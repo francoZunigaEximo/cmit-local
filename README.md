@@ -24,3 +24,6 @@ $ php artisan migrate
 Utilice el [migrate] para instalar la tabla users en la base de datos seleccionada.
 
 Edite el archivo [.env] para escribir los datos de su [localhost], [user], [password] y [port] sea cual fuere su servidor (Apache, Ngix, Lampp, Xampp, etc).
+
+Nuevas tablas para funcionalidades de usuarios, roles y permisos de usuarios en el root del proyecto en el caso de no poder ejecutar las migraciones
+* nuevas_tablas.sql 

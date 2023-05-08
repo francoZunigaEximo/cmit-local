@@ -56,7 +56,7 @@ class AuthController extends Controller
 
     public function testCreate()
     {
-        echo Hash::make("123456789");
+        echo Hash::make("Dicom1975");
     }
 
     public function cambiarPass()

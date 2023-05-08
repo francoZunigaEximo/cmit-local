@@ -17,10 +17,12 @@ use App\Http\Controllers\PrestacionesController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+//Route::get('/password', [AuthController::class, 'testCreate'])->name('password');
+
 Route::group(['middleware' => 'guest'], function(){
     Route::view('/', 'layouts.login')->name("login");
     Route::post('/validate-login', [AuthController::class, 'login'])->name('validate-login');
-    //Route::get('/password', [AuthController::class, 'testCreate'])->name('password');
 });
 
 Route::group(['middleware' => 'auth'], function(){
