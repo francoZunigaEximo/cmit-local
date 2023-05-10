@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     
-    <title>Error 403 - Salud Ocupacional SRL</title>
+    <title>Error 419 - Salud Ocupacional SRL</title>
 
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/apple-touch-icon.png') }}">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/favicon-32x32.png') }}">
@@ -19,13 +19,13 @@
 <body>
     <div class="row">
         <div class="col-sm-12">
-            <h1 class="titulo-error">403</h1>
+            <h1 class="titulo-error">419</h1>
         </div>
         <div class="col-sm-12 center">
-            <h3 class="subtitulo-error">Prohibido</h3>
+            <h3 class="subtitulo-error">La página ha expirado</h3>
         </div>
         <div class="col-sm-12 center">
-            <p class="mensaje-error">No tiene acceso a esta información.</p>
+            <p class="mensaje-error">La sesión del sitio ha expirado.</p>
         </div>
         <div class="col-sm-12 center">
             <img class="logo-error img-fluid opacity-35 " src="{{ asset('images/logo.png')}}" alt="Salud Ocupacional SRL">
