@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 
 
+
 class AuthController extends Controller
 {
     public function login(Request $request) 
@@ -30,11 +31,13 @@ class AuthController extends Controller
 
     public function register(Request $request) {
 
-        $validated = Validator::make($request->all(),[
+        $rules = [
             'name'       => 'required|string|max:100',
             'email'      => 'required|email|max:255|unique:users,email,'.Auth::id(),
             'password'   => 'required|min:8|same:repassword',
-        ]);
+        ];
+
+        $validated = Validator::make($request->all(),$rules);
 
         if($validated->fails()) return redirect()->route("register")->withErrors($validated->errors())->withInput();
 
@@ -54,18 +57,53 @@ class AuthController extends Controller
         return redirect()->route("login")->withSuccess("Se ha cerrado la sesion correctamente.");
     }
 
-    public function testCreate()
-    {
-        echo Hash::make("Dicom1975");
-    }
 
+    //Vista para cambiar password
     public function cambiarPass()
     {
         return view('layouts.change');
     }
 
+
     public function cambiarPostPass(Request $request)
     {   
+        $rules = [
+            'passactual' => [
+                'required',
+                'string',
+                function ($attribute, $value, $fail) use ($request) {
+                    if (!Hash::check($value, $request->user()->password)) {
+                        $fail('La contraseña es incorrecta');
+                    }
+                },
+            ],
+            'newpass' => 'required|min:8|max:20|string',
+            'newpass_confirmation' => 'required|same:newpass',
+        ];
 
+        $msg = [
+            'passactual.required' => 'Debe ingresar su contraseña actual para poder realizar el cambio',
+            'newpass.min' => 'La contraseña debe tener un minimo de 8 caracteres y un maximo de 20','newpass.max' => 'La contraseña debe tener un minimo de 8 caracteres y un maximo de 20',
+            'newpass.required' => 'La nueva contraseña es un campo requerido',
+            'newpass_confirmation.required' => 'Debe volver a escribir la contraseña para confirmar su cambio',
+            'newpass_confirmation.same' => 'Las nuevas contraseñas deben coincidir. Las mismas no son iguales',
+        ];
+
+
+        $validated = Validator::make($request->all(),$rules, $msg);
+
+        if($validated->fails()){
+            return back()->withInput()->withErrors($validated->messages());
+        }else{
+            
+            $user = $request->user();
+            $user->password = Hash::make($request->newpass);
+            $user->save();
+
+            return redirect()->back()->withSuccess('¡La contraseña se ha actualizado correctamente!');
+
+        }
     }
+
+
 }

@@ -39,11 +39,6 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="text-center mt-sm-5 mb-4 text-white-50">
-                            <div>
-                                <a href="index.html" class="d-inline-block auth-logo">
-                                    <img src="assets/images/logo-light.png" alt="" height="20">
-                                </a>
-                            </div>
                             <img class="mb-4" src="{{ asset('images/logo.png') }}" alt="Salud Ocupacional SRL">
                         </div>
                     </div>
@@ -119,7 +114,6 @@
     <script src="{{ asset('libs/node-waves/waves.min.js') }}"></script>
     <script src="{{ asset('libs/feather-icons/feather.min.js') }}"></script>
     <script src="{{ asset('js/pages/plugins/lord-icon-2.1.0.js') }}"></script>
-    <script src="{{ asset('js/plugins.js') }}"></script>
 
     <script src="{{ asset('libs/particles.js/particles.js') }}"></script>
     <script src="{{ asset('js/pages/particles.app.js') }}"></script>
