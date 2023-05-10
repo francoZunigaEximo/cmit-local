@@ -12,7 +12,10 @@
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/favicon-16x16.png') }}">
     <link rel="mask-icon" href="{{ asset('images/safari-pinned-tab.svg') }}" color="#5bbad5">
 
+    <link rel="shortcut icon" href="{{ asset('images/favicon.ico') }}">
+
     <link href="{{ asset('libs/jsvectormap/css/jsvectormap.min.css') }}" rel="stylesheet" type="text/css" />
+    @stack('styles')
 
     <link href="{{ asset('libs/swiper/swiper-bundle.min.css') }}" rel="stylesheet" type="text/css" />
 
@@ -78,7 +81,6 @@
     </div>
 </header>
 
-        <!-- ========== App Menu ========== -->
         <div class="app-menu navbar-menu">
             <!-- LOGO -->
             <div class="navbar-brand-box">
@@ -91,7 +93,6 @@
                         <img src="{{ asset('images/logo-intranet.png') }}" alt="Salud Ocupacionl SRL" >
                     </span>
                 </a>
-                <!-- Light Logo-->
                 <a href="{{ route('home') }}" class="logo logo-light">
                     <span class="logo-sm">
                         <img src="{{ asset('images/logo-intranet-sm.png') }}" alt="Salud Ocupacionl SRL" >
@@ -125,7 +126,7 @@
                                         <a href="{{ route('clientes') }}" class="nav-link" data-key="t-clientes"> Clientes </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="{{ route('pacientes') }}" class="nav-link" data-key="t-pacientes"> Pacientes </a>
+                                        <a href="{{ route('pacientes.index') }}" class="nav-link" data-key="t-pacientes"> Pacientes </a>
                                     </li>
 
                                     <li class="nav-item">
@@ -186,25 +187,23 @@
 
                     </ul>
                 </div>
-                <!-- Sidebar -->
             </div>
 
             <div class="sidebar-background"></div>
         </div>
-        <!-- Left Sidebar End -->
-        <!-- Vertical Overlay-->
+
         <div class="vertical-overlay"></div>
 
-        <!-- ============================================================== -->
-        <!-- Start right Content here -->
-        <!-- ============================================================== -->
         <div class="main-content">
-
             <div class="page-content">
-                @yield('content')
-
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-12">
+                            @yield('content')
+                        </div>
+                    </div>
+                </div>
             </div>
-            <!-- End Page-content -->
 
             <footer class="footer">
                 <div class="container-fluid">
@@ -221,10 +220,8 @@
                 </div>
             </footer>
         </div>
-        <!-- end main content-->
 
     </div>
-    <!-- END layout-wrapper -->
 
 
 
