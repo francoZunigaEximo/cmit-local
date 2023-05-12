@@ -109,82 +109,11 @@
             <div id="scrollbar">
                 <div class="container-fluid">
 
-                    
-
                     <div id="two-column-menu">
                     </div>
                     <ul class="navbar-nav" id="navbar-nav">
                         <li class="menu-title"><span data-key="t-menu">Menu</span></li>
-
-                        <li class="nav-item">
-                            <a class="nav-link menu-link" href="#sidebarClientes" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarClientes">
-                                <i data-feather="user" class="icon-dual"></i> <span data-key="t-user">Clientes</span>
-                            </a>
-                            <div class="collapse menu-dropdown" id="sidebarClientes">
-                                <ul class="nav nav-sm flex-column">
-                                    <li class="nav-item">
-                                        <a href="{{ route('clientes') }}" class="nav-link" data-key="t-clientes"> Clientes </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="{{ route('pacientes.index') }}" class="nav-link" data-key="t-pacientes"> Pacientes </a>
-                                    </li>
-
-                                    <li class="nav-item">
-                                        <a href="{{ route('grupos') }}" class="nav-link"> <span data-key="t-grupos">Grupos</span></a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link menu-link" href="#sidebarProveedores" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarProveedores">
-                                <i data-feather="package" class="icon-dual"></i> <span data-key="t-package">Proveedores</span>
-                            </a>
-                            <div class="collapse menu-dropdown" id="sidebarProveedores">
-                                <ul class="nav nav-sm flex-column">
-                                    <li class="nav-item">
-                                        <a href="{{ route('profesionales') }}" class="nav-link" data-key="t-profesionales"> Profesionales </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="{{ route('proveedores') }}" class="nav-link" data-key="t-proveedores"> Proveedores </a>
-                                    </li>
-
-                                    <li class="nav-item">
-                                        <a href="{{ route('examenes') }}" class="nav-link"> <span data-key="t-examenes">Examenes</span></a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link menu-link" href="#sidebarPrestaciones" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarPrestaciones">
-                                <i data-feather="check-square" class="icon-dual"></i> <span data-key="t-check-square">Prestaciones</span>
-                            </a>
-                            <div class="collapse menu-dropdown" id="sidebarPrestaciones">
-                                <ul class="nav nav-sm flex-column">
-                                    <li class="nav-item">
-                                        <a href="{{ route('prestaciones') }}" class="nav-link" data-key="t-prestaciones"> Prestaciones </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="{{ route('carnet') }}" class="nav-link" data-key="t-carnet"> Carnet </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="{{ route('pcr') }}" class="nav-link"> <span data-key="t-pcr">PCR</span></a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="{{ route('constancias') }}" class="nav-link"> <span data-key="t-pcr">Constancias</span></a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="{{ route('placas') }}" class="nav-link"> <span data-key="t-placas">Placas</span></a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="{{ route('entregadas') }}" class="nav-link"> <span data-key="t-entregadas">Entregadas</span></a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                       
-
+                    
                     </ul>
                 </div>
             </div>
@@ -250,7 +179,7 @@
 
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script type="text/javascript" src="{{ asset('libs/choices.js/public/assets/scripts/choices.min.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('libs/flatpickr/flatpickr.min.js') }}"><\/script>"));
+    <script type="text/javascript" src="{{ asset('libs/flatpickr/flatpickr.min.js') }}"></script>
 
     <script src="{{ asset('libs/apexcharts/apexcharts.min.js') }}"></script>
     <script src="{{ asset('libs/jsvectormap/js/jsvectormap.min.js') }}"></script>
