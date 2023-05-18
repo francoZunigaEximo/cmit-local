@@ -24,6 +24,7 @@
     <link href="{{ asset('css/icons.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('css/app.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('css/custom.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('css/screen.css') }}" rel="stylesheet" type="text/css" />
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
 </head>
