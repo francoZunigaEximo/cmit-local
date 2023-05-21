@@ -117,11 +117,7 @@
                     <ul class="navbar-nav" id="navbar-nav">
                         <li class="menu-title"><span data-key="t-menu">Menu</span></li>
 
-                        <li class="nav-item">
-                            <a class="nav-link menu-link" href="{{ route('pacientes.index') }}" aria-expanded="false">
-                                <i data-feather="user" class="icon-dual"></i> <span data-key="t-user">Pacientes</span>
-                            </a>
-                        </li>
+
                     </ul>
                 </div>
             </div>
