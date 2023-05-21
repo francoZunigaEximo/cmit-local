@@ -1,4 +1,5 @@
-<!doctype html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html lang="en" data-layout="vertical" data-topbar="light" data-sidebar="light" data-sidebar-size="lg" data-sidebar-image="none" data-preloader="disable">
 
 <head>
@@ -15,6 +16,7 @@
     <link rel="shortcut icon" href="{{ asset('images/favicon.ico') }}">
 
     <link href="{{ asset('libs/jsvectormap/css/jsvectormap.min.css') }}" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     @stack('styles')
 
     <link href="{{ asset('libs/swiper/swiper-bundle.min.css') }}" rel="stylesheet" type="text/css" />
@@ -74,7 +76,7 @@
                         <h6 class="dropdown-header">Bienvenido {{ Auth::user()->name }}!</h6>
                         <a class="dropdown-item" href="{{ route('changePassword')}}"><i class="mdi mdi-settings-circle text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Cambiar Constraseña</span></a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="{{ route('logout')}}"><i class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-key="t-logout">Salir</span></a>
+                        <a class="dropdown-item" href="{{ route('logout') }}"><i class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-key="t-logout">Salir</span></a>
                     </div>
                 </div>
             </div>
@@ -86,7 +88,7 @@
             <!-- LOGO -->
             <div class="navbar-brand-box">
                 <!-- Dark Logo-->
-                <a href="{{ route('home') }}" class="logo logo-dark">
+                <a href="#" class="logo logo-dark">
                     <span class="logo-sm">
                         <img src="{{ asset('images/logo-intranet-sm.png') }}" alt="Salud Ocupacionl SRL" >
                     </span>
@@ -114,7 +116,12 @@
                     </div>
                     <ul class="navbar-nav" id="navbar-nav">
                         <li class="menu-title"><span data-key="t-menu">Menu</span></li>
-                    
+
+                        <li class="nav-item">
+                            <a class="nav-link menu-link" href="{{ route('pacientes.index') }}" aria-expanded="false">
+                                <i data-feather="user" class="icon-dual"></i> <span data-key="t-user">Pacientes</span>
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -179,8 +186,8 @@
     <script src="{{ asset('js/pages/plugins/lord-icon-2.1.0.js') }}"></script>
 
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-    <script type="text/javascript" src="{{ asset('libs/choices.js/public/assets/scripts/choices.min.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('libs/flatpickr/flatpickr.min.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/choices.js@9.0.0/dist/choices.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
     <script src="{{ asset('libs/apexcharts/apexcharts.min.js') }}"></script>
     <script src="{{ asset('libs/jsvectormap/js/jsvectormap.min.js') }}"></script>
