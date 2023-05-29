@@ -182,7 +182,7 @@
     <script src="{{ asset('js/pages/plugins/lord-icon-2.1.0.js') }}"></script>
 
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/choices.js@9.0.0/dist/choices.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/choices.js/1.1.6/choices.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
     <script src="{{ asset('libs/apexcharts/apexcharts.min.js') }}"></script>
