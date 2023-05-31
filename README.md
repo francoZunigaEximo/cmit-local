@@ -14,6 +14,7 @@ Las lista de tecnologías utilizadas en el proyecto son:
 * [Laravel] - Versión: 10.x
 
 * Servidor: Lampp (Linux) / Xampp (Windows) / AppServ/ Laragon
+
 -> Lampp y Xampp: https://www.apachefriends.org/download.html
 -> AppServ: https://www.appserv.org/en/
 -> Laragon: https://laragon.org/ 
@@ -45,7 +46,8 @@ $ touch .env
 ```
 
 * Abrimos el archivo .env y copiamos el siguiente código
-`APP_NAME=Laravel
+```
+APP_NAME=Laravel
 APP_ENV=local
 APP_KEY=base64:xzcbDXPiv10GQui0vxHzmJb8IvLLQ8u/ewjYzF1+3dA=
 APP_DEBUG=true
@@ -103,16 +105,16 @@ VITE_PUSHER_HOST="${PUSHER_HOST}"
 VITE_PUSHER_PORT="${PUSHER_PORT}"
 VITE_PUSHER_SCHEME="${PUSHER_SCHEME}"
 VITE_PUSHER_APP_CLUSTER="${PUSHER_APP_CLUSTER}"
-`
+```
 
 * Debe modificar los siguientes valores con los de su base de datos para que funcione:
-`
+```
 DB_HOST=TU_HOST
 DB_PORT=3306
 DB_DATABASE=NOMBRE_BD
 DB_USERNAME=USUARIO_BD
 DB_PASSWORD=CONTRASEÑA_BD
-`
+```
 
 * Una ver guardados los cambios, actualize la key de laravel para encriptar datos sensibles y generar firmas de seguridad.
 ```
@@ -128,11 +130,12 @@ El proyecto tendria que funcionar sin problemas.
 El root del proyecto es http://localhost/cmit/public/
 
 En el caso de que el archivo .htaccess no le redireccione de manera correcta a la carpeta [public] o tiene inconvenientes dependendo de si su servidor es una distro Linux o Windows, cree en el root un archivo index.php y agregue el siguiente codigo
-`
+```
 <?php
  header('Location: http://localhost/cmit/public/index.php');
 ?>
-` 
+```
+
 Nota: En el caso de usar servidores LINUX, recuerde dar los permisos de lectura y escritura correspondientes.
 ```
 $ sudo chmod 777 -R storage && sudo chmod 777 -R bootstrap
