@@ -1,9 +1,0 @@
-@media (min-width: 1366px) and (max-width: 1366px) and (min-height: 768px) and (max-height: 768px) {
-    html {
-        zoom: 0.9 !important;
-        -moz-transform: scale(0.9) !important;
-        -webkit-transform: scale(0.9) !important;
-        -o-transform: scale(0.9) !important;
-        -ms-transform: scale(0.9) !important;
-    }
-}
