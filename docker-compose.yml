@@ -1,0 +1,42 @@
+# Copyright VMware, Inc.
+# SPDX-License-Identifier: APACHE-2.0
+
+version: '2'
+
+services:
+  mariadb:
+    image: docker.io/bitnami/mariadb:11.0
+    environment:
+      # ALLOW_EMPTY_PASSWORD is recommended only for development.
+      - ALLOW_EMPTY_PASSWORD=yes
+      - MARIADB_USER=bn_myapp
+      - MARIADB_DATABASE=bitnami_myapp
+    ports:
+      - 3306:3306
+  redis:
+    image: redis
+    ports:
+      - "6382:6379"
+    environment:
+      - name=value
+    
+  myapp:
+    image: docker.io/bitnami/laravel:10
+    ports:
+      - '8000:8000'
+    environment:
+      - DB_HOST=<host>
+      - DB_PORT=3306
+      - DB_USERNAME=<usuario>
+      - DB_DATABASE=<nombredb>
+      - DB_PASSWORD=<contraseña>
+      - CACHE_DRIVER=redis
+      - REDIS_CLIENT=predis
+      - REDIS_HOST=redis
+      - REDIS_PASSWORD=null
+      - REDIS_PORT=6379
+    volumes:
+      - 'C:/Users/fzuniga/DOCKER-LARAVEL/cmit:/app'
+    depends_on:
+      - mariadb
+      - redis  
