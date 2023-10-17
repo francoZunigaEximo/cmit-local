@@ -1,0 +1,466 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Cliente;
+use App\Models\Mapa;
+use App\Models\PaqueteEstudio;
+use App\Models\Prestacion;
+use App\Models\PrestacionesTipo;
+use App\Traits\ObserverPrestaciones;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Yajra\DataTables\DataTables;
+
+class PrestacionesController extends Controller
+{
+
+    use ObserverPrestaciones;
+
+    public function index(Request $request): mixed
+    {
+
+        if ($request->ajax()) {
+
+            $query = Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+                ->join('clientes', 'prestaciones.IdEmpresa', '=', 'clientes.Id')
+                ->select(
+                    DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdART) AS Art'),
+                    DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdEmpresa) AS RazonSocial'),
+                    'clientes.ParaEmpresa as ParaEmpresa',
+                    'clientes.Identificacion as Identificacion',
+                    'prestaciones.Fecha as FechaAlta',
+                    'prestaciones.Id as Id',
+                    'pacientes.Nombre as Nombre',
+                    'pacientes.Apellido as Apellido',
+                    'prestaciones.TipoPrestacion as Tipo',
+                    'prestaciones.Anulado as Anulado',
+                    'prestaciones.Pago as Pago',
+                    'prestaciones.Ausente as Ausente',
+                    'prestaciones.Incompleto as Incompleto',
+                    'prestaciones.Devol as Devol',
+                    'prestaciones.Forma as Forma',
+                    'prestaciones.SinEsc as SinEsc',
+                    'prestaciones.Estado as Estado',
+                    'prestaciones.Facturado as Facturado'
+                )
+                ->where('prestaciones.Estado', '=', '1')
+                ->where('prestaciones.Fecha', '=', Carbon::now()->format('Y-m-d'))
+                ->orderBy('prestaciones.Id', 'DESC');
+
+            return Datatables::of($query)->make(true);
+
+        }
+
+        return view('layouts.prestaciones.index');
+    }
+
+
+    public function search(Request $request): mixed
+    {
+        if ($request->ajax()) {
+            $query = $this->buildQuery($request);
+            return Datatables::of($query)->make(true);
+        }
+    
+        return view('layouts.prestaciones.index');
+    }
+    
+    private function buildQuery(Request $request)
+    {
+        $query = Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+            ->join('clientes', 'prestaciones.IdEmpresa', '=', 'clientes.Id')
+            ->select(
+                DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdART) AS Art'),
+                DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdEmpresa) AS empresa'),
+                'clientes.ParaEmpresa as ParaEmpresa',
+                'clientes.Identificacion as Identificacion',
+                'prestaciones.Fecha as FechaAlta',
+                'prestaciones.Id as Id',
+                'pacientes.Nombre as Nombre',
+                'pacientes.Apellido as Apellido',
+                'prestaciones.Anulado as Anulado',
+                'prestaciones.Pago as Pago',
+                'prestaciones.FechaVto as FechaVencimiento',
+                'prestaciones.Ausente as Ausente',
+                'prestaciones.Incompleto as Incompleto',
+                'prestaciones.Devol as Devol',
+                'prestaciones.Forma as Forma',
+                'prestaciones.SinEsc as SinEsc',
+                'prestaciones.TipoPrestacion as TipoPrestacion',
+                'prestaciones.eEnviado as eEnviado',
+                'prestaciones.Estado as Estado'
+            )
+            ->where('prestaciones.Estado', 1);
+    
+        if (!empty($request->nroprestacion)) {
+            $query->where('prestaciones.Id', '=', $request->nroprestacion);
+        } else {
+            $query = $this->applyBasicFilters($query, $request);
+            $query = $this->applyAdvancedFilters($query, $request);
+        }
+    
+        return $query;
+    }
+    
+    private function applyBasicFilters($query, $request)
+    {
+        if(!empty($request->nomempresa)) {
+            $query->where('clientes.RazonSocial', 'LIKE', '%'. $request->nomempresa .'%');
+        }
+
+        if(!empty($request->nomart)) {
+            $query->where('clientes.RazonSocial', 'LIKE', '%'. $request->nomart .'%');
+        }
+
+        if (!empty($request->tipoPrestacion)) {
+            $query->where('prestaciones.TipoPrestacion', $request->tipoPrestacion);
+        }
+    
+        if (!empty($request->pago)) {
+            $query->where('prestaciones.Pago', '=', $request->pago);
+        }
+    
+        if (!empty($request->formaPago)) {
+            $query->where('prestaciones.SPago', '=', $request->formaPago);
+        }
+
+        if(!empty($request->eEnviado)){
+            $query->where('prestaciones.eEnviado', '=', $request->eEnviado);
+        }
+
+        if (!empty($request->fechaDesde) && (!empty($request->fechaHasta))) {
+            $query->whereBetween('prestaciones.Fecha', [$request->fechaDesde, $request->fechaHasta]);
+        }
+
+        if (is_array($request->estado) && in_array('Incompleto', $request->estado)) {
+            $query->where('prestaciones.Incompleto', '1');
+        }
+
+        if (is_array($request->estado) && in_array('Anulado', $request->estado)) {
+            $query->where('prestaciones.Anulado', '1');
+        }
+
+        if (is_array($request->estado) && in_array('Ausente', $request->estado)) {
+            $query->where('prestaciones.Ausente', '1');
+        }
+
+        if (is_array($request->estado) && in_array('Forma', $request->estado)) {
+            $query->where('prestaciones.Forma', '1');
+        }
+
+        if (is_array($request->estado) && in_array('SinEsc', $request->estado)) {
+            $query->where('prestaciones.SinEsc', '1');
+        }
+
+        if (is_array($request->estado) && in_array('Devol', $request->estado)) {
+            $query->where('prestaciones.Devol', '1');
+        }
+    
+        if (is_array($request->estado) && in_array('RxPreliminar', $request->estado)) {
+            $query->where('prestaciones.RxPreliminar', '1');
+        }
+
+        if (is_array($request->estado) && in_array('Cerrado', $request->estado)) {
+            $query->where('prestaciones.Cerrado', '1');
+        }
+
+        if (is_array($request->estado) && in_array('Abierto', $request->estado)) {
+            $query->where('prestaciones.Cerrado', '0')
+                ->where('prestaciones.Finalizado', '0');
+        }
+
+        if (is_array($request->estado) && in_array('Cerrado', $request->estado)) {
+            $query->where('prestaciones.Cerrado', '1');
+        }
+    
+        return $query;
+    }
+    
+    private function applyAdvancedFilters($query, $request)
+    {
+
+        if (!empty($request->finalizado)) {
+            $query->where('prestaciones.Finalizado', '=', $request->finalizado);
+        }
+    
+        if (!empty($request->facturado)) {
+            $query->where('prestaciones.Facturado', '=', $request->facturado);
+        }
+    
+        if (!empty($request->entregado)) {
+            $query->where('prestaciones.Entregado', '=', $request->entregado);
+        }
+    
+        return $query;
+    }
+    
+
+    public function create()
+    {
+        $tipoPrestacion = PrestacionesTipo::all();
+        $paquetes = PaqueteEstudio::all();
+
+        return view('layouts.prestaciones.create', compact(['tipoPrestacion', 'paquetes']));
+    }
+
+    public function edit(Prestacion $prestacione)
+    {
+
+        $tipoPrestacion = PrestacionesTipo::all();
+        $financiador = Cliente::find($prestacione->Financiador, ['RazonSocial', 'Id', 'Identificacion']);
+
+        return view('layouts.prestaciones.edit', compact(['tipoPrestacion', 'prestacione', 'financiador']));
+
+    }
+
+    public function estados(Request $request): mixed
+    {
+
+        $estado = Prestacion::find($request->Id);
+
+
+        switch ($request->Tipo) {
+            case 'cerrar':
+                if ($estado->Finalizado !== 1) {
+                    $estado->Cerrado = ($estado->Cerrado === 0 && $estado->Entregado === 0 && $estado->eEnviado === 0 ? 1 : 0);
+                }
+                
+                if ($estado->Cerrado === 1) {
+                    $estado->FechaCierre = now()->format('Y-m-d');
+                } else {
+                    $estado->FechaCierre = null; 
+                }
+                break;
+
+            case 'finalizar':
+                if($estado->Entregado !== 1){
+                    $estado->Finalizado = ($estado->Finalizado === 0 && $estado->Cerrado === 1 && $estado->Entregado === 0 && $estado->eEnviado === 0 ? 1 : 0);
+                }
+                
+                if ($estado->Finalizado === 1) {
+                    $estado->FechaFinalizado = now()->format('Y-m-d');
+                } else {
+                    $estado->FechaFinalizado = null; 
+                }
+                break;
+
+            case 'entregar':
+                if($estado->eEnviado !== 1){
+                    $estado->Entregado = ($estado->Finalizado === 1 && $estado->Cerrado === 1 && $estado->Entregado === 0 && $estado->eEnviado === 0 ? 1 : 0);
+                }
+                
+                if ($estado->Entregado === 1) {
+                    $estado->FechaEntrega = now()->format('Y-m-d');
+                } else {
+                    $estado->FechaEntrega = null; 
+                }
+                break;
+
+            case 'eEnviar':
+                $estado->eEnviado = ($estado->Cerrado === 1 && $estado->eEnviado === 0 ? 1 : 0);
+                if ($estado->eEnviado === 1) {
+                    $estado->FechaEnviado= now()->format('Y-m-d');
+                } else {
+                    $estado->FechaEnviado = null; 
+                }
+                break;
+        }
+
+        $estado->save();
+
+        return response()->json(['tipo' => $request->Tipo, 'estado' => $estado]);
+
+    }
+
+    public function down(Request $request): void
+    {
+
+        $prestaciones = Prestacion::find($request->Id);
+
+        if($prestaciones)
+        {
+            $prestaciones->Estado = '0';
+            $prestaciones->save();
+        }
+        
+    }
+
+    //Bloquear prestacion con Ajax o Laravel
+    public function blockPrestacion(Request $request)
+    {
+        $prestaciones = Prestacion::find($request->prestaciones);
+
+        $prestaciones->Anulado = 1; // 0 => Habilitado, 1 => Anulado
+        $prestaciones->save();
+
+        return redirect()->route('prestaciones.index');
+    }
+
+    public function downPrestPaciente(Request $request)
+    {
+
+        $prestaciones = Prestacion::find($request->prestaciones);
+
+        $prestaciones->Estado = '0';
+        $prestaciones->save();
+
+    }
+
+    public function blockPrestPaciente(Request $request)
+    {
+        $prestaciones = Prestacion::find($request->Id);
+        $prestaciones->Anulado = 1; // 0 => Habilitado, 1 => Anulado
+        $prestaciones->save();
+
+    }
+
+    public function verifyBlock(Request $request)
+    {
+
+        $cliente = Cliente::find($request->cliente);
+
+        if ($cliente->Bloqueado == 1) {
+
+            return response()->json(['RazonSocial' => $cliente->RazonSocial, 'Identificacion' => $cliente->Identificacion, 'Motivo' => $cliente->Motivo, 'Bloqueado' => $cliente->Bloqueado]);
+        } else {
+
+            return response()->json(['Bloqueado' => $cliente->Bloqueado]);
+        }
+    }
+
+    public function getPago(Request $request)
+    {
+        $cliente = Cliente::where('Id', $request->financiador)->first();
+
+        $formaPago = $cliente ? $cliente->FPago : '';
+
+        return response()->json(['option' => $formaPago]);
+    }
+
+    public function savePrestacion(Request $request)
+    {
+        $nuevoId = Prestacion::max('Id') + 1;
+
+        Prestacion::create([
+            'Id' => $nuevoId,
+            'IdPaciente' => $request->paciente,
+            'TipoPrestacion' => $request->tipoPrestacion,
+            'Fecha' => $request->fecha,
+            'IdMapa' => $request->mapas ?? '0',
+            'Pago' => $request->pago,
+            'SPago' => $request->spago,
+            'Observaciones' => $request->observaciones ??  '',
+            'NumeroFacturaVta' => $request->nroFactura,
+            'IdEmpresa' => $request->IdEmpresa,
+            'IdART' => $request->IdART,
+            'Fecha' => date('Y-m-d'),
+            'Financiador' => $request->financiador,
+        ]);
+
+        $mapa = Mapa::find($request->mapas);
+        if($mapa){
+            $mapa->Cmapeados -= $mapa->Cmapeados;
+            $mapa->save();
+        }
+
+        return response()->json($nuevoId);
+    }
+
+    public function updatePrestacion(Request $request)
+    {
+   
+        $prestacion = Prestacion::find($request->Id);
+        $prestacion->IdEmpresa = $request->Empresa ?? 0;
+        $prestacion->IdART = $request->Art ?? 0;
+        $prestacion->Fecha = $request->Fecha ?? '';
+        $prestacion->TipoPrestacion = $request->TipoPrestacion ?? '';
+        $prestacion->IdMapa = $request->Mapas ?? 0;
+        $prestacion->Pago = $request->Pago ?? '';
+        $prestacion->SPago = $request->SPago ?? '';
+        $prestacion->Financiador = ($request->TipoPrestacion == 'ART' ? $request->Art : $request->Empresa) ?? 0;
+        $prestacion->Observaciones = $request->Observaciones ?? '';
+        $prestacion->NumeroFacturaVta = $request->NumeroFacturaVta ?? 0;
+        $prestacion->IdEvaluador = $request->IdEvaluador ?? 0;
+        $prestacion->Evaluacion = $request->Evaluacion ?? 0;
+        $prestacion->Calificacion = $request->Calificacion ?? 0;
+        $prestacion->RxPreliminar = $request->RxPreliminar === 'true' ? 1 : 0;
+        $prestacion->ObsExamenes = $request->ObsExamenes ?? '';
+        $prestacion->save();
+
+        $this->setPrestacionAtributo($request->Id, $request->SinEval);
+        $this->updateFichaLaboral($request->IdPaciente, $request->Art, $request->Empresa);
+
+    }
+
+    public function vencimiento(Request $request): void
+    {
+        $prestacion = Prestacion::find($request->Id);
+        $prestacion->Vto = 1;
+        $prestacion->save();
+    }
+
+    public function getParaEmpresas(Request $request): mixed
+    {
+
+        $buscar = $request->buscar;
+        $tipo = $request->tipo;
+        $searchCliente = Cliente::find($request->IdCliente);
+
+        $resultados = Cache::remember('ParaEmpreas_'.$buscar, 5, function () use ($buscar, $tipo, $searchCliente) {
+
+            $clientes = Cliente::where(function ($query) use ($buscar) {
+                $query->where('ParaEmpresa', 'LIKE', '%'.$buscar.'%')
+                    ->orWhere('Identificacion', 'LIKE', '%'.$buscar.'%');
+            })
+                ->where('TipoCliente', '=', $tipo)
+                ->where('Identificacion', '=', $searchCliente->Identificacion)
+                ->get();
+
+            $resultados = [];
+
+            foreach ($clientes as $cliente) {
+                $resultados[] = [
+                    'id' => $cliente->Id,
+                    'text' => $cliente->RazonSocial.' - '.$cliente->Identificacion,
+                ];
+            }
+
+            return $resultados;
+
+        });
+
+        return response()->json(['paraEmpresas' => $resultados]);
+    }
+
+    public function getPresPaciente(Request $request): mixed
+    {
+
+        $prestacion = Prestacion::find($request->Id);
+        $mapa = Mapa::join('clientes', 'mapas.IdART', '=', 'clientes.Id')
+            ->select(
+                'clientes.Id as Id',
+                'clientes.RazonSocial as RazonSocial',
+                'clientes.Identificacion as Identificacion')
+            ->where('clientes.Id', '=', $prestacion->IdMapa)
+            ->first();
+
+        if ($mapa) {
+
+            $resultados[] = [
+                'id' => $mapa->Id,
+                'text' => $mapa->RazonSocial.' - '.$mapa->Identificacion,
+            ];
+
+            return response()->json(['resultado' => $prestacion, 'mapa' => $resultados]);
+
+        } else {
+
+            return response()->json(['resultado' => $prestacion]);
+        }
+    }
+
+
+}

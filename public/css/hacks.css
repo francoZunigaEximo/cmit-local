@@ -1,0 +1,267 @@
+i, .cerrar, .finalizar, .entregar, .eEnviar {
+	cursor: pointer;
+}
+
+#eliminarTelefono, #editarTelefono {
+	font-size: 1.1em;
+}
+
+#eliminarTelefono {
+	color: red;
+}
+
+#editarTelefono {
+	color:green;
+}
+
+.btn.disabled {
+	cursor: not-allowed;
+	opacity: 0.6;
+}
+
+.required {
+	color: red !important;
+}
+
+.border-pic {
+	border: 1px solid #cccccc !important;
+}
+
+.sort-icon {
+	display: inline-block;
+	margin-left: 5px;
+	font-size: 0.8em;
+  }
+  
+  .sort-icon i {
+	opacity: 0.3;
+  }
+  
+  .sort-icon.asc i.ri-arrow-up-line,
+  .sort-icon.desc i.ri-arrow-down-line {
+	opacity: 1;
+  }
+
+.column {
+	max-width: 100px; 
+	overflow: hidden; 
+	text-overflow: ellipsis; 
+	white-space: nowrap; 
+	cursor: pointer;
+}
+
+.addTelefonos:hover {
+	cursor: pointer;
+}
+
+#auto-resize{
+	width: 500px;
+	min-height: 50px;
+	font-family: Arial, sans-serif;
+	font-size: 13px;
+	color: #444;
+	padding: 5px;
+  }
+  
+.noscroll{
+	overflow: hidden;
+	resize: none;
+}
+  
+.hiddendiv{
+	display: none;
+	white-space: pre-wrap;
+	width: 500px;
+	min-height: 50px;
+	font-family: Arial, sans-serif;
+	font-size: 13px;
+	padding: 5px;
+	word-wrap: break-word;
+}
+
+.lbr {
+	line-height: 3px;
+}
+
+.error {
+	color: red;
+	font-size: small;
+	font-weight:border;
+}
+
+/*Delete icon de Autorizados */
+.derechoAutorizado {
+	color: green; 
+}
+
+#deleteAutorizado {
+	cursor: pointer;
+}
+
+#clonar {
+	margin-bottom: 10px;
+}
+
+.full input {
+	background-color: #6591c4;
+	color: rgb(255, 255, 255);
+	font-weight: bold;
+}
+
+.editFull {
+	border: 1px solid #6591c4;
+	padding: 0.4em;
+	color: #6591c4;
+	font-size: 16px;
+}
+
+.optionsExamenes {
+	border: #c8d1db 1px solid;
+	padding: 1em;
+}
+
+.paquete, .examen, .buscador{
+	margin-bottom: 10px;
+}
+
+#listaExamenes{
+	margin-top: 20px;
+}
+
+.addPaquete, .addExamen, .addBuscador, .addPerfilProf {
+	margin-left: 5px;
+	font-size: 22px;
+	color: #253d52;
+}
+
+.examen, .paquete, .buscador {
+	display: flex; 
+	flex-direction: column;
+	flex: 1;
+}
+
+.cajaExamenes {
+	display: flex; align-items: center;
+}
+
+label {
+	font-weight: bolder;
+}
+
+.custom-badge {
+	display: inline-block;
+	padding: 4px 8px;
+	border-radius: 4px;
+	font-size: 0.75em;
+	font-weight: 600;
+}
+
+.custom-badge.violeta {
+	background-color: rgba(240,64,240,0.1); 
+	color:rgb(240, 64, 240);
+}
+
+.custom-badge.verdeAgua {
+	background-color: rgba(0,217,255); 
+	color:white;
+}
+
+.custom-badge.gris {
+	background-color: rgba(104,104,104,0.1); 
+	color:rgb(104, 104, 104);
+}
+
+.custom-badge.verde {
+	background-color: rgba(7, 26, 7, 0.1); 
+	color:green;
+}
+
+.custom-badge.rojo {
+	background-color: rgba(255,0,0,0.1); 
+	color:red;
+}
+
+.custom-badge.amarillo {
+	background-color: rgba(255, 255, 0, 0.1); 
+	color:rgb(192, 192, 7);
+}
+
+.custom-badge.azul {
+	background-color: rgb(55, 104, 240); 
+	color:white;
+	font-size: 12px;
+}
+
+
+.custom-badge.nuevoAmarillo {
+	background-color: rgb(255, 174, 0); 
+	color:white;
+	font-size: 12px;
+}
+
+
+.custom-badge.nuevoAzul {
+	background-color: rgb(55, 198, 241); 
+	color:white;
+	font-size: 12px;
+}
+
+.custom-badge.nuevoAzulInverso {
+	background-color: white; 
+	color:rgb(55, 198, 241);
+	border-color: rgb(55, 198, 241);
+}
+
+/* Fix de paginación */
+.pagination {
+	--vz-pagination-padding-x: 1.3rem !important;
+}
+
+.gris {
+	color: gray;
+}
+
+.verde {
+	color: green;
+}
+
+.rojo {
+	color: red;
+}
+
+.boton-azul {
+	color: white !important;
+	background-color: #24dcfc !important;
+	border: solid 1px #24dcfc !important;
+}
+
+.boton-verde {
+    background-color: #28a745 !important;
+    color: #fff !important;
+}
+
+.boton-amarillo {
+	background-color: rgb(255, 174, 0) in !important; 
+	color:white !important;
+}
+
+    /* Estilos personalizados para el input de archivo */
+    .custom-file-input {
+        display: none; /* Oculta el input real */
+    }
+
+    .custom-file-label {
+        cursor: pointer;
+        border: 1px solid #ccc; /* Borde personalizado */
+        padding: 5px 10px; /* Espaciado interno */
+        background-color: #f9f9f9; /* Color de fondo */
+    }
+
+    /* Estilos para cuando el usuario interactúa con el input */
+    .custom-file-input:focus + .custom-file-label {
+        background-color: #e0e0e0; /* Cambia el color de fondo al enfocar */
+    }
+
+	.richText-editor {
+		height: 100px !important;
+	}
