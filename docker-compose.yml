@@ -19,24 +19,30 @@ services:
       - "6382:6379"
     environment:
       - name=value
-    
+  composer-aux:
+    image: composer
+    volumes:
+      - '.:/app'
+    command: install --ignore-platform-reqs --no-scripts
+
   myapp:
     image: docker.io/bitnami/laravel:10
     ports:
       - '8000:8000'
     environment:
-      - DB_HOST=<host>
+      - DB_HOST=192.168.111.8
       - DB_PORT=3306
-      - DB_USERNAME=<usuario>
-      - DB_DATABASE=<nombredb>
-      - DB_PASSWORD=<contraseña>
+      - DB_USERNAME=db_cmit
+      - DB_DATABASE=db_cmit
+      - DB_PASSWORD=db_cmit
       - CACHE_DRIVER=redis
       - REDIS_CLIENT=predis
       - REDIS_HOST=redis
       - REDIS_PASSWORD=null
       - REDIS_PORT=6379
     volumes:
-      - 'C:/Users/fzuniga/DOCKER-LARAVEL/cmit:/app'
+      - '.:/app'
     depends_on:
+      - composer-aux
       - mariadb
       - redis  
