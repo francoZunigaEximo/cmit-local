@@ -67,7 +67,7 @@
                         </div>
                         
                     </div>
-                    <textarea class="form-control" id="meassageInput" rows="3" name="Observaciones">{{ $paciente->Observaciones }}</textarea>
+                    <textarea class="form-control" id="meassageInput" rows="3" name="Observaciones">{{ $paciente->Observaciones ?? '' }}</textarea>
                 </div>
             </div>
             <!--end card-->
@@ -659,7 +659,7 @@
                     <div class="col-3">
                         <div class="mb-3">
                             <label for="Observaciones" class="form-label">Observaciones de Bloqueo</label>
-                            <textarea style="color:#464242;  height:100px;" class="form-control" placeholder="Observaciones prestación" id="Observaciones" @readonly(true)>Empresa: {{ ($fichaLaboral->empresa->Motivo ? $fichaLaboral->empresa->Motivo : 'Sin datos de bloqueo empresa') ?? '' }} | ART: {{ ($fichaLaboral->art->Motivo ? $fichaLaboral->art->Motivo : 'Sin datos de bloqueo art') ?? '' }}</textarea>
+                            <textarea style="color:#464242;  height:100px;" class="form-control" placeholder="Observaciones prestación" id="Observaciones" @readonly(true)>Empresa: {{ $fichaLaboral->empresa->Motivo ?? 'Sin datos de bloqueo art' }} | ART: {{ $fichaLaboral->art->Motivo ?? 'Sin datos de bloqueo art' }}</textarea>
                         </div>
                       
                     </div><!--end col-->
