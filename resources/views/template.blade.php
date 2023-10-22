@@ -156,6 +156,12 @@
                                 <i data-feather="user-check" class="icon-dual"></i> <span data-key="t-layers">Profesionales</span>
                             </a>
                         </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link menu-link" href="{{ route('especialidades.index') }}" aria-expanded="false">
+                                <i data-feather="list" class="icon-dual"></i> <span data-key="t-layers">Especialidades</span>
+                            </a>
+                        </li>
                         
                     </ul>
                 </div>
