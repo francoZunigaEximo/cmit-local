@@ -182,6 +182,7 @@
 
     let editUrl = "{{ route('especialidades.edit', ['especialidade' => '__especialidades__']) }}";
     const checkProveedor = "{{ route('checkProveedor') }}";
+    const saveBasico = "{{ route('saveBasico') }}";
 </script>
 
 @push('styles')

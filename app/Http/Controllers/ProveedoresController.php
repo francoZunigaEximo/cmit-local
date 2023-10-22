@@ -102,7 +102,7 @@ class ProveedoresController extends Controller
             'Externo' => $request->Externo
         ]);
 
-        return response()->json(['expecialidad' => $Id]);
+        return response()->json(['especialidad' => $Id]);
         
     }
 
