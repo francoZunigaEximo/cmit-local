@@ -37,7 +37,8 @@ $(document).ready(function(){
 
                 swal('Perfecto', 'Se ha registrado la nueva especialidad de manera correcta', 'success');
                 setTimeout(() => {
-                    let lnk = href + "/" + data.Id + "/edit";
+                    let nuevo = location.href.replace("create", "");
+                    let lnk = nuevo + "/" + data.Id + "/edit";
                     window.location.href = lnk;
                 }, 3000);
             })
