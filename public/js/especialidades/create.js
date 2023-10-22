@@ -55,7 +55,7 @@ $(document).ready(function(){
             .done(function(response){
 
                 if (response.existe) {
-                    let especialidad = response.especialidad, url = editUrl.replace('__especialidad__', especialidad.Id);
+                    let especialidad = response.especialidades, url = editUrl.replace('__especialidad__', especialidad.Id);
                     
                     $('#editLink').attr('href', url);
                     $('#advertencia').modal('show');

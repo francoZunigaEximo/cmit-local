@@ -88,6 +88,24 @@ class ProveedoresController extends Controller
         return response()->json(['existe' => $existe, 'especialidades' => $especialidad]);
     }
 
+    public function save(Request $request)
+    {
+        $Id = Proveedor::max('Id') + 1;
+
+        Proveedor::create([
+            'Id' => $Id,
+            'Nombre' => $request->Nombre,
+            'Telefono' => $request->Telefono ?? '',
+            'Direccion' => $request->Direccion ?? '',
+            'IdLocalidad' => $request->IdLocalidad,
+            'Inactivo' => $request->Inactivo,
+            'Externo' => $request->Externo
+        ]);
+
+        return response()->json(['expecialidad' => $Id]);
+        
+    }
+
     public function excel(Request $request): string
     {
         $ids = $request->input('Id');
