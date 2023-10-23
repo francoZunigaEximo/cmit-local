@@ -21,7 +21,7 @@ class ProveedoresController extends Controller
 
     public function edit(Proveedor $especialidade)
     {
-        $localidad = Localidad::where('pcia', $especialidade->IdLocalidad)->first();
+        $localidad = Localidad::where('IdPcia', $especialidade->IdLocalidad)->first();
         $detalleProv = Provincia::find($localidad->Id);
         $provincias = Provincia::all();
 
