@@ -83,7 +83,7 @@
                 <div class="col-4 IdLocalidad mt-3">
                     <label for="IdLocalidad" class="form-label">Localidad</label>
                     <select class="form-control" name="IdLocalidad" id="IdLocalidad">
-                        <option value="{{ $especialidade->IdLocalidad }}" selected>Elija una opción...</option>
+                        <option value="{{ $especialidade->IdLocalidad }}" selected>{{ $localidad->Nombre }}</option>
                     </select>
                 </div> 
     
@@ -136,7 +136,7 @@
                 <div class="col-lg-12 pt-4">
                     <div class="hstack gap-2 justify-content-end">
                         
-                        <button type="button" id="updateOpciones" class="btn btn-success" disabled>Guardar</button>
+                        <button type="button" id="updateOpciones" class="btn btn-success">Guardar</button>
                     </div>
                 </div>
     
