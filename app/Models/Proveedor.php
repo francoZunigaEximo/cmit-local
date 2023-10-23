@@ -44,4 +44,9 @@ class Proveedor extends Model
     {
         return $this->hasOne(Examen::class, ['IdProveedor', 'IdProveedor2'], 'Id');
     }
+
+    public function localidad()
+    {
+        return $this->hasOne(Localidad::class, 'Id', 'IdLocalidad');
+    }
 }

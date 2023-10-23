@@ -170,7 +170,15 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('savePrestador', [ProfesionalesController::class, 'savePrestador'])->name('savePrestador');
 
     //Rutas de Proveedores
+    Route::resource('especialidades', ProveedoresController::class);
     Route::get('getProveedores', [ProveedoresController::class, 'getProveedores'])->name('getProveedores');
+    Route::get('searchEspecialidad', [ProveedoresController::class, 'search'])->name('searchEspecialidad');
+    Route::post('especialidadExcel', [ProveedoresController::class, 'excel'])->name('especialidadExcel');
+    Route::post('multiDownEspecialidad', [ProveedoresController::class, 'multiDown'])->name('multiDownEspecialidad');
+    Route::post('bajaEspecialidad', [ProveedoresController::class, 'down'])->name('bajaEspecialidad');
+    Route::get('checkProveedor', [ProveedoresController::class, 'check'])->name('checkProveedor');
+    Route::post('saveBasico', [ProveedoresController::class, 'save'])->name('saveBasico');
+    Route::post('updateProveedor', [ProveedoresController::class, 'updateProveedor'])->name('updateProveedor');
 
     //Rutas de ItemsPrestaciones
     Route::resource('itemsprestaciones', ItemPrestacionesController::class);
