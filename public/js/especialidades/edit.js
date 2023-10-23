@@ -1,5 +1,9 @@
 $(document).ready(function(){
 
+    quitarDuplicados("#Externo");
+    quitarDuplicados("#Inactivo");
+    quitarDuplicados("#Provincia");
+
     $(document).on('click', '#updateBasico, #updateOpciones', function(){
 
         let Nombre = $('#Nombre').val(), Externo = $('#Externo').val(), Inactivo = $('#Inactivo').val(), Telefono = $('#Telefono').val(), Direccion = $('#Direccion').val(), IdLocalidad = $('#IdLocalidad').val(), Obs = $('#Obs').val(), Multi = $('#Multi').prop('checked'), MultiE = $('#MultiE').prop('checked'), Min = $('#Min').val(), PR = $('#PR').val(), InfAdj = $('#InfAdj').val();
@@ -52,5 +56,14 @@ $(document).ready(function(){
                 });
             }
         });
+    }
+
+    function quitarDuplicados(selector) {
+        let seleccion = $(selector).val();
+        let countSeleccion = $(selector + " option[value='" + seleccion + "']").length;
+    
+        if (countSeleccion > 1) {
+            $(selector + " option[value='" + seleccion + "']:gt(0)").hide();
+        }
     }
 });
