@@ -21,7 +21,11 @@ class ProveedoresController extends Controller
 
     public function edit(Proveedor $especialidade)
     {
-        return view('layouts.especialidades.edit', compact(['especialidade']));
+        $localidad = Localidad::where('pcia', $especialidade->IdLocalidad)->first();
+        $detalleProv = Provincia::find($localidad->Id);
+        $provincias = Provincia::all();
+
+        return view('layouts.especialidades.edit', compact(['especialidade', 'detalleProv']));
     }
 
     public function create()
@@ -104,6 +108,25 @@ class ProveedoresController extends Controller
 
         return response()->json(['especialidad' => $Id]);
         
+    }
+
+    public function update(Request $request)
+    {
+        $especialidad = Proveedor::find($request->Id);
+
+        if($especialidad)
+        {
+            $especialidad->Nombre = $request->Nombre;
+            $especialidad->Telefono = $request->Telefono ?? '';
+            $especialidad->Direccion = $request->Direccion ?? '';
+            $especialidad->IdLocalidad = $request->IdLocalidad ?? '';
+            $especialidad->Inactivo = $request->Inactivo ?? '';
+            $especialidad->Min = $request->Min ?? '';
+            $especialidad->Multi = $request->Multi ?? '';
+            $especialidad->MultiE = $request->MultiE ?? '';
+            $especialidad->Externo = $request->Externo ?? '';
+            $especialidad->InfAdj = $request->InfAdj ?? '';
+        }
     }
 
     public function excel(Request $request): string

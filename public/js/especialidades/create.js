@@ -7,7 +7,6 @@ $(document).ready(function(){
     $(document).on('change', '#Externo', function(){
 
         let externo = $(this).val();
-        console.log(externo);
         if(externo === '1'){
             $('.Telefono, .Direccion, .Provincia, .IdLocalidad, .Obs').show();
         
@@ -38,7 +37,7 @@ $(document).ready(function(){
                 swal('Perfecto', 'Se ha registrado la nueva especialidad de manera correcta', 'success');
                 setTimeout(() => {
                     let nuevo = location.href.replace("create", "");
-                    let lnk = nuevo + "/" + data.Id + "/edit";
+                    let lnk = nuevo + "" + data + "/edit";
                     window.location.href = lnk;
                 }, 3000);
             })
@@ -56,7 +55,7 @@ $(document).ready(function(){
             .done(function(response){
 
                 if (response.existe) {
-                    let especialidad = response.especialidades, url = editUrl.replace('__especialidad__', especialidad.Id);
+                    let especialidad = response.especialidades, url = editUrl.replace('__especialidades__', especialidad.Id);
                     
                     $('#editLink').attr('href', url);
                     $('#advertencia').modal('show');

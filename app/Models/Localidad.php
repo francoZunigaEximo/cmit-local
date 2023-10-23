@@ -27,4 +27,9 @@ class Localidad extends Model
     {
         return $this->hasOne(Cliente::class, 'IdLocalidad', 'Id');
     }
+
+    public function proveedor()
+    {
+        return $this->hasOne(Proveedor::class, 'IdLocalidad', 'Id');
+    }
 }
