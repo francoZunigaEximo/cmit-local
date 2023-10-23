@@ -45,7 +45,7 @@
                 <div class="col-3 mt-3">
                     <label for="cliente" class="form-label">Externo</label>
                     <select class="form-control" name="Externo" id="Externo">
-                        <option value="{{ $especialidade->Externo ?? '' }}" selected>{{ $especialidade->Externo ?? 'Elija una opción...' }}</option>
+                        {{ $especialidade->Externo === 1 ? 'Sí' : ($especialidade->Externo === 0 ? 'No' : ($especialidade->Externo === null ? '' : 'Elija una opción...')) }}
                         <option value="1">Sí</option>
                         <option value="0">No</option>
                     </select>
@@ -54,7 +54,7 @@
                 <div class="col-3 mt-3">
                     <label for="Inactivo" class="form-label">Inactivo</label>
                     <select class="form-control" name="Inactivo" id="Inactivo">
-                        <option value="{{ $especialidade->Inactivo ?? '' }}" selected>{{ $especialidade->Inactivo ?? 'Elija una opción..' }}.</option>
+                        {{ $especialidade->Inactivo === 1 ? 'Sí' : ($especialidade->Inactivo === 0 ? 'No' : ($especialidade->Inactivo === null ? '' : 'Elija una opción...')) }}
                         <option value="1">Sí</option>
                         <option value="0">No</option>
                     </select>
@@ -83,7 +83,7 @@
                 <div class="col-4 IdLocalidad mt-3">
                     <label for="IdLocalidad" class="form-label">Localidad</label>
                     <select class="form-control" name="IdLocalidad" id="IdLocalidad">
-                        <option value="{{ $especialidade->IdLocalidad }}" selected>{{ $localidad->Nombre }}</option>
+                        <option value="{{ $especialidade->IdLocalidad ?? '' }}" selected>{{ $localidad->Nombre ?? 'Elija una opción...' }}</option>
                     </select>
                 </div> 
     
@@ -173,6 +173,7 @@
 <script>
     const getLocalidad ="{{ route('getLocalidades') }}";
     const TOKEN = "{{ csrf_token() }}";
+    const updateProveedor = "{{ route('updateProveedor') }}";
 
 </script>
 

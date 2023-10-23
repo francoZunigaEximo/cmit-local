@@ -178,6 +178,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('bajaEspecialidad', [ProveedoresController::class, 'down'])->name('bajaEspecialidad');
     Route::get('checkProveedor', [ProveedoresController::class, 'check'])->name('checkProveedor');
     Route::post('saveBasico', [ProveedoresController::class, 'save'])->name('saveBasico');
+    Route::post('updateProveedor', [ProveedoresController::class, 'updateProveedor'])->name('updateProveedor');
 
     //Rutas de ItemsPrestaciones
     Route::resource('itemsprestaciones', ItemPrestacionesController::class);

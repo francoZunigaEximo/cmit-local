@@ -110,7 +110,7 @@ class ProveedoresController extends Controller
         
     }
 
-    public function update(Request $request)
+    public function updateProveedor(Request $request)
     {
         $especialidad = Proveedor::find($request->Id);
 
