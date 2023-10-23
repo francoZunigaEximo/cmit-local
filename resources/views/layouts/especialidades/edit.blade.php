@@ -84,9 +84,6 @@
                     <label for="IdLocalidad" class="form-label">Localidad</label>
                     <select class="form-control" name="IdLocalidad" id="IdLocalidad">
                         <option value="{{ $especialidade->IdLocalidad }}" selected>Elija una opción...</option>
-                        @foreach($localidades as $localidad)
-                            <option value="{{ $localidad->Id ?? ''}}">{{ $localidad->Nombre ?? ''}}</option>
-                        @endforeach
                     </select>
                 </div> 
     
