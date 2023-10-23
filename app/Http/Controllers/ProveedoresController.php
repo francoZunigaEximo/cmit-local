@@ -25,7 +25,7 @@ class ProveedoresController extends Controller
         $detalleProv = Provincia::find($localidad->Id);
         $provincias = Provincia::all();
 
-        return view('layouts.especialidades.edit', compact(['especialidade', 'detalleProv']));
+        return view('layouts.especialidades.edit', compact(['especialidade', 'detalleProv', 'provincias']));
     }
 
     public function create()
