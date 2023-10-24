@@ -21,11 +21,11 @@ class ProveedoresController extends Controller
 
     public function edit(Proveedor $especialidade)
     {
-        $localidad = Localidad::where('IdPcia', $especialidade->IdLocalidad)->first();
-        $detalleProv = Provincia::find($localidad->Id);
+        $IdProv = Localidad::find($especialidade->IdLocalidad);
+        $detalleProv = Provincia::where('Id', $IdProv->IdPcia)->first();
         $provincias = Provincia::all();
 
-        return view('layouts.especialidades.edit', compact(['especialidade', 'detalleProv', 'provincias', 'localidad']));
+        return view('layouts.especialidades.edit', compact(['especialidade', 'detalleProv', 'provincias']));
     }
 
     public function create()
@@ -113,7 +113,7 @@ class ProveedoresController extends Controller
     public function updateProveedor(Request $request)
     {
         $especialidad = Proveedor::find($request->Id);
-
+        
         if($especialidad)
         {
             $especialidad->Nombre = $request->Nombre;
@@ -122,10 +122,12 @@ class ProveedoresController extends Controller
             $especialidad->IdLocalidad = $request->IdLocalidad ?? '';
             $especialidad->Inactivo = $request->Inactivo ?? '';
             $especialidad->Min = $request->Min ?? '';
-            $especialidad->Multi = $request->Multi ?? '';
-            $especialidad->MultiE = $request->MultiE ?? '';
+            $especialidad->Multi = $request->Multi === 'true' ? 1 : 0;
+            $especialidad->MultiE = $request->MultiE === 'true' ? 1 : 0;
             $especialidad->Externo = $request->Externo ?? '';
             $especialidad->InfAdj = $request->InfAdj ?? '';
+            $especialidad->Obs = $request->Obs ?? '';
+            $especialidad->save();
         }
     }
 
@@ -156,7 +158,7 @@ class ProveedoresController extends Controller
             $Nombre = $row->Nombre ?? '-';
             $Telefono = $row->Telefono ?? '-';
             $Adjunto = ($row->Adjunto === 0 ? 'Simple' : ($row->Adjunto === 1 ? 'Multiple' : '-'));
-            $Examen = ($row->Examen === 0 ? 'Interno' : ($row->Examen === 1 ? 'Externo' : '-'));
+            $Examen = ($row->Examen === 0 ? 'Simple' : ($row->Examen === 1 ? 'Multiple' : '-'));
             $Informe = ($row->Informe === 0 ? 'Simple' : ($row->Informe === 1 ? 'Multiple' : '-'));
             $Ubicacion = ($row->Ubicacion === 0 ? 'Interno':($row->Ubicacion === 1 ? 'Externo' : '-'));
 
@@ -189,6 +191,8 @@ class ProveedoresController extends Controller
             'Id as IdEspecialidad',
             'Nombre',
             'Telefono',
+            'Direccion',
+            DB::raw('(SELECT Nombre FROM localidades WHERE IdLocalidad = localidades.Id) AS NombreLocalidad'),
             'Multi as Adjunto',
             'MultiE as Examen',
             'InfAdj as Informe',

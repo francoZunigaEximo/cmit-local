@@ -460,5 +460,6 @@ DELIMITER ;
 /***********************************************************************************************************/
 --Se elimina la relación en la base de datos de Prestaciones con NrodeFactura
 ALTER TABLE db_cmit.prestaciones DROP FOREIGN KEY prestaciones_ibfk_4;
-
-
+/***********************************************************************************************************/
+--- Columna de Observaciones para Proveedores
+ALTER TABLE proveedores ADD COLUMN Obs TEXT NULL;
