@@ -103,7 +103,8 @@ class ProveedoresController extends Controller
             'Direccion' => $request->Direccion ?? '',
             'IdLocalidad' => $request->IdLocalidad,
             'Inactivo' => $request->Inactivo,
-            'Externo' => $request->Externo
+            'Externo' => $request->Externo,
+            'Obs' => $request->Obs
         ]);
 
         return response()->json(['especialidad' => $Id]);
@@ -126,6 +127,7 @@ class ProveedoresController extends Controller
             $especialidad->MultiE = $request->MultiE === 'true' ? 1 : 0;
             $especialidad->Externo = $request->Externo ?? '';
             $especialidad->InfAdj = $request->InfAdj ?? '';
+            $especialidad->PR = $request->PR ?? '';
             $especialidad->Obs = $request->Obs ?? '';
             $especialidad->save();
         }
