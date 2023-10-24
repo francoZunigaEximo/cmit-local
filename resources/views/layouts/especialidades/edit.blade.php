@@ -90,7 +90,7 @@
     
                 <div class="col-12 Obs mt-3">
                     <label for="Obs" class="form-label">Observaciones</label>
-                    <textarea name="Obs" id="Obs" class="form-control"></textarea>
+                    <textarea name="Obs" id="Obs" class="form-control">{{ $especialidade->Obs ?? '' }}</textarea>
                 </div>
     
                 <div class="col-lg-12 pt-4">
