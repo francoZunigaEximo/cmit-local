@@ -25,7 +25,8 @@ class Proveedor extends Model
         'Multi',
         'MultiE',
         'InfAdj',
-        'Externo'
+        'Externo',
+        'Obs'
     ];
 
     public $timestamps = false;

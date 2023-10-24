@@ -67,6 +67,8 @@
                                 <th class="sort">Proveedor</th>
                                 <th>Ubicación</th>
                                 <th>Teléfono</th>
+                                <th>Direccion</th>
+                                <th>Localidad</th>
                                 <th>Adjunto</th>
                                 <th>Exámen</th>
                                 <th>Informe</th>

@@ -40,12 +40,13 @@
                 <div class="col-6 mt-3">
                     <label for="Nombre" class="form-label">Nombre</label>
                     <input type="text" class="form-control" id="Nombre" name="Nombre" placeholder="Nombre" value="{{ $especialidade->Nombre ?? ''}}">
+                    <input type="hidden" value="{{ $especialidade->Id ?? '' }}" id="Id">
                 </div> 
     
                 <div class="col-3 mt-3">
                     <label for="cliente" class="form-label">Externo</label>
                     <select class="form-control" name="Externo" id="Externo">
-                        {{ $especialidade->Externo === 1 ? 'Sí' : ($especialidade->Externo === 0 ? 'No' : ($especialidade->Externo === null ? '' : 'Elija una opción...')) }}
+                        <option value="{{ $especialidade->Externo ?? '' }}" selected>{{ $especialidade->Externo === 1 ? 'Sí' : ($especialidade->Externo === 0 ? 'No' : ($especialidade->Externo === null ? '' : 'Elija una opción...')) }}</option>
                         <option value="1">Sí</option>
                         <option value="0">No</option>
                     </select>
@@ -54,7 +55,7 @@
                 <div class="col-3 mt-3">
                     <label for="Inactivo" class="form-label">Inactivo</label>
                     <select class="form-control" name="Inactivo" id="Inactivo">
-                        {{ $especialidade->Inactivo === 1 ? 'Sí' : ($especialidade->Inactivo === 0 ? 'No' : ($especialidade->Inactivo === null ? '' : 'Elija una opción...')) }}
+                        <option value="{{ $especialidade->Inactivo ?? '' }}" selected>{{ $especialidade->Inactivo === 1 ? 'Sí' : ($especialidade->Inactivo === 0 ? 'No' : ($especialidade->Inactivo === null ? '' : 'Elija una opción...')) }}</option>
                         <option value="1">Sí</option>
                         <option value="0">No</option>
                     </select>
@@ -83,7 +84,7 @@
                 <div class="col-4 IdLocalidad mt-3">
                     <label for="IdLocalidad" class="form-label">Localidad</label>
                     <select class="form-control" name="IdLocalidad" id="IdLocalidad">
-                        <option value="{{ $especialidade->IdLocalidad ?? '' }}" selected>{{ $localidad->Nombre ?? 'Elija una opción...' }}</option>
+                        <option value="{{ $especialidade->IdLocalidad ?? '' }}" selected>{{ $especialidade->localidad->Nombre ?? 'Elija una opción...' }}</option>
                     </select>
                 </div> 
     
@@ -125,7 +126,7 @@
     
                 <div class="col-6">
                     <label for="Min" class="form-label">Duración Turno (en minutos)</label>
-                    <input type="text" class="form-control" name="Min" id="Min" placeholder="Mínutos" value="{{ $especialidade->Min ?? ''}}">
+                    <input type="number" class="form-control" name="Min" id="Min" placeholder="Mínutos" value="{{ $especialidade->Min ?? ''}}">
                 </div>
     
                 <div class="col-6">
@@ -171,7 +172,6 @@
 </div><!-- /.modal -->
 
 <script>
-    const getLocalidad ="{{ route('getLocalidades') }}";
     const TOKEN = "{{ csrf_token() }}";
     const updateProveedor = "{{ route('updateProveedor') }}";
 

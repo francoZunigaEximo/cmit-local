@@ -23,7 +23,7 @@ $(document).ready(function(){
                     d.especialidad = especialidad;
                     d.opciones = opciones;
                 }
-            },       
+            },     
             dataType: 'json',
             type: 'POST',
             columns:  [
@@ -48,6 +48,14 @@ $(document).ready(function(){
                     data: 'Telefono'
                 },
                 {
+                    name: 'Direccion',
+                    data: 'Direccion'
+                },
+                {
+                    name: 'NombreLocalidad',
+                    data: 'NombreLocalidad'
+                },      
+                {
                     data: null,
                     render: function(data){
                         return `<span class="badge badge-soft-warning text-uppercase">${(data.Adjunto === 0) ? 'Simple' : 'Multiple'}</span>`;
@@ -56,7 +64,7 @@ $(document).ready(function(){
                 {
                     data: null,
                     render: function(data){
-                        return `<span class="badge badge-soft-success text-uppercase">${(data.Examen === 0) ? 'Interno' : 'Externo' }</span>`;
+                        return `<span class="badge badge-soft-success text-uppercase">${(data.Examen === 0) ? 'Simple' : 'Multiple' }</span>`;
                     }
                 },
                 {
