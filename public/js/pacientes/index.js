@@ -31,8 +31,14 @@ $(document).ready(function(){
                     ids: ids
                 },
                 success: function() {
-                    swal("Éxito", "¡Se ha dado de baja a los pacientes correctamente!", "success");
-                    location.reload();
+                    toastr.options = {
+                        closeButton: true,   
+                        progressBar: true,    
+                        timeOut: 3000,        
+                    };
+                    toastr.success('¡Se ha dado de baja a los pacientes correctamente!', 'Éxito');
+                    $('#listaPac').DataTable();
+                    $('#listaPac').DataTable().draw(false);
                 },
                 error: function(xhr) {
                     swal("Error", "¡Ha ocurrido un inconveniente. Consulte con el administrador!", "error");
@@ -103,7 +109,13 @@ $(document).ready(function(){
             $.post(down, {_token: TOKEN, Id: paciente})
 
                 .done(function(){
-                    swal('Perfecto', 'Se ha realizado de manera correcta la baja', 'success');
+                    toastr.options = {
+                        closeButton: true,   
+                        progressBar: true,    
+                        timeOut: 3000,        
+                    };
+                    toastr.success('Se ha realizado de manera correcta la baja', 'Perfecto');
+
                     $('#listaPac').DataTable();
                     $('#listaPac').DataTable().draw(false);
                 })
