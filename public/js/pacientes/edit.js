@@ -1,27 +1,10 @@
-function quitarDuplicados(selector) {
-    let seleccion = $(selector).val();
-    let countSeleccion = $(selector + " option[value='" + seleccion + "']").length;
-
-    if (countSeleccion > 1) {
-        $(selector + " option[value='" + seleccion + "']:gt(0)").hide();
-    }
-}
-
 $(document).ready(function(){
 
     quitarDuplicados("#tipoDocumento");
     quitarDuplicados("#provincia");
     quitarDuplicados("#tipoIdentificacion");
     checkProvincia();
-    
-
-    //Volver atrás desde Prestaciones
-    $('#backFichaLaboral').click(function(){
-        
-        $('.tab-pane').removeClass('active show');
-        $('#fichaLaboral').addClass('active show');
-        $('.nav-link[href="#fichaLaboral"]').tab('show');
-    });
+    tabActivo();
 
     
     $('#provincia').change(function() {
@@ -99,6 +82,20 @@ $(document).ready(function(){
             });
         }
     }
+
+    function quitarDuplicados(selector) {
+        let seleccion = $(selector).val();
+        let countSeleccion = $(selector + " option[value='" + seleccion + "']").length;
     
+        if (countSeleccion > 1) {
+            $(selector + " option[value='" + seleccion + "']:gt(0)").hide();
+        }
+    }
+
+    function tabActivo(){
+        $('.tab-pane').removeClass('active show');
+        $('#datosPersonales').addClass('active show');
+        $('.nav-link[href="datosPersonales"]').tab('show');
+    }
 
 });

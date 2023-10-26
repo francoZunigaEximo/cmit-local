@@ -78,7 +78,7 @@
                 <div class="card-header">
                     <ul class="nav nav-tabs-custom rounded card-header-tabs border-bottom-0" role="tablist">
                         <li class="nav-item" role="presentation">
-                            <a class="nav-link active" data-bs-toggle="tab" href="#datosPersonales" role="tab" aria-selected="true">
+                            <a class="nav-link" data-bs-toggle="tab" href="#datosPersonales" role="tab" aria-selected="true">
                                 <i class="fas fa-home"></i>
                                 Datos Personales
                             </a>

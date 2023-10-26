@@ -1,5 +1,11 @@
 $(document).ready(()=> {
 
+    tabActivo();
+    cargarAutorizados();
+    checkProvincia();
+    telefonos();
+    quitarDuplicados("#Provincia");
+    quitarDuplicados("#CondicionIva");
 
     //Eliminar Autorizados
     $(document).on('click', '.delete-icon', function() {
@@ -24,6 +30,48 @@ $(document).ready(()=> {
         });
     });
 
+    //Opciones en CLientes - carga de datos
+    $('#btnOpciones').off('click').on('click', function() {
+    
+        let fisico = $('#RF').prop('checked')?1:0,
+            sinEvaluacion = $('#SinEval').prop('checked')?1:0,
+            facturacionSinPaq = $('#SinPF').prop('checked')?1:0,
+            correo = $('#correoItem').prop('checked'),
+            mensajeria = $('#mensajeriaItem').prop('checked');
+
+        if(fisico === 0 && sinEvaluacion === 0 && facturacionSinPaq === 0 && correo == false && mensajeria == false){
+            swal('Atención', '¡No se puede guardar si todos los campos están vacíos. Debe escoger al menos una opción!', 'warning');
+            return;
+        }
+
+        if(correo == true && mensajeria == true){
+                swal('Atención', '¡No puede tener la opcion Mensajeria y Correo seleccionadas. Debe escoger por una opción!', 'warning');
+                return;
+        }
+
+        $.ajax({
+            url: checkOpciones,
+            type: 'Post',
+            data: {
+                _token: TOKEN,
+                fisico: fisico,
+                sinEvaluacion: sinEvaluacion,
+                facturacionSinPaq: facturacionSinPaq,
+                correo: correo,
+                mensajeria: mensajeria,
+                Id: ID,
+            },
+            success: function(){
+
+                swal('Perfecto', '¡Los datos se han guardado correctamente!', 'success');
+            },
+            error: function(xhr){
+                swal('Error', 'Hubo un error al obtener los autorizados. Consulte con el administrador', 'error');
+                console.error(xhr);
+            }
+        });
+
+    });
 
     //Registro de autorizado
     $('#btnAutorizado').click(function () {
@@ -85,107 +133,10 @@ $(document).ready(()=> {
         });
     });
 
-
-    //get de los Autorizados
-    function cargarAutorizados() {
-
-        $.ajax({
-            url: getAutorizados,
-            type: 'GET',
-            dataType: 'json',
-            data: {
-                Id: ID,
-                _token: TOKEN
-            },
-            success: function(response) {
-                let autorizados = response;
-
-                $('.body-autorizado').empty();
-
-                if (autorizados.length == 0) {
-                    let contenido = '<p> Sin datos de Autorizados </p>';
-                    $('.body-autorizado').append(contenido);
-
-                }else{
-
-                    $.each(autorizados, function(index, autorizado) {
-                        let contenido = `<div class="d-flex align-items-center mb-3">
-                                            <div class="flex-shrink-0 avatar-sm">
-                                                <div class="avatar-title bg-light text-primary rounded-3 fs-18">
-                                                    <i class="ri-shield-user-line"></i>
-                                                </div> 
-                                            </div>
-                                            <div class="flex-grow-1 ms-3">
-                                                <h6>${autorizado.Nombre} ${autorizado.Apellido} | DNI: ${autorizado.DNI} | <span class="derechoAutorizado">${autorizado.Derecho}</span> | <i id="deleteAutorizado" class="fas fa-trash-alt delete-icon" data-id="${autorizado.Id}"></i></h6>
-                                            </div>
-                                            <div>
-
-                                            </div>
-                                        </div>`;
-
-                        $('.body-autorizado').append(contenido);
-                    });
-                }
-            },
-            error: function(xhr){
-
-                swal('Error', 'Hubo un error al obtener los autorizados. Consulte con el administrador', 'error');
-                console.error(xhr);
-            }
-        });
-    }
-
-    cargarAutorizados();
-
-
-    //Opciones en CLientes - carga de datos
-    $('#btnOpciones').off('click').on('click', function() {
-        
-        let fisico = $('#RF').prop('checked')?1:0,
-            sinEvaluacion = $('#SinEval').prop('checked')?1:0,
-            facturacionSinPaq = $('#SinPF').prop('checked')?1:0,
-            correo = $('#correoItem').prop('checked'),
-            mensajeria = $('#mensajeriaItem').prop('checked');
-
-        if(fisico === 0 && sinEvaluacion === 0 && facturacionSinPaq === 0 && correo == false && mensajeria == false){
-            swal('Atención', '¡No se puede guardar si todos los campos están vacíos. Debe escoger al menos una opción!', 'warning');
-            return;
-        }
-
-        if(correo == true && mensajeria == true){
-                swal('Atención', '¡No puede tener la opcion Mensajeria y Correo seleccionadas. Debe escoger por una opción!', 'warning');
-                return;
-        }
-
-        $.ajax({
-            url: checkOpciones,
-            type: 'Post',
-            data: {
-                _token: TOKEN,
-                fisico: fisico,
-                sinEvaluacion: sinEvaluacion,
-                facturacionSinPaq: facturacionSinPaq,
-                correo: correo,
-                mensajeria: mensajeria,
-                Id: ID,
-            },
-            success: function(){
-
-                swal('Perfecto', '¡Los datos se han guardado correctamente!', 'success');
-            },
-            error: function(xhr){
-                swal('Error', 'Hubo un error al obtener los autorizados. Consulte con el administrador', 'error');
-                console.error(xhr);
-            }
-        });
-
-    });
-
-
-    //Validaciones de Email
-    
     //Chequeo de email. Carga de datos
     $('#guardarEmail').click(function(){
+
+        let controlEjecucion = true;
         
         let resultados = $('#EMailResultados').val(),
             informes = $('#EMailInformes').val(),
@@ -197,30 +148,13 @@ $(document).ready(()=> {
             emailsInformes = $('#EMailInformes').val(),
             emailsFactura = $('#EMailFactura').val();
     
-        let emailRegex = /^[\w.-]+(\.[\w.-]+)*@[\w.-]+\.[A-Za-z]{2,}$/;  
-        let correosInvalidos = [];
-    
-        function verificarCorreos(emails) {
-            let emailsArray = emails.split(',');
-            for (let i = 0; i < emailsArray.length; i++) {
-                let email = emailsArray[i].trim();
-                
-                if (email !== "" && !emailRegex.test(email)) {
-                    correosInvalidos.push(email);
-                }
-            }
+        if (!verificarCorreos(emailsResultados) || !verificarCorreos(emailsInformes) || !verificarCorreos(emailsFactura)) {
+            controlEjecucion = false;
         }
-        
-        verificarCorreos(emailsResultados);
-        verificarCorreos(emailsInformes);
-        verificarCorreos(emailsFactura);
-    
-        if (correosInvalidos.length > 0) {
-            swal("Atención", "Estos correos tienen formato inválido. Verifique por favor: " + correosInvalidos.join(", "), "warning");
-            return;
-        }
+            
+        if (controlEjecucion) {
 
-        $.ajax({
+            $.ajax({
             url: checkEmail,
             type: 'Post',
             data: {
@@ -240,9 +174,9 @@ $(document).ready(()=> {
                 swal('Error', 'Hubo un error al obtener los autorizados. Consulte con el administrador', 'error');
                 console.error(xhr);
             }
-        });
+            });
+        }
     });
-
 
 
     //Guardar las Observaciones en la base de datos
@@ -308,6 +242,54 @@ $(document).ready(()=> {
 
     });
 
+       //get de los Autorizados
+       function cargarAutorizados() {
+
+        $.ajax({
+            url: getAutorizados,
+            type: 'GET',
+            dataType: 'json',
+            data: {
+                Id: ID,
+                _token: TOKEN
+            },
+            success: function(response) {
+                let autorizados = response;
+
+                $('.body-autorizado').empty();
+
+                if (autorizados.length == 0) {
+                    let contenido = '<p> Sin datos de Autorizados </p>';
+                    $('.body-autorizado').append(contenido);
+
+                }else{
+
+                    $.each(autorizados, function(index, autorizado) {
+                        let contenido = `<div class="d-flex align-items-center mb-3">
+                                            <div class="flex-shrink-0 avatar-sm">
+                                                <div class="avatar-title bg-light text-primary rounded-3 fs-18">
+                                                    <i class="ri-shield-user-line"></i>
+                                                </div> 
+                                            </div>
+                                            <div class="flex-grow-1 ms-3">
+                                                <h6>${autorizado.Nombre} ${autorizado.Apellido} | DNI: ${autorizado.DNI} | <span class="derechoAutorizado">${autorizado.Derecho}</span> | <i id="deleteAutorizado" class="fas fa-trash-alt delete-icon" data-id="${autorizado.Id}"></i></h6>
+                                            </div>
+                                            <div>
+
+                                            </div>
+                                        </div>`;
+
+                        $('.body-autorizado').append(contenido);
+                    });
+                }
+            },
+            error: function(xhr){
+
+                swal('Error', 'Hubo un error al obtener los autorizados. Consulte con el administrador', 'error');
+                console.error(xhr);
+            }
+        });
+    }
 
     function checkProvincia(){
 
@@ -341,8 +323,6 @@ $(document).ready(()=> {
             });
         }
     }
-
-    checkProvincia();
 
     const idProvincias = [
         { key: "26", value: "BARILOCHE" },
@@ -380,24 +360,6 @@ $(document).ready(()=> {
         { key: "12", value: "TUCUMAN" },
         { key: "24", value: "VENEZUELA" },
     ];
-
-
-    //Quitamos duplicados en Provincia
-    let seleccionProvincia = $("#Provincia").val();
-    if (seleccionProvincia) {
-        let countProvincia = idProvincias.filter((option) => option.key === seleccionProvincia).length;
-        if (countProvincia > 1) {
-            $("#Provincia option[value='" + seleccionProvincia + "']:gt(0)").hide();
-        }
-    }
-
-
-    //Quitamos duplicados en CondicionIva
-    let seleccionCondicionIva = $("#CondicionIva").val(),
-        countSeleccionCondicion= $("#CondicionIva option[value='" + seleccionCondicionIva + "']").length; //Contamos cuantas veces apacere
-        if (countSeleccionCondicion > 1) {
-            $("#CondicionIva option[value='" + seleccionCondicionIva + "']:gt(0)").hide();
-        }
 
     $(document).on('click', '#addNumero', function() {
         let prefijo = $('#prefijoExtra').val(), numero = $('#numeroExtra').val(), observacion = $('#obsExtra').val();
@@ -437,13 +399,46 @@ $(document).ready(()=> {
         actualizarInputHidden();
     });
 
+     //Click para eliminar el telefono
+     $(document).on('click', '.eliminarTelefono', function(){
+
+        let telefonoId = $(this).data("id");
+        quitarTelefono(telefonoId);
+
+    });
+
+    $(document).on('click', '.editarTelefono', function(){
+
+        let telefonoId = $(this).data('id');
+
+        verTelefono(telefonoId);
+    });
+
+    $(document).on('click', '#saveCambiosEdit', function(){
+        
+        let Id = $('#Id').val(), CodigoArea = $('#nuevoPrefijo').val(), NumeroTelefono = $('#nuevoNumero').val(), Observaciones = $('#nuevaObservacion').val();
+
+        if(CodigoArea == "" || NumeroTelefono == "") {
+            swal("Atención", "Faltan datos en el número de teléfono del cliente. No pueden haber campos vacíos.", "warning");
+            return;
+        }
+
+        if(Observaciones == ""){
+            swal("Atención","Debe escribir alguna referencia en la observación.", "warning");
+            return;
+        }
+
+        saveEdicion(Id, CodigoArea, NumeroTelefono, Observaciones);
+        telefonos();
+        
+    });
+
 
     function actualizarInputHidden() {
         $('#hiddens .telefono-input').each(function(index) {
             $(this).attr('name', `telefonos[]`);
         });
     }
-
 
     function telefonos(){
 
@@ -483,18 +478,7 @@ $(document).ready(()=> {
 
         });
     }
-
-    telefonos();
-
-    //Click para eliminar el telefono
-    $(document).on('click', '.eliminarTelefono', function(){
-
-        let telefonoId = $(this).data("id");
-        quitarTelefono(telefonoId);
-
-    });
-
-
+   
     function quitarTelefono(id){
 
         $.ajax({
@@ -519,14 +503,51 @@ $(document).ready(()=> {
 
     }
 
+    function saveEdicion(id, prefijo, numero, observacion){
 
-    $(document).on('click', '.editarTelefono', function(){
+        $.ajax({
+            url: saveTelefono,
+            type: 'post',
+            data: {
+                IdRegistro: id,
+                prefijo: prefijo,
+                numero: numero,
+                observacion: observacion,
+                _token: TOKEN
+            },
 
-        let telefonoId = $(this).data('id');
+            success: function(result){
+                
+                let contenido = `
+                    <lord-icon
+                        src="https://cdn.lordicon.com/lupuorrc.json"
+                        trigger="loop"
+                        colors="primary:#121331,secondary:#08a88a"
+                        style="width:250px;height:250px">
+                    </lord-icon>
+                    <div class="mt-4">
+                        <h4 class="mb-3">Se han realizado los cambios correctamente</h4>
+                        <p class="text-muted mb-4">Los cambios se verán en unos 3 segundos...</p>
+                    </div>
+                `;
 
-        verTelefono(telefonoId);
-    });
 
+                $('#editTelefonoModal .modal-body').empty().append(contenido);
+                $('#editTelefonoModal .modal-footer').hide();
+
+                setTimeout(function() {
+                    $('#editTelefonoModal ').modal('hide');
+                }, 3000);
+                $('#tablaTelefonos').empty();
+                telefonos(); 
+                
+            },
+            error: function(xhr){
+                swal('Error','Hubo un error en el proceso de guardar los cambios telefonicos. Consulte con el administrador', 'error');
+                console.error(xhr);
+            }
+        });
+    }
 
     function verTelefono(id){
 
@@ -579,76 +600,41 @@ $(document).ready(()=> {
         });
     }
 
-
-    $(document).on('click', '#saveCambiosEdit', function(){
+    function verificarCorreos(emails) {
         
-        let Id = $('#Id').val(), CodigoArea = $('#nuevoPrefijo').val(), NumeroTelefono = $('#nuevoNumero').val(), Observaciones = $('#nuevaObservacion').val();
+        let emailRegex = /^[\w.-]+(\.[\w.-]+)*@[\w.-]+\.[A-Za-z]{2,}$/;
+        let correosInvalidos = [];
+        let emailsArray = emails.split(',');
 
-        if(CodigoArea == "" || NumeroTelefono == "") {
-            swal("Atención", "Faltan datos en el número de teléfono del cliente. No pueden haber campos vacíos.", "warning");
-            return;
-        }
+        for (let i = 0; i < emailsArray.length; i++) {
+            let email = emailsArray[i].trim();
 
-        if(Observaciones == ""){
-            swal("Atención","Debe escribir alguna referencia en la observación.", "warning");
-            return;
-        }
-
-        saveEdicion(Id, CodigoArea, NumeroTelefono, Observaciones);
-        telefonos();
-        
-
-    });
-
-
-    function saveEdicion(id, prefijo, numero, observacion){
-
-        $.ajax({
-            url: saveTelefono,
-            type: 'post',
-            data: {
-                IdRegistro: id,
-                prefijo: prefijo,
-                numero: numero,
-                observacion: observacion,
-                _token: TOKEN
-            },
-
-            success: function(result){
-                
-                let contenido = `
-                    <lord-icon
-                        src="https://cdn.lordicon.com/lupuorrc.json"
-                        trigger="loop"
-                        colors="primary:#121331,secondary:#08a88a"
-                        style="width:250px;height:250px">
-                    </lord-icon>
-                    <div class="mt-4">
-                        <h4 class="mb-3">Se han realizado los cambios correctamente</h4>
-                        <p class="text-muted mb-4">Los cambios se verán en unos 3 segundos...</p>
-                    </div>
-                `;
-
-
-                $('#editTelefonoModal .modal-body').empty().append(contenido);
-                $('#editTelefonoModal .modal-footer').hide();
-
-                setTimeout(function() {
-                    $('#editTelefonoModal ').modal('hide');
-                }, 3000);
-                $('#tablaTelefonos').empty();
-                telefonos(); 
-                
-            },
-            error: function(xhr){
-                swal('Error','Hubo un error en el proceso de guardar los cambios telefonicos. Consulte con el administrador', 'error');
-                console.error(xhr);
+            if (email !== "" && !emailRegex.test(email)) {
+                correosInvalidos.push(email);
             }
-        });
+        }
+
+        if (correosInvalidos.length > 0) {
+            swal("Atención", "Estos correos tienen formato inválido. Verifique por favor: " + correosInvalidos.join(", "), "warning");
+            return false; 
+        }
+
+        return true; 
+    }
+    
+    function tabActivo(){
+        $('.tab-pane').removeClass('active show');
+        $('#datosBasicos').addClass('active show');
+        $('.nav-link[href="datosBasicos"]').tab('show');
     }
 
-
-
-
+    function quitarDuplicados(selector) {
+        let seleccion = $(selector).val();
+        let countSeleccion = $(selector + " option[value='" + seleccion + "']").length;
+    
+        if (countSeleccion > 1) {
+            $(selector + " option[value='" + seleccion + "']:gt(0)").hide();
+        }
+    }
 
 });
