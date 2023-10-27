@@ -1,5 +1,7 @@
 $(document).ready(()=>{
 
+    $('th.sort').off("click"); // Se coloca provisoriamente, cuando se defina el modelo de ordenado a utilizar se puede quitar.
+
     new DataTable("#listaPrestaciones", {
 
         searching: false,

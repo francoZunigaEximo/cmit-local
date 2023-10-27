@@ -203,16 +203,16 @@
                             <thead class="table-light">
                                 <tr>
                                     <th></th>
-                                    <th>N°</th>
-                                    <th>Alta</th>
-                                    <th>Empresa</th>
-                                    <th>Para Empresa</th>
-                                    <th>Cuit</th>
-                                    <th>Paciente</th>
-                                    <th>ART</th>
-                                    <th>Situación</th>
-                                    <th>F.pago</th>
-                                    <th>Acciones</th>
+                                    <th class="sort">N°</th>
+                                    <th class="sort">Alta</th>
+                                    <th class="sort">Empresa</th>
+                                    <th class="sort">Para Empresa</th>
+                                    <th class="sort">Cuit</th>
+                                    <th class="sort">Paciente</th>
+                                    <th class="sort">ART</th>
+                                    <th class="sort">Situación</th>
+                                    <th class="sort">F.pago</th>
+                                    <th class="sort">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody class="list form-check-all">
