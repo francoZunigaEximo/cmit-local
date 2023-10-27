@@ -253,7 +253,7 @@ $(document).ready(()=>{
                 },
                 {
                     data: null,
-                    name: 'Nombre',
+                    name: 'nombreCompleto',
                     orderable: true,
                     targets: 6,
                     render: function(data){

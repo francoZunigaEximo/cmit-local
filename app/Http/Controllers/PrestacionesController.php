@@ -75,6 +75,7 @@ class PrestacionesController extends Controller
             ->select(
                 DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdART) AS Art'),
                 DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdEmpresa) AS empresa'),
+                DB::raw("CONCAT(pacientes.Apellido,pacientes.Nombre) AS nombreCompleto"),
                 'clientes.ParaEmpresa as ParaEmpresa',
                 'clientes.Identificacion as Identificacion',
                 'prestaciones.Fecha as FechaAlta',
