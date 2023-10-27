@@ -165,7 +165,8 @@ $(document).ready(()=>{
         new DataTable("#listaPrestaciones", {
 
             searching: false,
-            ordering: false,
+            ordering: true,
+            order: [[0, 'desc'],[1, 'desc'],[2, 'desc'],[3, 'desc'], [4, 'desc'], [5, 'desc'], [6, 'desc'], [7, 'desc'], [8, 'desc'], [9, 'desc'], [10, 'desc']],
             processing: true,
             lengthChange: false,
             pageLength: 15,
@@ -191,9 +192,12 @@ $(document).ready(()=>{
             },
             dataType: 'json',
             type: 'POST',
-            columns: [
+            columnDefs: [
                 {
                     data: null,
+                    name: 'Id',
+                    orderable: false,
+                    targets: 0,
                     render: function(data){
                         return `<div class="prestacionComentario" data-id="${ data.Id }" data-bs-toggle="modal" data-bs-target="#prestacionModal">
                                 <i class="ri-chat-3-line"></i>
@@ -202,18 +206,28 @@ $(document).ready(()=>{
                 },
                 {
                     data: null,
+                    name: 'Id',
+                    orderable: true,
+                    targets: 1,
                     render: function(data){
                         return '<span ' + (data.Ausente === 1 ? 'style="padding: 0.5em; background-color: red; color: white;" title="Ausente"' : (data.Incompleto === 1 ? 'style="padding: 0.5em; background-color: orange; color: black;" title="Incompleto"' : (data.Devol === 1 ? 'style="padding: 0.5em; background-color: blue; color: white;" title="Devol"' : (data.Forma === 1 ? 'style="padding: 0.5em; background-color: #0cb7f2; color: black;" title="Forma"' : (data.SinEsc === 1 ? 'style="padding: 0.5em; background-color: yellow; color: black;" title="Sin Esc"': ''))))) + '>' + data.Id + '</span>';
                     }
+
                 },
                 {
                     data: null,
+                    name: 'FechaAlta',
+                    targets: 2,
+                    orderable: true,
                     render: function(data){
                         return fechaNow(data.FechaAlta,'/',1);
                     }
                 },
                 {
                     data: null,
+                    name: 'empresa',
+                    orderable: true,
+                    targets: 3,
                     render: function(data){
                         let prestacionRz = data.empresa;
                         let recorteRz = prestacionRz.substring(0,15) + "...";
@@ -222,6 +236,9 @@ $(document).ready(()=>{
                 },
                 {
                     data: null,
+                    name: 'ParaEmpresa',
+                    orderable: true,
+                    targets: 4,
                     render: function(data){
                         let prestacionPe = data.ParaEmpresa;
                         let recortePe = prestacionPe.substring(0,15) + "...";
@@ -231,9 +248,14 @@ $(document).ready(()=>{
                 {
                     data: 'Identificacion',
                     name: 'Identificacion',
+                    targets: 5,
+                    orderable: true,
                 },
                 {
                     data: null,
+                    name: 'Nombre',
+                    orderable: true,
+                    targets: 6,
                     render: function(data){
                         let prestacionNom = data.Nombre;
                         let recorteNom = prestacionNom.substring(0,15) + "...";
@@ -242,6 +264,9 @@ $(document).ready(()=>{
                 },
                 {
                     data: null,
+                    name: 'Art',
+                    orderable: true,
+                    targets: 7,
                     render: function(data){
                         let prestacionArt = data.Art;
                         let recorteArt = prestacionArt.substring(0, 15) + "...";
@@ -250,12 +275,18 @@ $(document).ready(()=>{
                 },
                 {
                     data: null,
+                    name: 'Anulado',
+                    orderable: true,
+                    targets: 8,
                     render: function(data){
                         return '<span class="badge badge-soft-' + (data.Anulado == 0 ? "success" : "danger") + ' text-uppercase">' + (data.Anulado == 0 ? "Habilitado" : "Anulado") + '</span>';
                     }
                 },
                 {
                     data: null,
+                    name: 'Pago',
+                    orderable: true,
+                    targets: 9,
                     render: function(data){
                         
                         let pago;
@@ -275,6 +306,9 @@ $(document).ready(()=>{
                 },
                 {
                     data: null,
+                    name: 'Id',
+                    orderable: false,
+                    targets: 10,
                     render: function(data){
                         let editar = `<a title="Editar" href="${location.href}/${data.Id}/edit"><button type="button" class="btn btn-sm btn-primary edit-item-btn"><i class="ri-edit-line"></i></button></a>`;
                         

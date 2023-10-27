@@ -203,15 +203,15 @@
                             <thead class="table-light">
                                 <tr>
                                     <th></th>
-                                    <th class="sort">N°</th>
-                                    <th class="sort">Alta</th>
-                                    <th class="sort">Empresa</th>
-                                    <th class="sort">Para Empresa</th>
-                                    <th class="sort">Cuit</th>
-                                    <th class="sort">Paciente</th>
-                                    <th class="sort">ART</th>
-                                    <th class="sort">Situación</th>
-                                    <th class="sort">F.pago</th>
+                                    <th>N°</th>
+                                    <th>Alta</th>
+                                    <th>Empresa</th>
+                                    <th>Para Empresa</th>
+                                    <th>Cuit</th>
+                                    <th>Paciente</th>
+                                    <th>ART</th>
+                                    <th>Situación</th>
+                                    <th>F.pago</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
@@ -303,15 +303,10 @@ const SEARCH = "{{ route('searchPrestaciones') }}";
 
 @push('scripts')
 <!--datatable js-->
-<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
-<script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+
 
 <script src="{{ asset('js/prestaciones/index.js') }}?v={{ time() }}"></script>
 <script src="{{ asset('js/prestaciones/utils.js') }}?v={{ time() }}"></script>
