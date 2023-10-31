@@ -216,13 +216,6 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-12">
-                                        <div class="mb-3">
-                                            <label for="Observaciones" class="form-label">Observaciones</label><!-- campo observaciones-->
-                                            <textarea class="form-control" placeholder="Observaciones recepción" id="Observaciones">{{ $prestacione->Observaciones }}</textarea>
-                                        </div>
-                                    </div><!--end col-->
-
                                     <!--end col-->
                                 </div>
                                 <hr>
@@ -282,6 +275,14 @@
                                         </div>
                                     </div><!--end col-->
 
+                                    <div class="col-12">
+                                        <div class="mb-3">
+                                            <label for="Observaciones" class="form-label">Observaciones de Evaluación</label><!-- campo observaciones-->
+                                            <textarea class="form-control" placeholder="Observaciones de evaluación" id="Observaciones">{{ $prestacione->Observaciones }}</textarea>
+                                        </div>
+                                    </div><!--end col-->
+
+
                                 </div>
                                 <hr>
                                 <div class="listjs-table" id="customerList">
@@ -313,16 +314,16 @@
 
                                         <table class="display table table-bordered" style="width:100%"  id="listado">
                                             <thead class="table-light">
-                                                <th class="sort" title="Exámen">Exa</th>
+                                                <th class="sort">Exámen</th>
                                                 <th title="Incompleto">Inc</th>
                                                 <th title="Ausente">Aus</th>
                                                 <th title="Forma">For</th>
                                                 <th>Esc</th>
-                                                <th title="Devolución">Dev</th>
-                                                <th title="Efector">Efe</th>
-                                                <th title="Informador">Inf</th>
-                                                <th title="Factura">Fac</th>
-                                                <th title="Acciones">Acciones</th>
+                                                <th>Devolución</th>
+                                                <th>Efector</th>
+                                                <th>Informador</th>
+                                                <th>Factura</th>
+                                                <th>Acciones</th>
                                             </thead>
                                             <tbody id="listaExamenes" class="list form-check-all">
 

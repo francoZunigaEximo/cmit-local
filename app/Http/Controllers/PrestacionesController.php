@@ -133,7 +133,9 @@ class PrestacionesController extends Controller
         }
 
         if (!empty($request->fechaDesde) && (!empty($request->fechaHasta))) {
-            $query->whereBetween('prestaciones.Fecha', [$request->fechaDesde, $request->fechaHasta]);
+            $fechaDesde = Carbon::parse($request->fechaDesde); // Creamos un objeto para poder manipular la
+            $fechaDesde->addDay(); //Se agrega metodo addDay de Carbon para fixear los dias
+            $query->whereBetween('prestaciones.Fecha', [$fechaDesde, $request->fechaHasta]);
         }
 
         if (is_array($request->estado) && in_array('Incompleto', $request->estado)) {
