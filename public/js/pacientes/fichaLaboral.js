@@ -2,7 +2,8 @@ $(document).ready(function () {
 
     let fichaLaboralId = (checkFichaLaboral) ? checkFichaLaboral : '',
         pagoLaboral = $('#PagoLaboral').val(),
-        changeTipo = $('#TipoPrestacion').val();
+        changeTipo = $('#TipoPrestacion').val(),
+        AntiguedadEmpresa = $('#AntiguedadEmpresa').val();
     
     quitarDuplicados("#Horario");
     quitarDuplicados("#Tipo");
@@ -14,13 +15,13 @@ $(document).ready(function () {
 
     const listOpciones = {
         '.TareaRealizar': ['OCUPACIONAL', 'OTRO', 'INGRESO'],
-        '.PuestoActual': ['OCUPACIONAL', 'OTRO', 'INGRESO', 'PERIODICO', 'EGRESO'],
+        '.PuestoActual': ['OCUPACIONAL', 'OTRO', 'PERIODICO', 'EGRESO'],
         '.UltimoPuesto': ['OCUPACIONAL', 'OTRO', 'INGRESO'],
         '.SectorActual': ['PERIODICO', 'OCUPACIONAL', 'EGRESO', 'OTRO'],
         '.AntiguedadPuesto': ['PERIODICO', 'OCUPACIONAL', 'EGRESO', 'OTRO'],
-        '.AntiguedadEmpresa': ['EGRESO', 'OCUPACIONAL', 'OTRO'],
+        '.AntiguedadEmpresa': ['EGRESO', 'OCUPACIONAL', 'OTRO', 'PERIODICO', ],
         '.FechaIngreso': ['EGRESO', 'OCUPACIONAL', 'OTRO', 'PERIODICO'],
-        '.FechaEgreso': ['EGRESO', 'OCUPACIONAL', 'OTRO', 'PERIODICO'],
+        '.FechaEgreso': ['EGRESO', 'OCUPACIONAL', 'OTRO'],
     };
     
     //Hack para forzar la recarga
@@ -405,5 +406,6 @@ $(document).ready(function () {
             $('#SPago').empty().append(contenido);
         }
     }
+
 
 });

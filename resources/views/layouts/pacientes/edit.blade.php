@@ -238,26 +238,6 @@
                                         </select>
                                     </div>
                                 </div><!--end col-->
-
-                                <div class="col-6">
-            
-                                    <div class="mb-3">
-                                        <label for="TipoPrestacion" class="form-label"> Tipo de Prestación  </label>
-                                        <select class="form-select" id="TipoPrestacion">
-                                            <option value="{{ $fichaLaboral->TipoPrestacion ?? ''}}" selected>{{ $fichaLaboral->TipoPrestacion ?? 'Elija una opción...'}}</option>
-                                            <option value="INGRESO">Ingreso</option>
-                                            <option value="PERIODICO">Periódico</option>
-                                            <option value="OCUPACIONAL">Ocupacional</option>
-                                            <option value="EGRESO">Egreso</option>
-                                            <option value="OTRO">Otro</option>
-                                            <option value="CARNET">Carnet</option>
-                                            <option value="RECMED">Recmed</option>
-                                            <option value="S/C_OCUPACIO">S/C Ocupacional</option>
-                                            <option value="ART">ART</option> 
-                                        </select>
-                                    </div>
-                                </div><!--end col-->
-
                                
                                 <div class="col-6 selectArt">
                                     <label for="Art" class="form-label"> ART  </label>
@@ -266,7 +246,26 @@
                                             <option value="{{ $dataArt->Id ?? '' }}">{{ $dataArt->RazonSocial ?? '' }}</option>
                                         </select>
                                     </div>
-                                </div>       
+                                </div>
+                                
+                                <div class="col-6">
+            
+                                    <div class="mb-3">
+                                        <label for="TipoPrestacion" class="form-label"> Tipo de Prestación  </label>
+                                        <select class="form-select" id="TipoPrestacion">
+                                            <option value="{{ $fichaLaboral->TipoPrestacion ?? ''}}" selected>{{ $fichaLaboral->TipoPrestacion ?? 'Elija una opción...'}}</option>
+                                            <option value="ART">ART</option>
+                                            <option value="CARNET">CARNET</option>
+                                            <option value="EGRESO">EGRESO</option>
+                                            <option value="INGRESO">INGRESO</option>
+                                            <option value="OCUPACIONAL">OCUPACIONAL</option>
+                                            <option value="OTRO">OTRO</option>
+                                            <option value="PERIODICO">PERIODICO</option>
+                                            <option value="RECMED">RECMED</option>
+                                            <option value="S/C_OCUPACIO">S/C_OCUPACIO</option>
+                                        </select>
+                                    </div>
+                                </div><!--end col-->
 
                                 <div class="col-6 TareaRealizar">
                                     <div class="mb-3">
@@ -299,34 +298,69 @@
                                         </div>        
                                     </div>
                                 </div><!--end col-->
-                                <div class="col-6 Observaciones">
-                                    <div class="mb-3">
-                                        <label for="Observaciones" class="form-label">Observaciones:</label>
-                                        <textarea class="form-control" placeholder="Observaciones de la jornada laboral" id="Observaciones">{{ $fichaLaboral->Observaciones ?? '' }}</textarea>
-                                    </div>
-                                </div><!--end col-->
+
                                 <div class="col-6 UltimoPuesto">
                                     <div class="mb-3">
                                         <label for="UltimoPuesto" class="form-label">Última empresa y puesto</label>
                                         <input type="text" class="form-control" placeholder="Nombre del último puesto" id="UltimoPuesto" value="{{ $fichaLaboral->TareasEmpAnterior ?? '' }}">
                                     </div>
                                 </div><!--end col-->
-                                
+
                                 <div class="col-6 PuestoActual">
                                     <div class="mb-3">
                                         <label for="PuestoActual" class="form-label">Puesto actual</label>
                                         <input type="text" class="form-control" placeholder="Nombre del puesto actual" id="PuestoActual" value="{{ $fichaLaboral->Puesto ?? '' }}">
                                     </div>
                                 </div><!--end col-->
-    
-                               
+
                                 <div class="col-6 SectorActual">
                                     <div class="mb-3">
                                         <label for="SectorActual" class="form-label">Sector Actual</label>
                                         <input type="text" class="form-control" placeholder="Nombre del sector actual" id="SectorActual" value="{{ $fichaLaboral->Sector ?? '' }}">
                                     </div>
                                 </div>
-                                
+
+                                <div class="col-6 CCostos">
+                                    <div class="mb-3">
+                                        <label for="CCostos" class="form-label">C.Costos</label>
+                                        <input type="text" class="form-control" placeholder="Código de centro de costos" id="CCostos" value="{{ $fichaLaboral->CCosto ?? '' }}">
+                                    </div> 
+                                </div><!--end col-->
+
+                                <div class="col-3 AntiguedadEmpresa">
+                                    <div class="mb-3">
+                                        <label for="AntiguedadEmpresa" class="form-label">Antigüedad en la empresa</label>
+                                        <input type="number" class="form-control" placeholder="00" id="AntiguedadEmpresa" readonly="">
+                                    </div>
+                                </div><!--end col-->
+
+                                <div class="col-3 AntiguedadPuesto">
+                                    <div class="mb-3">
+                                        <label for="AntiguedadPuesto" class="form-label">Antigüedad en el puesto</label>
+                                        <input type="number" class="form-control" placeholder="00" id="AntiguedadPuesto" value="{{ $fichaLaboral->AntigPuesto ?? '' }}">
+                                    </div>
+                                </div><!--end col-->
+
+                                <div class="col-3 FechaIngreso">
+                                    <div class="mb-3">
+                                        <label for="FechaIngreso" class="form-label">Ingreso</label>
+                                        <input type="date" class="form-control" id="FechaIngreso" value="{{ (isset($fichaLaboral->FechaIngreso) && $fichaLaboral->FechaIngreso !== '0000-00-00') ? \Carbon\Carbon::parse($fichaLaboral->FechaIngreso)->format('Y-m-d') : '' }}">
+                                    </div>
+                                </div><!--end col-->
+                                <div class="col-3 FechaEgreso">
+                                    <div class="mb-3">
+                                        <label for="FechaEgreso" class="form-label">Egreso</label>
+                                        <input type="date" class="form-control" id="FechaEgreso" value="{{ (isset($fichaLaboral->FechaIngreso) && $fichaLaboral->FechaEgreso !== '0000-00-00') ? \Carbon\Carbon::parse($fichaLaboral->FechaEgreso)->format('Y-m-d') : '' }}">
+                                    </div>
+                                </div>   
+
+                                <div class="col-6 Observaciones">
+                                    <div class="mb-3">
+                                        <label for="Observaciones" class="form-label">Observaciones:</label>
+                                        <textarea class="form-control" placeholder="Observaciones de la jornada laboral" id="Observaciones">{{ $fichaLaboral->Observaciones ?? '' }}</textarea>
+                                    </div>
+                                </div><!--end col-->
+
                                 <div class="col-6">
                                     <div>
                                         <label for="pago" class="form-label">Forma de pago </label>
@@ -346,38 +380,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-6 CCostos">
-                                    <div class="mb-3">
-                                        <label for="CCostos" class="form-label">C.Costos</label>
-                                        <input type="text" class="form-control" placeholder="Código de centro de costos" id="CCostos" value="{{ $fichaLaboral->CCosto ?? '' }}">
-                                    </div>
-                                  
-                                </div><!--end col-->
-                                
-                                    <div class="col-3 AntiguedadPuesto">
-                                        <div class="mb-3">
-                                            <label for="AntiguedadPuesto" class="form-label">Antigüedad en el puesto</label>
-                                            <input type="int" class="form-control" placeholder="00" id="AntiguedadPuesto" value="{{ $fichaLaboral->AntigPuesto ?? '' }}">
-                                        </div>
-                                    </div><!--end col-->
-                                    <div class="col-3 FechaIngreso">
-                                        <div class="mb-3">
-                                            <label for="FechaIngreso" class="form-label">Ingreso</label>
-                                            <input type="date" class="form-control" id="FechaIngreso" value="{{ (isset($fichaLaboral->FechaIngreso) && $fichaLaboral->FechaIngreso !== '0000-00-00') ? \Carbon\Carbon::parse($fichaLaboral->FechaIngreso)->format('Y-m-d') : '' }}">
-                                        </div>
-                                    </div><!--end col-->
-                                    <div class="col-3 FechaEgreso">
-                                        <div class="mb-3">
-                                            <label for="FechaEgreso" class="form-label">Egreso</label>
-                                            <input type="date" class="form-control" id="FechaEgreso" value="{{ (isset($fichaLaboral->FechaIngreso) && $fichaLaboral->FechaEgreso !== '0000-00-00') ? \Carbon\Carbon::parse($fichaLaboral->FechaEgreso)->format('Y-m-d') : '' }}">
-                                        </div>
-                                    </div>   
-                                    <div class="col-3 AntiguedadEmpresa">
-                                        <div class="mb-3">
-                                            <label for="AntiguedadEmpresa" class="form-label">Antigüedad en la empresa</label>
-                                            <input type="int" class="form-control" placeholder="00" id="AntiguedadEmpresa" readonly="">
-                                        </div>
-                                    </div><!--end col-->
+
                                
                                 <!--end col-->
                                 <div class="col-lg-12">
