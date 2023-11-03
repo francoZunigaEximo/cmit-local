@@ -1,6 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html lang="en" data-layout="vertical" data-topbar="light" data-sidebar="light" data-sidebar-size="lg" data-sidebar-image="none" data-preloader="disable">
+<html lang="en" data-layout="vertical" data-topbar="light" data-sidebar="light" data-sidebar-size="sm-hover" data-sidebar-image="none" data-preloader="disable">
 
 <head>
 
@@ -67,6 +67,12 @@
 
             <div class="d-flex align-items-center">
 
+                <div class="ms-1 header-item d-none d-sm-flex">
+                    <button id="prestacionButton" type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle" title="Prestación rápida (Alt + P)" data-bs-toggle="offcanvas" data-bs-target="#prestacionFast" aria-controls="offcanvas">
+                        <i data-feather="layers"></i>
+                    </button>
+                </div>
+
                 <div class="dropdown ms-sm-3 header-item topbar-user">
                     <button type="button" class="btn" id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="d-flex align-items-center">
@@ -115,7 +121,7 @@
                     </span>
                 </a>
                 <button type="button" class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover" id="vertical-hover">
-                    <i class="ri-record-circle-line"></i>
+                    <i class="ri-anticlockwise-2-line" title="Fijar o Esconder menú"></i>
                 </button>
             </div>
 
@@ -129,37 +135,37 @@
 
                         <li class="nav-item">
                             <a class="nav-link menu-link" href="{{ route('pacientes.index') }}" aria-expanded="false">
-                                <i data-feather="heart" class="icon-dual"></i> <span data-key="t-user">Pacientes</span>
+                                <i data-feather="heart" class="icon-dual"></i> <span data-key="t-user" title="(ALT + A)">Pacientes</span>
                             </a>
                         </li>
 
                         <li class="nav-item">
                             <a class="nav-link menu-link" href="{{ route('clientes.index') }}" aria-expanded="false">
-                                <i data-feather="users" class="icon-dual"></i> <span data-key="t-user">Clientes</span>
+                                <i data-feather="users" class="icon-dual"></i> <span data-key="t-user" title="(ALT + C)">Clientes</span>
                             </a>
                         </li>
 
                         <li class="nav-item">
                             <a class="nav-link menu-link" href="{{ route('prestaciones.index') }}" aria-expanded="false">
-                                <i data-feather="layers" class="icon-dual"></i> <span data-key="t-layers">Prestaciones</span>
+                                <i data-feather="layers" class="icon-dual"></i> <span data-key="t-layers" title="(ALT + R)">Prestaciones</span>
                             </a>
                         </li>
 
                         <li class="nav-item">
                             <a class="nav-link menu-link" href="{{ route('mapas.index') }}" aria-expanded="false">
-                                <i data-feather="map" class="icon-dual"></i> <span data-key="t-layers">Mapas</span>
+                                <i data-feather="map" class="icon-dual"></i> <span data-key="t-layers" title="(ALT + M)">Mapas</span>
                             </a>
                         </li>
 
                         <li class="nav-item">
                             <a class="nav-link menu-link" href="{{ route('profesionales.index') }}" aria-expanded="false">
-                                <i data-feather="user-check" class="icon-dual"></i> <span data-key="t-layers">Profesionales</span>
+                                <i data-feather="user-check" class="icon-dual"></i> <span data-key="t-layers" title="(ALT + O)">Profesionales</span>
                             </a>
                         </li>
 
                         <li class="nav-item">
                             <a class="nav-link menu-link" href="{{ route('especialidades.index') }}" aria-expanded="false">
-                                <i data-feather="list" class="icon-dual"></i> <span data-key="t-layers">Especialidades</span>
+                                <i data-feather="list" class="icon-dual"></i> <span data-key="t-layers" title="(ALT + E)">Especialidades</span>
                             </a>
                         </li>
                         
@@ -256,6 +262,26 @@
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
 
+    <div class="offcanvas offcanvas-top" tabindex="-1" id="prestacionFast" aria-labelledby="prestacionFastLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="prestacionFastLabel">Prestación rápida:</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div class="center">
+                <div class="row">
+                    <div class="col-xl-3"></div>
+                    <div class="col-xl-6 d-flex justify-content-center align-items-center p-3 rounded" style="border: solid 1px #3c74b3">
+                        <label class="form-label" style="color: #5484bc; font-size: 1.3em; margin:auto 1em;">DNI: </label>
+                        <input type="number" class="form-control" placeholder="35458753" tabindex="1" id="dniPrestacion">
+                        <button type="button" class="btn btn-primary d-inline-flex" id="btnWizardPrestacion" style="margin-left: 5px" tabindex="2"><i class="ri-search-2-line"></i>&nbsp;Buscar</button>
+                    </div>
+                <div class="col-xl-3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         let mprof = "{{ session('mProf') }}";
         let choiseT = "{{ session('choiseT') }}";
@@ -266,6 +292,16 @@
         const choisePerfil = "{{ route('choisePerfil')}}";
         const choiseEspecialidad = "{{ route('choiseEspecialidad') }}";
         const savePrestador = "{{ route('savePrestador') }}";
+
+        const lnkPacientes= "{{ route('pacientes.index') }}";
+        const lnkClientes= "{{ route('clientes.index') }}";
+        const lnkPrestaciones = "{{ route('prestaciones.index') }}";
+        const lnkMapas = "{{ route('mapas.index') }}";
+        const lnkProfesionales = "{{ route('profesionales.index') }}";
+        const lnkEspecialidades = "{{ route('especialidades.index') }}";
+
+        const lnkNuevoPaciente = "{{ route('pacientes.edit', ['Documento' => '__paciente__']) }}";
+        const lnkExistePaciente = "{{ route('pacientes.edit', ['paciente' => '__paciente__']) }}";
 
     </script>
 
@@ -290,6 +326,8 @@
     <script src="{{ asset('js/app.js') }}"></script>
     <script src="{{ asset('js/scripts.js') }}?v={{ time() }}"></script>
     <script src="{{ asset('js/auth/template.js') }}?v={{ time() }}"></script>
+    <script src="{{ asset('js/atajos.js') }}?v={{ time() }}"></script>
+    <script src="{{ asset('js/wizardPrestaciones.js') }}?v={{ time() }}"></script>
     @stack('scripts')
 </body>
 
