@@ -300,7 +300,7 @@
         const lnkProfesionales = "{{ route('profesionales.index') }}";
         const lnkEspecialidades = "{{ route('especialidades.index') }}";
 
-        const lnkNuevoPaciente = "{{ route('pacientes.edit', ['Documento' => '__paciente__']) }}";
+        const lnkNuevoPaciente = "{{ route('pacientes.create', ['Documento' => '__paciente__']) }}";
         const lnkExistePaciente = "{{ route('pacientes.edit', ['paciente' => '__paciente__']) }}";
 
     </script>
