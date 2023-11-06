@@ -60,6 +60,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('getPacientes', [PacientesController::class, 'getPacientes'])->name('getPacientes');
     Route::post('searchPrestPacientes', [PacientesController::class, 'searchPrestPacientes'])->name('searchPrestPacientes');
     Route::get('updateFinanciador', [PacientesController::class, 'updateFinanciador'])->name('updateFinanciador');
+    Route::get('getNombre', [PacientesController::class, 'getNombre'])->name('getNombre');
 
     //Rutas de Clientes
     Route::resource('clientes', ClientesController::class);

@@ -27,14 +27,14 @@
                         <div class="col-sm-8">
                             <div>
                                 <a href="{{ route('pacientes.create') }}">
-                                    <button type="button" class="btn btn-primary add-btn">
+                                    <button type="button" class="btn botonGeneral">
                                         <i class="ri-add-line align-bottom me-1"></i> Nuevo
                                     </button>
                                 </a>   
-                                <button type="button" id="btnBajaMultiple" class="btn btn-soft-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="Baja multiple de pacientes">
+                                <button type="button" id="btnBajaMultiple" class="btn iconGeneral" title="Baja multiple de pacientes">
                                     <i class="ri-delete-bin-2-line"></i>
                                 </button>
-                                <button type="button" id="excel" class="btn btn-soft-success" style="" data-bs-toggle="tooltip" data-bs-placement="top" title="Generar reporte en Excel">
+                                <button type="button" id="excel" class="btn iconGeneral" title="Generar reporte en Excel">
                                     <i class="ri-file-excel-line"></i>
                                 </button>
                             </div>
@@ -80,6 +80,7 @@ const multipleDown = "{{ route('pacientes.multipleDown') }}";
 const exportExcel = "{{ route('excelPacientes') }}";
 const bajaPaciente = "{{ route('baja', ['pacientes' => '']) }}";
 const down = "{{ route('down') }}";
+const getNombre = "{{ route('getNombre') }}";
 
 //Extras
 const TOKEN = "{{ csrf_token() }}";
@@ -95,15 +96,9 @@ const SEARCH = "{{ route('search') }}";
 
 @push('scripts')
 <!--datatable js-->
-<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
-<script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
 
 <script src="{{ asset('js/scripts.js') }}?v={{ time() }}"></script>
 <script src="{{ asset('js/pacientes/index.js')}}?v={{ time() }}"></script>

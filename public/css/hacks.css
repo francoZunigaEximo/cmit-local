@@ -265,3 +265,13 @@ label {
 	.richText-editor {
 		height: 100px !important;
 	}
+
+	.iconGeneral, .botonGeneral {color: #3c74b3 !important; }
+
+	.iconGeneral {
+		font-size: 1.4em !important;
+	}
+
+	.botonGeneral {
+		border: 1px solid #3c74b3 !important;
+	}

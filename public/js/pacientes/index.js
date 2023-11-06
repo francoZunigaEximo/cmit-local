@@ -7,8 +7,6 @@ $(document).ready(function(){
         }
     });
 
-    
-
     $('#btnBajaMultiple').click(function(e) {
         e.preventDefault();
 
@@ -18,7 +16,7 @@ $(document).ready(function(){
         });
 
         if (ids.length === 0) {
-            swal("Atención", "Debe seleccionar al menos un paciente para la baja múltiple", "info");
+            swal("Atención", "Debe seleccionar al menos un paciente para la baja múltiple", "warning");
             return; 
         }
 
@@ -77,8 +75,6 @@ $(document).ready(function(){
                         let fullPath = baseUrl + '/cmit/storage' + path, link = document.createElement('a');
                         
                         link.href = fullPath;
-                        
-                        let currentDate = new Date();
                         link.download = "pacientes.xlsx";
                         link.style.display = 'none';
 
@@ -95,18 +91,23 @@ $(document).ready(function(){
                 });
             }
         } else {
-            swal('Error', 'Debes seleccionar al menos un paciente para exportar.', 'error');
+            swal('Error', 'Debes seleccionar al menos un paciente para exportar.', 'warning');
         }
 
     });
 
     $(document).on('click', '.downPaciente', function(){
 
-        let paciente = $(this).data('id');
+        let paciente = $(this).data('id'), fullName = $(this).data('nombrecompleto')
         
-        if(confirm("¿Está seguro que desea dar de baja a este paciente?")){
-
-            $.post(down, {_token: TOKEN, Id: paciente})
+        swal({
+            title: `¿Está seguro que desea dar de baja a este paciente ${fullName}?`,
+            icon: "warning",
+            buttons: ["Cancelar", "Dar de baja"],
+        }).then((confirmar) => {
+            if(confirmar) {
+                
+                $.post(down, {_token: TOKEN, Id: paciente})
 
                 .done(function(){
                     toastr.options = {
@@ -123,7 +124,9 @@ $(document).ready(function(){
                     swal('Error', 'Ha ocurrido un error, consulte con el administrador', 'error');
                     console.error(xhr);
                 })
-        }
+            } 
+        });
+  
     });
-    
+
 });

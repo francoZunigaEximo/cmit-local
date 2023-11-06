@@ -32,8 +32,10 @@ $(document).ready(()=>{
                         }
                     },
                     {
-                        data: 'NombreCompleto',
-                        name: 'NombreCompleto',
+                        data: null,
+                        render: function(data){
+                            return `<a href="${location.href}/${data.Id}/edit/"><strong>${data.NombreCompleto}</strong></a>`;
+                        }
                     },
                     {
                         data: 'Documento',
@@ -55,12 +57,11 @@ $(document).ready(()=>{
                     {
                         data: null,
                         render: function(data){
-                            let editar = `<a href="${location.href}/${data.Id}/edit/"><button type="button" class="btn btn-sm btn-primary edit-item-btn"><i class="ri-edit-line"></i></button></a>`;
                             let eliminar = `
-                            <button data-id="${data.Id}" type="button" class="btn btn-sm btn-danger downPaciente"><i class="ri-delete-bin-2-line"></i></button>
+                            <button data-id="${data.Id}" data-nombrecompleto="${data.NombreCompleto}" type="button" class="btn btn-sm downPaciente iconGeneral" title="Baja a paciente"><i class="ri-delete-bin-2-line"></i></button>
                             `;
         
-                            return editar + ' ' + eliminar;
+                            return eliminar;
                         },
                     }
                 ],
