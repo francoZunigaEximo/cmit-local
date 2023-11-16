@@ -336,47 +336,47 @@
                             <div class="row text-center">
                                 <div class="col-12">
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="ART" value="ART" {{ $fichaLaboral->TipoPrestacion ?? '' === 'ART' ? 'checked' : '' }}>
+                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="ART" value="ART" {{ ($fichaLaboral && $fichaLaboral->TipoPrestacion === 'ART' ? 'checked' : '') }}>
                                         <label class="form-check-label" for="ART">ART</label>
                                     </div>
 
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="INGRESO" value="INGRESO" {{ $fichaLaboral->TipoPrestacion ?? '' === 'INGRESO' ? 'checked' : ''}}>
+                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="INGRESO" value="INGRESO" {{ ($fichaLaboral && $fichaLaboral->TipoPrestacion === 'INGRESO' ? 'checked' : '') }}>
                                         <label class="form-check-label" for="ingreso">INGRESO</label>
                                     </div>
                             
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="PERIODICO" value="PERIODICO" {{ $fichaLaboral->TipoPrestacion ?? '' === 'PERIODICO' ? 'checked' : ''}}>
+                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="PERIODICO" value="PERIODICO" {{ ($fichaLaboral && $fichaLaboral->TipoPrestacion === 'PERIODICO' ? 'checked' : '' ) }}>
                                         <label class="form-check-label" for="periodico">PERIODICO</label>
                                     </div>
 
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="OCUPACIONAL" value="OCUPACIONAL" {{ $fichaLaboral->TipoPrestacion ?? '' === 'OCUPACIONAL' ? 'checked' : ''}}>
+                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="OCUPACIONAL" value="OCUPACIONAL" {{ ($fichaLaboral && $fichaLaboral->TipoPrestacion === 'OCUPACIONAL' ? 'checked' : '') }}>
                                         <label class="form-check-label" for="ocupacional">OCUPACIONAL</label>
                                     </div>
 
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="EGRESO" value="EGRESO" {{ $fichaLaboral->TipoPrestacion ?? '' === 'EGRESO' ? 'checked' : ''}}>
+                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="EGRESO" value="EGRESO" {{ ($fichaLaboral && $fichaLaboral->TipoPrestacion === 'EGRESO' ? 'checked' : '' ) }}>
                                         <label class="form-check-label" for="egreso">EGRESO</label>
                                     </div>
 
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="TipoPrestacion" id="CARNET" value="CARNET" {{ $fichaLaboral->TipoPrestacion ?? '' === 'CARNET' ? 'checked' : ''}}>
+                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="TipoPrestacion" id="CARNET" value="CARNET" {{ ($fichaLaboral && $fichaLaboral->TipoPrestacion === 'CARNET' ? 'checked' : '') }}>
                                         <label class="form-check-label" for="carnet">CARNET</label>
                                     </div>
 
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="TipoPrestacion" id="OTRO" value="OTRO" {{ $fichaLaboral->TipoPrestacion ?? '' === 'OTRO' ? 'checked' : ''}}>
+                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="TipoPrestacion" id="OTRO" value="OTRO" {{ ($fichaLaboral && $fichaLaboral->TipoPrestacion === 'OTRO' ? 'checked' : '') }}>
                                         <label class="form-check-label" for="otro">OTRO</label>
                                     </div>
 
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="TipoPrestacion" id="RECMED" value="RECMED" {{ $fichaLaboral->TipoPrestacion ?? '' === 'RECMED' ? 'checked' : ''}}>
+                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="TipoPrestacion" id="RECMED" value="RECMED" {{ ($fichaLaboral && $fichaLaboral->TipoPrestacion === 'RECMED' ? 'checked' : '') }}>
                                         <label class="form-check-label" for="recmed">RECMED</label>
                                     </div>
 
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="TipoPrestacion" id="S/C_OCUPACIO" value="S/C_OCUPACIO" {{ $fichaLaboral->TipoPrestacion ?? '' === 'S/C_OCUPACIO' ? 'checked' : ''}}>
+                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="TipoPrestacion" id="SCOCUPACIO" value="S/C_OCUPACIO" {{ ($fichaLaboral && $fichaLaboral->TipoPrestacion === 'S/C_OCUPACIO' ? 'checked' : '') }}>
                                         <label class="form-check-label" for="recmed">S/C_OCUPACIONAL</label>
                                     </div>
                                    
@@ -447,7 +447,7 @@
                                 <div class="col-6">
                                     <div class="input-group input-group-sm mb-2">
                                         <span class="input-group-text">Jornada</span>
-                                        <select class="form-select" id="Tipo">
+                                        <select class="form-select" id="TipoJornada">
                                             <option selected value="{{ $fichaLaboral->TipoJornada ?? ''}}">{{ $fichaLaboral->TipoJornada ?? 'Elija una opción...'}}</option>
                                             <option value="NORMAL">Normal</option>
                                             <option value="PROLONGADA">Prolongada</option>
@@ -515,31 +515,31 @@
     
                                     <div class="col-12 ObBloqueoEmpresa">
                                         <h6 class="fs-16" style="color: red">Observaciones de Bloqueo</h6>
-                                        <p class="text-muted mb-0">{{ $fichaLaboral->empresa->Motivo ?? '' }}</p>
+                                        <p class="text-muted mb-0"></p>
                                     </div>
                                     
                                     <div class="col-12 ObBloqueoArt">
                                         <hr class="mt-2 mb-2">
                                         <h6 class="fs-16" style="color: red">Observaciones de Bloqueo</h6>
-                                        <p class="text-muted mb-0">{{ $fichaLaboral->art->Motivo ?? '' }}</p>
+                                        <p class="text-muted mb-0"></p>
                                     </div>
                                     
                                     <div class="col-12 ObEmpresa">
                                         <hr class="mt-2 mb-2">
                                         <h6 class="fs-16">Observaciones Empresa</h6>
-                                        <p class="text-muted mb-0">{{ $fichaLaboral->empresa->Observaciones ?? ''}}</p>
+                                        <p class="text-muted mb-0"></p>
                                     </div>
 
                                     <div class="col-12 ObArt">
                                         <hr class="mt-2 mb-2">
                                         <h6 class="fs-16">Observaciones Art</h6>
-                                        <p class="text-muted mb-0">{{ $fichaLaboral->art->Observaciones ?? ''}}</p>
+                                        <p class="text-muted mb-0"></p>
                                     </div>
                                     
                                     <div class="col-12 ObPaciente">
                                         <hr class="mt-2 mb-2">
                                         <h6 class="fs-16">Observaciones Paciente</h6>
-                                        <p class="text-muted mb-0">{{ $paciente->Observaciones ?? ''}}</p>
+                                        <p class="text-muted mb-0"></p>
                                     </div>
 
                                     <div class="row">
@@ -560,7 +560,7 @@
 
                         <div class="row">
                             <div class="col-9 mx-auto box-information">
-
+                                <div class="messagePrestacion"></div>
                                 <div class="row">
                                     <div class="col-6">
                                         <div class="input-group input-group-sm mb-2 Financiador">
@@ -617,9 +617,17 @@
 
                                         <div class="input-group input-group-sm mb-2 Factura">
                                             <span class="input-group-text">Numero Factura</span>
-                                            <input type="text"  class="form-control" id="Tipo">
-                                            <input type="text"  class="form-control" id="Sucursal">
-                                            <input type="text"  class="form-control" id="NroFactura">
+                                            <select class="form-select" id="Tipo">
+                                                <option value="" selected>Elija una opción...</option>
+                                                <option value="A">A</option>
+                                                <option value="B">B</option>
+                                                <option value="E">E</option>
+                                                <option value="P">P</option>
+                                                <option value="R">R</option>
+                                                <option value="Z">Z</option>
+                                            </select>
+                                            <input type="text"  class="form-control" placeholder="nro sucursal" id="Sucursal">
+                                            <input type="text"  class="form-control" placeholder="nro de factura" id="NroFactura">
                                         </div>
 
                                         <div class="input-group input-group-sm mb-2 Autoriza">
@@ -646,7 +654,7 @@
                                 <div class="col-12 text-center mt-2">
                                     <hr class="mt-2 mb-2 d-block">
                                     <button type="button" class="btn botonGeneral eventDelete" data-bs-dismiss="modal">Cancelar</button>
-                                    <button type="button" class="btn botonGeneral seguirAl">Guardar</button>
+                                    <button type="button" id="guardarPrestacion" class="btn botonGeneral">Guardar</button>
                                 </div>
                             </div>
                         </div>

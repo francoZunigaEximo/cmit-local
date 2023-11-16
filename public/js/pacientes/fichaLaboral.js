@@ -147,6 +147,8 @@ $(document).ready(function () {
 
         if(pago === 'G'){
             $('.Autoriza').show();
+        }else{
+            $('.Autoriza').hide();
         }
     });
 
@@ -187,15 +189,15 @@ $(document).ready(function () {
     //Guardar FichaLaboral
     $(document).on('click', '#guardarFicha', function(){
 
-        let paciente = ID;
+        let paciente = ID,
             cliente = $('#selectClientes').val(),
             art = $('#selectArt').val(),
             tipoPrestacion =  $('input[name="TipoPrestacion"]:checked').val(),
             tareaRealizar = $('#TareaRealizar').val(),
-            tipo = $('#Tipo').val(),
+            tipo = $('#TipoJornada').val(),
             pago = $('#PagoLaboral').val(),
             horario = $('#Horario').val(),
-            observaciones = $('#Observaciones').val(),
+            observaciones = $('#ObservacionesFicha').val(),
             ultimoPuesto = $('#UltimoPuesto').val(),
             puestoActual = $('#PuestoActual').val(),
             sectorActual = $('#SectorActual').val(),
@@ -205,7 +207,7 @@ $(document).ready(function () {
             fechaEgreso = $('#FechaEgreso').val(),
             antiguedadEmpresa = $('#AntiguedadEmpresa').val();
 
-        if(tipoPrestacion === '' || tipoPrestacion === undefined){
+        if(tipoPrestacion === ''){
             toastr.warning('¡El campo tipo de prestación es obligatorio!', 'Alerta');
             return;
         }
@@ -215,42 +217,39 @@ $(document).ready(function () {
             return;
         }
 
-        $.ajax({
-            url: saveFichaAlta,
-            type: 'post',
-            data: {
-                paciente: paciente,
-                cliente: cliente,
-                art: art,
-                tareaRealizar: tareaRealizar,
-                tipoPrestacion: tipoPrestacion,
-                tipo: tipo,
-                pago: pago,
-                horario: horario,
-                observaciones: ObservacionesFicha,
-                ultimoPuesto: ultimoPuesto,
-                puestoActual: puestoActual,
-                sectorActual: sectorActual,
-                ccosto: ccosto,
-                antiguedadPuesto: antiguedadPuesto,
-                fechaIngreso: fechaIngreso,
-                fechaEgreso: fechaEgreso,
-                antiguedadEmpresa: antiguedadEmpresa,
-                _token: TOKEN,
-            },
-            success: function(){
+        $.post(saveFichaAlta, {paciente: paciente,
+            cliente: cliente,
+            art: art,
+            tareaRealizar: tareaRealizar,
+            tipoPrestacion: tipoPrestacion,
+            tipo: tipo,
+            pago: pago,
+            horario: horario,
+            observaciones: observaciones,
+            ultimoPuesto: ultimoPuesto,
+            puestoActual: puestoActual,
+            sectorActual: sectorActual,
+            ccosto: ccosto,
+            antiguedadPuesto: antiguedadPuesto,
+            fechaIngreso: fechaIngreso,
+            fechaEgreso: fechaEgreso,
+            antiguedadEmpresa: antiguedadEmpresa,
+            _token: TOKEN,
+            }) 
+            .done(function() {
+
                 toastr.success('¡Los datos se han actualizado. Nos redirigimos a la nueva prestación.!', 'Perfecto');
                 mostrarFinanciador();
                 selectMedioPago();
                 setTimeout(() => {
                     checkObservaciones();
                 }, 2000);
-            },
-            error: function(xhr) {
+
+            })
+            .fail(function(xhr) {
                 toastr.danger('Hubo un problema para procesar la información. Consulte con el administrador del sistema.', 'Error');
                 console.error(xhr);
-            }
-        });
+            });
     });
 
     //Calcular Antiguedad en la Empresa en FichaLaboral
@@ -383,7 +382,7 @@ $(document).ready(function () {
     {
         let opcion = $('#Pago').val()
         if(opcion === 'B'){
-            console.log("la opcion dentro funcion: " + opcion)
+
             let contenido = `
                 <option value="" selected>Elija una opción...</option>
                 <option value="A">Efectivo</option>
@@ -403,67 +402,85 @@ $(document).ready(function () {
         }else{
 
             $('.SPago').hide();
+            $('.ObsPres').hide();
+            $('.Factura').hide();
+            $('.Autoriza').hide();
 
         }
     }
 
     async function checkObservaciones() {
+
+        toastr.options = {
+            closeButton: true,   
+            progressBar: true,     
+            timeOut: 3000,        
+        };
+     
         if (ID === '') return;
-        $('.ObBloqueoEmpresa, .ObBloqueoArt, .ObEmpresa, .ObsPaciente').hide();
+        $('.ObBloqueoEmpresa, .ObBloqueoArt, .ObArt, .ObEmpresa, .ObPaciente').hide();
         $('.seguirAl').prop('disabled', false).removeAttr('title');
 
         try {
+
             const response = await $.get(checkObs, { Id: ID });
-            
+
             let obsArt = response.obsArt, obsEmpresa = response.obsEmpresa, obsPaciente = response.obsPaciente;
 
+            if([obsArt.Motivo, obsArt.Observaciones, obsEmpresa.Motivo, obsEmpresa.Observaciones, obsPaciente.Observaciones].every(value => value === '' || value === null)){
 
-            if([obsArt.Motivo, obsArt.Observaciones, obsEmpresa.Motivo, obs.Observaciones, obsPaciente.Observaciones].every(value => value === '')){
+                let alerta = `
+                <!-- Warning Alert -->
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        <strong> No existen observaciones para generar la prestación. </strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `;
 
                 $('.fichaLaboralModal, .observacionesModal').hide();
                 $('.nuevaPrestacion').show();
+
+                $(".messagePrestacion").html(alerta);
             
             }else{
 
                 $('.fichaLaboralModal').hide();
                 $('.observacionesModal').show();
 
-                if(obsArt.Motivo !== '') {
+                if(obsArt.Motivo !== '' && obsArt.Motivo !== null) {
                     $('.ObBloqueoArt').show();
+                    $('.ObBloqueoArt p').text(obsArt.Motivo);
                     $('.seguirAl').prop('disabled', true).attr('title', 'Boton bloqueado');
                 }
 
-                if(obsArt.Observaciones !== '') {
+                if(obsArt.Observaciones !== '' && obsArt.Observaciones !== null) {
                     $('.ObArt').show();
+                    $('.ObArt p').text(obsArt.Observaciones);
+                }
+                
+                if(obsEmpresa.Observaciones !== '' && obsEmpresa.Observaciones !== null) {
+                    $('.ObEmpresa').show();
+                    $('.ObEmpresa p').text(obsEmpresa.Observaciones);
                 }
 
-                if(obsEmpresa.Observaciones !== '') {
-                    $('.ObEmpresa').show();
-                }
-
-                if(obsEmpresa.Motivo !== '') {
-                    $('.ObEmpresa').show();
+                if(obsEmpresa.Motivo !== '' && obsEmpresa.Motivo !== null) {
+                    $('.ObBloqueoEmpresa').show();
+                    $('.ObBloqueoEmpresa p').text(obsEmpresa.Motivo);
                     $('.seguirAl').prop('disabled', true).attr('title', 'Boton bloqueado');
                 }
-
-                if(obsPaciente.Observaciones !== '') {
+                
+                if(obsPaciente.Observaciones !== '' && obsPaciente.Observaciones !== null) {
                     $('.ObPaciente').show();
+                    $('.ObPaciente p').text(obsPaciente.Observaciones);
                 }
             }
             
         } catch (error) {
             console.error(error);
-            toastr.danger('Se ha producido un error. Consulte con el administrador', 'Error');
+            toastr.warning('Se ha producido un error. Consulte con el administrador', 'Error');
         }
     }
-    
 
-    function stopPrestacion(campo) {
-
-        if(campo !== ''){
-            $('.seguirAl').attr('disabled', 'disabled').attr('title', 'Boton bloqueado');
-        }
-    }
 
     
 });
