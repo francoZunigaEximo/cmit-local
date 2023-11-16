@@ -5,32 +5,95 @@
 @section('content')
 
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-    <h4 class="mb-sm-0">Registrar un nuevo paciente</h4>
+    <h4 class="mb-sm-0">Nuevo paciente</h4>
 
-    <div class="page-title-right">
-        <ol class="breadcrumb m-0">
-            <li class="breadcrumb-item"><a href="{{ route('pacientes.index') }}">Pacientes</a></li>
-            <li class="breadcrumb-item active">Nuevo Paciente</li>
-        </ol>
-    </div>
 </div>
 
 <div class="container-fluid">
-        <form id="form-create" action="{{ route('pacientes.store') }}" method="POST" enctype="multipart/form-data" novalidate>
-            @csrf
-    <div class="position-relative mx-n4 mt-n4">
-        <div class="profile-wid-bg profile-setting-img">
-            <img src="{{ asset('images/banner-top.jpeg') }}" class="profile-wid-img" alt="">
-        </div>
-    </div>
+    <form id="form-create" action="{{ route('pacientes.store') }}" method="POST" enctype="multipart/form-data" novalidate>
+        @csrf
+   <div class="row">
+        <div class="col-12 text-center">
 
-    <div class="row">
-        <div class="col-3">
-            <div class="card-body p-4 border-pic">
-                <div class="text-center">
-                    <div class="profile-user position-relative d-inline-block mx-auto mb-4">
-                        <div id="profile-image-preview" class="img-thumbnail user-profile-image" style="width: 188px; height: 200px; background-image: url('{{ asset("images/icono-nuevo-usuario.png") }}'); background-size: cover; background-position: left;"></div>
-                       <div class="avatar-xs p-0 rounded-circle profile-photo-edit">
+            <div class="row">
+                <div class="col-4 box-information">
+                    <div class="input-group input-group-sm mb-3">
+                        <span class="input-group-text">Apellido&nbsp;<span class="required">(*)</span></span>
+                        <input type="text" class="form-control" id="Apellido" name="Apellido">
+                    </div>
+                    <div class="input-group input-group-sm mb-3">
+                        <span class="input-group-text">Nombre&nbsp;<span class="required">(*)</span></span>
+                        <input type="text" class="form-control" id="Nombre" name="Nombre">
+                    </div>
+                    <div class="input-group input-group-sm mb-3">
+                        <span class="input-group-text">Documento&nbsp;<span class="required">(*)</span></span>
+                        <select class="form-select" name="TipoDocumento" id="tipoDocumento">
+                            <option selected value="">Elija una opción...</option>
+                            <option value="DNI">DNI</option>
+                            <option value="PAS">PAS</option>
+                            <option value="LC">LC</option>
+                            <option value="CF">CF</option>
+                        </select>
+                        <input type="text" class="form-control" id="documento" name="Documento">
+                    </div>
+                    <div class="input-group input-group-sm mb-3">
+                        <span class="input-group-text">CUIT/CUIL</span>
+                        <select class="form-select" id="tipoIdentificacion" name="TipoIdentificacion">
+                            <option selected value="">Elija una opción...</option>
+                            <option value="CUIT">CUIT</option>
+                            <option value="CUIL">CUIL</option>
+                        </select>
+                        <input type="text" class="form-control" id="identificacion" name="Identificacion">
+                    </div>
+
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text">Fecha de nacimiento&nbsp;<span class="required">(*)</span></span>
+                        <input type="date" class="form-control" id="fecha" name="FechaNacimiento">
+                        <input type="text" class="form-control" id="edad" title="Edad">
+                    </div>
+                </div>
+
+                <div class="col-4 box-information">
+                    <div class="input-group input-group-sm mb-3">
+                        <span class="input-group-text">Dirección</span>
+                        <input type="text" class="form-control" id="Direccion" name="Direccion">
+                    </div>
+
+                    <div class="input-group input-group-sm mb-3">
+                        <span class="input-group-text">Telefono<span class="required">(*)</span></span>
+                        <input type="text" class="form-control" placeholder="(xxx)xxx-xxxx" id="cleave-phone" name="NumeroTelefono">
+                    </div>
+
+                    <div class="input-group input-group-sm mb-3">
+                        <span class="input-group-text">Email</span>
+                        <input type="text" class="form-control" placeholder="example@gmail.com" id="correo" name="EMail">
+                    </div>
+
+                    <div class="input-group input-group-sm mb-3">
+                        <span class="input-group-text">Provincia&nbsp;<span class="required">(*)</span></span>
+                        <select id="provincia" class="form-select" name="Provincia">
+                            <option selected value="">Elija una opción...</option>
+                            @foreach ($provincias as $provincia)
+                            <option value="{{ $provincia->Nombre }}">{{ $provincia->Nombre }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text">Localidad&nbsp;<span class="required">(*)</span></span>
+                        <select id="localidad" class="form-select" name="IdLocalidad">
+                            <option selected value="">Elija una opción...</option>
+                            <option>...</option>
+                        </select>
+                        <input type="text" class="form-control" id="codigoPostal" name="CP">
+                    </div>
+
+                </div>
+    
+                <div class="col-3 box-information mx-auto">
+                    <div class="profile-user position-relative d-inline-block mx-auto mb-2">
+                        <div id="profile-image-preview" class="img-thumbnail user-profile-image" style="width: 200px; height: 140px; background-image: url('{{ asset("archivos/fotos/foto-default.png") }}'); background-size: cover; background-position: center;"></div>
+                    <div class="avatar-xs p-0 rounded-circle profile-photo-edit">
                             <input id="profile-img-file-input" type="button" class="profile-img-file-input" value="Tomar foto" onClick="takeSnapshot()">
                             <input type="hidden" name="Foto" class="image-tag">
                             <label for="profile-img-file-input" class="profile-photo-edit avatar-xs">
@@ -40,196 +103,36 @@
                             </label>
                         </div> 
                     </div>
-                    <p class="text-muted mb-0">Sacar una fotografía al paciente</p>
-                </div>
-                <div class="text-center mt-4">
-                    <input id="toggle-webcam-button" type="button" class="btn btn-primary" value="Activar Webcam" onClick="toggleWebcam()">
-                </div>
-            </div>
-            <!--end card-->
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex align-items-center mb-5">
-                        <div class="flex-grow-1">
-                            <h5 class="card-title mb-0">Antecedentes</h5>
-                        </div>
-                        
+                    <div class="text-center d-block">
+                        <span class="toggle-webcam-button text-center iconGeneral" onClick="toggleWebcam()" title="Activar Webcam">
+                            <i class="ri-webcam-line"></i>
+                        </span>
                     </div>
-                    <textarea class="form-control" id="meassageInput" rows="3" placeholder="" name="Antecedentes"></textarea>
                 </div>
-            </div>
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex align-items-center mb-5">
-                        <div class="flex-grow-1">
-                            <h5 class="card-title mb-0">Observaciones</h5>
-                        </div>
-                        
+
+                <div class="col-12 box-information mt-2">
+                    <div class="input-group input-group-sm pt-1 pb-1">
+                        <span class="input-group-text">Antecedentes</span>
+                        <input type="text" class="form-control " id="antecedentes" name="Antecedentes">
                     </div>
-                    <textarea class="form-control" id="meassageInput" rows="3" placeholder="" name="Observaciones"></textarea>
                 </div>
-            </div>
-            <!--end card-->
+
+                <div class="col-12 box-information mt-2">
+                    <div class="input-group input-group-sm pt-1 pb-1">
+                        <span class="input-group-text">Observaciones</span>
+                        <input type="text" class="form-control " id="Observaciones" name="Observaciones">
+                    </div>
+                </div>
+
+                <div class="col-12 box-information mt-2 text-center">
+                    <button type="button" id="volverIndex" class="btn botonGeneral">Volver</button>
+                    <button type="submit" id="btnRegistrar" class="btn botonGeneral">Registrar</button>
+                </div>
+            </div> 
         </div>
-        <!--end col-->
-        <div class="col-9">
-            <div class="card mt-xxl-n5">
-                <div class="card-header">
-                    <ul class="nav nav-tabs-custom rounded card-header-tabs border-bottom-0" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <a class="nav-link active" data-bs-toggle="tab" href="#AltaPaciente" role="tab" aria-selected="true">
-                                <i class="fas fa-home"></i>
-                                Datos Personales
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-                <div class="card-body p-4">
-                    <div class="tab-content">
-                        <div class="tab-pane active show" id="AltaPaciente" role="tabpanel">
-                                <div class="row">
-                                    <div class="col-2">
-                                        <div class="mb-3">
-                                            <select class="form-select " name="TipoDocumento" id="tipoDocumento">
-                                                <option selected value="">Elija una opción...</option>
-                                                <option value="DNI">DNI</option>
-                                                <option value="PAS">PAS</option>
-                                                <option value="LC">LC</option>
-                                                <option value="CF">CF</option>
-                                            </select>
-                                        </div>
-                                    </div>        
-                                    <div class="col-4">
-                                        <div class="mb-3">
-                                            <input type="text" class="form-control" placeholder="Documento del Paciente. Ej: 34256871" id="documento" name="Documento">
-                                        </div>
-                                    </div><!--end col-->
-                                    <div class="col-2">
-                                        <div class="mb-3">
-                                            <select class="form-select" id="tipoIdentificacion" name="TipoIdentificacion">
-                                                <option selected value="">CUIT/CUIL</option>
-                                                <option value="CUIT">CUIT</option>
-                                                <option value="CUIL">CUIL</option>
-                                            </select>
-                                        </div>
-                                    </div>        
-                                    <div class="col-4">
-                                        <div class="mb-3">
-                                            <input type="text" class="form-control" placeholder="xx-xxxxxxxx-x" id="identificacion" name="Identificacion">
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="mb-3">
-                                            <label for="nombre" class="form-label">Nombre <span class="required">(*)</span></label>
-                                            <input type="text" class="form-control" placeholder="Nombre del paciente" id="nombre" name="Nombre">
-                                        </div>
-                                    </div><!--end col-->
-                                    <div class="col-6">
-                                        <div class="mb-3">
-                                            <label for="apellido" class="form-label">Apellido <span class="required">(*)</span></label>
-                                            <input type="text" class="form-control " placeholder="Apellido del paciente" id="apellido" name="Apellido">
-                                        </div>
-                                    </div><!--end col-->
-                                    <!--end col-->
-        
-                                    <div class="col-4">
-                                        <div class="mb-3">
-                                            <label for="fecha" class="form-label">Fecha de nacimiento <span class="required">(*)</span></label>
-                                            <input type="date" class="form-control" data-provider="flatpickr" id="fecha" name="FechaNacimiento">
-                                        </div>
-                                    </div>
-                                    <div class="col-2">
-                                        <div class="mb-3">
-                                            <label for="edad" class="form-label">Edad</label>
-                                            <input type="text" class="form-control" id="edad" disabled>
-                                        </div>
-                                    </div><!--end col-->
-
-                                    <div class="col-6">
-                                        <div class="mb-3">
-                                            <label for="telefono" class="form-label">Teléfono <span class="required">(*)</span></label>
-                                            <input type="text" class="form-control" placeholder="(xxx)xxx-xxxx" id="cleave-phone" name="NumeroTelefono">
-                                        </div>
-                                    </div><!--end col-->
- 
-
-                                    <div class="col-6">
-                                        <div class="mb-3">
-                                            <label for="correo" class="form-label">Email </label>
-                                            <input type="text" class="form-control" placeholder="example@gmail.com" id="correo" name="EMail">
-                                        </div>
-                                    </div><!--end col-->
-                                    <div class="col-6">
-                                        <div class="mb-3">
-                                            <label for="direccion" class="form-label">Dirección</label>
-                                            <input type="text" class="form-control" placeholder="Calle N° B°" id="direccion" name="Direccion">
-                                        </div>
-                                    </div>
-                                    <div class="col-4">
-                                        <div class="mb-3">
-                                            <label for="provincia" class="form-label">Provincia  <span class="required">(*)</span></label>
-                                            <select id="provincia" class="form-select" name="Provincia">
-                                                <option selected value="">Elija una opción...</option>
-                                                @foreach ($provincias as $provincia)
-                                                <option value="{{ $provincia->Nombre }}">{{ $provincia->Nombre }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div><!--end col-->
-                                    <div class="col-4">
-                                        <div class="mb-3">
-                                            <label for="localidad" class="form-label">Localidad  <span class="required">(*)</span></label>
-                                            <select id="localidad" class="form-select" name="IdLocalidad">
-                                                <option selected value="">Elija una opción...</option>
-                                                <option>...</option>
-                                            </select>
-                                        </div>
-                                    </div>   
-                                    <div class="col-2">
-                                        <div class="mb-3">
-                                            <label for="codigoPostal" class="form-label">CP</label>
-                                            <input type="text" class="form-control" id="codigoPostal" name="CP">
-                                        </div>
-                                    </div><!--end col-->
-        
-                                    
-                                    <!--end col-->
-                                    <div class="col-lg-12">
-                                        <div class="hstack gap-2 justify-content-end">
-                                            
-                                            <button type="button" class="btn btn-soft-danger">Cancelar</button>
-                                            <button type="submit" id="btnRegistrar" class="btn btn-success">Registrar</button>
-                                        </div>
-                                    </div>
-                                    <!--end col-->
-                                </div>
-                                <!--end row-->
-                            </form>
-                        </div>
-                        <!--end tab-pane-->
-                        <div class="tab-pane" id="changePassword" role="tabpanel">
-                            <!-- Code -->
-                        </div>
-                        <!--end tab-pane-->
-                        <div class="tab-pane" id="experience" role="tabpanel">
-                            <!-- Code -->
-                        </div>
-                        <!--end tab-pane-->
-                        <div class="tab-pane" id="privacy" role="tabpanel">
-                
-                            <!-- Code -->
-                        </div>
-                        <!--end tab-pane-->
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!--end col-->
-    </div>
-    <!--end row-->
-
-    </div>
-
+   </div>
+    </form>
+</div>
 
 <!-- Default Modals -->
 <div id="myModal" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
@@ -260,6 +163,7 @@
 const verify = "{{ route('verify') }}";
 const getLocalidades = "{{ route('getLocalidades') }}";
 const getCodigoPostal = "{{ route('getCodigoPostal') }}";
+const GOINDEX = "{{ route('pacientes.index') }}";
 
 //Extras
 const TOKEN = "{{ csrf_token() }}";
@@ -277,7 +181,7 @@ let editUrl = "{{ route('pacientes.edit', ['paciente' => '__paciente__']) }}";
 <script src="{{ asset('js/pacientes/create.js') }}?v={{ time() }}"></script>
 <script src="{{ asset('js/pacientes/utils.js') }}?v={{ time() }}"></script>
 
-<script src="{{ asset('js/webcam.min.js') }}"></script>
+<script src="{{ asset('js/webcam.min.js') }}?V={{ time() }}"></script>
 <script src="{{ asset('js/webcam-picture.js') }}?v={{ time() }}"></script>
 <script src="{{ asset('js/scripts.js') }}?v={{ time() }}"></script>
 <script src="{{ asset('libs/cleave.js/cleave.min.js') }}"></script>

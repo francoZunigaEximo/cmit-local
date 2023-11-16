@@ -156,7 +156,7 @@ class PacientesController extends Controller
 
             $foto = $fileName;
         } else {
-            $foto = '';
+            $foto = 'foto-default.png';
         }
 
         $paciente = Paciente::create([
@@ -240,7 +240,7 @@ class PacientesController extends Controller
     {
 
         //Actualizamos
-        $paciente = Paciente::find($request->Id);
+        $paciente = Paciente::find($paciente->Id);
         $paciente->Documento = $request->Documento;
         $paciente->TipoDocumento = $request->TipoDocumento;
         $paciente->Nombre = $request->Nombre;
@@ -256,7 +256,7 @@ class PacientesController extends Controller
         if ($request->Foto) {
             $img = $request->Foto;
             $folderPath = 'archivos/fotos/';
-            $fileName = 'P'.$request->Id;
+            $fileName = 'P'.$paciente->Id.'.jpg';
             $filePath = $folderPath.$fileName;
 
             // Eliminar archivo existente si existe
@@ -342,7 +342,25 @@ class PacientesController extends Controller
             ->join('localidades', 'pacientes.IdLocalidad', '=', 'localidades.Id')
             ->where('pacientes.Estado', 1)
             ->whereIn('pacientes.Id', $ids)
-            ->select('pacientes.Id', 'pacientes.Apellido', 'pacientes.Nombre', 'pacientes.Identificacion', 'pacientes.Documento', 'pacientes.Nacionalidad', 'pacientes.FechaNacimiento', 'pacientes.LugarNacimiento', 'pacientes.EstadoCivil', 'pacientes.ObsEstadoCivil', 'pacientes.Hijos', 'pacientes.Direccion', 'localidades.Nombre as Localidad', 'pacientes.Provincia', 'pacientes.EMail', 'pacientes.ObsEMail', 'pacientes.Antecedentes', 'pacientes.Observaciones')
+            ->select(
+                'pacientes.Id', 
+                'pacientes.Apellido', 
+                'pacientes.Nombre', 
+                'pacientes.Identificacion', 
+                'pacientes.Documento', 
+                'pacientes.Nacionalidad', 
+                'pacientes.FechaNacimiento', 
+                'pacientes.LugarNacimiento', 
+                'pacientes.EstadoCivil', 
+                'pacientes.ObsEstadoCivil', 
+                'pacientes.Hijos', 
+                'pacientes.Direccion', 
+                'localidades.Nombre as Localidad', 
+                'pacientes.Provincia', 
+                'pacientes.EMail', 
+                'pacientes.ObsEMail', 
+                'pacientes.Antecedentes', 
+                'pacientes.Observaciones')
             ->get();
 
         $excel = "Numero,Apellido,Nombre,CUIL/CUIT,Documento,Nacionalidad,Fecha de Nacimiento, Lugar de Nacimiento, Estado Civil, Observacion de Estado Civil, Hijos, Direccion, Localidad, Provincia, Email, Observacion Email, Antecedentes, Observaciones\n";
@@ -408,4 +426,13 @@ class PacientesController extends Controller
 
         return response()->json(['pacientes' => $resultados]);
     }
+
+    public function deletePicture(Request $request): void
+    {
+        $paciente = Paciente::find($request->Id);
+        $paciente->Foto = 'foto-default.png';
+        $paciente->save();
+        
+    }
+
 }

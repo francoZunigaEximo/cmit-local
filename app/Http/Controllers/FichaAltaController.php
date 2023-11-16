@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Cliente;
 use App\Models\Fichalaboral;
+use App\Models\Paciente;
 use Illuminate\Http\Request;
 
 class FichaAltaController extends Controller
@@ -69,6 +70,25 @@ class FichaAltaController extends Controller
 
         }
 
+    }
+
+    public function checkObs(Request $request): mixed
+    {
+
+        $fichaLaboral = Fichalaboral::where('IdPaciente', $request->Id)->first(['IdArt', 'IdEmpresa']);
+
+        if($fichaLaboral){
+
+            $obsArt = Cliente::where('Id', $fichaLaboral->IdArt)->first(['Motivo', 'Observaciones']);
+            $obsEmpresa = Cliente::where('Id', $fichaLaboral->IdEmpresa)->first(['Motivo', 'Observaciones']);
+            $obsPaciente = Paciente::where('Id', $request->Id)->first(['Observaciones']);
+
+            return response()->json([
+                'obsArt' => $obsArt,
+                'obsEmpresa' => $obsEmpresa,
+                'obsPaciente' => $obsPaciente
+            ]);
+        }
     }
 
 }

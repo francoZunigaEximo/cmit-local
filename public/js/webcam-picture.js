@@ -1,6 +1,6 @@
 Webcam.set({
-    width: 188,
-    height: 200,
+    width: 200,
+    height: 140,
     dest_width: 640,
     dest_height: 480,
     image_format: 'jpeg',
@@ -10,21 +10,16 @@ Webcam.set({
     fps: 45
 });
 
-var isWebcamActive = false;
+let isWebcamActive = false;
 
 function toggleWebcam() {
-    var webcamButton = document.getElementById('toggle-webcam-button');
-    var imagePreview = document.getElementById('profile-image-preview');
+    let imagePreview = document.getElementById('profile-image-preview');
 
     if (isWebcamActive) {
-        // Desactivar la webcam
         Webcam.reset();
-        webcamButton.value = 'Activar Webcam';
         imagePreview.style.backgroundImage = "url('{{ asset('images/default-image.png') }}')";
     } else {
-        // Activar la webcam
         Webcam.attach('#profile-image-preview');
-        webcamButton.value = 'Desactivar Webcam';
     }
 
     isWebcamActive = !isWebcamActive;
@@ -32,8 +27,8 @@ function toggleWebcam() {
 
 function takeSnapshot() {
     Webcam.snap(function (data_uri) {
-        var imageTag = document.querySelector('.image-tag');
-        var imagePreview = document.getElementById('profile-image-preview');
+        let imageTag = document.querySelector('.image-tag');
+        let imagePreview = document.getElementById('profile-image-preview');
 
         imageTag.value = data_uri;
         imagePreview.style.backgroundImage = "url('" + data_uri + "')";
@@ -42,7 +37,7 @@ function takeSnapshot() {
 
         // Desactivar la webcam después de tomar la foto
         Webcam.reset();
-        document.getElementById('toggle-webcam-button').value = 'Activar Webcam';
         isWebcamActive = false;
     });
+
 }

@@ -102,18 +102,6 @@ i, .cerrar, .finalizar, .entregar, .eEnviar {
 	margin-bottom: 10px;
 }
 
-.full input {
-	background-color: #6591c4;
-	color: rgb(255, 255, 255);
-	font-weight: bold;
-}
-
-.editFull {
-	border: 1px solid #6591c4;
-	padding: 0.4em;
-	color: #6591c4;
-	font-size: 16px;
-}
 
 .optionsExamenes {
 	border: #c8d1db 1px solid;
@@ -274,4 +262,43 @@ label {
 
 	.botonGeneral {
 		border: 1px solid #3c74b3 !important;
+	}
+
+	.width-ajust-input {
+		width: 80% !important;
+	}
+
+	.box-information {
+		border: 1px #eee solid !important; 
+		padding: 1em !important; 
+		border-radius:10px !important; 
+		margin-right: 2em !important;
+		background-color: rgba(144, 144, 144, 0.055) !important;
+	}
+
+	.error {
+		width: 100% !important;
+		font-size: 10px !important;
+	}
+
+	.custom-badge.original {
+		border: 1px solid #3c74b3 ; 
+		color:#3c74b3 ;
+		font-size: 12px;
+	}
+
+	body .selectClientes2 .select2.select2-container {
+		width: 399px !important;
+	}
+
+	body .selectArt2 .select2.select2-container {
+		width: 427px !important;
+	}
+
+	#altaPrestacionModal .modal-body {
+		padding-top: 5px !important;
+	}
+
+	#altaPrestacionModal .modal-body .ff-secondary {
+		font-size: 1.8em !important;
 	}

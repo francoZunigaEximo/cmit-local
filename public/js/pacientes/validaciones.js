@@ -132,19 +132,30 @@ $(document).ready(function(){
         return this.optional(element) || /^\w+([\.-]?\w+)*@(?:\w+\.)+[a-z]{2,3}$/i.test(value);
     }, "Por favor, ingresa una dirección de correo electrónico válida.");
 
+    toastr.options = {
+        closeButton: true,   
+        progressBar: true,    
+        timeOut: 3000,        
+    };
 
     $("#form-update, #form-create").on("submit", function(event) {
         if ($(this).valid()) {
             if($(this).attr("id") == "form-create"){
                 
-                swal('Felicitaciones','¡Se ha creado el paciente de manera correcta. Se habilitara la Ficha Medica, Prestaciones y Examenes!', 'success');
-                $(this).unbind("submit").submit();
+                toastr.success('¡Se ha creado el paciente de manera correcta.!', 'Felicitaciones');
+                setTimeout(() => {
+                    $(this).unbind("submit").submit();
+                }, 3000);
+                
             }else{
-                swal('Cambios realizados','¡Se ha actualizado el paciente de manera correcta.!', 'success');
-                $(this).unbind("submit").submit();
+                toastr.success('¡Se ha actualizado el paciente de manera correcta.!', 'Cambios realizados');
+                setTimeout(() => {
+                    $(this).unbind("submit").submit();
+                }, 3000);
+                
             }
         } else {
-            swal('Alerta','Por favor, complete todos los campos requeridos correctamente.', 'info');
+            toastr.info('¡Por favor, complete todos los campos requeridos correctamente!', 'Alerta');
         }
         
         event.preventDefault();

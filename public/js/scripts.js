@@ -61,7 +61,7 @@ $(document).ready(function() {
           añoActual = fechaActual.getFullYear(),
           edad = añoActual - fechaNacimientoValor.getFullYear();
 
-      $('#edad').val(edad);
+      $('#edad').val("Edad: " + edad);
     });
 
 

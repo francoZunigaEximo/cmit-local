@@ -54,13 +54,14 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('pacientes', PacientesController::class);
     Route::get('searchPacientes', [PacientesController::class, 'search'])->name('search');
     Route::post('down', [PacientesController::class, 'down'])->name('down');
-    Route::post('/verifydocument', [PacientesController::class, 'verifyDocument'])->name('verify');
+    Route::get('/verifydocument', [PacientesController::class, 'verifyDocument'])->name('verify');
     Route::post('/pacientes/multiple-down', [PacientesController::class, 'multipleDown'])->name('pacientes.multipleDown');
     Route::post('excelPacientes', [PacientesController::class, 'exportExcel'])->name('excelPacientes');
     Route::get('getPacientes', [PacientesController::class, 'getPacientes'])->name('getPacientes');
     Route::post('searchPrestPacientes', [PacientesController::class, 'searchPrestPacientes'])->name('searchPrestPacientes');
     Route::get('updateFinanciador', [PacientesController::class, 'updateFinanciador'])->name('updateFinanciador');
     Route::get('getNombre', [PacientesController::class, 'getNombre'])->name('getNombre');
+    Route::post('deletePicture', [PacientesController::class, 'deletePicture'])->name('deletePicture');
 
     //Rutas de Clientes
     Route::resource('clientes', ClientesController::class);
@@ -99,6 +100,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('saveFichaAlta', [FichaAltaController::class, 'save'])->name('saveFichaAlta');
     Route::get('verificarAlta', [FichaAltaController::class, 'verificar'])->name('verificarAlta');
     Route::get('getTipoPrestacion', [FichaAltaController::class, 'tipoPrestacion'])->name('getTipoPrestacion');
+    Route::get('checkObs', [FichaAltaController::class, 'checkObs'])->name('checkObs');
 
     //Ruta Examenes
     Route::post('getExamenes', [ExamenesController::class, 'getExamenes'])->name('getExamenes');

@@ -356,18 +356,16 @@ class PrestacionesController extends Controller
             'Pago' => $request->pago,
             'SPago' => $request->spago,
             'Observaciones' => $request->observaciones ??  '',
-            'NumeroFacturaVta' => $request->nroFactura,
             'IdEmpresa' => $request->IdEmpresa,
             'IdART' => $request->IdART,
             'Fecha' => date('Y-m-d'),
             'Financiador' => $request->financiador,
         ]);
 
-        $mapa = Mapa::find($request->mapas);
-        if($mapa){
-            $mapa->Cmapeados -= $mapa->Cmapeados;
-            $mapa->save();
-        }
+        $empresa = ($request->tipoPrestacion === 'ART' ? $request->IdART : $request->IdEmpresa);
+
+        $this->updateMapeados($request->mapas);
+        $this->facturaVenta($request->tipo, $request->sucursal, $request->nroFactura, $empresa, $request->tipoPrestacion);
 
         return response()->json($nuevoId);
     }
@@ -457,12 +455,9 @@ class PrestacionesController extends Controller
                 'text' => $mapa->RazonSocial.' - '.$mapa->Identificacion,
             ];
 
-            return response()->json(['resultado' => $prestacion, 'mapa' => $resultados]);
+            return response()->json(['resultado' => $prestacion, 'mapa' => $resultados ?? '']);
 
-        } else {
-
-            return response()->json(['resultado' => $prestacion]);
-        }
+        } 
     }
 
 

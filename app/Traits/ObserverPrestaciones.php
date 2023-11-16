@@ -2,8 +2,11 @@
 
 namespace App\Traits;
 
+use App\Models\FacturaDeVenta;
 use App\Models\Fichalaboral;
 use App\Models\PrestacionAtributo;
+use App\Models\Mapa;
+use Carbon\Carbon;
 
 trait ObserverPrestaciones
 {
@@ -33,13 +36,42 @@ trait ObserverPrestaciones
 
         if($laboral){
             
-
             $laboral->IdEmpresa = ($laboral->IdEmpresa === '' || $laboral->IdEmpresa === null ? '' : $empresa);
             $laboral->IdART = ($laboral->IdART === '' || $laboral->IdART === null ? '' : $art);
             $laboral->save();
-        }
+        }  
+    }
 
-        
+    public function updateMapeados($mapa)
+    {
+        $mapeado = Mapa::find($mapa);
+        if($mapeado){
+            $mapeado->Cmapeados -= $mapa->Cmapeados;
+            $mapeado->save();
+        }
+    }
+
+    public function facturaVenta($tipo, $sucursal, $factura, $idempresa, $tipocliente)
+    {
+
+        if(empty($tipo) || empty($sucursal) || empty($factura) || empty($idempresa) || empty($tipocliente)) return;
+
+        $nuevoId = FacturaDeVenta::max('Id') + 1;
+
+        FacturaDeVenta::create([
+            'Id'=> $nuevoId,
+            'Tipo' => $tipo ?? '',
+            'Sucursal' => $sucursal ?? '',
+            'NroFactura' => $factura ?? '',
+            'Fecha' => Carbon::now()->format('Y-m-d'),
+            'Anulada' => '0',
+            'FechaAnulada' => '0000-00-00',
+            'IdEmpresa' => $idempresa,
+            'TipoCliente' => ($tipocliente === 'ART' ? 'ART' : 'EMPRESA'),
+            'ObsAnulado' => '',
+            'EnvioFacturaF' => '0000-00-00 00:00:00',
+            'Obs' => ''
+        ]);
     }
 
 }

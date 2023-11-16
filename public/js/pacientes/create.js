@@ -69,4 +69,9 @@ $(document).ready(function(){
         });
     });
 
+    $('#volverIndex').click(function(){
+
+        windows.location.href = GOINDEX;
+    });
+
 });

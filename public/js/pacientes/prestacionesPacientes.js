@@ -1,78 +1,51 @@
 $(document).ready(()=>{
     
-    let hoy = new Date().toISOString().slice(0, 10);
-    let precarga = $('#tipoPrestacionPres').val();
+    let hoy = new Date().toISOString().slice(0, 10), precarga = $('#tipoPrestacionPres').val();
     $('#Fecha').val(hoy);
     
     precargaTipoPrestacion(precarga);
-
-    function precargaTipoPrestacion(val){
-        if(val === 'ART'){
-
-            $('.selectMapaPres').show();
-        }else{
-            $('.selectMapaPres').hide();
-        }
-    }
-    
     getMap();
-    $(document).on('change', '#tipoPrestacionPres', function(){
-        let estado = $(this).val();
-        actualizarFinanciador(estado);
-        
-    });
 
-    //Cuenta corriente sin medio de pago
-    $(document).on('change', '#Pago', function(){
-
-        let pago = $(this).val();
-        
-        if (pago === 'C'){
-            $('.SPago').hide();
-        }else{
-            $('.SPago').show();
-        } 
-    });
+    toastr.options = {
+        closeButton: true,   
+        progressBar: true,    
+        timeOut: 3000,        
+    };
 
     //Guardamos la prestación
     $('#guardarPrestacion').click(function(){
     
-        let cliente = $('#selectClientes').val(),
-            art = $('#selectArt').val(),
-            paciente = ID,
+        let paciente = ID,
             fecha = $('#Fecha').val(),
             tipoPrestacion = $('#tipoPrestacionPres').val(),
             mapa = $('#mapas').val(),
             pago = $('#Pago').val(),
             spago = $('#SPago').val(),
             observaciones = $('#Observaciones').val(),
-            autorizado = $('#autorizado').val(),
-            nroFactura = $('#NumeroFacturaVta').val(),
+            autorizado = $('#Autorizado').val(),
+            tipo = $('#Tipo').val();
+            sucursal = $('#Sucursal').val();
+            nroFactura = $('#NroFactura').val(),
             financiador = $('#financiador').val();
 
         //Validamos la factura
         if(spago === 'E' && nroFactura.length === 0 || nroFactura == null){
-            swal('El número de la factura es obligatoria si el medio de pago es "OTRO"');
+            toastr.warning('El número de la factura es obligatoria si el medio de pago es "OTRO"', 'Alerta');
             return;
         }
 
         if(tipoPrestacion === ''){
-            swal("Atención", "El tipo de prestación no puede ser un campo vacío", "warning");
+            toastr.warning('El tipo de prestación no puede ser un campo vacío', 'Alerta');
             return;
         }
 
-        if(pago === 'B' && nroFactura == ''){
-            swal("Atención", "El pago es contado, asi que debe agregar el número de factura para continuar.", "info");
-            return;
-        }
-
-        if(nroFactura.length > 11){
-            swal('Atención', 'EL número de factura no puede tener mas de 11 dígitos y debe ser numerico', 'warning');
+        if(pago === 'B' && (tipo == '' || sucursal === '' || nroFactura === '')){
+            toastr.warning('El pago es contado, asi que debe agregar el número de factura para continuar.', 'Alerta');
             return;
         }
 
         if(financiador === ''){
-            swal('Atención', 'El campo financiador es obligatorio', 'warning');
+            toastr.warning('El campo financiador es obligatorio', 'Alerta');
             return;
         }
 
@@ -98,6 +71,9 @@ $(document).ready(()=>{
                         pago: pago,
                         spago: spago,
                         observaciones: observaciones,
+                        tipo: tipo,
+                        autorizado: autorizado,
+                        sucursal: sucursal,
                         nroFactura: nroFactura,
                         financiador: financiador,
                         IdART: clienteArt.Id ?? 0,
@@ -105,11 +81,10 @@ $(document).ready(()=>{
                         _token: TOKEN
                     },
                     success: function(response){
-                        console.log(response);
-                        swal("¡Alta exitosa!", "Se ha generado la prestación del paciente. Se redireccionará en 3 segundos a edición de prestaciones.", "success");
+                        
+                        toastr.success('Se ha generado la prestación del paciente. Se redireccionará en 3 segundos a edición de prestaciones.', '¡Alta exitosa!');
                         $('#Pago, #SPago, #Observaciones, #NumeroFacturaVta, #Autorizado').val("");
                         setTimeout(function(){
-                            $('#altaPrestacionModal').modal('hide');
                             let url = location.href,
                                 clearUrl = url.replace(/\/pacientes\/.*/, ''),
                                 redireccionar =  clearUrl + '/prestaciones/' + response + '/edit';
@@ -118,14 +93,14 @@ $(document).ready(()=>{
                         
                     },
                     error: function(xhr){
-        
-                        swal("Error", "No se puedieron almacenar los datos. Consulte con el administrador", "error");
+                        
+                        toastr.danger('No se puedieron almacenar los datos. Consulte con el administrador', 'Error');
                         console.error(xhr);
                     }
                 });
             },
             error: function(xhr){
-                swal("Error", "Ha habido un error el la validación del cliente para generar la prestación. Consulte con su administrador", "error");
+                toastr.danger('Ha habido un error el la validación del cliente para generar la prestación. Consulte con su administrador', 'Error');
                 console.error(xhr);
             }   
         });
@@ -246,7 +221,7 @@ $(document).ready(()=>{
                 _token: TOKEN
             },
             success: function() {
-                swal('Acción realizada', 'Se ha dado de baja la prestación del paciente de manera correcta. Puede que tarde unos minutos en cargar el cambio.', 'success');
+                toastr.success('Se ha dado de baja la prestación del paciente de manera correcta. Puede que tarde unos minutos en cargar el cambio.', 'Acción realizada');
                 cambioEstadoDown();
             },
             error: function(xhr){
@@ -261,7 +236,7 @@ $(document).ready(()=>{
         
         let autorizado = $('.Autorizado');
 
-        return ($(this).val() == 'G')? autorizado.show() : autorizado.hide();
+        return ($(this).val() === 'G')? autorizado.show() : autorizado.hide();
     });
 
     $(document).on('keydown', function(event) {
@@ -272,11 +247,6 @@ $(document).ready(()=>{
 
             window.location.reload();
         }
-    });
-
-    // Cuando la página se haya recargado completamente
-    $(window).on('load', function() {
-        $('a.nav-link[href="#prestaciones"]').tab('show');
     });
 
     function mostrarPreloader(arg) {
@@ -349,6 +319,15 @@ $(document).ready(()=>{
                 }
                 
             })
+    }
+
+    function precargaTipoPrestacion(val){
+        if(val === 'ART'){
+
+            $('.selectMapaPres').show();
+        }else{
+            $('.selectMapaPres').hide();
+        }
     }
 
     function actualizarFinanciador(estado){
