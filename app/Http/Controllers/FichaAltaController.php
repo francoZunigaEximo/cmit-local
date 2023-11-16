@@ -57,7 +57,7 @@ class FichaAltaController extends Controller
     }
 
     //Verificamos para emplear la vista full
-    public function verificar(Request $request): mixed
+    public function verificar(Request $request)
     {
         $fichaLaboral = Fichalaboral::where('IdPaciente', $request->Id)->first();
 

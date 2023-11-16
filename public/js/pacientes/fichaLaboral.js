@@ -212,11 +212,11 @@ $(document).ready(function () {
             return;
         }
 
-        if(cliente === '0' && art === '0'){
+        if(cliente === '0' && art === '0' || cliente === '' && art === ''){
             toastr.warning('¡Debe seleccionar una empresa o una art!', 'Alerta');
             return;
         }
- 
+       
         $.post(saveFichaAlta, {paciente: paciente,
             cliente: cliente,
             art: art,
@@ -237,7 +237,7 @@ $(document).ready(function () {
             _token: TOKEN,
             }) 
             .done(function() {
-
+                
                 toastr.success('¡Los datos se han actualizado. Nos redirigimos a la nueva prestación.!', 'Perfecto');
                 mostrarFinanciador();
                 selectMedioPago();
