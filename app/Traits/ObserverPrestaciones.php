@@ -15,7 +15,7 @@ trait ObserverPrestaciones
     {
         $sinEval = ($sinEval === 'true' ? 1 : 0);
 
-        $prestacion = PrestacionAtributo::where('IdPadre', $IdPadre)->first();
+        $prestacion = PrestacionAtributo::where('IdPadre', $IdPadre)->first(['SinEval']);
 
         if ($prestacion) {
             $prestacion->SinEval = $sinEval;
@@ -32,7 +32,7 @@ trait ObserverPrestaciones
 
     public function updateFichaLaboral($paciente, $art, $empresa)
     {
-        $laboral = Fichalaboral::where('IdPaciente', $paciente)->first();
+        $laboral = Fichalaboral::where('IdPaciente', $paciente)->first(['IdEmpresa', 'IdART']);
 
         if($laboral){
             
@@ -45,8 +45,9 @@ trait ObserverPrestaciones
     public function updateMapeados($mapa)
     {
         $mapeado = Mapa::find($mapa);
+        
         if($mapeado){
-            $mapeado->Cmapeados -= $mapa->Cmapeados;
+            $mapeado->Cmapeados -= 1;
             $mapeado->save();
         }
     }

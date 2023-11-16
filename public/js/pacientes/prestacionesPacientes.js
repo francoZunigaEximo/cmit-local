@@ -29,13 +29,23 @@ $(document).ready(()=>{
             financiador = $('#financiador').val();
 
         //Validamos la factura
-        if(spago === 'E' && nroFactura.length === 0 || nroFactura == null){
-            toastr.warning('El número de la factura es obligatoria si el medio de pago es "OTRO"', 'Alerta');
+        if(spago === 'G' && autorizado === ''){
+            toastr.warning('Si el medio de pago es gratuito, debe seleccionar quien autoriza.', 'Alerta');
             return;
         }
 
         if(tipoPrestacion === ''){
             toastr.warning('El tipo de prestación no puede ser un campo vacío', 'Alerta');
+            return;
+        }
+
+        if(pago === 'B' && spago === '') {
+            toastr.warning('Debe seleccionar un "medio de pago" cuando la "forma de pago" es "contado"', 'Alerta');
+            return;
+        }
+
+        if(pago === '' || spago === null || pago === undefined) {
+            toastr.warning('Debe seleccionar una "forma de pago"', 'Alerta');
             return;
         }
 
@@ -53,8 +63,7 @@ $(document).ready(()=>{
             url: verificarAlta,
             type: 'get',
             data: {
-                Id: ID,
-                _token: TOKEN
+                Id: ID
             },
             success: function(response){
                 let cliente = response.cliente;
@@ -81,26 +90,27 @@ $(document).ready(()=>{
                         _token: TOKEN
                     },
                     success: function(response){
-                        
+
+                        let nuevoId = response.nuevoId;
                         toastr.success('Se ha generado la prestación del paciente. Se redireccionará en 3 segundos a edición de prestaciones.', '¡Alta exitosa!');
                         $('#Pago, #SPago, #Observaciones, #NumeroFacturaVta, #Autorizado').val("");
                         setTimeout(function(){
                             let url = location.href,
                                 clearUrl = url.replace(/\/pacientes\/.*/, ''),
-                                redireccionar =  clearUrl + '/prestaciones/' + response + '/edit';
+                                redireccionar =  clearUrl + '/prestaciones/' + nuevoId + '/edit';
                             window.location.href = redireccionar;
                         },3000);
                         
                     },
                     error: function(xhr){
                         
-                        toastr.danger('No se puedieron almacenar los datos. Consulte con el administrador', 'Error');
+                        toastr.error('No se puedieron almacenar los datos. Consulte con el administrador', 'Error');
                         console.error(xhr);
                     }
                 });
             },
             error: function(xhr){
-                toastr.danger('Ha habido un error el la validación del cliente para generar la prestación. Consulte con su administrador', 'Error');
+                toastr.error('Ha habido un error el la validación del cliente para generar la prestación. Consulte con su administrador', 'Error');
                 console.error(xhr);
             }   
         });
@@ -229,14 +239,6 @@ $(document).ready(()=>{
                 console.error(xhr);
             }
         });
-    });
-
-    //Mostrar u ocultar autorizados si esta "Sin Cargo"
-    $('#SPago').change(function(){
-        
-        let autorizado = $('.Autorizado');
-
-        return ($(this).val() === 'G')? autorizado.show() : autorizado.hide();
     });
 
     $(document).on('keydown', function(event) {

@@ -354,7 +354,7 @@ class PrestacionesController extends Controller
             'Fecha' => $request->fecha,
             'IdMapa' => $request->mapas ?? '0',
             'Pago' => $request->pago,
-            'SPago' => $request->spago,
+            'SPago' => $request->spago ?? '',
             'Observaciones' => $request->observaciones ??  '',
             'IdEmpresa' => $request->IdEmpresa,
             'IdART' => $request->IdART,
@@ -364,10 +364,18 @@ class PrestacionesController extends Controller
 
         $empresa = ($request->tipoPrestacion === 'ART' ? $request->IdART : $request->IdEmpresa);
 
-        $this->updateMapeados($request->mapas);
-        $this->facturaVenta($request->tipo, $request->sucursal, $request->nroFactura, $empresa, $request->tipoPrestacion);
+        if($request->mapas)
+        {
+            $this->updateMapeados($request->mapas);
+        }
 
-        return response()->json($nuevoId);
+        if($request->tipo && $request->sucursal && $request->nroFactura)
+        {
+            $this->facturaVenta($request->tipo, $request->sucursal, $request->nroFactura, $empresa, $request->tipoPrestacion);
+        }
+        
+
+        return response()->json(['nuevoId' => $nuevoId]);
     }
 
     public function updatePrestacion(Request $request)

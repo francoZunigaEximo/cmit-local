@@ -207,7 +207,7 @@ $(document).ready(function () {
             fechaEgreso = $('#FechaEgreso').val(),
             antiguedadEmpresa = $('#AntiguedadEmpresa').val();
 
-        if(tipoPrestacion === ''){
+        if(tipoPrestacion === '' || tipoPrestacion === undefined){
             toastr.warning('¡El campo tipo de prestación es obligatorio!', 'Alerta');
             return;
         }
@@ -216,7 +216,7 @@ $(document).ready(function () {
             toastr.warning('¡Debe seleccionar una empresa o una art!', 'Alerta');
             return;
         }
-
+ 
         $.post(saveFichaAlta, {paciente: paciente,
             cliente: cliente,
             art: art,
