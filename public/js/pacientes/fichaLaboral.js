@@ -240,16 +240,11 @@ $(document).ready(function () {
             },
             success: function(){
                 toastr.success('¡Los datos se han actualizado. Nos redirigimos a la nueva prestación.!', 'Perfecto');
-                    mostrarFinanciador();
-                    selectMedioPago();
-                    setTimeout(() => {
-                        //$('.fichaLaboralModal').hide();
-                        //$('.observacionesModal').show();
-                        checkObservaciones();
-                    }, 2000);
-
-
-
+                mostrarFinanciador();
+                selectMedioPago();
+                setTimeout(() => {
+                    checkObservaciones();
+                }, 2000);
             },
             error: function(xhr) {
                 toastr.danger('Hubo un problema para procesar la información. Consulte con el administrador del sistema.', 'Error');
@@ -415,7 +410,7 @@ $(document).ready(function () {
     async function checkObservaciones() {
         if (ID === '') return;
         $('.ObBloqueoEmpresa, .ObBloqueoArt, .ObEmpresa, .ObsPaciente').hide();
-        $('.seguirAl').removeAttr('disabled').removeAttr('title');
+        $('.seguirAl').prop('disabled', false).removeAttr('title');
 
         try {
             const response = await $.get(checkObs, { Id: ID });
@@ -435,7 +430,7 @@ $(document).ready(function () {
 
                 if(obsArt.Motivo !== '') {
                     $('.ObBloqueoArt').show();
-                    $('.seguirAl').attr('disabled', 'disabled').attr('title', 'Boton bloqueado');
+                    $('.seguirAl').prop('disabled', true).attr('title', 'Boton bloqueado');
                 }
 
                 if(obsArt.Observaciones !== '') {
@@ -448,7 +443,7 @@ $(document).ready(function () {
 
                 if(obsEmpresa.Motivo !== '') {
                     $('.ObEmpresa').show();
-                    $('.seguirAl').attr('disabled', 'disabled').attr('title', 'Boton bloqueado');
+                    $('.seguirAl').prop('disabled', true).attr('title', 'Boton bloqueado');
                 }
 
                 if(obsPaciente.Observaciones !== '') {
