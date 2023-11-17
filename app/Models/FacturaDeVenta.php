@@ -9,7 +9,7 @@ class FacturaDeVenta extends Model
 {
     use HasFactory;
 
-    protected $table = 'itemsprestaciones';
+    protected $table = 'facturasventa';
 
     protected $primaryKey = 'Id';
 
