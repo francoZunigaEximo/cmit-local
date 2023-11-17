@@ -13,6 +13,21 @@ class FacturaDeVenta extends Model
 
     protected $primaryKey = 'Id';
 
+    protected $fillable = [
+        'Id',
+        'Tipo',
+        'Sucursal',
+        'NroFactura',
+        'Fecha',
+        'Anulada',
+        'FechaAnulada',
+        'IdEmpresa',
+        'TipoCliente',
+        'ObsAnulado',
+        'EnvioFacturaF',
+        'Obs'
+    ];
+
     public $timestamps = false;
 
     public function itemPrestacion()
