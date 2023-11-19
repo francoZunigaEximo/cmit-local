@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Cliente;
 use App\Models\Mapa;
+use App\Models\Paciente;
 use App\Models\PaqueteEstudio;
 use App\Models\Prestacion;
 use App\Models\PrestacionesTipo;
@@ -468,5 +469,11 @@ class PrestacionesController extends Controller
         } 
     }
 
+    public function verifyWizard(Request $request)
+    {
+        $query = Paciente::where('Documento', $request->Documento)->first();
+        $existe = $query !== null;
 
+        return response()->json(['existe' => $existe, 'paciente' => $query]);
+    }
 }

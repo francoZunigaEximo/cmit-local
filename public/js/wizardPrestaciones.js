@@ -22,7 +22,7 @@ $(document).ready(()=> {
             return;
         }
 
-        $.get(verify, { Documento: dniPrestacion })
+        $.get(verifyWizard, { Documento: dniPrestacion })
             .done(function(response){
                 let paciente = response.paciente;
 
@@ -30,7 +30,8 @@ $(document).ready(()=> {
 
                     window.location.href = lnkExistePaciente.replace('__paciente__', paciente.Id);
                 }else{
-                    window.location.href = lnkNuevoPaciente.replace('__paciente__', dniPrestacion);
+                    localStorage.setItem('insertDoc', dniPrestacion);
+                    window.location.href = lnkNuevoPaciente;
                 }
 
             })

@@ -1,5 +1,12 @@
 $(document).ready(function(){
 
+    let doc = localStorage.getItem('insertDoc');
+    
+    if(doc){
+        $('#documento').val(doc);
+        localStorage.removeItem('insertDoc');
+    }
+
     //Hacemos los cambios cuando hay un cambio en el campo
     $('#documento').on('change blur', function () {
         let documento = $(this).val();
@@ -71,7 +78,7 @@ $(document).ready(function(){
 
     $('#volverIndex').click(function(){
 
-        windows.location.href = GOINDEX;
+        window.location.href = GOINDEX;
     });
 
 });

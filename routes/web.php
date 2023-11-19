@@ -95,6 +95,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('actualizarEstados', [PrestacionesController::class, 'estados'])->name('actualizarEstados');
     Route::post('actualizarVto', [PrestacionesController::class, 'vencimiento'])->name('actualizarVto');
     Route::post('setEvaluador', [PrestacionesController::class, 'setEvaluador'])->name('setEvaluador');
+    Route::get('verifyWizard', [PrestacionesController::class, 'verifyWizard'])->name('verifyWizard');
 
     //Ruta Ficha Laboral
     Route::post('saveFichaAlta', [FichaAltaController::class, 'save'])->name('saveFichaAlta');
