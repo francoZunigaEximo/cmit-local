@@ -69,7 +69,7 @@
 
                 <div class="ms-1 header-item d-none d-sm-flex">
                     <button id="prestacionButton" type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle" title="Prestación rápida (Alt + P)" data-bs-toggle="offcanvas" data-bs-target="#prestacionFast" aria-controls="offcanvas">
-                        <i data-feather="layers"></i>
+                        <i data-feather="users"></i>
                     </button>
                 </div>
 
@@ -141,13 +141,13 @@
 
                         <li class="nav-item">
                             <a class="nav-link menu-link" href="{{ route('clientes.index') }}" aria-expanded="false">
-                                <i data-feather="users" class="icon-dual"></i> <span data-key="t-user" title="(ALT + C)">Clientes</span>
+                                <i data-feather="layers" class="icon-dual"></i> <span data-key="t-user" title="(ALT + C)">Clientes</span>
                             </a>
                         </li>
 
                         <li class="nav-item">
                             <a class="nav-link menu-link" href="{{ route('prestaciones.index') }}" aria-expanded="false">
-                                <i data-feather="layers" class="icon-dual"></i> <span data-key="t-layers" title="(ALT + R)">Prestaciones</span>
+                                <i data-feather="users" class="icon-dual"></i> <span data-key="t-layers" title="(ALT + R)">Prestaciones</span>
                             </a>
                         </li>
 
