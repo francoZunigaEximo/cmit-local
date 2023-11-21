@@ -54,7 +54,7 @@ $(document).ready(()=> {
                 });
             }
         } else {
-            toastr.error('Ha ocurrido un error al exportar el archivo. Consulte con el administrador.', 'Error');
+            toastr.warning("Verifique si ha seleccionado alguna especialidad. Caso contrario, consulte con el administrador", "Atención");
         }
 
     });
