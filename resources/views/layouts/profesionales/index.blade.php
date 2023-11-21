@@ -29,7 +29,7 @@
             <!-- Esto debería ser un select múltiple. -->
             <label for="opciones" class="form-label">Opciones</label>
             <select class="js-example-basic-multiple" name="opciones[]" multiple="multiple" id="opciones" data-placeholder="Opciones ...">
-                <option value="pago0">Pago por prestación</option>
+                <option value="pago0">Pago por exámen</option>
                 <option value="pago1">Pago por hora</option>
                 <option value="inactivo1">Inactivos</option>
                 <option value="inactivo0">Activos</option>
@@ -55,11 +55,11 @@
 
                     <div>
                         <a href="{{ route('profesionales.create') }}">
-                            <button type="button" class="btn btn-primary"><i class="ri-add-line align-bottom me-1"></i> Nuevo</button>
+                            <button type="button" class="btn botonGeneral"><i class="ri-add-line align-bottom me-1"></i> Nuevo</button>
                         </a>
 
-                        <button class="btn btn-soft-warning multipleBProf"><i class="ri-forbid-2-line"></i></button>
-                        <button class="btn btn-soft-danger multipleDProf"><i class="ri-delete-bin-2-line"></i></button>
+                        <button class="btn botonGeneral multipleBProf"><i class="ri-forbid-2-line"></i></button>
+                        <button class="btn botonGeneral multipleDProf"><i class="ri-delete-bin-2-line"></i></button>
                     </div>
                 </div>
                 <div class="col-8">
