@@ -4,9 +4,21 @@ $(document).ready(function(){
         
         let especialidad = $('#especialidad').val(), opciones = $('#opciones').val();
 
-        if(especialidad === '' && opciones === '') return;
+        toastr.options = {
+            closeButton: true,   
+            progressBar: true,    
+            timeOut: 3000,        
+        };
+
+        if(especialidad === '' && opciones === ''){
+
+            toastr.warning("Debe escribir que desea buscar o bien seleccionar un filtro", "Atención");
+            return;
+        } 
  
         $('#listaEspecialidades').DataTable().clear().destroy();
+
+        $('#especialidad, #opciones').val("");
 
         new DataTable("#listaEspecialidades", {
 
