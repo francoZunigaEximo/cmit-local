@@ -1,5 +1,11 @@
 $(document).ready(()=> {
 
+    toastr.options = {
+        closeButton: true,   
+        progressBar: true,    
+        timeOut: 3000,        
+    };
+
     $('#excel').click(function(e) {
         e.preventDefault();
 
@@ -38,15 +44,17 @@ $(document).ready(()=> {
                         setTimeout(function() {
                             document.body.removeChild(link);
                         }, 100);
+                        toastr.success('Se ha generado el reporte excel de manera correcta', 'Perfecto');
                     
                     },                    
                     error: function(xhr) {
                         console.error(xhr);
+                        toastr.warning("Verifique si ha seleccionado alguna especialidad", "Atención");
                     }
                 });
             }
         } else {
-            swal('Error', 'Debes seleccionar al menos un paciente para exportar.', 'error');
+            toastr.error('Ha ocurrido un error al exportar el archivo. Consulte con el administrador.', 'Error');
         }
 
     });
@@ -60,7 +68,7 @@ $(document).ready(()=> {
         });
 
         if (ids.length === 0) {
-            swal("Atención", "Debe seleccionar al menos una especialidad para la baja múltiple", "info");
+            toastr.warning("Debe seleccionar al menos una especialidad para la baja múltiple", "Atención");
             return; 
         }
 
@@ -73,12 +81,12 @@ $(document).ready(()=> {
                     ids: ids
                 },
                 success: function() {
-                    swal("Éxito", "¡Se ha dado de baja a las especialidades correctamente!", "success");
+                    toastr.success("¡Se ha dado de baja a las especialidades correctamente!", "Éxito");
                     $('#listaEspecialidades').DataTable();
                     $('#listaEspecialidades').DataTable().draw(false);
                 },
                 error: function(xhr) {
-                    swal("Error", "¡Ha ocurrido un inconveniente. Consulte con el administrador!", "error");
+                    toastr.error("¡Ha ocurrido un inconveniente. Consulte con el administrador!", "Error");
                     console.error(xhr);
                 }
             });
@@ -95,13 +103,13 @@ $(document).ready(()=> {
 
             $.post(bajaEspecialidad, {_token: TOKEN, Id: especialidad})
             .done(function(){
-                swal('Perfecto', 'Se ha dado de baja la especialidad de manera correcta', 'success');
+                toastr.success("Se ha dado de baja la especialidad de manera correcta", "Perfecto");
                 $('#listaEspecialidades').DataTable();
                 $('#listaEspecialidades').DataTable().draw(false);
 
             })
             .fail(function(xhr){
-                swal('Error', 'Ha ocurrido un error. Consulte con el administrador', 'error');
+                toastr.error("Ha ocurrido un error. Consulte con el administrador", "Error");
                 console.error(xhr);
             });
         }
