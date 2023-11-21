@@ -28,6 +28,8 @@
             <label for="opciones" class="form-label">Opciones</label>
             <select class="form-control" name="opciones" id="opciones">
                 <option value="" selected>Elija una opción...</option>
+                <option value="Todo">Todo</option>
+                <option value="Interno">Interno</option>
                 <option value="Externo">Externo</option>
                 <option value="Multi">Multi Adjunto</option>
                 <option value="MultiE">Multi Exámen</option>
@@ -35,22 +37,22 @@
         </div>
     
         <div class="col-2 p-2 mb-2 d-flex align-items-end">
-            <button type="button" id="buscar" class="btn btn-primary"><i class="ri-zoom-in-line"></i> Buscar</button>
+            <button type="button" id="buscar" class="btn botonGeneral"><i class="ri-zoom-in-line"></i> Buscar</button>
         </div>
 
         <div class="col-4 p-2 mb-2 d-flex align-items-end justify-content-end">
             <div class="mx-1">
                 <a href="{{ route('especialidades.create') }}">
-                    <button type="button" class="btn btn-primary"><i class="ri-add-line"></i> Nuevo</button>
+                    <button type="button" class="btn botonGeneral"><i class="ri-add-line"></i> Nuevo</button>
                 </a>
             </div>
             <div class="mx-1">
-                <button type="button" id="excel" class="btn btn-soft-success" title="Excel">
+                <button type="button" id="excel" class="btn botonGeneral" title="Excel">
                     <i class="ri-file-excel-line"></i>
                 </button>
             </div>
             <div class="mx-1">
-                <button type="button" id="btnBajaMultiple" class="btn btn-soft-warning" title="Bloquear">
+                <button type="button" id="btnBajaMultiple" class="btn botonGeneral" title="Bloquear">
                     <i class="ri-forbid-2-line"></i>
                 </button>
             </div>
@@ -104,15 +106,9 @@
 
 
 @push('scripts')
-<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
-<script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
 
 <script src="{{ asset('js/especialidades/index.js') }}?v={{ time() }}"></script>
 <script src="{{ asset('js/especialidades/paginacion.js') }}?v={{ time() }}"></script>

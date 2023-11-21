@@ -133,7 +133,7 @@ class ProveedoresController extends Controller
         }
     }
 
-    public function excel(Request $request): string
+    public function excel(Request $request)
     {
         $ids = $request->input('Id');
         if (! is_array($ids)) {
@@ -200,8 +200,12 @@ class ProveedoresController extends Controller
             'InfAdj as Informe',
             'Externo as Ubicacion'
             );
-            if ($opciones !== '0') {
+            if ($opciones !== '0' && $opciones !== 'Interno' && $opciones !== 'Todo') {
                 $query->where($opciones, 1);
+            
+            }elseif($opciones === 'Interno'){
+                $query->where('Externo', 0);
+
             }
         
             $result = $query->get();

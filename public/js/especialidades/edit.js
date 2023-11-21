@@ -38,6 +38,10 @@ $(document).ready(function(){
         let provincia = $(this).val();
         changeProvincia(provincia);
     });
+
+    $('#btnVolverEspe').click(function(){
+        window.location.href = GOINDEX;
+    });
     
     function changeProvincia(id){
         $.ajax({

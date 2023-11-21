@@ -96,8 +96,8 @@
                 <div class="col-lg-12 pt-4">
                     <div class="hstack gap-2 justify-content-end">
                         
-                        <button type="button" id="btnVolver" class="btn btn-soft-danger">Volver</button>
-                        <button type="button" id="updateBasico" class="btn btn-success">Guardar</button>
+                        <button type="button" id="btnVolverEspe" class="btn botonGeneral">Volver</button>
+                        <button type="button" id="updateBasico" class="btn botonGeneral">Guardar</button>
                     </div>
                 </div>
             </div>
@@ -174,6 +174,7 @@
 <script>
     const TOKEN = "{{ csrf_token() }}";
     const updateProveedor = "{{ route('updateProveedor') }}";
+    const GOINDEX = "{{ route('especialidades.index') }}";
 
 </script>
 
