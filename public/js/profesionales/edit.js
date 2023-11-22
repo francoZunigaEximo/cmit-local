@@ -125,6 +125,11 @@ $(document).ready(function(){
             });
     });
 
+    $(document).on('click', '#volverProfesionales', function(){
+
+        window.location.href = GOINDEX;
+    });
+
     function cargarPerfiles(){
 
         $.get(getPerfiles, {Id: ID})

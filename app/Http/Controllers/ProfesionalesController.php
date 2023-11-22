@@ -253,8 +253,10 @@ class ProfesionalesController extends Controller
         $nuevoId = Profesional::max('Id') + 1;
         $provincia = $this->fixerProvincia((int)$request->Provincia);
 
-        $fileName = 'PROF'.$nuevoId. '.' . $request->Foto->extension();
-        $request->Foto->storeAs('public/profesionales', $fileName);
+        if($request->hasFile('Foto')) {
+            $fileName = 'PROF'.$nuevoId. '.' . $request->Foto->extension();
+            $request->Foto->storeAs('public/profesionales', $fileName);
+        }
 
         Profesional::create([
             'Id' => $nuevoId,
@@ -268,7 +270,7 @@ class ProfesionalesController extends Controller
             'Firma' => $request->Firma ?? '',
             'CP' => $request->CP,
             'Inactivo' => $request->estado,
-            'Foto' => $fileName
+            'Foto' => $fileName ?? ''
         ]);
 
         $this->setTelefono($nuevoId, $request->Telefono);

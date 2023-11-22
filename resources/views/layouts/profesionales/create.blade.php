@@ -150,8 +150,8 @@
                             <!--end col-->
                             <div class="col-lg-12">
                                 <div class="hstack gap-2 justify-content-end">
-                                    <button type="button" class="volver btn btn-soft-danger">Volver</button>
-                                    <button type="submit" class="saveProfesional btn btn-success">Guardar</button>
+                                    <button type="button" id="volverProfesionales" class="btn botonGeneral">Volver</button>
+                                    <button type="submit" class="saveProfesional btn botonGeneral">Guardar</button>
                                 </div>
                             </div>
                             <!--end col-->
@@ -413,6 +413,7 @@
     const TOKEN = "{{ csrf_token() }}";
     const checkDocumento = "{{ route('checkDocumento') }}";
     let editUrl = "{{ route('profesionales.edit', ['profesionale' => '__profesionale__']) }}";
+    const GOINDEX = "{{ route('profesionales.index') }}";
 </script>
 
 @push('styles')

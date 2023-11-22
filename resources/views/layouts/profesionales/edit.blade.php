@@ -153,8 +153,8 @@
                             <div class="col-lg-12">
                                 <div class="hstack gap-2 justify-content-end">
 
-                                    <button type="button" class="volver btn btn-soft-danger">Volver</button>
-                                    <button type="submit" class="btn btn-success">Guardar</button>
+                                    <button type="button" class="volverProfesionales btn botonGeneral">Volver</button>
+                                    <button type="submit" class="btn botonGeneral">Guardar</button>
                                 </div>
                             </div>
                             <!--end col-->
@@ -384,6 +384,7 @@
     const delPerfil = "{{ route('delPerfil') }}";
     const opcionesProf = "{{ route('opcionesProf') }}";
     const seguroProf = "{{ route('seguroProf') }}";
+    const GOINDEX = "{{ route('profesionales.index') }}";
     
 </script>
 

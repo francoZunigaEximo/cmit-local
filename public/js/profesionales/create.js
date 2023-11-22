@@ -1,5 +1,11 @@
 $(document).ready(function(){
 
+    toastr.options = {
+        closeButton: true,   
+        progressBar: true,    
+        timeOut: 3000,        
+    };
+
     $("#Apellido, #Nombre").on("input", function() {
         $(this).val($(this).val().toUpperCase());
     });
@@ -32,8 +38,13 @@ $(document).ready(function(){
             })
             .fail(function(xhr){
                 console.error(xhr);
-                swal('error', 'Ha ocurrido un error. Actualice la página y si el problema persiste, consulte con el administrador', 'error');
+                toastr.error("Ha ocurrido un error. Actualice la página y si el problema persiste, consulte con el administrador", "Error");
             });
+    });
+
+    $(document).on('click', '#volverProfesionales', function(){
+
+        window.location.href = GOINDEX;
     });
 
 });

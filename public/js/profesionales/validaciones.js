@@ -1,6 +1,12 @@
 $(document).ready(()=>{
 
-    $("#form-update, #form-create").validate({
+    toastr.options = {
+        closeButton: true,   
+        progressBar: true,    
+        timeOut: 3000,        
+    };
+
+    $("#form-update,e, #form-create").validate({
         
         rules: {
             Documento: {
@@ -102,18 +108,18 @@ $(document).ready(()=>{
     $("#form-update, #form-create").on("submit", function(event) {
         if ($(this).valid()) {
             if($(this).attr("id") == "form-create"){
-                swal('Felicitaciones','¡Se ha creado el profesional de manera correcta. Se habilitará las Opciones y el Seguro!', 'success');
+                toastr.success("¡Se ha creado el profesional de manera correcta. Se habilitará las Opciones y el Seguro!", "Felicitaciones");
                 setTimeout(() => {
                     $(this).unbind("submit").submit();
                 }, 5000);
             }else{
-                swal('Cambios realizados','¡Se ha actualizado el profesional de manera correcta.!', 'success');
+                toastr.success("¡Se ha actualizado el profesional de manera correcta.!", "Cambios realizados");
                 setTimeout(() => {
                     $(this).unbind("submit").submit();
                 }, 5000);
             }
         } else {
-            swal('Alerta','Por favor, complete todos los campos requeridos correctamente.', 'info');
+            toastr.warning("Por favor, complete todos los campos requeridos correctamente.", "Alerta");
         }
         
         event.preventDefault();
