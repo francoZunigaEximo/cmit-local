@@ -8,6 +8,8 @@ trait Components
 {
     public function getAge(string $age): int
     {
+        if ($age === null) return null; 
+        
         $dateBirth = new DateTime($age);
         $today = new DateTime();
         $newAge = $today->diff($dateBirth);
