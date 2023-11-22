@@ -8,7 +8,7 @@ trait Components
 {
     public function getAge(string $age): int
     {
-        if ($age === null) return null; 
+        if ($age === '') return null; 
         
         $dateBirth = new DateTime($age);
         $today = new DateTime();

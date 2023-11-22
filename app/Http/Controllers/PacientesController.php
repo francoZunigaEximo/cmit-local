@@ -215,7 +215,7 @@ class PacientesController extends Controller
                 'paciente' => $paciente,
                 'provincias' => Provincia::all(),
                 'telefono' => $this->getTelefono($paciente->Id) ,
-                'suEdad' => $this->getAge($paciente->FechaNacimiento),
+                'suEdad' => $this->getAge($paciente->FechaNacimiento) ?? '',
                 'tipoPrestacion' => PrestacionesTipo::all(),
                 'dataArt' => $this->getFichaLaboral($paciente->Id, 'art')?? null,
                 'dataCliente' => $this->getFichaLaboral($paciente->Id, 'empresa')?? null,
