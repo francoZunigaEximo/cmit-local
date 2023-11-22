@@ -6,7 +6,7 @@ use DateTime;
 use App\Models\Fichalaboral;
 trait Components
 {
-    public function getAge(string $age): int
+    public function getAge($age)
     {
         if ($age === '') return null; 
         
