@@ -302,3 +302,9 @@ label {
 	#altaPrestacionModal .modal-body .ff-secondary {
 		font-size: 1.8em !important;
 	}
+
+	.custom-badge.pequeno {
+		border: 1px solid #3c74b3 ; 
+		color:#3c74b3;
+		margin-right: 3px; 
+	}

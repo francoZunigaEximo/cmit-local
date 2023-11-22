@@ -1,8 +1,24 @@
 $(document).ready(()=> {
 
+    toastr.options = {
+        closeButton: true,   
+        progressBar: true,    
+        timeOut: 3000,        
+    };
+
     $('#especialidad').select2({
         placeholder: 'Seleccionar especialidad...',
-        language: 'es',
+        language: {
+            noResults: function() {
+                return "No hay especialidades con esos datos";        
+            },
+            searching: function() {
+                return "Buscando..";
+            },
+            inputTooShort: function () {
+                return "Por favor, ingrese 2 o más caracteres";
+            }
+        },
         allowClear: true,
         ajax: {
            url: getProveedores,
@@ -58,7 +74,7 @@ $(document).ready(()=> {
         });
 
         if (ids.length === 0) {
-            swal('Atención', 'Debe seleccionar al menos un profesional para la baja múltiple', 'warning');
+            toastr.warning("Debe seleccionar al menos un profesional para la baja múltiple", "warning");
             return; 
         }
         if (confirm("¿Esta seguro que desea realizar esta acción?")){
@@ -104,7 +120,7 @@ $(document).ready(()=> {
             })
             .fail(function(xhr){
                 console.error(xhr);
-                swal('Error', 'Ha ocurrido un error. Actualice la página y si el problema persiste, consulte con el administrador', 'error');
+                toastr.error("Ha ocurrido un error. Actualice la página y si el problema persiste, consulte con el administrador","Error");
             })
     }
 

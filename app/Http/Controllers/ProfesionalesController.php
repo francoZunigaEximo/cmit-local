@@ -59,7 +59,6 @@ class ProfesionalesController extends Controller
             )
             ->join('proveedores', 'profesionales.IdProveedor', '=', 'proveedores.Id')
             ->where('profesionales.Id', '<>', 0)
-            ->where('profesionales.Inactivo', 0)
             ->orderBy('profesionales.Apellido', 'Asc');
 
             $query->when(is_array($tipo), function ($query) use ($tipo) {
@@ -67,6 +66,7 @@ class ProfesionalesController extends Controller
                     $campo = strtoupper($valor);
                     $query->when(in_array($valor, ['t1', 't2', 't3', 't4']), function ($query) use ($campo) {
                         $query->where($campo, '=', '1');
+                        $query->where('profesionales.Inactivo', 0);
                     });
                 }
             });
@@ -84,13 +84,25 @@ class ProfesionalesController extends Controller
             });
 
             $query->when($especialidad, function ($query) use ($especialidad) {
-                $query->where('profesionales.IdProveedor', $especialidad);
+                $query->where('profesionales.IdProveedor', $especialidad)
+                    ->where('profesionales.Inactivo', 0);
             });
 
             $query->when(is_array($opciones), function ($query) use ($opciones, $arrOpciones) { 
                 foreach ($opciones as $valor){
                     $data = $arrOpciones[$valor];
-                    $query->where('profesionales.'.$data[0], $data[1]);
+                    if ($arrOpciones[$valor] !== 'inactivo1' && $arrOpciones[$valor] !== 'inactivo2') {
+
+                        $query->where('profesionales.'.$data[0], $data[1]);
+                    
+                    }elseif($arrOpciones[$valor] === 'inactivo1'){
+                        $query->where('profesionales.Inactivo', 1);
+                    
+                    }elseif($arrOpciones[$valor] === 'inactivo2'){
+                        $query->where('profesionales.Inactivo', 2);
+                    
+                    }
+                    
                 }
             });
 

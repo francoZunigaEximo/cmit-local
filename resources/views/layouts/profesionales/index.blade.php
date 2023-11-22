@@ -47,6 +47,14 @@
 
             </select>
         </div>
+        <div class="col-3 p-2 mb-2">
+                <label for="tipo" class="form-label">Buscar</label>
+                <div class="search-box ms-2">
+                    <input type="text" name="buscar" id="buscar" class="form-control search" placeholder="DNI o Apellido y Nombre...">
+                    <i class="ri-search-line search-icon"></i>
+                </div>
+            
+        </div>
     </div>
     <div class="card-body">
         <div class="listjs-table" id="listaProfesionales">
@@ -63,12 +71,7 @@
                     </div>
                 </div>
                 <div class="col-8">
-                    <div class="d-flex justify-content-sm-end" style="width: 100%;">
-                        <div class="search-box ms-2">
-                            <input type="text" name="buscar" id="buscar" class="form-control search" placeholder="Buscar por DNI o Apellido y Nombre del profesional...">
-                            <i class="ri-search-line search-icon"></i>
-                        </div>
-                    </div>
+                    
                 </div>
             </div>
 
@@ -77,11 +80,10 @@
                     <thead class="table-light">
                         <tr class="text-center">
                             <th><input type="checkbox" id="checkAll" name="Id"></th>
-                            <th class="sort">Nombre</th>
+                            <th class="sort">Apellido y Nombre</th>
                             <th class="sort">DNI</th>
-                            <th class="sort">Proveedor</th>
+                            <th class="sort">Especialidad</th>
                             <th>Rol</th>
-                            <th>Multiproveedor</th>
                             <th>Login</th>
                             <th>Pago</th>
                             <th>Estado</th>
