@@ -138,15 +138,18 @@
                                 <div class="mb-3">
                                     <label for="Foto" class="form-label">Firma</label>
                                     <input type="file" class="form-control-sm custom-file-input" id="Foto" name="Foto" accept="image/*" style="display: none;">
-                                    <label class="custom-file-label" for="Foto" style="cursor: pointer;">Selecciona o arrastra una imagen aquí</label>
+                                    <label class="custom-file-label" for="Foto" style="cursor: pointer;">Selecciona una imagen aquí</label>
                                     <img id="vistaPrevia" src="{{ asset('storage/profesionales/'.$profesionale->Foto) }}" alt="Previsualización de imagen" style="{{ $profesionale->Foto ? '' : 'display: none;' }}  max-width: 200px; max-height: 200px;">
+                                    <input type="hidden" name="wImage" id="wImage" value="{{ $profesionale->wImage ?? ''}}">
+                                    <input type="hidden" name="hImage" id="hImage"  value="{{ $profesionale->hImage ?? ''}}">
+                                    <small style="display: block;">La imagen se edita en la "Vista Previa"</small>
                                 </div>
 
                             </div>
                             <div class="col-3">
                                 <div class="mb-3" style="text-align: right;">
                                     <label for="previsualizar" class="form-label"><br><br><br></label>
-                                    <button type="button" class="previsualizar btn btn-soft-info waves-effect waves-light" data-bs-toggle="modal" data-bs-target="#z">Previsualizar Firma</button>
+                                    <button type="button" class="previsualizar btn btn-soft-info waves-effect waves-light" data-bs-toggle="modal" data-bs-target="#z">Vista Previa Firma</button>
                                 </div>
                             </div>
                             <!--end col-->
@@ -233,7 +236,7 @@
                                     <div class="col-12">
                                         <br>
                                         <div class="text-end">
-                                            <button type="button" class="saveOpciones btn btn-success">Guardar</button>
+                                            <button type="button" class="saveOpciones btn botonGeneral">Guardar</button>
                                         </div>
                                     </div>
 
@@ -342,7 +345,7 @@
                             <div class="col-lg-12">
                                 <div class="hstack gap-2 justify-content-end">
 
-                                    <button type="button" class="saveSeguro btn btn-success">Guardar</button>
+                                    <button type="button" class="saveSeguro btn botonGeneral">Guardar</button>
                                 </div>
                             </div>
                             <!--end col-->
@@ -363,6 +366,10 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>
             </div>
             <div class="modal-body">
+                <div class="alert alert-primary alert-dismissible alert-label-icon rounded-label fade show" role="alert">
+                    <i class="ri-user-smile-line label-icon"></i><small>Coloquese en los bordes de la imagen para modificar el tamaño.</small>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
                 <img id="imagenModal" src="#" style="display:block; max-width: 100%; max-height: 400px;">
                 <p id="selloModal"></p> 
             </div>
@@ -408,7 +415,9 @@
 <script src="{{ asset('js/pages/select2.init.js') }}"></script>
 <script src="{{ asset('libs/cleave.js/cleave.min.js') }}"></script>
 
-<script src="{{ asset('js/richText/jquery.richtext.js') }}?v={{ time() }"></script>
+<script src="{{ asset('js/richText/jquery.richtext.js') }}?v={{ time() }}"></script>
+
+
 
 @endpush
 @endsection

@@ -463,3 +463,9 @@ ALTER TABLE db_cmit.prestaciones DROP FOREIGN KEY prestaciones_ibfk_4;
 /***********************************************************************************************************/
 --- Columna de Observaciones para Proveedores
 ALTER TABLE proveedores ADD COLUMN Obs TEXT NULL;
+/***********************************************************************************************************/
+-- Columnas para tamaño de imagen en Profesionales
+SET SESSION sql_mode = 'NO_ENGINE_SUBSTITUTION';
+ALTER TABLE profesionales ADD COLUMN wImage VARCHAR(10) DEFAULT 0;
+ALTER TABLE profesionales ADD COLUMN hImage VARCHAR(10) DEFAULT 0;
+SET SESSION sql_mode = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION';

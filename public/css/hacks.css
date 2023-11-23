@@ -308,3 +308,9 @@ label {
 		color:#3c74b3;
 		margin-right: 3px; 
 	}
+
+	#imagenModal {
+		cursor: nwse-resize; /* Cambia el cursor al colocarse en los bordes */
+		max-width: 100%;
+		max-height: 400px;
+	}

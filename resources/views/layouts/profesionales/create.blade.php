@@ -138,6 +138,9 @@
                                     <input type="file" class="form-control-sm custom-file-input" id="Foto" name="Foto" accept="image/*" style="display: none;">
                                     <label class="custom-file-label" for="Foto" style="cursor: pointer;">Selecciona o arrastra una imagen aquí</label>
                                     <img id="vistaPrevia" src="#" alt="Previsualización de imagen" style="display: none; max-width: 200px; max-height: 200px;">
+                                    <input type="hidden" name="wImagen" id="wImagen">
+                                    <input type="hidden" name="hImagen" id="hImagen">
+                                    <small style="display: block;">La imagen se edita en la "Vista Previa"</small>
                                 </div>
 
                             </div><!--end col-->

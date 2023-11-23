@@ -1,10 +1,17 @@
 $(document).ready(function(){
 
+    let resizing = false, startWidth, startHeight, startX, startY; //variables de ancho de imagen
 
     cargarPerfiles();
     quitarDuplicados("#provincia");
     quitarDuplicados("#estado");
     perfiles(ID);
+
+    toastr.options = {
+        closeButton: true,   
+        progressBar: true,    
+        timeOut: 3000,        
+    };
 
     $("#Apellido, #Nombre").on("input", function() {
         $(this).val($(this).val().toUpperCase());
@@ -25,16 +32,14 @@ $(document).ready(function(){
        
         $.post(opcionesProf, {_token: TOKEN, T1: efector, T2: informador, T3: evaluador, T4: combinado, Pago: pago, InfAdj: informeAdj, TMP: tmp, TLP: tlp, Id: ID})
             .done(function(){
-                swal('Perfecto', 'Se han guardado los cambios de manera correcta', 'success');
+                toastr.success("Se han guardado los cambios de manera correcta", "Perfecto");
                 $('#perfiles').empty().append('<option value="" selected>Elija una opción</option>');
                 perfiles(ID);
             })
             .fail(function(xhr){
                 console.error(xhr);
-                swal('Error', 'Ha ocurrido un error. Actualice la página y si el problema persiste, consulte con el administrador', 'error');
+                toastr.error("Ha ocurrido un error. Actualice la página y si el problema persiste, consulte con el administrador", "Error");
             })
-
-        
     });
 
     $(document).on('click', '.saveSeguro', function(){
@@ -44,7 +49,7 @@ $(document).ready(function(){
             seguroMP = $('#SeguroMP').val();
 
         if(mn < 0) {
-            swal('Atención', 'Matricula no acepta números negativos', 'warning');
+            toastr.warning("Matricula no acepta números negativos", "Atención");
             return;
         }
 
@@ -54,7 +59,7 @@ $(document).ready(function(){
             })
             .fail(function(xhr){
                 console.error(xhr);
-                swal('Error', 'Ha ocurrido un error. Actualice la página y si el problema persiste, consulte con el administrador', 'error');
+                toastr.error("Ha ocurrido un error. Actualice la página y si el problema persiste, consulte con el administrador", "Error");
             })
 
     });
@@ -65,7 +70,7 @@ $(document).ready(function(){
             especialidad = $('#listaEspecialidad').val();
 
         if(perfil === '' || especialidad === '') {
-            swal('Atención', 'Debe seleccionar una especialidad y un perfil para poder añadirlo a la lista', 'warning');
+            toastr.warning("Debe seleccionar una especialidad y un perfil para poder añadirlo a la lista", "Atención");
             return;
         }
 
@@ -73,32 +78,18 @@ $(document).ready(function(){
             .done(function(response){
                 
                 if(response.error){
-                    toastr.options = {
-                        closeButton: true,   
-                        progressBar: true,    
-                        timeOut: 3000,        
-                    };
                     toastr.info(response.error);
                     return;
 
                 }else{
-
-                    toastr.options = {
-                        closeButton: true,   
-                        progressBar: true,    
-                        timeOut: 3000,        
-                    };
                     toastr.success(`Se ha añadido el perfil de manera correcta`);
                     cargarPerfiles();
-                }
-
-                
+                }   
             })
             .fail(function(xhr){
 
                 console.error(xhr);
-                swal('Error', 'Ha ocurrido un error. Actualice la página y si el problema persiste, consulte con el administrador', 'error');
-              
+                toastr.error("Ha ocurrido un error. Actualice la página y si el problema persiste, consulte con el administrador", "Error");
             });
     });
 
@@ -107,7 +98,9 @@ $(document).ready(function(){
         let IdProf = $(this).data('prof'),
             IdProv = $(this).data('prov');
 
-        $.post(delPerfil, {_token: TOKEN, IdProf: IdProf, IdProv: IdProv})
+        if(confirm("¿Está seguro que desea eliminar?")){
+
+            $.post(delPerfil, {_token: TOKEN, IdProf: IdProf, IdProv: IdProv})
             .done(function(){
 
                 toastr.options = {
@@ -120,14 +113,42 @@ $(document).ready(function(){
             })
             .fail(function(xhr){
 
-                swal('Error', 'Ha ocurrido un error. Actualice la página y si el problema persiste, consulte con el administrador', 'error');
+                toastr.error("Ha ocurrido un error. Actualice la página y si el problema persiste, consulte con el administrador", "Error");
                 console.error(xhr);
             });
+        }
+        
     });
 
     $(document).on('click', '#volverProfesionales', function(){
 
         window.location.href = GOINDEX;
+    });
+
+    $('#imagenModal').mousedown(function (e) {
+        resizing = true;
+        startWidth = $('#imagenModal').width();
+        startHeight = $('#imagenModal').height();
+        startX = e.clientX;
+        startY = e.clientY;
+    });
+
+    $(document).mousemove(function (e) {
+        if (resizing) {
+            let newWidth = startWidth + (e.clientX - startX);
+            let newHeight = startHeight + (e.clientY - startY);
+
+            // Aplica nuevas dimensiones
+            $('#imagenModal').width(newWidth);
+            $('#imagenModal').height(newHeight);
+
+            $('#wImage').val(newWidth);
+            $('#hImage').val(newHeight);
+        }
+    });
+
+    $(document).mouseup(function () {
+        resizing = false;
     });
 
     function cargarPerfiles(){
@@ -143,15 +164,15 @@ $(document).ready(function(){
                     let arr = d.Tipos.split(',');
                 
                     const perfiles = {
-                        't1': ['Efector', 'success'],
-                        't2': ['Informador', 'warning'],
-                        't3': ['Evaluador', 'warning'],
-                        't4': ['Combinado', 'success']
+                        't1': ['Efector'],
+                        't2': ['Informador'],
+                        't3': ['Evaluador'],
+                        't4': ['Combinado']
                     }
                 
                     let imprimir = arr.map(e => {
                         if (perfiles[e]) {
-                            return `<span class="badge badge-soft-${perfiles[e][1]} text-uppercase" style="margin-right: 3px; display:inline-block">${perfiles[e][0]}</span><br>`;
+                            return `<span class="badge custom-badge pequeno text-uppercase" style="margin-right: 3px; display:inline-block">${perfiles[e][0]}</span><br>`;
                         }
                         return ''; 
                     }).join(''); 
@@ -164,7 +185,7 @@ $(document).ready(function(){
                             </td>
                             <td>
                                 <div class="remove">
-                                    <button data-prof="${d.IdProf}" data-prov="${d.IdProv}" class="btn btn-sm btn-danger  eliminarPerfil" title="Dar de baja"><i class="ri-delete-bin-2-line"></i></button>
+                                    <button data-prof="${d.IdProf}" data-prov="${d.IdProv}" class="btn btn-sm iconGeneral eliminarPerfil" title="Dar de baja"><i class="ri-delete-bin-2-line"></i></button>
                                 </div>
                             </td>
                         </tr>
@@ -211,7 +232,6 @@ $(document).ready(function(){
             });
     }
 
-
-
+    
 
 });
