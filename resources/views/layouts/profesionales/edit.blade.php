@@ -370,7 +370,7 @@
                     <i class="ri-user-smile-line label-icon"></i><small>Coloquese en los bordes de la imagen para modificar el tamaño.</small>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
-                <img id="imagenModal" src="#" style="display:block; max-width: 100%; max-height: 400px;">
+                <img id="imagenModal" src="#" width="{{ $profesionale->wImage ?? ''}}" height="{{ $profesionale->hImage ?? ''}}" style="display:block; max-width: 100%; max-height: 400px;">
                 <p id="selloModal"></p> 
             </div>
             <div class="modal-footer">
