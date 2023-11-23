@@ -33,7 +33,9 @@ class Profesional extends Model
         'T4',
         'TLP',
         'TMP',
-        'Pago'
+        'Pago',
+        'wImage',
+        'hImage'
     ];
 
     public $timestamps = false;
