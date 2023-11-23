@@ -297,8 +297,8 @@ class ProfesionalesController extends Controller
         $update->IdLocalidad = $request->IdLocalidad;
         $update->Firma = $request->Firma;
         $update->CP = $request->CP;
-        $update->wImagen = $request->wImage;
-        $update->hImagen = $request->hImage;
+        $update->wImage = $request->wImage;
+        $update->hImage = $request->hImage;
         $update->Inactivo = $request->estado;
 
         if ($request->hasFile('Foto')) {
