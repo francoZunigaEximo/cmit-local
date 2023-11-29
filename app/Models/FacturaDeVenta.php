@@ -25,7 +25,8 @@ class FacturaDeVenta extends Model
         'TipoCliente',
         'ObsAnulado',
         'EnvioFacturaF',
-        'Obs'
+        'Obs',
+        'IdPrestacion'
     ];
 
     public $timestamps = false;

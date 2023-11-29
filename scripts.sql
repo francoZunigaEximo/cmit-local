@@ -469,3 +469,6 @@ SET SESSION sql_mode = 'NO_ENGINE_SUBSTITUTION';
 ALTER TABLE profesionales ADD COLUMN wImage VARCHAR(10) DEFAULT 0;
 ALTER TABLE profesionales ADD COLUMN hImage VARCHAR(10) DEFAULT 0;
 SET SESSION sql_mode = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION';
+
+/************************************************************************************************************/
+ALTER TABLE facturaventas ADD COLUMN IdPrestacion INT DEFAULT 0;

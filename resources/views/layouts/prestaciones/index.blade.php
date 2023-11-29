@@ -287,7 +287,7 @@ const searchPrestaciones = "{{ route('searchPrestaciones') }}";
 const TOKEN = "{{ csrf_token() }}";
 const GOPACIENTES = "{{ route('pacientes.edit', ['paciente' => '__paciente__']) }}";
 const downPrestaActiva = "{{ route('downPrestaActiva') }}";
-const rutaBlock = "{{ route('blockPrestacion', ['prestaciones' => '']) }}";
+const rutaBlock = "{{ route('blockPrestacion', ['Id' => '']) }}";
 const ROUTE = "{{ route('prestaciones.index') }}";
 const SEARCH = "{{ route('searchPrestaciones') }}";
 

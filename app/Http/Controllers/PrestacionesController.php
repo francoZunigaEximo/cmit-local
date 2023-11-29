@@ -8,6 +8,7 @@ use App\Models\Paciente;
 use App\Models\PaqueteEstudio;
 use App\Models\Prestacion;
 use App\Models\PrestacionesTipo;
+use App\Traits\ObserverFacturasVenta;
 use App\Traits\ObserverPrestaciones;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -18,7 +19,7 @@ use Yajra\DataTables\DataTables;
 class PrestacionesController extends Controller
 {
 
-    use ObserverPrestaciones;
+    use ObserverPrestaciones, ObserverFacturasVenta;
 
     public function index(Request $request): mixed
     {
@@ -286,39 +287,22 @@ class PrestacionesController extends Controller
 
         if($prestaciones)
         {
-            $prestaciones->Estado = '0';
-            $prestaciones->save();
+            $prestaciones->update(['Estado' => '0']);
         }
         
     }
 
-    //Bloquear prestacion con Ajax o Laravel
     public function blockPrestacion(Request $request)
     {
-        $prestaciones = Prestacion::find($request->prestaciones);
-
-        $prestaciones->Anulado = 1; // 0 => Habilitado, 1 => Anulado
-        $prestaciones->save();
-
-        return redirect()->route('prestaciones.index');
-    }
-
-    public function downPrestPaciente(Request $request)
-    {
-
-        $prestaciones = Prestacion::find($request->prestaciones);
-
-        $prestaciones->Estado = '0';
-        $prestaciones->save();
-
-    }
-
-    public function blockPrestPaciente(Request $request)
-    {
         $prestaciones = Prestacion::find($request->Id);
-        $prestaciones->Anulado = 1; // 0 => Habilitado, 1 => Anulado
-        $prestaciones->save();
 
+        if($prestaciones){
+
+            $prestaciones->Anulado = 1; // 0 => Habilitado, 1 => Anulado
+            $prestaciones->save();
+
+        }
+        
     }
 
     public function verifyBlock(Request $request)
@@ -370,9 +354,9 @@ class PrestacionesController extends Controller
             $this->updateMapeados($request->mapas);
         }
 
-        if($request->tipo && $request->sucursal && $request->nroFactura)
+        if($request->tipo && $request->sucursal && $request->nroFactura && $nuevoId)
         {
-            $this->facturaVenta($request->tipo, $request->sucursal, $request->nroFactura, $empresa, $request->tipoPrestacion);
+            $this->addFactura($request->tipo, $request->sucursal, $request->nroFactura, $empresa, $request->tipoPrestacion, $nuevoId);
         }
         
 
@@ -399,17 +383,24 @@ class PrestacionesController extends Controller
         $prestacion->RxPreliminar = $request->RxPreliminar === 'true' ? 1 : 0;
         $prestacion->ObsExamenes = $request->ObsExamenes ?? '';
         $prestacion->save();
+        
+        if($request->SinEval){
+            $this->setPrestacionAtributo($request->Id, $request->SinEval);
+        }
 
-        $this->setPrestacionAtributo($request->Id, $request->SinEval);
+        $empresa = ($request->tipoPrestacion === 'ART' ? $request->ART : $request->Empresa);
+        
         $this->updateFichaLaboral($request->IdPaciente, $request->Art, $request->Empresa);
+        $this->addFactura($request->tipo, $request->sucursal, $request->nroFactura, $empresa, $request->tipoPrestacion, $request->Id);
 
     }
 
     public function vencimiento(Request $request): void
     {
         $prestacion = Prestacion::find($request->Id);
-        $prestacion->Vto = 1;
-        $prestacion->save();
+        if($prestacion){
+            $prestacion->update(['Vto' => 1]);
+        }  
     }
 
     public function getParaEmpresas(Request $request): mixed
@@ -476,4 +467,5 @@ class PrestacionesController extends Controller
 
         return response()->json(['existe' => $existe, 'paciente' => $query]);
     }
+
 }

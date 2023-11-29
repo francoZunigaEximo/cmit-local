@@ -453,4 +453,15 @@ class ClientesController extends Controller
 
         return response()->json(['clientes' => $resultados]);
     }
+
+    public function checkParaEmpresa(Request $request)
+    {
+
+        $cliente = Cliente::find($request->empresa);
+
+        if($cliente)
+        {
+            return response()->json(['cliente' => $cliente]);
+        }
+    }
 }

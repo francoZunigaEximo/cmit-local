@@ -15,6 +15,7 @@ use App\Http\Controllers\TelefonosController;
 use App\Http\Controllers\ProveedoresController;
 use App\Http\Controllers\ItemPrestacionesController;
 use App\Http\Controllers\UtilityController;
+use App\Http\Controllers\FacturasVentaController;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Route;
 
@@ -77,13 +78,12 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('checkOpciones', [ClientesController::class, 'checkOpciones'])->name('checkOpciones');
     Route::post('verifyIdentificacion', [ClientesController::class, 'verifyIdentificacion'])->name('verifyIdentificacion');
     Route::post('exportExcelClientes', [ClientesController::class, 'excel'])->name('exportExcelClientes');
+    Route::get('checkParaEmpresa', [ClientesController::class, 'checkParaEmpresa'])->name('checkParaEmpresa');
 
     //Rutas de Prestaciones
     Route::resource('prestaciones', PrestacionesController::class);
-    Route::post('downPrestaActiva', [PrestacionesController::class, 'down'])->name('downPrestaActiva');
-    Route::post('downPrestPaciente', [PrestacionesController::class, 'downPrestPaciente'])->name('downPrestPaciente');
+    Route::get('downPrestaActiva', [PrestacionesController::class, 'down'])->name('downPrestaActiva');
     Route::get('blockPrestacion', [PrestacionesController::class, 'blockPrestacion'])->name('blockPrestacion');
-    Route::post('blockPrestPaciente', [PrestacionesController::class, 'blockPrestPaciente'])->name('blockPrestPaciente');
     Route::get('searchPrestaciones', [PrestacionesController::class, 'search'])->name('searchPrestaciones');
     Route::post('savePrestacion', [PrestacionesController::class, 'savePrestacion'])->name('savePrestacion');
     Route::post('getParaEmpresas', [PrestacionesController::class, 'getParaEmpresas'])->name('getParaEmpresas');
@@ -192,5 +192,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('updateAdjunto', [ItemPrestacionesController::class, 'updateAdjunto'])->name('updateAdjunto');
     Route::get('paginacionGeneral', [ItemPrestacionesController::class, 'paginacionGeneral'])->name('paginacionGeneral');
     Route::post('updateExamen', [ItemPrestacionesController::class, 'updateExamen'])->name('updateExamen');
+
+    //Rutas de FacturasdeVenta
+    Route::get('getFactura', [FacturasVentaController::class, 'getFactura'])->name('getFactura');
 
 });

@@ -199,18 +199,17 @@ $(document).ready(()=>{
         let Id = $(this).data('idprest');
 
         $.ajax({
-            url: blockPrestPaciente,
-            type: 'post',
+            url: blockPrestacion,
+            type: 'get',
             data: {
                 Id: Id,
-                _token: TOKEN
             },
-            success: function(result) {
-                swal('Bloqueo procesado', 'Se ha bloqueado la prestación del paciente de manera correcta. Puede que tarde unos minutos en cargar el cambio.', 'success');
+            success: function() {
+                toastr.success('Se ha bloqueado la prestación del paciente de manera correcta. Puede que tarde unos minutos en cargar el cambio.', 'Bloqueo procesado');
                 cambioEstadoBlock();
             },
             error: function(xhr) {
-                swal('Error', 'No se ha podido bloquear la prestación. Consulte con el administrador', 'error');
+                toastr.error('No se ha podido bloquear la prestación. Consulte con el administrador', 'Error');
                 console.error(xhr);
             }
         });
@@ -224,11 +223,10 @@ $(document).ready(()=>{
         let Id = $(this).data('idprest');
 
         $.ajax({
-            url: downPrestPaciente,
-            type: 'post',
+            url: downPrestaActiva,
+            type: 'get',
             data: {
-                prestaciones: Id,
-                _token: TOKEN
+                Id: Id,
             },
             success: function() {
                 toastr.success('Se ha dado de baja la prestación del paciente de manera correcta. Puede que tarde unos minutos en cargar el cambio.', 'Acción realizada');

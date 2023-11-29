@@ -149,7 +149,7 @@ $(document).ready(()=>{
             type: 'post',
             data: {
                 _token: TOKEN,
-                idPrestacion: Id,
+                idPrestacion: ID,
                 idExamen: idExamen
             },
             success: function(){
@@ -237,7 +237,7 @@ $(document).ready(()=>{
             url: checkExamen, 
             method: 'Post',
             data: { 
-                Id: Id,
+                Id: ID,
                 _token: TOKEN,
             },
             success: function(result) {
@@ -253,7 +253,7 @@ $(document).ready(()=>{
                         data: {
                             _token: TOKEN,
                             IdExamen: examenes,
-                            Id: Id,
+                            Id: ID,
                             tipo: 'listado'
                         },
                         success: function(response){

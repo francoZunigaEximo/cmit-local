@@ -1,7 +1,12 @@
 $(document).ready(()=> {
 
-    let fecha = $('#FechaVto').val();
-    let opcion = $('#pago').val();
+    let fecha = $('#FechaVto').val(), opcion = $('#pago').val(), opcionPago = $('#SPago').val();
+
+    toastr.options = {
+        closeButton: true,   
+        progressBar: true,     
+        timeOut: 3000,        
+    };
     
     quitarDuplicados("#tipoPrestacion");
     quitarDuplicados("#pago");
@@ -16,8 +21,26 @@ $(document).ready(()=> {
     cargarFinanciador($("#tipoPrestacion").val());
     cambiosVencimiento(fecha);
     selectMedioPago(opcion);
+    getMap();
+    getFact();
 
+    //Hack de carga
+    $(document).ready(function(){
+        getAutoriza(opcionPago);
+    });
+    
     $('.alert').hide();
+
+    $(document).on('change', '#pago', function(){
+        
+        selectMedioPago();
+    });
+
+    $(document).on('change', '#SPago', function(){
+
+        let data = $(this).val();
+        getAutoriza(data);
+    });
 
     $('#actualizarPrestacion').on('click', function(event) {
         event.preventDefault();
@@ -30,8 +53,11 @@ $(document).ready(()=> {
             IdPaciente = $('#IdPaciente').val();
             spago = $('#SPago').val(),
             observaciones = $('#Observaciones').val(),
-            nroFactura = $('#NumeroFacturaVta').val(),
+            tipo = $('#Tipo').val(),
+            sucursal = $('#Sucursal').val(),
+            nroFactura = $('#NroFactura').val(),
             mapas = $('#mapas').val(),
+            autorizado = $('#Autorizado').val();
             IdEvaluador = $('#IdEvaluador').val(),
             Evaluacion = $('#Evaluacion').val(),
             Calificacion = $('#Calificacion').val(),
@@ -41,8 +67,23 @@ $(document).ready(()=> {
 
             
          //Validamos la factura
-         if(spago === 'E' && nroFactura.length === 0 || nroFactura == null){
-            swal('Atención', 'El número de la factura es obligatoria', 'warning');
+        if(spago === 'G' && autorizado === ''){
+            toastr.warning('Si el medio de pago es gratuito, debe seleccionar quien autoriza.', 'Alerta');
+            return;
+        }
+
+        if(pago === 'B' && spago === '') {
+            toastr.warning('Debe seleccionar un "medio de pago" cuando la "forma de pago" es "contado"', 'Alerta');
+            return;
+        }
+
+        if(pago === '' || spago === null || pago === undefined) {
+            toastr.warning('Debe seleccionar una "forma de pago"', 'Alerta');
+            return;
+        }
+
+        if(pago === 'B' && (tipo == '' || sucursal === '' || nroFactura === '')){
+            toastr.warning('El pago es contado, asi que debe agregar el número de factura para continuar.', 'Alerta');
             return;
         }
 
@@ -51,21 +92,11 @@ $(document).ready(()=> {
             return;
         }
 
-        if(pago === 'B' && nroFactura == ''){
-            swal("Atención", "El pago es contado, asi que debe agregar el número de factura para continuar.", "warning");
-            return;
-        }
-
-        if(nroFactura.length > 11){
-            swal('Atención', 'EL número de factura no puede tener mas de 11 dígitos y debe ser numerico', 'warning');
-            return;
-        }
-
         $.ajax({
             url: updatePrestacion,
             type: 'Post',
             data: {
-                Id: Id,
+                Id: ID,
                 TipoPrestacion: tipoPrestacion,
                 Pago: pago,
                 Fecha: fecha,
@@ -75,17 +106,19 @@ $(document).ready(()=> {
                 Empresa: empresa,
                 IdPaciente: IdPaciente,
                 Art: art,
-                NumeroFacturaVta: nroFactura,
                 IdEvaluador: IdEvaluador,
                 Evaluacion: Evaluacion,
                 Calificacion: Calificacion,
                 RxPreliminar: RxPreliminar,
                 SinEval: SinEval,
                 ObsExamenes: ObsExamenes,
+                tipo: tipo,
+                sucursal: sucursal,
+                nroFactura: nroFactura,
                 _token: TOKEN
             },
             success: function(){
-                swal("Actualización realizada","La prestación se ha actualizado correctamente. Se recargaran los datos.", "success");
+                toastr.success("La prestación se ha actualizado correctamente. Se recargaran los datos.", "Actualización realizada");
                 setTimeout(function(){
                     location.reload();
                 }, 3000);  
@@ -107,6 +140,26 @@ $(document).ready(()=> {
         }
     });
 
+    $(document).on('change', '#empresa', function(){
+
+        let empresa = $(this).val();
+        
+        if(empresa === null) return;
+
+        $.get(checkParaEmpresa, {empresa: empresa})
+            .done(function(response){
+
+                let data = response.cliente;
+
+                $('#paraEmpresa').val(data.ParaEmpresa);
+            })
+            .fail(function(xhr){
+
+                console.log(xhr);
+                toastr.error('Ha ocurrido un error. Consulte con el administrador', 'Error');
+            });
+    });
+
     $(document).on('change', '#tipoPrestacion', function() {
         cargarFinanciador($(this).val());
     });
@@ -114,32 +167,6 @@ $(document).ready(()=> {
 
     $("#TipoPrestacion").val(selectTipoPrestacion);
  
-    $('#mapas').select2({
-        placeholder: 'Seleccionar mapa',
-        language: 'es',
-        allowClear: true,
-        ajax: {
-           url: getMapas,
-           dataType: 'json',
-           delay: 250,
-           data: function(params) {
-                return {
-                    buscar: params.term,
-                    empresa: $('#empresa').val(),
-                    art: $('#art').val()
-                };
-           },
-           processResults: function(data) {
-                return {
-                    results: data.mapas
-                };
-           },
-           cache: true,
-        },
-        minimumInputLength: 2
-    });
-
-
     $(document).on('click','.cerrar, .finalizar, .entregar, .eEnviar', function() {
 
         $(this).prop('readonly', false);
@@ -152,28 +179,26 @@ $(document).ready(()=> {
             type: 'POST',
             data: {
                 _token: TOKEN,
-                Id: Id,
+                Id: ID,
                 Tipo: tipo
             },
             success: function(response){
 
                 let t = response.tipo,
                     e = response.estado;
-                console.log(t);
-                console.log(e.Cerrado);
-
+                    debugger;
                 switch (tipo) {
-
+                    
                     case 'cerrar':
                         if(e.Cerrado === 1 && e.Entregado === 0 && e.eEnviado === 0){
-                            $('.cerrar').html('<i class="ri-lock-line"></i> Cerrado');
-                            $('.FechaFinalizado').find('span').removeAttr('title').removeClass().addClass('badge text-bg-warning finalizar');
+                            $('.cerrar').html('<i class="ri-lock-line"></i>&nbsp;Cerrado');
+                            $('.FechaFinalizado').find('span').removeAttr('title').removeClass().addClass('input-group-text finalizar');
                             $('#cerrar').val(fechaNow(new Date, '/', 1)).prop('readonly', true);
                             
                         } else {
                             if(e.Finalizado !== 1 ){
-                                $('.cerrar').html('Cerrar');
-                                $('.FechaFinalizado').find('span').removeAttr('title').removeClass().addClass('badge text-bg-dark');
+                                $('.cerrar').html('<i class="ri-lock-unlock-line"></i>&nbsp;Cerrar');
+                                $('.FechaFinalizado').find('span').removeAttr('title').removeClass().addClass('input-group-text');
                                 $('#cerrar').val('').prop('readonly', false);
                             }
                         }
@@ -181,27 +206,27 @@ $(document).ready(()=> {
 
                     case 'finalizar':
                         if(e.Cerrado === 1 && e.Finalizado === 1 && e.Entregado === 0 ){
-                            $('.finalizar').html('<i class="ri-lock-line"></i> Finalizado');
+                            $('.finalizar').html('<i class="ri-lock-line"></i>&nbsp;Finalizado');
                             $('#finalizar').val(fechaNow(new Date, '/', 1)).prop('readonly', true);
-                            $('.FechaEntrega').find('span').removeAttr('title').removeClass().addClass('badge text-bg-success entregar');
+                            $('.FechaEntrega').find('span').removeAttr('title').removeClass().addClass('input-group-text entregar');
 
                         }else{
                             if(e.Entregado !== 1){
-                                $('.finalizar').html('Finalizar');
+                                $('.finalizar').html('<i class="ri-lock-unlock-line"></i>&nbsp;Finalizar');
                                 $('#finalizar').val('').prop('readonly', false);
-                                $('.FechaEntrega').find('span').removeAttr('title').removeClass().addClass('badge text-bg-dark');
+                                $('.FechaEntrega').find('span').removeAttr('title').removeClass().addClass('input-group-text');
                             }
                         }
                         break;
 
                     case 'entregar':
                         if(e.Cerrado === 1 && e.Finalizado === 1 && e.Entregado === 1){
-                            $('.entregar').html('<i class="ri-lock-line"></i> Entregado');
+                            $('.entregar').html('<i class="ri-lock-line"></i>&nbsp;Entregado');
                             $('#entregar').val(fechaNow(new Date, '/', 1)).prop('readonly', true);
                         
                         }else{
                             if(e.eEnviado !== 1){
-                                $('.entregar').html('Entregar');
+                                $('.entregar').html('<i class="ri-lock-unlock-line"></i>&nbsp;Entregar');
                                 $('#entregar').val('').prop('readonly', false);
                             }  
                         }
@@ -209,11 +234,11 @@ $(document).ready(()=> {
                     
                     case 'eEnviar':
                         if(e.Cerrado === 1 && e.eEnviado === 1){
-                            $('.eEnviar').html('<i class="ri-lock-line"></i> eEnviado');
+                            $('.eEnviar').html('<i class="ri-lock-line"></i>&nbsp;eEnviado');
                             $('#eEnviar').val(fechaNow(new Date, '/', 1)).prop('readonly', true);
                         }else{
                             if(e.Cerrado !== 0){
-                                $('.eEnviar').html('eEnviar');
+                                $('.eEnviar').html('<i class="ri-lock-unlock-line"></i>&nbsp;eEnviar');
                                 $('#eEnviar').val('').prop('readonly', false);
                             }
                             
@@ -240,6 +265,9 @@ $(document).ready(()=> {
             searching: function() {
 
             return "Buscando..";
+            },
+            inputTooShort: function () {
+                return "Por favor, ingrese 2 o más caracteres";
             }
         },
         language: 'es',
@@ -265,7 +293,19 @@ $(document).ready(()=> {
 
     $('#paquetes').select2({
         placeholder: 'Seleccionar paquete...',
-        language: 'es',
+        language: {
+            noResults: function() {
+
+            return "No hay paquete con esos datos";        
+            },
+            searching: function() {
+
+            return "Buscando..";
+            },
+            inputTooShort: function () {
+                return "Por favor, ingrese 2 o más caracteres";
+            }
+        },
         allowClear: true,
         ajax: {
            url: getPaquetes,
@@ -288,7 +328,19 @@ $(document).ready(()=> {
 
     $('#art').select2({
         placeholder: 'Seleccionar ART',
-        language: 'es',
+        language: {
+            noResults: function() {
+
+            return "No hay ART con esos datos";        
+            },
+            searching: function() {
+
+            return "Buscando..";
+            },
+            inputTooShort: function () {
+                return "Por favor, ingrese 2 o más caracteres";
+            }
+        },
         allowClear: true,
         ajax: {
            url: getClientes,
@@ -312,7 +364,19 @@ $(document).ready(()=> {
 
     $('#empresa').select2({
         placeholder: 'Seleccionar empresa',
-        language: 'es',
+        language: {
+            noResults: function() {
+
+            return "No hay Empresa con esos datos";        
+            },
+            searching: function() {
+
+            return "Buscando..";
+            },
+            inputTooShort: function () {
+                return "Por favor, ingrese 2 o más caracteres";
+            }
+        },
         allowClear: true,
         ajax: {
            url: getClientes,
@@ -349,7 +413,6 @@ $(document).ready(()=> {
             } 
     });
 
-
     $(document).on('change', '#pago', function(){
         
         let option = $(this).val();
@@ -363,7 +426,8 @@ $(document).ready(()=> {
     $(document).on("select2:open", () => {
         document.querySelector(".select2-container--open .select2-search__field").focus()
     });
-    
+
+ 
     function precargaMapa(){
         let val = $('#TipoPrestacion').val();
         if(val === 'ART'){
@@ -390,7 +454,6 @@ $(document).ready(()=> {
     
         return (format === 1) ? dia + divider + mes + divider + anio : anio + divider + mes + divider + dia;
     }
-    
     
     function quitarDuplicados(selector) {
         let seleccion = $(selector).val();
@@ -423,7 +486,7 @@ $(document).ready(()=> {
                 type: 'POST',
                 data: {
                     _token: TOKEN,
-                    Id: Id,
+                    Id: ID,
                 },
                 success: function(){
                     $('.alert').show().html('Se ha actualizado el Vto en la base de datos por ser la fecha actual posterior a la fecha de vigente <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>');
@@ -434,46 +497,70 @@ $(document).ready(()=> {
 
     function selectMedioPago(opcion)
     {
-
         if(opcion === 'B'){
 
-            let contenido = `
-                <option value="" selected>Elija una opción...</option>
-                <option value="A">Efectivo</option>
-                <option value="B">Débito</option>
-            `;
-
-            $('#SPago').empty().append(contenido);
+            $('.SPago').show();
+            $('.Factura').show();
+            $('.Autoriza').hide();
        
-        }else if(opcion === 'P') {
-
-            let contenido = `
-                <option value="" selected>Elija una opción...</option>
-                <option value="C">Crédito</option>
-                <option value="D">Cheque</option>
-                <option value="E">Otro</option>
-                <option value="F">Transferencia</option>
-                <option value="G">Sin Cargo</option>
-            `;
-            
-            $('#SPago').empty().append(contenido);
         }else {
 
-            let contenido = `
-            <option value="" selected>Elija una opción...</option>
-            <option value="A">Efectivo</option>
-            <option value="B">Débito</option>
-            <option value="C">Crédito</option>
-            <option value="D">Cheque</option>
-            <option value="E">Otro</option>
-            <option value="F">Transferencia</option>
-            <option value="G">Sin Cargo</option>
-            `;
-
-            $('#SPago').empty().append(contenido);
+            $('.SPago').hide();
+            $('.ObsPres').hide();
+            $('.Factura').hide();
+            $('.Autoriza').hide();
         }
     }
 
+    function getMap(){
+
+        let empresa = $('#selectClientes').val(),
+            art = $('#selectArt').val();
+ 
+        $.get(getMapas, {empresa: empresa, art: art})
+            .done(function(response){
+
+                let mapas = response.mapas;
+                $('#mapas').empty().append('<option value="" selected>Elija un mapa...</option>');
+                
+                if(mapas.length === 0)
+                {
+                    $('#mapas').empty().append('<option title=""value="Sin mapas disponibles para esta ART y Empresa." selected>Sin mapas disponibles.</option>');
+                }else{
+
+                    $.each(mapas, function(index, d){
+
+                        let contenido = `<option value="${d.Id}">${d.Nro} | Empresa: ${d.RSE} - ART: ${d.RSArt}</option>`;
     
+                        $('#mapas').append(contenido);
+                    });
+                }
+                
+            })
+    }
+
+    function getFact(){
+
+        $.get(getFactura, {Id: ID})
+            .done(function(response){
+
+                let data = response.factura;
+
+                if(data){
+                    $('#Tipo').val(data.Tipo);
+                    $('#Sucursal').val(data.Sucursal);
+                    $('#NroFactura').val(data.NroFactura);
+                }
+            })
+    }
+
+    function getAutoriza(pago){
+
+        if(pago === 'G'){
+            $('.Autoriza').show();
+        }else{
+            $('.Autoriza').hide();
+        }
+    }
     
 });

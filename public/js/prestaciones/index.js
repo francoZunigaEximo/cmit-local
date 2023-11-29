@@ -17,10 +17,12 @@ $(document).ready(()=>{
             searching: function() {
 
             return "Buscando..";
+            },
+            inputTooShort: function () {
+                return "Por favor, ingrese 2 o más caracteres";
             }
         },
         placeholder: 'Nombre y apellido del paciente',
-        language: "es",
         allowClear: true,
         ajax: {
             url: getPacientes, 
@@ -69,7 +71,7 @@ $(document).ready(()=>{
 
         if(confirm("¿Está seguro que desea dar de baja esta prestación?")){
 
-            $.post(downPrestaActiva, {_token: TOKEN, Id: prestacion})
+            $.get(downPrestaActiva, {Id: prestacion})
                 .done(function(){
                     swal('Perfecto', 'Se ha dado de baja la prestación', 'success');
                     $('#listaPrestaciones').DataTable();
