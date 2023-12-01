@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Cliente;
 use App\Models\Fichalaboral;
+use App\Models\PrestacionesTipo;
 use App\Models\Paciente;
 use Illuminate\Http\Request;
 
@@ -89,6 +90,32 @@ class FichaAltaController extends Controller
                 'obsPaciente' => $obsPaciente
             ]);
         }
+    }
+
+    // Devuelve el listado de prestaciones segun el financiador seleccionado
+    public function getTipoPrestacion(Request $request){
+
+        if(!$request->financiador){
+            return response()->json(['tiposPrestacion' => []]);
+        }
+
+        $tipoCliente = Cliente::where('Id', $request->financiador)->first()->TipoCliente;
+
+        if($tipoCliente == "A"){
+            $tiposPrestacion = PrestacionesTipo::select('Id','Nombre')->where('Nombre', 'ART')->get();
+        }
+        else {
+            $tiposPrestacion = PrestacionesTipo::select('Id','Nombre')->where('Nombre', '!=', 'ART')->get();
+        }
+
+        $tiposPrestacion = $tiposPrestacion->map(function ($tipoPrestacion) {
+            return [
+                'id' => $tipoPrestacion->Id,
+                'nombre' => $tipoPrestacion->Nombre,
+            ];
+        });
+        
+        return response()->json(['tiposPrestacion' => $tiposPrestacion]);
     }
 
 }

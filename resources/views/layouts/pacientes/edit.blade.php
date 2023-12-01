@@ -361,25 +361,17 @@
                                     </div>
 
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="TipoPrestacion" id="CARNET" value="CARNET" {{ ($fichaLaboral && $fichaLaboral->TipoPrestacion === 'CARNET' ? 'checked' : '') }}>
-                                        <label class="form-check-label" for="carnet">CARNET</label>
-                                    </div>
-
-                                    <div class="form-check form-check-inline">
                                         <input class="form-check-input" type="radio" name="TipoPrestacion" id="TipoPrestacion" id="OTRO" value="OTRO" {{ ($fichaLaboral && $fichaLaboral->TipoPrestacion === 'OTRO' ? 'checked' : '') }}>
                                         <label class="form-check-label" for="otro">OTRO</label>
                                     </div>
-
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="TipoPrestacion" id="RECMED" value="RECMED" {{ ($fichaLaboral && $fichaLaboral->TipoPrestacion === 'RECMED' ? 'checked' : '') }}>
-                                        <label class="form-check-label" for="recmed">RECMED</label>
+                                    <div class="form-check form-check-inline" id="divtipoPrestacionPresOtros" style="display:none">
+                                        <select class="form-select" id="tipoPrestacionPresOtros">
+                                            <option selected value="">Elija una opción...</option>
+                                            @foreach ($tiposPrestacionOtros as $tipo)
+                                            <option value="{{ $tipo->Nombre }}">{{ $tipo->Nombre }}</option>
+                                            @endforeach
+                                        </select>
                                     </div>
-
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="TipoPrestacion" id="SCOCUPACIO" value="S/C_OCUPACIO" {{ ($fichaLaboral && $fichaLaboral->TipoPrestacion === 'S/C_OCUPACIO' ? 'checked' : '') }}>
-                                        <label class="form-check-label" for="recmed">S/C_OCUPACIONAL</label>
-                                    </div>
-                                   
                                 </div>
                             </div>
 
@@ -567,7 +559,7 @@
                                             <span class="input-group-text">Financiador</span>
                                             <div class="updateFinanciador"></div>
                                         </div>
-
+                                        <input type="hidden" id="tipoPrestacionHidden"/>
                                         <div class="input-group input-group-sm mb-2 Tprestacion">
                                             <span class="input-group-text">Tipo Prestacion</span>
                                             <select class="form-select tipoPrestacionPres" id="tipoPrestacionPres">

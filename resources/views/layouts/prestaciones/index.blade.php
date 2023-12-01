@@ -111,13 +111,8 @@
                                 </div>
 
                                 <div class="col-sm-2 mb-3">
-                                    <label for="nroprestacion" class="form-label font-weight-bold"><strong>Buscar Empresa</strong></label>
-                                    <input type="text" placeholder="Nombre Empresa." class="form-control" id="nomempresa">
-                                </div>
-
-                                <div class="col-sm-2 mb-3">
-                                    <label for="nroprestacion" class="form-label font-weight-bold"><strong>Buscar ART</strong></label>
-                                    <input type="text" placeholder="Nombre ART." class="form-control" id="nomart">
+                                    <label for="pacempart" class="form-label font-weight-bold"><strong>Paciente/Empresa/Art</strong></label>
+                                    <input type="text" placeholder="Paciente/Empresa/ART" class="form-control" id="pacempart">
                                 </div>
 
                                <!-- Filtros avanzados --> 

@@ -141,8 +141,8 @@ $(document).ready(()=>{
 
         event.preventDefault();
         let nroprestacion = $('#nroprestacion').val();
-        let nomempresa = $('#nomempresa').val();
-        let nomart = $('#nomart').val();
+        let pacempart = $('#pacempart').val();
+
         //Filtros basicos
         let tipoPrestacion = $('#TipoPrestacion').val();
         let pago = $('#Pago').val();
@@ -177,8 +177,7 @@ $(document).ready(()=>{
             ajax: {
                 url: SEARCH,
                 data: function(e){
-                    e.nomempresa = nomempresa;
-                    e.nomart = nomart;
+                    e.pacempart = pacempart;
                     e.nroprestacion = nroprestacion;
                     e.tipoPrestacion = tipoPrestacion;
                     e.pago = pago;

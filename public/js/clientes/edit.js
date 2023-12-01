@@ -186,6 +186,7 @@ $(document).ready(()=> {
             ObsCE = $('#ObsCE').val(),
             ObsCO = $('#ObsCO').val(),
             ObsEval = $('#ObsEval').val();
+            Motivo = $('#Motivo').val();
         
         $.ajax({
             url: setObservaciones,
@@ -196,6 +197,7 @@ $(document).ready(()=> {
                 ObsCE: ObsCE,
                 ObsCO: ObsCO,
                 ObsEval: ObsEval,
+                Motivo, Motivo,
                 Id: ID,
             },
             success: function(){

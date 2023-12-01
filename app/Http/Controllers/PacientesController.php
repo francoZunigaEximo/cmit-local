@@ -210,6 +210,8 @@ class PacientesController extends Controller
 
     public function edit(Paciente $paciente): mixed
     {
+        
+        $tiposPrestacionPrincipales = ['ART', 'INGRESO', 'PERIODICO', 'OCUPACIONAL', 'EGRESO', 'OTRO'];
 
         return view('layouts.pacientes.edit', with([
                 'paciente' => $paciente,
@@ -221,6 +223,7 @@ class PacientesController extends Controller
                 'dataCliente' => $this->getFichaLaboral($paciente->Id, 'empresa')?? null,
                 'fichaLaboral' => $this->getFichaLaboral($paciente->Id, null) ?? null,
                 'pacientePrestacion' => $this->getPrestacion($paciente->Id),
+                'tiposPrestacionOtros' => PrestacionesTipo::whereNotIn('Nombre', $tiposPrestacionPrincipales)->get(),
             ])
         );
     }
@@ -434,5 +437,4 @@ class PacientesController extends Controller
         $paciente->save();
         
     }
-
 }

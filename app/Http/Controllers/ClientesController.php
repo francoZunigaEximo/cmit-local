@@ -331,6 +331,7 @@ class ClientesController extends Controller
         $cliente->ObsCE = $request->ObsCE;
         $cliente->ObsCO = $request->ObsCO;
         $cliente->ObsEval = $request->ObsEval;
+        $cliente->Motivo = $request->Motivo;
         $cliente->save();
     }
 

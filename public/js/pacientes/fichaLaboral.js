@@ -63,11 +63,19 @@ $(document).ready(function () {
 
     $('input[name="TipoPrestacion"]').change(function(){
         changeTipo = $(this).val(); 
-        $('#tipoPrestacionPres').val(changeTipo);
+        $('#tipoPrestacionHidden').val(changeTipo);
+
+        if(changeTipo === 'OTRO') {
+            $("#divtipoPrestacionPresOtros").show();
+        }
+        else {
+            $("#divtipoPrestacionPresOtros").hide();
+        }
     });
 
     $('#Pago').val(pagoLaboral);
     $('#tipoPrestacionPres').val(changeTipo);
+    $('#tipoPrestacionHidden').val(changeTipo);
 
     $('#selectClientes').select2({
         dropdownParent: $('#altaPrestacionModal'),
@@ -193,6 +201,7 @@ $(document).ready(function () {
             cliente = $('#selectClientes').val(),
             art = $('#selectArt').val(),
             tipoPrestacion =  $('input[name="TipoPrestacion"]:checked').val(),
+            tipoPrestacionPresOtros =  $('#tipoPrestacionPresOtros').val(),
             tareaRealizar = $('#TareaRealizar').val(),
             tipo = $('#TipoJornada').val(),
             pago = $('#PagoLaboral').val(),
@@ -207,6 +216,11 @@ $(document).ready(function () {
             fechaEgreso = $('#FechaEgreso').val(),
             antiguedadEmpresa = $('#AntiguedadEmpresa').val();
 
+        if(tipoPrestacion === 'OTRO' && tipoPrestacionPresOtros) {
+            tipoPrestacion = tipoPrestacionPresOtros;
+            $('#tipoPrestacionHidden').val(tipoPrestacion);
+        }
+
         if(tipoPrestacion === '' || tipoPrestacion === undefined){
             toastr.warning('¡El campo tipo de prestación es obligatorio!', 'Alerta');
             return;
@@ -216,7 +230,17 @@ $(document).ready(function () {
             toastr.warning('¡Debe seleccionar una empresa o una art!', 'Alerta');
             return;
         }
-       
+        
+        if(tipoPrestacion === 'ART' && (art === '0' || art === '')){
+            toastr.warning('¡Debe seleccionar una ART para el tipo de prestación ART!', 'Alerta');
+            return;
+        }
+        
+        if(tipoPrestacion != 'ART' && (cliente === '0' || cliente === '')){
+            toastr.warning('¡Debe seleccionar una empresa para el tipo de prestación seleccionado!', 'Alerta');
+            return;
+        }
+
         $.post(saveFichaAlta, {paciente: paciente,
             cliente: cliente,
             art: art,
@@ -266,7 +290,7 @@ $(document).ready(function () {
     $(document).on("select2:open", () => {
         document.querySelector(".select2-container--open .select2-search__field").focus()
     });
-
+    
 
     //Bloqueo de cliente si existe
     function cargarBloqueo(response) {
@@ -311,7 +335,13 @@ $(document).ready(function () {
                                     </select>`;
 
                     $('.updateFinanciador').append(prestacion);
-                    let estado = $('#tipoPrestacionPres').val();
+
+                    $('#financiador').change(function() {
+                        filtrarTipoPrestacion($('#financiador').val(), null);
+                    });
+
+                    let estado = $('#tipoPrestacionHidden').val();
+                    
                     if (estado !== 'ART') {
                         $("#empresaFinanciador").prop("selected", true);
                         $('.selectMapaPres').hide();
@@ -323,11 +353,41 @@ $(document).ready(function () {
                         $('.selectMapaPres').show();
                     }
 
+                    filtrarTipoPrestacion($('#financiador').val(), estado);
+
                  }
 
             }
         });   
      }
+
+    function filtrarTipoPrestacion(idFinanciador, estado) {
+
+        $.ajax({
+            url: getTipoPrestacion,
+            type: "GET",
+            data: {
+                financiador: idFinanciador,
+                _token: TOKEN
+            },
+            success: function(response) {
+                let tiposPrestacion = response.tiposPrestacion;
+                
+                if(tiposPrestacion) {
+                    $('#tipoPrestacionPres').empty();
+                    $('#tipoPrestacionPres').append('<option selected>Elija una opción...</option>');
+
+                    tiposPrestacion.forEach(function(tipoPrestacion) {
+                        $('#tipoPrestacionPres').append('<option value="' + tipoPrestacion.nombre + '">' + tipoPrestacion.nombre + '</option>');
+                    });
+                    
+                    if(estado) {    
+                        $('#tipoPrestacionPres').val(estado);
+                    }
+                }
+            }
+        });
+    }
 
     function activarMapas(estado){
         if (estado === 'ART') {
@@ -348,7 +408,7 @@ $(document).ready(function () {
         let egreso = $('#FechaEgreso').val();
 
         let dateIngreso = new Date(ingreso);
-        let dateEgreso = new Date(egreso);
+        let dateEgreso = egreso ? new Date(egreso) : new Date();
 
         let diff = dateEgreso.getFullYear() - dateIngreso.getFullYear();
 

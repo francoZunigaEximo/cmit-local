@@ -100,7 +100,7 @@ Route::group(['middleware' => 'auth'], function () {
     //Ruta Ficha Laboral
     Route::post('saveFichaAlta', [FichaAltaController::class, 'save'])->name('saveFichaAlta');
     Route::get('verificarAlta', [FichaAltaController::class, 'verificar'])->name('verificarAlta');
-    Route::get('getTipoPrestacion', [FichaAltaController::class, 'tipoPrestacion'])->name('getTipoPrestacion');
+    Route::get('getTipoPrestacion', [FichaAltaController::class, 'getTipoPrestacion'])->name('getTipoPrestacion');
     Route::get('checkObs', [FichaAltaController::class, 'checkObs'])->name('checkObs');
 
     //Ruta Examenes

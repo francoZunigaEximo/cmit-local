@@ -4,6 +4,17 @@ $(document).ready(() => {
         $("#prestacionFast").offcanvas("show");
     });
 
+    $("#prestacionFast").on('shown.bs.offcanvas', function() {
+        $("#dniPrestacion").focus();
+    });
+    
+    $("#dniPrestacion").keyup(function(event) {
+        if (event.which === 13) {
+            $("#btnWizardPrestacion").click();
+        }
+    });
+
+
     const options = {
         'a': lnkPacientes,
         'c': lnkClientes,

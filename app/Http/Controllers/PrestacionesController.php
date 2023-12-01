@@ -110,12 +110,17 @@ class PrestacionesController extends Controller
     
     private function applyBasicFilters($query, $request)
     {
-        if(!empty($request->nomempresa)) {
-            $query->where('clientes.RazonSocial', 'LIKE', '%'. $request->nomempresa .'%');
-        }
-
-        if(!empty($request->nomart)) {
-            $query->where('clientes.RazonSocial', 'LIKE', '%'. $request->nomart .'%');
+        if(!empty($request->pacempart)) {
+            $query->where(function ($query) use ($request) {
+                $query->orwhere('clientes.RazonSocial', 'LIKE', '%'. $request->pacempart .'%')
+                    ->orWhere('clientes.Identificacion', 'LIKE', '%'. $request->pacempart .'%')
+                    ->orWhere('clientes.ParaEmpresa', 'LIKE', '%'. $request->pacempart .'%')
+                    ->orWhere('clientes.NombreFantasia', 'LIKE', '%'. $request->pacempart .'%')
+                    ->orWhere('pacientes.Nombre', 'LIKE', '%'. $request->pacempart .'%')
+                    ->orWhere('pacientes.Apellido', 'LIKE', '%'. $request->pacempart .'%')
+                    ->orWhere('pacientes.Documento', 'LIKE', '%'. $request->pacempart .'%')
+                    ->orWhere('pacientes.Identificacion', 'LIKE', '%'. $request->pacempart .'%');
+            });
         }
 
         if (!empty($request->tipoPrestacion)) {

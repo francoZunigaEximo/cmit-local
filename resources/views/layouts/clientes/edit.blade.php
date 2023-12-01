@@ -5,7 +5,7 @@
 @section('content')
 
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-    <h4 class="mb-sm-0">Editar cliente</h4>
+    <h4 class="mb-sm-0">Editar cliente <span class="custom-badge original">Nro. {{ $cliente->Id }}</span></h4>
 
     <div class="page-title-right">
         <ol class="breadcrumb m-0">
@@ -250,24 +250,35 @@
             <div class="mt-4 mb-3 border-bottom pb-2">
                 <h5 class="card-title">Estas son otras empresas asociadas al cliente "{{ $cliente->RazonSocial }}" "{{ $cliente->Identificacion }}":</h5>
             </div>
-            @forelse($paraEmpresas as $empresa)
-            <div class="d-flex align-items-center mb-3">
-                <div class="flex-shrink-0 avatar-sm">
-                    <div class="avatar-title bg-light text-primary rounded-3 fs-18">
-                        <i class="ri-building-4-line"></i>
-                    </div>
-                </div>
-                <div class="flex-grow-1 ms-3">
-                    <h6>Empresa: {{ $empresa->ParaEmpresa}} </h6>
-                </div>
-                <div>
-                    <!-- Rounded Buttons -->
-                    <a href="{{ route('clientes.edit', ['cliente' => $empresa->Id])}}" class="btn rounded-pill btn-primary waves-effect waves-light">Ver</a>
-                </div>
-            </div>
-            @empty
-            <p>No hay empresas asociadas</p>
-            @endforelse
+            <table class="table">
+                <tbody>
+                    @forelse($paraEmpresas as $empresa)
+                    <tr>
+                        <td class="align-middle">
+                            <div class="avatar-sm">
+                                <div class="avatar-title bg-light text-primary rounded-3 fs-18">
+                                    <i class="ri-building-4-line"></i>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="align-middle">
+                            <h6>Empresa: {{ $empresa->ParaEmpresa}} </h6>
+                        </td>
+                        <td class="align-middle">
+                            <h6>Razon Social: {{ $empresa->RazonSocial}} </h6>
+                        </td>
+                        <td class="align-middle">
+                            <div>
+                                <!-- Rounded Buttons -->
+                                <a href="{{ route('clientes.edit', ['cliente' => $empresa->Id])}}" class="btn rounded-pill btn-primary waves-effect waves-light">Ver</a>
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <p>No hay empresas asociadas</p>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
         <div class="tab-pane" id="autorizados" role="tabpanel">
                 <div class="row g-2">
@@ -444,6 +455,10 @@
                 <div class="mb-3">
                     <label for="ObsCO" class="form-label">Cobranzas <i class="bx bx-show-alt" style="color: blue" title="Haz clic en el texto para ver todo"></i></label>
                     <textarea class="form-control auto-resize" placeholder="Observaciones cobranza" id="ObsCO">{{ $cliente->ObsCO }}</textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="Motivo" class="form-label">Observaciones de Bloqueo <i class="bx bx-show-alt" style="color: blue" title="Haz clic en el texto para ver todo"></i></label>
+                    <textarea class="form-control auto-resize" placeholder="Observaciones de bloqueo" id="Motivo">{{ $cliente->Motivo }}</textarea>
                 </div>
             </div>
             <div class="hstack gap-2 justify-content-end">
