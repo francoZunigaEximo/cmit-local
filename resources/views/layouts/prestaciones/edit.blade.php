@@ -120,7 +120,7 @@
 
                         <div class="col-10 FechaEnviado mt-2">
                             <div class="input-group input-group-sm">
-                                {!! ($prestacione->Cerrado == 1 ? ($prestacione->eEnviado == 1 ? '<span class="input-group-text eEnviar"><i class="ri-lock-line"></i>&nbps;E-enviado</span>' : '<span class="input-group-text eEnviar"><i class="ri-lock-unlock-line"></i>&nbsp;E-enviar</span>') : '<span class="input-group-text eEnviar"><i class="ri-lock-unlock-line"></i>&nbsp;E-enviar</span>') !!}
+                                {!! ($prestacione->Cerrado == 1 ? ($prestacione->eEnviado == 1 ? '<span class="input-group-text eEnviar"><i class="ri-lock-line"></i>&nbsp;E-enviado</span>' : '<span class="input-group-text eEnviar"><i class="ri-lock-unlock-line"></i>&nbsp;E-enviar</span>') : '<span class="input-group-text eEnviar"><i class="ri-lock-unlock-line"></i>&nbsp;E-enviar</span>') !!}
                                 <input type="text" class="form-control" id="eEnviar" placeholder="dd/mm/aaaa" value="{{ ($prestacione->FechaEnviado == '0000-00-00' || $prestacione->FechaEnviado == null ? '' : \Carbon\Carbon::parse($prestacione->FechaEnviado)->format('d/m/Y')) }}" @readonly(true)>
                             </div>
                         </div>
