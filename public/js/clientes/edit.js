@@ -197,7 +197,7 @@ $(document).ready(()=> {
                 ObsCE: ObsCE,
                 ObsCO: ObsCO,
                 ObsEval: ObsEval,
-                Motivo, Motivo,
+                Motivo: Motivo,
                 Id: ID,
             },
             success: function(){
