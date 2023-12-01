@@ -186,7 +186,7 @@ $(document).ready(()=> {
 
                 let t = response.tipo,
                     e = response.estado;
-                    debugger;
+    
                 switch (tipo) {
                     
                     case 'cerrar':

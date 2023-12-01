@@ -1,9 +1,30 @@
 $(document).ready(()=>{
+
+    let idExamen = []; 
  
+    toastr.options = {
+        closeButton: true,   
+        progressBar: true,     
+        timeOut: 3000,        
+    };
+
+    cargarExamen();
 
     $('#exam').select2({
         placeholder: 'Seleccionar exámen...',
-        language: 'es',
+        language: {
+            noResults: function() {
+
+            return "No hay examenes con esos datos";        
+            },
+            searching: function() {
+
+            return "Buscando..";
+            },
+            inputTooShort: function () {
+                return "Por favor, ingrese 2 o más caracteres";
+            }
+        },
         allowClear: true,
         ajax: {
            url: searchExamen,
@@ -33,7 +54,7 @@ $(document).ready(()=>{
         let paquete = $('#paquetes').val();
         
         if(paquete === '' || paquete === null){
-            swal("Atención", "Debe seleccionar un paquete para poder añadirlo en su totalidad", "warning");
+            toastr.warning("Debe seleccionar un paquete para poder añadirlo en su totalidad", "Atención");
             return;
         }
 
@@ -51,10 +72,7 @@ $(document).ready(()=>{
                     ids = data.map(function(item) {
                     return item.Id;
                   });
-                saveExamen(ids);
-                setTimeout(() => {
-                    location.reload();
-                }, 3000);     
+                saveExamen(ids);   
             }
        });
        
@@ -66,51 +84,47 @@ $(document).ready(()=>{
         $(this).closest('tr').remove();
 
         if (idItem !== undefined) {
-            
-            $.ajax({
-                url: deleteExamen,
-                type: 'Post',
-                data: {
-                    Id: idItem,
-                    _token: TOKEN
-                },
-                success: function(){
+            if(confirm("Confirme la eliminación del exámen:")){
 
-                    toastr.options = {
-                        closeButton: true,   
-                        progressBar: true,    
-                        timeOut: 3000,        
-                    };
-                    toastr.info('Se ha eliminado el examen de manera correcta de la BD', 'Eliminación realizada');
-                }
-            });
+                $.ajax({
+                    url: deleteExamen,
+                    type: 'Post',
+                    data: {
+                        Id: idItem,
+                        _token: TOKEN
+                    },
+                    success: function(){
+                        toastr.info('Se ha eliminado el exámen.', 'Eliminar');
+                    }
+                });
+            }
+            
         }
     });
 
     $(document).on('click', '.bloquear-examen', function() {
 
         let idItem = $(this).data('bloquear');
-        $(this).closest('tr').remove();
 
         if (idItem !== undefined) {
-            
-            $.ajax({
-                url: bloquearExamen,
-                type: 'Post',
-                data: {
-                    Id: idItem,
-                    _token: TOKEN
-                },
-                success: function(){
+            if(confirm('Confirme la baja del exámen:')){
 
-                    toastr.options = {
-                        closeButton: true,   
-                        progressBar: true,    
-                        timeOut: 3000,        
-                    };
-                    toastr.info('Se ha bloquead el examen de manera correcta en la BD', 'Bloqueo realizado');
-                }
-            });
+                $.ajax({
+                    url: bloquearExamen,
+                    type: 'Post',
+                    data: {
+                        Id: idItem,
+                        _token: TOKEN
+                    },
+                    success: function(){
+                        toastr.info('Se ha dado de baja el exámen', 'Baja realizada');
+                        $('#listaExamenes').empty();
+                        $('#exam').val([]).trigger('change.select2');
+                        $('#addPaquete').val([]).trigger('change.select2');
+                        cargarExamen();
+                    }
+                });
+            }   
         }
     });
 
@@ -119,14 +133,13 @@ $(document).ready(()=>{
         let id = $("#exam").val();
         
         if(id === '' || id === null) {
-            swal("Atención", "Debe seleccionar un examen para poder añadirlo a la lista", "warning");
+            toastr.warning("Debe seleccionar un examen para poder añadirlo a la lista", "Atención");
             return;
         }
 
         saveExamen(id);
     });
 
-    let idExamen = []; 
     function saveExamen(id){
 
         idExamen = [];
@@ -139,7 +152,7 @@ $(document).ready(()=>{
         }
 
         if (idExamen.length === 0) {
-            swal('Atención','No existe el exámen o el paquete no contiene examenes','warning');
+            toastr.warning("No existe el exámen o el paquete no contiene examenes", "Atención");
             return;
         }
 
@@ -158,42 +171,33 @@ $(document).ready(()=>{
                 $('#exam').val([]).trigger('change.select2');
                 $('#addPaquete').val([]).trigger('change.select2');
                 cargarExamen();
-                location.reload();
         },
             error: function(xhr){
-                swal('Error', 'Ha ocurrido un error. Consulte con el administrador', 'error');
+                toastr.error("Ha ocurrido un error. Consulte con el administrador", "Error");
                 console.error(xhr);
             }
         });
 
     }
-
-    cargarExamen();
     
     $(document).on('click', '.incompleto, .ausente, .forma, .sinesc, .devol', function() {
         let classes = $(this).attr('class').split(' '),
             item = $(this).closest('tr').find('td:first').attr('id');
-    
-            if (classes.includes('incompleto')) {
 
-                opcionesExamenes(item, 'Incompleto');
+            const opcionesClasses = {
+                'incompleto': 'Incompleto',
+                'ausente': 'Ausente',
+                'forma': 'Forma',
+                'sinesc': 'SinEsc',
+                'devol': 'Devol'
+              };
 
-            } else if (classes.includes('ausente')) {
+            let buscarClasse = classes.find(clase => opcionesClasses.hasOwnProperty(clase));
 
-                opcionesExamenes(item, 'Ausente');
-
-            } else if(classes.includes('forma')) {
-
-                opcionesExamenes(item, 'Forma');
-            
-            } else if(classes.includes('sinesc')) {
-
-                opcionesExamenes(item, 'SinEsc');
-
-            } else if(classes.includes('devol')) {
-
-                opcionesExamenes(item, 'Devol');
+            if(buscarClasse){
+                opcionesExamenes(item, opcionesClasses[buscarClasse]);
             }
+    
     });
 
     function opcionesExamenes(item, opcion){
@@ -208,11 +212,6 @@ $(document).ready(()=>{
             },
             success: function(){
 
-                toastr.options = {
-                    closeButton: true,   
-                    progressBar: true,    
-                    timeOut: 3000,        
-                };
                 toastr.success('Cambio realizado correctamente', 'Perfecto');
 
                 let fila = $('td#' + item).closest('tr'), 
@@ -224,7 +223,7 @@ $(document).ready(()=>{
             },
             error: function(xhr){
                 console.error(xhr);
-                swal('Error', 'Ha ocurrido un error', 'error');
+                toastr.error("Ha ocurrido un error. Consulte con el administrador", "Error");
             }
         });
 
@@ -266,40 +265,40 @@ $(document).ready(()=>{
                                 let url = editUrl.replace('__examen__', examen.IdItem);
 
                                 let fila = `
-                                        <tr>
+                                        <tr ${examen.Anulado === 1 ? 'class="filaBaja"' : ''}>
                                             <td data-idexam="${examenId}" id="${examen.IdItem}">${examen.Nombre}</td>
                                             <td>
                                                 <span id="incompleto" class="${(examen.Incompleto === 0 ||  examen.Incompleto === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
-                                                    <i class="ri-flag-2-line incompleto"></i>
+                                                    <i class="ri-flag-2-line ${examen.Anulado === 0 ? 'incompleto' : ''}"></i>
                                                 </span>
                                             </td>  <!-- este botón marca o desmarca el campo incompleto - debe ser rojo si es que el valor del campo es 1 -->
                                             <td>
                                                 <span id="ausente" class="${(examen.Ausente === 0 || examen.Ausente === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
-                                                    <i class=" ri-flag-2-line ausente"></i>
+                                                    <i class=" ri-flag-2-line ${examen.Anulado === 0 ? 'ausente' : '' }"></i>
                                                 </span>
                                             </td><!-- este botón marca o desmarca el campo ausente - debe ser rojo si es que el valor del campo es 1 -->
                                             <td>
                                                 <span id="forma" class="${(examen.Forma === 0 || examen.Forma === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
-                                                    <i class=" ri-flag-2-line forma"></i>
+                                                    <i class=" ri-flag-2-line ${examen.Anulado === 0 ? 'forma' : ''}"></i>
                                                 </span>
                                             </td><!-- este botón marca o desmarca el campo fomra - debe ser rojo si es que el valor del campo es 1 -->
                                             <td>
                                                 <span id="sinesc" class="${(examen.SinEsc === 0 || examen.SinEsc === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
-                                                    <i class=" ri-flag-2-line sinesc"></i>
+                                                    <i class=" ri-flag-2-line ${examen.Anulado === 0 ? 'sinesc' : '' }"></i>
                                                 </span>
                                             </td><!-- este botón marca o desmarca el campo sinesc - debe ser rojo si es que el valor del campo es 1 -->
                                             <td>
                                                 <span id="devol" id="${examen.IdItem}" class="${(examen.Devol === 0 || examen.Devol === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
-                                                    <i class=" ri-flag-2-line devol"></i>
+                                                    <i class=" ri-flag-2-line ${examen.Anulado === 0 ? 'devol' : '' }"></i>
                                                 </span>
                                             </td><!-- este botón marca o desmarca el campo devolucion - debe ser rojo si es que el valor del campo es 1 -->
         
-                                            <td class="date text-center">${examen.ApellidoE} ${examen.NombreE} <br>
+                                            <td class="date text-center" title="${examen.ApellidoE} ${examen.NombreE}">${examen.ApellidoE}<br>
                                                 <span class="badge badge-soft-danger">${(examen.CAdj === 0 || examen.CAdj === 1 || examen.CAdj === 2 ? 'Abierto': (examen.CAdj === 3 || examen.CAdj === 4 || examen.CAdj === 5 ? 'Cerrado' : 'Sin datos'))}</span>
-                                                    <i class="ri-attachment-line ${(examen.CAdj === 0 || examen.CAdj === 3 || examen.CAdj === 1 || examen.CAdj === 4 ? 'rojo' : 'verde')}"></i>
+                                                ${(examen.CAdj === 0 || examen.CAdj === null) ? ``: `<i class="ri-attachment-line ${(examen.CAdj === 3 || examen.CAdj === 1 || examen.CAdj === 4 ? 'rojo' : 'verde')}"></i>`}    
                                             </td>
                                     <!-- muestra el apellido + nombre del efector y debajo el estado (campo CAdj Abierto = 0 - 1 - 2 Cerrado = 3 - 4 - 5)  y al lado el icono de archivo (campo cAdj) gris si no hay archivo o verde si hay adjunto (NA = 0 - 3 Pendiente = 1 - 4  Adjunto = 2 - 5)  -->
-                                            <td class="date text-center">${examen.ApellidoI} ${examen.NombreI}<br>
+                                            <td class="date text-center" title="${examen.ApellidoI} ${examen.NombreI}">${examen.ApellidoI}<br>
                                                 <span class="badge badge-soft-danger">${(examen.CInfo === 3 ? 'Cerrado' : (examen.CInfo === 2 ? 'Borrador' : (examen.CInfo === 1 || examen.CInfo === 0 ? 'Pendiente': 'Sin datos')))}</span>
                                             </td>
                                     <!-- muestra el apellido + nombre del informador y debajo el estado (campo CInfo - Cerrado = 3, Borrador = 2 o pendiente = 0 y 1)   -->
@@ -311,16 +310,19 @@ $(document).ready(()=>{
                                                     <button type="button" class="btn btn-sm btn-soft-primary edit-item-btn" title="Ver"><i class="ri-search-eye-line"></i></button>
                                                 </a>
                                             </div>
-                                            <div class="bloquear">
-                                                <button data-bloquear="${examen.IdItem}" class="btn btn-sm btn-warning remove-item-btn bloquear-examen" title="Inhabilitar">
-                                                    <i class="ri-forbid-2-line"></i>
-                                                </button>
-                                            </div>
-                                            <div class="remove">
-                                                <button data-delete="${examen.IdItem}"  class="btn btn-sm btn-danger delete-examen" title="Eliminar">
-                                                    <i class="ri-delete-bin-2-line"></i>
-                                                </button>
-                                            </div>
+                                            ${examen.Anulado === 0 ? `
+                                                <div class="bloquear">
+                                                    <button data-bloquear="${examen.IdItem}" class="btn btn-sm btn-warning remove-item-btn bloquear-examen" title="Baja">
+                                                        <i class="ri-forbid-2-line"></i>
+                                                    </button>
+                                                </div>
+                                                <div class="remove">
+                                                    <button data-delete="${examen.IdItem}"  class="btn btn-sm btn-danger delete-examen" title="Eliminar">
+                                                        <i class="ri-delete-bin-2-line"></i>
+                                                    </button>
+                                                </div>    
+                                                ` : ''}
+                                            
                                         </div>
                                     </td>
                                     </tr>`;
@@ -334,7 +336,7 @@ $(document).ready(()=>{
             },
             error: function(xhr){
                 console.error(xhr);
-                swal('Error', 'Ha ocurrido un error. Consulte con el administrador', 'error');
+                toastr.error("Ha ocurrido un error. Consulte con el administrador", "Error");
             }
         });
     }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Examen;
 use App\Models\ItemPrestacion;
 use App\Models\PaqueteEstudio;
+use App\Models\Relpaqest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
@@ -39,9 +40,11 @@ class ExamenesController extends Controller
     public function paqueteId(Request $request)
     {
 
-        $query = Examen::where('IdEstudio', $request->IdPaquete, ['Id'])->get();
+        $query = Relpaqest::where('IdPaquete', $request->IdPaquete)->get();
+        $idExamenes = $query->pluck('IdExamen')->toArray();
+        $examenes = Examen::whereIn('Id', $idExamenes)->get();
 
-        return response()->json(['examenes' => $query]);
+        return response()->json(['examenes' => $examenes]);
         
     }
 
@@ -133,13 +136,13 @@ class ExamenesController extends Controller
                     'itemsprestaciones.CAdj as CAdj',
                     'itemsprestaciones.CInfo as CInfo',
                     'itemsprestaciones.Id as IdItem',
+                    'itemsprestaciones.Anulado as Anulado'
                 );                
 
             if ($request->tipo === 'listado' && is_array($request->IdExamen)) {
 
                     $query->whereIn('examenes.Id', $request->IdExamen)
-                            ->where('itemsprestaciones.IdPrestacion', $request->Id)
-                            ->where('itemsprestaciones.Anulado', '<>', 1);
+                            ->where('itemsprestaciones.IdPrestacion', $request->Id);
             } 
 
             return $query->orderBy('examenes.Nombre', 'ASC')->get();
