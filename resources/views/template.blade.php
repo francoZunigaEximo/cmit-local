@@ -306,6 +306,29 @@
 
     </script>
 
+    <script>
+        let idleTimeout;
+
+        function resetIdleTimeout() {
+            clearTimeout(idleTimeout);
+            idleTimeout = setTimeout(function () {
+                
+                window.location.href = '/logout';
+            }, {{ config('session.lifetime') * 1000 }});
+        }
+
+        // Reiniciar el temporizador
+        $(document).on('mousemove keydown scroll', function () {
+            resetIdleTimeout();
+        });
+
+        // Iniciar el temporizador con Hack
+        $(document).ready(function () {
+            resetIdleTimeout();
+        });
+    </script>
+
+
     <script src="{{ asset('libs/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('libs/simplebar/simplebar.min.js') }}"></script>
     <script src="{{ asset('libs/node-waves/waves.min.js') }}"></script>
