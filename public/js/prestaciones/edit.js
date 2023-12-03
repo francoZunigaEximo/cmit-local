@@ -439,20 +439,22 @@ $(document).ready(()=> {
     }
 
     function fechaNow(fechaAformatear, divider, format) {
-        let fechaActual;
+        let dia, mes, anio; 
     
         if (fechaAformatear === null) {
-            fechaActual = new Date();
+            let fechaHoy = new Date();
+    
+            dia = fechaHoy.getDate().toString().padStart(2, '0');
+            mes = (fechaHoy.getMonth() + 1).toString().padStart(2, '0');
+            anio = fechaHoy.getFullYear();
         } else {
-            fechaActual = new Date(fechaAformatear);
+            let nuevaFecha = fechaAformatear.split("-"); 
+            dia = nuevaFecha[0]; 
+            mes = nuevaFecha[1]; 
+            anio = nuevaFecha[2];
         }
     
-        let dia = fechaActual.getDate(), mes = fechaActual.getMonth() + 1, anio = fechaActual.getFullYear();
-    
-        dia = dia < 10 ? '0' + dia : dia;
-        mes = mes < 10 ? '0' + mes : mes;
-    
-        return (format === 1) ? dia + divider + mes + divider + anio : anio + divider + mes + divider + dia;
+        return (format === 1) ? `${dia}${divider}${mes}${divider}${anio}` : `${anio}${divider}${mes}${divider}${dia}`;
     }
     
     function quitarDuplicados(selector) {

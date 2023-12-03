@@ -110,17 +110,18 @@
                                     <input type="text" placeholder="Nro." class="form-control" id="nroprestacion">
                                 </div>
 
-                                <div class="col-sm-2 mb-3">
-                                    <label for="pacempart" class="form-label font-weight-bold"><strong>Paciente/Empresa/Art</strong></label>
-                                    <input type="text" placeholder="Paciente/Empresa/ART" class="form-control" id="pacempart">
-                                </div>
-
                                <!-- Filtros avanzados --> 
                                <div class="collapse" id="filtrosAvanzados">
                                 <div class="card mb-3">
                                   <div class="card-body" style="background: #eaeef3">
                                     <div class="row">
-
+                                    
+                                    <div class="col-sm-2 mb-3">
+                                        <div>
+                                            <label for="pacempart" class="form-label font-weight-bold"><strong>Paciente/Empresa/Art</strong></label>
+                                            <input type="text" placeholder="Paciente/Empresa/ART" class="form-control" id="pacempart">
+                                        </div>
+                                        </div>
 
                                       <div class="col-sm-2 mb-3">
                                         <div>
@@ -155,16 +156,14 @@
                                         </div>
                                       </div>
 
-                                      
-
                                     </div>
                                   </div>
                                 </div>
                               </div>
                                 <!-- Fin del filtro avanzado -->
                                 <div class="hstack gap-2 justify-content-end">
-                                    <a class="btn btn-danger" id="buscarReset">Mostrar Hoy</a>
-                                    <a class="btn btn-success" id="buscarPrestaciones">Buscar</a>
+                                    <a class="btn botonGeneral" id="buscarReset">Mostrar Hoy</a>
+                                    <a class="btn botonGeneral" id="buscarPrestaciones">Buscar</a>
                                 </div>
                                 
                             </div>
@@ -174,7 +173,7 @@
 
                     <div class="col-sm-9">
                         <div>
-                            <button type="button" class="btn btn-primary add-btn" data-bs-toggle="offcanvas" data-bs-target="#offcanvasTop" aria-controls="offcanvasTop">
+                            <button type="button" class="btn botonGeneral add-btn" data-bs-toggle="offcanvas" data-bs-target="#offcanvasTop" aria-controls="offcanvasTop">
                                     <i class="ri-add-line align-bottom me-1"></i> Nuevo
                             </button>
                             <button title="Filtros avanzados" class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#filtrosAvanzados" aria-expanded="false" aria-controls="filtrosAvanzados">
@@ -260,9 +259,9 @@
             <div class="col-xl-6 d-flex justify-content-center align-items-center p-3 rounded" style="background-color: #d4e0ee">
                 <label class="form-label" style="color: #5484bc; font-size: 1.3em; margin:auto 1em;">Paciente</label>
                 <select class="form-select" id="paciente"></select>
-                <button type="button" class="btn btn-primary d-inline-flex" id="checkPaciente" style="margin-left: 5px"><i class="ri-check-line me-2"></i>Crear</button>
+                <button type="button" class="btn botonGeneral d-inline-flex" id="checkPaciente" style="margin-left: 5px"><i class="ri-check-line me-2"></i>&nbsp;Crear</button>
                 <a href="{{ route('pacientes.create') }}">
-                    <button type="button" class="btn btn-warning d-inline-flex" style="margin-left: 10px"><i class="ri-user-add-line"></i>Nuevo</button>
+                    <button type="button" class="btn botonGeneral d-inline-flex" style="margin-left: 10px"><i class="ri-user-add-line"></i>&nbsp;Nuevo</button>
                 </a>
             </div>
         <div class="col-xl-3"></div>
@@ -282,7 +281,7 @@ const searchPrestaciones = "{{ route('searchPrestaciones') }}";
 const TOKEN = "{{ csrf_token() }}";
 const GOPACIENTES = "{{ route('pacientes.edit', ['paciente' => '__paciente__']) }}";
 const downPrestaActiva = "{{ route('downPrestaActiva') }}";
-const rutaBlock = "{{ route('blockPrestacion', ['Id' => '']) }}";
+const blockPrestacion = "{{ route('blockPrestacion') }}";
 const ROUTE = "{{ route('prestaciones.index') }}";
 const SEARCH = "{{ route('searchPrestaciones') }}";
 

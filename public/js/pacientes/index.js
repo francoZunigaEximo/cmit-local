@@ -1,4 +1,10 @@
 $(document).ready(function(){
+    
+    toastr.options = {
+        closeButton: true,   
+        progressBar: true,    
+        timeOut: 3000,        
+    };
 
     $(document).on('keydown', function(event) {
         if (event.keyCode === 27) {
@@ -29,11 +35,7 @@ $(document).ready(function(){
                     ids: ids
                 },
                 success: function() {
-                    toastr.options = {
-                        closeButton: true,   
-                        progressBar: true,    
-                        timeOut: 3000,        
-                    };
+
                     toastr.success('¡Se ha dado de baja a los pacientes correctamente!', 'Éxito');
                     $('#listaPac').DataTable();
                     $('#listaPac').DataTable().draw(false);
@@ -108,13 +110,8 @@ $(document).ready(function(){
             if(confirmar) {
                 
                 $.post(down, {_token: TOKEN, Id: paciente})
-
                 .done(function(){
-                    toastr.options = {
-                        closeButton: true,   
-                        progressBar: true,    
-                        timeOut: 3000,        
-                    };
+                   
                     toastr.success('Se ha realizado de manera correcta la baja', 'Perfecto');
 
                     $('#listaPac').DataTable();

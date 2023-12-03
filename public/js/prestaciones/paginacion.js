@@ -32,7 +32,7 @@ $(document).ready(()=>{
             {
                 data: null,
                 render: function(data){
-                    return fechaNow(data.FechaAlta,'/',1);
+                    return fechaNow(data.FechaAlta,'/',0);
                 }
             },
             {
@@ -87,7 +87,7 @@ $(document).ready(()=>{
                         }else if(data.Pago == "C"){
                             pago = 'CCorriente';
                         }else if (data.Pago == "P"){
-                            pago = 'PCuenta';
+                            pago = 'ExCuenta';
                         }else{
                             pago = "-"
                         }
@@ -102,13 +102,11 @@ $(document).ready(()=>{
                                     <button type="button" class="btn btn-sm btn-primary edit-item-btn">
                                         <i class="ri-edit-line"></i>
                                     </button>
-                                  </a>`;
+                                  </a>`,
                     
-                    let bloquear = '<a ' + (data.Anulado == 1 ? 'onclick="return false;"' : 'href="' + rutaBlock + data.Id + '"  onclick="return confirm(\'¿Estás seguro de que deseas Inhabilitar esta prestación?\')"') + '">' +
-                    '<button type="button" class="btn btn-sm btn-warning remove-item-btn" title="' + (data.Anulado == 1 ? "Anulado" : "Anular") + '" ' + (data.Anulado == 1 ? "disabled" : "") + '><i class="ri-forbid-2-line"></i></button>' +
-                '</a>';
+                    bloquear = `<button type="button" data-id="${data.Id}" class="btn btn-sm btn-warning remove-item-btn bloquearPrestacion" title="${(data.Anulado == 1 ? "Bloqueado" : "Bloquear")}" ${ (data.Anulado == 1 ? "disabled" : "")}><i class="ri-forbid-2-line"></i></button>`,
 
-                    let baja = `<button data-id="${data.Id}" type="button" class="btn btn-sm btn-danger downPrestacion"><i class="ri-delete-bin-2-line"></i></button>`;
+                    baja = `<button data-id="${data.Id}" type="button" class="btn btn-sm btn-danger downPrestacion"><i class="ri-delete-bin-2-line"></i></button>`;
 
                     return editar + ' ' + bloquear + ' ' + baja;
                 }
@@ -153,7 +151,7 @@ $(document).ready(()=>{
         let eEnviado = $('#eEnviado').val();
 
         //Filtros avanzados
-        let finalizado = $('Finalizado').val();
+        let finalizado = $('#Finalizado').val();
         let facturado = $('#Facturado').val();
         let entregado = $('#Entregado').val();
 
@@ -221,7 +219,7 @@ $(document).ready(()=>{
                     targets: 2,
                     orderable: true,
                     render: function(data){
-                        return fechaNow(data.FechaAlta,'/',1);
+                        return fechaNow(data.FechaAlta,'/',0);
                     }
                 },
                 {
@@ -296,7 +294,7 @@ $(document).ready(()=>{
                         }else if(data.Pago == "C"){
                             pago = 'CCorriente';
                         }else if (data.Pago == "P"){
-                            pago = 'PCuenta';
+                            pago = 'ExCuenta';
                         }else{
                             pago = "-"
                         }
@@ -311,13 +309,11 @@ $(document).ready(()=>{
                     orderable: false,
                     targets: 10,
                     render: function(data){
-                        let editar = `<a title="Editar" href="${location.href}/${data.Id}/edit"><button type="button" class="btn btn-sm btn-primary edit-item-btn"><i class="ri-edit-line"></i></button></a>`;
+                        let editar = `<a title="Editar" href="${location.href}/${data.Id}/edit"><button type="button" class="btn btn-sm iconGeneral"><i class="ri-edit-line"></i></button></a>`,
                         
-                        let bloquear = '<a ' + (data.Anulado == 1 ? 'onclick="return false;"' : 'href="' + rutaBlock + data.Id + '"  onclick="return confirm(\'¿Estás seguro de que deseas Inhabilitar esta prestación?\')"') + '">' +
-                        '<button type="button" class="btn btn-sm btn-warning remove-item-btn" title="' + (data.Anulado == 1 ? "Anulado" : "Anular") + '" ' + (data.Anulado == 1 ? "disabled" : "") + '><i class="ri-forbid-2-line"></i></button>' +
-                    '</a>';
+                        bloquear = `<button type="button" data-id="${data.Id}" class="btn btn-sm iconGeneral bloquearPrestacion" title="${(data.Anulado == 1 ? "Bloqueado" : "Bloquear")}" ${ (data.Anulado == 1 ? "disabled" : "")}><i class="ri-forbid-2-line"></i></button>`,
 
-                    let baja = `<button data-id="${data.Id}" type="button" class="btn btn-sm btn-danger downPrestacion" ><i class="ri-delete-bin-2-line"></i></button>`;
+                        baja = `<button data-id="${data.Id}" type="button" class="btn btn-sm iconGeneral downPrestacion" ><i class="ri-delete-bin-2-line"></i></button>`;
     
                         return editar + ' ' + bloquear + ' ' + baja;
                     }
@@ -348,22 +344,22 @@ $(document).ready(()=>{
 
 
     function fechaNow(fechaAformatear, divider, format) {
-        let fechaActual;
+        let dia, mes, anio; 
     
         if (fechaAformatear === null) {
-            fechaActual = new Date();
+            let fechaHoy = new Date();
+    
+            dia = fechaHoy.getDate().toString().padStart(2, '0');
+            mes = (fechaHoy.getMonth() + 1).toString().padStart(2, '0');
+            anio = fechaHoy.getFullYear();
         } else {
-            fechaActual = new Date(fechaAformatear);
+            let nuevaFecha = fechaAformatear.split("-"); 
+            dia = nuevaFecha[0]; 
+            mes = nuevaFecha[1]; 
+            anio = nuevaFecha[2];
         }
     
-        let dia = fechaActual.getDate();
-        let mes = fechaActual.getMonth() + 1;
-        let anio = fechaActual.getFullYear();
-    
-        dia = dia < 10 ? '0' + dia : dia;
-        mes = mes < 10 ? '0' + mes : mes;
-    
-        return (format === 1) ? dia + divider + mes + divider + anio : anio + divider + mes + divider + dia;
+        return (format === 1) ? `${dia}${divider}${mes}${divider}${anio}` : `${anio}${divider}${mes}${divider}${dia}`;
     }
 
 

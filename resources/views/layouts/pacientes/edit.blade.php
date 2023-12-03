@@ -712,6 +712,7 @@ const checkObs = "{{ route('checkObs') }}";
 <script src="{{ asset('js/scripts.js') }}?v={{ time() }}"></script>
 <script src="{{ asset('js/pacientes/edit.js') }}?v={{ time() }}"></script>
 <script src="{{ asset('js/prestaciones/utils.js') }}?v={{ time() }}"></script>
+<script src="{{ asset('js/utils.js') }}?v={{ time() }}"></script>
 <script src="{{ asset('js/pacientes/fichaLaboral.js') }}?v={{ time() }}"></script>
 <script src="{{ asset('js/pacientes/prestacionesPacientes.js') }}?v={{ time() }}"></script>
 <script src="{{ asset('js/pacientes/prestacionesComentarios.js') }}?v={{ time() }}"></script>

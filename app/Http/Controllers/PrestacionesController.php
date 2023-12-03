@@ -73,13 +73,14 @@ class PrestacionesController extends Controller
     private function buildQuery(Request $request)
     {
         $query = Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-            ->join('clientes', 'prestaciones.IdEmpresa', '=', 'clientes.Id')
+            ->join('clientes as emp', 'prestaciones.IdEmpresa', '=', 'emp.Id')
+            ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
             ->select(
                 DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdART) AS Art'),
                 DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdEmpresa) AS empresa'),
                 DB::raw("CONCAT(pacientes.Apellido,pacientes.Nombre) AS nombreCompleto"),
-                'clientes.ParaEmpresa as ParaEmpresa',
-                'clientes.Identificacion as Identificacion',
+                'emp.ParaEmpresa as ParaEmpresa',
+                'emp.Identificacion as Identificacion',
                 'prestaciones.Fecha as FechaAlta',
                 'prestaciones.Id as Id',
                 'pacientes.Nombre as Nombre',
@@ -101,21 +102,24 @@ class PrestacionesController extends Controller
         if (!empty($request->nroprestacion)) {
             $query->where('prestaciones.Id', '=', $request->nroprestacion);
         } else {
-            $query = $this->applyBasicFilters($query, $request);
-            $query = $this->applyAdvancedFilters($query, $request);
+            $query = $this->applyFilters($query, $request);
         }
     
         return $query;
     }
     
-    private function applyBasicFilters($query, $request)
+    private function applyFilters($query, $request)
     {
         if(!empty($request->pacempart)) {
             $query->where(function ($query) use ($request) {
-                $query->orwhere('clientes.RazonSocial', 'LIKE', '%'. $request->pacempart .'%')
-                    ->orWhere('clientes.Identificacion', 'LIKE', '%'. $request->pacempart .'%')
-                    ->orWhere('clientes.ParaEmpresa', 'LIKE', '%'. $request->pacempart .'%')
-                    ->orWhere('clientes.NombreFantasia', 'LIKE', '%'. $request->pacempart .'%')
+                $query->orwhere('emp.RazonSocial', 'LIKE', '%'. $request->pacempart .'%')
+                    ->orwhere('art.RazonSocial', 'LIKE', '%'. $request->pacempart .'%')
+                    ->orWhere('emp.Identificacion', 'LIKE', '%'. $request->pacempart .'%')
+                    ->orWhere('art.Identificacion', 'LIKE', '%'. $request->pacempart .'%')
+                    ->orWhere('emp.ParaEmpresa', 'LIKE', '%'. $request->pacempart .'%')
+                    ->orWhere('art.ParaEmpresa', 'LIKE', '%'. $request->pacempart .'%')
+                    ->orWhere('emp.NombreFantasia', 'LIKE', '%'. $request->pacempart .'%')
+                    ->orWhere('art.NombreFantasia', 'LIKE', '%'. $request->pacempart .'%')
                     ->orWhere('pacientes.Nombre', 'LIKE', '%'. $request->pacempart .'%')
                     ->orWhere('pacientes.Apellido', 'LIKE', '%'. $request->pacempart .'%')
                     ->orWhere('pacientes.Documento', 'LIKE', '%'. $request->pacempart .'%')
@@ -140,9 +144,7 @@ class PrestacionesController extends Controller
         }
 
         if (!empty($request->fechaDesde) && (!empty($request->fechaHasta))) {
-            $fechaDesde = Carbon::parse($request->fechaDesde); // Creamos un objeto para poder manipular la
-            $fechaDesde->addDay(); //Se agrega metodo addDay de Carbon para fixear los dias
-            $query->whereBetween('prestaciones.Fecha', [$fechaDesde, $request->fechaHasta]);
+            $query->whereBetween('prestaciones.Fecha', [$request->fechaDesde, $request->fechaHasta]);
         }
 
         if (is_array($request->estado) && in_array('Incompleto', $request->estado)) {
@@ -185,15 +187,10 @@ class PrestacionesController extends Controller
         if (is_array($request->estado) && in_array('Cerrado', $request->estado)) {
             $query->where('prestaciones.Cerrado', '1');
         }
-    
-        return $query;
-    }
-    
-    private function applyAdvancedFilters($query, $request)
-    {
 
         if (!empty($request->finalizado)) {
             $query->where('prestaciones.Finalizado', '=', $request->finalizado);
+            return $query;
         }
     
         if (!empty($request->facturado)) {
@@ -206,6 +203,7 @@ class PrestacionesController extends Controller
     
         return $query;
     }
+    
     
 
     public function create()

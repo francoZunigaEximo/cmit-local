@@ -1,12 +1,19 @@
 $(document).ready(()=>{
 
-    //Fechas en filtros
-    $('#fechaHasta').val(fechaNow(null, "-", 2));
-    //Limpiamos el ID para evitar bug
-    let IdComentario = null;
+    toastr.options = {
+        closeButton: true,   
+        progressBar: true,     
+        timeOut: 3000,        
+    };
 
     scrollListado();
 
+    //Limpiamos el ID para evitar bug
+    let IdComentario = null;
+
+    //Fechas en filtros
+    $('#fechaHasta').val(fechaNow(null, "-", 0));
+    
     $('#paciente').select2({
         dropdownParent: $('#offcanvasTop'),
         language: {
@@ -51,7 +58,7 @@ $(document).ready(()=>{
         let paciente = $('#paciente').select2('data').map(option => option.id);
 
         if (paciente.length == '') {
-            swal("Atención", "El campo no puede estar vacío. Si su usuario no existe, pruebe con crearlo con el botón nuevo.", "warning");
+            toastr.warning("El campo no puede estar vacío. Si su usuario no existe, pruebe con crearlo con el botón nuevo.", "Atención");
             return;
         }
 
@@ -73,12 +80,12 @@ $(document).ready(()=>{
 
             $.get(downPrestaActiva, {Id: prestacion})
                 .done(function(){
-                    swal('Perfecto', 'Se ha dado de baja la prestación', 'success');
+                    toastr.success("Se ha dado de baja la prestación", "Perfecto");
                     $('#listaPrestaciones').DataTable();
                     $('#listaPrestaciones').DataTable().draw(false);
                 })
                 .fail(function(xhr){
-                    swal('Error', 'Ha ocurrido un error. Consulte con el administrador', 'error');
+                    toastr.error("Ha ocurrido un error. Consulte con el administrador", "Error");
                     console.error(xhr);
                 });
         }
@@ -110,7 +117,7 @@ $(document).ready(()=>{
             },
             error:function(xhr){
 
-                swal('Error', '¡Ha ocurrido un inconveniente y la solicitud no podrá llevarse a cabo. Consulte con el administrador!', 'error');
+                toasrt.error("¡Ha ocurrido un inconveniente y la solicitud no podrá llevarse a cabo. Consulte con el administrador!", "Error");
                 console.error(xhr);
             }
         });
@@ -135,16 +142,32 @@ $(document).ready(()=>{
                 },
                 success: function(){
                     
-                    swal('Perfecto', 'El comentario de la prestación se ha guardado correctamente', 'success');
+                    toasrt.success("El comentario de la prestación se ha guardado correctamente", "Perfecto");
                 },
 
                 error: function(xhr){
 
-                    swal("Error", "¡Ha ocurrido un inconveniente y la solicitud no podrá llevarse a cabo. Consulte con el administrador!", "error");
+                    toasrt.error("¡Ha ocurrido un inconveniente y la solicitud no podrá llevarse a cabo. Consulte con el administrador!", "Error");
                     console.error(xhr);
                 }
             });
         }
+    });
+
+    $(document).on('click', '.bloquearPrestacion', function(){
+
+        let id = $(this).data('id');
+        
+        $.get(blockPrestacion, {Id: id})
+            .done(function(){
+                toastr.success("Se ha bloqueado correctamente", "Perfecto");
+                $('#listaPrestaciones').DataTable();
+                $('#listaPrestaciones').DataTable().draw(false);
+            })
+            .fail(function(xhr){
+                toastr.error("Se ha producido un error. Consulte con el administrador", "Error");
+                console.error(xhr);
+            });
     });
     
 
@@ -154,38 +177,23 @@ $(document).ready(()=>{
         }, 800);
     }
 
-    function mostrarPreloader(arg) {
-        $(arg).css({
-            opacity: '0.3',
-            visibility: 'visible'
-        });
-    }
-    
-    function ocultarPreloader(arg) {
-        $(arg).css({
-            opacity: '0',
-            visibility: 'hidden'
-        });
-    }
-
-    //Obtener fechas
     function fechaNow(fechaAformatear, divider, format) {
-        let fechaActual;
-
+        let dia, mes, anio; 
+    
         if (fechaAformatear === null) {
-            fechaActual = new Date();
+            let fechaHoy = new Date();
+    
+            dia = fechaHoy.getDate().toString().padStart(2, '0');
+            mes = (fechaHoy.getMonth() + 1).toString().padStart(2, '0');
+            anio = fechaHoy.getFullYear();
         } else {
-            fechaActual = new Date(fechaAformatear);
+            let nuevaFecha = fechaAformatear.split("-"); 
+            dia = nuevaFecha[0]; 
+            mes = nuevaFecha[1]; 
+            anio = nuevaFecha[2];
         }
-
-        let dia = fechaActual.getDate();
-        let mes = fechaActual.getMonth() + 1;
-        let anio = fechaActual.getFullYear();
-
-        dia = dia < 10 ? '0' + dia : dia;
-        mes = mes < 10 ? '0' + mes : mes;
-
-        return (format === 1) ? dia + divider + mes + divider + anio : anio + divider + mes + divider + dia;
+    
+        return (format === 1) ? `${dia}${divider}${mes}${divider}${anio}` : `${anio}${divider}${mes}${divider}${dia}`;
     }
 
 });
