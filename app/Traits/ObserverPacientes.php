@@ -82,4 +82,64 @@ trait ObserverPacientes
         return $result;
         
     }
+
+    public function addFoto($foto, $id, $tipo)
+    {
+        if ($foto && ($tipo === 'update' || $tipo === 'create')) {
+            $img = $foto;
+            $folderPath = 'archivos/fotos/';
+
+            $image_parts = explode(';base64,', $img);
+            $image_type_aux = explode('image/', $image_parts[0]);
+            $image_type = $image_type_aux[1];
+
+            $image_base64 = base64_decode($image_parts[1]);
+            $fileName = 'P'.$id.'.png';
+
+            $filePath = $folderPath.$fileName;
+            file_put_contents($filePath, $image_base64);
+            chmod($filePath, 0755);
+
+            return $fileName;
+
+        } elseif(($foto === null || $foto === '') && ($tipo === 'update' || $tipo === 'create')) {
+            
+            return 'foto-default.png';
+
+        }else{
+            return null;
+        }
+    }
+
+    public function addTelefono($telefono, $id, $tipo)
+    {
+        $telefonoClean = str_replace(['-', '(', ')'], '', $telefono);
+
+        if (strlen($telefonoClean) >= 10) {
+            $CodigoArea = substr($telefonoClean, 0, 3);
+            $NumeroTelefono = substr($telefonoClean, 3);
+        } else {
+            $NumeroTelefono = $telefonoClean;
+        }
+
+        if($tipo === 'create')
+        {
+            Telefono::create([
+                'Id' => Telefono::max('Id') + 1,
+                'IdEntidad' => $id,
+                'CodigoArea' => $CodigoArea ?? '',
+                'NumeroTelefono' => $NumeroTelefono,
+            ]);
+
+        }elseif($tipo === 'update'){
+
+            $telefono = Telefono::where('IdEntidad', $id)->first();
+
+            $telefono->CodigoArea = $CodigoArea ?? '';
+            $telefono->NumeroTelefono = $NumeroTelefono;
+            $telefono->save();
+
+        }
+    }
+
 }

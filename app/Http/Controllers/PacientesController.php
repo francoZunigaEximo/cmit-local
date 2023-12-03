@@ -135,29 +135,9 @@ class PacientesController extends Controller
     public function store(Request $request): mixed
     {
 
-        // Tomamos el ultimo ID y le sumamos 1 por falta del autoincrement
         $nuevoIdPaciente = Paciente::max('Id') + 1;
 
-        // Procesamos la imagen y si la imagen esta vacía guardamos una imagen default
-        if ($request->Foto) {
-            $img = $request->Foto;
-            $folderPath = 'archivos/fotos/';
-
-            $image_parts = explode(';base64,', $img);
-            $image_type_aux = explode('image/', $image_parts[0]);
-            $image_type = $image_type_aux[1];
-
-            $image_base64 = base64_decode($image_parts[1]);
-            $fileName = 'P'.$nuevoIdPaciente.'.png';
-
-            $filePath = $folderPath.$fileName;
-            file_put_contents($filePath, $image_base64);
-            chmod($filePath, 0755);
-
-            $foto = $fileName;
-        } else {
-            $foto = 'foto-default.png';
-        }
+        $foto = $this->addFoto($request->Foto, $nuevoIdPaciente, 'create');
 
         $paciente = Paciente::create([
             'Id' => $nuevoIdPaciente,
@@ -182,22 +162,10 @@ class PacientesController extends Controller
 
         $paciente->save();
 
-        // Limpiamos el telefono
-        $telefonoClean = str_replace(['-', '(', ')'], '', $request->NumeroTelefono);
-
-        if (strlen($telefonoClean) >= 10) {
-            $CodigoArea = substr($telefonoClean, 0, 3);
-            $NumeroTelefono = substr($telefonoClean, 3);
-        } else {
-            $NumeroTelefono = $telefonoClean;
+        if($request->NumeroTelefono)
+        {
+            $this->addTelefono($request->NumeroTelefono, $nuevoIdPaciente, 'create');
         }
-
-        Telefono::create([
-            'Id' => Telefono::max('Id') + 1,
-            'IdEntidad' => $nuevoIdPaciente,
-            'CodigoArea' => $CodigoArea ?? '',
-            'NumeroTelefono' => $NumeroTelefono,
-        ]);
 
         return redirect()->route('pacientes.edit', ['paciente' => $nuevoIdPaciente]);
 
@@ -242,7 +210,6 @@ class PacientesController extends Controller
     public function update(Request $request, Paciente $paciente)
     {
 
-        //Actualizamos
         $paciente = Paciente::find($paciente->Id);
         $paciente->Documento = $request->Documento;
         $paciente->TipoDocumento = $request->TipoDocumento;
@@ -256,47 +223,15 @@ class PacientesController extends Controller
         $paciente->Provincia = $request->Provincia;
         $paciente->IdLocalidad = $request->IdLocalidad;
         $paciente->CP = $request->CP;
-        if ($request->Foto) {
-            $img = $request->Foto;
-            $folderPath = 'archivos/fotos/';
-            $fileName = 'P'.$paciente->Id.'.jpg';
-            $filePath = $folderPath.$fileName;
-
-            // Eliminar archivo existente si existe
-            if (file_exists($fileName)) {
-                unlink($filePath);
-            }
-
-            $image_parts = explode(';base64,', $img);
-            $image_type_aux = explode('image/', $image_parts[0]);
-            $image_type = $image_type_aux[1];
-            $image_base64 = base64_decode($image_parts[1]);
-
-            file_put_contents($filePath, $image_base64);
-            chmod($filePath, 0755);
-
-            $paciente->Foto = $fileName;
-        }
+        $paciente->Foto = $this->addFoto($request->Foto, $paciente->Id, 'update') ?? '';
         $paciente->Antecedentes = $request->Antecedentes;
         $paciente->Observaciones = $request->Observaciones;
         $paciente->save();
 
-        //Limpiamos el telefono
-        $telefonoClean = str_replace(['-', '(', ')'], '', $request->NumeroTelefono);
-
-        if (strlen($telefonoClean) >= 10) {
-            $CodigoArea = substr($telefonoClean, 0, 3);
-            $NumeroTelefono = substr($telefonoClean, 3);
-        } else {
-            $NumeroTelefono = $telefonoClean;
+        if($request->NumeroTelefono)
+        {
+            $this->addTelefono($request->NumeroTelefono, $paciente->Id, 'update');
         }
-
-        //Actualizamos
-        $telefono = Telefono::where('IdEntidad', $paciente->Id)->first();
-
-        $telefono->CodigoArea = $CodigoArea ?? '';
-        $telefono->NumeroTelefono = $NumeroTelefono;
-        $telefono->save();
 
         return back();
 
