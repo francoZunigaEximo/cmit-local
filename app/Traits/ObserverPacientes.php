@@ -102,12 +102,10 @@ trait ObserverPacientes
 
             return $fileName;
 
-        } elseif(($foto === null || $foto === '') && ($tipo === 'update' || $tipo === 'create')) {
+        } elseif(($foto === null || $foto === '') && $tipo === 'create') {
             
             return 'foto-default.png';
 
-        }else{
-            return null;
         }
     }
 

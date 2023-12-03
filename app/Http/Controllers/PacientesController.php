@@ -223,7 +223,10 @@ class PacientesController extends Controller
         $paciente->Provincia = $request->Provincia;
         $paciente->IdLocalidad = $request->IdLocalidad;
         $paciente->CP = $request->CP;
-        $paciente->Foto = $this->addFoto($request->Foto, $paciente->Id, 'update') ?? '';
+        if($request->Foto)
+        {
+            $paciente->Foto = $this->addFoto($request->Foto, $paciente->Id, 'update');
+        } 
         $paciente->Antecedentes = $request->Antecedentes;
         $paciente->Observaciones = $request->Observaciones;
         $paciente->save();
