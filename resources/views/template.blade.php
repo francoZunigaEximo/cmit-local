@@ -303,18 +303,17 @@
         const lnkNuevoPaciente = "{{ route('pacientes.create') }}";
         const lnkExistePaciente = "{{ route('pacientes.edit', ['paciente' => '__paciente__']) }}";
         const verifyWizard = "{{ route('verifyWizard') }}";
+        const SALIR = "{{ route('logout') }}";
+        const tiempoSesion = {{ config('session.lifetime') * 60 * 1000 }};
 
-    </script>
-
-    <script>
         let idleTimeout;
 
         function resetIdleTimeout() {
             clearTimeout(idleTimeout);
             idleTimeout = setTimeout(function () {
                 
-                window.location.href = '/logout';
-            }, {{ config('session.lifetime') * 1000 }});
+                window.location.href = SALIR;
+            }, tiempoSesion);
         }
 
         // Reiniciar el temporizador
