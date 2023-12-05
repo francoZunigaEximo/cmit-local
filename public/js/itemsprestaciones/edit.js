@@ -1,21 +1,73 @@
 $(document).ready(function(){
 
-    $('.abrir, .cerrar, .asignar, .liberar').hide();
-    
-    const valAbrir = ['3','4','5'], valCerrar = ['0','1','2'], ID = $('#Id').val();;
-    let cadj = $('#CAdj').val(), efector = $('#efectores').val(), informador = $('#informadores').val(), provEfector = $('#IdEfector').val(), provInformador = $('#IdInformador').val();
+    $.fn.filepond.registerPlugin(FilePondPluginImagePreview);
 
+    toastr.options = {
+        closeButton: true,   
+        progressBar: true,    
+        timeOut: 3000,        
+    };
+
+    const valAbrir = ['3','4','5'], valCerrar = ['0','1','2'], ID = $('#Id').val();
+    let cadj = $('#CAdj').val(), CInfo = $('#CInfo').val(), efector = $('#efectores').val(), informador = $('#informadores').val(), provEfector = $('#IdEfector').val(), provInformador = $('#IdInformador').val(), Estado = $('#Estado').val(), EstadoI = $('#EstadoI').val();
+
+    $('.abrir, .cerrar, .asignar, .liberar, .asignarI, .cerrarI, .adjuntarEfector, .adjuntarInformador').hide();
     $('#efectores option[value="0"]').text('Elija una opción...');
     $('#informadores option[value="0"]').text('Elija una opción...');
-
+    
+    asignar(efector, 'efector');
+    asignar(informador, 'informador');
+    liberar(cadj, efector);
     abrir(cadj);
-    cerrar(cadj);
-    asignar(efector);
-    liberar(efector);
+    cerrar(cadj, efector, 'efector');
+    cerrar(cadj, informador, 'informador');
     optionsGeneral(provEfector, 'efector');
     optionsGeneral(provInformador, 'informador');
     listadoE();
     listadoI();
+
+    $(document).on('click', '.btnAdjEfector, .btnAdjInformador', function () {
+        let who = $(this).hasClass('btnAdjEfector') ? 'efector' : 'informador';
+    
+        let fileInput = $('.fileEfector')[0];  // Obten el elemento input de tipo file
+        let archivo = fileInput.files[0]; 
+        
+        // Comprobar si hay archivos
+        if (archivo) {
+            let descripcionE = $('#DescripcionE').val(),
+                descripcionI = $('#DescripcionI').val(),
+                descripcion = (who === 'efector') ? descripcionE : descripcionI,
+                identificacion = $('#identificacion').val(),
+                prestacion = $('#prestacion').val();
+    
+            let formData = new FormData();
+            formData.append('archivo', archivo);
+            formData.append('Id', ID);
+            formData.append('Descripcion', descripcion);
+            formData.append('IdEntidad', identificacion);
+            formData.append('IdPrestacion', prestacion);
+            formData.append('_token', TOKEN);
+    
+            $.ajax({
+                type: 'POST',
+                url: fileUpload,
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    // Manejar el éxito de la solicitud
+                },
+                error: function (xhr) {
+                    console.error(xhr);
+                    toastr.error("Ha ocurrido un error. Consulte con el administrador", "Atención");
+                }
+            });
+        } else {
+            console.error('No se seleccionó ningún archivo.');
+        }
+    });
+    
+    
 
     $(document).on('click', '#abrir', function(){
 
@@ -23,14 +75,8 @@ $(document).ready(function(){
 
         if(cadj in lista){
 
-            $.post(updateItem, {Id : ID, _token: TOKEN, CAdj: lista[cadj] })
+            $.post(updateItem, {Id : ID, _token: TOKEN, CAdj: lista[cadj], Para: 'abrir' })
                 .done(function(){
-
-                    toastr.options = {
-                        closeButton: true,   
-                        progressBar: true,    
-                        timeOut: 3000,        
-                    };
                     toastr.success('Se ha realizado la acción correctamente', 'Actualizacion realizada');
                     setTimeout(() => {
                         location.reload();
@@ -38,64 +84,74 @@ $(document).ready(function(){
                     
                 })
                 .fail(function(xhr){
-                    toastr.options = {
-                        closeButton: true,   
-                        progressBar: true,    
-                        timeOut: 3000,        
-                    };
                     toastr.success('Ha ocurrido un error. Consulte con el administrador', 'Error');
                     console.error(xhr);
                 });
         }
     });
 
-    $(document).on('click', '#cerrar', function(){
+    $('#btnVolver').click(function() {
+        location.href = volver;
+    }); 
 
-        let lista = {0: 3, 1: 4, 2: 5};
+    $('#adjuntarEfector').on('click', function () {
+        $('#archivoEfector').click();
+    });
 
-        if(cadj in lista){
+    $(document).on('click', '#cerrar, #cerrarI', function(){
 
-            $.post(updateItem, {Id : ID, _token: TOKEN, CAdj: lista[cadj] })
+        let who = $(this).hasClass('cerrar') ? 'cerrar' : 'cerrarI',
+            listaE = {0: 3, 1: 4, 2: 5},
+            listaI = ['0', '1', '2'];
+
+        if(who === 'cerrar' && cadj in listaE){
+
+            $.post(updateItem, {Id : ID, _token: TOKEN, CAdj: listaE[cadj], Para: who })
                 .done(function(){
-
-                    toastr.options = {
-                        closeButton: true,   
-                        progressBar: true,    
-                        timeOut: 3000,        
-                    };
-                    toastr.success('Se ha realizado la acción correctamente', 'Actualizacion realizada');
+                    toastr.success('Se ha cerrado al efector correctamente', 'Actualizacion realizada');
                     setTimeout(() => {
                         location.reload();
                     }, 3000);
                     
                 })
                 .fail(function(xhr){
-                    toastr.options = {
-                        closeButton: true,   
-                        progressBar: true,    
-                        timeOut: 3000,        
-                    };
+                    toastr.success('Ha ocurrido un error. Consulte con el administrador', 'Error');
+                    console.error(xhr);
+                });
+
+        }else if(who === 'cerrarI' && listaI.includes(CInfo)){
+
+            $.post(updateItem, {Id : ID, _token: TOKEN, CInfo: 3, Para: who })
+                .done(function(){
+                    toastr.success('Se ha cerrado al informador correctamente', 'Actualizacion realizada');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 3000);
+                    
+                })
+                .fail(function(xhr){
                     toastr.success('Ha ocurrido un error. Consulte con el administrador', 'Error');
                     console.error(xhr);
                 });
         }
     });
 
-    $(document).on('click', '#asignar', function(){
+    $(document).on('click', '#asignar, #asignarI', function(){
+
+        let who = $(this).hasClass('asignar') ? 'asignar' : 'asignarI',
+            check = (who === 'asignar') ? $('#efectores').val() : $('#informadores').val();
+
+        if(check === '' || check === '0'){
+            toastr.warning("Debe seleccionar un Efector/Informador para poder asignar uno", "Atención");
+            return;
+        }
         
-        let check = $('#efectores').val();
-        $.post(updateEfector, { Id: ID, _token: TOKEN, IdProfesional: check, fecha: 1})
+        $.post(updateEfector, { Id: ID, _token: TOKEN, IdProfesional: check, fecha: 1, Para: who})
             .done(function(){
-
-                toastr.options = {
-                    closeButton: true,   
-                    progressBar: true,    
-                    timeOut: 3000,        
-                };
-                toastr.success('Se ha actualizado el efector de manera correcta', 'Actualizacion realizada');
+                toastr.success('Se ha actualizado la información de manera correcta', 'Actualización realizada');
                 setTimeout(() => {
-                    location.reload();
-                }, 3000);
+                    location.reload();             
+                }, 3000); 
             })
     });
 
@@ -105,18 +161,13 @@ $(document).ready(function(){
 
         if(checkEmpty !== '0'){
 
-            $.post(updateEfector, { Id: ID, _token: TOKEN, IdProfesional: 0, fecha: 0})
+            $.post(updateEfector, { Id: ID, _token: TOKEN, IdProfesional: 0, fecha: 0, Para: 'asignar'})
             .done(function(){
-
-                toastr.options = {
-                    closeButton: true,   
-                    progressBar: true,    
-                    timeOut: 3000,        
-                };
                 toastr.success('Se ha actualizado el efector de manera correcta', 'Actualizacion realizada');
                 setTimeout(() => {
                     location.reload();
                 }, 3000);
+                
             })
         }
    
@@ -124,30 +175,21 @@ $(document).ready(function(){
 
     $(document).on('click', '#adjuntos', function(){
 
-        let cadj = $('#CAdj').val(), lista = {1: 2, 4: 5, 2: 1, 5: 4};
+        let lista = {1: 2, 4: 5, 2: 1, 5: 4};
 
-        if(cadj === '0' || cadj === 'null') return;
+        if(cadj === '0' || cadj === null) return;
 
         if(cadj in lista){
             
             $.post(updateAdjunto, {Id: ID, _token: TOKEN, CAdj: lista[cadj]})
                 .done(function(){
-                  
-                    toastr.options = {
-                        closeButton: true,   
-                        progressBar: true,
-                        timeOut: 3000,        
-                    };
                     toastr.success('Se ha actualizado el efector de manera correcta', 'Actualizacion realizada');
                     setTimeout(() => {
                         location.reload();
                     }, 3000);
                 })
-            
-
         }
             
-
     });
 
     $(document).on('click', '#actualizarExamen', function(){
@@ -168,21 +210,86 @@ $(document).ready(function(){
             });
     });
 
-    function abrir(val){
-        return (valAbrir.includes(val)) ? $('.abrir').show() : $('.abrir').hide();    
+    async function abrir(val){
+        let resultado = await (valAbrir.includes(val));
+        
+        if(resultado){
+
+            $('.abrir').show();
+            $('#informadores').prop('disabled', false);
+        
+        }else{
+
+            $('.abrir').hide();  
+        }
     }
 
-    function cerrar(val){
-        return (valCerrar.includes(val)) ? $('.cerrar').show() : $('.cerrar').hide();
+    async function cerrar(val, e, tipo){  
+
+        if(tipo === 'efector'){
+
+            let resultado = await (valCerrar.includes(val) && e !== '0');
+            
+            if(resultado){
+                $('.cerrar').show();
+                $('#informadores').prop('disabled', true);
+
+            }
+        }else if(tipo === 'informador'){
+
+            let resultado = await (efector !== '0' && informador !== '0') && (CInfo !== '3'),
+                final = await (efector !== '0' && informador !== '0') && (Estado === 'Cerrado' && EstadoI === 'Cerrado');
+
+            if(resultado){
+   
+                $('.cerrarI').show();
+                $('.abrir').hide();
+                $('.adjuntarInformador').show();
+
+            }else if(final){
+
+                $('.cerrarI').hide();
+                $('.abrir').hide();
+                $('.adjuntarInformador').hide();
+            }
+        }
     }
 
-    function asignar(efector){
+    async function asignar(e, tipo){
 
-        return (efector === '' || efector === 'null' || efector === '0') ? $('.asignar').show() : $('.asignar').hide();
+        if(tipo === 'efector'){
+
+            let resultado = await (e === '0' || e === null || e === '');
+
+            if(resultado){
+
+                $('.asignar').show();
+                $('#informadores').prop('disabled', true);
+                $('.adjuntarInformador').hide();
+            }
+        
+        }else if(tipo === 'informador'){
+
+            let resultado = await (e === '0' || e === null || e === '') && (efector !== '0');
+            
+            if(resultado){
+                $('.asignarI').show();
+                $('.abrir').show();
+            }
+        }
     }
+       
 
-    function liberar(efector){
-        return (efector !== '' && efector !== 'null' && efector !== '0') ? $('.liberar').show() : $('.liberar').hide();
+    async function liberar(val, e){
+        let resultado = await (e !== '' && e !== null && e !== '0' && valCerrar.includes(val));
+        
+        if(resultado){
+            $('.liberar').show();
+            $('.asignarI').hide();
+            $('.adjuntarEfector').show();
+
+        }  
+
     }
 
     function optionsGeneral(id, tipo) {
@@ -214,7 +321,7 @@ $(document).ready(function(){
 
     function listadoE(){
 
-        $.get(paginacionGeneral, {Id: ID})
+        $.get(paginacionGeneral, {Id: ID, tipo: 'efector'})
             .done(function(response){
                 
                 let data = response.resultado;
@@ -249,7 +356,7 @@ $(document).ready(function(){
 
     function listadoI(){
 
-        $.get(paginacionGeneral, {Id: ID})
+        $.get(paginacionGeneral, {Id: ID, tipo: 'informador'})
             .done(function(response){
                 
                 let data = response.resultado;
@@ -263,10 +370,10 @@ $(document).ready(function(){
                             <td>
                                 <div class="d-flex gap-2">
                                     <div class="edit">
-                                        <button type="button" class="btn btn-sm btn-soft-primary edit-item-btn" title="Ver"><i class="ri-search-eye-line"></i></button>
+                                        <button type="button" class="btn btn-sm iconGeneral" title="Ver"><i class="ri-search-eye-line"></i></button>
                                     </div>
                                     <div class="remove">
-                                        <button class="btn btn-sm btn-danger" title="Eliminar">
+                                        <button class="btn btn-sm iconGeneral" title="Eliminar">
                                             <i class="ri-delete-bin-2-line"></i>
                                         </button>
                                     </div>
@@ -279,8 +386,4 @@ $(document).ready(function(){
                 });
             })
     }
-
-    $('#btnVolver').click(function() {
-        history.back();
-    }); 
 });

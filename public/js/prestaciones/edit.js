@@ -190,18 +190,21 @@ $(document).ready(()=> {
                 switch (tipo) {
                     
                     case 'cerrar':
-                        if(e.Cerrado === 1 && e.Entregado === 0 && e.eEnviado === 0){
+                        if(e.Cerrado === 1 && e.Finalizado === 0 && e.Entregado === 0) {
+                            
                             $('.cerrar').html('<i class="ri-lock-line"></i>&nbsp;Cerrado');
                             $('.FechaFinalizado').find('span').removeAttr('title').removeClass().addClass('input-group-text finalizar');
                             $('#cerrar').val(fechaNow(new Date, '/', 1)).prop('readonly', true);
                             
                         } else {
-                            if(e.Finalizado !== 1 ){
+                            
+                            if(e.Cerrado === 0 && e.Finalizado === 0 && e.Entregado === 0){
                                 $('.cerrar').html('<i class="ri-lock-unlock-line"></i>&nbsp;Cerrar');
                                 $('.FechaFinalizado').find('span').removeAttr('title').removeClass().addClass('input-group-text');
                                 $('#cerrar').val('').prop('readonly', false);
                             }
                         }
+                        
                         break;
 
                     case 'finalizar':
@@ -209,12 +212,14 @@ $(document).ready(()=> {
                             $('.finalizar').html('<i class="ri-lock-line"></i>&nbsp;Finalizado');
                             $('#finalizar').val(fechaNow(new Date, '/', 1)).prop('readonly', true);
                             $('.FechaEntrega').find('span').removeAttr('title').removeClass().addClass('input-group-text entregar');
+                            
 
                         }else{
                             if(e.Entregado !== 1){
                                 $('.finalizar').html('<i class="ri-lock-unlock-line"></i>&nbsp;Finalizar');
                                 $('#finalizar').val('').prop('readonly', false);
                                 $('.FechaEntrega').find('span').removeAttr('title').removeClass().addClass('input-group-text');
+                                
                             }
                         }
                         break;
@@ -439,22 +444,23 @@ $(document).ready(()=> {
     }
 
     function fechaNow(fechaAformatear, divider, format) {
-        let dia, mes, anio; 
+        let dia, mes, anio;
     
-        if (fechaAformatear === null) {
+        if (fechaAformatear === null || !(fechaAformatear instanceof Date)) {
             let fechaHoy = new Date();
     
             dia = fechaHoy.getDate().toString().padStart(2, '0');
             mes = (fechaHoy.getMonth() + 1).toString().padStart(2, '0');
             anio = fechaHoy.getFullYear();
         } else {
-            let nuevaFecha = fechaAformatear.split("-"); 
-            dia = nuevaFecha[0]; 
-            mes = nuevaFecha[1]; 
-            anio = nuevaFecha[2];
+            dia = fechaAformatear.getDate().toString().padStart(2, '0');
+            mes = (fechaAformatear.getMonth() + 1).toString().padStart(2, '0');
+            anio = fechaAformatear.getFullYear();
         }
     
-        return (format === 1) ? `${dia}${divider}${mes}${divider}${anio}` : `${anio}${divider}${mes}${divider}${dia}`;
+        let fechaCadena = `${anio}${divider}${mes}${divider}${dia}`;
+    
+        return (format === 1) ? `${dia}${divider}${mes}${divider}${anio}` : fechaCadena;
     }
     
     function quitarDuplicados(selector) {

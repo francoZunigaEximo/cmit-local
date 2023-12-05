@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ArchivoEfector;
+use App\Models\ArchivoInformador;
 use App\Models\ItemPrestacion;
 use App\Models\ItemPrestacionInfo;
 use App\Models\Profesional;
@@ -20,8 +22,10 @@ class ItemPrestacionesController extends Controller
 
     public function edit(ItemPrestacion $itemsprestacione): mixed
     {
-    
-        return view('layouts.itemsprestaciones.edit', compact(['itemsprestacione']));
+        $paciente = $this->getPaciente($itemsprestacione->IdPrestacion);
+        $qrTexto = $this->generarQR('A', $itemsprestacione->IdPrestacion, $itemsprestacione->IdExamen, $paciente->Id, 'texto');
+
+        return view('layouts.itemsprestaciones.edit', compact(['itemsprestacione', 'qrTexto', 'paciente']));
     }
 
     public function updateItem(Request $request): void
@@ -29,19 +33,34 @@ class ItemPrestacionesController extends Controller
         $item = ItemPrestacion::find($request->Id);
 
         if($item) 
-        {
-            $item->CAdj = $request->CAdj;
+        {   
+            if($request->Para === 'cerrar' || $request->Para === 'abrir')
+            {
+                $item->CAdj = $request->CAdj;
+            
+            }elseif($request->Para === 'cerrarI'){
+
+                $item->CInfo = $request->CInfo;
+            
+            }
             $item->save();
         }
     }
 
-    public function updateEfector(Request $request): void
+    public function updateEfector(Request $request)
     {
+
         $item = ItemPrestacion::find($request->Id);
 
         if($item)
         {
-            $item->IdProfesional = $request->IdProfesional;
+            if($request->Para === 'asignar'){
+                $item->IdProfesional = $request->IdProfesional;
+
+            }elseif($request->Para === 'asignarI'){
+                $item->IdProfesional2 = $request->IdProfesional;
+            }
+            
             $item->FechaAsignado = ($request->fecha === '0' ? '' : now()->format('Y-m-d'));
             $item->save();
         }
@@ -55,7 +74,6 @@ class ItemPrestacionesController extends Controller
                 'profesionales.Id as Id',
                 DB::raw("CONCAT(profesionales.Apellido, ' ', profesionales.Nombre) AS NombreCompleto"),
             )
-            ->where('profesionales.T1', '1')
             ->where(function($query) use ($request) {
                 if ($request->tipo === 'efector') {
                     $query->where('profesionales.T1', '1');
@@ -64,6 +82,7 @@ class ItemPrestacionesController extends Controller
                 }
             })
             ->where('profesionales.IdProveedor', $request->proveedor)
+            ->where('profesionales.Inactivo', '0')
             ->get();
 
         return response()->json(['resultados' => $data]);
@@ -96,7 +115,13 @@ class ItemPrestacionesController extends Controller
                 'examenes.Adjunto as Adjunto',
                 'proveedores.MultiE as MultiE',
             )
-            ->where('itemsprestaciones.Id', $Id)
+            ->where(function($query) use ($request, $Id) {
+                if ($request->tipo === 'efector') {
+                    $query->where('archivosefector.IdEntidad', $Id);
+                } elseif ($request->tipo === 'informador') {
+                    $query->where('archivosinformador.IdEntidad', $Id);
+                }
+            })
             ->get();
 
         return response()->json(['resultado' => $query]);
@@ -124,5 +149,43 @@ class ItemPrestacionesController extends Controller
             $query->save();
         }
     }
+
+
+    public function uploadAdjunto(Request $request)
+    {
+        return $request->all();
+
+        $nuevoId = ($request->who === 'efector') ? ArchivoEfector::max('Id') + 1 : ArchivoInformador::max('Id') + 1;
+        $identificador = ($request->who === 'efector') ? 'AEF' : 'AINF';
+
+        if($request->hasFile('archivo')) {
+            $fileName = $identificador.$nuevoId. '.' . $request->archivo->extension();
+            $request->archivo->storeAs('public/itemsprestaciones', $fileName);
+        }
+
+        if($request->who === 'efector'){
+
+            ArchivoEfector::create([
+                'Id' => $nuevoId,
+                'IdEntidad' => $request->IdEntidad,
+                'Descripcion' => $request->Descripcion ?? '',
+                'Ruta' => $fileName,
+                'IdPrestacion' => $request->IdPrestacion,
+                'Tipo' => 0
+            ]);
+        
+        }elseif($request->who === 'informador'){
+
+            ArchivoInformador::create([
+                'Id' => $nuevoId,
+                'IdEntidad' => $request->IdEntidad,
+                'Descripcion' => $request->Descripcion ?? '',
+                'Ruta' => $fileName,
+                'IdPrestacion' => $request->IdPrestacion
+            ]);
+        }
+        
+    }
+
 
 }

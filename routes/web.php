@@ -192,6 +192,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('updateAdjunto', [ItemPrestacionesController::class, 'updateAdjunto'])->name('updateAdjunto');
     Route::get('paginacionGeneral', [ItemPrestacionesController::class, 'paginacionGeneral'])->name('paginacionGeneral');
     Route::post('updateExamen', [ItemPrestacionesController::class, 'updateExamen'])->name('updateExamen');
+    Route::post('uploadAdjunto', [ItemPrestacionesController::class, 'uploadAdjunto'])->name('uploadAdjunto');
 
     //Rutas de FacturasdeVenta
     Route::get('getFactura', [FacturasVentaController::class, 'getFactura'])->name('getFactura');

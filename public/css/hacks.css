@@ -334,3 +334,7 @@ body .selectArt2 .select2.select2-container {
 .filaBaja {
 	background-color: #f500001c;
 }
+
+.size50porcent {
+	width: 50% !important;
+}
