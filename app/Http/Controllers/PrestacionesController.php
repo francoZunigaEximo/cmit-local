@@ -14,7 +14,11 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Yajra\DataTables\DataTables;
+use App\Exports\PrestacionesExport;
+use Maatwebsite\Excel\Facades\Excel;
+use stdClass;
 
 class PrestacionesController extends Controller
 {
@@ -469,6 +473,23 @@ class PrestacionesController extends Controller
         $existe = $query !== null;
 
         return response()->json(['existe' => $existe, 'paciente' => $query]);
+    }
+
+    public function exportExcel(Request $request)
+    {
+        $ids        = $request->ids ? explode(",", $request->ids) : []; 
+        $filters    = $request->filters ? explode(",", $request->filters) : [];
+
+        if($filters){
+            $filtersAux = new stdClass() ;
+            foreach ($filters as $filter) {
+                $value = explode(":", $filter);
+                $filtersAux->{$value[0]} = isset($value[1]) ? $value[1] : "";
+            }
+            $filters = $filtersAux;
+        }
+        
+        return Excel::download(new PrestacionesExport($ids, $filters), 'prestaciones.xlsx');
     }
 
 }

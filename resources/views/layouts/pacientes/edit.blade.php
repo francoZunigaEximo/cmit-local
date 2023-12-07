@@ -163,6 +163,9 @@
                             <span evol</span>
                             <span title="Ausente" style="padding: 0.5em; background-color: red; color: black; border-radius: 3px"> Ausente</span>
                             <span title="Sin Esc" style="padding: 0.5em; background-color: yellow; color: black; border-radius: 3px"> Sin Esc</span>
+                            <button type="button" id="excel" class="btn iconGeneral" title="Generar reporte en Excel">
+                            <i class="ri-file-excel-line"></i>
+                            </button>
                         </div>
                         <div class="col-sm-6">
                             <div class="" style="width: 100%;">
@@ -177,7 +180,7 @@
                             <table id="listaPacientes" class="display table table-bordered" style="width:100%">
                                 <thead class="table-light">
                                     <tr>
-                                        <td></td>
+                                        <th><input type="checkbox" id="checkAll" name="Id"></th>
                                         <th class="sort">N°</th>
                                         <th class="sort">Alta</th>
                                         <th class="sort">Empresa</th>
@@ -193,9 +196,7 @@
                                     @forelse($pacientePrestacion as $prespaciente)
                                     <tr id="filapresId" data-filapres="{{ $prespaciente->Id }}">
                                         <td>
-                                            <div class="prestacionComentario" data-id="{{ $prespaciente->Id }}" data-bs-toggle="modal" data-bs-target="#prestacionModal">
-                                                    <i class="ri-chat-3-line"></i>
-                                            </div>
+                                            <input type="checkbox" name="Id" value="{{$prespaciente->Id}}" checked="">
                                         </td>
                                         <td>
                                             <span 
@@ -225,7 +226,7 @@
                                                     <button type="button" id="blockPrestPaciente" data-idprest="{{ $prespaciente->Id }}" class="btn iconGeneral" title="{{ ($prespaciente->Anulado == 1)? 'Bloqueado':'Bloquear' }}" {{ ($prespaciente->Anulado == 1)?'disabled':'' }}><i class="ri-forbid-2-line"></i></button>
                                                 </div>
                                                     <button type="button" id="downPrestPaciente" data-idprest="{{ $prespaciente->Id }}" class="btn iconGeneral" ><i class="ri-delete-bin-2-line"></i></button>
-                                                    
+                                                    <button class="btn btn-sm prestacionComentario" data-id="{{ $prespaciente->Id }}" data-bs-toggle="modal" data-bs-target="#prestacionModal"><i class="ri-chat-3-line"></i></button>
                                              </div>
                                         </td>
                                     </tr>
@@ -696,6 +697,38 @@ const getTipoPrestacion = "{{ route('getTipoPrestacion') }}";
 const TOKEN = "{{ csrf_token() }}";
 
 const checkObs = "{{ route('checkObs') }}";
+$('#excel').click(function(e) {
+    e.preventDefault();
+
+    ids     = "";
+    filters = "";
+    length  = $('input[name="Id"]:checked').length;
+
+    $('input[name="Id"]:checked').each(function(index,element) {
+        
+        if($(this).val() == "on"){
+            return;
+        }
+
+        if(index == (length - 1)){
+            ids += $(this).val();    
+        }
+        else {
+            ids += $(this).val() + ",";    
+        }
+    });
+
+    if (!ids){
+        toastr.info('No existen registros para exportar', 'Atención');
+        return;
+    }
+
+    var exportExcel = "{{ route('excelPrestaciones', ['ids' =>  'idsContent', 'filters' => 'filtersContent']) }}";
+    exportExcel     = exportExcel.replace('idsContent', ids);
+    exportExcel     = exportExcel.replace('filtersContent', filters);
+    exportExcel     = exportExcel.replaceAll('amp;', '');
+    window.location = exportExcel;
+});
 
 </script>
 

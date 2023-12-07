@@ -8,7 +8,7 @@ $(document).ready(()=>{
         ordering: false,
         processing: true,
         lengthChange: false,
-        pageLength: 15,
+        pageLength: 50,
         responsive: true,
         serverSide: true,
         ajax: ROUTE,       
@@ -18,9 +18,8 @@ $(document).ready(()=>{
             {
                 data: null,
                 render: function(data){
-                    return `<div class="prestacionComentario" data-id="${ data.Id }" data-bs-toggle="modal" data-bs-target="#prestacionModal">
-                            <i class="ri-chat-3-line"></i>
-                    </div>`;
+                    let id = data.Id;
+                    return `<input type="checkbox" name="Id" value="${id}" checked>`;
                 }
             },
             {
@@ -169,7 +168,7 @@ $(document).ready(()=>{
             order: [[0, 'desc'],[1, 'desc'],[2, 'desc'],[3, 'desc'], [4, 'desc'], [5, 'desc'], [6, 'desc'], [7, 'desc'], [8, 'desc'], [9, 'desc'], [10, 'desc']],
             processing: true,
             lengthChange: false,
-            pageLength: 15,
+            pageLength: 50,
             responsive: true,
             serverSide: true,
             ajax: {
@@ -194,13 +193,12 @@ $(document).ready(()=>{
             columnDefs: [
                 {
                     data: null,
-                    name: 'Id',
+                    name: 'selectId',
                     orderable: false,
                     targets: 0,
                     render: function(data){
-                        return `<div class="prestacionComentario" data-id="${ data.Id }" data-bs-toggle="modal" data-bs-target="#prestacionModal">
-                                <i class="ri-chat-3-line"></i>
-                        </div>`;
+                        let id = data.Id;
+                        return `<input type="checkbox" name="Id" value="${id}" checked>`;
                     }
                 },
                 {
@@ -314,8 +312,10 @@ $(document).ready(()=>{
                         bloquear = `<button type="button" data-id="${data.Id}" class="btn btn-sm iconGeneral bloquearPrestacion" title="${(data.Anulado == 1 ? "Bloqueado" : "Bloquear")}" ${ (data.Anulado == 1 ? "disabled" : "")}><i class="ri-forbid-2-line"></i></button>`,
 
                         baja = `<button data-id="${data.Id}" type="button" class="btn btn-sm iconGeneral downPrestacion" ><i class="ri-delete-bin-2-line"></i></button>`;
-    
-                        return editar + ' ' + bloquear + ' ' + baja;
+                        
+                        comentario = `<button class="btn btn-sm prestacionComentario" data-id="${ data.Id }" data-bs-toggle="modal" data-bs-target="#prestacionModal"><i class="ri-chat-3-line"></i></button>`;
+
+                        return editar + ' ' + bloquear + ' ' + baja + ' ' + comentario;
                     }
                 }
             ],

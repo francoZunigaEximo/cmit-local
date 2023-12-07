@@ -155,9 +155,7 @@ $(document).ready(()=>{
 
                         let row = `<tr>
                                     <td>
-                                        <div class="prestacionComentario" data-id="${papre.Id}" data-bs-toggle="modal" data-bs-target="#prestacionModal">
-                                            <i class="ri-chat-3-line"></i>
-                                        </div>
+                                        <input type="checkbox" name="Id" value=${papre.Id} checked="">
                                     </td>
                                     <td>${papre.Id}</td>
                                     <td>${fechaNow(papre.FechaAlta,'/',1)}</td>
@@ -180,6 +178,7 @@ $(document).ready(()=>{
                                                 <button type="button" id="blockPrestPaciente" data-idprest="${papre.Id}" class="btn btn-sm btn-warning remove-item-btn" title="${(papre.Anulado == 1 ? "Bloqueado" : "Bloquear")}" ${(papre.Anulado == 1 ? "disabled" : "")}><i class="ri-forbid-2-line"></i></button>
                                             </div>
                                             <button type="button" id="downPrestPaciente" data-idprest="${papre.Id}"class="btn btn-sm btn-danger remove-item-btn" ><i class="ri-delete-bin-2-line"></i></button>
+                                            <button class="btn btn-sm prestacionComentario" data-id="${papre.Id}" data-bs-toggle="modal" data-bs-target="#prestacionModal"><i class="ri-chat-3-line"></i></button>
                                         </div>
                                     </td>
                                 </tr>`;

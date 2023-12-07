@@ -196,4 +196,8 @@ $(document).ready(()=>{
         return (format === 1) ? `${dia}${divider}${mes}${divider}${anio}` : `${anio}${divider}${mes}${divider}${dia}`;
     }
 
+    $('#checkAll').on('click', function() {
+        $('input[type="checkbox"][name="Id"]:not(#checkAll)').prop('checked', this.checked);
+    });
+
 });

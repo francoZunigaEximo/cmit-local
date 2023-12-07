@@ -179,6 +179,9 @@
                             <button title="Filtros avanzados" class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#filtrosAvanzados" aria-expanded="false" aria-controls="filtrosAvanzados">
                                 <i class="ri-filter-2-line"></i>
                             </button>
+                            <button type="button" id="excel" class="btn iconGeneral" title="Generar reporte en Excel">
+                                <i class="ri-file-excel-line"></i>
+                            </button>
                         </div>
                     </div>
 
@@ -196,7 +199,7 @@
                         <table id="listaPrestaciones" class="display table table-bordered" style="width:100%">
                             <thead class="table-light">
                                 <tr>
-                                    <th></th>
+                                    <th><input type="checkbox" id="checkAll" name="Id"></th>
                                     <th class="sort">N°</th>
                                     <th class="sort">Alta</th>
                                     <th class="sort">Empresa</th>
@@ -285,6 +288,61 @@ const blockPrestacion = "{{ route('blockPrestacion') }}";
 const ROUTE = "{{ route('prestaciones.index') }}";
 const SEARCH = "{{ route('searchPrestaciones') }}";
 
+$('#excel').click(function(e) {
+    e.preventDefault();
+
+    var listaPrestaciones = $('#listaPrestaciones').DataTable();
+
+    if (!listaPrestaciones.data().any() ) {
+        toastr.info('No existen registros para exportar', 'Atención');
+        return;
+    }
+
+    ids     = "";
+    filters = "";
+    length  = $('input[name="Id"]:checked').length;
+
+    $('input[name="Id"]:checked').each(function(index,element) {
+        
+        if($(this).val() == "on"){
+            return;
+        }
+
+        if(index == (length - 1)){
+            ids += $(this).val();    
+        }
+        else {
+            ids += $(this).val() + ",";    
+        }
+    });
+
+    if($("#checkAll").prop('checked') == true) {
+        filters += "nroprestacion:" + $('#nroprestacion').val() + ",";
+        filters += "pacempart:" + $('#pacempart').val() + ",";
+        filters += "tipoPrestacion:" + $('#TipoPrestacion').val() + ",";
+        filters += "pago:" + $('#Pago').val() + ",";
+        filters += "formaPago:" + $('#Spago').val() + ",";
+        filters += "fechaDesde:" + $('#fechaDesde').val() + ",";
+        filters += "fechaHasta:" + $('#fechaHasta').val() + ",";
+        filters += "estado:" + $('#Estado').val() + ",";
+        filters += "eEnviado:" + $('#eEnviado').val() + ",";
+        filters += "finalizado:" + $('#Finalizado').val() + ",";
+        filters += "facturado:" + $('#Facturado').val() + ",";
+        filters += "entregado:" + $('#Entregado').val();
+
+        if((fechaDesde == '' || fechaHasta == '') && nroprestacion == ''){
+            swal('Alerta','La fecha "Desde" y "Hasta" son obligatorias.', 'warning');
+            return;
+        }
+    }
+
+    var exportExcel = "{{ route('excelPrestaciones', ['ids' =>  'idsContent', 'filters' => 'filtersContent']) }}";
+    exportExcel     = exportExcel.replace('idsContent', ids);
+    exportExcel     = exportExcel.replace('filtersContent', filters);
+    exportExcel     = exportExcel.replaceAll('amp;', '');
+    window.location = exportExcel;
+});
+
 </script>
 
 @push('styles')
@@ -300,7 +358,6 @@ const SEARCH = "{{ route('searchPrestaciones') }}";
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
-
 
 <script src="{{ asset('js/prestaciones/index.js') }}?v={{ time() }}"></script>
 <script src="{{ asset('js/prestaciones/utils.js') }}?v={{ time() }}"></script>
