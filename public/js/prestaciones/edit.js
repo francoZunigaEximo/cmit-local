@@ -1,6 +1,6 @@
 $(document).ready(()=> {
 
-    let fecha = $('#FechaVto').val(), opcion = $('#pago').val(), opcionPago = $('#SPago').val();
+    let fecha = $('#FechaVto').val(), opcion = $('#pago').val(), opcionPago = $('#SPago').val(), empresa = $('#empresa').val(),art = $('#art').val();
 
     toastr.options = {
         closeButton: true,   
@@ -21,7 +21,7 @@ $(document).ready(()=> {
     cargarFinanciador($("#tipoPrestacion").val());
     cambiosVencimiento(fecha);
     selectMedioPago(opcion);
-    getMap();
+    getMap(empresa, art);
     getFact();
 
     //Hack de carga
@@ -520,12 +520,9 @@ $(document).ready(()=> {
         }
     }
 
-    function getMap(){
+    function getMap(empresaIn, artIn){
 
-        let empresa = $('#selectClientes').val(),
-            art = $('#selectArt').val();
- 
-        $.get(getMapas, {empresa: empresa, art: art})
+        $.get(getMapas, {empresa: empresaIn, art: artIn})
             .done(function(response){
 
                 let mapas = response.mapas;
@@ -533,7 +530,7 @@ $(document).ready(()=> {
                 
                 if(mapas.length === 0)
                 {
-                    $('#mapas').empty().append('<option title=""value="Sin mapas disponibles para esta ART y Empresa." selected>Sin mapas disponibles.</option>');
+                    $('#mapas').empty().append('<option title="" value="" selected>Sin mapas disponibles.</option>');
                 }else{
 
                     $.each(mapas, function(index, d){

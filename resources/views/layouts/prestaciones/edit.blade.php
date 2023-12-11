@@ -33,7 +33,7 @@
                         <div class="input-group input-group-sm">
                             <span class="input-group-text">Paciente</span>
                             <input type="text" class="form-control" id="Id" name="Id" value="{{ $prestacione->IdPaciente }}" @readonly(true) title="{{ $prestacione->IdPaciente }}">
-                            <input type="text" class="form-control" style="width: 50%" id="NombreCompleto" name="NombreCompleto" value="{{ $prestacione->paciente->Apellido }} {{ $prestacione->paciente->Nombre }}" @readonly(true) title="{{ $prestacione->paciente->Apellido }} {{ $prestacione->paciente->Nombre }}">
+                            <input type="text" class="form-control" style="width: 35%" id="NombreCompleto" name="NombreCompleto" value="{{ $prestacione->paciente->Apellido }} {{ $prestacione->paciente->Nombre }}" @readonly(true) title="{{ $prestacione->paciente->Apellido }} {{ $prestacione->paciente->Nombre }}">
                         </div>
                     </div>
 

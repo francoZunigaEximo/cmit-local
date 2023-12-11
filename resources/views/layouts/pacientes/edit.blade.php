@@ -8,10 +8,6 @@
     <h4 class="mb-sm-0">Paciente <span class="custom-badge original">Nro. {{ $paciente->Id }}</span></h4>
 
     <div class="page-title-right">
-        <button type="button" class="btn botonGeneral">
-            <i class="ri-add-line align-bottom me-1"></i> Ficha Laboral
-        </button>
-
         <button type="button" class="btn botonGeneral" data-bs-toggle="modal" data-bs-target="#altaPrestacionModal">
             <i class="ri-add-line align-bottom me-1"></i> Nueva Prestación
         </button>

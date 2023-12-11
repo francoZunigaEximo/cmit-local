@@ -189,10 +189,8 @@ class ItemPrestacionesController extends Controller
                 'Tipo' => 0
             ]);
 
-            $this->updateEstado($request->who, $request->Id);
+            $this->updateEstado($request->who, $request->IdEntidad, $arr[$request->who][0], null);
 
-            
-        
         }elseif($request->who === 'informador'){
 
             ArchivoInformador::create([
@@ -203,7 +201,7 @@ class ItemPrestacionesController extends Controller
                 'IdPrestacion' => $request->IdPrestacion
             ]);
 
-            $this->updateEstado($request->who, $request->Id);
+            $this->updateEstado($request->who, $request->IdEntidad, null, $arr[$request->who][0]);
         }
         
     }
@@ -217,7 +215,7 @@ class ItemPrestacionesController extends Controller
 
             if ($adjunto) {
                 $adjunto->delete();
-                $this->updateEstado($request->Tipo, $request->ItemP);
+                $this->updateEstado($request->Tipo, $request->ItemP, $request->Id, null);
             }
         
         }elseif($request->Tipo === 'informador')
@@ -227,7 +225,7 @@ class ItemPrestacionesController extends Controller
 
             if ($adj) {
                 $adj->delete();
-                $this->updateEstado($request->Tipo, $request->ItemP);
+                $this->updateEstado($request->Tipo, $request->ItemP, null, $request->Id);
             }
         }
         

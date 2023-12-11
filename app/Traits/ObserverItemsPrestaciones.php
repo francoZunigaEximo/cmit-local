@@ -60,36 +60,46 @@ trait ObserverItemsPrestaciones
         return $paciente;
     }
 
-    public function updateEstado($tipo, $id)
+    public function updateEstado($tipo, $idItemPrestacion, $idEfector, $idInformador)
     {
        
-        $item = ItemPrestacion::find($id);
-        $efectores = ArchivoEfector::where('IdEntidad', $id)->get();
-        $informadores = ArchivoInformador::where('IdEntidad', $id)->get();
+        $item = ItemPrestacion::where('Id', $idItemPrestacion)->first();
+        $efectores = ArchivoEfector::where('Id', $idEfector)->first();
+        $informadores = ArchivoInformador::where('Id', $idInformador)->first();
 
         if($item)
         {
+
             if($tipo === 'efector' && $efectores)
             {
 
                 switch ($item->CAdj) {
-                    case 4:
-                        $item->CAdj = 5;
+                    case 0:
+                        $item->CAdj = 1; 
                         break;
                     
-                    case 1:
-                        $item->CAdj = 2;
+                    case 3:
+                        $item->CAdj = 4;
+                        break;
+                    
+                    case 4:
+                        $item->CAdj = 5;
                         break;
                 }
             }elseif($tipo === 'efector' && !($efectores)){
                 
                 switch($item->CAdj) {
+                    
+                    case 1:
+                        $item->CAdj= 0;
+                        break;
+                    
+                    case 4:
+                        $item->CAdj = 3;
+                        break;
+                    
                     case 5:
                         $item->CAdj = 4;
-                        break;
-
-                    case 2:
-                        $item->CAdj = 1;
                         break;
                 }
             }
