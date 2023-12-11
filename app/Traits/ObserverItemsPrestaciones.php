@@ -2,6 +2,9 @@
 
 namespace App\Traits;
 
+use App\Models\ArchivoEfector;
+use App\Models\ArchivoInformador;
+use App\Models\ItemPrestacion;
 use App\Models\ItemPrestacionInfo;
 use App\Models\Prestacion;
 use App\Models\Paciente;
@@ -55,5 +58,50 @@ trait ObserverItemsPrestaciones
         $query = Prestacion::where('Id', $id)->first(['IdPaciente']);
         $paciente = Paciente::find($query->IdPaciente);
         return $paciente;
+    }
+
+    public function updateEstado($tipo, $id)
+    {
+       
+        $item = ItemPrestacion::find($id);
+        $efectores = ArchivoEfector::where('IdEntidad', $id)->get();
+        $informadores = ArchivoInformador::where('IdEntidad', $id)->get();
+
+        if($item)
+        {
+            if($tipo === 'efector' && $efectores)
+            {
+
+                switch ($item->CAdj) {
+                    case 4:
+                        $item->CAdj = 5;
+                        break;
+                    
+                    case 1:
+                        $item->CAdj = 2;
+                        break;
+                }
+            }elseif($tipo === 'efector' && !($efectores)){
+                
+                switch($item->CAdj) {
+                    case 5:
+                        $item->CAdj = 4;
+                        break;
+
+                    case 2:
+                        $item->CAdj = 1;
+                        break;
+                }
+            }
+
+            if($tipo === 'informador' && $informadores){
+
+                $item->CInfo = 1;
+            }else{
+                $item->CInfo = 0;
+            }
+
+            $item->save();
+        }
     }
 }

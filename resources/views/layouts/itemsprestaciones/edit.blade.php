@@ -58,7 +58,7 @@
                 <div class="col-12">
                     <div class="input-group input-group-sm mb-2">
                         <span class="input-group-text">Informe</span>
-                        <textarea class="form-control" style="height: 80px" id="ObsExamen" name="ObsExamen">{{ $itemsprestacione->ObsExamen ?? '' }}</textarea>
+                        <textarea class="form-control" style="height: 80px" id="ObsExamen" name="ObsExamen">{{ strip_tags($itemsprestacione->ObsExamen) ?? '' }}</textarea>
                     </div>
                 </div>
             </div>
@@ -164,7 +164,7 @@
         <div class="col-12 mx-auto box-information">
             <div class="input-group input-group-sm mb-2">
                 <span class="input-group-text">Observaciones Informador</span>
-                <textarea class="form-control" style="height: 80px" name="Obs" id="Obs">{!! $itemsprestacione->itemsInfo->Obs ?? '' !!}</textarea>
+                <textarea class="form-control" style="height: 80px" name="Obs" id="Obs">{!! isset($itemsprestacione->itemsInfo) ? strip_tags($itemsprestacione->itemsInfo->Obs) : '' !!}</textarea>
             </div>
         </div>
     </div>
@@ -223,7 +223,7 @@
                     <thead class="table-light">
                         <th class="sort" title="Exámen">Exámen</th>
                         <th>Descripción</th>
-                        <th>Acciones <button type="button" class="btn botonGeneral adjuntarInformador">Adjuntar archivo</button></th>
+                        <th>Acciones <button type="button" class="btn botonGeneral adjuntarInformador" data-bs-toggle="modal" data-bs-target="#modalInformador">Adjuntar archivo</button></th>
                     </thead>
                     <tbody id="listainformadores" class="list form-check-all">
             
@@ -247,7 +247,7 @@
             <div class="modal-body">
                 <form id="form-efector">
                     
-                    <input type="file" class="form-control fileEfector" name="fileEfector"/>
+                    <input type="file" class="form-control fileA" name="fileEfector"/>
                 
                     <div class="mt-3">
                         <label for="Descripcion" class="form-label">Descripción</label>
@@ -264,17 +264,48 @@
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+<div id="modalInformador" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel">Adjuntar archivo Informador</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>
+            </div>
+            <div class="modal-body">
+                <form id="form-informador">
+                    
+                    <input type="file" class="form-control fileA" name="fileInformador"/>
+                
+                    <div class="mt-3">
+                        <label for="Descripcion" class="form-label">Descripción</label>
+                        <textarea class="form-control" name="DescripcionI" id="DescripcionI" rows="5"></textarea>
+                    </div>
+                </form> 
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn botonGeneral" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn botonGeneral btnAdjInformador">Guardar adjunto</button>
+            </div>
+
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 <script>
     const TOKEN = '{{ csrf_token() }}';
 
     const updateItem = "{{ route('updateItem') }}";
-    const updateEfector = "{{ route('updateEfector') }}";
+    const updateAsignado = "{{ route('updateAsignado') }}";
     const listGeneral = "{{ route('listGeneral') }}";
     const updateAdjunto = "{{ route('updateAdjunto') }}";
     const paginacionGeneral = "{{ route('paginacionGeneral') }}";
     const updateExamen = "{{ route('updateExamen') }}";
     const volver = "{{ route('prestaciones.edit', ['prestacione' => $itemsprestacione->IdPrestacion]) }}";
     const fileUpload = "{{ route('uploadAdjunto') }}";
+    const descargaE = "{{ asset('storage/ArchivosEfectores') }}";
+    const descargaI = "{{ asset('storage/ArchivosInformadores') }}";
+    const deleteIdAdjunto = "{{ route('deleteIdAdjunto') }}";
+
 
 
 </script>
@@ -294,13 +325,6 @@
 <script src="{{ asset('js/itemsprestaciones/edit.js') }}?v={{ time() }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="{{ asset('js/fancyTable.js') }}"></script>
-
-<script src="https://unpkg.com/filepond/dist/filepond.min.js"></script>
-<!-- include FilePond plugins -->
-<script src="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.js"></script>
-<!-- include FilePond jQuery adapter -->
-<script src="https://unpkg.com/jquery-filepond/filepond.jquery.js"></script>
-
 
 @endpush
 

@@ -13,7 +13,13 @@ class ArchivoInformador extends Model
 
     protected $primaryKey = 'Id';
 
-    protected $fillable = [];
+    protected $fillable = [
+        'Id',
+        'IdEntidad',
+        'Descripcion',
+        'Ruta',
+        'IdPrestacion'
+    ];
 
     public $timestamps = false;
 }

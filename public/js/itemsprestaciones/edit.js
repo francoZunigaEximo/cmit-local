@@ -1,7 +1,5 @@
 $(document).ready(function(){
 
-    $.fn.filepond.registerPlugin(FilePondPluginImagePreview);
-
     toastr.options = {
         closeButton: true,   
         progressBar: true,    
@@ -28,11 +26,15 @@ $(document).ready(function(){
 
     $(document).on('click', '.btnAdjEfector, .btnAdjInformador', function () {
         let who = $(this).hasClass('btnAdjEfector') ? 'efector' : 'informador';
-    
-        let fileInput = $('.fileEfector')[0];  // Obten el elemento input de tipo file
-        let archivo = fileInput.files[0]; 
+        let archivo = (who === 'efector') ? $('input[name="fileEfector"]')[0].files[0] : $('input[name="fileInformador"]')[0].files[0];
+        let tipoArchivo = archivo.type.toLowerCase();
+
         
-        // Comprobar si hay archivos
+        if(tipoArchivo !== 'application/pdf' && !tipoArchivo.startsWith('image/')) {
+            toastr.warning("Los archivos permitidos son imágenes o PDF", "Atención");
+            return;
+        }
+
         if (archivo) {
             let descripcionE = $('#DescripcionE').val(),
                 descripcionI = $('#DescripcionI').val(),
@@ -46,6 +48,7 @@ $(document).ready(function(){
             formData.append('Descripcion', descripcion);
             formData.append('IdEntidad', identificacion);
             formData.append('IdPrestacion', prestacion);
+            formData.append('who', who);
             formData.append('_token', TOKEN);
     
             $.ajax({
@@ -54,8 +57,11 @@ $(document).ready(function(){
                 data: formData,
                 processData: false,
                 contentType: false,
-                success: function (data) {
-                    // Manejar el éxito de la solicitud
+                success: function() {
+                    
+                   setTimeout(() => {
+                        location.reload();
+                    }, 3000);
                 },
                 error: function (xhr) {
                     console.error(xhr);
@@ -63,7 +69,7 @@ $(document).ready(function(){
                 }
             });
         } else {
-            console.error('No se seleccionó ningún archivo.');
+            toastr.warning('No se seleccionó ningún archivo.');
         }
     });
     
@@ -94,14 +100,35 @@ $(document).ready(function(){
         location.href = volver;
     }); 
 
-    $('#adjuntarEfector').on('click', function () {
-        $('#archivoEfector').click();
+    $(document).on('click', '.deleteAdjunto', function(){
+
+        let id = $(this).data('id'), tipo = $(this).data('tipo');
+
+        if(confirm("¿Está seguro que desea eliminar?")){
+
+            if(id === '' || tipo === ''){
+                toastr.warning("Hay un problema porque no podemos identificar el tipo o la id a eliminar", "Atención");
+                return;
+            }
+    
+            $.get(deleteIdAdjunto, {Id: id, Tipo: tipo, ItemP: ID})
+                .done(function(){
+                    toastr.success("Se ha eliminado el adjunto de manera correcta", "Perfecto");
+                    setTimeout(() => {
+                        location.reload();
+                    }, 3000);
+                })
+                .fail(function(xhr){
+                    console.log(xhr);
+                    toastr.error("Ha ocurrido un error. Consulte con el administrador", "Error");
+                })
+        }
     });
 
     $(document).on('click', '#cerrar, #cerrarI', function(){
-
+        
         let who = $(this).hasClass('cerrar') ? 'cerrar' : 'cerrarI',
-            listaE = {0: 3, 1: 4, 2: 5},
+            listaE = {0: 3, 2: 5, 1: 4},
             listaI = ['0', '1', '2'];
 
         if(who === 'cerrar' && cadj in listaE){
@@ -146,7 +173,7 @@ $(document).ready(function(){
             return;
         }
         
-        $.post(updateEfector, { Id: ID, _token: TOKEN, IdProfesional: check, fecha: 1, Para: who})
+        $.post(updateAsignado, { Id: ID, _token: TOKEN, IdProfesional: check, fecha: 1, Para: who})
             .done(function(){
                 toastr.success('Se ha actualizado la información de manera correcta', 'Actualización realizada');
                 setTimeout(() => {
@@ -161,7 +188,7 @@ $(document).ready(function(){
 
         if(checkEmpty !== '0'){
 
-            $.post(updateEfector, { Id: ID, _token: TOKEN, IdProfesional: 0, fecha: 0, Para: 'asignar'})
+            $.post(updateAsignado, { Id: ID, _token: TOKEN, IdProfesional: 0, fecha: 0, Para: 'asignar'})
             .done(function(){
                 toastr.success('Se ha actualizado el efector de manera correcta', 'Actualizacion realizada');
                 setTimeout(() => {
@@ -331,19 +358,29 @@ $(document).ready(function(){
                     let contenido = `
                         <tr>
                             <td>${d.Nombre}</td>
-                            <td>${(d.DescripcionE !== null || d.DescripcionE !== 'undefined' ? d.Descripcion : ' - ')}</td>
+                            <td>${(d.DescripcionE !== null && d.DescripcionE !== undefined  && d.DescripcionE !== '' ? d.DescripcionE : ' ')}</td>
                             <td>${(d.Adjunto === 0 ? 'Físico' : 'Digital')}</td>
                             <td>${(d.MultiE === 0 ? 'Simple' : 'Multi')}</td>
                             <td>
                                 <div class="d-flex gap-2">
                                     <div class="edit">
-                                        <button type="button" class="btn btn-sm btn-soft-primary edit-item-btn" title="Ver"><i class="ri-search-eye-line"></i></button>
+                                        <a href="${descargaE}/${d.RutaE}" target="_blank">
+                                            <button type="button" class="btn btn-sm iconGeneral" title="Ver"><i class="ri-search-eye-line"></i></button>
+                                        </a>
                                     </div>
-                                    <div class="remove">
-                                        <button class="btn btn-sm btn-danger" title="Eliminar">
-                                            <i class="ri-delete-bin-2-line"></i>
-                                        </button>
+                                    <div class="download">
+                                        <a href="${descargaE}/${d.RutaE}" target="_blank" download>
+                                            <button type="button" class="btn btn-sm iconGeneral" title="Descargar"><i class="ri-download-2-line"></i></button>
+                                        </a>
                                     </div>
+                                    ${(Estado === 'Cerrado') ? `` : `
+                                        <div class="remove">
+                                            <button data-id="${d.IdE}" data-tipo="efector" class="btn btn-sm iconGeneral deleteAdjunto" title="Eliminar">
+                                                <i class="ri-delete-bin-2-line"></i>
+                                            </button>
+                                        </div>
+                                    `}
+                                    
                                 </div>
                             </td>
                         </tr>
@@ -366,17 +403,26 @@ $(document).ready(function(){
                     let contenido = `
                         <tr>
                             <td>${d.Nombre}</td>
-                            <td>${(d.DescripcionI !== null ? d.Descripcion : ' - ')}</td>
+                            <td>${(d.DescripcionI !== null && d.DescripcionI !== undefined && d.DescripcionI !== '' ? d.DescripcionI : '')}</td>
                             <td>
                                 <div class="d-flex gap-2">
                                     <div class="edit">
-                                        <button type="button" class="btn btn-sm iconGeneral" title="Ver"><i class="ri-search-eye-line"></i></button>
+                                        <a href="${descargaI}/${d.RutaI}" target="_blank">
+                                            <button type="button" class="btn btn-sm iconGeneral" title="Ver"><i class="ri-search-eye-line"></i></button>
+                                        </a>
                                     </div>
+                                    <div class="download">
+                                        <a href="${descargaI}/${d.RutaI}" target="_blank" download>
+                                            <button type="button" class="btn btn-sm iconGeneral" title="Descargar"><i class="ri-download-2-line"></i></button>
+                                        </a>
+                                    </div>
+                                    ${(EstadoI === 'Cerrado') ? `` : `
                                     <div class="remove">
-                                        <button class="btn btn-sm iconGeneral" title="Eliminar">
+                                        <button data-id="${d.IdI}" data-tipo="informador" class="btn btn-sm iconGeneral deleteAdjunto" title="Eliminar">
                                             <i class="ri-delete-bin-2-line"></i>
                                         </button>
                                     </div>
+                                    `}
                                 </div>
                             </td>
                         </tr>
@@ -386,4 +432,6 @@ $(document).ready(function(){
                 });
             })
     }
+
+    
 });

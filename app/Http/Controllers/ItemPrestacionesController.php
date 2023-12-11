@@ -47,7 +47,7 @@ class ItemPrestacionesController extends Controller
         }
     }
 
-    public function updateEfector(Request $request)
+    public function updateAsignado(Request $request)
     {
 
         $item = ItemPrestacion::find($request->Id);
@@ -104,25 +104,39 @@ class ItemPrestacionesController extends Controller
     {
         $Id = $request->Id;
 
-        $query = ItemPrestacion::join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
+        if($request->tipo === 'efector')
+        {
+
+            $query = ItemPrestacion::join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
             ->leftJoin('archivosefector', 'itemsprestaciones.Id', '=', 'archivosefector.IdEntidad')
-            ->leftJoin('archivosinformador', 'itemsprestaciones.Id', '=', 'archivosinformador.IdEntidad')
             ->join('proveedores', 'itemsprestaciones.IdProveedor', '=', 'proveedores.Id')
             ->select(
+                'archivosefector.Id as IdE',
                 'examenes.Nombre as Nombre',
                 'archivosefector.Descripcion as DescripcionE',
-                'archivosinformador.Descripcion as DescripcionI',
+                'archivosefector.Ruta as RutaE',
                 'examenes.Adjunto as Adjunto',
                 'proveedores.MultiE as MultiE',
             )
-            ->where(function($query) use ($request, $Id) {
-                if ($request->tipo === 'efector') {
-                    $query->where('archivosefector.IdEntidad', $Id);
-                } elseif ($request->tipo === 'informador') {
-                    $query->where('archivosinformador.IdEntidad', $Id);
-                }
-            })
+            ->where('archivosefector.IdEntidad', $Id)
             ->get();
+
+        }else if($request->tipo === 'informador'){
+
+            $query = ItemPrestacion::join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
+                ->leftJoin('archivosinformador', 'itemsprestaciones.Id', '=', 'archivosinformador.IdEntidad')
+                ->join('proveedores', 'itemsprestaciones.IdProveedor', '=', 'proveedores.Id')
+                ->select(
+                    'archivosinformador.Id as IdI',
+                    'examenes.Nombre as Nombre',
+                    'archivosinformador.Descripcion as DescripcionI',
+                    'archivosinformador.Ruta as RutaI',
+                    'examenes.Adjunto as Adjunto',
+                )
+                ->where('archivosinformador.IdEntidad', $Id)
+                ->get();
+
+        }
 
         return response()->json(['resultado' => $query]);
     }
@@ -153,39 +167,71 @@ class ItemPrestacionesController extends Controller
 
     public function uploadAdjunto(Request $request)
     {
-        return $request->all();
 
-        $nuevoId = ($request->who === 'efector') ? ArchivoEfector::max('Id') + 1 : ArchivoInformador::max('Id') + 1;
-        $identificador = ($request->who === 'efector') ? 'AEF' : 'AINF';
+        $arr = [
+            'efector' => [ArchivoEfector::max('Id') + 1, 'AEF', 'public/ArchivosEfectores'],
+            'informador' => [ArchivoInformador::max('Id') + 1, 'AINF', 'public/ArchivosInformadores']
+        ];
 
         if($request->hasFile('archivo')) {
-            $fileName = $identificador.$nuevoId. '.' . $request->archivo->extension();
-            $request->archivo->storeAs('public/itemsprestaciones', $fileName);
+            $fileName = $arr[$request->who][1].$arr[$request->who][0]. '_'. $request->IdPrestacion .'.' . $request->archivo->extension();
+            $request->archivo->storeAs($arr[$request->who][2], $fileName);
         }
 
         if($request->who === 'efector'){
 
             ArchivoEfector::create([
-                'Id' => $nuevoId,
+                'Id' => $arr[$request->who][0],
                 'IdEntidad' => $request->IdEntidad,
                 'Descripcion' => $request->Descripcion ?? '',
                 'Ruta' => $fileName,
                 'IdPrestacion' => $request->IdPrestacion,
                 'Tipo' => 0
             ]);
+
+            $this->updateEstado($request->who, $request->Id);
+
+            
         
         }elseif($request->who === 'informador'){
 
             ArchivoInformador::create([
-                'Id' => $nuevoId,
+                'Id' => $arr[$request->who][0],
                 'IdEntidad' => $request->IdEntidad,
                 'Descripcion' => $request->Descripcion ?? '',
                 'Ruta' => $fileName,
                 'IdPrestacion' => $request->IdPrestacion
             ]);
+
+            $this->updateEstado($request->who, $request->Id);
         }
         
     }
 
+    public function deleteIdAdjunto(Request $request)
+    {
+
+        if($request->Tipo === 'efector')
+        {
+            $adjunto = ArchivoEfector::find($request->Id);
+
+            if ($adjunto) {
+                $adjunto->delete();
+                $this->updateEstado($request->Tipo, $request->ItemP);
+            }
+        
+        }elseif($request->Tipo === 'informador')
+        {
+
+            $adj = ArchivoInformador::find($request->Id);
+
+            if ($adj) {
+                $adj->delete();
+                $this->updateEstado($request->Tipo, $request->ItemP);
+            }
+        }
+        
+
+    }
 
 }
