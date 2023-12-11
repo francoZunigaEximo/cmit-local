@@ -95,11 +95,12 @@
                             </div>
                         </div>
                     </div>
-
+                    
                     <div class="col-4">
                         <div class="col-10">
                             <div class="input-group input-group-sm">
-                                <span class="input-group-text cerrar">{!!($prestacione->FechaCierre == '0000-00-00' || $prestacione->FechaCierre == null ? '<i class="ri-lock-unlock-line"></i>&nbsp;Cerrar' : '<i class="ri-lock-line"></i>&nbsp;Cerrado' )!!}</span>
+                                {!! ($prestacione->FechaCierre == '0000-00-00' || $prestacione->FechaCierre == null ? '<span class="input-group-text cerrar"><i class="ri-lock-unlock-line"></i>&nbsp;Cerrar' : '<span class="input-group-text cerrar"><i class="ri-lock-line"></i>&nbsp;Cerrado' ) !!}
+                                </span>
                                 <input type="text" class="form-control" id="cerrar" placeholder="dd/mm/aaaa" value="{{ ($prestacione->FechaCierre == '0000-00-00' || $prestacione->FechaCierre == null ? '': \Carbon\Carbon::parse($prestacione->FechaCierre)->format('d/m/Y')) }}" @readonly(true)>
                             </div>
                         </div>

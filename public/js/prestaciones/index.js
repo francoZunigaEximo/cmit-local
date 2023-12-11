@@ -6,7 +6,7 @@ $(document).ready(()=>{
         timeOut: 3000,        
     };
 
-    scrollListado();
+    //scrollListado();
 
     //Limpiamos el ID para evitar bug
     let IdComentario = null;
@@ -171,11 +171,11 @@ $(document).ready(()=>{
     });
     
 
-    function scrollListado(){
+    /*function scrollListado(){
         $('html, body').animate({
             scrollTop: $('#listaPrestaciones').offset().top
         }, 800);
-    }
+    }*/
 
     function fechaNow(fechaAformatear, divider, format) {
         let dia, mes, anio; 

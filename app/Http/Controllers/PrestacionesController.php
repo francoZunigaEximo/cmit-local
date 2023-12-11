@@ -233,49 +233,45 @@ class PrestacionesController extends Controller
 
         $estado = Prestacion::find($request->Id);
 
-
         switch ($request->Tipo) {
             case 'cerrar':
-                if ($estado->Finalizado !== 1) {
-                    $estado->Cerrado = ($estado->Cerrado === 0 && $estado->Entregado === 0 && $estado->eEnviado === 0 ? 1 : 0);
-                }
-                
-                if ($estado->Cerrado === 1) {
+
+                if ($estado->Cerrado === 0 && $estado->Finalizado === 0 && $estado->Entregado === 0) {
+                    $estado->Cerrado = 1;
                     $estado->FechaCierre = now()->format('Y-m-d');
-                } else {
-                    $estado->FechaCierre = null; 
-                }
+                }elseif($estado->Cerrado === 1 && $estado->Finalizado === 0 && $estado->Entregado === 0){
+                    $estado->Cerrado = 0;
+                    $estado->FechaCierre = null;
+                } 
                 break;
 
             case 'finalizar':
-                if($estado->Entregado !== 1){
-                    $estado->Finalizado = ($estado->Finalizado === 0 && $estado->Cerrado === 1 && $estado->Entregado === 0 && $estado->eEnviado === 0 ? 1 : 0);
-                }
-                
-                if ($estado->Finalizado === 1) {
+                if($estado->Cerrado === 1 && $estado->Finalizado === 0 && $estado->Entregado === 0){
+                    $estado->Finalizado = 1;
                     $estado->FechaFinalizado = now()->format('Y-m-d');
-                } else {
+                }elseif($estado->Cerrado === 1 && $estado->Finalizado === 1 && $estado->Entregado === 0){
+                    $estado->Finalizado = 0;
                     $estado->FechaFinalizado = null; 
                 }
                 break;
 
             case 'entregar':
-                if($estado->eEnviado !== 1){
-                    $estado->Entregado = ($estado->Finalizado === 1 && $estado->Cerrado === 1 && $estado->Entregado === 0 && $estado->eEnviado === 0 ? 1 : 0);
-                }
-                
-                if ($estado->Entregado === 1) {
+                if($estado->Cerrado === 1 && $estado->Finalizado === 1 && $estado->Entregado === 0){
+                    $estado->Entregado = 1;
                     $estado->FechaEntrega = now()->format('Y-m-d');
-                } else {
+                }elseif($estado->Cerrado === 1 && $estado->Finalizado === 1 && $estado->Entregado === 1){
+                    $estado->Entregado = 0;
                     $estado->FechaEntrega = null; 
                 }
                 break;
 
             case 'eEnviar':
-                $estado->eEnviado = ($estado->Cerrado === 1 && $estado->eEnviado === 0 ? 1 : 0);
-                if ($estado->eEnviado === 1) {
+                if($estado->Cerrado === 1 && $estado->eEnviado === 0) {
+                    $estado->eEnviado = 1;
                     $estado->FechaEnviado= now()->format('Y-m-d');
-                } else {
+                    
+                }elseif($estado->Cerrado === 1 && $estado->eEnviado === 1){
+                    $estado->eEnviado = 0;
                     $estado->FechaEnviado = null; 
                 }
                 break;

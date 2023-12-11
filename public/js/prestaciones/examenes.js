@@ -294,12 +294,12 @@ $(document).ready(()=>{
                                             </td><!-- este botón marca o desmarca el campo devolucion - debe ser rojo si es que el valor del campo es 1 -->
         
                                             <td class="date text-center" title="${examen.ApellidoE} ${examen.NombreE}">${examen.ApellidoE}<br>
-                                                <span class="badge badge-soft-danger">${(examen.CAdj === 0 || examen.CAdj === 1 || examen.CAdj === 2 ? 'Abierto': (examen.CAdj === 3 || examen.CAdj === 4 || examen.CAdj === 5 ? 'Cerrado' : 'Sin datos'))}</span>
-                                                ${(examen.CAdj === 0 || examen.CAdj === null) ? ``: `<i class="ri-attachment-line ${(examen.CAdj === 3 || examen.CAdj === 1 || examen.CAdj === 4 ? 'rojo' : 'verde')}"></i>`}    
+                                                <span class="badge badge-soft-${(examen.CAdj === 0 || examen.CAdj === 1 || examen.CAdj === 2 ? 'danger': (examen.CAdj === 3 || examen.CAdj === 4 || examen.CAdj === 5 ? 'success' : ''))}">${(examen.CAdj === 0 || examen.CAdj === 1 || examen.CAdj === 2 ? 'Abierto': (examen.CAdj === 3 || examen.CAdj === 4 || examen.CAdj === 5 ? 'Cerrado' : ''))}</span>
+                                                ${(examen.CAdj === 2 || examen.CAdj === 5) ? `<i class="ri-attachment-line ${(examen.CAdj === 2 || examen.CAdj === 5  ? 'verde' : '')}"></i>`: ``}    
                                             </td>
                                     <!-- muestra el apellido + nombre del efector y debajo el estado (campo CAdj Abierto = 0 - 1 - 2 Cerrado = 3 - 4 - 5)  y al lado el icono de archivo (campo cAdj) gris si no hay archivo o verde si hay adjunto (NA = 0 - 3 Pendiente = 1 - 4  Adjunto = 2 - 5)  -->
                                             <td class="date text-center" title="${examen.ApellidoI} ${examen.NombreI}">${examen.ApellidoI}<br>
-                                                <span class="badge badge-soft-danger">${(examen.CInfo === 3 ? 'Cerrado' : (examen.CInfo === 2 ? 'Borrador' : (examen.CInfo === 1 || examen.CInfo === 0 ? 'Pendiente': 'Sin datos')))}</span>
+                                                <span class="badge badge-soft-${(examen.CInfo === 3 ? 'success' : (examen.CInfo === 2 ? 'danger' : (examen.CInfo === 1 || examen.CInfo === 0 ? 'danger': '')))}">${(examen.CInfo === 3 ? 'Cerrado' : (examen.CInfo === 2 ? 'Borrador' : (examen.CInfo === 1 || examen.CInfo === 0 ? 'Pendiente': '')))}</span>
                                             </td>
                                     <!-- muestra el apellido + nombre del informador y debajo el estado (campo CInfo - Cerrado = 3, Borrador = 2 o pendiente = 0 y 1)   -->
                                     <td class="phone"><span class="${examen.Facturado === 1 ? 'badge badge-soft-success' : 'custom-badge gris'}"><i class="ri-check-line"></i></span></td> <!-- > campo Facturado gris si el campo tiene valor 0 verde si el campo tiene valor 1</!-->
@@ -307,17 +307,17 @@ $(document).ready(()=>{
                                         <div class="d-flex gap-2">
                                             <div class="edit">
                                                 <a href="${url}" id="editLink">
-                                                    <button type="button" class="btn btn-sm btn-soft-primary edit-item-btn" title="Ver"><i class="ri-search-eye-line"></i></button>
+                                                    <button type="button" class="btn btn-sm iconGeneral" title="Ver"><i class="ri-search-eye-line"></i></button>
                                                 </a>
                                             </div>
                                             ${examen.Anulado === 0 ? `
                                                 <div class="bloquear">
-                                                    <button data-bloquear="${examen.IdItem}" class="btn btn-sm btn-warning remove-item-btn bloquear-examen" title="Baja">
+                                                    <button data-bloquear="${examen.IdItem}" class="btn btn-sm iconGeneral bloquear-examen" title="Baja">
                                                         <i class="ri-forbid-2-line"></i>
                                                     </button>
                                                 </div>
                                                 <div class="remove">
-                                                    <button data-delete="${examen.IdItem}"  class="btn btn-sm btn-danger delete-examen" title="Eliminar">
+                                                    <button data-delete="${examen.IdItem}"  class="btn btn-sm iconGeneral delete-examen" title="Eliminar">
                                                         <i class="ri-delete-bin-2-line"></i>
                                                     </button>
                                                 </div>    
