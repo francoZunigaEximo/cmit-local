@@ -569,7 +569,8 @@
 
                                         <div class="input-group input-group-sm mb-2 selectMapaPres">
                                             <span class="input-group-text">Mapas</span>
-                                            <select class="form-control" name="mapas" id="mapas"></select>
+                                            <select class="form-control" name="mapas" id="mapas">
+                                            </select>
                                         </div>
 
                                     </div>

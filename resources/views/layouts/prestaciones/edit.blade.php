@@ -91,6 +91,7 @@
                             <div class="input-group input-group-sm">
                                 <span class="input-group-text">Mapa</span>
                                 <select class="form-control" name="mapas" id="mapas">
+                                    <option value="{{ $prestacione->IdMapa ?? ''}}" selected>{{ $prestacione->mapa->Nro ?? ''}} {{ "| Empresa " . $prestacione->mapa->empresaMapa->RazonSocial ?? ''}} {{ " - ART: " . $prestacione->mapa->artMapa->RazonSocial ?? 'Elija una opción...' }}</option>
                                 </select>
                             </div>
                         </div>

@@ -16,6 +16,7 @@ $(document).ready(()=> {
     quitarDuplicados("#RxPreliminar");
     quitarDuplicados("#TipoPrestacion");
     quitarDuplicados("#Financiador");
+    quitarDuplicados("#mapas");
 
     precargaMapa();
     cargarFinanciador($("#tipoPrestacion").val());
@@ -526,13 +527,9 @@ $(document).ready(()=> {
             .done(function(response){
 
                 let mapas = response.mapas;
-                $('#mapas').empty().append('<option value="" selected>Elija un mapa...</option>');
                 
-                if(mapas.length === 0)
+                if(mapas.length !== 0)
                 {
-                    $('#mapas').empty().append('<option title="" value="" selected>Sin mapas disponibles.</option>');
-                }else{
-
                     $.each(mapas, function(index, d){
 
                         let contenido = `<option value="${d.Id}">${d.Nro} | Empresa: ${d.RSE} - ART: ${d.RSArt}</option>`;
