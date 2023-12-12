@@ -57,8 +57,8 @@ $(document).ready(function () {
     });
 
     $('#PagoLaboral').change(function(){
-        pagoLaboral = $(this).val(); 
-        $('#Pago').val(pagoLaboral);
+        let valor = $(this).val(); 
+        $('#Pago').val(valor).find('option[value="' + valor + '"]').prop('selected', true);
     });
 
     $('input[name="TipoPrestacion"]').change(function(){
