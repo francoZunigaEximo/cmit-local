@@ -92,7 +92,7 @@
                                 <div class="mb-3">
                                     <label for="Provincia" class="form-label">Provincia <span class="required">(*)</span></label>
                                     <select id="provincia" class="form-select" name="Provincia">
-                                        <option selected value="{{ $profesionale->localidad->IdPcia ?? ''}}">{{ $profesionale->Provincia ?? 'Elija una opción...'}}</option>
+                                        <option selected value="{{ $profesionale->Provincia ?? ''}}">{{ $profesionale->Provincia ?? 'Elija una opción...'}}</option>
                                             @foreach ($provincias as $provincia)
                                                 <option value="{{ $provincia->Nombre }}">{{ $provincia->Nombre }}</option>
                                             @endforeach
@@ -272,7 +272,7 @@
                                         <div class="col-lg-12">
                                             <div class="card">
                                                 <div class="card-header">
-                                                    <h4 class="card-title mb-0">Especialidades y Perfiles</h4>
+                                                    <h4 class="card-title mb-0">Especialidades y Perfiles | Perfil principal: {{ $profesionale->proveedor->Nombre }}</h4>
                                                 </div><!-- end card header -->
 
                                                 <div class="card-body">

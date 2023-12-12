@@ -199,6 +199,13 @@ class ProfesionalesController extends Controller
     public function setPerfil(Request $request)
     {
 
+        $query = Profesional::where('Id', $request->Id)->first();
+        if($query->IdProveedor === null || $query->IdProveedor === 0){
+
+            $query->IdProveedor = $request->especialidad;
+            $query->save();
+        }
+
         $consulta = ProfesionalProv::where('IdProf', $request->Id)
             ->where('IdProv', $request->especialidad)
             ->where('Tipo', $request->perfil)
@@ -249,9 +256,11 @@ class ProfesionalesController extends Controller
 
     public function store(Request $request): string
     {
-       
+        return $request->Provincia;
         $nuevoId = Profesional::max('Id') + 1;
         $provincia = $this->fixerProvincia((int)$request->Provincia);
+
+        return $provincia;
 
         if($request->hasFile('Foto')) {
             $fileName = 'PROF'.$nuevoId. '.' . $request->Foto->extension();
@@ -283,9 +292,7 @@ class ProfesionalesController extends Controller
     }
 
     public function update(Request $request, $profesionale)
-    {
-        //return $request->all();
-        $provincia = $this->fixerProvincia($request->Provincia);
+    {   
 
         $update = Profesional::find($profesionale);
         $update->Documento = $request->Documento;
@@ -293,7 +300,7 @@ class ProfesionalesController extends Controller
         $update->Nombre = $request->Nombre;
         $update->EMail = $request->EMail;
         $update->Direccion = $request->Direccion;
-        $update->Provincia = $provincia->Nombre;
+        $update->Provincia = $request->Provincia;
         $update->IdLocalidad = $request->IdLocalidad;
         $update->Firma = $request->Firma;
         $update->CP = $request->CP;

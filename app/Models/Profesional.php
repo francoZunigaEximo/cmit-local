@@ -25,6 +25,7 @@ class Profesional extends Model
         'Direccion',
         'IdLocalidad',
         'Provincia',
+        'CP',
         'Firma',
         'Foto',
         'T1',
