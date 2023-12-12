@@ -1,34 +1,3 @@
-function getFecha(fecha){
-
-    let fechaActual = new Date();
-    let fechaLimiteAdmision = new Date(fecha);
-    let diff = fechaLimiteAdmision.getTime() - fechaActual.getTime();
-   
-    return (Math.round(diff/(1000*60*60*24)));
-}
-
-
-function fechaNow(fechaAformatear, divider, format) {
-    let dia, mes, anio; 
-
-    if (fechaAformatear === null) {
-        let fechaHoy = new Date();
-
-        dia = fechaHoy.getDate().toString().padStart(2, '0');
-        mes = (fechaHoy.getMonth() + 1).toString().padStart(2, '0');
-        anio = fechaHoy.getFullYear();
-    } else {
-        let nuevaFecha = fechaAformatear.split("-"); 
-        dia = nuevaFecha[0]; 
-        mes = nuevaFecha[1]; 
-        anio = nuevaFecha[2];
-    }
-
-    return (format === 1) ? `${dia}${divider}${mes}${divider}${anio}` : `${anio}${divider}${mes}${divider}${dia}`;
-}
-
-
-
 $(document).ready(()=>{
 
         //Botón de busqueda de Mapas
@@ -86,12 +55,12 @@ $(document).ready(()=>{
                         render: function(data){
                             
                             let totalDias = getFecha(data.Fecha);
-                            let fecha = fechaNow(data.Fecha,'/',1);
+                            let fecha = fechaNow(data.Fecha,'/',0);
 
                             let style = (totalDias <= 0 ? 'rojo' : 'verde');
 
                             let contenido = `<div style="text-align: center">
-                                                <span style="display:block">${fecha === 'NaN/NaN/NaN'? 'Sin fecha' : fecha}</span>
+                                                <span style="display:block">${fecha === 'NaN/NaN/NaN'? '-' : fecha}</span>
                                                 <span class="custom-badge ${style}">${(totalDias === 'NaN'? 0 : totalDias)}</span>
                                             </div>`;
 
@@ -104,7 +73,7 @@ $(document).ready(()=>{
                         render: function(data){
 
                             let totalDias = getFecha(data.FechaE);
-                            let fecha = fechaNow(data.FechaE,'/',1);
+                            let fecha = fechaNow(data.FechaE,'/',0);
 
                             let style = (totalDias <= 0 && data.eEnviado === 1 ? 'violeta' : (totalDias <= 0 && data.eEnviado === 0? 'verde' : (totalDias <= 10 && totalDias >= 1 ? 'rojo' : (totalDias > 10 ? 'amarillo': 'violeta'))))
 
@@ -160,9 +129,9 @@ $(document).ready(()=>{
                         data: null,
                         render: function(data){
                             
-                            let editar = '<a title="Editar" href="'+ location.href + '/' + data.Id + '/edit">' + '<button type="button" class="btn btn-sm btn-primary edit-item-btn"><i class="ri-edit-line"></i></button>' + '</a>';
+                            let editar = '<a title="Editar" href="'+ location.href + '/' + data.Id + '/edit">' + '<button type="button" class="btn btn-sm iconGeneral edit-item-btn"><i class="ri-edit-line"></i></button>' + '</a>';
                             
-                            let baja = `<button data-id="${data.Id}" type="button" class="btn btn-sm btn-danger deleteMapa" ><i class="ri-delete-bin-2-line"></i></button>`;
+                            let baja = `<button data-id="${data.Id}" type="button" class="btn btn-sm iconGeneral deleteMapa" ><i class="ri-delete-bin-2-line"></i></button>`;
         
                             return editar + ' ' + baja;
                         }
@@ -190,6 +159,35 @@ $(document).ready(()=>{
             });
     
         });
+
+        function getFecha(fecha){
+
+            let fechaActual = new Date();
+            let fechaLimiteAdmision = new Date(fecha);
+            let diff = fechaLimiteAdmision.getTime() - fechaActual.getTime();
+           
+            return (Math.round(diff/(1000*60*60*24)));
+        }
+        
+        
+        function fechaNow(fechaAformatear, divider, format) {
+            let dia, mes, anio; 
+        
+            if (fechaAformatear === null) {
+                let fechaHoy = new Date();
+        
+                dia = fechaHoy.getDate().toString().padStart(2, '0');
+                mes = (fechaHoy.getMonth() + 1).toString().padStart(2, '0');
+                anio = fechaHoy.getFullYear();
+            } else {
+                let nuevaFecha = fechaAformatear.split("-"); 
+                dia = nuevaFecha[0]; 
+                mes = nuevaFecha[1]; 
+                anio = nuevaFecha[2];
+            }
+        
+            return (format === '0') ? `${dia}${divider}${mes}${divider}${anio}` : `${anio}${divider}${mes}${divider}${dia}`;
+        }
 
 
 });

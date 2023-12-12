@@ -127,7 +127,7 @@
                     <div class="col-lg-12 mt-3">
                         <div class="hstack gap-2 justify-content-end">
                             
-                            <button type="button" id="updateMapa" class="btn btn-success">Actualizar</button>
+                            <button type="button" id="updateMapa" class="btn botonGeneral">Actualizar</button>
                         </div>
                     </div>
 

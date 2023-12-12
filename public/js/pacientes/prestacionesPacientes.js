@@ -44,7 +44,7 @@ $(document).ready(()=>{
             return;
         }
 
-        if(pago === '' || spago === null || pago === undefined) {
+        if(pago === '' || pago === null || pago === undefined) {
             toastr.warning('Debe seleccionar una "forma de pago"', 'Alerta');
             return;
         }
@@ -297,7 +297,7 @@ $(document).ready(()=>{
 
         let empresa = $('#selectClientes').val(),
             art = $('#selectArt').val();
- 
+
         $.get(getMapas, {empresa: empresa, art: art})
             .done(function(response){
 

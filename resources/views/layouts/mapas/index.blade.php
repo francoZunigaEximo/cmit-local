@@ -98,8 +98,8 @@
                                         <span class="custom-badge amarillo"> Entregas a mas de 10 dias de vencer, que ya cortaron</span>
                                     </div>
                                     <div class="col-sm-3" style="text-align: right;">
-                                        <button type="button" id="reset" class="btn btn-danger">Reiniciar</button>
-                                        <button type="button" id="buscar" class="btn btn-primary">Buscar</button>
+                                        <button type="button" id="reset" class="btn botonGeneral">Reiniciar</button>
+                                        <button type="button" id="buscar" class="btn botonGeneral">Buscar</button>
                                     </div>
                                 </div>
                                
@@ -111,11 +111,11 @@
                     <div class="col-sm-9">
                         <div>
                             <a href="{{ route('mapas.create') }}">
-                                <button type="button" class="btn btn-primary add-btn">
+                                <button type="button" class="btn botonGeneral add-btn">
                                     <i class="ri-add-line align-bottom me-1"></i> Nuevo
                                 </button>
                             </a>   
-                            <button type="button" id="excel" class="btn btn-soft-success" style="" data-bs-toggle="tooltip" data-bs-placement="top" title="Generar reporte en Excel">
+                            <button type="button" id="excel" class="btn iconGeneral" style="" data-bs-toggle="tooltip" data-bs-placement="top" title="Generar reporte en Excel">
                                 <i class="ri-file-excel-line"></i>
                             </button>
                         </div>

@@ -1,30 +1,30 @@
 $(document).ready(()=>{
 
-    //Quitamos duplicados en Provincia
-    let seleccionEstado = $("#Estado").val(),
-        countSeleccionEstado= $("#Estado option[value='" + seleccionEstado + "']").length; //Contamos cuantas veces apacere
-    if (countSeleccionEstado > 1) {
-        $("#Estado option[value='" + seleccionEstado + "']:gt(0)").hide();
-    }
-
-    //Sumamos los totales
-    function total(...args) {
-        return args.reduce((sum, current) => sum + current, 0);
-    }
-    
-    //Ejecutamos la función para sumar
-    let totalEnProceso = parseInt($('#totalEnProceso').text()),
+    let hoy = new Date().toISOString().slice(0, 10), 
+        maxCaracteres = 100,
+        totalEnProceso = parseInt($('#totalEnProceso').text()),
         totalCerradas = parseInt($('#totalCerradas').text()),
         totalFinalizados = parseInt($('#totalFinalizados').text()),
         totalEntregados = parseInt($('#totalEntregados').text()),
         totalCompleta = parseInt($('#totalCompleta').text()),
-        totalConEstados = parseInt($('#totalConEstados').text()),
-        totales = total(totalEnProceso, totalConEstados, totalCerradas, totalFinalizados, totalEntregados, totalCompleta);
-    if (isNaN(totales)) {
-        totales = 0;
-    }
-    $('#total').text(totales);
+        totalConEstados = parseInt($('#totalConEstados').text());
 
+    toastr.options = {
+        closeButton: true,   
+        progressBar: true,    
+        timeOut: 3000,        
+    };
+
+    quitarDuplicados("#Estado");
+    getPrestaMapas();
+    actualizarTotales(totalEnProceso, totalCerradas, totalFinalizados, totalEntregados, totalCompleta, totalConEstados);
+    verificacionNro();
+    getCerrarMapas();
+    getFinalMapa();
+    getEnMapa();
+
+    $('#remitoFechaE').val(hoy)
+   
     //Exportar Excel
     $('.excel').click(function() {
         
@@ -78,7 +78,7 @@ $(document).ready(()=>{
                 });
             }
         } else {
-            swal('Error', 'Debes seleccionar al menos un mapa para exportar.', 'error');
+            toastr.error('Debes seleccionar al menos un mapa para exportar.', 'Error');
         }
 
     });
@@ -90,7 +90,7 @@ $(document).ready(()=>{
 
         ids.push($(this).data('remito'));
 
-        if (ids.length === 1 && ids[0] === 0) {
+        if (ids.length > 0) {
             
             if (confirm("¿Estás seguro de que deseas generar el reporte en PDF?")) {
                 console.log(ids);
@@ -136,11 +136,7 @@ $(document).ready(()=>{
                 });
             }
         } else {
-            toastr.options = {
-                closeButton: true,   
-                progressBar: true,    
-                timeOut: 3000,        
-            };
+
             toastr.info('No hay remitos para imprimir el pdf', 'Atención');
         }
         
@@ -163,38 +159,19 @@ $(document).ready(()=>{
                 
                 $.post(updateMapa, {_token: TOKEN, Nro:Nro, IdART: IdART, IdEmpresa: IdEmpresa, Fecha: Fecha, FechaE: FechaE, Estado: Estado, Cpacientes: Cpacientes, Obs: Obs, Id: IdMap})
                 .done(function(){
-                    swal('Perfecto', 'Se ha actualizado el mapa correctamente', 'success');
+                    toastr.success('Se ha actualizado el mapa correctamente', 'Perfecto');
                     setTimeout(() => {
                         location.reload();
                     }, 3000);
                     
                 })
                 .fail(function(xhr){
-                    swal('Error', 'No se ha podido guardar la actualización. Recargue la página y si el problema persiste, consulte con el administrador', 'warning');
+                    toastr.error('No se ha podido guardar la actualización. Recargue la página y si el problema persiste, consulte con el administrador', 'Error');
                 });
             }
              
     });
 
-    let hoy = new Date().toISOString().slice(0, 10);
-    $('#remitoFechaE').val(hoy);
-
-    // Contador y máximo de caracteres en Remito de Clientes/Opciones
-    let maxCaracteres = 100;
-
-    function updateContador() {
-        let longitud = $('#remitoObs').val();
-        let caracteres = longitud.length;
-        $('#contadorRemitoObs').text(caracteres + '/' + maxCaracteres);
-    }
-
-    function blockExcedente(e) {
-        let longitud = $('#remitoObs').val();
-        let caracteres = longitud.length;
-        if (caracteres >= maxCaracteres) {
-            e.preventDefault();
-        }
-    }
 
     $('#remitoObs').on('input', function() {
         updateContador();
@@ -221,7 +198,7 @@ $(document).ready(()=>{
             remitoFechaE = $('#remitoFechaE').val();
 
         if(remitoFechaE === '' || remitoFechaE === null){
-            swal('Atención', 'Debe especificar una fecha de entrega', 'warning');
+            toastr.warning('Debe especificar una fecha de entrega', 'Atención');
             return;
         }
 
@@ -236,13 +213,13 @@ $(document).ready(()=>{
             },
             success: function(){
 
-                swal('Perfecto', 'Se han registrado las fechas de entrega en los remitos correspondientes', 'success');
+                toastr.success('Se han registrado las fechas de entrega en los remitos correspondientes', 'Perfecto');
                 $('#remitoObs').val('');
                 $('#entregarModal').modal('hide');
             },
             error: function(xhr){
                 console.error(xhr);
-                swal('Error', 'Ha ocurrido un error. Consulte con el administrador', 'error');
+                toastr.error('Ha ocurrido un error. Consulte con el administrador', 'Error');
             }
             
         });
@@ -251,7 +228,6 @@ $(document).ready(()=>{
 
     $(document).on('click', '.buscarPresMapa', function() {
 
-
         let NroPrestacion = $('#NroPrestacion').val(),
             NroRemito = $('#NroRPrestacion').val(),
             Etapa = $('#etapaPrestacion').val(),
@@ -259,7 +235,7 @@ $(document).ready(()=>{
             mapa = MAPA;
 
         if(NroRemito === '' && NroPrestacion === '' && Etapa === '' && Estado ===''){
-            swal('Atención', 'Debe utilizar algun filtro', 'warning');
+            toastr.warning('Debe utilizar algun filtro', 'Atención');
             return;
         }
 
@@ -279,7 +255,7 @@ $(document).ready(()=>{
                 let data = response.result;
 
                 if(data === ''){
-                    swal('Atención', 'No se han encontrado resultados', 'warning');
+                    toastr.warning('No se han encontrado resultados', 'Atención');
                 }
 
                 $('#prestaMapa').empty();
@@ -299,7 +275,6 @@ $(document).ready(()=>{
                    } else if(dat.Cerrado === 0 && dat.Finalizado === 0) {
                         estado = '<span style="text-align=center" class="custom-badge gris">Abierto</span>';
                    }
-
 
                    let eEnviado = (dat.eEnviado === 1 ? '<span style="text-align=center" class="custom-badge verde"><i class="ri-checkbox-circle-line"></i></span>' : '<span style="text-align=center" class="custom-badge gris"><i class="ri-checkbox-circle-line"></i></span>');
 
@@ -339,7 +314,6 @@ $(document).ready(()=>{
         });
 
     });
-
 
     $(document).on('click', '.verPrestacion', function(){
 
@@ -404,7 +378,7 @@ $(document).ready(()=>{
             })
             .fail(function(xhr){
                 console.error(xhr);
-                swal('Error', 'Ha ocurrido un error, consulte con el administrador', 'error');
+                toastr.error('Ha ocurrido un error, consulte con el administrador', 'Error');
             })
     });
     
@@ -475,20 +449,9 @@ $(document).ready(()=>{
         })
         .fail(function(xhr) {
             console.error(xhr);
-            swal('Error', 'Ha ocurrido un error, por favor, consulte con un administrador', 'error');
+            toastr.error('Ha ocurrido un error, por favor, consulte con un administrador', 'Error');
         });
     });
-
-    verificacionNro();
-
-    function verificacionNro(){
-        let nro = $('#Nro').val(),
-            verificador = $('#verificador').val();
-
-        if(nro === verificador){
-            $('#updateMapa').prop('disabled', false);
-        }
-    }
 
     $(document).on('change', '#Nro, #verificador', function(){
 
@@ -523,244 +486,6 @@ $(document).ready(()=>{
 
     });
 
-    getEnMapa();
-
-    function getEnMapa(){
-
-        $('#eenviarMapa').empty();
-
-        $.get(enviarMapa, { mapa: MAPA})
-            .done(function(enviar){
-
-                $.each(enviar, function(index, en){
-                        
-                    let tipo = (en.TipoPrestacion ? '<span class="custom-badge nuevoAzulInverso">' + en.TipoPrestacion +'</span>' : '');
-
-                    let fechaOriginal = en.Fecha,
-                    partesFecha = fechaOriginal.split("-"),
-                    nuevaFecha = partesFecha[2] + "/" + partesFecha[1] + "/" + partesFecha[0];
-
-                    let contenido = `
-                        <tr>
-                            <td>${en.IdPrestacion}</td>
-                            <td>${nuevaFecha}</td>
-                            <td>${tipo}</td>
-                            <td>${en.ApellidoPaciente} ${en.NombrePaciente}</td>
-                            <td>${en.Documento}</td>
-                            <td><button data-id="${en.IdPrestacion}" class="btn btn-sm btn-soft-primary edit-item-btn verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
-                            <td>${en.eEnviado === 1 ? '<input type="checkbox" disabled>' : `<input type="checkbox" name="Id" value="${en.IdPrestacion}" checked>`}</td>
-                        </tr>
-                    `;
-                    $('#eenviarMapa').append(contenido);
-
-                });
-
-            })
-            .fail(function(xhr){
-                console.error(xhr);
-                swal('Error', 'Ha ocurrido un error. Actualice la página y el caso de que el problema persista, consulte con el administrador.', 'error');
-            })
-    }
-
-    getFinalMapa();
-
-    function getFinalMapa(){
-
-        $('#cerrarMapa').empty();
-
-        $.get(getFMapa, {mapa: MAPA})
-        .done(function(data){
-
-            $('#finalizarMapa').empty();
-
-            $.each(data, function(index, f){
-
-                let estado;
-            
-            if(f.Finalizado === 1){
-                estado = '<span style="text-align=center" class="custom-badge verde">Finalizado</span>';
-            
-            } else if(f.Cerrado === 1){
-                estado = '<span style="text-align=center" class="custom-badge azul">Cerrado</span>';
-            
-            } else if(f.Cerrado === 0 && d.Finalizado === 0) {
-                estado = '<span style="text-align=center" class="custom-badge gris">Abierto</span>';
-            
-            }else if(f.eEnviado === 1) {
-                estado = '<span style="text-align=center" class="custom-badge gris">eEnviado</span>';
-            
-            }else if(f.Anulado === 1) {
-                estado = '<span style="text-align=center" class="custom-badge gris">Anulado</span>';
-            
-            }else if(f.Entregado === 1) {
-                estado = '<span style="text-align=center" class="custom-badge gris">Entregado</span>';
-            
-            }else if(f.Incompleto === 1) {
-                estado = '<span style="text-align=center" class="custom-badge gris">Incompleto</span>';
-            }
-
-            let fechaOriginal = f.Fecha,
-                partesFecha = fechaOriginal.split("-"),
-                nuevaFecha = partesFecha[2] + "/" + partesFecha[1] + "/" + partesFecha[0];
-            
-            let contenido = `
-                <tr>
-                    <td>${f.IdPrestacion}</td>
-                    <td>${nuevaFecha}</td>
-                    <td>${f.ApellidoPaciente} ${f.NombrePaciente}</td>
-                    <td>${estado}</td>
-                    <td><button data-id="${f.IdPrestacion}" class="btn btn-sm btn-soft-primary edit-item-btn verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
-                    <td>${f.Finalizado === 1 ? '<input type="checkbox" disabled>' : `<input type="checkbox" name="Id" value="${f.IdPrestacion}" checked>`}</td>
-                </tr>
-            `;
-
-                $('#finalizarMapa').append(contenido);
-                $('#NroPresFinal, #NroRemitoFinal').val("");
-                
-            });
-
-            $("#listaFinalizar").fancyTable({
-                pagination: true,
-                perPage: 10,
-                searchable: false,
-                globalSearch: false,
-                sortable: false, 
-            });
-
-        })
-        .fail(function(xhr){
-            console.error(xhr);
-            swal('Error', 'Ha ocurrido un error. Actualice la página y si el problema persiste, consulte con el administrador', 'error');
-        })
-    }
-
-    getCerrarMapas();
-
-    function getCerrarMapas(){
-
-        $('#cerrarMapa').empty();
-
-        $.get(getCerrar, {mapa: MAPA})
-            .done(function(close){
-
-                $.each(close, function(index, c) {
-
-                    let estado;
-                    
-                    if(c.Finalizado === 1){
-                        estado = '<span style="text-align=center" class="custom-badge verde">Finalizado</span>';
-                    
-                    } else if(c.Cerrado === 1){
-                        estado = '<span style="text-align=center" class="custom-badge azul">Cerrado</span>';
-                    
-                    } else if(c.Cerrado === 0 && c.Finalizado === 0) {
-                        estado = '<span style="text-align=center" class="custom-badge gris">Abierto</span>';
-                    
-                    }else if(c.eEnviado === 1) {
-                        estado = '<span style="text-align=center" class="custom-badge gris">eEnviado</span>';
-                    
-                    }else if(c.Anulado === 1) {
-                        estado = '<span style="text-align=center" class="custom-badge gris">Anulado</span>';
-                    
-                    }else if(c.Entregado === 1) {
-                        estado = '<span style="text-align=center" class="custom-badge gris">Entregado</span>';
-                    
-                    }else if(c.Incompleto === 1) {
-                        estado = '<span style="text-align=center" class="custom-badge gris">Incompleto</span>';
-                    }
-    
-                    let fechaOriginal = c.Fecha,
-                        partesFecha = fechaOriginal.split("-"),
-                        nuevaFecha = partesFecha[2] + "/" + partesFecha[1] + "/" + partesFecha[0];
-                    
-                    let contenido = `
-                        <tr>
-                            <td>${c.IdPrestacion}</td>
-                            <td>${nuevaFecha}</td>
-                            <td>${c.ApellidoPaciente} ${c.NombrePaciente}</td>
-                            <td>${estado}</td>
-                            <td><button data-id="${c.IdPrestacion}" class="btn btn-sm btn-soft-primary edit-item-btn verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
-                            <td>${c.Cerrado === 1 ? '<input type="checkbox" disabled>' : `<input type="checkbox" name="Id" value="${c.IdPrestacion}" checked>`} </td>
-                           
-                        </tr>
-                    `;
-    
-                    $('#cerrarMapa').append(contenido);
-                    
-                });
-                
-            })
-            .fail(function(xhr){
-                console.error(xhr);
-                swal('Error', 'Ha ocurrido un error. Actualice la página y si el problema persiste, consulte al administrador', 'error');
-            });
-    }
-
-    getPrestaMapas();
-
-    function getPrestaMapas(){
-
-        $('#prestaMapa').empty();
-
-        $.get(getPrestaciones, {mapa: MAPA })
-            .done(function(presta){
-
-                $.each(presta, function(index, d) {
-
-                    let etapa = (d.Etapa === 'Completo' ? '<span style="text-align=center" class="custom-badge verde">Completo</span>' : '<span style="text-align=center" class="custom-badge rojo">Incompleto</span>');
-
-                    let estado;
-                    
-                   if(d.Finalizado === 1){
-                        estado = '<span style="text-align=center" class="custom-badge verde">Finalizado</span>';
-                  
-                   } else if(d.Cerrado === 1){
-                        estado = '<span style="text-align=center" class="custom-badge azul">Cerrado</span>';
-                   
-                   } else if(d.Cerrado === 0 && d.Finalizado === 0) {
-                        estado = '<span style="text-align=center" class="custom-badge gris">Abierto</span>';
-                   }
-
-
-                   let eEnviado = (d.eEnviado === 1 ? '<span style="text-align=center" class="custom-badge verde"><i class="ri-checkbox-circle-line"></i></span>' : '<span style="text-align=center" class="custom-badge gris"><i class="ri-checkbox-circle-line"></i></span>');
-
-                   let facturado = (d.Facturado === 1 ? '<span style="text-align=center" class="custom-badge verde"><i class="ri-checkbox-circle-line"></i></span>' : '<span style="text-align=center" class="custom-badge amarillo"><i class="ri-information-line"></i></span>');
-                
-                   let fechaOriginal = d.Fecha;
-                   let partesFecha = fechaOriginal.split("-");
-                   let nuevaFecha = partesFecha[2] + "/" + partesFecha[1] + "/" + partesFecha[0];
-
-                    let contenido = `
-                        <tr>
-                            <td>${d.IdPrestacion}</td>
-                            <td>${nuevaFecha}</td>
-                            <td>${d.Apellido} ${d.Nombre}</td>
-                            <td>${d.NroCEE}</td>
-                            <td>${etapa}</td>
-                            <td>${estado}</td>
-                            <td>${eEnviado}</td>
-                            <td>${facturado}</td>
-                            <td><button data-id="${d.IdPrestacion}" class="btn btn-sm btn-soft-primary edit-item-btn verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
-                        </tr>`;
-
-                    $('#prestaMapa').append(contenido);
-
-                    });
-
-                    $("#listaPresMapa").fancyTable({
-                        pagination: true,
-                        perPage: 15,
-                        searchable: false,
-                        globalSearch: false,
-                        sortable: false, 
-                    });
-            })
-            .fail(function(xhr){
-                swal('Error', 'Ha ocurrido un error. Actualice la página y si el problema persiste, consulte con el administrador', 'error');
-                console.error(xhr)
-            })
-    }
-
     $(document).on('click', '.cerrarMapa', function(){
 
         let ids = [];
@@ -771,13 +496,13 @@ $(document).ready(()=>{
         let checkAll =$('#checkAll').prop('checked');
 
         if(ids.length === 0 && checkAll === false){
-            swal('Atención', 'No hay ninguna prestación seleccionada para cerrar', 'warning');
+            toastr.warning('No hay ninguna prestación seleccionada para cerrar', 'Atención');
             return;
         }
 
         $.post(saveEstado, { ids: ids, estado: 'Cerrado', _token: TOKEN })
             .done(function(){
-                swal('Perfecto', 'Se han cerrado todos los mapas seleccionados','success');
+                toastr.success('Se han cerrado todos los mapas seleccionados','Perfecto');
                 $('#cerrarMapa').empty();
                 getEnMapa();
                 getFinalMapa();
@@ -785,7 +510,7 @@ $(document).ready(()=>{
             })
             .fail(function(xhr){
                 console.error(xhr);
-                swal('Error', 'Ha ocurrido un error. Consulte con el administrador','error');
+                toastr.error('Ha ocurrido un error. Consulte con el administrador','Error');
             })
     });
 
@@ -856,7 +581,7 @@ $(document).ready(()=>{
             })
             .fail(function(xhr){
                 console.error(xhr);
-                swal('Error', 'Ha ocurrido un error. Consulte con el administrador', 'error');
+                toastr.error('Ha ocurrido un error. Consulte con el administrador', 'Error');
             });
     });
 
@@ -870,13 +595,13 @@ $(document).ready(()=>{
         let checkAll =$('#checkAll').prop('checked');
 
         if(ids.length === 0 && checkAll === false){
-            swal('Atención', 'No hay ninguna prestación seleccionada para finalizar', 'warning');
+            toastr.warning('No hay ninguna prestación seleccionada para finalizar', 'Atención');
             return;
         }
 
         $.post(saveFinalizar, { ids: ids, _token: TOKEN })
             .done(function(){
-                swal('Perfecto', 'Se han finalizado todos los mapas seleccionados','success');
+                toastr.success('Se han finalizado todos los mapas seleccionados','Perfecto');
                 $('#finalizarMapa').empty();
                 getEnMapa();
                 getFinalMapa();
@@ -884,7 +609,7 @@ $(document).ready(()=>{
             })
             .fail(function(xhr){
                 console.error(xhr);
-                swal('Error', 'Ha ocurrido un error. Consulte con el administrador','error');
+                toastr.error('Ha ocurrido un error. Consulte con el administrador','Error');
             })
     });
 
@@ -928,7 +653,7 @@ $(document).ready(()=>{
                 .fail(function(xhr){
 
                     console.error(xhr);
-                    swal('Error', 'Ha ocurrido un error. Consulte con el administrador', 'error');
+                    toastr.error('Ha ocurrido un error. Consulte con el administrador', 'Error');
                 });
     });
 
@@ -942,13 +667,13 @@ $(document).ready(()=>{
         let checkAll =$('#checkAll').prop('checked');
 
         if(ids.length === 0 && checkAll === false){
-            swal('Atención', 'No hay ninguna prestación seleccionada para eEnviar', 'warning');
+            toastr.warning('No hay ninguna prestación seleccionada para eEnviar', 'Atención');
             return;
         }
 
         $.post(saveEnviar, { ids: ids, _token: TOKEN })
             .done(function(){
-                swal('Perfecto', 'Se han eEnviado todos los mapas seleccionados','success');
+                toastr.success('Se han eEnviado todos los mapas seleccionados','Perfecto');
                 $('#eenviarMapa').empty();
                 $('#eEnviarModal').modal('hide');
                 getEnMapa();
@@ -957,7 +682,7 @@ $(document).ready(()=>{
             })
             .fail(function(xhr){
                 console.error(xhr);
-                swal('Error', 'Ha ocurrido un error. Consulte con el administrador','error');
+                toastr.error('Ha ocurrido un error. Consulte con el administrador','Error');
             })
     });
 
@@ -968,5 +693,280 @@ $(document).ready(()=>{
 
     });
 
+    function quitarDuplicados(selector) {
+        let seleccion = $(selector).val();
+        let countSeleccion = $(selector + " option[value='" + seleccion + "']").length;
+    
+        if (countSeleccion > 1) {
+            $(selector + " option[value='" + seleccion + "']:gt(0)").hide();
+        }
+    }
+
+    function total(...args) {
+        return args.reduce((sum, current) => sum + current, 0);
+    }
+
+    function updateContador() {
+        let longitud = $('#remitoObs').val();
+        let caracteres = longitud.length;
+        $('#contadorRemitoObs').text(caracteres + '/' + maxCaracteres);
+    }
+
+    function blockExcedente(e) {
+        let longitud = $('#remitoObs').val();
+        let caracteres = longitud.length;
+        if (caracteres >= maxCaracteres) {
+            e.preventDefault();
+        }
+    }
+
+    function actualizarTotales(totalEnProceso, totalConEstados, totalCerradas, totalFinalizados, totalEntregados, totalCompleta) {
+        let totales = total(totalEnProceso, totalConEstados, totalCerradas, totalFinalizados, totalEntregados, totalCompleta);
+    
+        if (isNaN(totales)) {
+            totales = 0;
+        }
+    
+        $('#total').text(totales);
+    }
+
+    function getPrestaMapas(){
+
+        $('#prestaMapa').empty();
+
+        $.get(getPrestaciones, {mapa: MAPA })
+            .done(function(presta){
+
+                $.each(presta, function(index, d) {
+
+                    let etapa = (d.Etapa === 'Completo' ? '<span style="text-align=center" class="custom-badge verde">Completo</span>' : '<span style="text-align=center" class="custom-badge rojo">Incompleto</span>');
+
+                    let estado;
+                    
+                   if(d.Finalizado === 1){
+                        estado = '<span style="text-align=center" class="custom-badge verde">Finalizado</span>';
+                  
+                   } else if(d.Cerrado === 1){
+                        estado = '<span style="text-align=center" class="custom-badge azul">Cerrado</span>';
+                   
+                   } else if(d.Cerrado === 0 && d.Finalizado === 0) {
+                        estado = '<span style="text-align=center" class="custom-badge gris">Abierto</span>';
+                   }
+
+
+                   let eEnviado = (d.eEnviado === 1 ? '<span style="text-align=center" class="custom-badge verde"><i class="ri-checkbox-circle-line"></i></span>' : '<span style="text-align=center" class="custom-badge gris"><i class="ri-checkbox-circle-line"></i></span>');
+
+                   let facturado = (d.Facturado === 1 ? '<span style="text-align=center" class="custom-badge verde"><i class="ri-checkbox-circle-line"></i></span>' : '<span style="text-align=center" class="custom-badge amarillo"><i class="ri-information-line"></i></span>');
+                
+                   let fechaOriginal = d.Fecha;
+                   let partesFecha = fechaOriginal.split("-");
+                   let nuevaFecha = partesFecha[2] + "/" + partesFecha[1] + "/" + partesFecha[0];
+
+                    let contenido = `
+                        <tr>
+                            <td>${d.IdPrestacion}</td>
+                            <td>${nuevaFecha}</td>
+                            <td>${d.Apellido} ${d.Nombre}</td>
+                            <td>${d.NroCEE}</td>
+                            <td>${etapa}</td>
+                            <td>${estado}</td>
+                            <td>${eEnviado}</td>
+                            <td>${facturado}</td>
+                            <td><button data-id="${d.IdPrestacion}" class="btn btn-sm btn-soft-primary edit-item-btn verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
+                        </tr>`;
+
+                    $('#prestaMapa').append(contenido);
+
+                    });
+
+                    $("#listaPresMapa").fancyTable({
+                        pagination: true,
+                        perPage: 15,
+                        searchable: false,
+                        globalSearch: false,
+                        sortable: false, 
+                    });
+            })
+            .fail(function(xhr){
+                toastr.error('Ha ocurrido un error. Actualice la página y si el problema persiste, consulte con el administrador', 'Error');
+                console.error(xhr)
+            })
+    }
+
+    function getCerrarMapas(){
+
+        $('#cerrarMapa').empty();
+
+        $.get(getCerrar, {mapa: MAPA})
+            .done(function(close){
+
+                $.each(close, function(index, c) {
+
+                    let estado;
+                    
+                    if(c.Finalizado === 1){
+                        estado = '<span style="text-align=center" class="custom-badge verde">Finalizado</span>';
+                    
+                    } else if(c.Cerrado === 1){
+                        estado = '<span style="text-align=center" class="custom-badge azul">Cerrado</span>';
+                    
+                    } else if(c.Cerrado === 0 && c.Finalizado === 0) {
+                        estado = '<span style="text-align=center" class="custom-badge gris">Abierto</span>';
+                    
+                    }else if(c.eEnviado === 1) {
+                        estado = '<span style="text-align=center" class="custom-badge gris">eEnviado</span>';
+                    
+                    }else if(c.Anulado === 1) {
+                        estado = '<span style="text-align=center" class="custom-badge gris">Anulado</span>';
+                    
+                    }else if(c.Entregado === 1) {
+                        estado = '<span style="text-align=center" class="custom-badge gris">Entregado</span>';
+                    
+                    }else if(c.Incompleto === 1) {
+                        estado = '<span style="text-align=center" class="custom-badge gris">Incompleto</span>';
+                    }
+    
+                    let fechaOriginal = c.Fecha,
+                        partesFecha = fechaOriginal.split("-"),
+                        nuevaFecha = partesFecha[2] + "/" + partesFecha[1] + "/" + partesFecha[0];
+                    
+                    let contenido = `
+                        <tr>
+                            <td>${c.IdPrestacion}</td>
+                            <td>${nuevaFecha}</td>
+                            <td>${c.ApellidoPaciente} ${c.NombrePaciente}</td>
+                            <td>${estado}</td>
+                            <td><button data-id="${c.IdPrestacion}" class="btn btn-sm btn-soft-primary edit-item-btn verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
+                            <td>${c.Cerrado === 1 ? '<input type="checkbox" disabled>' : `<input type="checkbox" name="Id" value="${c.IdPrestacion}" checked>`} </td>
+                           
+                        </tr>
+                    `;
+    
+                    $('#cerrarMapa').append(contenido);
+                    
+                });
+                
+            })
+            .fail(function(xhr){
+                console.error(xhr);
+                toastr.error('Ha ocurrido un error. Actualice la página y si el problema persiste, consulte al administrador', 'Error');
+            });
+    }
+
+    function getFinalMapa(){
+
+        $('#cerrarMapa').empty();
+
+        $.get(getFMapa, {mapa: MAPA})
+        .done(function(data){
+
+            $('#finalizarMapa').empty();
+
+            $.each(data, function(index, f){
+
+                let estado;
+            
+            if(f.Finalizado === 1){
+                estado = '<span style="text-align=center" class="custom-badge verde">Finalizado</span>';
+            
+            } else if(f.Cerrado === 1){
+                estado = '<span style="text-align=center" class="custom-badge azul">Cerrado</span>';
+            
+            } else if(f.Cerrado === 0 && d.Finalizado === 0) {
+                estado = '<span style="text-align=center" class="custom-badge gris">Abierto</span>';
+            
+            }else if(f.eEnviado === 1) {
+                estado = '<span style="text-align=center" class="custom-badge gris">eEnviado</span>';
+            
+            }else if(f.Anulado === 1) {
+                estado = '<span style="text-align=center" class="custom-badge gris">Anulado</span>';
+            
+            }else if(f.Entregado === 1) {
+                estado = '<span style="text-align=center" class="custom-badge gris">Entregado</span>';
+            
+            }else if(f.Incompleto === 1) {
+                estado = '<span style="text-align=center" class="custom-badge gris">Incompleto</span>';
+            }
+
+            let fechaOriginal = f.Fecha,
+                partesFecha = fechaOriginal.split("-"),
+                nuevaFecha = partesFecha[2] + "/" + partesFecha[1] + "/" + partesFecha[0];
+            
+            let contenido = `
+                <tr>
+                    <td>${f.IdPrestacion}</td>
+                    <td>${nuevaFecha}</td>
+                    <td>${f.ApellidoPaciente} ${f.NombrePaciente}</td>
+                    <td>${estado}</td>
+                    <td><button data-id="${f.IdPrestacion}" class="btn btn-sm btn-soft-primary edit-item-btn verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
+                    <td>${f.Finalizado === 1 ? '<input type="checkbox" disabled>' : `<input type="checkbox" name="Id" value="${f.IdPrestacion}" checked>`}</td>
+                </tr>
+            `;
+
+                $('#finalizarMapa').append(contenido);
+                $('#NroPresFinal, #NroRemitoFinal').val("");
+                
+            });
+
+            $("#listaFinalizar").fancyTable({
+                pagination: true,
+                perPage: 10,
+                searchable: false,
+                globalSearch: false,
+                sortable: false, 
+            });
+
+        })
+        .fail(function(xhr){
+            console.error(xhr);
+            toastr.error('Ha ocurrido un error. Actualice la página y si el problema persiste, consulte con el administrador', 'Error');
+        })
+    }
+
+    function verificacionNro(){
+        let nro = $('#Nro').val(),
+            verificador = $('#verificador').val();
+
+        if(nro === verificador){
+            $('#updateMapa').prop('disabled', false);
+        }
+    }
+
+    function getEnMapa(){
+
+        $('#eenviarMapa').empty();
+
+        $.get(enviarMapa, { mapa: MAPA})
+            .done(function(enviar){
+
+                $.each(enviar, function(index, en){
+                        
+                    let tipo = (en.TipoPrestacion ? '<span class="custom-badge nuevoAzulInverso">' + en.TipoPrestacion +'</span>' : '');
+
+                    let fechaOriginal = en.Fecha,
+                    partesFecha = fechaOriginal.split("-"),
+                    nuevaFecha = partesFecha[2] + "/" + partesFecha[1] + "/" + partesFecha[0];
+
+                    let contenido = `
+                        <tr>
+                            <td>${en.IdPrestacion}</td>
+                            <td>${nuevaFecha}</td>
+                            <td>${tipo}</td>
+                            <td>${en.ApellidoPaciente} ${en.NombrePaciente}</td>
+                            <td>${en.Documento}</td>
+                            <td><button data-id="${en.IdPrestacion}" class="btn btn-sm btn-soft-primary edit-item-btn verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
+                            <td>${en.eEnviado === 1 ? '<input type="checkbox" disabled>' : `<input type="checkbox" name="Id" value="${en.IdPrestacion}" checked>`}</td>
+                        </tr>
+                    `;
+                    $('#eenviarMapa').append(contenido);
+
+                });
+
+            })
+            .fail(function(xhr){
+                console.error(xhr);
+                toastr.error('Ha ocurrido un error. Actualice la página y el caso de que el problema persista, consulte con el administrador.', 'Error');
+            })
+    }
 
 });

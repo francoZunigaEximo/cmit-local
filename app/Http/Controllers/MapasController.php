@@ -514,7 +514,7 @@ class MapasController extends Controller
             ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
             ->leftJoin('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
             ->where('mapas.Nro', '=', $request->mapa);
-            //->orWhereRaw("mapas.Nro = \"'{$request->mapa}\"");
+
             
             $query->when($NroPrestacion, function ($query) use ($NroPrestacion) {
                 $query->where('prestaciones.Id', $NroPrestacion);
@@ -665,7 +665,7 @@ class MapasController extends Controller
         $ids = $request->ids;
 
         foreach ($ids as $id) {
-            $prestacion = Prestacion::where('Id', $id)->first();
+            $prestacion = Prestacion::where('Id', $id)->where('Cerrado', 1)->first();
             
             if($prestacion){
                 $prestacion->Finalizado = 1;

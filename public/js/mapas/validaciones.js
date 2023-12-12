@@ -1,5 +1,11 @@
 $(document).ready(()=>{
 
+    toastr.options = {
+        closeButton: true,   
+        progressBar: true,    
+        timeOut: 3000,        
+    };
+
     $("#form-update, #form-create").off();
     $("#form-update, #form-create").validate({
         rules: {
@@ -7,6 +13,12 @@ $(document).ready(()=>{
                 required: true,
                 maxlength: 12,
                 noNegative: true,
+            },
+            IdART: {
+                required: true,
+            },
+            IdEmpresa: {
+                required: true,
             },
             Fecha: {
                 date:true,
@@ -24,6 +36,12 @@ $(document).ready(()=>{
             Nro: {
                 required: "Este campo es obligatorio",
                 maxlength: "El máximo de caracteres es de 12",
+            },
+            IdART: {
+                required: "El ART es obligatorio",
+            },
+            IdEmpresa: {
+                required: "La Empresa es obligatoria",
             },
             Fecha: {
                 date: "El campo debe ser de fechas",
@@ -52,14 +70,14 @@ $(document).ready(()=>{
         // Verificar si el formulario es válido
         if ($(this).valid()) {
             if($(this).attr("id") == "form-create"){
-                swal('Felicitaciones', '¡Se ha generado el mapa de manera correcta.', 'success');
+                toastr.success('¡Se ha generado el mapa de manera correcta.', 'Felicitaciones');
                 setTimeout(() => {
                     $(this).unbind("submit").submit();
                 }, 4000);   
             }
 
         } else {
-            swal('Atención', 'Por favor, complete todos los campos requeridos correctamente.', 'warning');
+            toastr.warning('Por favor, complete todos los campos requeridos correctamente.', 'Atención');
         }
         
         event.preventDefault();
