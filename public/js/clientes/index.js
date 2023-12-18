@@ -94,47 +94,6 @@ $(document).ready(function(){
         }
     });
 
-
-    $(document).on('click', '.bloqueo-btn', function() {
-        let razonSocial = $(this).data('razon-social'), cuit = $(this).data('cliente-cuit'), id = $(this).data('cliente-id');
-        
-        $('#razonSocial').text(razonSocial);
-        $('#cuit').text(cuit);
-
-        $('.confirmarBloqueo').click(function() {
-            let motivo = $('#Motivo').val();
-
-            if(motivo.length === 0){
-
-                swal('Atención', '¡El motivo es un campo obligatorio. Debe escribir un motivo!', 'warning');
-            }else{
-                $.ajax({
-                url: block,
-                type: 'POST',
-                data: {
-                    _token: TOKEN,
-                    motivo: motivo,
-                    cliente: id
-                },
-                success: function() {
-
-                    swal('Acción realizada', 'El cliente se ha bloqueado de manera correcta', 'success');
-                    
-                    $('#blockCliente').modal('hide');
-                    $('#Motivo').val("");
-                    let dataTable = $('#listaClientes').DataTable();
-                    dataTable.draw(false);
-
-                },
-                error: function(xhr) {
-                    swal('Error', '¡Ha ocurrido un inconveniente y la solicitud no podrá llevarse a cabo. Consulte con el administrador!', 'error');
-                    console.error(xhr);
-                    }
-                });
-            }
-        });
-    });
-
     $(document).on('click', '.downCliente', function(){
 
         let cliente = $(this).data('id');

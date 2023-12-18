@@ -1,13 +1,21 @@
 $(document).ready(()=> {
 
+    let messageClientes = $('#messageClientes');
+
+    toastr.options = {
+        closeButton: true,   
+        progressBar: true,    
+        timeOut: 3000,        
+    };
+
     tabActivo();
     cargarAutorizados();
     checkProvincia();
     telefonos();
     quitarDuplicados("#Provincia");
     quitarDuplicados("#CondicionIva");
+    checkBloq();
 
-    //Eliminar Autorizados
     $(document).on('click', '.delete-icon', function() {
         let Id = $(this).data('id');
        
@@ -19,12 +27,12 @@ $(document).ready(()=> {
                 _token: TOKEN,
             },
             success: function(){
-                swal('Perfecto', 'El autorizado ha sido eliminado correctamente', 'success');
+                toastr.success('El autorizado ha sido eliminado correctamente', 'Perfecto');
                 $('.body-autorizado').empty();
                 cargarAutorizados();
             },
             error: function(xhr){
-                swal('Error', 'Hubo un inconveniento con el proceso. Consulto con el administrador', 'error');
+                toastr.error('Hubo un inconveniento con el proceso. Consulto con el administrador', 'Error');
                 console.error(xhr);
             }
         });
@@ -37,18 +45,15 @@ $(document).ready(()=> {
             sinEvaluacion = $('#SinEval').prop('checked')?1:0,
             facturacionSinPaq = $('#SinPF').prop('checked')?1:0,
             correo = $('#correoItem').prop('checked'),
-            mensajeria = $('#mensajeriaItem').prop('checked');
+            mensajeria = $('#mensajeriaItem').prop('checked'),
+            bloqueado = $('#Bloqueado').prop('checked')?1:0;
 
-        if(fisico === 0 && sinEvaluacion === 0 && facturacionSinPaq === 0 && correo == false && mensajeria == false){
-            swal('Atención', '¡No se puede guardar si todos los campos están vacíos. Debe escoger al menos una opción!', 'warning');
+    
+        if(correo == true && mensajeria == true){
+            toastr.warning('¡No puede tener la opcion Mensajeria y Correo seleccionadas. Debe escoger por una opción!', 'Atención');
             return;
         }
-
-        if(correo == true && mensajeria == true){
-                swal('Atención', '¡No puede tener la opcion Mensajeria y Correo seleccionadas. Debe escoger por una opción!', 'warning');
-                return;
-        }
-
+        
         $.ajax({
             url: checkOpciones,
             type: 'Post',
@@ -59,14 +64,22 @@ $(document).ready(()=> {
                 facturacionSinPaq: facturacionSinPaq,
                 correo: correo,
                 mensajeria: mensajeria,
+                bloqueado: bloqueado,
                 Id: ID,
             },
             success: function(){
 
-                swal('Perfecto', '¡Los datos se han guardado correctamente!', 'success');
+                if(bloqueado === 0){
+                    swal("Se actualizará la página para habilitar todas las funcionalidades en 3 segundos");
+                    setTimeout(()=>{
+                        location.reload();
+                    }, 3000);
+                }else{
+                    toastr.success('¡Los datos se han guardado correctamente!', 'Perfecto');
+                }
             },
             error: function(xhr){
-                swal('Error', 'Hubo un error al obtener los autorizados. Consulte con el administrador', 'error');
+                toastr.error('Hubo un error al obtener los autorizados. Consulte con el administrador', 'Error');
                 console.error(xhr);
             }
         });
@@ -84,23 +97,23 @@ $(document).ready(()=> {
 
         if (Nombre === '' || Apellido === '' || DNI === '' || Derecho === '') {
 
-            swal('Atención', 'Por favor, complete todos los campos obligatorios.', 'warning');
-            return; 
+            toastr.warning('Por favor, complete todos los campos obligatorios.', 'Atención');
+            return;
         }
 
 
         if(DNI.length > 8 || parseInt(DNI) < 0){
-            swal("Atención", "El dni no puede contener más de 8 digitos o ser negativo", "warning");
+            toastr.warning("El dni no puede contener más de 8 digitos o ser negativo", "Atención");
             return;
         }
 
         if(Nombre.length > 25){
-            swal("Atención", "El nombre no puede contener mas de 25 caracteres", "warning");
+            toastr.warning("El nombre no puede contener mas de 25 caracteres", "Atención");
             return;
         }
 
         if(Apellido.length > 30){
-            swal("Atención", "El apellido no puede contener mas de 30 caracteres", "warning");
+            toastr.warning("El apellido no puede contener mas de 30 caracteres", "Atención");
             return;
         }
 
@@ -118,16 +131,13 @@ $(document).ready(()=> {
             },
             success: function(){
 
-                swal('Felicitaciones', 'El autorizado se registró correctamente', 'success');
+                toastr.success('El autorizado se registró correctamente', 'Felicitaciones');
                 cargarAutorizados();
-                $('#Nombre').val('');
-                $('#Apellido').val('');
-                $('#DNI').val('');
-                $('#Derecho').val('');
+                $('#Nombre, #Apellido, #DNI, #Derecho').val('');
             },
             error: function(xhr){
 
-                swal('Error', 'Hubo un error en el registro. Consulte con el administrador.', 'error');
+                toastr.error('Hubo un error en el registro. Consulte con el administrador.', 'Error');
                 console.error(xhr);
             }
         });
@@ -138,15 +148,11 @@ $(document).ready(()=> {
 
         let controlEjecucion = true;
         
-        let resultados = $('#EMailResultados').val(),
-            informes = $('#EMailInformes').val(),
-            facturas = $('#EMailFactura').val(),
-            sinEnvio = $('#SEMail').prop('checked');
-    
         // Verificación de correos
         let emailsResultados = $('#EMailResultados').val(),
             emailsInformes = $('#EMailInformes').val(),
-            emailsFactura = $('#EMailFactura').val();
+            emailsFactura = $('#EMailFactura').val(),
+            sinEnvio = $('#SEMail').prop('checked');;
     
         if (!verificarCorreos(emailsResultados) || !verificarCorreos(emailsInformes) || !verificarCorreos(emailsFactura)) {
             controlEjecucion = false;
@@ -159,19 +165,19 @@ $(document).ready(()=> {
             type: 'Post',
             data: {
                 _token: TOKEN,
-                resultados: resultados,
-                informes: informes,
-                facturas: facturas,
+                resultados: emailsResultados,
+                informes: emailsInformes,
+                facturas: emailsFactura,
                 sinEnvio: sinEnvio,
                 Id: ID
             },
             success: function(){
 
-                    swal('Excelente', '¡Se han registrado los cambios correctamente!', 'success');
+                toastr.success('¡Se han registrado los cambios correctamente!', 'Excelente');
             },
             error: function(xhr){
 
-                swal('Error', 'Hubo un error al obtener los autorizados. Consulte con el administrador', 'error');
+                toastr.error('Hubo un error al obtener los autorizados. Consulte con el administrador', 'Error');
                 console.error(xhr);
             }
             });
@@ -202,12 +208,11 @@ $(document).ready(()=> {
             },
             success: function(){
 
-                swal('Perfecto', 'Las observaciones se han cargado correctamente', 'success');
-            
+                toastr.success('Las observaciones se han cargado correctamente', 'Perfecto');
             },
             error: function(xhr){
 
-                swal('Error', 'Hubo un error en el registro. Consulte con el administrador', 'error')
+                toastr.error('Hubo un error en el registro. Consulte con el administrador', 'Error')
                 console.error(xhr);
             }
         });
@@ -253,7 +258,6 @@ $(document).ready(()=> {
             dataType: 'json',
             data: {
                 Id: ID,
-                _token: TOKEN
             },
             success: function(response) {
                 let autorizados = response;
@@ -287,7 +291,7 @@ $(document).ready(()=> {
             },
             error: function(xhr){
 
-                swal('Error', 'Hubo un error al obtener los autorizados. Consulte con el administrador', 'error');
+                toastr.error('Hubo un error al obtener los autorizados. Consulte con el administrador', 'Error');
                 console.error(xhr);
             }
         });
@@ -318,7 +322,7 @@ $(document).ready(()=> {
                     $('#Provincia').append(nuevoOption);
                 },
                 error: function(xhr){
-                    console.log('No se pudo autocompletar la provincia. Debe cargarlo manualmente.');
+                    toastr.error('No se pudo autocompletar la provincia. Debe cargarlo manualmente.', 'Error');
                     console.error(xhr);
                     
                 }
@@ -421,17 +425,62 @@ $(document).ready(()=> {
         let Id = $('#Id').val(), CodigoArea = $('#nuevoPrefijo').val(), NumeroTelefono = $('#nuevoNumero').val(), Observaciones = $('#nuevaObservacion').val();
 
         if(CodigoArea == "" || NumeroTelefono == "") {
-            swal("Atención", "Faltan datos en el número de teléfono del cliente. No pueden haber campos vacíos.", "warning");
+            toastr.warning("Faltan datos en el número de teléfono del cliente. No pueden haber campos vacíos.", "Atención");
             return;
         }
 
         if(Observaciones == ""){
-            swal("Atención","Debe escribir alguna referencia en la observación.", "warning");
+            toastr.warning("Debe escribir alguna referencia en la observación.", "Atención");
             return;
         }
 
         saveEdicion(Id, CodigoArea, NumeroTelefono, Observaciones);
         telefonos();
+        
+    });
+
+    $(document).on('click', '.bloqueo-btn', function() {
+        let bloqueado = $('#Bloqueado').prop('checked');
+
+        if(bloqueado){
+            $('#blockCliente').modal('show');
+
+            $('.confirmarBloqueo').click(function() {
+                let motivo = $('#MotivoB').val();
+
+                if(motivo === ''){
+    
+                    toastr.warning('¡El motivo es un campo obligatorio. Debe escribir un motivo!', 'Atención');
+                }else{
+                    $.ajax({
+                    url: block,
+                    type: 'POST',
+                    data: {
+                        _token: TOKEN,
+                        motivo: motivo,
+                        cliente: ID
+                    },
+                    success: function() {
+    
+                        toastr.success('El cliente se ha bloqueado de manera correcta', 'Acción realizada');
+                        
+                        $('#blockCliente').modal('hide');
+                        $('#Motivo').val("");
+                        swal('Atención', 'Se recargará la app para bloquear las funcionalidades', 'warning');
+                        setTimeout(()=> {
+                            location.reload();
+                        }, 3000);
+                        
+    
+                    },
+                    error: function(xhr) {
+                        toastr.error('¡Ha ocurrido un inconveniente y la solicitud no podrá llevarse a cabo. Consulte con el administrador!', 'Error');
+                        console.error(xhr);
+                        }
+                    });
+                }
+            });
+        }
         
     });
 
@@ -450,7 +499,6 @@ $(document).ready(()=> {
             data: {
                 Id: ID,
                 tipo: 'all',
-                _token: TOKEN
             },
             success: function(response){
                 let telefonos = response;
@@ -462,7 +510,7 @@ $(document).ready(()=> {
                                             <td>${result.CodigoArea}</td>
                                             <td>${result.NumeroTelefono}</td>
                                             <td>${result.Observaciones}</td>
-                                            <td><i data-id="${result.Id}" class="ri-edit-2-line editarTelefono" title="Editar" data-bs-toggle="modal" data-bs-target="#editTelefonoModal" id="editarTelefono"></i> <i data-id="${result.Id}" class="ri-delete-bin-line eliminarTelefono" title="Eliminar" id="eliminarTelefono"></i></li> <span class="badge text-bg-success" title="Este registro ya se encuentra en la base de datos">Base de datos</span></td>
+                                            <td><div class="telefonoAcciones"><i data-id="${result.Id}" class="ri-edit-2-line editarTelefono" title="Editar" data-bs-toggle="modal" data-bs-target="#editTelefonoModal" id="editarTelefono"></i> <i data-id="${result.Id}" class="ri-delete-bin-line eliminarTelefono" title="Eliminar" id="eliminarTelefono"></i></li> <span class="badge text-bg-success" title="Este registro ya se encuentra en la base de datos">Base de datos</span></div></td>
                                         </tr>`;
                         
                         $('#tablaTelefonos').append(contenido);
@@ -474,7 +522,7 @@ $(document).ready(()=> {
                 }
             },
             error: function(xhr){
-                swal('Error', 'Hay un error en la carga de los telefonos adicionales. Consulte con el administrador', 'error');
+                toastr.error('Hay un error en la carga de los telefonos adicionales. Consulte con el administrador', 'Error');
                 console.error(xhr);
             }
 
@@ -493,11 +541,11 @@ $(document).ready(()=> {
             },
             success: function(){
 
-                swal("Excelente","El número de telefono adicional se ha borrado de la base de datos.", "success");
+                toastr.success("El número de telefono adicional se ha borrado de la base de datos.", "Excelente");
             },
             error: function(xhr){ 
 
-                swal("Error", "Ha ocurrido un error al intentar eliminar el número de telefono adicional. Consulte con el administrador", "error");
+                toastr.error("Ha ocurrido un error al intentar eliminar el número de telefono adicional. Consulte con el administrador", "Error");
                 console.error(xhr);
             }
 
@@ -545,7 +593,7 @@ $(document).ready(()=> {
                 
             },
             error: function(xhr){
-                swal('Error','Hubo un error en el proceso de guardar los cambios telefonicos. Consulte con el administrador', 'error');
+                toastr.error('Hubo un error en el proceso de guardar los cambios telefonicos. Consulte con el administrador', 'Error');
                 console.error(xhr);
             }
         });
@@ -561,7 +609,6 @@ $(document).ready(()=> {
             data: {
                 Id: id,
                 tipo: 'one',
-                _token: TOKEN,
             },
             success: function(result){
                 
@@ -596,7 +643,7 @@ $(document).ready(()=> {
 
             },
             error: function(xhr){
-                swal("Error","Ha ocurrido un error en el proceso de obtener los datos. Consulte con el administrador", "error");
+                toastr.error("Ha ocurrido un error en el proceso de obtener los datos. Consulte con el administrador", "Error");
                 console.error(xhr);
             }
         });
@@ -637,6 +684,26 @@ $(document).ready(()=> {
         if (countSeleccion > 1) {
             $(selector + " option[value='" + seleccion + "']:gt(0)").hide();
         }
+    }
+
+    function checkBloq(){
+        
+        $.get(getBloqueo, {Id: ID})
+            .done(async function(response){
+
+                let data = await response.cliente;
+
+                messageClientes.html(`<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <strong> Motivo del bloqueo: </strong> ${data.Motivo}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>`);
+               $('#addNumero, #Bloqueado, #btnOpciones, #guardarEmail, #btnAutorizado, #btnObservaciones, [type="submit"]').prop('disabled', true);
+               $('.telefonoAcciones').empty().hide();
+            })
+            .fail(function(xhr){
+                console.error(xhr);
+                toastr.error("Ha ocurrido un error. Consulte con el administrador");
+            });
     }
 
 });

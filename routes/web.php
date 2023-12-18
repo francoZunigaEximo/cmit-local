@@ -79,6 +79,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('verifyIdentificacion', [ClientesController::class, 'verifyIdentificacion'])->name('verifyIdentificacion');
     Route::post('exportExcelClientes', [ClientesController::class, 'excel'])->name('exportExcelClientes');
     Route::get('checkParaEmpresa', [ClientesController::class, 'checkParaEmpresa'])->name('checkParaEmpresa');
+    route::get('getBloqueo', [ClientesController::class, 'getBloqueo'])->name('getBloqueo');
 
     //Rutas de Prestaciones
     Route::resource('prestaciones', PrestacionesController::class);

@@ -257,7 +257,7 @@ label {
 .iconGeneral, .botonGeneral {color: #3c74b3 !important; }
 
 .iconGeneral {
-	font-size: 1.4em !important;
+	font-size: 11px !important;
 }
 
 .botonGeneral {
@@ -338,3 +338,7 @@ body .selectArt2 .select2.select2-container {
 .size50porcent {
 	width: 50% !important;
 }
+
+#listaClientes th, td { white-space: nowrap !important; }
+#listaClientes tr { height: 37px !important;}
+#listaClientes tbody tr td { padding: 5px 8px 2px 8px };

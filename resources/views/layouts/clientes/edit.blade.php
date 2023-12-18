@@ -5,14 +5,9 @@
 @section('content')
 
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-    <h4 class="mb-sm-0">Editar cliente <span class="custom-badge original">Nro. {{ $cliente->Id }}</span></h4>
+    <h4 class="mb-sm-0">Cliente <span class="custom-badge original">Nro. {{ $cliente->Id }}</span> {!! ($cliente->Bloqueado === 1) ? '<span class="custom-badge rojo">Bloqueado</span>' : '' !!}</h4>
 
-    <div class="page-title-right">
-        <ol class="breadcrumb m-0">
-            <li class="breadcrumb-item"><a href="{{ route('clientes.index') }}">Clientes</a></li>
-            <li class="breadcrumb-item active">Editar Cliente</li>
-        </ol>
-    </div>
+    <div class="page-title-right"></div>
 </div>
                         
 <div class="card-header d-flex justify-content-between">
@@ -38,7 +33,8 @@
         <li class="nav-item" role="presentation">
             <a class="nav-link" data-bs-toggle="tab" href="#autorizados" role="tab" aria-selected="false" tabindex="-1">
                 <i class="far fa-user"></i>
-                Autorizados                                            </a>
+                Autorizados
+            </a>
         </li>
         <li class="nav-item" role="presentation">
             <a class="nav-link" data-bs-toggle="tab" href="#obs" role="tab" aria-selected="false" tabindex="-1">
@@ -54,12 +50,12 @@
         </li>
     </ul>
 
-    <button type="button" id="clonar" class="btn btn-primary"><i class="ri-file-copy-2-line"></i> Clonar</button>
+    <button type="button" id="clonar" class="btn botonGeneral"><i class="ri-file-copy-2-line"></i> Clonar</button>
 </div>
 <div class="card-body p-4">
     <div class="tab-content">
+        <div id="messageClientes"></div>
         <div class="tab-pane active" id="datosBasicos" role="tabpanel">
-            <div id="messageClientes"></div>
             <form class="form-update" id="form-update" action="{{ route('clientes.update', ['cliente' => $cliente->Id]) }}"" method="POST" enctype="multipart/form-data" novalidate>
                 @csrf
                 @method('PUT')
@@ -162,11 +158,9 @@
                         <div class="mb-3">
                             <label for="Provincia" class="form-label">Provincia</label>
                             <select class="form-select" name="Provincia" id="Provincia">
-                                <option value="{{ $detailsProvincia->Id }}">{{ $detailsProvincia->Nombre }}</option>
+                                <option value="{{ $cliente->Provincia ?? '' }}" selected>{{ $cliente->Provincia ?? 'Elija una opción...'}}</option>
                                 @foreach ($provincias as $provincia)
-                                    @if (($provincia->Id !== $detailsProvincia->Id) && ($provincia->Nombre !== $detailsProvincia->Id))
-                                        <option value="{{ $provincia->Id }}">{{ $provincia->Nombre }}</option>
-                                    @endif
+                                    <option value="{{ $provincia->Nombre }}">{{ $provincia->Nombre }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -197,7 +191,7 @@
                                 <span class="input-group-addon">-</span>
                                 <input name="obsExtra" id="obsExtra" type="text" class="form-control" placeholder="Observación">
                                 <span class="input-group-addon">-</span>
-                                <button type="button" class="btn btn-warning" id="addNumero">Agregar Número adicional</button>
+                                <button type="button" class="btn botonGeneral" id="addNumero">Agregar Número adicional</button>
                             </div>
                             <table class="table table-nowrap" style="border: 1px solid #eeeeee">
                                 <thead>
@@ -221,8 +215,8 @@
                     <div class="col-lg-12 pt-4">
                         <div class="hstack gap-2 justify-content-end">
                             
-                            <button type="button" id="btnVolverCliente" class="btn btn-soft-danger">Volver</button>
-                            <button type="submit" class="btn btn-success">Actualizar</button>
+                            <button type="button" id="btnVolverCliente" class="btn botonGeneral">Volver</button>
+                            <button type="submit" class="btn botonGeneral">Actualizar</button>
                         </div>
                     </div>
                     <!--end col-->
@@ -320,7 +314,7 @@
                     <!--end col-->
                     <div class="col-lg-12">
                         <div class="text-end">
-                            <button type="button" id="btnAutorizado" class="btn btn-primary">Autorizar</button>
+                            <button type="button" id="btnAutorizado" class="btn botonGeneral">Autorizar</button>
                         </div>
                         
                     </div>
@@ -392,9 +386,18 @@
                                 </div>
                             </div>
 
+                            <div class="col-lg-3">
+                                <div class="form-check form-check-success mb-6">
+                                    <input class="form-check-input bloqueo-btn" type="checkbox" id="Bloqueado" {{ ($cliente->Bloqueado == 1)?'checked' : '' }}>
+                                    <label class="form-check-label" for="Bloqueado">
+                                        Bloquear
+                                    </label>
+                                </div>
+                            </div>
+
                             <!--end col-->
                             <div class="hstack gap-2 justify-content-end">
-                                <a class="btn btn-success" id="btnOpciones">Guardar</a>
+                                <button class="btn botonGeneral" id="btnOpciones">Guardar</button>
                             </div>
                         </div>
                         <!--end row-->
@@ -432,7 +435,7 @@
                     </label>
                 </div>
                 <div class="hstack gap-2 justify-content-end">
-                    <a class="btn btn-success" id="guardarEmail">Guardar</a>
+                    <button class="btn botonGeneral" id="guardarEmail">Guardar</button>
                 </div>
             </div>
         </div>
@@ -462,7 +465,7 @@
                 </div>
             </div>
             <div class="hstack gap-2 justify-content-end">
-                <a class="btn btn-success" id="btnObservaciones" >Guardar</a>
+                <button class="btn botonGeneral" id="btnObservaciones" >Guardar</button>
             </div>
         </div>
         <!--end tab-pane-->
@@ -512,6 +515,26 @@
     </div>
 </div>
 
+<!-- Default Modals -->
+<div id="blockCliente" class="modal fadeInUp" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel" style="color: red"> Solicitud de bloqueo ({{ $cliente->RazonSocial ?? '' }} - CUIT {{ $cliente->Identificacion ?? ''}})</h5>
+            </div>
+            <div class="modal-body">
+                <p>Escriba el motivo del Bloqueo:</p>
+               <textarea name="MotivoB" id="MotivoB" class="form-control" rows="10"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn botonGeneral" id="reset" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn botonGeneral confirmarBloqueo">Confirmar</button>
+            </div>
+
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 <script>
 
 const ID = '{{ $cliente->Id }}';
@@ -533,6 +556,8 @@ const setObservaciones = "{{ route('clientes.setObservaciones') }}";
 const getTelefonos = "{{ route('getTelefonos') }}";
 const deleteTelefono = "{{ route('deleteTelefono') }}";
 const saveTelefono = "{{ route('saveTelefono') }}";
+const block = "{{ route('clientes.block') }}";
+const getBloqueo = "{{ route('getBloqueo') }}";
 
 </script>
 

@@ -1,5 +1,11 @@
 $(document).ready(function() {
 
+    toastr.options = {
+        closeButton: true,   
+        progressBar: true,    
+        timeOut: 3000,        
+    };
+
     $("#form-update, #form-create").off();
     $("#form-update, #form-create").validate({
         rules: {
@@ -132,18 +138,24 @@ $(document).ready(function() {
         if ($(this).valid()) {
             if($(this).attr("id") == "form-create"){
                 
-                swal('Felicitaciones', '¡Se ha creado el paciente de manera correcta. Se habilitarán la Opciones, Emails, Autorizados, Observaciones y Para Empresa!', 'success');
-                $(this).unbind("submit").submit();
+                toastr.success('¡Se ha creado el paciente de manera correcta. Se habilitarán la Opciones, Emails, Autorizados, Observaciones y Para Empresa!', 'Felicitaciones');
+                setTimeout(()=> {
+                    $(this).unbind("submit").submit();
+                }, 3000);
+                
 
                 
             }else{
-                swal('Perfecto', '¡Se han actualizado los datos de manera correcta. Se actualizará el navegador!', 'success');
-                $(this).unbind("submit").submit();
+                toastr.success('¡Se han actualizado los datos de manera correcta. Se actualizará el navegador!', 'Perfecto');
+                setTimeout(() => {
+                    $(this).unbind("submit").submit();
+                }, 3000);
+                
                 
             }  
 
         } else {
-            swal('Atención', 'Por favor, complete todos los campos requeridos correctamente.', 'warning');
+            toastr.error('Por favor, complete todos los campos requeridos correctamente.', 'Atención');
         }
         
         event.preventDefault();

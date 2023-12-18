@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Cliente;
 use App\Models\Provincia;
+use App\Models\Localidad;
 use App\Models\Telefono;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -13,9 +14,7 @@ use Yajra\DataTables\DataTables;
 
 class ClientesController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index(Request $request)
     {
         if ($request->ajax()) {
@@ -29,8 +28,7 @@ class ClientesController extends Controller
                 'Id',
                 'FPago')
                 ->orderBy('Id', 'DESC')
-                ->take(5000)
-                ->where('Estado', '=', '1');
+                ->where('Estado', '1');
 
             return Datatables::of($query)->make(true);
 
@@ -58,7 +56,7 @@ class ClientesController extends Controller
                 'Id',
                 'FPago')
                 ->orderBy('Id', 'DESC')
-                ->where('Estado', '=', '1');
+                ->where('Estado', '1');
 
             $query->when($buscar, function ($query) use ($buscar) {
                 $query->where(function ($query) use ($buscar) {
@@ -156,23 +154,14 @@ class ClientesController extends Controller
         return view('layouts.clientes.index');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-
-        $provincias = Provincia::all();
-
-        return view('layouts.clientes.create', compact('provincias'));
+        return view('layouts.clientes.create')->with('provincias', Provincia::all());
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+
     public function store(Request $request)
     {
-        //return $request->all();
         $nuevoId = Cliente::max('Id') + 1;
 
         $cliente = Cliente::create([
@@ -222,56 +211,47 @@ class ClientesController extends Controller
 
     public function edit(Cliente $cliente)
     {
-        $provincias = Provincia::all();
-        $detailsProvincia = DB::table('provincias')->where('Id', $cliente->Provincia)->orWhere('Nombre', $cliente->Provincia)->first(['Nombre', 'Id']);
-        $detailsLocalidad = DB::table('localidades')->where('Id', $cliente->IdLocalidad)->first(['Nombre', 'CP', 'Id']);
+        $provincias = Provincia::all();            
+        $detailsLocalidad = Localidad::where('Id', $cliente->IdLocalidad)->first(['Nombre', 'CP', 'Id']);
         $paraEmpresas = Cliente::where('Identificacion', $cliente->Identificacion)->get();
 
-        return view('layouts.clientes.edit', compact(['cliente', 'provincias', 'detailsProvincia', 'detailsLocalidad', 'paraEmpresas']));
+        return view('layouts.clientes.edit', compact(['cliente', 'provincias', 'detailsLocalidad', 'paraEmpresas']));
     }
 
     public function update(Request $request, Cliente $cliente)
     {
         //Actualizamos
         $cliente = Cliente::find($request->Id);
-        $cliente->TipoCliente = $request->TipoCliente;
-        $cliente->Identificacion = $request->Identificacion;
-        $cliente->ParaEmpresa = $request->ParaEmpresa;
-        $cliente->RazonSocial = $request->RazonSocial;
-        $cliente->NombreFantasia = $request->NombreFantasia;
-        $cliente->CondicionIva = $request->CondicionIva;
-        $cliente->Telefono = $request->Telefono;
-        $cliente->Direccion = $request->Direccion;
-        $cliente->Provincia = $request->Provincia;
-        $cliente->IdLocalidad = $request->IdLocalidad;
-        $cliente->CP = $request->CP;
-        $cliente->save();
+        if($cliente)
+        {
+            $cliente->fill($request->all())->save();
+        
+            $telefonos = $request->telefonos;
 
-        $telefonos = $request->telefonos;
+            // Ejecutamos solo si hay algo
+            if (! empty($telefonos) && is_array($telefonos)) {
+                foreach ($telefonos as $telefonoJSON) {
+                    $telefonoArray = json_decode($telefonoJSON, true);
+                    if (is_array($telefonoArray) && count($telefonoArray) === 3) {
 
-        // Ejecutamos solo si hay algo
-        if (! empty($telefonos) && is_array($telefonos)) {
-            foreach ($telefonos as $telefonoJSON) {
-                $telefonoArray = json_decode($telefonoJSON, true);
-                if (is_array($telefonoArray) && count($telefonoArray) === 3) {
-
-                    Telefono::create([
-                        'Id' => Telefono::max('Id') + 1,
-                        'IdCliente' => $request->Id,
-                        'CodigoArea' => $telefonoArray[0], //Prefijo
-                        'NumeroTelefono' => $telefonoArray[1], // Número
-                        'Observaciones' => $telefonoArray[2], // Observación
-                        'TipoEntidad' => 'i',
-                    ]);
+                        Telefono::create([
+                            'Id' => Telefono::max('Id') + 1,
+                            'IdCliente' => $request->Id,
+                            'CodigoArea' => $telefonoArray[0], //Prefijo
+                            'NumeroTelefono' => $telefonoArray[1], // Número
+                            'Observaciones' => $telefonoArray[2], // Observación
+                            'TipoEntidad' => 'i',
+                        ]);
+                    }
                 }
             }
         }
 
-        return redirect()->back();
+        return back();
 
     }
 
-    public function multipleDown(Request $request)
+    public function multipleDown(Request $request): void
     {
         $ids = $request->input('ids');
         if (! is_array($ids)) {
@@ -279,8 +259,6 @@ class ClientesController extends Controller
         }
 
         Cliente::whereIn('id', $ids)->update(['Estado' => 0]);
-
-        return redirect()->back();
     }
 
     public function baja(Request $request): void
@@ -289,20 +267,21 @@ class ClientesController extends Controller
         
         if($cliente)
         {
-            $cliente->Estado = '0';
-            $cliente->save();
+            $cliente::update(['Estado' => 0]);
         }
 
     }
 
-    public function block(Request $request)
+    public function block(Request $request): void
     {
         $cliente = Cliente::find($request->cliente);
-        $cliente->Motivo = $request->motivo;
-        $cliente->Bloqueado = '1';
-        $cliente->save();
+        if($cliente)
+        {
+            $cliente->Motivo = $request->motivo;
+            $cliente->Bloqueado = '1';
+            $cliente->save();
+        }
 
-        return redirect()->route('clientes.index');
     }
 
     public function verifyIdentificacion(Request $request)
@@ -324,47 +303,46 @@ class ClientesController extends Controller
         return response()->json(['existe' => $existe, 'cliente' => $cliente]);
     }
 
-    public function setObservaciones(Request $request)
+    public function setObservaciones(Request $request): void
     {
         $cliente = Cliente::find($request->Id);
-        $cliente->Observaciones = $request->Observaciones;
-        $cliente->ObsCE = $request->ObsCE;
-        $cliente->ObsCO = $request->ObsCO;
-        $cliente->ObsEval = $request->ObsEval;
-        $cliente->Motivo = $request->Motivo;
-        $cliente->save();
+       
+        if($cliente)
+        {
+            $cliente->fill($request->all());
+            $cliente->save();
+        }
     }
 
-    public function checkEmail(Request $request)
+    public function checkEmail(Request $request):void
     {
         $cliente = Cliente::find($request->Id);
-        $cliente->EMailResultados = $request->resultados;
-        $cliente->EMailInformes = $request->informes;
-        $cliente->EMailFactura = $request->facturas;
-        $cliente->SEMail = ($request->sinEnvio) ? 1 : 0;
-        $cliente->save();
+        if($cliente)
+        {
+            $cliente->fill([
+                'EMailResultados' => $request->resultados,
+                'EMailInformes' => $request->informes,
+                'EMailFactura' => $request->facturas,
+            ]);
+            $cliente->SEMail = ($request->sinEnvio) ? 1 : 0;
+            $cliente->save();
+        }
     }
 
     public function checkOpciones(Request $request)
     {
-        //return $request->all();
+        
         $cliente = Cliente::find($request->Id);
-        $cliente->RF = $request->fisico;
-        $cliente->SinEval = $request->sinEvaluacion;
-        $cliente->SinPF = $request->facturacionSinPaq;
 
-        if ($request->mensajeria === 'true') {
-
-            $cliente->Entrega = 2;
-        } elseif ($request->correo === 'true') {
-
-            $cliente->Entrega = 4;
-        } else {
-
-            $cliente->Entrega = 0;
+        if($cliente)
+        {
+            $cliente->RF = $request->fisico;
+            $cliente->SinEval = $request->sinEvaluacion;
+            $cliente->SinPF = $request->facturacionSinPaq;
+            $cliente->Bloqueado = $request->bloqueado;
+            $cliente->Entrega = ($request->mensajeria === true ? 2 : ($request->correo === true ? 4 : 0)); 
+            $cliente->save();
         }
-
-        $cliente->save();
     }
 
     //Exportar clientes
@@ -461,6 +439,16 @@ class ClientesController extends Controller
         $cliente = Cliente::find($request->empresa);
 
         if($cliente)
+        {
+            return response()->json(['cliente' => $cliente]);
+        }
+    }
+
+    public function getBloqueo(Request $request)
+    {
+        $cliente = Cliente::where('Id', $request->Id)->first(['Bloqueado', 'Motivo']);
+        
+        if($cliente && $cliente->Bloqueado === 1)
         {
             return response()->json(['cliente' => $cliente]);
         }

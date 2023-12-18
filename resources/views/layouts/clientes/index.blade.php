@@ -25,15 +25,12 @@
                         
                     <div>
                         <a href="{{ route('clientes.create') }}">
-                            <button type="button" class="btn btn-primary add-btn"  id="create-btn" data-bs-target="#showModal"><i class="ri-add-line align-bottom me-1"></i> Nuevo</button>
+                            <button type="button" class="btn botonGeneral add-btn"  id="create-btn" data-bs-target="#showModal"><i class="ri-add-line align-bottom me-1"></i> Nuevo</button>
                         </a>
-                        <button type="button" id="btnBajaMultiple"class="btn btn-soft-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="Baja multiple de clientes">
-                            <i class="ri-delete-bin-2-line"></i>
-                        </button>
-                        <button type="button" id="excel" class="btn btn-soft-success" data-bs-toggle="tooltip" data-bs-placement="top" title="Generar reporte en Excel">
+                        <button type="button" id="excel" class="btn botonGeneral" title="Generar reporte en Excel">
                             <i class="ri-file-excel-line"></i>
                         </button>
-                        <button type="button" class="btn btn-soft-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Mensajería a clientes">
+                        <button type="button" class="btn botonGeneral" title="Mensajería a clientes">
                             <i class="ri-send-plane-line" title="Mensajería"></i>
                         </button> 
                     </div>
@@ -82,7 +79,7 @@
                 </div>
             </div>
 
-            <div class="table-responsive table-card mt-3 mb-1">
+            <div class="table-responsive table-card mb-1">
                 <table id="listaClientes" class="display table table-bordered" style="width:100%">
                     <thead class="table-light">
                         <tr>
@@ -105,25 +102,7 @@
     </div><!-- end card -->
 </div>
 
-<!-- Default Modals -->
-<div id="blockCliente" class="modal fadeInUp" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="myModalLabel" style="color: red"> Solicitud de bloqueo (<span id="razonSocial"></span> - CUIT <span id="cuit"></span>)</h5>
-            </div>
-            <div class="modal-body">
-                <p>Escriba el motivo del Bloqueo:</p>
-               <textarea name="Motivo" id="Motivo" class="form-control" rows="10"></textarea>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" id="reset" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary confirmarBloqueo">Confirmar</button>
-            </div>
 
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
 
 <script>
 //Rutas
@@ -131,8 +110,6 @@ const exportExcelClientes = "{{ route('exportExcelClientes') }}";
 const multipleDown = "{{ route('clientes.multipleDown') }}";
 const SEARCH = "{{ route('searchClientes') }}";
 const baja = "{{ route('baja') }}";
-
-const block = "{{ route('clientes.block') }}";
 
 //Constantes
 const TOKEN = "{{ csrf_token() }}";

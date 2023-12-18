@@ -7,6 +7,9 @@ $(document).ready(()=>{
             new DataTable("#listaClientes", {
 
                 searching: false,
+                fixedColumns: {
+                    heightMatch: 'none'
+                },
                 ordering: false,
                 processing: true,
                 lengthChange: false,
@@ -77,14 +80,11 @@ $(document).ready(()=>{
                     {
                         data: null,
                         render: function(data){
-                            let editar = `<a href="${location.href}/${data.Id}/edit/"><button type="button" class="btn btn-sm btn-primary edit-item-btn"><i class="ri-edit-line"></i></button></a>`;
-                            
-                            let bloqueoBtnTitle = (data.Bloqueado == 1) ? 'Bloqueado' : 'Bloquear';
-                            let bloquear = `<button type="button" data-bs-toggle="modal" data-bs-target="#blockCliente" class="btn btn-sm btn-warning remove-item-btn bloqueo-btn" title="${bloqueoBtnTitle}" data-cliente-id="${data.Id}" data-razon-social="${data.RazonSocial}" data-cliente-cuit="${data.Identificacion}" ${data.Bloqueado === 1 ? ' disabled' : ''} + '><i class="ri-forbid-2-line"></i></button>`;
+                            let editar = `<a href="${location.href}/${data.Id}/edit/"><button type="button" class="btn btn-sm iconGeneral edit-item-btn"><i class="ri-edit-line"></i></button></a>`,
 
-                            let eliminar = `<button data-id="${data.Id}" type="button" class="btn btn-sm btn-danger downCliente"><i class="ri-delete-bin-2-line"></i></button></a>`;
+                                eliminar = `<button data-id="${data.Id}" type="button" class="btn btn-sm iconGeneral downCliente"><i class="ri-delete-bin-2-line"></i></button></a>`;
                         
-                            return editar + ' ' + bloquear + ' ' + eliminar;
+                            return editar + ' ' + eliminar;
                         },
                     }  
                 ],
