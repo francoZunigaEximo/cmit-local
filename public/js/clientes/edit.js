@@ -69,14 +69,8 @@ $(document).ready(()=> {
             },
             success: function(){
 
-                if(bloqueado === 0){
-                    swal("Se actualizará la página para habilitar todas las funcionalidades en 3 segundos");
-                    setTimeout(()=>{
-                        location.reload();
-                    }, 3000);
-                }else{
-                    toastr.success('¡Los datos se han guardado correctamente!', 'Perfecto');
-                }
+                toastr.success('¡Los datos se han guardado correctamente!', 'Perfecto');
+                return;
             },
             error: function(xhr){
                 toastr.error('Hubo un error al obtener los autorizados. Consulte con el administrador', 'Error');
@@ -152,7 +146,7 @@ $(document).ready(()=> {
         let emailsResultados = $('#EMailResultados').val(),
             emailsInformes = $('#EMailInformes').val(),
             emailsFactura = $('#EMailFactura').val(),
-            sinEnvio = $('#SEMail').prop('checked');;
+            sinEnvio = $('#SEMail').prop('checked');
     
         if (!verificarCorreos(emailsResultados) || !verificarCorreos(emailsInformes) || !verificarCorreos(emailsFactura)) {
             controlEjecucion = false;
@@ -322,7 +316,7 @@ $(document).ready(()=> {
                     $('#Provincia').append(nuevoOption);
                 },
                 error: function(xhr){
-                    toastr.error('No se pudo autocompletar la provincia. Debe cargarlo manualmente.', 'Error');
+                    toastr.warning('No se pudo autocompletar la provincia. Debe cargarlo manualmente.', 'Atención');
                     console.error(xhr);
                     
                 }
@@ -439,7 +433,8 @@ $(document).ready(()=> {
         
     });
 
-    $(document).on('click', '.bloqueo-btn', function() {
+    $(document).on('click', '.bloqueo-btn', function(e) {
+        
         let bloqueado = $('#Bloqueado').prop('checked');
 
         if(bloqueado){
@@ -465,7 +460,7 @@ $(document).ready(()=> {
                         toastr.success('El cliente se ha bloqueado de manera correcta', 'Acción realizada');
                         
                         $('#blockCliente').modal('hide');
-                        $('#Motivo').val("");
+                        $('#MotivoB').val("");
                         swal('Atención', 'Se recargará la app para bloquear las funcionalidades', 'warning');
                         setTimeout(()=> {
                             location.reload();
@@ -691,14 +686,18 @@ $(document).ready(()=> {
         $.get(getBloqueo, {Id: ID})
             .done(async function(response){
 
-                let data = await response.cliente;
+                if(response){
 
-                messageClientes.html(`<div class="alert alert-warning alert-dismissible fade show" role="alert">
-                    <strong> Motivo del bloqueo: </strong> ${data.Motivo}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>`);
-               $('#addNumero, #Bloqueado, #btnOpciones, #guardarEmail, #btnAutorizado, #btnObservaciones, [type="submit"]').prop('disabled', true);
-               $('.telefonoAcciones').empty().hide();
+                    let data = await response.cliente;
+
+                    messageClientes.html(`<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        <strong> Motivo del bloqueo: </strong> ${data.Motivo}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>`);
+
+                    $('#addNumero, #Bloqueado, #btnOpciones, #guardarEmail, #btnAutorizado, #btnObservaciones, [type="submit"]').prop('disabled', true);
+                    $('.telefonoAcciones').empty().hide();
+                    }
             })
             .fail(function(xhr){
                 console.error(xhr);

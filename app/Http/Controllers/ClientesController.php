@@ -324,7 +324,7 @@ class ClientesController extends Controller
                 'EMailInformes' => $request->informes,
                 'EMailFactura' => $request->facturas,
             ]);
-            $cliente->SEMail = ($request->sinEnvio) ? 1 : 0;
+            $cliente->SEMail = ($request->sinEnvio === 'true') ? 1 : 0;
             $cliente->save();
         }
     }
@@ -340,7 +340,7 @@ class ClientesController extends Controller
             $cliente->SinEval = $request->sinEvaluacion;
             $cliente->SinPF = $request->facturacionSinPaq;
             $cliente->Bloqueado = $request->bloqueado;
-            $cliente->Entrega = ($request->mensajeria === true ? 2 : ($request->correo === true ? 4 : 0)); 
+            $cliente->Entrega = ($request->mensajeria === 'true' ? 2 : ($request->correo === 'true' ? 4 : 0)); 
             $cliente->save();
         }
     }

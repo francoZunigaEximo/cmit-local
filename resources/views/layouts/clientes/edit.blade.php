@@ -397,7 +397,7 @@
 
                             <!--end col-->
                             <div class="hstack gap-2 justify-content-end">
-                                <button class="btn botonGeneral" id="btnOpciones">Guardar</button>
+                                <button type="button" class="btn botonGeneral" id="btnOpciones">Guardar</button>
                             </div>
                         </div>
                         <!--end row-->
@@ -435,7 +435,7 @@
                     </label>
                 </div>
                 <div class="hstack gap-2 justify-content-end">
-                    <button class="btn botonGeneral" id="guardarEmail">Guardar</button>
+                    <button type="button" class="btn botonGeneral" id="guardarEmail">Guardar</button>
                 </div>
             </div>
         </div>
@@ -465,7 +465,7 @@
                 </div>
             </div>
             <div class="hstack gap-2 justify-content-end">
-                <button class="btn botonGeneral" id="btnObservaciones" >Guardar</button>
+                <button type="button" class="btn botonGeneral" id="btnObservaciones" >Guardar</button>
             </div>
         </div>
         <!--end tab-pane-->
@@ -485,8 +485,8 @@
                     <h4 class="mb-3">¡El número de CUIT ya se encuentra registrado!</h4>
                     <p class="text-muted mb-4">Actualice sus datos haciendo clíc en el botón.</p>
                     <div class="hstack gap-2 justify-content-center">
-                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Utilizar otro número de cuit</button>
-                        <a href="#" id="editLink" class="btn btn-primary">Actualizar datos</a>
+                        <button type="button" class="btn botonGeneral" data-bs-dismiss="modal">Utilizar otro número de cuit</button>
+                        <a href="#" id="editLink" class="btn botonGeneral">Actualizar datos</a>
                     </div>
                 </div>
             </div>
@@ -508,8 +508,8 @@
             
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar edición</button>
-                <button type="button" class="btn btn-primary" id="saveCambiosEdit">Guardar</button>
+                <button type="button" class="btn botonGeneral" data-bs-dismiss="modal">Cancelar edición</button>
+                <button type="button" class="btn botonGeneral" id="saveCambiosEdit">Guardar</button>
             </div>
         </div>
     </div>
