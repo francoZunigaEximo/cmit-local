@@ -8,7 +8,6 @@ use App\Models\Localidad;
 use App\Models\Telefono;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Yajra\DataTables\DataTables;
 
@@ -164,7 +163,7 @@ class ClientesController extends Controller
     {
         $nuevoId = Cliente::max('Id') + 1;
 
-        $cliente = Cliente::create([
+        Cliente::create([
             'Id' => $nuevoId,
             'TipoCliente' => $request->TipoCliente,
             'Identificacion' => $request->Identificacion,
@@ -181,8 +180,6 @@ class ClientesController extends Controller
             'CP' => $request->CP,
             'Bloqueado' => '0',
         ]);
-
-        $cliente->save();
 
         //Guardamos los telefonos que traemos
         $telefonos = $request->telefonos;
@@ -277,17 +274,14 @@ class ClientesController extends Controller
         $cliente = Cliente::find($request->cliente);
         if($cliente)
         {
-            $cliente->Motivo = $request->motivo;
-            $cliente->Bloqueado = '1';
-            $cliente->save();
+            $cliente::update(['Motivo' => $request->motivo, 'Bloqueado' => '1']);
         }
 
     }
 
     public function verifyIdentificacion(Request $request)
     {
-        $cliente = Cliente::where('Identificacion', $request->Identificacion)
-            ->first();
+        $cliente = Cliente::where('Identificacion', $request->Identificacion)->first();
         $existe = $cliente !== null;
 
         return response()->json(['existe' => $existe, 'cliente' => $cliente]);
@@ -336,10 +330,12 @@ class ClientesController extends Controller
 
         if($cliente)
         {
-            $cliente->RF = $request->fisico;
-            $cliente->SinEval = $request->sinEvaluacion;
-            $cliente->SinPF = $request->facturacionSinPaq;
-            $cliente->Bloqueado = $request->bloqueado;
+            $cliente->fill([
+                'RF' => $request->fisico,
+                'SinEval' => $request->sinEvaluacion,
+                'SinPF' => $request->facturacionSinPaq,
+                'Bloqueado' => $request->bloqueado
+            ]);
             $cliente->Entrega = ($request->mensajeria === 'true' ? 2 : ($request->correo === 'true' ? 4 : 0)); 
             $cliente->save();
         }
@@ -353,8 +349,7 @@ class ClientesController extends Controller
             $ids = [$ids];
         }
 
-        $clientes = DB::table('clientes')
-            ->join('provincias', 'provincias.Id', '=', 'clientes.Provincia')
+        $clientes = Cliente::join('provincias', 'provincias.Id', '=', 'clientes.Provincia')
             ->join('localidades', 'localidades.Id', '=', 'clientes.IdLocalidad')
             ->whereIn('clientes.Id', $ids)
             ->select(
