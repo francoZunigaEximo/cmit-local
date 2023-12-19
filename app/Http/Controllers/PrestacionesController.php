@@ -10,11 +10,9 @@ use App\Models\Prestacion;
 use App\Models\PrestacionesTipo;
 use App\Traits\ObserverFacturasVenta;
 use App\Traits\ObserverPrestaciones;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Yajra\DataTables\DataTables;
 use App\Exports\PrestacionesExport;
 use Maatwebsite\Excel\Facades\Excel;
@@ -31,12 +29,14 @@ class PrestacionesController extends Controller
         if ($request->ajax()) {
 
             $query = Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-                ->join('clientes', 'prestaciones.IdEmpresa', '=', 'clientes.Id')
+                ->join('clientes as emp', 'prestaciones.IdEmpresa', '=', 'emp.Id')
+                ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
                 ->select(
                     DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdART) AS Art'),
-                    DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdEmpresa) AS RazonSocial'),
-                    'clientes.ParaEmpresa as ParaEmpresa',
-                    'clientes.Identificacion as Identificacion',
+                    DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdEmpresa) AS Empresa'),
+                    DB::raw("CONCAT(pacientes.Apellido,pacientes.Nombre) AS nombreCompleto"),
+                    'emp.ParaEmpresa as ParaEmpresa',
+                    'emp.Identificacion as Identificacion',
                     'prestaciones.Fecha as FechaAlta',
                     'prestaciones.Id as Id',
                     'pacientes.Nombre as Nombre',
@@ -53,7 +53,7 @@ class PrestacionesController extends Controller
                     'prestaciones.Facturado as Facturado'
                 )
                 ->where('prestaciones.Estado', '=', '1')
-                ->where('prestaciones.Fecha', '=', Carbon::now()->format('Y-m-d'))
+                ->where('prestaciones.Fecha', '=', now()->format('Y-m-d'))
                 ->orderBy('prestaciones.Id', 'DESC');
 
             return Datatables::of($query)->make(true);
@@ -81,7 +81,7 @@ class PrestacionesController extends Controller
             ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
             ->select(
                 DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdART) AS Art'),
-                DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdEmpresa) AS empresa'),
+                DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdEmpresa) AS Empresa'),
                 DB::raw("CONCAT(pacientes.Apellido,pacientes.Nombre) AS nombreCompleto"),
                 'emp.ParaEmpresa as ParaEmpresa',
                 'emp.Identificacion as Identificacion',
@@ -299,11 +299,9 @@ class PrestacionesController extends Controller
     {
         $prestaciones = Prestacion::find($request->Id);
 
-        if($prestaciones){
-
-            $prestaciones->Anulado = 1; // 0 => Habilitado, 1 => Anulado
-            $prestaciones->save();
-
+        if($prestaciones)
+        {
+            $prestaciones->update(['Anulado' => '1']); // 0 => Habilitado, 1 => Anulado
         }
         
     }
@@ -313,22 +311,10 @@ class PrestacionesController extends Controller
 
         $cliente = Cliente::find($request->cliente);
 
-        if ($cliente->Bloqueado == 1) {
+        if ($cliente) {
 
-            return response()->json(['RazonSocial' => $cliente->RazonSocial, 'Identificacion' => $cliente->Identificacion, 'Motivo' => $cliente->Motivo, 'Bloqueado' => $cliente->Bloqueado]);
-        } else {
-
-            return response()->json(['Bloqueado' => $cliente->Bloqueado]);
-        }
-    }
-
-    public function getPago(Request $request)
-    {
-        $cliente = Cliente::where('Id', $request->financiador)->first();
-
-        $formaPago = $cliente ? $cliente->FPago : '';
-
-        return response()->json(['option' => $formaPago]);
+            return response()->json(['cliente' => $cliente]);
+        } 
     }
 
     public function savePrestacion(Request $request)
@@ -346,7 +332,7 @@ class PrestacionesController extends Controller
             'Observaciones' => $request->observaciones ??  '',
             'IdEmpresa' => $request->IdEmpresa,
             'IdART' => $request->IdART,
-            'Fecha' => date('Y-m-d'),
+            'Fecha' => now()->format('Y-m-d'),
             'Financiador' => $request->financiador,
         ]);
 

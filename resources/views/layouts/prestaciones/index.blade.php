@@ -8,10 +8,7 @@
     <h4 class="mb-sm-0">Prestaciones</h4>
 
     <div class="page-title-right">
-        <ol class="breadcrumb m-0">
-            <li class="breadcrumb-item"><a href="{{ route('prestaciones.index') }}">Prestaciones</a></li>
-            <li class="breadcrumb-item active">Listado</li>
-        </ol>
+
     </div>
 </div>
 
@@ -162,8 +159,8 @@
                               </div>
                                 <!-- Fin del filtro avanzado -->
                                 <div class="hstack gap-2 justify-content-end">
-                                    <a class="btn botonGeneral" id="buscarReset">Mostrar Hoy</a>
-                                    <a class="btn botonGeneral" id="buscarPrestaciones">Buscar</a>
+                                    <a class="btn botonGeneral hoyPrestaciones">Mostrar Hoy</a>
+                                    <a class="btn botonGeneral buscarPrestaciones">Buscar</a>
                                 </div>
                                 
                             </div>
@@ -183,16 +180,6 @@
                                 <i class="ri-file-excel-line"></i>
                             </button>
                         </div>
-                    </div>
-
-                    <div class="col-sm-9 mb-3 mt-4" style="font-size: small">
-                        <span>Estados: </span>
-                        <span title="Imcompleto" style="padding: 0.5em; background-color:orange; color: black; border-radius: 3px">Incompleto</span>
-                        <span title="Devol" style="padding: 0.5em; background-color:blue; color: white; border-radius: 3px">Devol</span>
-                        <span title="Forma" style="padding: 0.5em; background-color: #0cb7f2; color: black; border-radius: 3px">Forma </span>
-                        <span evol</span>
-                        <span title="Ausente" style="padding: 0.5em; background-color: red; color: black; border-radius: 3px"> Ausente</span>
-                        <span title="Sin Esc" style="padding: 0.5em; background-color: yellow; color: black; border-radius: 3px"> Sin Esc</span>
                     </div>
 
                     <div class="table-responsive table-card mt-3 mb-1">
