@@ -6,6 +6,8 @@ use App\Models\Cliente;
 use App\Models\Provincia;
 use App\Models\Localidad;
 use App\Models\Telefono;
+use App\Traits\OberverClientes;
+use App\Traits\ObserverClientes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
@@ -13,6 +15,8 @@ use Yajra\DataTables\DataTables;
 
 class ClientesController extends Controller
 {
+
+    use ObserverClientes;
 
     public function index(Request $request)
     {
@@ -180,27 +184,8 @@ class ClientesController extends Controller
             'CP' => $request->CP,
             'Bloqueado' => '0',
         ]);
-
-        //Guardamos los telefonos que traemos
-        $telefonos = $request->telefonos;
-
-        // Ejecutamos solo si hay algo
-        if (! empty($telefonos) && is_array($telefonos)) {
-            foreach ($telefonos as $telefonoJSON) {
-                $telefonoArray = json_decode($telefonoJSON, true);
-                if (is_array($telefonoArray) && count($telefonoArray) === 3) {
-
-                    Telefono::create([
-                        'Id' => Telefono::max('Id') + 1,
-                        'IdCliente' => $nuevoId,
-                        'CodigoArea' => $telefonoArray[0], //Prefijo
-                        'NumeroTelefono' => $telefonoArray[1], // Número
-                        'Observaciones' => $telefonoArray[2], // Observación
-                        'TipoEntidad' => 'i',
-                    ]);
-                }
-            }
-        }
+        
+        $this->setTelefono($nuevoId, $request->telefonos);
 
         return redirect()->route('clientes.edit', ['cliente' => $nuevoId]);
 
@@ -217,31 +202,11 @@ class ClientesController extends Controller
 
     public function update(Request $request, Cliente $cliente)
     {
-        //Actualizamos
         $cliente = Cliente::find($request->Id);
         if($cliente)
         {
             $cliente->fill($request->all())->save();
-        
-            $telefonos = $request->telefonos;
-
-            // Ejecutamos solo si hay algo
-            if (! empty($telefonos) && is_array($telefonos)) {
-                foreach ($telefonos as $telefonoJSON) {
-                    $telefonoArray = json_decode($telefonoJSON, true);
-                    if (is_array($telefonoArray) && count($telefonoArray) === 3) {
-
-                        Telefono::create([
-                            'Id' => Telefono::max('Id') + 1,
-                            'IdCliente' => $request->Id,
-                            'CodigoArea' => $telefonoArray[0], //Prefijo
-                            'NumeroTelefono' => $telefonoArray[1], // Número
-                            'Observaciones' => $telefonoArray[2], // Observación
-                            'TipoEntidad' => 'i',
-                        ]);
-                    }
-                }
-            }
+            $this->setTelefono($request->Id, $request->telefonos);
         }
 
         return back();

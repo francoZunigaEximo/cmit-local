@@ -3,7 +3,7 @@
 namespace App\Traits;
 
 use DateTime;
-use App\Models\Fichalaboral;
+
 trait Components
 {
     public function getAge($age)
