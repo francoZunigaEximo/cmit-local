@@ -172,10 +172,13 @@ $(document).ready(function () {
                 _token: TOKEN
             },
             success: function (response) {
-                if (response.Bloqueado == 0) {
+
+                let data = response.cliente;
+
+                if (data.Bloqueado === 0) {
                     deshabilitarBloqueo();
                 } else {
-                    cargarBloqueo(response);
+                    cargarBloqueo(data);
                 }
             }
         });

@@ -89,7 +89,6 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('savePrestacion', [PrestacionesController::class, 'savePrestacion'])->name('savePrestacion');
     Route::post('getParaEmpresas', [PrestacionesController::class, 'getParaEmpresas'])->name('getParaEmpresas');
     Route::post('checkFinanciador', [PrestacionesController::class, 'checkFinanciador'])->name('checkFinanciador');
-    Route::post('getPago', [PrestacionesController::class, 'getPago'])->name('getPago');
     Route::post('verifyBlock', [PrestacionesController::class, 'verifyBlock'])->name('verifyBlock');
     Route::post('getPresPaciente', [PrestacionesController::class, 'getPresPaciente'])->name('getPresPaciente');
     Route::post('updatePrestacion', [PrestacionesController::class, 'updatePrestacion'])->name('updatePrestacion');
