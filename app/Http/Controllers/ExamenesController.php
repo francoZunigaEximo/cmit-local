@@ -198,8 +198,10 @@ class ExamenesController extends Controller
     {
 
         $getId = Examen::find($request->IdExamen);
-
-        return response()->json(['examenes' => $getId]);
+        
+        if($getId){
+            return response()->json(['examenes' => $getId]);
+        }
     }
 
     public function deleteEx(Request $request): void
@@ -218,9 +220,9 @@ class ExamenesController extends Controller
         $item = ItemPrestacion::find($request->Id);
 
         if ($item) {
-            $item->Anulado = 1;
-            $item->save();
+            $item::update(['Anulado' => 1]);
         }
     }
+
 
 }
