@@ -168,6 +168,12 @@
                                 <i data-feather="list" class="icon-dual"></i> <span data-key="t-layers" title="(ALT + E)">Especialidades</span>
                             </a>
                         </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link menu-link" href="{{ route('noticias.edit', 1) }}" aria-expanded="false">
+                                <i data-feather="message-circle" class="icon-dual"></i> <span data-key="t-layers">Noticias</span>
+                            </a>
+                        </li>
                         
                     </ul>
                 </div>

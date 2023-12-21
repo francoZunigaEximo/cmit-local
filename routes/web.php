@@ -16,6 +16,7 @@ use App\Http\Controllers\ProveedoresController;
 use App\Http\Controllers\ItemPrestacionesController;
 use App\Http\Controllers\UtilityController;
 use App\Http\Controllers\FacturasVentaController;
+use App\Http\Controllers\NoticiasController;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Route;
 
@@ -200,5 +201,9 @@ Route::group(['middleware' => 'auth'], function () {
 
     //Rutas de FacturasdeVenta
     Route::get('getFactura', [FacturasVentaController::class, 'getFactura'])->name('getFactura');
+
+    // Rutas de Noticias
+    Route::resource('noticias', NoticiasController::class);
+    Route::post('updateNoticia', [NoticiasController::class, 'update'])->name('updateNoticia');
 
 });
