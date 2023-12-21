@@ -16,6 +16,7 @@ use App\Http\Controllers\ProveedoresController;
 use App\Http\Controllers\ItemPrestacionesController;
 use App\Http\Controllers\UtilityController;
 use App\Http\Controllers\FacturasVentaController;
+use App\Models\Examen;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Route;
 
@@ -115,6 +116,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('bloquearExamen', [ExamenesController::class, 'bloquearEx'])->name('bloquearExamen');
     Route::post('paqueteId', [ExamenesController::class, 'paqueteId'])->name('paqueteId');
     Route::post('itemExamen', [ExamenesController::class, 'itemExamen'])->name('itemExamen');
+    ROute::get('porcentajeExamen', [ExamenesController::class, 'porcentajeExamen'])->name('porcentajeExamen');
 
     //Ruta de Comentarios de Prestaciones
     Route::post('setComentarioPres', [ComentariosPrestacionesController::class, 'setComentarioPres'])->name('setComentarioPres');

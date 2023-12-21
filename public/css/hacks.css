@@ -205,16 +205,45 @@ label {
 	--vz-pagination-padding-x: 1.3rem !important;
 }
 
+.fondo-verde {
+	background-color: green;
+	color: black;
+}
+
+.fondo-amarillo {
+	background-color: yellow;
+	color: black;
+}
+
+.fondo-naranja {
+	background-color: orangered;
+	color: black;
+}
+
+.fondo-blanco {
+	color: black;
+	background-color: white;
+}
+
+.fondo-rojo {
+	background-color: red;
+	color: black;
+}
+
+.rojo {
+	color: red;
+}
+
+.blanco {
+	color: white;
+}
+
 .gris {
 	color: gray;
 }
 
 .verde {
 	color: green;
-}
-
-.rojo {
-	color: red;
 }
 
 .boton-azul {
@@ -256,12 +285,20 @@ label {
 
 .iconGeneral, .botonGeneral {color: #3c74b3 !important; }
 
-.iconGeneral {
+.iconGeneralBlanco, .botonGeneralBlanco {color: white !important;}
+
+.iconGeneralNegro {color: black !important;}
+
+.iconGeneral, .iconGeneralBlanco {
 	font-size: 11px !important;
 }
 
 .botonGeneral {
 	border: 1px solid #3c74b3 !important;
+}
+
+.botonGeneralBlanco {
+	border: 1px solid white !important;
 }
 
 .width-ajust-input {
@@ -347,3 +384,7 @@ body .selectArt2 .select2.select2-container {
 
 #listaClientes tbody tr td,
 #listaPrestaciones tbody tr td { padding: 5px 8px 2px 8px };
+
+table.dataTable tr.dtrg-level-0 td {
+	font-size: 1.1em;
+  }

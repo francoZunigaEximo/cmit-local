@@ -43,68 +43,61 @@
                                 <div class="col-sm-2 mb-3">
                                     <label for="TipoPrestacion" class="form-label"><strong>Tipo de prestación:</strong></label>
                                     <select class="js-example-basic-multiple" name="tipoPrestacion[]" multiple="multiple" id="TipoPrestacion" data-placeholder="Elija una opción...">
-                                        <option value="INGRESO">Ingreso</option>
-                                        <option value="PERIODICO">Periódico</option>
                                         <option value="CARNET">Carnet</option>
                                         <option value="EGRESO">Egreso</option>
-                                        <option value="ART">ART</option>
+                                        <option value="INGRESO">Ingreso</option>
                                         <option value="NO_ART">NO ART</option>
                                         <option value="OCUPACIONAL">Ocupacional</option>
+                                        <option value="OTRO">Otro</option>
+                                        <option value="PERIODICO">Periódico</option>
                                         <option value="RECMED">Redmec</option>
                                         <option value="S/C_OCUPACIO">S/C Ocupacional</option>
-                                        <option value="OTRO">Otro</option>
                                     </select>
                                 </div>
-                                <div class="col-sm-2 mb-3">
-                                    <label for="Pago" class="form-label"><strong>Pago:</strong></label>
-                                    <select class="form-control" id="Pago">
-                                        <option value="" selected>Elija una opción...</option>
-                                        <option value="C">Cuenta corriente</option>
-                                        <option value="P">Pago a cuenta</option>
-                                        <option value="B">Contado</option>
-                                        </select>
-                                </div>
-                                <div class="col-sm-2 mb-3">
-                                    <label for="Pago" class="form-label"><strong>Forma de Pago:</strong></label>
-                                    <select class="form-control" id="Spago">
-                                        <option value="" selected>Elija una opción...</option>
-                                        <option value="G">Sin cargo</option>
-                                        <option value="F">Transferencia</option>
-                                        <option value="E">Otra</option>
-                                        </select>
-                                </div>
-                                
+
                                 <div class="col-sm-2 mb-3">
                                     <div>
                                         <label for="Estado" class="form-label"><strong>Estado:</strong></label>
                                         <select class="js-example-basic-multiple" name="estados[]" multiple="multiple" id="Estado" data-placeholder="Elija una opción...">
-                                            <option value="Anulado">Anulado</option>
-                                            <option value="Incompleto">Incompleto</option>
-                                            <option value="Ausente">Ausente</option>
-                                            <option value="Forma">Forma</option>
-                                            <option value="SinEsc">Sin Escanear</option>
-                                            <option value="Devol">Devolución</option>
-                                            <option value="RxPreliminar">Rx Preliminar</option>
-                                            <option value="Cerrado">Cerrado</option>
-                                            <option value="Abierto">Abierto</option>
-                                            
+                                            <optgroup label="Estado">
+                                                <option value="Abierto">Abierto</option>
+                                                <option value="Cerrado">Cerrado</option>
+                                                <option value="Finalizado">Finalizado</option>
+                                                <option value="Entregado">Entregado</option>
+                                                <option value="eEnviado">eEnviado</option>
+                                                <option value="Facturado">Facturado</option>
+                                            </optgroup>
+                                            <optgroup label="Pago">
+                                                <option value="Pago-C">Cuenta corriente</option>
+                                                <option value="Pago-P">Examen a cuenta</option>
+                                                <option value="Pago-B">Contado</option>
+                                            </optgroup>
+                                            <optgroup label="Forma de Pago">
+                                                <option value="SPago-G">Sin cargo</option>
+                                                <option value="SPago-F">Transferencia</option>
+                                                <option value="SPago-E">Otra</option>
+                                            </optgroup>
+                                            <optgroup label="Filtros">
+                                                <option value="Anulado">Anulado</option>
+                                                <option value="Ausente">Ausente</option>
+                                                <option value="Devol">Devolución</option>
+                                                <option value="Forma">Forma</option>
+                                                <option value="Incompleto">Incompleto</option>
+                                                <option value="RxPreliminar">Rx Preliminar</option>
+                                                <option value="SinEsc">Sin Escanear</option>
+                                            </optgroup>
                                         </select>
                                     </div>  
-                                </div>
-                                <div class="col-sm-2 mb-3">
-                                    <div>
-                                        <label for="eEnviado" class="form-label"><strong>eEnviado:</strong></label>
-                                        <select id="eEnviado" class="form-control">
-                                            <option value="" selected>Elija una opción...</option>
-                                            <option value="1">Enviadas</option>
-                                            <option value="0">No Enviadas</option>
-                                        </select>
-                                    </div>
                                 </div>
 
                                 <div class="col-sm-2 mb-3">
                                     <label for="nroprestacion" class="form-label font-weight-bold"><strong>Nro. Prestación</strong></label>
                                     <input type="text" placeholder="Nro." class="form-control" id="nroprestacion">
+                                </div>
+
+                                <div class="col-sm-2 mb-3 d-flex align-items-center">
+                                    <button type="button" class="btn botonGeneral buscarPrestaciones">Buscar</button>&nbsp;
+                                    <button type="button" class="btn botonGeneral hoyPrestaciones">Mostrar Hoy</button>
                                 </div>
 
                                <!-- Filtros avanzados --> 
@@ -113,45 +106,27 @@
                                   <div class="card-body" style="background: #eaeef3">
                                     <div class="row">
                                     
-                                    <div class="col-sm-2 mb-3">
-                                        <div>
-                                            <label for="pacempart" class="form-label font-weight-bold"><strong>Paciente/Empresa/Art</strong></label>
-                                            <input type="text" placeholder="Paciente/Empresa/ART" class="form-control" id="pacempart">
-                                        </div>
+                                        <div class="col-sm-2 mb-3">
+                                            <div>
+                                                <label for="paciente" class="form-label font-weight-bold"><strong>Paciente</strong></label>
+                                                <input type="text" placeholder="Nombre y Apellido" class="form-control" id="pacienteSearch">
+                                            </div>
                                         </div>
 
-                                      <div class="col-sm-2 mb-3">
-                                        <div>
-                                          <label for="Finalizado" class="form-label"><strong>Finalizado:</strong></label>
-                                          <select id="Finalizado" class="form-control">
-                                            <option value="" selected>Elija una opción...</option>
-                                            <option value="1">Finalizado</option>
-                                            <option value="0">No finalizado</option>
-                                          </select>
+                                        <div class="col-sm-2 mb-3">
+                                            <div>
+                                                <label for="empresa" class="form-label font-weight-bold"><strong>Empresa</strong></label>
+                                                <input type="text" placeholder="Empresa, Para Empresa o Cuit" class="form-control" id="empresaSearch">
+                                            </div>
                                         </div>
-                                      </div>
 
-                                      <div class="col-sm-2 mb-3">
-                                        <div>
-                                          <label for="Facturado" class="form-label"><strong>Facturado:</strong></label>
-                                          <select id="Facturado" class="form-control">
-                                            <option value="" selected>Elija una opción...</option>
-                                            <option value="1">Sí</option>
-                                            <option value="0">No</option>
-                                          </select>
+                                        <div class="col-sm-2 mb-3">
+                                            <div>
+                                                <label for="art" class="form-label font-weight-bold"><strong>Art</strong></label>
+                                                <input type="text" placeholder="Nombre de la ART" class="form-control" id="artSearch">
+                                            </div>
                                         </div>
-                                      </div>
 
-                                      <div class="col-sm-2 mb-3">
-                                        <div>
-                                          <label for="Entregado" class="form-label"><strong>Entregado:</strong></label>
-                                          <select id="Entregado" class="form-control">
-                                            <option value="" selected>Elija una opción...</option>
-                                            <option value="1">Sí</option>
-                                            <option value="0">No</option>
-                                          </select>
-                                        </div>
-                                      </div>
 
                                     </div>
                                   </div>
@@ -159,8 +134,7 @@
                               </div>
                                 <!-- Fin del filtro avanzado -->
                                 <div class="hstack gap-2 justify-content-end">
-                                    <a class="btn botonGeneral hoyPrestaciones">Mostrar Hoy</a>
-                                    <a class="btn botonGeneral buscarPrestaciones">Buscar</a>
+                                    
                                 </div>
                                 
                             </div>
@@ -187,16 +161,23 @@
                             <thead class="table-light">
                                 <tr>
                                     <th><input type="checkbox" id="checkAll" name="Id"></th>
-                                    <th class="sort">N°</th>
-                                    <th class="sort">Alta</th>
+                                    <th class="sort">% Av</th>
+                                    <th class="sort">Fecha</th>
+                                    <th class="sort">Nro</th>
+                                    <th class="sort">Paciente</th>
+                                    <th class="sort">Tipo</th>
                                     <th class="sort">Empresa</th>
                                     <th class="sort">Para Empresa</th>
-                                    <th class="sort">Cuit</th>
-                                    <th class="sort">Paciente</th>
                                     <th class="sort">ART</th>
-                                    <th class="sort">Situación</th>
-                                    <th class="sort">F.pago</th>
-                                    <th class="sort">Acciones</th>
+                                    <th class="sort">Estado</th>
+                                    <th>eEnv</th>
+                                    <th>INC</th>
+                                    <th>AUS</th>
+                                    <th>FOR</th>
+                                    <th>DEV</th>
+                                    <th>FP</th>
+                                    <th>FAC</th>
+                                    <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody class="list form-check-all">
@@ -274,6 +255,7 @@ const downPrestaActiva = "{{ route('downPrestaActiva') }}";
 const blockPrestacion = "{{ route('blockPrestacion') }}";
 const ROUTE = "{{ route('prestaciones.index') }}";
 const SEARCH = "{{ route('searchPrestaciones') }}";
+const porcentajeExamen = "{{ route('porcentajeExamen') }}";
 
 $('#excel').click(function(e) {
     e.preventDefault();
