@@ -57,7 +57,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="input-group input-group-sm mb-2">
-                        <span class="input-group-text">Informe</span>
+                        <span class="input-group-text">Observaciones</span>
                         <textarea class="form-control" style="height: 80px" id="ObsExamen" name="ObsExamen">{{ strip_tags($itemsprestacione->ObsExamen) ?? '' }}</textarea>
                     </div>
                 </div>
@@ -164,7 +164,7 @@
         <div class="col-12 mx-auto box-information">
             <div class="input-group input-group-sm mb-2">
                 <span class="input-group-text">Observaciones Informador</span>
-                <textarea class="form-control" style="height: 80px" name="Obs" id="Obs">{!! isset($itemsprestacione->itemsInfo) ? strip_tags($itemsprestacione->itemsInfo->Obs) : '' !!}</textarea>
+                <textarea class="form-control" style="height: 80px" name="Obs" id="Obs" disabled>{!! isset($itemsprestacione->itemsInfo) ? strip_tags($itemsprestacione->itemsInfo->Obs) : '' !!}</textarea>
             </div>
         </div>
     </div>
