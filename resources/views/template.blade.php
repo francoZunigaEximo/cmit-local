@@ -104,7 +104,7 @@
             <!-- LOGO -->
             <div class="navbar-brand-box">
                 <!-- Dark Logo-->
-                <a href="#" class="logo logo-dark">
+                <a href="{{route('noticias.index')}}" class="logo logo-dark">
                     <span class="logo-sm">
                         <img src="{{ asset('images/logo-intranet-sm.png') }}" alt="Salud Ocupacionl SRL" >
                     </span>

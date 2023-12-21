@@ -8,6 +8,7 @@
     <h4 style={{$estiloSubitutlo}}> {{$noticia->Subtitulo}} </h4> 
     <br><br>
     <h4> {!! $noticia->Texto !!} </h4> 
+    <img src="{{ asset('storage/noticias/'.$noticia->Ruta) }}"></img>
 </div>
 
 @push('styles')

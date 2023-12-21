@@ -47,9 +47,6 @@
                     <button type="submit" class="btn botonGeneral">Guardar</button>
                 </div>
             </div>
-            <div class="col-lg-2 pt-4">
-                <a href="{{ url('/noticias') }}" class="btn btn-xs btn-info pull-right">Ver noticia</a>
-            </div>
         </div>
     </form>
     <br><br>
