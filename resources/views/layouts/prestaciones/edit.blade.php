@@ -283,6 +283,12 @@
                     <span class="input-group-text">Obs exámenes</span>
                     <input type="text" class="form-control" placeholder="Observaciones" id="ObsExamenes" name="ObsExamenes" value="{{ $prestacione->ObsExamenes ?? ''}}">
                 </div>
+
+                <div class="input-group input-group mt-2">
+                    <span class="input-group-text">Obs estado</span>
+                    <input type="text" class="form-control" placeholder="Observaciones" id="Obs" name="Obs" value="{{ $prestacione->prestacionComentario->Obs ?? ''}}">
+                </div>
+
                 <div class="input-group input-group mt-2">
                     <span class="input-group-text">Obs evaluación</span>
                     <input type="text" class="form-control" placeholder="Observaciones de evaluación" id="Observaciones" value="{{ $prestacione->Observaciones ?? ''}}">

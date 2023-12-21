@@ -400,8 +400,14 @@ class PrestacionesController extends Controller
         $prestacion->ObsExamenes = $request->ObsExamenes ?? '';
         $prestacion->save();
         
-        if($request->SinEval){
+        if($request->SinEval)
+        {
             $this->setPrestacionAtributo($request->Id, $request->SinEval);
+        }
+
+        if($request->Obs)
+        {
+            $this->setPrestacionComentario($request->Id, $request->Obs);
         }
 
         $empresa = ($request->tipoPrestacion === 'ART' ? $request->ART : $request->Empresa);
