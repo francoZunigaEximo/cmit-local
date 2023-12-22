@@ -87,4 +87,9 @@ class Prestacion extends Model
     {
         return $this->hasOne(PrestacionAtributo::class, 'IdPadre', 'Id');
     }
+
+    public function prestacionComentario()
+    {
+        return $this->hasOne(PrestacionComentario::class, 'IdP', 'Id');
+    }
 }

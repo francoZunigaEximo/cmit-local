@@ -53,18 +53,19 @@ $(document).ready(() => {
                     data: null,
                     render: function(data){
                         
+                        let style = (data.TMP === 1 ? 'success' : 'danger');
                         let tipo = (data.TMP === 1 ? 'Múltiples' : data.Proveedor);
-                        return `<div style="text-align: center"><span class="badge custom-badge pequeno text-uppercase">${tipo}</span></div>`;
+                        return `<div style="text-align: center"><span class="badge badge-soft-${style} text-uppercase">${tipo}</span></div>`;
                     }
                 },
                 {
                     data: null,
                     render: function(data){
 
-                        let efector = (data.Efector === 1 ? '<span class="badge badge custom-badge pequeno text-uppercase" style="margin-right: 3px; display:block">Efector</span>': ''),
-                            informador = (data.Informador === 1 ? '<span class="badge badge custom-badge pequeno text-uppercase" style="margin-right: 3px; display:block">Informador</span>': ''),
-                            evaluador = (data.Evaluador === 1 ? '<span class="badge badge custom-badge pequeno text-uppercase" style="margin-right: 3px; display:block">Evaluador</span>': ''),
-                            combinado = (data.Combinado === 1 ? '<span class="badge badge custom-badge pequeno text-uppercase" style="margin-right: 3px; display:block">Combinado</span>': '');
+                        let efector = (data.Efector === 1 ? '<span class="badge badge-soft-success text-uppercase" style="margin-right: 3px; display:block">Efector</span>': ''),
+                            informador = (data.Informador === 1 ? '<span class="badge badge-soft-warning text-uppercase" style="margin-right: 3px; display:block">Informador</span>': ''),
+                            evaluador = (data.Evaluador === 1 ? '<span class="badge badge-soft-primary text-uppercase" style="margin-right: 3px; display:block">Evaluador</span>': ''),
+                            combinado = (data.Combinado === 1 ? '<span class="badge badge-soft-success text-uppercase" style="margin-right: 3px; display:block">Combinado</span>': '');
 
                         return efector + informador + evaluador + combinado;
                     }
@@ -76,7 +77,7 @@ $(document).ready(() => {
                             1: ['SI', 'success'], 
                             0: ['NO', 'danger']
                         };
-                        return `<div style="text-align: center"><span class="badge custom-badge pequeno text-uppercase">${estados[data.Login][0]}</span></div>`;
+                        return `<div style="text-align: center"><span class="badge badge-soft-${estados[data.Login][1]} text-uppercase">${estados[data.Login][0]}</span></div>`;
                     }
                 },
                 {
@@ -84,7 +85,7 @@ $(document).ready(() => {
                     render: function(data){
 
                         let estados = {1: 'Hora', 0: 'Exámen'};
-                        return `<span class="badge custom-badge pequeno text-uppercase">${estados[data.Pago]}</span>`;
+                        return `<span class="badge badge-soft-success pequeno text-uppercase">${estados[data.Pago]}</span>`;
                     }
                 },
                 {
@@ -92,7 +93,7 @@ $(document).ready(() => {
                     render: function(data){
                     
                         let estados = { 0: 'Activo', 1: 'Inactivo', 2: 'Baja'};
-                        return `<span class="badge custom-badge pequeno text-uppercase">${estados[data.Estado]}</span>`;
+                        return `<span class="badge badge-soft-success pequeno text-uppercase">${estados[data.Estado]}</span>`;
                     }
                 },
                 {

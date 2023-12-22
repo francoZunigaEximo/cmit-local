@@ -64,7 +64,8 @@ $(document).ready(()=> {
             Calificacion = $('#Calificacion').val(),
             SinEval =$('#SinEval').prop('checked');
             RxPreliminar = $('#RxPreliminar').prop('checked'),
-            ObsExamenes = $('#ObsExamenes').val();
+            ObsExamenes = $('#ObsExamenes').val(),
+            Obs = $('#Obs').val();
 
             
          //Validamos la factura
@@ -116,6 +117,7 @@ $(document).ready(()=> {
                 tipo: tipo,
                 sucursal: sucursal,
                 nroFactura: nroFactura,
+                Obs: Obs,
                 _token: TOKEN
             },
             success: function(){

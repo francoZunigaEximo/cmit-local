@@ -10,11 +10,9 @@ use App\Models\Prestacion;
 use App\Models\PrestacionesTipo;
 use App\Traits\ObserverFacturasVenta;
 use App\Traits\ObserverPrestaciones;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Yajra\DataTables\DataTables;
 use App\Exports\PrestacionesExport;
 use Maatwebsite\Excel\Facades\Excel;
@@ -31,12 +29,15 @@ class PrestacionesController extends Controller
         if ($request->ajax()) {
 
             $query = Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-                ->join('clientes', 'prestaciones.IdEmpresa', '=', 'clientes.Id')
+                ->join('clientes as emp', 'prestaciones.IdEmpresa', '=', 'emp.Id')
+                ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
+                ->join('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
                 ->select(
                     DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdART) AS Art'),
-                    DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdEmpresa) AS RazonSocial'),
-                    'clientes.ParaEmpresa as ParaEmpresa',
-                    'clientes.Identificacion as Identificacion',
+                    DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdEmpresa) AS Empresa'),
+                    DB::raw('COUNT(itemsprestaciones.IdPrestacion) as Total'),
+                    'emp.ParaEmpresa as ParaEmpresa',
+                    'emp.Identificacion as Identificacion',
                     'prestaciones.Fecha as FechaAlta',
                     'prestaciones.Id as Id',
                     'pacientes.Nombre as Nombre',
@@ -53,8 +54,9 @@ class PrestacionesController extends Controller
                     'prestaciones.Facturado as Facturado'
                 )
                 ->where('prestaciones.Estado', '=', '1')
-                ->where('prestaciones.Fecha', '=', Carbon::now()->format('Y-m-d'))
-                ->orderBy('prestaciones.Id', 'DESC');
+                ->where('prestaciones.Fecha', '=', now()->format('Y-m-d'))
+                ->orderBy('prestaciones.Id', 'DESC')
+                ->groupBy('prestaciones.Id');
 
             return Datatables::of($query)->make(true);
 
@@ -79,10 +81,12 @@ class PrestacionesController extends Controller
         $query = Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
             ->join('clientes as emp', 'prestaciones.IdEmpresa', '=', 'emp.Id')
             ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
+            ->leftJoin('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
             ->select(
                 DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdART) AS Art'),
-                DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdEmpresa) AS empresa'),
-                DB::raw("CONCAT(pacientes.Apellido,pacientes.Nombre) AS nombreCompleto"),
+                DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdEmpresa) AS Empresa'),
+                DB::raw('COALESCE(COUNT(itemsprestaciones.IdPrestacion), 0) as Total'),
+                DB::raw('COALESCE(COUNT(CASE WHEN itemsprestaciones.CAdj = 5 THEN itemsprestaciones.IdPrestacion END), 0) as CerradoAdjunto'),
                 'emp.ParaEmpresa as ParaEmpresa',
                 'emp.Identificacion as Identificacion',
                 'prestaciones.Fecha as FechaAlta',
@@ -99,9 +103,11 @@ class PrestacionesController extends Controller
                 'prestaciones.SinEsc as SinEsc',
                 'prestaciones.TipoPrestacion as TipoPrestacion',
                 'prestaciones.eEnviado as eEnviado',
-                'prestaciones.Estado as Estado'
+                'prestaciones.Estado as Estado',
+                'prestaciones.Facturado as Facturado'
             )
-            ->where('prestaciones.Estado', 1);
+            ->where('prestaciones.Estado', 1)
+            ->groupBy('prestaciones.Id');
     
         if (!empty($request->nroprestacion)) {
             $query->where('prestaciones.Id', '=', $request->nroprestacion);
@@ -114,37 +120,35 @@ class PrestacionesController extends Controller
     
     private function applyFilters($query, $request)
     {
-        if(!empty($request->pacempart)) {
+        if(!empty($request->pacienteSearch)) {
             $query->where(function ($query) use ($request) {
-                $query->orwhere('emp.RazonSocial', 'LIKE', '%'. $request->pacempart .'%')
-                    ->orwhere('art.RazonSocial', 'LIKE', '%'. $request->pacempart .'%')
-                    ->orWhere('emp.Identificacion', 'LIKE', '%'. $request->pacempart .'%')
-                    ->orWhere('art.Identificacion', 'LIKE', '%'. $request->pacempart .'%')
-                    ->orWhere('emp.ParaEmpresa', 'LIKE', '%'. $request->pacempart .'%')
-                    ->orWhere('art.ParaEmpresa', 'LIKE', '%'. $request->pacempart .'%')
-                    ->orWhere('emp.NombreFantasia', 'LIKE', '%'. $request->pacempart .'%')
-                    ->orWhere('art.NombreFantasia', 'LIKE', '%'. $request->pacempart .'%')
-                    ->orWhere('pacientes.Nombre', 'LIKE', '%'. $request->pacempart .'%')
-                    ->orWhere('pacientes.Apellido', 'LIKE', '%'. $request->pacempart .'%')
-                    ->orWhere('pacientes.Documento', 'LIKE', '%'. $request->pacempart .'%')
-                    ->orWhere('pacientes.Identificacion', 'LIKE', '%'. $request->pacempart .'%');
+                $query->orWhere('pacientes.Nombre', 'LIKE', '%'. $request->pacienteSearch .'%')
+                    ->orWhere('pacientes.Apellido', 'LIKE', '%'. $request->pacienteSearch .'%')
+                    ->orWhere('pacientes.Documento', 'LIKE', '%'. $request->pacienteSearch .'%')
+                    ->orWhere('pacientes.Identificacion', 'LIKE', '%'. $request->pacienteSearch .'%');
+            });
+        }
+
+        if(!empty($request->empresaSearch)) {
+            $query->where(function($query) use ($request) {
+                $query->orWhere('emp.Identificacion', 'LIKE', '%'. $request->empresaSearch .'%')
+                    ->orWhere('emp.ParaEmpresa', 'LIKE', '%'. $request->empresaSearch .'%')
+                    ->orWhere('emp.NombreFantasia', 'LIKE', '%'. $request->empresaSearch .'%')
+                    ->orWhere('emp.RazonSocial', 'LIKE', '%'. $request->empresaSearch .'%');
+            });
+        }
+
+        if(!empty($request->artSearch)) {
+            $query->where(function($query) use ($request) {
+                $query->orwhere('art.RazonSocial', 'LIKE', '%'. $request->artSearch .'%')
+                    ->orWhere('art.Identificacion', 'LIKE', '%'. $request->artSearch .'%')
+                    ->orWhere('art.ParaEmpresa', 'LIKE', '%'. $request->artSearch .'%')
+                    ->orWhere('art.NombreFantasia', 'LIKE', '%'. $request->artSearch .'%');
             });
         }
 
         if (!empty($request->tipoPrestacion)) {
             $query->where('prestaciones.TipoPrestacion', $request->tipoPrestacion);
-        }
-    
-        if (!empty($request->pago)) {
-            $query->where('prestaciones.Pago', '=', $request->pago);
-        }
-    
-        if (!empty($request->formaPago)) {
-            $query->where('prestaciones.SPago', '=', $request->formaPago);
-        }
-
-        if(!empty($request->eEnviado)){
-            $query->where('prestaciones.eEnviado', '=', $request->eEnviado);
         }
 
         if (!empty($request->fechaDesde) && (!empty($request->fechaHasta))) {
@@ -188,21 +192,44 @@ class PrestacionesController extends Controller
                 ->where('prestaciones.Finalizado', '0');
         }
 
-        if (is_array($request->estado) && in_array('Cerrado', $request->estado)) {
-            $query->where('prestaciones.Cerrado', '1');
+        if (is_array($request->estado) && in_array('Finalizado', $request->estado)) {
+            $query->where('prestaciones.Finalizado', '1');
         }
 
-        if (!empty($request->finalizado)) {
-            $query->where('prestaciones.Finalizado', '=', $request->finalizado);
-            return $query;
+        if (is_array($request->estado) && in_array('Entregado', $request->estado)) {
+            $query->where('prestaciones.Entregado', '1');
         }
-    
-        if (!empty($request->facturado)) {
-            $query->where('prestaciones.Facturado', '=', $request->facturado);
+
+        if (is_array($request->estado) && in_array('eEnviado', $request->estado)) {
+            $query->where('prestaciones.eEnviado', '1');
         }
-    
-        if (!empty($request->entregado)) {
-            $query->where('prestaciones.Entregado', '=', $request->entregado);
+
+        if (is_array($request->estado) && in_array('Facturado', $request->estado)) {
+            $query->where('prestaciones.Facturado', '1');
+        }
+
+        if (is_array($request->estado) && in_array('Pago-C', $request->estado)) {
+            $query->where('prestaciones.Pago', 'C');
+        }
+
+        if (is_array($request->estado) && in_array('Pago-P', $request->estado)) {
+            $query->where('prestaciones.Pago', 'P');
+        }
+
+        if (is_array($request->estado) && in_array('Pago-B', $request->estado)) {
+            $query->where('prestaciones.Pago', 'B');
+        }
+
+        if (is_array($request->estado) && in_array('SPago-G', $request->estado)) {
+            $query->where('prestaciones.SPago', 'G');
+        }
+
+        if (is_array($request->estado) && in_array('SPago-F', $request->estado)) {
+            $query->where('prestaciones.SPago', 'F');
+        }
+
+        if (is_array($request->estado) && in_array('SPago-E', $request->estado)) {
+            $query->where('prestaciones.SPago', 'E');
         }
     
         return $query;
@@ -299,11 +326,9 @@ class PrestacionesController extends Controller
     {
         $prestaciones = Prestacion::find($request->Id);
 
-        if($prestaciones){
-
-            $prestaciones->Anulado = 1; // 0 => Habilitado, 1 => Anulado
-            $prestaciones->save();
-
+        if($prestaciones)
+        {
+            $prestaciones->update(['Anulado' => '1']); // 0 => Habilitado, 1 => Anulado
         }
         
     }
@@ -313,22 +338,10 @@ class PrestacionesController extends Controller
 
         $cliente = Cliente::find($request->cliente);
 
-        if ($cliente->Bloqueado == 1) {
+        if ($cliente) {
 
-            return response()->json(['RazonSocial' => $cliente->RazonSocial, 'Identificacion' => $cliente->Identificacion, 'Motivo' => $cliente->Motivo, 'Bloqueado' => $cliente->Bloqueado]);
-        } else {
-
-            return response()->json(['Bloqueado' => $cliente->Bloqueado]);
-        }
-    }
-
-    public function getPago(Request $request)
-    {
-        $cliente = Cliente::where('Id', $request->financiador)->first();
-
-        $formaPago = $cliente ? $cliente->FPago : '';
-
-        return response()->json(['option' => $formaPago]);
+            return response()->json(['cliente' => $cliente]);
+        } 
     }
 
     public function savePrestacion(Request $request)
@@ -346,7 +359,7 @@ class PrestacionesController extends Controller
             'Observaciones' => $request->observaciones ??  '',
             'IdEmpresa' => $request->IdEmpresa,
             'IdART' => $request->IdART,
-            'Fecha' => date('Y-m-d'),
+            'Fecha' => now()->format('Y-m-d'),
             'Financiador' => $request->financiador,
         ]);
 
@@ -387,8 +400,14 @@ class PrestacionesController extends Controller
         $prestacion->ObsExamenes = $request->ObsExamenes ?? '';
         $prestacion->save();
         
-        if($request->SinEval){
+        if($request->SinEval)
+        {
             $this->setPrestacionAtributo($request->Id, $request->SinEval);
+        }
+
+        if($request->Obs)
+        {
+            $this->setPrestacionComentario($request->Id, $request->Obs);
         }
 
         $empresa = ($request->tipoPrestacion === 'ART' ? $request->ART : $request->Empresa);

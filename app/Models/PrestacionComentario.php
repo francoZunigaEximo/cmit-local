@@ -20,4 +20,9 @@ class PrestacionComentario extends Model
     ];
 
     public $timestamps = false;
+
+    public function prestacion()
+    {
+        return $this->hasOne(Prestacion::class, 'Id', 'IdP');
+    }
 }

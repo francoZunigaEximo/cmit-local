@@ -4,6 +4,7 @@ namespace App\Traits;
 
 use App\Models\Fichalaboral;
 use App\Models\PrestacionAtributo;
+use App\Models\PrestacionComentario;
 use App\Models\Mapa;
 
 trait ObserverPrestaciones
@@ -15,10 +16,11 @@ trait ObserverPrestaciones
 
         $prestacion = PrestacionAtributo::where('IdPadre', $IdPadre)->first(['SinEval']);
 
-        if ($prestacion) {
+        if($prestacion) 
+        {
             $prestacion->SinEval = $sinEval;
             $prestacion->save();
-        } else {
+        }else{
 
             PrestacionAtributo::create([
                 'Id' => PrestacionAtributo::max('Id') + 1,
@@ -28,14 +30,33 @@ trait ObserverPrestaciones
         }
     }
 
+    public function setPrestacionComentario($id, $observacion)
+    {
+        $comentario = PrestacionComentario::where('IdP', $id)->first();
+
+        if($comentario) 
+        {
+            $comentario->Obs = $observacion;
+            $comentario->save();
+        }else{
+
+            PrestacionComentario::create([
+                'Id' => PrestacionComentario::max('Id') + 1,
+                'IdP' => $id,
+                'Obs' => $observacion,
+            ]);
+
+        }
+    }
+
     public function updateFichaLaboral($paciente, $art, $empresa)
     {
         $laboral = Fichalaboral::where('IdPaciente', $paciente)->first(['IdEmpresa', 'IdART']);
 
         if($laboral){
             
-            $laboral->IdEmpresa = ($laboral->IdEmpresa === '' || $laboral->IdEmpresa === null ? '' : $empresa);
-            $laboral->IdART = ($laboral->IdART === '' || $laboral->IdART === null ? '' : $art);
+            $laboral->IdEmpresa = (empty($laboral->IdEmpresa) || $laboral->IdEmpresa === null ? '' : $empresa);
+            $laboral->IdART = (empty($laboral->IdART) || $laboral->IdART === null ? '' : $art);
             $laboral->save();
         }  
     }

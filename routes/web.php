@@ -17,6 +17,7 @@ use App\Http\Controllers\ItemPrestacionesController;
 use App\Http\Controllers\UtilityController;
 use App\Http\Controllers\FacturasVentaController;
 use App\Http\Controllers\NoticiasController;
+use App\Models\Examen;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Route;
 
@@ -90,7 +91,6 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('savePrestacion', [PrestacionesController::class, 'savePrestacion'])->name('savePrestacion');
     Route::post('getParaEmpresas', [PrestacionesController::class, 'getParaEmpresas'])->name('getParaEmpresas');
     Route::post('checkFinanciador', [PrestacionesController::class, 'checkFinanciador'])->name('checkFinanciador');
-    Route::post('getPago', [PrestacionesController::class, 'getPago'])->name('getPago');
     Route::post('verifyBlock', [PrestacionesController::class, 'verifyBlock'])->name('verifyBlock');
     Route::post('getPresPaciente', [PrestacionesController::class, 'getPresPaciente'])->name('getPresPaciente');
     Route::post('updatePrestacion', [PrestacionesController::class, 'updatePrestacion'])->name('updatePrestacion');
@@ -117,6 +117,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('bloquearExamen', [ExamenesController::class, 'bloquearEx'])->name('bloquearExamen');
     Route::post('paqueteId', [ExamenesController::class, 'paqueteId'])->name('paqueteId');
     Route::post('itemExamen', [ExamenesController::class, 'itemExamen'])->name('itemExamen');
+    ROute::get('porcentajeExamen', [ExamenesController::class, 'porcentajeExamen'])->name('porcentajeExamen');
 
     //Ruta de Comentarios de Prestaciones
     Route::post('setComentarioPres', [ComentariosPrestacionesController::class, 'setComentarioPres'])->name('setComentarioPres');
