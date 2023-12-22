@@ -229,7 +229,7 @@ class ClientesController extends Controller
         
         if($cliente)
         {
-            $cliente::update(['Estado' => 0]);
+            $cliente->update(['Estado' => 0]);
         }
 
     }
@@ -239,7 +239,7 @@ class ClientesController extends Controller
         $cliente = Cliente::find($request->cliente);
         if($cliente)
         {
-            $cliente::update(['Motivo' => $request->motivo, 'Bloqueado' => '1']);
+            $cliente->update(['Motivo' => $request->motivo, 'Bloqueado' => '1']);
         }
 
     }

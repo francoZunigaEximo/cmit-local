@@ -220,7 +220,7 @@ class ExamenesController extends Controller
         $item = ItemPrestacion::find($request->Id);
 
         if ($item) {
-            $item::update(['Anulado' => 1]);
+            $item->update(['Anulado' => 1]);
         }
     }
 
