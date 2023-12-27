@@ -13,12 +13,6 @@ use Illuminate\Support\Facades\DB;
 
 trait ObserverPacientes
 {
-
-    public function fixerProvincia($id)
-    {
-        return Provincia::where('Id', $id)->orWhere('Nombre', $id)->first(['Id', 'Nombre']);
-    }
-
     public function getTelefono($id): mixed
     {
         return Telefono::where('IdEntidad', $id)->first(['CodigoArea', 'NumeroTelefono']);
