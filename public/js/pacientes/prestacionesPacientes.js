@@ -127,9 +127,8 @@ $(document).ready(()=>{
 
             $.ajax({
                 url: searchPrestPacientes,
-                type: 'POST',
+                type: 'GET',
                 data: {
-                    _token: TOKEN,
                     buscar: buscar,
                     paciente: ID
                 },
@@ -144,41 +143,87 @@ $(document).ready(()=>{
 
                         //Acortadores
                         let prestacionArt = papre.Art,
-                            prestacionRz = papre.RazonSocial,
-                            prestacionPe = papre.ParaEmpresa,
-                            prestacionApe = papre.Apellido;
+                            prestacionRz = papre.Empresa,
+                            prestacionPe = papre.ParaEmpresa;
 
-                        let recorteArt = prestacionArt.substring(0, 15) + "...",
-                            recorteRz = prestacionRz.substring(0,15) + "...",
-                            recortePe = prestacionPe.substring(0,15) + "...",
-                            recorteApe = prestacionApe.substring(0,15) + "...";
+                        let recorteArt = prestacionArt.substring(0, 7) + "...",
+                            recorteRz = prestacionRz.substring(0,7) + "...",
+                            recortePe = prestacionPe.substring(0,7) + "...";
 
-                        let row = `<tr>
+                        let cerradoAdjunto = papre.CerradoAdjunto || 0,
+                            total = papre.Total || 1,
+                            calculo = parseFloat(((cerradoAdjunto / total) * 100).toFixed(2));
+                    
+                        if (calculo === 100) {
+                            resultado = 'fondo-blanco';
+                        } else if (calculo >= 86 && calculo <= 99) {
+                            resultado ='fondo-verde';
+                        } else if (calculo >= 51 && calculo <= 85) {
+                            resultado = 'fondo-amarillo';
+                        } else if (calculo >= 1 && calculo <= 50) {
+                            resultado = 'fondo-naranja';
+                        } else {
+                            resultado = 'fondo-rojo';
+                        }
+
+                        let row = `<tr class="${resultado}">
                                     <td>
                                         <input type="checkbox" name="Id" value=${papre.Id} checked="">
                                     </td>
-                                    <td>${papre.Id}</td>
-                                    <td>${fechaNow(papre.FechaAlta,'/',1)}</td>
-                                    <td title="${papre.RazonSocial}">${recorteRz}</td>
-                                    <td title="${papre.ParaEmpresa}">${recortePe}</td>
-                                    <td>${papre.Identificacion}</td>
-                                    <td title="${papre.Art}">${recorteArt}</td>
                                     <td>
-                                        <span class="badge badge-soft-${(papre.Anulado == 0 ? "success" : "danger")} text-uppercase">${ (papre.Anulado == 0 ? "Habilitado" : "Bloqueado")}</span>
+                                        ${parseFloat(((cerradoAdjunto / total) * 100).toFixed(2)) + `%`}
                                     </td>
-                                    <td>${(papre.Pago == "B" ? 'Ctdo.' : papre.Pago == "C" ? "CCorriente" : papre.Pago == "C" ? "PCuenta" : "CCorriente")}
+                                    <td>
+                                        ${fechaNow(papre.FechaAlta,'/',0)}
+                                    </td>
+                                    <td>
+                                        ${papre.Id}
+                                    </td>
+                                    <td>
+                                        ${papre.Tipo}
+                                    </td>
+                                    <td title="${papre.RazonSocial}">
+                                        ${recorteRz}
+                                    </td>
+                                    <td title="${papre.ParaEmpresa}">
+                                        ${recortePe}
+                                    </td>
+                                    <td title="${papre.Art}">
+                                        ${recorteArt}
+                                    </td>
+                                    <td>
+                                        <span class="iconGeneralNegro text-uppercase">${ (papre.Anulado == 0 ? "Habilitado" : "Bloqueado")}</span>
+                                    </td>
+                                    <td>
+                                        ${(`<div class="text-center"><i class="${papre.eEnviado === 1 ? `ri-checkbox-circle-fill negro` : `ri-close-circle-line negro`}"></i></div>`)}
+                                    </td>
+                                    <td>
+                                        ${(papre.Incompleto === 1 ? `<div class="text-center"><i class="ri-check-line"></i></div>` : `-`)}
+                                    </td>
+                                    <td>
+                                        ${(papre.Ausente === 1 ? `<div class="text-center"><i class="ri-check-line"></i></div>` : `-`)}
+                                    </td>
+                                    <td>
+                                        ${(papre.Forma === 1 ? `<div class="text-center"><i class="ri-check-line"></i></div>` : `-`)}
+                                    </td>
+                                    <td>
+                                        ${(papre.Devol === 1 ? `<div class="text-center"><i class="ri-check-line"></i></div>` : `-`)}
+                                    </td>
+                                    <td>
+                                        ${(papre.Pago == "B" ? 'Ctdo.' : papre.Pago == "C" ? "CCorriente" : papre.Pago == "C" ? "PCuenta" : "CCorriente")}
+                                    </td>
+                                    <td>
+                                        ${(papre.Facturado === 1 ? `<div class="text-center"><i class="ri-check-line"></i></div>` : `-`)}
                                     </td>
                                     <td>
                                         <div class="d-flex gap-2">
                                             <a title="Editar" href="${urlEdicion}">
-                                                <button type="button" class="btn btn-sm btn-primary edit-item-btn"><i class="ri-edit-line"></i></button>
+                                                <button type="button" class="btn btn-sm iconGeneralNegro"><i class="ri-edit-line"></i></button>
                                             </a>
-                                            <button type="button" title="Generar examen" id="AddExamenPrestacion" data-idprest="${papre.Id}" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#addExamenModal"><i class="ri-heart-add-line"></i></button>
                                             <div class="bloquear">
-                                                <button type="button" id="blockPrestPaciente" data-idprest="${papre.Id}" class="btn btn-sm btn-warning remove-item-btn" title="${(papre.Anulado == 1 ? "Bloqueado" : "Bloquear")}" ${(papre.Anulado == 1 ? "disabled" : "")}><i class="ri-forbid-2-line"></i></button>
+                                                <button type="button" id="blockPrestPaciente" data-idprest="${papre.Id}" class="btn btn-sm iconGeneralNegro" title="${(papre.Anulado == 1 ? "Bloqueado" : "Bloquear")}" ${(papre.Anulado == 1 ? "disabled" : "")}><i class="ri-forbid-2-line"></i></button>
                                             </div>
-                                            <button type="button" id="downPrestPaciente" data-idprest="${papre.Id}"class="btn btn-sm btn-danger remove-item-btn" ><i class="ri-delete-bin-2-line"></i></button>
-                                            <button class="btn btn-sm prestacionComentario" data-id="${papre.Id}" data-bs-toggle="modal" data-bs-target="#prestacionModal"><i class="ri-chat-3-line"></i></button>
+                                            <button type="button" id="downPrestPaciente" data-idprest="${papre.Id}"class="btn btn-sm iconGeneralNegro"><i class="ri-delete-bin-2-line"></i></button>
                                         </div>
                                     </td>
                                 </tr>`;

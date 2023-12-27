@@ -22,8 +22,6 @@ use Illuminate\Support\Facades\Route;
 
 //Route::get('/password', [AuthController::class, 'testCreate'])->name('password');
 
-
-
 Route::group(['middleware' => 'guest'], function () {
     Route::view('/', 'layouts.login')->name('login');
     Route::post('/validate-login', [AuthController::class, 'login'])->name('validate-login');
@@ -57,13 +55,13 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('searchPacientes', [PacientesController::class, 'search'])->name('search');
     Route::post('down', [PacientesController::class, 'down'])->name('down');
     Route::get('/verifydocument', [PacientesController::class, 'verifyDocument'])->name('verify');
-    Route::post('/pacientes/multiple-down', [PacientesController::class, 'multipleDown'])->name('pacientes.multipleDown');
+    Route::post('pacientes/multiple-down', [PacientesController::class, 'multipleDown'])->name('pacientes.multipleDown');
     Route::post('excelPacientes', [PacientesController::class, 'exportExcel'])->name('excelPacientes');
     Route::get('getPacientes', [PacientesController::class, 'getPacientes'])->name('getPacientes');
-    Route::post('searchPrestPacientes', [PacientesController::class, 'searchPrestPacientes'])->name('searchPrestPacientes');
-    Route::get('updateFinanciador', [PacientesController::class, 'updateFinanciador'])->name('updateFinanciador');
+    Route::get('searchPrestPacientes', [PacientesController::class, 'searchPrestPacientes'])->name('searchPrestPacientes');
     Route::get('getNombre', [PacientesController::class, 'getNombre'])->name('getNombre');
     Route::post('deletePicture', [PacientesController::class, 'deletePicture'])->name('deletePicture');
+    Route::post('/codigopostal', [PacientesController::class, 'getCodigoPostal'])->name('getCPostal');
 
     //Rutas de Clientes
     Route::resource('clientes', ClientesController::class);
@@ -72,7 +70,6 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('clientes/blockCliente', [ClientesController::class, 'block'])->name('clientes.block');
     Route::get('searchClientes', [ClientesController::class, 'search'])->name('searchClientes');
     Route::post('/verifycuitEmpresa', [ClientesController::class, 'verifyCuitEmpresa'])->name('verifycuitEmpresa');
-    Route::post('/codigopostal', [PacientesController::class, 'getCodigoPostal'])->name('getCPostal');
     Route::get('getClientes', [ClientesController::class, 'getClientes'])->name('getClientes');
     Route::post('/clientes/setObservaciones', [ClientesController::class, 'setObservaciones'])->name('clientes.setObservaciones');
     Route::post('checkEmail', [ClientesController::class, 'checkEmail'])->name('checkEmail');
