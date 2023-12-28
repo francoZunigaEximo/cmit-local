@@ -24,8 +24,9 @@ class ItemPrestacionesController extends Controller
     {
         $paciente = $this->getPaciente($itemsprestacione->IdPrestacion);
         $qrTexto = $this->generarQR('A', $itemsprestacione->IdPrestacion, $itemsprestacione->IdExamen, $paciente->Id, 'texto');
+        $adjuntoEfector = $this->adjuntoEfector($itemsprestacione->Id);
 
-        return view('layouts.itemsprestaciones.edit', compact(['itemsprestacione', 'qrTexto', 'paciente']));
+        return view('layouts.itemsprestaciones.edit', compact(['itemsprestacione', 'qrTexto', 'paciente', 'adjuntoEfector']));
     }
 
     public function updateItem(Request $request): void
@@ -115,7 +116,7 @@ class ItemPrestacionesController extends Controller
                 'examenes.Nombre as Nombre',
                 'archivosefector.Descripcion as DescripcionE',
                 'archivosefector.Ruta as RutaE',
-                'examenes.Adjunto as Adjunto',
+                'examenes.NoImprime as Adjunto',
                 'proveedores.MultiE as MultiE',
             )
             ->where('archivosefector.IdEntidad', $Id)

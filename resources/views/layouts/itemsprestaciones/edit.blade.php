@@ -110,12 +110,12 @@
                 </div>
 
             </div>
-
+           <!-- (in_array($itemsprestacione->CAdj, [1,4]) ? 'Pendiente' : (in_array($itemsprestacione->CAdj, [2,5]) ? 'Adjunto' : (in_array($itemsprestacione->CAdj, [0,3]) ? 'No lleva Adjuntos' : ' - '))) ?? ''-->
             <div class="row">
                 <div class="col-md-2">
                     <div class="input-group input-group-sm mb-2">
                         <span class="input-group-text">Adjunto</span>
-                        <input type="text" class="form-control" id="Estado" name="Estado" value="{{  (in_array($itemsprestacione->CAdj, [1,4]) ? 'Pendiente' : (in_array($itemsprestacione->CAdj, [2,5]) ? 'Adjunto' : (in_array($itemsprestacione->CAdj, [0,3]) ? 'No lleva Adjuntos' : ' - '))) ?? ''}}" @readonly(true)>
+                        <input type="text" class="form-control" id="Estado" name="Estado" value="{{ ($itemsprestacione->examenes->Adjunto === 0 ? 'No lleva Adjuntos' : ($itemsprestacione->examenes->Adjunto === 1 && $adjuntoEfector === 0 ? 'Pendiente' : ($itemsprestacione->examenes->Adjunto === 1 && $adjuntoEfector === 1 ? 'Adjuntado' : '-'))) }}" @readonly(true)>
                     </div>
                 </div>
             </div>

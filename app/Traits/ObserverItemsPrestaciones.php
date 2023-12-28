@@ -114,4 +114,13 @@ trait ObserverItemsPrestaciones
             $item->save();
         }
     }
+
+    public function adjuntoEfector($id)
+    {
+        if (empty($id)) return;
+
+        $archivo = ArchivoEfector::where('IdEntidad', $id)->first();
+        
+        return $archivo ? 1 : 0;
+    }
 }
