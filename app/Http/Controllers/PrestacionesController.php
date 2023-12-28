@@ -35,7 +35,8 @@ class PrestacionesController extends Controller
                 ->select(
                     DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdART) AS Art'),
                     DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdEmpresa) AS Empresa'),
-                    DB::raw('COUNT(itemsprestaciones.IdPrestacion) as Total'),
+                    DB::raw('COALESCE(COUNT(itemsprestaciones.IdPrestacion), 0) as Total'),
+                    DB::raw('COALESCE(COUNT(CASE WHEN itemsprestaciones.CAdj = 5 THEN itemsprestaciones.IdPrestacion END), 0) as CerradoAdjunto'),
                     'emp.ParaEmpresa as ParaEmpresa',
                     'emp.Identificacion as Identificacion',
                     'prestaciones.Fecha as FechaAlta',

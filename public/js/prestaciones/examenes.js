@@ -295,7 +295,7 @@ $(document).ready(()=>{
         
                                             <td class="date text-center" title="${examen.ApellidoE} ${examen.NombreE}">${examen.ApellidoE}<br>
                                                 <span class="badge badge-soft-${(examen.CAdj === 0 || examen.CAdj === 1 || examen.CAdj === 2 ? 'danger': (examen.CAdj === 3 || examen.CAdj === 4 || examen.CAdj === 5 ? 'success' : ''))}">${(examen.CAdj === 0 || examen.CAdj === 1 || examen.CAdj === 2 ? 'Abierto': (examen.CAdj === 3 || examen.CAdj === 4 || examen.CAdj === 5 ? 'Cerrado' : ''))}</span>
-                                                ${(examen.CAdj === 2 || examen.CAdj === 5) ? `<i class="ri-attachment-line ${(examen.CAdj === 2 || examen.CAdj === 5  ? 'verde' : '')}"></i>`: ``}    
+                                                ${(examen.CAdj === 2 || examen.CAdj === 5) && examen.ExaAdj === 1 ? `<i class="ri-attachment-line ${(examen.CAdj === 2 || examen.CAdj === 5  ? 'verde' : '')}"></i>`: ``}    
                                             </td>
                                     <!-- muestra el apellido + nombre del efector y debajo el estado (campo CAdj Abierto = 0 - 1 - 2 Cerrado = 3 - 4 - 5)  y al lado el icono de archivo (campo cAdj) gris si no hay archivo o verde si hay adjunto (NA = 0 - 3 Pendiente = 1 - 4  Adjunto = 2 - 5)  -->
                                             <td class="date text-center" title="${examen.ApellidoI} ${examen.NombreI}">${examen.ApellidoI}<br>

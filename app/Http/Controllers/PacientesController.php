@@ -6,7 +6,6 @@ use App\Models\Paciente;
 use App\Models\Prestacion;
 use App\Models\PrestacionesTipo;
 use App\Models\Provincia;
-use App\Models\Telefono;
 use App\Traits\Components;
 use App\Traits\ObserverPacientes;
 use Illuminate\Http\Request;
@@ -79,38 +78,39 @@ class PacientesController extends Controller
             $paciente = $request->paciente;
 
             $query = Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-                ->join('clientes', 'prestaciones.IdEmpresa', '=', 'clientes.Id')
+                ->join('clientes as emp', 'prestaciones.IdEmpresa', '=', 'emp.Id')
+                ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
+                ->join('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
                 ->select(
                     DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdART) AS Art'),
-                    DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdEmpresa) AS RazonSocial'),
-                    'clientes.ParaEmpresa as ParaEmpresa',
-                    'clientes.Identificacion as Identificacion',
+                    DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdEmpresa) AS Empresa'),
+                    DB::raw('COALESCE(COUNT(itemsprestaciones.IdPrestacion), 0) as Total'),
+                    DB::raw('COALESCE(COUNT(CASE WHEN itemsprestaciones.CAdj = 5 THEN itemsprestaciones.IdPrestacion END), 0) as CerradoAdjunto'),
+                    'emp.ParaEmpresa as ParaEmpresa',
+                    'emp.Identificacion as Identificacion',
                     'prestaciones.Fecha as FechaAlta',
                     'prestaciones.Id as Id',
                     'pacientes.Nombre as Nombre',
                     'pacientes.Apellido as Apellido',
+                    'prestaciones.TipoPrestacion as Tipo',
                     'prestaciones.Anulado as Anulado',
                     'prestaciones.Pago as Pago',
                     'prestaciones.FechaVto as FechaVencimiento',
                     'prestaciones.Ausente as Ausente',
                     'prestaciones.IdPaciente as Paciente',
-                    'prestaciones.Estado as Estado')
-                ->where('prestaciones.Estado', 1)
-                ->where('prestaciones.IdPaciente', '=', $paciente)
-                ->orderBy('prestaciones.Id', 'DESC');
+                    'prestaciones.Estado as Estado',
+                    'prestaciones.Facturado as Facturado');
 
             $query->when($buscar, function ($query) use ($buscar, $paciente) {
                 $query->where(function ($query) use ($buscar, $paciente) {
-                    $query->where('clientes.RazonSocial', 'LIKE', '%'.$buscar.'%')
-                        ->orWhere('clientes.ParaEmpresa', 'LIKE', '%'.$buscar.'%');
+                    $query->where('emp.RazonSocial', 'LIKE', '%'.$buscar.'%')
+                        ->orWhere('emp.ParaEmpresa', 'LIKE', '%'.$buscar.'%');
                     $query->orWhere(function ($query) use ($buscar, $paciente) {
                         $query->whereExists(function ($subquery) use ($buscar, $paciente) {
                             $subquery->select(DB::raw(1))
                                 ->from('clientes')
-                                ->whereColumn('clientes.Id', 'prestaciones.IdART')
-                                ->where('clientes.RazonSocial', 'LIKE', '%'.$buscar.'%')
-                                ->where('prestaciones.IdPaciente', $paciente)
-                                ->where('prestaciones.Estado', 1);
+                                ->whereColumn('art.Id', 'prestaciones.IdART')
+                                ->where('art.RazonSocial', 'LIKE', '%'.$buscar.'%');
                         });
                     });
                     $query->orWhere(function ($query) use ($buscar, $paciente) {
@@ -120,7 +120,11 @@ class PacientesController extends Controller
                 });
             });
 
-            return $query->cursorPaginate(500);
+            return $query->groupBy('prestaciones.Id')
+                        ->where('prestaciones.Estado', 1)
+                        ->where('prestaciones.IdPaciente', '=', $paciente)
+                        ->orderBy('prestaciones.Id', 'DESC')
+                        ->paginate(500);
         });
 
         return response()->json(['pacientes' => $prestacion]);
@@ -196,39 +200,35 @@ class PacientesController extends Controller
         );
     }
 
-    public function updateFinanciador(Request $request)
-    {
-        $art = $this->getFichaLaboral($request->Id, 'art');
-        $cliente = $this->getFichaLaboral($request->Id, 'empresa');
-
-        return response()->json(['art' => $art, 'cliente' => $cliente]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Paciente $paciente)
     {
 
         $paciente = Paciente::find($paciente->Id);
-        $paciente->Documento = $request->Documento;
-        $paciente->TipoDocumento = $request->TipoDocumento;
-        $paciente->Nombre = $request->Nombre;
-        $paciente->Apellido = $request->Apellido;
-        $paciente->TipoIdentificacion = $request->TipoIdentificacion;
-        $paciente->Identificacion = $request->Identificacion;
-        $paciente->FechaNacimiento = $request->FechaNacimiento;
-        $paciente->EMail = $request->EMail;
-        $paciente->Direccion = $request->Direccion;
-        $paciente->Provincia = $request->Provincia;
-        $paciente->IdLocalidad = $request->IdLocalidad;
-        $paciente->CP = $request->CP;
+
+        $data = $request->only([
+            'Documento',
+            'TipoDocumento',
+            'Nombre',
+            'Apellido',
+            'TipoIdentificacion',
+            'Identificacion',
+            'FechaNacimiento',
+            'EMail',
+            'Direccion',
+            'Provincia',
+            'IdLocalidad',
+            'CP',
+            'Antecedentes',
+            'Observaciones',
+        ]);
+
+        $paciente->update($data);
+        
         if($request->Foto)
         {
             $paciente->Foto = $this->addFoto($request->Foto, $paciente->Id, 'update');
         } 
-        $paciente->Antecedentes = $request->Antecedentes;
-        $paciente->Observaciones = $request->Observaciones;
+
         $paciente->save();
 
         if($request->NumeroTelefono)
@@ -246,8 +246,7 @@ class PacientesController extends Controller
 
         if($paciente){
 
-            $paciente->Estado = '0';
-            $paciente->save();
+            $paciente->update(['Estado', '0']);
 
         } 
     }
@@ -269,7 +268,7 @@ class PacientesController extends Controller
 
         Paciente::whereIn('id', $ids)->update(['Estado' => 0]);
 
-        return redirect()->back();
+        return back();
     }
 
     public function exportExcel(Request $request)

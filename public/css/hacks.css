@@ -307,7 +307,7 @@ label {
 
 .box-information {
 	border: 1px #eee solid !important; 
-	padding: 1em !important; 
+	padding: 0.5em !important; 
 	border-radius:10px !important; 
 	margin-right: 2em !important;
 	background-color: rgba(144, 144, 144, 0.055) !important;
@@ -377,14 +377,22 @@ body .selectArt2 .select2.select2-container {
 }
 
 #listaClientes th, td,
+#listaPacientes th, td,
 #listaPrestaciones th, td { white-space: nowrap !important; }
 
 #listaClientes tr,
+#listaPacientes tr,
 #listaPrestaciones tr { height: 37px !important;}
 
 #listaClientes tbody tr td,
+#listaPacientes tbody tr td,
 #listaPrestaciones tbody tr td { padding: 5px 8px 2px 8px };
 
 table.dataTable tr.dtrg-level-0 td {
 	font-size: 1.1em;
-  }
+}
+
+.page-title-box {
+	padding: 5px 1.5rem !important;
+	margin: -23px -1.5rem 0.5rem -1.5rem !important;
+}

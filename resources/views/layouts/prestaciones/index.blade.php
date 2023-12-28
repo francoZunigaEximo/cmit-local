@@ -260,7 +260,33 @@ const porcentajeExamen = "{{ route('porcentajeExamen') }}";
 $('#excel').click(function(e) {
     e.preventDefault();
 
-    var listaPrestaciones = $('#listaPrestaciones').DataTable();
+    if ($.fn.DataTable.isDataTable('#listaPrestaciones')) {
+        $('#listaPrestaciones').DataTable().destroy();
+    }
+
+    var listaPrestaciones = $('#listaPrestaciones').DataTable({
+        searching: false,
+        lengthChange: false,
+        language: {
+                processing: "Cargando listado de prestaciones de CMIT",
+                emptyTable: "No hay prestaciones con los datos buscados",
+                paginate: {
+                    first: "Primera",
+                    previous: "Anterior",
+                    next: "Siguiente",
+                    last: "Última"
+                },
+                aria: {
+                    paginate: {
+                        first: "Primera",
+                        previous: "Anterior",
+                        next: "Siguiente",
+                        last: "Última"
+                    }
+                },
+                info: "Mostrando _START_ a _END_ de _TOTAL_ de prestaciones",
+            },
+    });
 
     if (!listaPrestaciones.data().any() ) {
         toastr.info('No existen registros para exportar', 'Atención');
@@ -287,17 +313,13 @@ $('#excel').click(function(e) {
 
     if($("#checkAll").prop('checked') == true) {
         filters += "nroprestacion:" + $('#nroprestacion').val() + ",";
-        filters += "pacempart:" + $('#pacempart').val() + ",";
+        filters += "paciente:" + $('#pacienteSearch').val() + ",";
+        filters += "empresa:" + $('#empresaSearch').val() + ",";
+        filters += "art:" + $('#artSearch').val() + ",";
         filters += "tipoPrestacion:" + $('#TipoPrestacion').val() + ",";
-        filters += "pago:" + $('#Pago').val() + ",";
-        filters += "formaPago:" + $('#Spago').val() + ",";
         filters += "fechaDesde:" + $('#fechaDesde').val() + ",";
         filters += "fechaHasta:" + $('#fechaHasta').val() + ",";
         filters += "estado:" + $('#Estado').val() + ",";
-        filters += "eEnviado:" + $('#eEnviado').val() + ",";
-        filters += "finalizado:" + $('#Finalizado').val() + ",";
-        filters += "facturado:" + $('#Facturado').val() + ",";
-        filters += "entregado:" + $('#Entregado').val();
 
         if((fechaDesde == '' || fechaHasta == '') && nroprestacion == ''){
             swal('Alerta','La fecha "Desde" y "Hasta" son obligatorias.', 'warning');

@@ -152,13 +152,6 @@
                     <div class="row listjs-table" id="customerList">
 
                         <div class="col-sm-6 small">
-                            <span>Estados: </span>
-                            <span title="Imcompleto" style="padding: 0.5em; background-color:orange; color: black; border-radius: 3px">Incompleto</span>
-                            <span title="Devol" style="padding: 0.5em; background-color:blue; color: white; border-radius: 3px">Devol</span>
-                            <span title="Forma" style="padding: 0.5em; background-color: #0cb7f2; color: black; border-radius: 3px">Forma </span>
-                            <span evol</span>
-                            <span title="Ausente" style="padding: 0.5em; background-color: red; color: black; border-radius: 3px"> Ausente</span>
-                            <span title="Sin Esc" style="padding: 0.5em; background-color: yellow; color: black; border-radius: 3px"> Sin Esc</span>
                             <button type="button" id="excel" class="btn iconGeneral" title="Generar reporte en Excel">
                             <i class="ri-file-excel-line"></i>
                             </button>
@@ -177,52 +170,112 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th><input type="checkbox" id="checkAll" name="Id"></th>
-                                        <th class="sort">N°</th>
-                                        <th class="sort">Alta</th>
+                                        <th class="sort">% Av</th>
+                                        <th class="sort">Fecha</th>
+                                        <th class="sort">Nro</th>
+                                        <th class="sort">Tipo</th>
                                         <th class="sort">Empresa</th>
                                         <th class="sort">Para Empresa</th>
-                                        <th class="sort">Cuit</th>
-                                        <th class="sort">Art</th>
-                                        <th class="sort">Situación</th>
-                                        <th class="sort">F.Pago</th>
+                                        <th class="sort">ART</th>
+                                        <th class="sort">Estado</th>
+                                        <th>eEnv</th>
+                                        <th>INC</th>
+                                        <th>AUS</th>
+                                        <th>FOR</th>
+                                        <th>DEV</th>
+                                        <th>FP</th>
+                                        <th>FAC</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody class="list form-check-all">
                                     @forelse($pacientePrestacion as $prespaciente)
-                                    <tr id="filapresId" data-filapres="{{ $prespaciente->Id }}">
+                                    <tr 
+                                    @php
+                                        
+                                        $cerradoAdjunto = $prespaciente->CerradoAdjunto ?? 0;
+                                        $total = $prespaciente->Total ?? 1;
+                                        $calculo = ($total != 0) ? number_format(($cerradoAdjunto / $total) * 100, 2) : 0;
+                                        $resultado;
+                                
+                                    if ($calculo === 100) {
+                                        $resultado = 'fondo-blanco';
+                                    } else if ($calculo >= 86 && $calculo <= 99) {
+                                        $resultado = 'fondo-verde';
+                                    } else if ($calculo >= 51 && $calculo <= 85) {
+                                        $esultado = 'fondo-amarillo';
+                                    } else if ($calculo >= 1 && $calculo <= 50) {
+                                        $resultado = 'fondo-naranja';
+                                    } else {
+                                        $resultado = 'fondo-rojo';
+                                    }
+
+                                    echo ' class="'.$resultado.'" ';
+
+                                    @endphp
+                                    id="filapresId" data-filapres="{{ $prespaciente->Id }}" >
                                         <td>
                                             <input type="checkbox" name="Id" value="{{$prespaciente->Id}}" checked="">
                                         </td>
                                         <td>
-                                            <span 
-                                                {!! ($prespaciente->Ausente === 1 ? 'style="padding: 0.5em; background-color: red; color: white;" title="Ausente"' : 
-                                                    ($prespaciente->Incompleto === 1 ? 'style="padding: 0.5em; background-color: orange; color: black;" title="Incompleto"' : 
-                                                        ($prespaciente->Devol === 1 ? 'style="padding: 0.5em; background-color: blue; color: white;" title="Devol"' : 
-                                                            ($prespaciente->Forma === 1 ? 'style="padding: 0.5em; background-color: #0cb7f2; color: black;" title="Forma"' : 
-                                                                ($prespaciente->SinEsc === 1 ? 'style="padding: 0.5em; background-color: yellow; color: black;" title="Sin Esc"': ''))))) !!}
-                                            >
-                                                {{ $prespaciente->Id }}
-                                            </span>
+                                            @php
+                                                $cerradoAdjunto = $prespaciente->CerradoAdjunto ?? 0;
+                                                $total = $prespaciente->Total ?? 1;
+
+                                                echo number_format(($cerradoAdjunto / $total) * 100, 2) .'%';
+
+                                            @endphp
                                         </td>
-                                        <td>{{ \Carbon\Carbon::parse($prespaciente->FechaAlta)->format('d/m/Y') }}</td>
-                                        <td title="{{ $prespaciente->RazonSocial }}">{{ Illuminate\Support\Str::limit($prespaciente->RazonSocial,20,'...') }}</td>
-                                        <td title="{{ $prespaciente->ParaEmpresa }}">{{ Illuminate\Support\Str::limit($prespaciente->ParaEmpresa, 15, '...') }}</td>
-                                        <td>{{ $prespaciente->Identificacion }}</td>
-                                        <td title="{{ $prespaciente->Art }}">{{ Illuminate\Support\Str::limit($prespaciente->Art, 15, '...')  ?? '...'}}</td>
-                                        <td><span id="estadoBadge" class="badge badge-soft-{{ ($prespaciente->Anulado == 0)?'success':'danger' }} text-uppercase">{{ ($prespaciente->Anulado == 0)? 'Habilitado':'Bloqueado' }}</span></td>
-                                        <td>{{ $prespaciente->Pago == 'B' ? 'Ctdo' : ($prespaciente->Pago == 'C' ? 'CCorriente' : ($prespaciente->Pago == 'P' ? 'PC' : 'CCorriente')) }}
+                                        <td>
+                                            {{ \Carbon\Carbon::parse($prespaciente->FechaAlta)->format('d/m/Y') }}
+                                        </td>
+                                        <td>
+                                            {{ $prespaciente->Id }}
+                                        </td>
+                                        <td>
+                                            {{ $prespaciente->Tipo }}
+                                        </td>
+                                        <td title="{{ $prespaciente->Empresa }}">
+                                            {{ Illuminate\Support\Str::limit($prespaciente->Empresa,7,'...') }}</td>
+                                        <td title="{{ $prespaciente->ParaEmpresa }}">
+                                            {{ Illuminate\Support\Str::limit($prespaciente->ParaEmpresa, 7, '...') }}
+                                        </td>
+                                        <td title="{{ $prespaciente->Art }}">
+                                            {{ Illuminate\Support\Str::limit($prespaciente->Art, 7, '...')  ?? '-'}}
+                                        </td>
+                                        <td>
+                                            <span id="estadoBadge" class="iconGeneralNegro text-uppercase">{{ ($prespaciente->Anulado == 0)? 'Habilitado':'Anulado' }}</span>
+                                        </td>
+                                        <td>
+                                            <div class="text-center"><i class="{{$prespaciente->eEnviado === 1 ? 'ri-checkbox-circle-fill negro' : 'ri-close-circle-line negro'}}"></i></div> 
+                                        </td>
+                                        <td>
+                                            {{ $prespaciente->Incompleto === 1 ? '<div class="text-center"><i class="ri-check-line"></i></div>' : '-' }}
+                                        </td>
+                                        <td>
+                                            {{ $prespaciente->Ausente === 1 ? '<div class="text-center"><i class="ri-check-line"></i></div>' : '-' }}
+                                        </td>
+                                        <td>
+                                            {{ $prespaciente->Forma === 1 ? '<div class="text-center"><i class="ri-check-line"></i></div>' : '-' }}
+                                        </td>
+                                        <td>
+                                            {{ $prespaciente->Devol === 1 ? '<div class="text-center"><i class="ri-check-line"></i></div>' : '-' }}
+                                        </td>
+                                        <td>
+                                            {{ $prespaciente->Pago == 'B' ? 'Ctdo' : ($prespaciente->Pago == 'C' ? 'CC' : ($prespaciente->Pago == 'P' ? 'ExCta' : '-')) }}
+                                        </td>
+                                        <td>
+                                            {{ $prespaciente->Facturado === 1 ? '<div class="text-center"><i class="ri-check-line"></i></div>' : '-' }}
                                         </td>
                                         <td>
                                             <div class="d-flex gap-2">
-                                                <a title="Editar" href="{{ route('prestaciones.edit', ['prestacione' => $prespaciente->Id, 'location' => 'paciente' ])}}">
-                                                    <button type="button" class="btn iconGeneral"><i class="ri-edit-line"></i></button>
+                                                <a title="Ver" href="{{ route('prestaciones.edit', ['prestacione' => $prespaciente->Id, 'location' => 'paciente' ])}}">
+                                                    <button type="button" class="btn btn-sm iconGeneralNegro"><i class="ri-edit-line"></i></button>
                                                 </a>
                                                 <div class="bloquear">
-                                                    <button type="button" id="blockPrestPaciente" data-idprest="{{ $prespaciente->Id }}" class="btn iconGeneral" title="{{ ($prespaciente->Anulado == 1)? 'Bloqueado':'Bloquear' }}" {{ ($prespaciente->Anulado == 1)?'disabled':'' }}><i class="ri-forbid-2-line"></i></button>
+                                                    <button type="button" id="blockPrestPaciente" data-idprest="{{ $prespaciente->Id }}" class="btn btn-sm iconGeneralNegro" title="{{ ($prespaciente->Anulado == 1)? 'Bloqueado':'Bloquear' }}" {{ ($prespaciente->Anulado == 1)?'disabled':'' }}><i class="ri-forbid-2-line"></i></button>
                                                 </div>
-                                                    <button type="button" id="downPrestPaciente" data-idprest="{{ $prespaciente->Id }}" class="btn iconGeneral" ><i class="ri-delete-bin-2-line"></i></button>
-                                                    <button class="btn btn-sm prestacionComentario" data-id="{{ $prespaciente->Id }}" data-bs-toggle="modal" data-bs-target="#prestacionModal"><i class="ri-chat-3-line"></i></button>
+                                                    <button type="button" id="downPrestPaciente" data-idprest="{{ $prespaciente->Id }}" class="btn btn-sm iconGeneralNegro" ><i class="ri-delete-bin-2-line"></i></button>
                                              </div>
                                         </td>
                                     </tr>
@@ -674,7 +727,6 @@ const getComentarioPres = "{{ route('getComentarioPres') }}";
 const setComentarioPres = "{{ route('setComentarioPres') }}";
 const searchPrestPacientes = "{{ route('searchPrestPacientes') }}";
 
-const updateFinanciador = "{{ route('updateFinanciador') }}";
 const getMapas = "{{ route('getMapas') }}";
 
 const deletePicture = "{{ route('deletePicture') }}";

@@ -256,11 +256,7 @@ class ProfesionalesController extends Controller
 
     public function store(Request $request): string
     {
-        return $request->Provincia;
         $nuevoId = Profesional::max('Id') + 1;
-        $provincia = $this->fixerProvincia((int)$request->Provincia);
-
-        return $provincia;
 
         if($request->hasFile('Foto')) {
             $fileName = 'PROF'.$nuevoId. '.' . $request->Foto->extension();
@@ -274,7 +270,7 @@ class ProfesionalesController extends Controller
             'Nombre' => $request->Nombre,
             'EMail' => $request->EMail,
             'Direccion' => $request->Direccion ?? '',
-            'Provincia' => $provincia->Nombre,
+            'Provincia' => $request->Provincia,
             'IdLocalidad' => $request->IdLocalidad,
             'Firma' => $request->Firma ?? '',
             'CP' => $request->CP,

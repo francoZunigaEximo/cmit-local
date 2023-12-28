@@ -13,12 +13,6 @@ use Illuminate\Support\Facades\DB;
 
 trait ObserverPacientes
 {
-
-    public function fixerProvincia($id)
-    {
-        return Provincia::where('Id', $id)->orWhere('Nombre', $id)->first(['Id', 'Nombre']);
-    }
-
     public function getTelefono($id): mixed
     {
         return Telefono::where('IdEntidad', $id)->first(['CodigoArea', 'NumeroTelefono']);
@@ -54,12 +48,16 @@ trait ObserverPacientes
     public function getPrestacion($id):  mixed
     {
         $result = Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-            ->join('clientes', 'prestaciones.IdEmpresa', '=', 'clientes.Id')
+            ->join('clientes as emp', 'prestaciones.IdEmpresa', '=', 'emp.Id')
+            ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
+            ->join('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
             ->select(
                 DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdART) AS Art'),
-                DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdEmpresa) AS RazonSocial'),
-                'clientes.ParaEmpresa as ParaEmpresa',
-                'clientes.Identificacion as Identificacion',
+                DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdEmpresa) AS Empresa'),
+                DB::raw('COUNT(itemsprestaciones.IdPrestacion) as Total'),
+                DB::raw('COALESCE(COUNT(CASE WHEN itemsprestaciones.CAdj = 5 THEN itemsprestaciones.IdPrestacion END), 0) as CerradoAdjunto'),
+                'emp.ParaEmpresa as ParaEmpresa',
+                'emp.Identificacion as Identificacion',
                 'prestaciones.Fecha as FechaAlta',
                 'prestaciones.Id as Id',
                 'pacientes.Nombre as Nombre',
@@ -72,12 +70,14 @@ trait ObserverPacientes
                 'prestaciones.Devol as Devol',
                 'prestaciones.Forma as Forma',
                 'prestaciones.SinEsc as SinEsc',
-                'prestaciones.Estado as Estado'
+                'prestaciones.Estado as Estado',
+                'prestaciones.Facturado as Facturado'
             )
             ->where('IdPaciente', $id)
             ->where('prestaciones.Estado', '=', '1')
             ->orderBy('prestaciones.Id', 'DESC')
-            ->cursorPaginate(15);
+            ->groupBy('prestaciones.Id')
+            ->cursorPaginate(500);
 
         return $result;
         

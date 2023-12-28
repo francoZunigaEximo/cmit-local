@@ -124,6 +124,8 @@ class ExamenesController extends Controller
                 ->select(
                     'examenes.Nombre as Nombre',
                     'examenes.Id as IdExamen',
+                    'examenes.Adjunto as ExaAdj',
+                    'examenes.NoImprime as ExaNI',
                     'efector.Nombre as NombreE',
                     'efector.Apellido as ApellidoE',
                     'informador.Nombre as NombreI',

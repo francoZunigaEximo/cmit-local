@@ -2,12 +2,12 @@
 
 namespace App\Exports;
 
-use App\User;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use App\Models\Prestacion;
 use stdClass;
+use Carbon\Carbon;
 
 class PrestacionesExport implements FromCollection,WithHeadings
 {
@@ -35,6 +35,12 @@ class PrestacionesExport implements FromCollection,WithHeadings
             'ART',
             'Situación',
             'F.Pago',
+            'Observacion Estado',
+            'Aus',
+            'Inc',
+            'Dev',
+            'For',
+            'SinEsc'
         ];
     }
     public function collection()
@@ -47,14 +53,13 @@ class PrestacionesExport implements FromCollection,WithHeadings
             $prestacionExcel = new stdClass();
 
             $prestacionExcel->numero            = $prestacion->Id ?? '-';
-            $prestacionExcel->alta              = $prestacion->FechaAlta ?? '-'; // Formatear
+            $prestacionExcel->alta              = Carbon::parse($prestacion->FechaAlta)->format('d-m-Y') ?? '-'; // Formatear
             $prestacionExcel->empresa           = $prestacion->RazonSocial ?? '-';
             $prestacionExcel->paraEmpresa       = $prestacion->ParaEmpresa ?? '-';
             $prestacionExcel->Identificacion    = $prestacion->Identificacion ?? '-';
             $prestacionExcel->paciente          = $prestacion->Apellido . " " . $prestacion->Nombre;
             $prestacionExcel->art               = $prestacion->Art ?? '-';
             $prestacionExcel->situacion         = $prestacion->Anulado == 0 ? "Habilitado" : "Anulado";
-
             $pago = "-";
 
             switch ($prestacion->Pago) {
@@ -68,6 +73,13 @@ class PrestacionesExport implements FromCollection,WithHeadings
                     $prestacionExcel->pago = 'ExCuenta';
                     break;
             }
+            
+            $prestacionExcel->observacionEstado = $prestacion->ObsEstado ?? '-';
+            $prestacionExcel->ausente           = $prestacion->Ausente === 0 ? '-' : 'Sí';
+            $prestacionExcel->incompleto        = $prestacion->Incompleto === 0 ? '-' : 'Sí';
+            $prestacionExcel->devolucion        = $prestacion->Devol === 0 ? '-' : 'Sí';
+            $prestacionExcel->forma             = $prestacion->Forma === 0 ? '-' : 'Sí';
+            $prestacionExcel->sinesc            = $prestacion->SinEsc === 0 ? '-' : 'Sí';
 
             $prestacionesExcel->push($prestacionExcel);
         }
@@ -81,6 +93,7 @@ class PrestacionesExport implements FromCollection,WithHeadings
     return DB::table('prestaciones')
         ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
         ->join('clientes', 'prestaciones.IdEmpresa', '=', 'clientes.Id')
+        ->leftJoin('prestaciones_comentarios', 'prestaciones.Id', '=', 'prestaciones_comentarios.IdP')
         ->select(
             DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdART) AS Art'),
             DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdEmpresa) AS RazonSocial'),
@@ -91,7 +104,13 @@ class PrestacionesExport implements FromCollection,WithHeadings
             'pacientes.Nombre as Nombre',
             'pacientes.Apellido as Apellido',
             'prestaciones.Anulado as Anulado',
-            'prestaciones.Pago as Pago'
+            'prestaciones.Pago as Pago',
+            'prestaciones.Ausente as Ausente',
+            'prestaciones.Incompleto as Incompleto',
+            'prestaciones.Devol as Devol',
+            'prestaciones.Forma as Forma',
+            'prestaciones.SinEsc as SinEsc',
+            'prestaciones_comentarios.Obs as ObsEstado'
         )
         ->where('prestaciones.Estado', '=', '1')
         ->whereIn('prestaciones.Id', $this->ids)
@@ -106,10 +125,11 @@ class PrestacionesExport implements FromCollection,WithHeadings
         $query = Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
             ->join('clientes as emp', 'prestaciones.IdEmpresa', '=', 'emp.Id')
             ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
+            ->leftJoin('prestaciones_comentarios', 'prestaciones.Id', '=', 'prestaciones_comentarios.IdP')
             ->select(
                 DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdART) AS Art'),
                 DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdEmpresa) AS empresa'),
-                DB::raw("CONCAT(pacientes.Apellido,pacientes.Nombre) AS nombreCompleto"),
+                DB::raw("CONCAT(pacientes.Apellido,pacientes.Nombre) AS nombreCompleto"),            
                 'emp.ParaEmpresa as ParaEmpresa',
                 'emp.Identificacion as Identificacion',
                 'prestaciones.Fecha as FechaAlta',
@@ -126,7 +146,9 @@ class PrestacionesExport implements FromCollection,WithHeadings
                 'prestaciones.SinEsc as SinEsc',
                 'prestaciones.TipoPrestacion as TipoPrestacion',
                 'prestaciones.eEnviado as eEnviado',
-                'prestaciones.Estado as Estado'
+                'prestaciones.Estado as Estado',
+                'prestaciones_comentarios.Obs as ObsEstado'
+                
             )
             ->where('prestaciones.Estado', 1);
 
