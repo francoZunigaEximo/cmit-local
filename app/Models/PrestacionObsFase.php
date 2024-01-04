@@ -5,27 +5,23 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Constanciase extends Model
+class PrestacionObsFase extends Model
 {
     use HasFactory;
 
-    protected $table = 'constanciase';
+    protected $table = 'prestaciones_obsfases';
 
     protected $primaryKey = 'Id';
 
     protected $fillable = [
         'Id',
-        'NroC',
+        'IdEntidad',
+        'Comentario',
+        'IdExamen',
+        'IdUsuario',
         'Fecha',
-        'Obs'
+        'Rol'
     ];
 
     public $timestamps = false;
-
-    public function prestacion()
-    {
-        return $this->belongsTo(Prestacion::class, 'constanciase_it', 'IdC', 'IdP');
-    }
 }
-
-

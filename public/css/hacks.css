@@ -264,19 +264,18 @@ label {
 
 /* Estilos personalizados para el input de archivo */
 .custom-file-input {
-	display: none; /* Oculta el input real */
+	display: none; 
 }
 
 .custom-file-label {
 	cursor: pointer;
-	border: 1px solid #ccc; /* Borde personalizado */
-	padding: 5px 10px; /* Espaciado interno */
-	background-color: #f9f9f9; /* Color de fondo */
+	border: 1px solid #ccc; 
+	padding: 5px 10px; 
+	background-color: #f9f9f9;
 }
 
-/* Estilos para cuando el usuario interactúa con el input */
 .custom-file-input:focus + .custom-file-label {
-	background-color: #e0e0e0; /* Cambia el color de fondo al enfocar */
+	background-color: #e0e0e0; 
 }
 
 .richText-editor {
@@ -295,6 +294,16 @@ label {
 
 .botonGeneral {
 	border: 1px solid #3c74b3 !important;
+}
+
+.custom-badge.generalNegro {
+	background-color: white; 
+	border: 1px solid #0e0d0d;
+	color:#0e0d0d;
+	padding: 0.15em 0.15em;
+    font-size: 0.75em;
+    font-weight: 600;
+	text-transform: uppercase
 }
 
 .botonGeneralBlanco {
@@ -376,16 +385,23 @@ body .selectArt2 .select2.select2-container {
 	width: 50% !important;
 }
 
+.size80porcent {
+	width: 80% !important;
+}
+
 #listaClientes th, td,
 #listaPacientes th, td,
+#listaMapas th, td,
 #listaPrestaciones th, td { white-space: nowrap !important; }
 
 #listaClientes tr,
 #listaPacientes tr,
+#listaMapas tr,
 #listaPrestaciones tr { height: 37px !important;}
 
 #listaClientes tbody tr td,
 #listaPacientes tbody tr td,
+#listaMapas tbody tr td,
 #listaPrestaciones tbody tr td { padding: 5px 8px 2px 8px };
 
 table.dataTable tr.dtrg-level-0 td {

@@ -28,8 +28,8 @@ $(document).ready(()=>{
                 date:true,
                 fechaPosterior: true,
             },
-            Obs: {
-                required: true,
+            Cpacientes: {
+                required: true,   
             }
         },
         messages: {
@@ -49,8 +49,8 @@ $(document).ready(()=>{
             FechaE: {
                 date: "El campo debe ser de fechas",
             },
-            Obs: {
-                required: "Este campo es obligatorio",
+            Cpacientes: {
+                required: "Debe especificar la cantidad de pacientes",
             }
         }
     });
@@ -62,8 +62,8 @@ $(document).ready(()=>{
     }, "La fecha debe ser posterior a la fecha de hoy");
 
     $.validator.addMethod("noNegative", function(value, element) {
-        return this.optional(element) || parseFloat(value) >= 0;
-      }, "No se permiten números mapas negativos o símbolos");
+        return this.optional(element) || (/^[a-zA-Z]+$/.test(value) || parseFloat(value) >= 0);
+    }, "Solo se permiten letras o números no negativos");
 
 
     $("#form-create").on("submit", function(event) {
@@ -73,7 +73,7 @@ $(document).ready(()=>{
                 toastr.success('¡Se ha generado el mapa de manera correcta.', 'Felicitaciones');
                 setTimeout(() => {
                     $(this).unbind("submit").submit();
-                }, 4000);   
+                }, 3000);   
             }
 
         } else {

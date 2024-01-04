@@ -1,13 +1,7 @@
 $(document).ready(()=>{
 
     let hoy = new Date().toISOString().slice(0, 10), 
-        maxCaracteres = 100,
-        totalEnProceso = parseInt($('#totalEnProceso').text()),
-        totalCerradas = parseInt($('#totalCerradas').text()),
-        totalFinalizados = parseInt($('#totalFinalizados').text()),
-        totalEntregados = parseInt($('#totalEntregados').text()),
-        totalCompleta = parseInt($('#totalCompleta').text()),
-        totalConEstados = parseInt($('#totalConEstados').text());
+        maxCaracteres = 100;
 
     toastr.options = {
         closeButton: true,   
@@ -17,16 +11,17 @@ $(document).ready(()=>{
 
     quitarDuplicados("#Estado");
     getPrestaMapas();
-    actualizarTotales(totalEnProceso, totalCerradas, totalFinalizados, totalEntregados, totalCompleta, totalConEstados);
     verificacionNro();
     getCerrarMapas();
     getFinalMapa();
     getEnMapa();
+    listaComentariosPrivados(IDMAPA);
+    listarRemitos(IDMAPA);
 
     $('#remitoFechaE').val(hoy)
    
     //Exportar Excel
-    $('.excel').click(function() {
+    $(document).on('click', '.excel', function(){
         
         let ids = [];
         ids.push($(this).data('remito'));
@@ -84,7 +79,7 @@ $(document).ready(()=>{
     });
 
     //Exportar PDF
-    $('.pdf').click(function() {
+    $(document).on('click', '.pdf', function(){
 
         let ids = [];
 
@@ -148,8 +143,8 @@ $(document).ready(()=>{
         let Nro = $('#Nro').val(),
             IdART =$('#IdART').val(),
             IdEmpresa = $('#IdEmpresa').val(),
-            Fecha = $('#Fecha').val(),
-            FechaE = $('#FechaE').val(),
+            FechaEdicion = $('#FechaEdicion').val(),
+            FechaEEdicion = $('#FechaEEdicion').val(),
             Estado = $('#Estado').val(),
             Cpacientes = $('#Cpacientes').val(),
             Obs = $('#Obs').val(),
@@ -157,7 +152,7 @@ $(document).ready(()=>{
 
             if($('#form-update').valid()) {
                 
-                $.post(updateMapa, {_token: TOKEN, Nro:Nro, IdART: IdART, IdEmpresa: IdEmpresa, Fecha: Fecha, FechaE: FechaE, Estado: Estado, Cpacientes: Cpacientes, Obs: Obs, Id: IdMap})
+                $.post(updateMapa, {_token: TOKEN, Nro:Nro, IdART: IdART, IdEmpresa: IdEmpresa, FechaEdicion: FechaEdicion, FechaEEdicion: FechaEEdicion, Estado: Estado, Cpacientes: Cpacientes, Obs: Obs, Id: IdMap})
                 .done(function(){
                     toastr.success('Se ha actualizado el mapa correctamente', 'Perfecto');
                     setTimeout(() => {
@@ -193,7 +188,7 @@ $(document).ready(()=>{
 
     $(document).on('click', '.confirmarEntrega', function(){
 
-        let remito = $(this).data('id'),
+        let prestacion = $(this).data('id'),
             remitoObs =$('#remitoObs').val(),
             remitoFechaE = $('#remitoFechaE').val();
 
@@ -209,13 +204,14 @@ $(document).ready(()=>{
                 _token: TOKEN,
                 Obs: remitoObs,
                 FechaE: remitoFechaE,
-                Id: remito
+                Id: prestacion
             },
             success: function(){
 
                 toastr.success('Se han registrado las fechas de entrega en los remitos correspondientes', 'Perfecto');
                 $('#remitoObs').val('');
                 $('#entregarModal').modal('hide');
+                listarRemitos(IDMAPA);
             },
             error: function(xhr){
                 console.error(xhr);
@@ -262,9 +258,7 @@ $(document).ready(()=>{
 
                 $.each(data, function(index, dat) {
 
-                    let etapa = (dat.Etapa === 'Completo' ? '<span style="text-align=center" class="custom-badge verde">Completo</span>' : '<span style="text-align=center" class="custom-badge rojo">Incompleto</span>');
-
-                    let estado;
+                   let estado;
                     
                    if(dat.Finalizado === 1){
                         estado = '<span style="text-align=center" class="custom-badge verde">Finalizado</span>';
@@ -275,14 +269,8 @@ $(document).ready(()=>{
                    } else if(dat.Cerrado === 0 && dat.Finalizado === 0) {
                         estado = '<span style="text-align=center" class="custom-badge gris">Abierto</span>';
                    }
-
-                   let eEnviado = (dat.eEnviado === 1 ? '<span style="text-align=center" class="custom-badge verde"><i class="ri-checkbox-circle-line"></i></span>' : '<span style="text-align=center" class="custom-badge gris"><i class="ri-checkbox-circle-line"></i></span>');
-
-                   let facturado = (dat.Facturado === 1 ? '<span style="text-align=center" class="custom-badge verde"><i class="ri-checkbox-circle-line"></i></span>' : '<span style="text-align=center" class="custom-badge amarillo"><i class="ri-information-line"></i></span>');
                 
-                   let fechaOriginal = dat.Fecha;
-                   let partesFecha = fechaOriginal.split("-");
-                   let nuevaFecha = partesFecha[2] + "/" + partesFecha[1] + "/" + partesFecha[0];
+                   let nuevaFecha = fecha(dat.Fecha);
 
                     let contenido = `
                         <tr>
@@ -290,11 +278,30 @@ $(document).ready(()=>{
                             <td>${nuevaFecha}</td>
                             <td>${dat.Apellido} ${dat.Nombre}</td>
                             <td>${dat.NroCEE}</td>
-                            <td>${etapa}</td>
+                            <td class="text-center">
+                                <span class="custom-badge ${dat.Etapa === 'Completo' ? 'verde' : 'rojo'}">${dat.Etapa}</span>
+                            </td>
                             <td>${estado}</td>
-                            <td>${eEnviado}</td>
-                            <td>${facturado}</td>
-                            <td><button data-id="${dat.IdPrestacion}" class="btn btn-sm btn-soft-primary edit-item-btn verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
+                            <td class="text-center">
+                                <span style="text-align=center" class="custom-badge original"><i class="${dat.eEnviado === 1 ? 'ri-check-line' : 'ri-close-line'}"></i></span>
+                            </td>
+                            <td class="text-center">
+                                <span style="text-align=center" class="custom-badge original"><i class="${dat.Facturado === 1 ? 'ri-check-line' : 'ri-close-line'}"></i></span>
+                            </td>
+                            </td>
+                            <td>
+                                <span data-id="${dat.IdPrestacion}" data-estado="prestacion" title="${dat.Incompleto === 1 ? `Incompleto` : `Completo`}" class="cambiarEstado custom-badge ${dat.Incompleto === 1 ? `rojo` : `verde`}">
+                                    <i class="ri-lightbulb-line"></i>
+                                </span>
+                            </td>
+                            <td>
+                                <button data-id="${dat.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver" data-bs-toggle="modal" data-bs-target="#verPrestacionModal">
+                                    <i class="ri-search-eye-line"></i>
+                                </button>
+                                <button title="Observaciones privadas" type="button" class="iconGeneral btn btn-sm comentarioPrivado" data-bs-toggle="modal" data-bs-target="#comentarioPrivado" data-id="${dat.IdPrestacion}" data-nombre="${dat.Apellido} ${dat.Nombre}">
+                                    <i class="ri-chat-quote-line"></i>
+                                </button>
+                            </td>
                         </tr>`;
 
                     $('#prestaMapa').append(contenido);
@@ -340,26 +347,33 @@ $(document).ready(()=>{
                 $.each(examen, function(index, e) {
                     
                     let arrCompleto = [3,4,5,6], efectuadoOk = arrCompleto.includes(e.CAdj);
-                    let isComplete = (efectuadoOk && e.CInfo === 3 ? '<span class="custom-badge verde">Completo</span>' : '<span class="custom-badge rojo">Incompleto</span>');
+                    /*let isComplete = (efectuadoOk ? '<span class="custom-badge verde">Completo</span>' : '<span class="custom-badge rojo">Incompleto</span>');*/
 
                     let arrCerrado = [3,4,5], cerradoOk = arrCerrado.includes(e.CAdj);
-       
-                    let efectorCompleto = e.ApellidoEfector + ' ' + e.NombreEfector;
+                    
+                    let efectorCompleto = e.ApellidoEfector + ' ' + e.NombreEfector,
+                        informadorCompleto = e.ApellidoInformador + ' ' + e.NombreInformador;
 
                     let contenido = `
                         <tr>
                             <td>${e.NombreExamen}</td>
-                            <td>${isComplete}</td>
                             <td>${e.NombreProveedor}</td>
                             <td>
                                 <span>${(e.NombreEfector === null || e.ApellidoEfector == null ? '-' : efectorCompleto )}</span>
                                 <span>${(cerradoOk ? '<span style="display:block" class="custom-badge verde">Completo</span>' : '')}</span>
                             </td>
+                            <td><span class="custom-badge pequeno">${arrCerrado.includes(e.CAdj) ? `cerrado`:`abierto`}</span></td>
+                            <td><span class="custom-badge pequeno">${e.ExamenAdjunto === 0 ? `No lleva adjuntos` : e.ExamenAdjunto === 1 && e.adjuntados === 'sadjunto' ? `pendiente` : e.ExamenAdjunto === 1 && e.adjuntados === 'adjunto' ? `Adjuntado` : `-`}</span></td>
                             <td>
-                                <span>${e.ApellidoInformador ? e.ApellidoInformador : '-'} ${e.NombreInformador ? e.NombreInformador : ''}</span>
+                                <span>${e.NombreInformador === null || e.ApellidoInformador == null ? '-' : informadorCompleto }</span>
                                 <span>${(e.CInfo === 3 ? '<span style="display:block" class="custom-badge verde">Completo</span>' : '')}</span>
                             </td>
-                            <td><button data-id="${e.IdExamen}" class="btn btn-sm btn-soft-primary edit-item-btn" title="Ver"><i class="ri-search-eye-line"></i></button></td>
+                            <td><span class="custom-badge pequeno">${e.CInfo === 3 ? `cerrado`: `abierto`}</span></td>
+                            <td><span data-id="${e.IdItemPrestacion}" data-estado="examen" title="${e.Incompleto === 1 ? `Incompleto` : `Completo`}" class="cambiarEstado custom-badge ${e.Incompleto === 1 ? `rojo` : `verde`}"><i class="ri-lightbulb-line"></i></span></td>
+                            <td>
+                                <button type="button" data-id="${e.IdItemPrestacion}" class="btn btn-sm iconGeneral verItemPrestacion" title="Ver exámen"><i class="ri-search-eye-line"></i></button>
+                                <button title="Observación de Estado" class="btn btn-sm iconGeneral" data-bs-toggle="modal" data-bs-target="#ObsEstado"><i class="ri-chat-1-fill"></i></button>
+                            </td>
                         </tr>
                     `;
                     
@@ -419,23 +433,22 @@ $(document).ready(()=>{
                     estado = '<span style="text-align=center" class="custom-badge gris">Incompleto</span>';
                 }
 
-                let fechaOriginal = d.Fecha,
-                    partesFecha = fechaOriginal.split("-"),
-                    nuevaFecha = partesFecha[2] + "/" + partesFecha[1] + "/" + partesFecha[0];
+                let nuevaFecha = fecha(d.Fecha);
                 
                 let contenido = `
                     <tr>
                         <td>${d.IdPrestacion}</td>
                         <td>${nuevaFecha}</td>
                         <td>${d.ApellidoPaciente} ${d.NombrePaciente}</td>
+                        <td>${d.dni}</td>
                         <td>${estado}</td>
-                        <td><button data-id="${d.IdPrestacion}" class="btn btn-sm btn-soft-primary edit-item-btn verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
+                        <td><button data-id="${d.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
                         <td><input type="checkbox" name="Id" value="${d.IdPrestacion}" checked></td>
                     </tr>
                 `;
 
                 $('#cerrarMapa').append(contenido);
-                $('#NroPresCerrar, #EtapaCerrar, #NroRemitoCerrar').val('');
+                $('#NroPresCerrar, #EtapaCerrar').val('');
                 
             });
 
@@ -550,17 +563,16 @@ $(document).ready(()=>{
                     estado = '<span style="text-align=center" class="custom-badge gris">Incompleto</span>';
                 }
 
-                let fechaOriginal = f.Fecha,
-                    partesFecha = fechaOriginal.split("-"),
-                    nuevaFecha = partesFecha[2] + "/" + partesFecha[1] + "/" + partesFecha[0];
+                let nuevaFecha = fecha(f.Fecha);
                 
                 let contenido = `
                     <tr>
                         <td>${f.IdPrestacion}</td>
+                        <td>${f.NroRemito}</td>
                         <td>${nuevaFecha}</td>
                         <td>${f.ApellidoPaciente} ${f.NombrePaciente}</td>
                         <td>${estado}</td>
-                        <td><button data-id="${f.IdPrestacion}" class="btn btn-sm btn-soft-primary edit-item-btn verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
+                        <td><button data-id="${f.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
                         <td>${f.Finalizado === 1 ? '<input type="checkbox" disabed>' : `<input type="checkbox" name="Id" value="${f.IdPrestacion}" checked>`}</td>
                         
                     </tr>
@@ -618,32 +630,29 @@ $(document).ready(()=>{
         let fDesde = $('#fDesde').val(),
             fHasta = $('#fHasta').val(),
             NroPresEnviar = $('#NroPresEnviar').val(),
-            eEnviadoEnviar = $('#eEnviadoEnviar').val();
+            eEnviadoEnviar = $('#eEnviadoEnviar').val(),
+            NroPresRemito = $('#NroPresRemito').val();
 
         
-            $.get(getEnviarMapa, {desde: fDesde, hasta: fHasta, prestacion: NroPresEnviar, eEnviado: eEnviadoEnviar, mapa: MAPA})
+            $.get(getEnviarMapa, {desde: fDesde, hasta: fHasta, prestacion: NroPresEnviar, eEnviado: eEnviadoEnviar, mapa: MAPA, NroRemito: NroPresRemito})
                 .done(function(enviar){
 
                     $('#eenviarMapa').empty();
 
                     $.each(enviar, function(index, en){
                         
-                        let tipo = (en.TipoPrestacion ? '<span class="custom-badge nuevoAzulInverso">' + en.TipoPrestacion +'</span>' : '');
-
-                        let fechaOriginal = en.Fecha,
-                        partesFecha = fechaOriginal.split("-"),
-                        nuevaFecha = partesFecha[2] + "/" + partesFecha[1] + "/" + partesFecha[0];
+                        let nuevaFecha = fecha(en.Fecha);;
 
                         let contenido = `
                             <tr>
-                                <td>${en.IdPrestacion}</td>
+                                <td>${en.NroRemito}</td>
                                 <td>${nuevaFecha}</td>
-                                <td>${tipo}</td>
+                                <td>${en.IdPrestacion}</td>
                                 <td>${en.ApellidoPaciente} ${en.NombrePaciente}</td>
                                 <td>${en.Documento}</td>
-                                <td><button data-id="${en.IdPrestacion}" class="btn btn-sm btn-soft-primary edit-item-btn verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
-                                <td>${en.eEnviado === 1 ? '<input type="checkbox" disabled>' : `<input type="checkbox" name="Id" value="${en.IdPrestacion}" checked>`}</td>
-                                
+                                <td><span class="custom-badge original">${(en.eEnviado === 1 ? 'eEnviado':'No eEnviado')}</span></td>
+                                <td><button data-id="${en.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
+                                <td>${en.eEnviado === 1 ? '' : en.eEnviado === 0 && en.Finalizado === 1 && en.Cerrado === 1 && en.CInfo === 3 && [3,4,5].includes(en.CAdj) ? `<input type="checkbox" name="Id" value="${en.IdPrestacion}" checked>` : '<span class="custom-badge pequeno">Bloqueado</span>'}</td>     
                             </tr>
                         `;
                         $('#eenviarMapa').append(contenido);
@@ -693,6 +702,55 @@ $(document).ready(()=>{
 
     });
 
+    $(document).on('click', '.verItemPrestacion', function(){
+
+        let id = $(this).data('id');
+        window.open(lnkItemsprestaciones.replace('__item__', id), '_blank');
+    });
+
+    $(document).on('click', '.cambiarEstado', function(){
+
+        let id = $(this).data('id');
+        let status = $(this).data('estado');
+        checkEstado(id, status);
+    });
+
+    $(document).on('click', '.comentarioPrivado', function(){
+
+        let id = $(this).data('id'), nombre = $(this).data('nombre');
+
+        $('#mostrarIdPrestacion').text(id);
+        $('#mostrarNombre').text(nombre);
+    });
+
+    $(document).on('click', '.confirmarComentarioPriv', function(){
+
+        let comentario = $('#Comentario').val(), idprest = $('#mostrarIdPrestacion').text();
+
+        if(comentario === ''){
+            toastr.warning('La observación no puede estar vacía', 'Atención');
+            return;
+        }
+
+        $.post(savePrivComent, {_token: TOKEN, Comentario: comentario, IdEntidad: idprest})
+            .done(function(){
+
+                toastr.success('Perfecto', 'Se ha generado la observación correctamente');
+
+                setTimeout(() => {
+                    $('#privadoPrestaciones').empty();
+                    $('#comentarioPrivado').modal('hide');
+                    $("#Comentario").val("");
+                    listaComentariosPrivados(IDMAPA);
+                }, 3000);
+            })
+
+    });
+
+    $('#comentarioPrivado').on('hidden.bs.modal', function(){
+        $("#Comentario").val("");
+    });
+
     function quitarDuplicados(selector) {
         let seleccion = $(selector).val();
         let countSeleccion = $(selector + " option[value='" + seleccion + "']").length;
@@ -720,16 +778,6 @@ $(document).ready(()=>{
         }
     }
 
-    function actualizarTotales(totalEnProceso, totalConEstados, totalCerradas, totalFinalizados, totalEntregados, totalCompleta) {
-        let totales = total(totalEnProceso, totalConEstados, totalCerradas, totalFinalizados, totalEntregados, totalCompleta);
-    
-        if (isNaN(totales)) {
-            totales = 0;
-        }
-    
-        $('#total').text(totales);
-    }
-
     function getPrestaMapas(){
 
         $('#prestaMapa').empty();
@@ -738,8 +786,6 @@ $(document).ready(()=>{
             .done(function(presta){
 
                 $.each(presta, function(index, d) {
-
-                    let etapa = (d.Etapa === 'Completo' ? '<span style="text-align=center" class="custom-badge verde">Completo</span>' : '<span style="text-align=center" class="custom-badge rojo">Incompleto</span>');
 
                     let estado;
                     
@@ -752,15 +798,8 @@ $(document).ready(()=>{
                    } else if(d.Cerrado === 0 && d.Finalizado === 0) {
                         estado = '<span style="text-align=center" class="custom-badge gris">Abierto</span>';
                    }
-
-
-                   let eEnviado = (d.eEnviado === 1 ? '<span style="text-align=center" class="custom-badge verde"><i class="ri-checkbox-circle-line"></i></span>' : '<span style="text-align=center" class="custom-badge gris"><i class="ri-checkbox-circle-line"></i></span>');
-
-                   let facturado = (d.Facturado === 1 ? '<span style="text-align=center" class="custom-badge verde"><i class="ri-checkbox-circle-line"></i></span>' : '<span style="text-align=center" class="custom-badge amarillo"><i class="ri-information-line"></i></span>');
                 
-                   let fechaOriginal = d.Fecha;
-                   let partesFecha = fechaOriginal.split("-");
-                   let nuevaFecha = partesFecha[2] + "/" + partesFecha[1] + "/" + partesFecha[0];
+                   let nuevaFecha = fecha(d.Fecha);
 
                     let contenido = `
                         <tr>
@@ -768,11 +807,25 @@ $(document).ready(()=>{
                             <td>${nuevaFecha}</td>
                             <td>${d.Apellido} ${d.Nombre}</td>
                             <td>${d.NroCEE}</td>
-                            <td>${etapa}</td>
-                            <td>${estado}</td>
-                            <td>${eEnviado}</td>
-                            <td>${facturado}</td>
-                            <td><button data-id="${d.IdPrestacion}" class="btn btn-sm btn-soft-primary edit-item-btn verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
+                            <td class="text-center">
+                                <span class="custom-badge ${d.Etapa === 'Completo' ? 'verde': 'rojo'}">${d.Etapa}</span>
+                            </td>
+                            <td class="text-center">${estado}</td>
+                            <td class="text-center">
+                                <span style="text-align=center" class="custom-badge original"><i class="${d.eEnviado === 1 ? 'ri-check-line' : 'ri-close-line'}"></i></span>
+                            </td>
+                            <td class="text-center">
+                                <span style="text-align=center" class="custom-badge original"><i class="${d.Facturado === 1 ? 'ri-check-line' : 'ri-close-line'}"></i></span>
+                            </td>
+                            <td><span data-id="${d.IdPrestacion}" data-estado="prestacion" title="${d.Incompleto === 1 ? `Incompleto` : `Completo`}" class="cambiarEstado custom-badge ${d.Incompleto === 1 ? `rojo` : `verde`}"><i class="ri-lightbulb-line"></i></span></td>
+                            <td>
+                                <button data-id="${d.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal">
+                                    <i class="ri-search-eye-line"></i>
+                                </button>
+                                <button title="Observaciones privadas" type="button" class="iconGeneral btn btn-sm comentarioPrivado" data-bs-toggle="modal" data-bs-target="#comentarioPrivado"  data-id="${d.IdPrestacion}"data-nombre="${d.Apellido} ${d.Nombre}">
+                                    <i class="ri-chat-quote-line"></i>
+                                </button>
+                            </td>
                         </tr>`;
 
                     $('#prestaMapa').append(contenido);
@@ -826,17 +879,16 @@ $(document).ready(()=>{
                         estado = '<span style="text-align=center" class="custom-badge gris">Incompleto</span>';
                     }
     
-                    let fechaOriginal = c.Fecha,
-                        partesFecha = fechaOriginal.split("-"),
-                        nuevaFecha = partesFecha[2] + "/" + partesFecha[1] + "/" + partesFecha[0];
+                    let nuevaFecha = fecha(c.Fecha);
                     
                     let contenido = `
                         <tr>
-                            <td>${c.IdPrestacion}</td>
                             <td>${nuevaFecha}</td>
+                            <td>${c.IdPrestacion}</td>
                             <td>${c.ApellidoPaciente} ${c.NombrePaciente}</td>
+                            <td>${c.dni}</td>
                             <td>${estado}</td>
-                            <td><button data-id="${c.IdPrestacion}" class="btn btn-sm btn-soft-primary edit-item-btn verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
+                            <td><button data-id="${c.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
                             <td>${c.Cerrado === 1 ? '<input type="checkbox" disabled>' : `<input type="checkbox" name="Id" value="${c.IdPrestacion}" checked>`} </td>
                            
                         </tr>
@@ -888,17 +940,16 @@ $(document).ready(()=>{
                 estado = '<span style="text-align=center" class="custom-badge gris">Incompleto</span>';
             }
 
-            let fechaOriginal = f.Fecha,
-                partesFecha = fechaOriginal.split("-"),
-                nuevaFecha = partesFecha[2] + "/" + partesFecha[1] + "/" + partesFecha[0];
+            let nuevaFecha = fecha(f.Fecha);
             
             let contenido = `
                 <tr>
                     <td>${f.IdPrestacion}</td>
+                    <td>${f.NroRemito}</td>
                     <td>${nuevaFecha}</td>
                     <td>${f.ApellidoPaciente} ${f.NombrePaciente}</td>
                     <td>${estado}</td>
-                    <td><button data-id="${f.IdPrestacion}" class="btn btn-sm btn-soft-primary edit-item-btn verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
+                    <td><button data-id="${f.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
                     <td>${f.Finalizado === 1 ? '<input type="checkbox" disabled>' : `<input type="checkbox" name="Id" value="${f.IdPrestacion}" checked>`}</td>
                 </tr>
             `;
@@ -943,29 +994,133 @@ $(document).ready(()=>{
                         
                     let tipo = (en.TipoPrestacion ? '<span class="custom-badge nuevoAzulInverso">' + en.TipoPrestacion +'</span>' : '');
 
-                    let fechaOriginal = en.Fecha,
-                    partesFecha = fechaOriginal.split("-"),
-                    nuevaFecha = partesFecha[2] + "/" + partesFecha[1] + "/" + partesFecha[0];
+                    let nuevaFecha = fecha(en.Fecha);
 
                     let contenido = `
                         <tr>
-                            <td>${en.IdPrestacion}</td>
+                            <td>${en.NroRemito}</td>
                             <td>${nuevaFecha}</td>
-                            <td>${tipo}</td>
+                            <td>${en.IdPrestacion}</td>
                             <td>${en.ApellidoPaciente} ${en.NombrePaciente}</td>
                             <td>${en.Documento}</td>
-                            <td><button data-id="${en.IdPrestacion}" class="btn btn-sm btn-soft-primary edit-item-btn verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
-                            <td>${en.eEnviado === 1 ? '<input type="checkbox" disabled>' : `<input type="checkbox" name="Id" value="${en.IdPrestacion}" checked>`}</td>
+                        <td><span class="custom-badge original">${(en.eEnviado === 1 ? 'eEnviado':'No eEnviado')}</span></td>
+                            <td><button data-id="${en.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
+                            <td>${en.eEnviado === 1 ? '' : en.eEnviado === 0 && en.Finalizado === 1 && en.Cerrado === 1 && en.CInfo === 3 && [3,4,5].includes(en.CAdj) ? `<input type="checkbox" name="Id" value="${en.IdPrestacion}" checked>` : '<span class="custom-badge pequeno">Bloqueado</span>'}</td> 
                         </tr>
                     `;
                     $('#eenviarMapa').append(contenido);
-
+                    
                 });
 
             })
             .fail(function(xhr){
                 console.error(xhr);
                 toastr.error('Ha ocurrido un error. Actualice la página y el caso de que el problema persista, consulte con el administrador.', 'Error');
+            })
+    }
+
+    function checkEstado(id, who) {
+        let btn = $('.cambiarEstado[data-id="' + id + '"]');
+        btn.prop('disabled', true);
+    
+        let arr = { _token: TOKEN, Id: id, estado: who };
+    postData
+        $.post(changeEstado, arr)
+            .done(async function(response) {
+                let data = await response.result;
+
+                btn.prop('title', data.Incompleto === 1 ? 'Incompleto' : 'Completo')
+                   .removeClass()
+                   .addClass('cambiarEstado custom-badge ' + (data.Incompleto === 1 ? 'rojo' : 'verde'));
+            })
+            .always(function() {
+                btn.prop('disabled', false);
+            });
+    }
+
+    function listaComentariosPrivados(idmapa){
+
+        $('#privadoPrestaciones').empty();
+
+        $.get(privateComment, {Id: idmapa})
+            .done(async function(response){
+
+                let data = await response.result;
+
+                $.each(data, function(index, d){
+ 
+                    let contenido =  `
+                        <tr>
+                            <td>${fecha(d.Fecha)}</td>
+                            <td>${d.IdEntidad}</td>
+                            <td>${d.IdUsuario}</td>
+                            <td>${d.nombre_perfil}</td>
+                            <td>${d.Comentario}</td>
+                        </tr>
+                    `;
+
+                    $('#privadoPrestaciones').append(contenido);
+                });
+
+                $("#lstPrivPrestaciones").fancyTable({
+                    pagination: true,
+                    perPage: 15,
+                    searchable: false,
+                    globalSearch: false,
+                    sortable: false, 
+                });
+            })
+    }
+
+    function fecha(fe){
+
+        let partesFecha = fe.split("-");
+        return  partesFecha[2] + "/" + partesFecha[1] + "/" + partesFecha[0];
+    }
+
+    function listarRemitos(idmapa){
+
+        $('#remitoMapa').empty();
+
+        $.get(getRemito, {Id: idmapa})
+            .done(function(response){
+
+                let data = response.result;
+
+                $.each(data, function(index, r){
+
+                    let contenido = `
+                        <tr>
+                            <td>${r.NroCEE}</td>
+                            <td>${r.contadorRemitos}</td>
+                            <td>
+                                <span style="text-align=center" class="custom-badge ${r.Entregado === 1 ? 'verde':'rojo'}">${r.Entregado === 1 ? 'Entregado':'Sin Entregar'}</span>
+                            </td>
+                            <td>${r.Obs || '-'}</td>
+                            <td>
+                                <button data-remito="${r.Id}" type="button" class="btn botonGeneral entregarRemito" data-bs-toggle="modal" data-bs-target="#entregarModal">${r.Entregado === 1 ? 'Revertir Entrega':'Entregar'}</button> 
+                            </td>
+                            <td>
+                                <button data-remito="${r.NroCEE}" type="button" class="pdf btn iconGeneral" title="Generar reporte en Pdf">
+                                    <i class="ri-file-pdf-line"></i>
+                                </button>
+                                <button data-remito="${r.NroCEE }" type="button" class="excel btn iconGeneral" title="Generar reporte en Excel">
+                                    <i class="ri-file-excel-line"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+
+                    $('#remitoMapa').append(contenido);
+                });
+
+                $("#listaRemito").fancyTable({
+                    pagination: true,
+                    perPage: 15,
+                    searchable: false,
+                    globalSearch: false,
+                    sortable: false, 
+                });
             })
     }
 

@@ -11,7 +11,7 @@ $(document).ready(()=>{
                 ordering: false,
                 processing: true,
                 lengthChange: false,
-                pageLength: 15,
+                pageLength: 50,
                 responsive: true,
                 serverSide: true,
                 ajax: {
@@ -43,25 +43,31 @@ $(document).ready(()=>{
                         name: 'Nro',
                     },
                     {
-                        data: 'Art',
-                        name: 'Art',
+                        data: null,
+                        render: function(data){
+                            let cortar = data.Art;
+                            let recorte = cortar.substring(0,12) + "...";
+                            return `<span title="Art: ${data.Art} - ParaEmpresa: ${data.ParaEmpresa_Art} - Alias: ${data.NombreFantasia_Art}">${recorte}</span>`;
+                        }
                     },
                     {
-                        data: 'Empresa',
-                        name: 'Empresa',
+                        data: null,
+                        render: function(data){
+                            let cortar = data.Empresa;
+                            let recorte = cortar.substring(0,12) + "...";
+                            return `<span title="Empresa: ${data.Empresa} - ParaEmpresa: ${data.ParaEmpresa_Empresa} - Alias: ${data.NombreFantasia_Empresa}">${recorte}</span>`;
+                        }
                     },
                     {
                         data:null,
                         render: function(data){
                             
-                            let totalDias = getFecha(data.Fecha);
+                            let totalDias = getDias(data.Fecha);
                             let fecha = fechaNow(data.Fecha,'/',0);
 
-                            let style = (totalDias <= 0 ? 'rojo' : 'verde');
-
-                            let contenido = `<div style="text-align: center">
-                                                <span style="display:block">${fecha === 'NaN/NaN/NaN'? '-' : fecha}</span>
-                                                <span class="custom-badge ${style}">${(totalDias === 'NaN'? 0 : totalDias)}</span>
+                            let contenido = `<div style="text-align: center d-inline">
+                                                <span>${fecha === 'NaN/NaN/NaN'? '-' : fecha}</span>
+                                                <span class="custom-badge generalNegro">${(totalDias <= 0) ? 'Cerrado' : ''}</span>
                                             </div>`;
 
                             return contenido;
@@ -72,14 +78,12 @@ $(document).ready(()=>{
                         data: null,
                         render: function(data){
 
-                            let totalDias = getFecha(data.FechaE);
-                            let fecha = fechaNow(data.FechaE,'/',0);
-
-                            let style = (totalDias <= 0 && data.eEnviado === 1 ? 'violeta' : (totalDias <= 0 && data.eEnviado === 0? 'verde' : (totalDias <= 10 && totalDias >= 1 ? 'rojo' : (totalDias > 10 ? 'amarillo': 'violeta'))))
+                            let totalDias = getDias(data.FechaE),
+                                fecha = fechaNow(data.FechaE,'/',0);
 
                             let contenido = `<div style="text-align: center">
-                                                <span style="display:block">${(fecha === 'NaN/NaN/NaN'? 'Sin fecha' : fecha) }</span>
-                                                <span class="custom-badge ${style}">${(totalDias === 'NaN'? 0 : totalDias)}</span>
+                                                <span>${(fecha === 'NaN/NaN/NaN'? 'Sin fecha' : fecha) }</span>
+                                                <span class="custom-badge generalNegro">${(totalDias === NaN ? 0 : totalDias)}</span>
                                             </div>`;
                             return contenido;
                         }
@@ -87,17 +91,10 @@ $(document).ready(()=>{
                     {
                         data: null,
                         render: function(data){
-                            return `<div style="text-align: center">${data.contadorPrestaciones}</div>`;
+
+                            return `<div style="text-align: center">${data.contadorPrestaciones}/${data.contadorPacientes === 0 && data.contadorPrestaciones !== 0 ? data.contadorPrestaciones : data.contadorPacientes}</div>`;
                         } 
 
-                    },
-                    {
-                        data: null,
-                        render: function(data){
-                            
-                            let total = data.contadorPacientes - data.contadorPrestaciones;
-                            return `<div style="text-align: center">${total}</div>`;
-                        }
                     },
                     {
                         data: null,
@@ -105,21 +102,21 @@ $(document).ready(()=>{
                                
                                 if(data.estado !== undefined){
                                     listaMapas
-                                    return '<span class="badge badge-soft-success text-uppercase">' + data.estado + '</span>';
+                                    return '<span class="custom-badge generalNegro">' + data.estado + '</span>';
                                 }else{
 
                                     if(data.eEnviado === 1){
-                                        return '<span class="badge badge-soft-success text-uppercase">eEnviado</span>';
+                                        return '<span class="custom-badge generalNegro">eEnviado</span>';
                                     }else if(data.Cerrado === 0 && data.Finalizado === 0){
-                                        return '<span class="badge badge-soft-success text-uppercase">Abierto</span>';
+                                        return '<span class="custom-badge generalNegro">Abierto</span>';
                                     }else if(data.Cerrado === 1 && data.eEnviado === 1 && data.Entregado === 1){
-                                        return '<span class="badge badge-soft-success text-uppercase">Terminado</span>';
+                                        return '<span class="custom-badge generalNegro">Terminado</span>';
                                     }else if(data.Cerrado === 1){
-                                        return '<span class="badge badge-soft-success text-uppercase">Cerrado</span>';
+                                        return '<span class="custom-badge generalNegro">Cerrado</span>';
                                     }else if(data.eEnviado === 0){
-                                        return '<span class="badge badge-soft-success text-uppercase">No eEnviado</span>';
+                                        return '<span class="custom-badge generalNegro">No eEnviado</span>';
                                     }else{
-                                        return '<span class="badge badge-soft-success text-uppercase">En proceso</span>';
+                                        return '<span class="custom-badge generalNegro">En proceso</span>';
                                     }
                                 }
                                 
@@ -155,12 +152,30 @@ $(document).ready(()=>{
                         }
                     },
                     info: "Mostrando _START_ a _END_ de _TOTAL_ de mapas",
+                },
+                createdRow: function (row, data, dataIndex) {
+
+                    let totalDias = getDias(data.FechaE);
+
+                    if (totalDias >= -15 && totalDias <= 11 && data.eEnviado === 0) {
+                        resultado = $(row).addClass('fondo-amarillo');
+                    } else if (totalDias >= -10 && totalDias <= 1 && data.eEnviado === 0) {
+                        resultado = $(row).addClass('fondo-naranja');
+                    } else if (totalDias <= 0 && data.eEnviado === 0) {
+                        resultado = $(row).addClass('fondo-rojo');
+                    } else if (data.eEnviado === 1) {
+                        resultado = $(row).addClass('fondo-verde');
+                    }else {
+                        resultado = $(row).addClass('fondo-blanco');
+                    }
+                
+                    return resultado;
                 }
             });
     
         });
 
-        function getFecha(fecha){
+        function getDias(fecha){
 
             let fechaActual = new Date();
             let fechaLimiteAdmision = new Date(fecha);

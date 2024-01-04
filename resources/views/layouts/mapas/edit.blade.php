@@ -5,17 +5,14 @@
 @section('content')
 
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-    <h4 class="mb-sm-0">Edición mapa</h4>
+    <h4 class="mb-sm-0">Mapas</h4>
 
     <div class="page-title-right">
-        <ol class="breadcrumb m-0">
-            <li class="breadcrumb-item"><a href="{{ route('mapas.index') }}">Mapas</a></li>
-            <li class="breadcrumb-item active">Editar Mapa</li>
-        </ol>
+
     </div>
 </div>
 
-<h4 class="mb-5 mt-4">Mapa ART <span class="custom-badge azul">{{$mapa->Nro }}</span> {{ $art }} - {{ $empresa }}</h4>
+<h4 class="mb-4 mt-3"></span> {{ $mapa->artMapa->RazonSocial }} | {{ $mapa->empresaMapa->RazonSocial }} <span class="custom-badge original">{{$mapa->Nro }}</h4>
 
 <div class="card-header">
     <ul class="nav nav-tabs-custom rounded card-header-tabs border-bottom-0" role="tablist">
@@ -36,7 +33,7 @@
         </li>
         <li class="nav-item" role="presentation">
             <a class="nav-link" data-bs-toggle="tab" href="#cerrar" role="tab" aria-selected="false" tabindex="-1">
-                <span class="custom-badge azul">
+                <span class="custom-badge original">
                     <i class="ri-lock-2-line"></i>
                     Cerrar
                 </span>
@@ -44,7 +41,7 @@
         </li>
         <li class="nav-item" role="presentation">
             <a class="nav-link" data-bs-toggle="tab" href="#finalizar" role="tab" aria-selected="false" tabindex="-1">
-                <span class="custom-badge nuevoAmarillo">
+                <span class="custom-badge original">
                     <i class="ri-lock-2-line"></i>
                     Finalizar
                 </span>
@@ -52,7 +49,7 @@
         </li>
         <li class="nav-item" role="presentation">
             <a class="nav-link text-info" data-bs-toggle="tab" href="#eenviar" role="tab" aria-selected="false" tabindex="-1">
-                <span class="custom-badge nuevoAzul">
+                <span class="custom-badge original">
                     <i class="ri-lock-2-line"></i>
                     eEnviar
                 </span>
@@ -61,81 +58,83 @@
     </ul>
 </div>
 
-<div class="card-body p-4">
+<div class="card-body p-2">
     <div class="tab-content">
 
         <div class="tab-pane active" id="mapasitem" role="tabpanel">
             <div id="messageMapas"></div>
             <form id="form-update">
                 <div class="row">
-                
-                    <div class="col-2 p-2 mb-2">
-                            <label for="Nro" class="form-label">ART</label>
+                    <div class="col-4 box-information">
+
+                        <div class="input-group input-group-sm mb-2 size80porcent">
+                            <span class="input-group-text">Cod Mapa&nbsp;<span class="required">(*)</span></span>
                             <input type="hidden" id="Id" value="{{ $mapa->Id }}">
                             <input type="text" class="form-control" id="Nro" name="Nro" value="{{ $mapa->Nro ?? '' }}">
                             <input type="hidden" id="verificador" value="{{ $mapa->Nro ?? '' }}">
-                    </div>
-                    
-                    <div class="col-4 p-2 mb-2">
-                        <label for="ART" class="form-label"> <br>  </label>
-                        <select class="form-select" name="IdART" id="IdART">
-                            @if(!empty($mapa->IdART))
-                                <option value="{{ $mapa->IdART }}">{{ $art }}</option>
-                            @endif  
-                        </select>
-                    </div>
+                        </div>
 
-                    <div class="col-6 p-2 mb-2">
-                        <label for="Empresa" class="form-label">Empresa</label>
-                        <select class="form-select" id="IdEmpresa" name="IdEmpresa">
-                            @if(!empty($mapa->IdEMpresa))
-                                <option value="{{ $mapa->IdEMpresa}}">{{ $empresa }}</option>
-                            @endif
-                        </select>
+                        <div class="input-group input-group-sm mb-2 selectSize">
+                            <span class="input-group-text">ART&nbsp;<span class="required">(*)</span></span>
+                            <select class="form-select" name="IdART" id="IdART">
+                                @if(!empty($mapa->IdART))
+                                    <option value="{{ $mapa->IdART }}">{{ $mapa->artMapa->RazonSocial }}</option>
+                                @endif  
+                            </select>
+                        </div>
+
+                        <div class="input-group input-group-sm mb-2 selectSize">
+                            <span class="input-group-text">Empresa&nbsp;<span class="required">(*)</span></span>
+                            <select class="form-select" id="IdEmpresa" name="IdEmpresa">
+                                @if(!empty($mapa->IdEMpresa))
+                                    <option value="{{ $mapa->IdEMpresa}}">{{ $mapa->empresaMapa->RazonSocial }}</option>
+                                @endif
+                            </select>
+                        </div>
+
+                        <div class="input-group input-group-sm size80porcent">
+                            <span class="input-group-text">Cant Total de Pacientes&nbsp;<span class="required">(*)</span></span>
+                            <input type="number" class="form-control" id="Cpacientes" name="Cpacientes" value="{{ $mapa->Cpacientes }}">
+                        </div>
+
                     </div>
+  
+                    <div class="col-4 box-information">
+                        <div class="input-group input-group-sm mb-2 size80porcent">
+                            <span class="input-group-text">Fecha de Corte&nbsp;<span class="required">(*)</span></span>
+                            <input type="date" class="form-control" id="FechaEdicion" name="FechaEdicion" value="{{ $mapa->Fecha }}">
+                        </div>
 
-                    <div class="col-6 p-2 mb-2">
-                        <label for="Fecha" class="form-label">Fecha de Corte</label>
-                        <input type="date" class="form-control" id="Fecha" name="Fecha" value="{{ $mapa->Fecha }}">
-                    </div>
+                        <div class="input-group input-group-sm mb-2 size80porcent">
+                            <span class="input-group-text">Fecha de Corte&nbsp;<span class="required">(*)</span></span>
+                            <input type="date" class="form-control" id="FechaEEdicion" name="FechaEEdicion" value="{{ $mapa->FechaE }}">
+                        </div>
 
-                    <div class="col-6 p-2 mb-2">
-                        <label for="FechaE" class="form-label">Fecha de Entrega</label>
-                        <input type="date" class="form-control" id="FechaE" name="FechaE" value="{{ $mapa->FechaE }}">
-                    </div>
-
-                    <div class="col-6 p-2 mb-2">
-                        <label for="Estado" class="form-label">Estado </label>
-                        <select class="form-select" name="Estado" id="Estado">
-                            <option value="{{ $mapa->Inactivo }}" selected>{{ ($mapa->Inactivo == 0? 'Activo' : 'Inactivo') }}</option>
-                            <option value="0">Activo</option>
-                            <option value="1">Inactivo</option>
-                        </select>
-                    </div>
-
-
-                    <div class="col-6 p-2 mb-2">
-                        <label for="Cpacientes" class="form-label">Cantidad de pacientes </label>
-                        <input type="number" class="form-control" id="Cpacientes" name="Cpacientes" value="{{ $mapa->Cpacientes }}">
-                    </div>
-
-                    <div class="col-12 p-2 mb-2">
-                        <label for="Observaciones" class="form-label">Observaciones </label>
-                        <textarea class="form-control" name="Obs" id="Obs" rows="4">{{ $mapa->Obs }}</textarea>
-                    </div>
-
-                    <div class="col-lg-12 mt-3">
-                        <div class="hstack gap-2 justify-content-end">
-                            
-                            <button type="button" id="updateMapa" class="btn botonGeneral">Actualizar</button>
+                        <div class="input-group input-group-sm  size80porcent">
+                            <span class="input-group-text">Fecha de Corte&nbsp;<span class="required">(*)</span></span>
+                            <select class="form-select" name="Estado" id="Estado">
+                                <option value="{{ $mapa->Inactivo }}" selected>{{ ($mapa->Inactivo == 0? 'Activo' : 'Inactivo') }}</option>
+                                <option value="0">Activo</option>
+                                <option value="1">Inactivo</option>
+                            </select>
                         </div>
                     </div>
 
+                    <div class="col-3 box-information">
+                        <div class="input-group input-group-sm mb-2">
+                            <span class="input-group-text">Observaciones</span>
+                            <textarea class="form-control" name="Obs" id="Obs" rows="8">{{ $mapa->Obs }}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="col-12 box-information mt-2 text-center">
+                        <button type="button" id="updateMapa" class="btn botonGeneral">Actualizar</button>
+                    </div>
                 </div>
             </form>
 
             <div class="table-responsive table-card mt-3 mb-1">
-                <table id="listaMapas" class="display table table-bordered" style="width:100%">
+                <table id="listaMapas" class="display table table-bordered text-center" style="width:100%">
                     <thead class="table-light">
                         <tr>
                             <th>En proceso</th>
@@ -144,17 +143,19 @@
                             <th>Cerradas</th>
                             <th>Finalizadas</th>
                             <th>Entregadas</th>
-                            <th>Total</th>
+                            <th>Presentes</th>
+                            <th>Ausentes</th>
                         </tr>
                     </thead>
                     <tbody class="list form-check-all">
-                        <td id="totalEnProceso">{{ $totalEnProceso }}</td>
-                        <td id="totalConEstados">{{ $conteo->conEstados }}</td>
-                        <td id="totalCompleta">{{ $conteo->completa }}</td>
-                        <td id="totalCerradas">{{ $conteo->cerradas }}</td>
-                        <td id="totalFinalizados">{{ $conteo->finalizados }}</td>
-                        <td id="totalEntregados">{{ $conteo->entregados }}</td>
-                        <td id="total"></td>
+                        <td id="totalEnProceso">{{ $enProceso }}</td>
+                        <td id="totalConEstados">{{ $conEstado }}</td>
+                        <td id="totalCompleta">{{ $completas }}</td>
+                        <td id="totalCerradas">{{ $cerradas }}</td>
+                        <td id="totalFinalizados">{{ $finalizados }}</td>
+                        <td id="totalEntregados">{{ $entregados }}</td>
+                        <td id="Presentes">{{ $presentes }}</td>
+                        <td id="ausentes">{{ $ausentes }}</td>
                     </tbody>
                 </table>
             </div>
@@ -211,7 +212,7 @@
                     <p style="font-size: small"><span class="custom-badge rojo">Incompletas</span> Son todas las prestaciones con algún exámen sin efectuar o informar.</p>
                 </div>
                 <div class="col-sm-3" style="text-align: right;">
-                    <button type="button" class="btn btn-success buscarPresMapa">Buscar</button>
+                    <button type="button" class="btn botonGeneral buscarPresMapa">Buscar</button>
                 </div>
             </div>
 
@@ -225,8 +226,9 @@
                             <th class="sort">Remito</th>
                             <th class="sort">Etapas</th>
                             <th class="sort">Estado</th>
-                            <th class="sort">eEnviado</th>
-                            <th class="sort">Facturado</th> 
+                            <th>eEnviado</th>
+                            <th>Facturado</th> 
+                            <th>INC</th>
                             <th>Ver</th>
                         </tr>
                     </thead>
@@ -234,6 +236,33 @@
     
                     </tbody>
                 </table>
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h4 class="card-title mb-0">Observaciones privadas</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive table-card mt-3 mb-1">
+                                    <table id="lstPrivPrestaciones" class="display table table-bordered" style="100%">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th class="sort">Fecha</th>
+                                                <th class="sort">Nro prestación</th>
+                                                <th>Usuario</th>
+                                                <th>Rol</th>
+                                                <th>Comentario</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="list form-check-all" id="privadoPrestaciones">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -241,37 +270,19 @@
         <div class="tab-pane" id="remitos" role="tabpanel">
             
             <div class="table-responsive table-card mt-3 mb-1">
-                <table id="listaMapas" class="display table table-bordered" style="width:100%">
+                <table id="listaRemito" class="display table table-bordered" style="width:100%">
                     <thead class="table-light">
                         <tr>
-                            <th>Nro de Remito</th>
-                            <th>Cantidad de prestaciones</th>
-                            <th>Descarga</th>
-                            <th>Entrega</th>
+                            <th class="sort">Remito Nro.</th>
+                            <th>Cant Prestaciones</th>
+                            <th>Estado</th>
+                            <th>Obs.de Entrega</th>
+                            <th>Acciones</th>
+                            <th>Descargar</th>
                         </tr>
                     </thead>
-                    <tbody class="list form-check-all">
-                        @forelse($remitos as $remito)
-                            <tr>
-                                <td>{{ $remito->NroCEE }}</td>
-                                <td>{{ $remito->contadorRemitos }}</td>
-                                <td>
-                                    <button data-remito="{{ $remito->NroCEE }}" type="button" class="pdf btn btn-soft-secondary" title="Generar reporte en Pdf">
-                                        <i class="ri-file-pdf-line"></i>
-                                    </button>
-                                    <button data-remito="{{ $remito->NroCEE }}" type="button" class="excel btn btn-soft-success" title="Generar reporte en Excel">
-                                        <i class="ri-file-excel-line"></i>
-                                    </button>
-                                </td>
-                                <td> 
-                                    <button data-remito="{{ $remito->NroCEE }}" type="button" class="btn boton-azul entregarRemito" data-bs-toggle="modal" data-bs-target="#entregarModal">Entregar</button> 
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td>No hay remitos para este mapa</td>
-                            </tr>
-                        @endforelse
+                    <tbody class="list form-check-all" id="remitoMapa">
+                  
                     </tbody>
                 </table>
             </div>
@@ -286,11 +297,6 @@
                     <small>Presione ENTER para buscar</small>
                 </div>
     
-                <div class="col-sm-4 mb-3">
-                    <label for="NroRemitoCerrar" class="form-label font-weight-bold"><strong>Nro Remito:</strong></label>
-                    <input type="number" class="form-control" id="NroRemitoCerrar" name="NroRemitoCerrar" placeholder="Buscar por nro de remito">
-                    <small>Presione ENTER para buscar</small>
-                </div>
 
                 <div class="col-sm-4 mb-3">
                     <label for="EstadoCerrar" class="form-label font-weight-bold"><strong>Estado:</strong></label>
@@ -317,10 +323,11 @@
                 <table id="listaCerrar" class="display table table-bordered" style="width:100%">
                     <thead class="table-light">
                         <tr>
-                            <th class="sort">Nro</th>
                             <th class="sort">Fecha</th>
+                            <th>Nro. Prestación</th>
                             <th class="sort">Paciente</th>
-                            <th class="sort">Estado</th>
+                            <th>DNI</th>
+                            <th>Estado</th>
                             <th>Ver</th>
                             <th><input type="checkbox" id="checkAll" name="Id"></th>
                         </tr>
@@ -365,7 +372,8 @@
                 <table id="listaFinalizar" class="display table table-bordered" style="width:100%">
                     <thead class="table-light">
                         <tr>
-                            <th class="sort">Nro</th>
+                            <th class="sort">Prestación</th>
+                            <th class="sort">Remito Nro.</th>
                             <th class="sort">Fecha</th>
                             <th class="sort">Paciente</th>
                             <th class="sort">Estado</th>
@@ -405,14 +413,14 @@
                 </div>
 
                 <div class="col-sm-2 mb-3">
-                    <label for="eEnviadoEnviar" class="form-label font-weight-bold"><br /></label>
-                    <button class="btn btn-primary waves-effect waves-light btn-sm" type="button" id="vistaPreviaEnviar" style="display:block;"><i class="ri-file-text-line"></i> Vista Previa</button>
-                    <button class="btn boton-verde waves-effect waves-light btn-sm mt-1" type="button" id="exportarEnviar"><i class="ri-file-add-line"></i> Exportar</button>
+                    <label for="NroPresRemito" class="form-label font-weight-bold"><strong>Nro Remito:</strong></label>
+                    <input type="number" class="form-control" id="NroPresRemito" name="NroPresRemito" placeholder="Buscar por nro de remito">
                 </div>
 
                 <div class="col-sm-1 mb-3">
-                    <label for="eEnviadoEnviar" class="form-label font-weight-bold"><br /></label>
-                    <button id="buscarEnviar" type="button" class="btn btn-success waves-effect waves-light"> <i class="ri-search-2-line"></i> Buscar</button>
+                    <label for="buscarEnviar" class="form-label font-weight-bold"><br /></label>
+                    <button id="buscarEnviar" type="button" class="btn botonGeneral"> 
+                        <i class="ri-search-2-line"></i> Buscar</button>
                 </div>   
             </div>
 
@@ -420,9 +428,12 @@
                 <div class="col-sm-8" style="text-align: left;">
                     <p style="font-size: small"> <span class="custom-badge nuevoAzul">eEnviar</span> solo las prestaciones Cerradas con todos los exámenes cerrados, adjuntados e informados (incluso sus anexos).</p>
                     <p style="font-size: small">Al presional el botón <span class="custom-badge nuevoAzul">eEnviar</span>se exportará el eEstudio a la carpeta designada en <strong>Mi Empresa</strong> y se marcará la Prestación como eEnviada</p>
+                    <p style="font-size: small">Si el estado es <span class="custom-badge nuevoAzul">No eEnviado</span> y <span class="custom-badge nuevoAzul">Bloqueado</span> es porque la prestación no se encuentra cerrada, finalizada y correctamente efectuada e informada.</p>
                 </div>
                 <div class="col-sm-4" style="text-align: right;">
-                    <button type="button" class="btn custom-badge nuevoAzulInverso eEnviarDatos" data-bs-toggle="modal" data-bs-target="#eEnviarModal" data-remito="{{ $remito->NroCEE ?? ''}}">
+                    <button class="btn botonGeneral" type="button" id="vistaPreviaEnviar" ><i class="ri-file-text-line"></i> Vista Previa</button>
+                    <button class="btn botonGeneral" type="button" id="exportarEnviar"><i class="ri-file-add-line"></i> Exportar</button>
+                    <button type="button" class="btn botonGeneral eEnviarDatos" data-bs-toggle="modal" data-bs-target="#eEnviarModal" data-remito="{{ $remito->NroCEE ?? ''}}">
                         <i class="ri-mail-send-line"></i> eEnviar    
                     </button>
                 </div>
@@ -432,11 +443,12 @@
                 <table id="listaeenviar" class="display table table-bordered" style="width:100%">
                     <thead class="table-light">
                         <tr>
-                            <th class="sort">Nro</th>
+                            <th class="sort">Remito Nro</th>
                             <th class="sort">Fecha</th>
-                            <th class="sort">Tipo</th>
+                            <th class="sort">Nro Prestación</th>
                             <th class="sort">Paciente</th>
                             <th class="sort">DNI</th>
+                            <th class="sort">Estado</th>
                             <th>Ver</th>
                             <th><input type="checkbox" id="checkAll" name="Id"><th>
                         </tr>
@@ -494,8 +506,8 @@
                        <p><strong>Paciente: </strong><span id="nomPaciente"></span> <span id="apePaciente"></span> | <span id="tipoDocPaciente"></span> <span id="documentoPaciente"></span></p>
                     </div>
                     <div class="col-sm-4" style="text-align: right;">
-                        <button class="btn btn-sm btn-primary"><i class="ri-printer-line"></i> Imprimir</button>
-                        <button class="btn btn-sm boton-verde"><i class="ri-file-text-line"></i> eEstudios</button>
+                        <button class="btn btn-sm botonGeneral"><i class="ri-printer-line"></i> Imprimir</button>
+                        <button class="btn btn-sm botonGeneral"><i class="ri-file-text-line"></i> e-Estudio</button>
                     </div>
                 </div>
 
@@ -504,11 +516,14 @@
                         <thead class="table-light">
                             <tr>
                                 <th class="sort">Examen</th>
-                                <th class="sort">Estado</th>
-                                <th class="sort">Proveedor</th>
+                                <th class="sort">Especialidad</th>
                                 <th class="sort">Efector</th>
+                                <th style="background-color: #eeeeee"></th>
+                                <th style="background-color: #eeeeee"></th>
                                 <th class="sort">Informador</th>
-                                <th></th>
+                                <th style="background-color: #eeeeee"></th>
+                                <th>INC</th>
+                                <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody class="list form-check-all" id="examenMapa">
@@ -534,17 +549,20 @@
                 <p style="text-align:center !important" class="text-muted mb-4">Puede seleccionar el envío del eEstudio por correo electrónico a la ART, a la Empresa o a ambos.</p>
 
                 <div class="row mb-4 text-center">
-                    <div class="col-sm-6" style="padding-left: 20%">
-                        <input  class="form-check-input" type="checkbox" id="art" checked> ART
+                    <div class="col-sm-4" style="padding-left: 10%">
+                        <input  class="form-check-input" type="checkbox" id="art"> ART
                     </div>
-                    <div class="col-sm-6" style="padding-right: 20%">
-                        <input class="form-check-input" type="checkbox" id="empresa" checked> Empresa 
+                    <div class="col-sm-4" style="padding-right: 10%">
+                        <input class="form-check-input" type="checkbox" id="empresa"> Empresa 
+                    </div>
+                    <div class="col-sm-4" style="padding-right: 10%">
+                        <input class="form-check-input" type="checkbox" id="empresa"> Adjuntar 
                     </div>
                 </div>
 
                 <div class="d-flex justify-content-center">
-                    <button type="button" class="btn btn-soft-danger me-2" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-soft-success saveEnviar">e-Enviar</button>
+                    <button type="button" class="btn botonGeneral me-2" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn botonGeneral saveEnviar">e-Enviar</button>
                 </div>
 
             </div>
@@ -553,6 +571,28 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+
+<div id="comentarioPrivado" class="modal fadeInUp" tabindex="-1" aria-labelledby="myModalLabel" aria-hidde="true" style="display: none">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel"> Observación privada | Prestación <span class="custom-badge original" id="mostrarIdPrestacion"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>
+            </div>
+            <div class="modal-body" class="text-center p-3">
+                <div class="modal-body">
+                    <h5>Paciente: <span class="custom-badge original" id="mostrarNombre"></span></h5>
+                    <p>Escriba un comentario de la cuestión o situación:</p>
+                   <textarea name="Comentario" id="Comentario" class="form-control" rows="10"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn botonGeneral" id="reset" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn botonGeneral confirmarComentarioPriv">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
 //Rutas
@@ -576,9 +616,16 @@ const getPrestaciones = "{{ route('getPrestaciones') }}";
 const getCerrar = "{{ route('getCerrar') }}";
 const getFMapa = "{{ route('getFMapa') }}";
 const enviarMapa = "{{ route('enviarMapa') }}";
+const changeEstado = "{{ route('changeEstado') }}";
+const lnkItemsprestaciones = "{{ route('itemsprestaciones.edit', ['itemsprestacione' => '__item__']) }}";
+const privateComment = "{{ route('comentariosPriv') }}";
+const savePrivComent = "{{ route('savePrivComent') }}";
+const getRemito = "{{ route('getRemito') }}";
 //Extras
 const TOKEN = "{{ csrf_token() }}";
 const MAPA = "{{ $mapa->Nro }}";
+const IDMAPA = "{{ $mapa->Id }}";
+
 </script>
 
 @push('styles')
@@ -588,15 +635,9 @@ const MAPA = "{{ $mapa->Nro }}";
 @endpush
 
 @push('scripts')
-<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
-<script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
 
 <script src="{{ asset('js/jquery.validate.min.js') }}"></script>
 <script src="{{ asset('js/mapas/edit.js')}}?v={{ time() }}"></script>

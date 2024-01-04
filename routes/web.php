@@ -17,7 +17,7 @@ use App\Http\Controllers\ItemPrestacionesController;
 use App\Http\Controllers\UtilityController;
 use App\Http\Controllers\FacturasVentaController;
 use App\Http\Controllers\NoticiasController;
-use App\Models\Examen;
+use App\Http\Controllers\PrestacionesObsFasesController;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Route;
 
@@ -158,6 +158,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('getFinalizar', [MapasController::class, 'getFinalizar'])->name('getFinalizar');
     Route::get('getFMapa', [MapasController::class, 'getFinalizar'])->name('getFMapa');
     Route::get('enviarMapa', [MapasController::class, 'geteEnviar'])->name('enviarMapa');
+    Route::post('changeEstado', [MapasController::class, 'changeEstado'])->name('changeEstado');
+    Route::get('getRemito', [MapasController::class, 'getRemito'])->name('getRemito');
 
     //Rutas de Profesionales
     Route::resource('profesionales', ProfesionalesController::class);
@@ -204,4 +206,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('noticias', NoticiasController::class);
     Route::post('updateNoticia', [NoticiasController::class, 'update'])->name('updateNoticia');
 
+    //Rutas de Observaciones de Fases de Prestaciones
+    Route::get('comentariosPriv', [PrestacionesObsFasesController::class, 'comentariosPriv'])->name('comentariosPriv');
+    Route::post('savePrivComent', [PrestacionesObsFasesController::class, 'addComentario'])->name('savePrivComent');
 });

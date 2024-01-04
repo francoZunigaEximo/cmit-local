@@ -34,7 +34,7 @@ $(document).ready(()=>{
                     {
                         data: null,
                         render: function(data){
-                            return `<a href="${location.href}/${data.Id}/edit/"><strong>${data.NombreCompleto}</strong></a>`;
+                            return `<strong>${data.NombreCompleto}</strong>`;
                         }
                     },
                     {
@@ -57,11 +57,13 @@ $(document).ready(()=>{
                     {
                         data: null,
                         render: function(data){
+
+                            let editar = `<a href="${location.href}/${data.Id}/edit/"><button type="button" class="btn btn-sm iconGeneral edit-item-btn"><i class="ri-search-eye-line"></i></button></a>`;
                             let eliminar = `
                             <button data-id="${data.Id}" data-nombrecompleto="${data.NombreCompleto}" type="button" class="btn btn-sm downPaciente iconGeneral" title="Baja a paciente"><i class="ri-delete-bin-2-line"></i></button>
                             `;
         
-                            return eliminar;
+                            return editar + ' ' + eliminar;
                         },
                     }
                 ],

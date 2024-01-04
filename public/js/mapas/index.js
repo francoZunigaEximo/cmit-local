@@ -1,16 +1,22 @@
 $(document).ready(()=>{
 
+    toastr.options = {
+        closeButton: true,   
+        progressBar: true,     
+        timeOut: 3000,        
+    };
+
     //Botón reset en el buscador
     $('#reset').click(function(){ 
         $('#form-index :input, #form-index select').val('');
+        $('#Estado').val([]).trigger('change.select2');
+        $('#Vencimiento').val([]).trigger('change.select2');
         $('#Ver').val('activo');
-        $('#Estado').val('NOeEnviado');
+        $('#listaMapas').DataTable().clear().destroy();
     });
 
     //Datos Default
     $('#Ver').val('activo');
-    $('#Estado').val('NOeEnviado');
-
 
     //Exportar Excel a clientes
     $('#excel').click(function(e) {
@@ -58,13 +64,10 @@ $(document).ready(()=>{
                 });
             }
         } else {
-            swal('Error', 'Debes seleccionar al menos un mapa para exportar.', 'error');
+            toastr.warning('Error', 'Debes seleccionar al menos un mapa para exportar.');
         }
-
     });
 
-
-    //$(document).off('click', '.deleteMapa');
     $(document).on('click','.deleteMapa', function(){
         let id = $(this).data('id');
         
@@ -76,25 +79,16 @@ $(document).ready(()=>{
                 Id: id
             },
             success: function(){
-                toastr.options = {
-                    closeButton: true,   
-                    progressBar: true,    
-                    timeOut: 3000,        
-                };
+
                 toastr.success(`Se ha elimnado correctamente el mapa`, `Eliminar mapa`);
                 $('#listaMapas').DataTable();
                 $('#listaMapas').DataTable().draw(false);
             },
             error: function(xhr){
                 console.error(xhr);
-                swal('Error', 'Se ha producido un error. Actualice la página y si el problema persiste, consulte con el administrador', 'error');
+                toastr.error('Error', 'Se ha producido un error. Actualice la página y si el problema persiste, consulte con el administrador');
             }
         });
-
     });
-
-    
-
-       
 
 });
