@@ -1024,7 +1024,7 @@ $(document).ready(()=>{
         btn.prop('disabled', true);
     
         let arr = { _token: TOKEN, Id: id, estado: who };
-    postData
+
         $.post(changeEstado, arr)
             .done(async function(response) {
                 let data = await response.result;
