@@ -150,7 +150,13 @@
                             <button title="Filtros avanzados" class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#filtrosAvanzados" aria-expanded="false" aria-controls="filtrosAvanzados">
                                 <i class="ri-filter-2-line"></i>
                             </button>
-                            <button type="button" id="excel" class="btn iconGeneral" title="Generar reporte en Excel">
+                            <button type="button" class="btn iconGeneral" title="Reporte Simple" onclick="exportExcel('simple')">
+                                <i class="ri-file-excel-line"></i>
+                            </button>
+                            <button type="button" class="btn iconGeneral" title="Reporte Detallado" onclick="exportExcel('detallado')">
+                                <i class="ri-file-excel-line"></i>
+                            </button>
+                            <button type="button" class="btn iconGeneral" title="Reporte Completo" onclick="exportExcel('completo')">
                                 <i class="ri-file-excel-line"></i>
                             </button>
                         </div>
@@ -257,38 +263,12 @@ const ROUTE = "{{ route('prestaciones.index') }}";
 const SEARCH = "{{ route('searchPrestaciones') }}";
 const porcentajeExamen = "{{ route('porcentajeExamen') }}";
 
-$('#excel').click(function(e) {
-    e.preventDefault();
+function exportExcel(tipo) {
 
-    if ($.fn.DataTable.isDataTable('#listaPrestaciones')) {
-        $('#listaPrestaciones').DataTable().destroy();
-    }
-
-    var listaPrestaciones = $('#listaPrestaciones').DataTable({
-        searching: false,
-        lengthChange: false,
-        language: {
-                processing: "Cargando listado de prestaciones de CMIT",
-                emptyTable: "No hay prestaciones con los datos buscados",
-                paginate: {
-                    first: "Primera",
-                    previous: "Anterior",
-                    next: "Siguiente",
-                    last: "Última"
-                },
-                aria: {
-                    paginate: {
-                        first: "Primera",
-                        previous: "Anterior",
-                        next: "Siguiente",
-                        last: "Última"
-                    }
-                },
-                info: "Mostrando _START_ a _END_ de _TOTAL_ de prestaciones",
-            },
-    });
-
+    var listaPrestaciones = $('#listaPrestaciones').DataTable();
+    
     if (!listaPrestaciones.data().any() ) {
+        $('#listaPrestaciones').DataTable().destroy();
         toastr.info('No existen registros para exportar', 'Atención');
         return;
     }
@@ -327,12 +307,13 @@ $('#excel').click(function(e) {
         }
     }
 
-    var exportExcel = "{{ route('excelPrestaciones', ['ids' =>  'idsContent', 'filters' => 'filtersContent']) }}";
+    var exportExcel = "{{ route('excelPrestaciones', ['ids' =>  'idsContent', 'filters' => 'filtersContent', 'tipo' => 'tipoContent']) }}";
     exportExcel     = exportExcel.replace('idsContent', ids);
     exportExcel     = exportExcel.replace('filtersContent', filters);
+    exportExcel     = exportExcel.replace('tipoContent', tipo);
     exportExcel     = exportExcel.replaceAll('amp;', '');
     window.location = exportExcel;
-});
+}
 
 </script>
 

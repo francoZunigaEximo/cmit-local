@@ -495,6 +495,7 @@ class PrestacionesController extends Controller
     {
         $ids        = $request->ids ? explode(",", $request->ids) : []; 
         $filters    = $request->filters ? explode(",", $request->filters) : [];
+        $tipo       = $request->tipo;
 
         if($filters){
             $filtersAux = new stdClass() ;
@@ -505,7 +506,7 @@ class PrestacionesController extends Controller
             $filters = $filtersAux;
         }
         
-        return Excel::download(new PrestacionesExport($ids, $filters), 'prestaciones.xlsx');
+        return Excel::download(new PrestacionesExport($ids, $filters, $tipo), 'prestaciones.xlsx');
     }
 
 }

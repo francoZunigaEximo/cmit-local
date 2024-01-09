@@ -14,10 +14,12 @@ class PrestacionesExport implements FromCollection,WithHeadings
 
     protected $ids;
     protected $filters;
+    protected $tipo;
 
-    function __construct($ids, $filters) {
+    function __construct($ids, $filters, $tipo) {
         $this->ids      = $ids;
         $this->filters  = $filters;
+        $this->tipo     = $tipo;
     }
 
     /**
@@ -25,61 +27,180 @@ class PrestacionesExport implements FromCollection,WithHeadings
     */
     public function headings(): array
     {
-        return [
-            'N°',
-            'Alta',
-            'Empresa',
-            'Para Empresa',
-            'Cuit',
-            'Paciente',
-            'ART',
-            'Situación',
-            'F.Pago',
-            'Observacion Estado',
-            'Aus',
-            'Inc',
-            'Dev',
-            'For',
-            'SinEsc'
-        ];
+        switch ($this->tipo) {
+            case 'simple':
+                return [
+                    'Fecha',
+                    'Prestacion',
+                    'Tipo',
+                    'Paciente',
+                    'DNI',
+                    'Cliente',
+                    'Empresa',
+                    'ART',
+                    'Cerrado',
+                    'Finalizado',
+                    'Entregado',
+                    'eEnviado',
+                    'Facturado',
+                    'Factura',
+                    'Forma Pago',
+                    'Vencimiento',
+                    'Evaluacion',
+                    'Califiacion',
+                    'Obs.Resultado',
+                    'Anulada',
+                    'Obs.Anulada',
+                    'Nro.CE',
+                    'C.Costos',
+                    'INC',
+                    'AUS',
+                    'FOR',
+                    'DEV',
+                    'OBS ESTADOS'
+                ];
+                break;
+            case 'detallado':
+                return [
+                    'Fecha',
+                    'Prestacion',
+                    'Tipo',
+                    'Paciente',
+                    'DNI',
+                    'Cliente',
+                    'Empresa',
+                    'ART',
+                    'C.Costos',
+                    'Nro.CE',
+                    'Prst Anulada',
+                    'Obs.Anulada',
+                    'Examen',
+                    'Exa Anulado',
+                    'INC',
+                    'AUS',
+                    'FOR',
+                    'DEV',
+                    'OBS ESTADOS'
+                ];
+                break;
+            case 'completo':
+                return [
+                    'Fecha',
+                    'Prestacion',
+                    'Tipo',
+                    'Paciente',
+                    'DNI',
+                    'Cliente',
+                    'Empresa',
+                    'ART',
+                    'C.Costos',
+                    'Nro.CE',
+                    'Anulada',
+                    'Obs.Anulada',
+                    'Cerrado',
+                    'Finalizado',
+                    'Entregado',
+                    'eEnviado',
+                    'Vencimiento',
+                    'Evaluacion',
+                    'Calificacion',
+                    'Obs.Resultado',
+                    'Examen',
+                    'Anulado',
+                    'INC',
+                    'AUS',
+                    'FOR',
+                    'DEV',
+                    'OBS ESTADOS',
+                    'Facturado',
+                    'Factura',
+                    'Forma Pago',
+                    'Especialidad Efector',
+                    'Efector',
+                    'Asignado',
+                    'Pagado Ef.',
+                    'Informador',
+                    'Pagado Inf.',
+                    'Obs. Examen',
+                    'Obs. Efector',
+                    'Obs. Informador',
+                    'Obs. Privadas',
+                ];
+                break;
+        }
     }
+    
     public function collection()
     {
         $prestacionesExcel = collect();
-        $prestaciones = empty($this->filters) ? $this->getPrestacionesPorIds() : $this->getPrestacionesPorFiltros();
+
+        switch ($this->tipo) {
+            case 'simple':
+                $prestacionesExcel = $this->getInformeSimple();
+                break;
+            case 'detallado':
+                $prestacionesExcel = $this->getInformeDetallado();
+                break;
+            case 'completo':
+                $prestacionesExcel = $this->getInformeCompleto();
+                break;
+        }
+
+        return $prestacionesExcel;
+    }
+
+    public function getInformeSimple(){
+
+        $prestacionesExcel = collect();
+        $prestaciones = $this->getPrestaciones();
 
         foreach ($prestaciones as $prestacion) {
 
             $prestacionExcel = new stdClass();
 
-            $prestacionExcel->numero            = $prestacion->Id ?? '-';
-            $prestacionExcel->alta              = Carbon::parse($prestacion->FechaAlta)->format('d-m-Y') ?? '-'; // Formatear
+            $prestacionExcel->fecha             = Carbon::parse($prestacion->FechaAlta)->format('d-m-Y') ?? '-'; // Formatear
+            $prestacionExcel->prestacion        = $prestacion->Id ?? '-';
+            $prestacionExcel->tipo              = $prestacion->TipoPrestacion ?? '-';
+            $prestacionExcel->paciente          = $prestacion->Apellido . " " .  $prestacion->Nombre ?? '-';
+            $prestacionExcel->dni               = $prestacion->DNI ?? '-';
+            $prestacionExcel->cliente           = $prestacion->RazonSocial ?? '-'; // Revisar esto
             $prestacionExcel->empresa           = $prestacion->RazonSocial ?? '-';
-            $prestacionExcel->paraEmpresa       = $prestacion->ParaEmpresa ?? '-';
-            $prestacionExcel->Identificacion    = $prestacion->Identificacion ?? '-';
-            $prestacionExcel->paciente          = $prestacion->Apellido . " " . $prestacion->Nombre;
             $prestacionExcel->art               = $prestacion->Art ?? '-';
-            $prestacionExcel->situacion         = $prestacion->Anulado == 0 ? "Habilitado" : "Anulado";
-            $pago = "-";
+            $prestacionExcel->cerrado           = $prestacion->Cerrado ?? '-';
+            $prestacionExcel->finalizado        = $prestacion->Finalizado ?? '-';
+            $prestacionExcel->entregado         = $prestacion->Entregado ?? '-';
+            $prestacionExcel->eEnviado          = $prestacion->eEnviado ?? '-';
+            $prestacionExcel->facturado         = $prestacion->Facturado ?? '-';
+            $prestacionExcel->factura           = '-'; // Consultar como se forma el número de factura.
 
             switch ($prestacion->Pago) {
                 case "B":
-                    $prestacionExcel->pago = 'Ctdo.';
+                    $prestacionExcel->formaPago = 'Ctdo.';
                     break;
                 case "C":
-                    $prestacionExcel->pago = 'CCorriente';
+                    $prestacionExcel->formaPago = 'CCorriente';
                     break;
                 case "P":
-                    $prestacionExcel->pago = 'ExCuenta';
+                    $prestacionExcel->formaPago = 'ExCuenta';
+                    break;
+                default:
+                    $prestacionExcel->formaPago = '-';
                     break;
             }
-            
+
+            $prestacionExcel->vencimiento       = $prestacion->FechaVto ?? '-';
+            $prestacionExcel->evaluacion        = $prestacion->Evaluacion ?? '-';
+            $prestacionExcel->calificacion      = $prestacion->Calificacion ?? '-';
+            $prestacionExcel->obsResultado      = $prestacion->Observaciones ?? '-';
+            $prestacionExcel->anulada           = $prestacion->Anulado ?? '-';
+            $prestacionExcel->obsAnulado        = $prestacion->ObsAnulado ?? '-';
+            $prestacionExcel->nroCe             = $prestacion->NroCEE ?? '-';
+            $prestacionExcel->ccostos           = '-'; // Consultar Ccostos
+            $prestacionExcel->inc               = $prestacion->Incompleto === 0 ? '-' : 'Sí';
+            $prestacionExcel->aus               = $prestacion->Ausente === 0 ? '-' : 'Sí';
+            $prestacionExcel->for               = $prestacion->Forma === 0 ? '-' : 'Sí';
+            $prestacionExcel->dev               = $prestacion->Devol === 0 ? '-' : 'Sí';
             $prestacionExcel->observacionEstado = $prestacion->ObsEstado ?? '-';
-            $prestacionExcel->ausente           = $prestacion->Ausente === 0 ? '-' : 'Sí';
-            $prestacionExcel->incompleto        = $prestacion->Incompleto === 0 ? '-' : 'Sí';
-            $prestacionExcel->devolucion        = $prestacion->Devol === 0 ? '-' : 'Sí';
-            $prestacionExcel->forma             = $prestacion->Forma === 0 ? '-' : 'Sí';
-            $prestacionExcel->sinesc            = $prestacion->SinEsc === 0 ? '-' : 'Sí';
 
             $prestacionesExcel->push($prestacionExcel);
         }
@@ -87,87 +208,253 @@ class PrestacionesExport implements FromCollection,WithHeadings
         return $prestacionesExcel;
     }
 
+    public function getInformeDetallado(){
+        
+        $prestacionesExcel = collect();
+        $prestaciones = $this->getExamenes();
 
-    public function getPrestacionesPorIds(){
+        foreach ($prestaciones as $prestacion) {
 
-    return DB::table('prestaciones')
+            $prestacionExcel = new stdClass();
+
+            $prestacionExcel->fecha             = Carbon::parse($prestacion->FechaAlta)->format('d-m-Y') ?? '-'; // Formatear
+            $prestacionExcel->prestacion        = $prestacion->Id ?? '-';
+            $prestacionExcel->tipo              = $prestacion->TipoPrestacion ?? '-';
+            $prestacionExcel->paciente          = $prestacion->Apellido . " " .  $prestacion->Nombre ?? '-';
+            $prestacionExcel->dni               = $prestacion->DNI ?? '-';
+            $prestacionExcel->cliente           = $prestacion->RazonSocial ?? '-'; // Revisar esto
+            $prestacionExcel->empresa           = $prestacion->RazonSocial ?? '-';
+            $prestacionExcel->art               = $prestacion->Art ?? '-';
+            $prestacionExcel->ccostos           = '-'; // Consultar Ccostos
+            $prestacionExcel->nroCe             = $prestacion->NroCEE ?? '-';
+            $prestacionExcel->anulada           = $prestacion->Anulado ?? '-';
+            $prestacionExcel->obsAnulado        = $prestacion->ObsAnulado ?? '-';
+            $prestacionExcel->examen            = $prestacion->Examen ?? '-';
+            $prestacionExcel->exaAnulado        = '-'; // Consultar Exa Anulado 
+            $prestacionExcel->inc               = $prestacion->Incompleto === 0 ? '-' : 'Sí';
+            $prestacionExcel->aus               = $prestacion->Ausente === 0 ? '-' : 'Sí';
+            $prestacionExcel->for               = $prestacion->Forma === 0 ? '-' : 'Sí';
+            $prestacionExcel->dev               = $prestacion->Devol === 0 ? '-' : 'Sí';
+            $prestacionExcel->observacionEstado = $prestacion->ObsEstado ?? '-';
+
+            $prestacionesExcel->push($prestacionExcel);
+        }
+
+        return $prestacionesExcel;
+    }
+
+    public function getInformeCompleto(){
+        
+        $prestacionesExcel = collect();
+        $prestaciones = $this->getExamenes();
+        
+        foreach ($prestaciones as $prestacion) {
+
+            $prestacionExcel = new stdClass();
+
+            $prestacionExcel->fecha             = Carbon::parse($prestacion->FechaAlta)->format('d-m-Y') ?? '-'; // Formatear
+            $prestacionExcel->prestacion        = $prestacion->Id ?? '-';
+            $prestacionExcel->tipo              = $prestacion->TipoPrestacion ?? '-';
+            $prestacionExcel->paciente          = $prestacion->Apellido . " " .  $prestacion->Nombre ?? '-';
+            $prestacionExcel->dni               = $prestacion->DNI ?? '-';
+            $prestacionExcel->cliente           = $prestacion->RazonSocial ?? '-'; // Revisar esto
+            $prestacionExcel->empresa           = $prestacion->RazonSocial ?? '-';
+            $prestacionExcel->art               = $prestacion->Art ?? '-';
+            $prestacionExcel->ccostos           = '-'; // Consultar Ccostos
+            $prestacionExcel->nroCe             = $prestacion->NroCEE ?? '-';
+            $prestacionExcel->anulada           = $prestacion->Anulado ?? '-';
+            $prestacionExcel->obsAnulado        = $prestacion->ObsAnulado ?? '-';
+            $prestacionExcel->cerrado           = $prestacion->Cerrado ?? '-';
+            $prestacionExcel->finalizado        = $prestacion->Finalizado ?? '-';
+            $prestacionExcel->entregado         = $prestacion->Entregado ?? '-';
+            $prestacionExcel->eEnviado          = $prestacion->eEnviado ?? '-';
+            $prestacionExcel->vencimiento       = $prestacion->FechaVto ?? '-';
+            $prestacionExcel->evaluacion        = $prestacion->Evaluacion ?? '-';
+            $prestacionExcel->calificacion      = $prestacion->Calificacion ?? '-';
+            $prestacionExcel->obsResultado      = $prestacion->Observaciones ?? '-';
+            $prestacionExcel->examen            = $prestacion->Examen ?? '-';
+            $prestacionExcel->anulado           = $prestacion->Anulado ?? '-'; // Consultar duplicado 
+            $prestacionExcel->inc               = $prestacion->Incompleto === 0 ? '-' : 'Sí';
+            $prestacionExcel->aus               = $prestacion->Ausente === 0 ? '-' : 'Sí';
+            $prestacionExcel->for               = $prestacion->Forma === 0 ? '-' : 'Sí';
+            $prestacionExcel->dev               = $prestacion->Devol === 0 ? '-' : 'Sí';
+            $prestacionExcel->observacionEstado = $prestacion->ObsEstado ?? '-';
+            $prestacionExcel->facturado         = $prestacion->Facturado ?? '-';
+            $prestacionExcel->factura           = '-'; // Consultar como se forma el número de factura.
+
+            switch ($prestacion->Pago) {
+                case "B":
+                    $prestacionExcel->formaPago = 'Ctdo.';
+                    break;
+                case "C":
+                    $prestacionExcel->formaPago = 'CCorriente';
+                    break;
+                case "P":
+                    $prestacionExcel->formaPago = 'ExCuenta';
+                    break;
+                default:
+                    $prestacionExcel->formaPago = '-';
+                    break;
+            }
+
+            $prestacionExcel->facturado             = $prestacion->Facturado ?? '-';
+            $prestacionExcel->EspecialidadEfector   = $prestacion->EspecialidadEfector ?? '-';
+            $prestacionExcel->Efector               = $prestacion->apellidoEfector . " " . $prestacion->nombreEfector;
+            $prestacionExcel->asignado              = $prestacion->asignado ?? '-';
+            $prestacionExcel->Informador            = '-'; // Consultar
+            $prestacionExcel->Pagadoef              = '-'; // Consultar
+            $prestacionExcel->PagadoInf             = '-'; // Consultar
+            $prestacionExcel->ObsExamen             = $prestacion->ObsExamen ?? '-';
+            $prestacionExcel->ObsEfector            = '-'; // Consultar
+            $prestacionExcel->ObsInformador         = '-'; // Consultar
+            $prestacionExcel->ObsPrivadas           = '-'; // Consultar
+            $prestacionesExcel->push($prestacionExcel);
+            
+        }
+
+        return $prestacionesExcel;
+    }
+
+    public function getPrestaciones(){
+
+        $query =  DB::table('prestaciones')
         ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
         ->join('clientes', 'prestaciones.IdEmpresa', '=', 'clientes.Id')
+        ->join('clientes as emp', 'prestaciones.IdEmpresa', '=', 'emp.Id')
+        ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
         ->leftJoin('prestaciones_comentarios', 'prestaciones.Id', '=', 'prestaciones_comentarios.IdP')
         ->select(
             DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdART) AS Art'),
             DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdEmpresa) AS RazonSocial'),
-            'clientes.ParaEmpresa as ParaEmpresa',
-            'clientes.Identificacion as Identificacion',
             'prestaciones.Fecha as FechaAlta',
             'prestaciones.Id as Id',
+            'prestaciones.TipoPrestacion as TipoPrestacion',
+            'pacientes.Documento as DNI',
             'pacientes.Nombre as Nombre',
             'pacientes.Apellido as Apellido',
+            'prestaciones.FechaCierre as Cerrado',
+            'prestaciones.FechaFinalizado as Finalizado',
+            'prestaciones.FechaEntrega as Entregado',
+            'prestaciones.FechaEnviado as eEnviado',  
+            'prestaciones.FechaFact as Facturado',
+            'prestaciones.FechaVto as FechaVto',
+            'prestaciones.Evaluacion as Evaluacion', 
+            'prestaciones.Calificacion as Calificacion',
+            'prestaciones.Observaciones as Observaciones', 
             'prestaciones.Anulado as Anulado',
-            'prestaciones.Pago as Pago',
+            'prestaciones.ObsAnulado as ObsAnulado', 
+            'prestaciones.NroCEE as NroCEE',
+            'prestaciones.Incompleto as Incompleto', 
             'prestaciones.Ausente as Ausente',
-            'prestaciones.Incompleto as Incompleto',
-            'prestaciones.Devol as Devol',
             'prestaciones.Forma as Forma',
-            'prestaciones.SinEsc as SinEsc',
-            'prestaciones_comentarios.Obs as ObsEstado'
+            'prestaciones.Devol as Devol',
+            'prestaciones_comentarios.Obs as ObsEstado',
+            'prestaciones.Pago as Pago'
         )
-        ->where('prestaciones.Estado', '=', '1')
-        ->whereIn('prestaciones.Id', $this->ids)
-        ->orderBy('prestaciones.Id', 'DESC')
-        ->get();
+        ->where('prestaciones.Estado', '=', '1');
+
+         if (empty($this->filters)) {
+            return $query->whereIn('prestaciones.Id', $this->ids)
+            ->orderBy('prestaciones.Id', 'DESC')
+            ->get();
+         }
+         else {
+
+            return $this->applyFilters($query);
+         }
     }
 
-    public function getPrestacionesPorFiltros() {
+    public function getExamenes(){
+
+        $query = DB::table('prestaciones')
+        ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+        ->join('clientes', 'prestaciones.IdEmpresa', '=', 'clientes.Id')
+        ->join('clientes as emp', 'prestaciones.IdEmpresa', '=', 'emp.Id')
+        ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
+        ->join('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
+        ->join('examenes', 'examenes.Id', '=', 'itemsprestaciones.IdExamen')
+        ->join('profesionales', 'profesionales.Id', '=', 'itemsprestaciones.IdProfesional')
+        ->join('proveedores', 'proveedores.Id', '=', 'profesionales.IdProveedor')
+        ->leftJoin('prestaciones_comentarios', 'prestaciones.Id', '=', 'prestaciones_comentarios.IdP')
+        ->select(
+            DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdART) AS Art'),
+            DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdEmpresa) AS RazonSocial'),
+            DB::raw("CONCAT(pacientes.Apellido,pacientes.Nombre) AS nombreCompleto"),
+            DB::raw("CONCAT(profesionales.Apellido,profesionales.Nombre) AS Efector"),   
+            'prestaciones.Fecha as FechaAlta',
+            'prestaciones.Id as Id',
+            'prestaciones.TipoPrestacion as TipoPrestacion',
+            'pacientes.Documento as DNI',
+            'pacientes.Nombre as Nombre',
+            'pacientes.Apellido as Apellido',
+            'prestaciones.NroCEE as NroCEE',
+            'prestaciones.Anulado as Anulado',
+            'prestaciones.ObsAnulado as ObsAnulado', 
+            'prestaciones.FechaCierre as Cerrado',
+            'prestaciones.FechaFinalizado as Finalizado',
+            'prestaciones.FechaEntrega as Entregado',
+            'prestaciones.FechaEnviado as eEnviado',  
+            'prestaciones.FechaFact as Facturado',
+            'prestaciones.FechaVto as FechaVto',
+            'prestaciones.Evaluacion as Evaluacion', 
+            'prestaciones.Calificacion as Calificacion',
+            'prestaciones.Observaciones as Observaciones', 
+            'prestaciones.Incompleto as Incompleto', 
+            'prestaciones.Ausente as Ausente',
+            'prestaciones.Forma as Forma',
+            'prestaciones.Devol as Devol',
+            'prestaciones_comentarios.Obs as ObsEstado',
+            'examenes.Nombre as Examen',
+            'proveedores.Nombre as EspecialidadEfector',
+            'itemsprestaciones.ObsExamen as ObsExamen',
+            'profesionales.Nombre as nombreEfector',
+            'profesionales.Apellido as apellidoEfector',
+            'itemsprestaciones.FechaAsignado as asignado',
+            'prestaciones.Pago as Pago'
+        )
+        ->where('prestaciones.Estado', '=', '1');
+
+        if (empty($this->filters)) {
+            return $query->whereIn('prestaciones.Id', $this->ids)
+            ->orderBy('prestaciones.Id', 'DESC')
+            ->get();
+        }
+        else {
+            return $this->applyFilters($query);
+        }
+    }
+
+    public function applyFilters($query) {
 
         $filters = $this->filters;
-        
-        $query = Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-            ->join('clientes as emp', 'prestaciones.IdEmpresa', '=', 'emp.Id')
-            ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
-            ->leftJoin('prestaciones_comentarios', 'prestaciones.Id', '=', 'prestaciones_comentarios.IdP')
-            ->select(
-                DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdART) AS Art'),
-                DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdEmpresa) AS empresa'),
-                DB::raw("CONCAT(pacientes.Apellido,pacientes.Nombre) AS nombreCompleto"),            
-                'emp.ParaEmpresa as ParaEmpresa',
-                'emp.Identificacion as Identificacion',
-                'prestaciones.Fecha as FechaAlta',
-                'prestaciones.Id as Id',
-                'pacientes.Nombre as Nombre',
-                'pacientes.Apellido as Apellido',
-                'prestaciones.Anulado as Anulado',
-                'prestaciones.Pago as Pago',
-                'prestaciones.FechaVto as FechaVencimiento',
-                'prestaciones.Ausente as Ausente',
-                'prestaciones.Incompleto as Incompleto',
-                'prestaciones.Devol as Devol',
-                'prestaciones.Forma as Forma',
-                'prestaciones.SinEsc as SinEsc',
-                'prestaciones.TipoPrestacion as TipoPrestacion',
-                'prestaciones.eEnviado as eEnviado',
-                'prestaciones.Estado as Estado',
-                'prestaciones_comentarios.Obs as ObsEstado'
-                
-            )
-            ->where('prestaciones.Estado', 1);
 
-         if(!empty($filters->pacempart)) {
+        if(!empty($filters->paciente)) {
             $query->where(function ($query) use ($filters) {
-                $query->orwhere('emp.RazonSocial', 'LIKE', '%'. $filters->pacempart .'%')
-                    ->orwhere('art.RazonSocial', 'LIKE', '%'. $filters->pacempart .'%')
-                    ->orWhere('emp.Identificacion', 'LIKE', '%'. $filters->pacempart .'%')
-                    ->orWhere('art.Identificacion', 'LIKE', '%'. $filters->pacempart .'%')
-                    ->orWhere('emp.ParaEmpresa', 'LIKE', '%'. $filters->pacempart .'%')
-                    ->orWhere('art.ParaEmpresa', 'LIKE', '%'. $filters->pacempart .'%')
-                    ->orWhere('emp.NombreFantasia', 'LIKE', '%'. $filters->pacempart .'%')
-                    ->orWhere('art.NombreFantasia', 'LIKE', '%'. $filters->pacempart .'%')
-                    ->orWhere('pacientes.Nombre', 'LIKE', '%'. $filters->pacempart .'%')
-                    ->orWhere('pacientes.Apellido', 'LIKE', '%'. $filters->pacempart .'%')
-                    ->orWhere('pacientes.Documento', 'LIKE', '%'. $filters->pacempart .'%')
-                    ->orWhere('pacientes.Identificacion', 'LIKE', '%'. $filters->pacempart .'%');
+                $query->orWhere('pacientes.Nombre', 'LIKE', '%'. $filters->paciente .'%')
+                    ->orWhere('pacientes.Apellido', 'LIKE', '%'. $filters->paciente .'%')
+                    ->orWhere('pacientes.Documento', 'LIKE', '%'. $filters->paciente .'%')
+                    ->orWhere('pacientes.Identificacion', 'LIKE', '%'. $filters->paciente .'%');
             });
         }
+
+        if(!empty($filters->empresa)) {
+            $query->where(function($query) use ($filters) {
+                $query->orWhere('emp.Identificacion', 'LIKE', '%'. $filters->empresa .'%')
+                    ->orWhere('emp.ParaEmpresa', 'LIKE', '%'. $filters->empresa .'%')
+                    ->orWhere('emp.NombreFantasia', 'LIKE', '%'. $filters->empresa .'%')
+                    ->orWhere('emp.RazonSocial', 'LIKE', '%'. $filters->empresa .'%');
+            });
+        }
+
+        if(!empty($filters->art)) {
+            $query->where(function($query) use ($filters) {
+                $query->orwhere('art.RazonSocial', 'LIKE', '%'. $filters->art .'%')
+                    ->orWhere('art.Identificacion', 'LIKE', '%'. $filters->art .'%')
+                    ->orWhere('art.ParaEmpresa', 'LIKE', '%'. $filters->art .'%')
+                    ->orWhere('art.NombreFantasia', 'LIKE', '%'. $filters->art .'%');
+            });
+        }
+
 
         if (!empty($filters->tipoPrestacion)) {
             $query->where('prestaciones.TipoPrestacion', $filters->tipoPrestacion);
@@ -242,8 +529,7 @@ class PrestacionesExport implements FromCollection,WithHeadings
         if (!empty($filters->entregado)) {
             $query->where('prestaciones.Entregado', '=', $filters->entregado);
         }
-    
+
         return $query->get();
     }
-
 }
