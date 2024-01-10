@@ -20,54 +20,39 @@ $(document).ready(()=>{
 
     $('#remitoFechaE').val(hoy)
    
-    //Exportar Excel
-    $(document).on('click', '.excel', function(){
+    //Exportar
+    $(document).on('click', '.excel, .pdf', function(){
         
         let ids = [];
         ids.push($(this).data('remito'));
+
+        let arr = {
+            excel: 
+                {
+                    datos:  {modulo: 'remito', tipo: 'excel', mapa: MAPA, Id: ids, archivo: 'csv'},
+                    archivo: 'csv'    
+                },
+            pdf:
+                {
+                    datos:  {Id: ids, mapa: MAPA, archivo: 'pdf'},
+                    archivo: 'pdf'  
+                }
+        };
         
+        tipo = $(this).hasClass('excel') ? 'excel' : 'pdf';
 
         if (ids.length > 0) {
-            if (confirm("¿Estás seguro de que deseas generar el reporte de Excel?")) {
+            if (confirm("¿Estás seguro de que deseas generar el reporte?")) {
                 $.ajax({
-                    url: exportExcelMapas,
-                    type: "POST",
-                    data: {
-                        _token: TOKEN,
-                        modulo: 'remito',
-                        tipo: 'excel',
-                        mapa: MAPA,
-                        Id: ids
-                    },
+                    url: fileExport,
+                    type: "GET",
+                    data: arr[tipo].datos,
                     success: function(response) {
-                        let filePath = response.filePath,
-                            pattern = /storage(.*)/,
-                            match = filePath.match(pattern),
-                            path = match ? match[1] : '';
 
-                        let url = new URL(location.href),
-                            baseUrl = url.origin,
-                            fullPath = baseUrl + '/cmit/storage' + path;
-
-                        let link = document.createElement('a');
-                        link.href = fullPath;
-                        link.download = "informe.xlsx";
-                        link.style.display = 'none';
-
-                        document.body.appendChild(link);
-                        link.click();
-                        setTimeout(function() {
-                            document.body.removeChild(link);
-                        }, 100);
-
-                        toastr.options = {
-                            closeButton: true,   
-                            progressBar: true,    
-                            timeOut: 3000,        
-                        };
-                        toastr.success('Se esta generando el informe. Aguarde', 'Informe Excel');
+                        createFile(arr[tipo].archivo, response.filePath);
+                        toastr.success('Se esta generando el reporte. Aguarde', 'Generando reporte');
                     },
-                    error: function(xhr, status, error) {
+                    error: function(xhr) {
                         console.log(xhr.responseText);
                     }
                 });
@@ -78,66 +63,6 @@ $(document).ready(()=>{
 
     });
 
-    //Exportar PDF
-    $(document).on('click', '.pdf', function(){
-
-        let ids = [];
-
-        ids.push($(this).data('remito'));
-
-        if (ids.length > 0) {
-            
-            if (confirm("¿Estás seguro de que deseas generar el reporte en PDF?")) {
-                console.log(ids);
-                $.ajax({
-                    url: mapasPdf,
-                    type: "POST",
-                    data: {
-                        _token: TOKEN,
-                        Id: ids,
-                        mapa: MAPA
-                    },
-                    success: function(response) {
-                        toastr.options = {
-                            closeButton: true,   
-                            progressBar: true,    
-                            timeOut: 3000,        
-                        };
-                        toastr.success('Se esta generando el informe. Aguarde', 'Informe PDF');
-
-                        let filePath = response.filePath,
-                            pattern = /storage(.*)/,
-                            match = filePath.match(pattern),
-                            path = match ? match[1] : '';
-
-                        let url = new URL(location.href),
-                            baseUrl = url.origin,
-                            fullPath = baseUrl + '/cmit/storage' + path;
-
-                        let link = document.createElement('a');
-                        link.href = fullPath;
-                        link.download = "remito.pdf";
-                        link.style.display = 'none';
-
-                        document.body.appendChild(link);
-                        link.click();
-                        setTimeout(function() {
-                            document.body.removeChild(link);
-                        }, 100);
-                    },
-                    error: function(xhr, status, error) {
-                        console.log(xhr.responseText);
-                    }
-                });
-            }
-        } else {
-
-            toastr.info('No hay remitos para imprimir el pdf', 'Atención');
-        }
-        
-    });
-
-    
     $('#updateMapa').click(function(){
 
         let Nro = $('#Nro').val(),
@@ -347,7 +272,6 @@ $(document).ready(()=>{
                 $.each(examen, function(index, e) {
                     
                     let arrCompleto = [3,4,5,6], efectuadoOk = arrCompleto.includes(e.CAdj);
-                    /*let isComplete = (efectuadoOk ? '<span class="custom-badge verde">Completo</span>' : '<span class="custom-badge rojo">Incompleto</span>');*/
 
                     let arrCerrado = [3,4,5], cerradoOk = arrCerrado.includes(e.CAdj);
                     
@@ -402,48 +326,34 @@ $(document).ready(()=>{
             estado = $('#EstadoCerrar').val(),
             remito = $('#NroRemitoCerrar').val();
             
-        $.get(getCerrarMapa, { prestacion: prestacion, remito: remito, estado: estado, mapa: MAPA})
-        .done(function(cerrar) {
+        $.get(serchInCerrar, { prestacion: prestacion, remito: remito, estado: estado, mapa: MAPA})
+        .done(function(response) {
 
             $('#cerrarMapa').empty();
 
-            $.each(cerrar, function(index, d) {
+            let data = response.result;
+
+            $.each(data, function(index, d) {
 
                 let estado;
-                
-                if(d.Finalizado === 1){
-                    estado = '<span style="text-align=center" class="custom-badge verde">Finalizado</span>';
-                
-                } else if(d.Cerrado === 1){
-                    estado = '<span style="text-align=center" class="custom-badge azul">Cerrado</span>';
-                
-                } else if(d.Cerrado === 0 && d.Finalizado === 0) {
-                    estado = '<span style="text-align=center" class="custom-badge gris">Abierto</span>';
-                
-                }else if(d.eEnviado === 1) {
-                    estado = '<span style="text-align=center" class="custom-badge gris">eEnviado</span>';
-                
-                }else if(d.Anulado === 1) {
-                    estado = '<span style="text-align=center" class="custom-badge gris">Anulado</span>';
-                
-                }else if(d.Entregado === 1) {
-                    estado = '<span style="text-align=center" class="custom-badge gris">Entregado</span>';
-                
-                }else if(d.Incompleto === 1) {
-                    estado = '<span style="text-align=center" class="custom-badge gris">Incompleto</span>';
-                }
 
-                let nuevaFecha = fecha(d.Fecha);
+                if(d.Cerrado === 1){
+                    estado = '<span style="text-align=center" class="custom-badge verde">Cerrado</span>';
+                
+                } else if(d.Cerrado === 0){
+                    estado = '<span style="text-align=center" class="custom-badge rojo">Abierto</span>';
+                
+                } 
                 
                 let contenido = `
                     <tr>
                         <td>${d.IdPrestacion}</td>
-                        <td>${nuevaFecha}</td>
+                        <td>${fecha(d.Fecha)}</td>
                         <td>${d.ApellidoPaciente} ${d.NombrePaciente}</td>
                         <td>${d.dni}</td>
                         <td>${estado}</td>
                         <td><button data-id="${d.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
-                        <td><input type="checkbox" name="Id" value="${d.IdPrestacion}" checked></td>
+                        <td>${d.Cerrado === 1 ? '<input type="checkbox" disabled>' : `<input type="checkbox" name="Id" value="${d.IdPrestacion}" checked>`}</td>
                     </tr>
                 `;
 
@@ -532,44 +442,28 @@ $(document).ready(()=>{
         let prestacionf = $('#NroPresFinal').val(),
             remitof = $('#NroRemitoFinal').val();
 
-        $.get(getFinalizarMapa, { prestacion: prestacionf, remito: remitof, mapa: MAPA })
-            .done(function(finalizar){
+        $.get(searchInFinalizar, { prestacion: prestacionf, remito: remitof, mapa: MAPA })
+            .done(function(response){
 
                 $('#finalizarMapa').empty();
+                let data = response.result;
 
-                $.each(finalizar, function(index, f){
+                $.each(data, function(index, f){
 
-                    let estado;
-                
+                let estado;
+
                 if(f.Finalizado === 1){
                     estado = '<span style="text-align=center" class="custom-badge verde">Finalizado</span>';
                 
-                } else if(f.Cerrado === 1){
-                    estado = '<span style="text-align=center" class="custom-badge azul">Cerrado</span>';
-                
-                } else if(f.Cerrado === 0 && d.Finalizado === 0) {
-                    estado = '<span style="text-align=center" class="custom-badge gris">Abierto</span>';
-                
-                }else if(f.eEnviado === 1) {
-                    estado = '<span style="text-align=center" class="custom-badge gris">eEnviado</span>';
-                
-                }else if(f.Anulado === 1) {
-                    estado = '<span style="text-align=center" class="custom-badge gris">Anulado</span>';
-                
-                }else if(f.Entregado === 1) {
-                    estado = '<span style="text-align=center" class="custom-badge gris">Entregado</span>';
-                
-                }else if(f.Incompleto === 1) {
-                    estado = '<span style="text-align=center" class="custom-badge gris">Incompleto</span>';
-                }
-
-                let nuevaFecha = fecha(f.Fecha);
+                } else if(f.Finalizado === 0){
+                    estado = '<span style="text-align=center" class="custom-badge azul">Abierto</span>';
+                } 
                 
                 let contenido = `
                     <tr>
                         <td>${f.IdPrestacion}</td>
                         <td>${f.NroRemito}</td>
-                        <td>${nuevaFecha}</td>
+                        <td>${fecha(f.Fecha)}</td>
                         <td>${f.ApellidoPaciente} ${f.NombrePaciente}</td>
                         <td>${estado}</td>
                         <td><button data-id="${f.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
@@ -760,10 +654,6 @@ $(document).ready(()=>{
         }
     }
 
-    function total(...args) {
-        return args.reduce((sum, current) => sum + current, 0);
-    }
-
     function updateContador() {
         let longitud = $('#remitoObs').val();
         let caracteres = longitud.length;
@@ -851,39 +741,25 @@ $(document).ready(()=>{
         $('#cerrarMapa').empty();
 
         $.get(getCerrar, {mapa: MAPA})
-            .done(function(close){
+            .done(function(response){
 
-                $.each(close, function(index, c) {
+                let data = response.result;
+
+                $.each(data, function(index, c) {
 
                     let estado;
+
+                    if(c.Cerrado === 1){
+                        estado = '<span style="text-align=center" class="custom-badge verde">Cerrado</span>';
                     
-                    if(c.Finalizado === 1){
-                        estado = '<span style="text-align=center" class="custom-badge verde">Finalizado</span>';
+                    } else if(c.Cerrado === 0){
+                        estado = '<span style="text-align=center" class="custom-badge azul">Abierto</span>';
                     
-                    } else if(c.Cerrado === 1){
-                        estado = '<span style="text-align=center" class="custom-badge azul">Cerrado</span>';
-                    
-                    } else if(c.Cerrado === 0 && c.Finalizado === 0) {
-                        estado = '<span style="text-align=center" class="custom-badge gris">Abierto</span>';
-                    
-                    }else if(c.eEnviado === 1) {
-                        estado = '<span style="text-align=center" class="custom-badge gris">eEnviado</span>';
-                    
-                    }else if(c.Anulado === 1) {
-                        estado = '<span style="text-align=center" class="custom-badge gris">Anulado</span>';
-                    
-                    }else if(c.Entregado === 1) {
-                        estado = '<span style="text-align=center" class="custom-badge gris">Entregado</span>';
-                    
-                    }else if(c.Incompleto === 1) {
-                        estado = '<span style="text-align=center" class="custom-badge gris">Incompleto</span>';
-                    }
-    
-                    let nuevaFecha = fecha(c.Fecha);
+                    } 
                     
                     let contenido = `
                         <tr>
-                            <td>${nuevaFecha}</td>
+                            <td>${fecha(c.Fecha)}</td>
                             <td>${c.IdPrestacion}</td>
                             <td>${c.ApellidoPaciente} ${c.NombrePaciente}</td>
                             <td>${c.dni}</td>
@@ -910,43 +786,27 @@ $(document).ready(()=>{
         $('#cerrarMapa').empty();
 
         $.get(getFMapa, {mapa: MAPA})
-        .done(function(data){
+        .done(function(response){
 
             $('#finalizarMapa').empty();
+            let data = response.result;
 
             $.each(data, function(index, f){
 
-                let estado;
-            
+            let estado;
+
             if(f.Finalizado === 1){
                 estado = '<span style="text-align=center" class="custom-badge verde">Finalizado</span>';
             
-            } else if(f.Cerrado === 1){
-                estado = '<span style="text-align=center" class="custom-badge azul">Cerrado</span>';
-            
-            } else if(f.Cerrado === 0 && d.Finalizado === 0) {
-                estado = '<span style="text-align=center" class="custom-badge gris">Abierto</span>';
-            
-            }else if(f.eEnviado === 1) {
-                estado = '<span style="text-align=center" class="custom-badge gris">eEnviado</span>';
-            
-            }else if(f.Anulado === 1) {
-                estado = '<span style="text-align=center" class="custom-badge gris">Anulado</span>';
-            
-            }else if(f.Entregado === 1) {
-                estado = '<span style="text-align=center" class="custom-badge gris">Entregado</span>';
-            
-            }else if(f.Incompleto === 1) {
-                estado = '<span style="text-align=center" class="custom-badge gris">Incompleto</span>';
-            }
-
-            let nuevaFecha = fecha(f.Fecha);
+            } else if(f.Finalizado === 0){
+                estado = '<span style="text-align=center" class="custom-badge azul">Abierto</span>';
+            } 
             
             let contenido = `
                 <tr>
                     <td>${f.IdPrestacion}</td>
                     <td>${f.NroRemito}</td>
-                    <td>${nuevaFecha}</td>
+                    <td>${fecha(f.Fecha)}</td>
                     <td>${f.ApellidoPaciente} ${f.NombrePaciente}</td>
                     <td>${estado}</td>
                     <td><button data-id="${f.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
@@ -1122,6 +982,58 @@ $(document).ready(()=>{
                     sortable: false, 
                 });
             })
+    }
+
+    function tipoEstado(data){
+
+        let estado;
+
+        if(data.Cerrado === 1){
+            estado = '<span style="text-align=center" class="custom-badge verde">Cerrado</span>';
+        
+        } else if(data.Cerrado === 1 && data.Finalizado === 1){
+            estado = '<span style="text-align=center" class="custom-badge azul">Finalizado</span>';
+        
+        } else if(data.Cerrado === 0 && data.Finalizado === 0 || data.Cerrado === 1 && data.Finalizado === 0) {
+            estado = '<span style="text-align=center" class="custom-badge gris">Abierto</span>';
+        
+        }else if(data.Cerrado === 1 && data.eEnviado === 1) {
+            estado = '<span style="text-align=center" class="custom-badge gris">eEnviado</span>';
+        
+        }else if(data.Anulado === 1) {
+            estado = '<span style="text-align=center" class="custom-badge gris">Anulado</span>';
+        
+        }else if(data.Entregado === 1) {
+            estado = '<span style="text-align=center" class="custom-badge gris">Entregado</span>';
+        
+        }else if(data.Incompleto === 1) {
+            estado = '<span style="text-align=center" class="custom-badge gris">Incompleto</span>';
+        }
+
+        return estado;
+    }
+
+    function createFile(tipo, array){
+
+        let filePath = array,
+            pattern = /storage(.*)/,
+            match = filePath.match(pattern),
+            path = match ? match[1] : '';
+
+        let url = new URL(location.href),
+            baseUrl = url.origin,
+            fullPath = baseUrl + '/cmit/storage' + path;
+
+        let link = document.createElement('a');
+        link.href = fullPath;
+        link.download = tipo === 'pdf' ? "reporte.pdf" : "reporte.csv";
+        link.style.display = 'none';
+
+        document.body.appendChild(link);
+        link.click();
+        setTimeout(function() {
+            document.body.removeChild(link);
+        }, 100);
     }
 
 });

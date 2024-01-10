@@ -89,8 +89,8 @@
 
                                 <div class="row">
                                     <div class="col-sm-9 mb-3">
-                                        <span class="custom-badge amarillo"> Entregas a mas de -15 a 11 días </span>
-                                        <span class="custom-badge naranja">Entregas -10 a 1 día</span>
+                                        <span class="custom-badge amarillo"> Entregas entre 15 a 11 días </span>
+                                        <span class="custom-badge naranja">Entregas entre 10 a 1 día</span>
                                         <span class="custom-badge rojo">Entregas con 0 en adelante mientras no este eEnviado</span>
                                         <span class="custom-badge verde">Entregas eEnviadas</span>
                                     </div>
@@ -149,7 +149,7 @@
     //Rutas
     const SEARCH = "{{ route('searchMapas') }}"
     const routeMapas = "{{ route('deleteMapa', ['mapa' => '']) }}";
-    const exportExcelMapas = "{{ route('exportExcelMapas') }}";
+    const fileExport = "{{ route('fileExport') }}";
     const deleteMapa = "{{ route('deleteMapa') }}";
     //Extras
     const TOKEN = "{{ csrf_token() }}";

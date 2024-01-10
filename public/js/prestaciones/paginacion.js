@@ -21,7 +21,7 @@ $(document).ready(()=>{
             fixedColumns: true,
             processing: true,
             lengthChange: false,
-            pageLength: 50,
+            pageLength: 150,
             responsive: true,
             serverSide: true,
             dataType: 'json',
@@ -47,7 +47,11 @@ $(document).ready(()=>{
                         let cerradoAdjunto = data.CerradoAdjunto || 0,
                             total = data.Total || 1;
 
-                        return ((cerradoAdjunto/total)*100).toFixed(2) + '%';
+                        let resultado = data.Anulado === 0 
+                            ? ((cerradoAdjunto/total)*100).toFixed(2) + '%'
+                            : 'Anul';
+
+                        return resultado;
                     }
 
                 },
@@ -246,14 +250,16 @@ $(document).ready(()=>{
             
                 if (calculo === 100) {
                     resultado = $(row).addClass('fondo-blanco');
-                } else if (calculo >= 86 && calculo <= 99) {
+                } else if (data.Anulado === 0 && calculo >= 86 && calculo <= 99) {
                     resultado = $(row).addClass('fondo-verde');
-                } else if (calculo >= 51 && calculo <= 85) {
+                } else if (data.Anulado === 0 && calculo >= 51 && calculo <= 85) {
                     resultado = $(row).addClass('fondo-amarillo');
-                } else if (calculo >= 1 && calculo <= 50) {
+                } else if (data.Anulado === 0 && calculo >= 1 && calculo <= 50) {
                     resultado = $(row).addClass('fondo-naranja');
-                } else {
+                } else if(data.Anulado === 0) {
                     resultado = $(row).addClass('fondo-rojo');
+                } else if(data.Anulado === 1) {
+                    resultado = $(row).addClass('rojo');
                 }
             
                 return resultado;

@@ -187,9 +187,14 @@ label {
 	font-size: 12px;
 }
 
+.custom-badge.naranja {
+	background-color: rgba(211, 102, 13, 0.452); 
+	color:rgb(255, 81, 0);
+}
+
 
 .custom-badge.nuevoAzul {
-	background-color: rgb(55, 198, 241); 
+	background-color: rgb(78, 169, 197); 
 	color:white;
 	font-size: 12px;
 }
@@ -303,7 +308,6 @@ label {
 	padding: 0.15em 0.15em;
     font-size: 0.75em;
     font-weight: 600;
-	text-transform: uppercase
 }
 
 .botonGeneralBlanco {

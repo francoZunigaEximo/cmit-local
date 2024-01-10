@@ -83,7 +83,7 @@ $(document).ready(()=>{
 
                             let contenido = `<div style="text-align: center">
                                                 <span>${(fecha === 'NaN/NaN/NaN'? 'Sin fecha' : fecha) }</span>
-                                                <span class="custom-badge generalNegro">${(totalDias === NaN ? 0 : totalDias)}</span>
+                                                <span class="custom-badge generalNegro">${(totalDias === NaN || totalDias < 0 ? 0 : totalDias)}</span>
                                             </div>`;
                             return contenido;
                         }
@@ -99,27 +99,28 @@ $(document).ready(()=>{
                     {
                         data: null,
                         render: function(data) {
-                               
-                                if(data.estado !== undefined){
-                                    listaMapas
-                                    return '<span class="custom-badge generalNegro">' + data.estado + '</span>';
-                                }else{
+                            
+                            let enviados = data.contadorPrestaciones > 0 && data.contadorPrestaciones === data.cdorEEnviados, 
+                                noEnviados = data.contadorPrestaciones > 0 && data.contadorPrestaciones !== data.cdorEEnviados,
+                                cerrado = data.contadorPrestaciones > 0 && data.contadorPrestaciones === data.cdorCerrados && data.contadorPrestaciones !== data.cdorFinalizados,
+                                abierto = data.contadorPrestaciones > 0 && data.contadorPrestaciones !== data.cdorCerrado && data.contadorPrestaciones !== data.cdorFinalizados,
+                                terminado = data.contadorPrestaciones > 0 && data.contadorPrestaciones === data.cdorCerrados && data.contadorPrestaciones ===data.cdorEEnviados;
 
-                                    if(data.eEnviado === 1){
-                                        return '<span class="custom-badge generalNegro">eEnviado</span>';
-                                    }else if(data.Cerrado === 0 && data.Finalizado === 0){
-                                        return '<span class="custom-badge generalNegro">Abierto</span>';
-                                    }else if(data.Cerrado === 1 && data.eEnviado === 1 && data.Entregado === 1){
-                                        return '<span class="custom-badge generalNegro">Terminado</span>';
-                                    }else if(data.Cerrado === 1){
-                                        return '<span class="custom-badge generalNegro">Cerrado</span>';
-                                    }else if(data.eEnviado === 0){
-                                        return '<span class="custom-badge generalNegro">No eEnviado</span>';
-                                    }else{
-                                        return '<span class="custom-badge generalNegro">En proceso</span>';
-                                    }
-                                }
-                                
+                                let conteo = '(Total Prestaciones: ' + data.contadorPrestaciones + ') (Total Cerrados: ' + data.cdorCerrados + ') (Total Finalizados: ' + data.cdorFinalizados + ') (Total eEnviados:' + data.cdorEEnviados + ')';
+
+                            if(enviados){
+                                return '<span title="' + conteo + '" class="custom-badge generalNegro">eEnviado</span>';
+                            }else if(abierto){
+                                return '<span title="' + conteo + '" class="custom-badge generalNegro">Abierto</span>';
+                            }else if(terminado){
+                                return '<span title="' + conteo + '" class="custom-badge generalNegro">Terminado</span>';
+                            }else if(cerrado){
+                                return '<span title="' + conteo + '" class="custom-badge generalNegro">Cerrado</span>';
+                            }else if(noEnviados){
+                                return '<span title="' + conteo + '" class="custom-badge generalNegro">No eEnviado</span>';
+                            }else if(data.contadorPrestaciones === 0){
+                                return '<span title="' + conteo + '" class="custom-badge generalNegro">Vacío</span>';
+                            }       
                         }
                     },
                     {
@@ -157,16 +158,14 @@ $(document).ready(()=>{
 
                     let totalDias = getDias(data.FechaE);
 
-                    if (totalDias >= -15 && totalDias <= 11 && data.eEnviado === 0) {
+                    if (totalDias >= 11 && totalDias <= 15 && data.eEnviado === 0) {
                         resultado = $(row).addClass('fondo-amarillo');
-                    } else if (totalDias >= -10 && totalDias <= 1 && data.eEnviado === 0) {
+                    } else if (totalDias >= 1 && totalDias <= 10 && data.eEnviado === 0) {
                         resultado = $(row).addClass('fondo-naranja');
                     } else if (totalDias <= 0 && data.eEnviado === 0) {
                         resultado = $(row).addClass('fondo-rojo');
-                    } else if (data.eEnviado === 1) {
+                    } else if (data.contadorPrestaciones > 0 && data.contadorPrestaciones === data.cdorEEnviados) {
                         resultado = $(row).addClass('fondo-verde');
-                    }else {
-                        resultado = $(row).addClass('fondo-blanco');
                     }
                 
                     return resultado;

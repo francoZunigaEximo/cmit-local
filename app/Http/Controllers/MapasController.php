@@ -40,28 +40,32 @@ class MapasController extends Controller
 
         if ($request->ajax()) {
 
-            $query = DB::table('mapas')
-                ->select(
+            $query = Mapa::select(
                     'mapas.Id AS Id', 
-                    'mapas.Nro AS Nro', 
+                    'mapas.Nro AS Nro',
+                    'mapas.Fecha AS Fecha', 
+                    'mapas.FechaE AS FechaE',
+                    'mapas.Cmapeados AS Cmapeados',
+                    'mapas.Cpacientes AS contadorPacientes', 
                     'clientes.RazonSocial AS Art',
                     'clientes.ParaEmpresa AS ParaEmpresa_Art',
                     'clientes.NombreFantasia AS NombreFantasia_Art',   
                     'clientes2.RazonSocial AS Empresa', 
                     'clientes2.ParaEmpresa AS ParaEmpresa_Empresa',
                     'clientes2.ParaEmpresa AS NombreFantasia_Empresa',  
-                    'mapas.Fecha AS Fecha', 
-                    'mapas.FechaE AS FechaE', 
                     'prestaciones.eEnviado AS eEnviado', 
                     'prestaciones.Cerrado AS Cerrado', 
                     'prestaciones.Entregado AS Entregado', 
                     'prestaciones.Finalizado AS Finalizado', 
                     'prestaciones.IdPaciente AS IdPaciente', 
-                    'prestaciones.Id AS IdPrestacion',
-                    'mapas.Cmapeados AS Cmapeados',
-                    'mapas.Cpacientes AS contadorPacientes')
+                    'prestaciones.Id AS IdPrestacion'
+                    )
                 ->selectRaw('COALESCE((SELECT COUNT(*) FROM prestaciones WHERE IdMapa = mapas.Id AND prestaciones.Anulado = 0), 0) AS contadorPrestaciones')
-                ->selectRaw("COALESCE((SELECT COUNT(*) FROM mapas JOIN prestaciones ON prestaciones.IdPaciente = pacientes.Id WHERE pacientes.Id = prestaciones.IdPaciente AND mapas.Nro = ? AND prestaciones.Anulado = 0), 0) AS cdorPacientesAnulados", [$request->Nro])
+                ->selectRaw("COALESCE((SELECT COUNT(*) FROM prestaciones WHERE IdMapa = mapas.Id AND prestaciones.Anulado = 1), 0) AS cdorPacientesAnulados")
+                ->selectRaw("COALESCE((SELECT COUNT(*) FROM prestaciones WHERE IdMapa = mapas.Id AND eEnviado = 1), 0) AS cdorEEnviados")
+                ->selectRaw("COALESCE((SELECT COUNT(*) FROM prestaciones WHERE IdMapa = mapas.Id AND Finalizado = 1), 0) AS cdorFinalizados")
+                ->selectRaw("COALESCE((SELECT COUNT(*) FROM prestaciones WHERE IdMapa = mapas.Id AND Cerrado = 1), 0) AS cdorCerrados")   
+                ->selectRaw("COALESCE((SELECT COUNT(*) FROM prestaciones WHERE IdMapa = mapas.Id AND Entregado = 1), 0) AS cdorEntregados")
                 ->leftJoin('prestaciones', 'mapas.Id', '=', 'prestaciones.IdMapa')
                 ->leftJoin('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
                 ->join('clientes', 'mapas.IdART', '=', 'clientes.Id')
@@ -106,7 +110,8 @@ class MapasController extends Controller
             $query->when(is_array($Estado) && in_array('abierto', $Estado), function ($query) {
                 $query->addSelect(DB::raw("'Abierto' as estado"))
                     ->where('prestaciones.Finalizado', '=', 0)
-                    ->where('prestaciones.Cerrado', '=', 0);
+                    ->where('prestaciones.Cerrado', '=', 0)
+                    ->where('prestaciones.Entregado', '=', 0);
             });
 
             //Cerrado
@@ -200,13 +205,20 @@ class MapasController extends Controller
         return view('layouts.mapas.create');
     }
 
-    public function delete(Request $request)
+    public function edit(Mapa $mapa)
     {
+        $cerradas = $this->contadorCerrado($mapa->Id);
+        $finalizados = $this->contadorFinalizado($mapa->Id);
+        $entregados = $this->contadorEntregado($mapa->Id);
+        $conEstado = $this->contadorConEstado($mapa->Id);
+        $completas = $this->contadorCompletas($mapa->Id);
+        $enProceso = $this->contadorEnProceso($mapa->Id);
+        $presentes = $enProceso + $completas + $cerradas + $finalizados + $entregados;
+        $ausentes = (intval($mapa->Cpacientes) ?? 0) - $presentes;
 
-        $mapa = Mapa::find($request->Id);
-        $mapa->Inactivo = 1;
-        $mapa->save();
+        return view('layouts.mapas.edit', compact(['mapa', 'cerradas', 'finalizados', 'entregados', 'conEstado', 'presentes', 'completas', 'enProceso', 'ausentes']));
     }
+
 
     public function store(Request $request)
     {
@@ -230,50 +242,6 @@ class MapasController extends Controller
         return redirect()->route('mapas.edit', ['mapa' => $nuevoId]);
     }
 
-    public function edit(Mapa $mapa)
-    {
-        $cerradas = $this->contadorCerrado($mapa->Id);
-        $finalizados = $this->contadorFinalizado($mapa->Id);
-        $entregados = $this->contadorEntregado($mapa->Id);
-        $conEstado = $this->contadorConEstado($mapa->Id);
-        $completas = $this->contadorCompletas($mapa->Id);
-        $enProceso = $this->contadorEnProceso($mapa->Id);
-        $presentes = $enProceso + $completas + $cerradas + $finalizados + $entregados;
-        $ausentes = (intval($mapa->Cpacientes) ?? 0) - $presentes;
-
-        return view('layouts.mapas.edit', compact(['mapa', 'cerradas', 'finalizados', 'entregados', 'conEstado', 'presentes', 'completas', 'enProceso', 'ausentes']));
-    }
-
-    public function prestaciones(Request $request)
-    {
-        $query = Prestacion::select(
-            'mapas.Id AS Id',
-            'mapas.Nro AS Nro',
-            'mapas.Fecha AS Fecha',
-            'mapas.FechaE AS FechaE',
-            'mapas.Cpacientes AS contadorPacientes',
-            'prestaciones.eEnviado AS eEnviado',
-            'prestaciones.Cerrado AS Cerrado',
-            'prestaciones.Entregado AS Entregado',
-            'prestaciones.Finalizado AS Finalizado',
-            'prestaciones.IdPaciente AS IdPaciente',
-            'prestaciones.Id AS IdPrestacion',
-            'prestaciones.NroCEE AS NroCEE',
-            'prestaciones.Incompleto AS Incompleto',
-            'prestaciones.Facturado AS Facturado',
-            'pacientes.Apellido AS Apellido',
-            'pacientes.Nombre AS Nombre',
-            DB::raw('(SELECT CASE WHEN COUNT(*) = SUM(CASE WHEN items.CAdj IN (3, 4, 5, 6) AND items.CInfo = 3 THEN 1 ELSE 0 END) THEN "Completo" ELSE "Incompleto" END FROM itemsprestaciones AS items WHERE items.IdPrestacion = prestaciones.Id) AS Etapa')
-        )
-        ->join('mapas', 'prestaciones.IdMapa', '=', 'mapas.Id')
-        ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-        ->leftJoin('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
-        ->where('mapas.Nro', '=', $request->mapa);
-
-        $result = $query->distinct()->get();
-        return response()->json($result);
-    }
-
     public function updateMapa(Request $request): void
     {
         $mapa = Mapa::where('Id', $request->Id)->first();
@@ -292,132 +260,159 @@ class MapasController extends Controller
         }
     }
 
-    public function excel(Request $request)
+    public function delete(Request $request)
     {
+
+        $mapa = Mapa::find($request->Id);
+        if($mapa)
+        {
+            $mapa->Inactivo = 1;
+            $mapa->save();
+        }
         
-        $ids = $request->input('Id');
-        if (! is_array($ids)) {
-            $ids = [$ids];
-        }
-
-        $mapas = Mapa::join('prestaciones', 'mapas.Id', '=', 'prestaciones.IdMapa')
-            ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-            ->select(
-                'mapas.Id as Id',
-                'mapas.Nro as Nro',
-                DB::raw('(Select RazonSocial from clientes where Id = mapas.IdART) AS Art'),
-                DB::raw('(Select RazonSocial from clientes where Id = mapas.IdEMpresa) AS Empresa'),
-                'mapas.Fecha as Fecha',
-                'mapas.FechaE as FechaE',
-                'mapas.Inactivo as Inactivo',
-                'mapas.Obs as Obs',
-                'prestaciones.eEnviado as eEnviado',
-                'prestaciones.Cerrado as Cerrado',
-                'prestaciones.Entregado as Entregado',
-                'prestaciones.Finalizado as Finalizado',
-                'prestaciones.NroCEE as NroCEE',
-                DB::raw('(Select Nombre from pacientes where Id = prestaciones.IdPaciente) AS Nombre'),
-                DB::raw('(Select Apellido from pacientes where Id = prestaciones.IdPaciente) AS Apellido'),
-                'prestaciones.Id as IdPrestacion',
-                DB::raw('COALESCE((SELECT COUNT(*) FROM prestaciones WHERE IdMapa = mapas.Id), 0) as contadorPrestaciones'),
-                DB::raw('COALESCE((SELECT COUNT(*) FROM pacientes WHERE pacientes.Id = prestaciones.IdPaciente), 0) as contadorPacientes'),
-                DB::raw('COALESCE((SELECT COUNT(*) FROM pacientes WHERE pacientes.Id = prestaciones.IdPaciente AND prestaciones.Anulado = 0), 0) as cdorPacientesAnulados')
-                
-            );
-            
-        $mapas->when($request->modulo === 'remito', function ($mapas) use ($ids, $request) {
-            $mapas->whereIn('prestaciones.NroCEE', $ids)
-                    ->where('mapas.Nro', $request->mapa);
-        });
-
-        $mapas->when($request->tipo === null, function ($mapas) use ($ids) {
-            $mapas->whereIn('mapas.Id', $ids);
-        });
-
-        $result = $mapas->orderBy('pacientes.Id', 'DESC')->groupBy('Nro')->get(); 
-
-        $csv = "Id,Nro,Art,Empresa,Fecha Corte,Fecha Entrega,Inactivo,Nro de Remito, eEnviado,Cerrado,Entregado,Finalizado,Apellido y Nombre, Total de Prestaciones,Observación\n";
-
-        foreach ($result as $row) {
-            $Id = $row->Id ?? '-';
-            $Nro = $row->Nro ?? '-';
-            $Art = $row->Art ?? '-';
-            $Empresa = $row->Empresa ?? '-';
-            $Fecha = $row->Fecha ?? '-';
-            $FechaE = $row->FechaE ?? '-';
-            $Inactivo = ($row->Inactivo === 0 ? 'No' : ($row->Inactivo === 1 ? 'Sí' : '-')) ?? '-';
-            $nroRemito = ($row->NroCEE === '' || $row->NroCEE === null ? '-' : $row->NroCEE);
-            $eEnviado = ($row->eEnviado === 0 ? 'No' : ($row->eEnviado === 1 ? 'Sí' : '-')) ?? '-';
-            $Cerrado = ($row->Cerrado === 0 ? 'No' : ($row->Cerrado === 1 ? 'Sí' : '-')) ?? '-';
-            $Entregado = ($row->Entregado === 0 ? 'No' : ($row->Entregado === 1 ? 'Sí' : '-')) ?? '-';
-            $Finalizado = ($row->Finalizado === 0 ? 'No' : ($row->Finalizado === 1 ? 'Sí' : '-')) ?? '-';
-            $NombreCompleto = $row->Apellido.' '.$row->Nombre;
-            $TotalPrestaciones = $row->contadorPrestaciones ?? '-';
-            $Obs = str_replace(["\r", "\n", ','], ' ', $row->Obs);
-
-            $csv .= "$Id,$Nro,$Art,$Empresa,$Fecha,$FechaE,$Inactivo,$nroRemito,$eEnviado,$Cerrado,$Entregado,$Finalizado,$NombreCompleto,$TotalPrestaciones,$Obs\n";
-        }
-
-        // Generar un nombre aleatorio para el archivo
-        $name = Str::random(10).'.xlsx';
-
-        // Guardar el archivo en la carpeta de almacenamiento
-        $filePath = storage_path('app/public/'.$name);
-        file_put_contents($filePath, $csv);
-        chmod($filePath, 0777);
-
-        // Devolver la ruta del archivo generado
-        return response()->json(['filePath' => $filePath]);
-
     }
 
-    public function pdf(Request $request)
+    public function prestaciones(Request $request)
     {
-        $ids = $request->input('Id');
-        if (! is_array($ids)) {
-            $ids = [$ids];
-        }
+        $query = $this->queryPrestaciones($request->mapa);
+        $result = $query->distinct()->get();
+        return response()->json($result);
+    }
 
-        $mapas = Mapa::select(
-                'mapas.Id as Id',
-                'mapas.Nro as Nro',
-                DB::raw('(Select RazonSocial from clientes where Id = mapas.IdART) AS Art'),
-                DB::raw('(Select RazonSocial from clientes where Id = mapas.IdEMpresa) AS Empresa'),
-                'mapas.Fecha as Fecha',
-                'mapas.FechaE as FechaE',
-                'mapas.Inactivo as Inactivo',
-                'mapas.Obs as Obs',
-                'prestaciones.eEnviado as eEnviado',
-                'prestaciones.Cerrado as Cerrado',
-                'prestaciones.Entregado as Entregado',
-                'prestaciones.Finalizado as Finalizado',
-                'prestaciones.NroCEE as NroCEE',
-                DB::raw('(Select Nombre from pacientes where Id = prestaciones.IdPaciente) AS Nombre'),
-                DB::raw('(Select Apellido from pacientes where Id = prestaciones.IdPaciente) AS Apellido'),
-                'prestaciones.Id as IdPrestacion',
-                DB::raw('COALESCE((SELECT COUNT(*) FROM prestaciones WHERE IdMapa = mapas.Id), 0) as contadorPrestaciones'),
-                DB::raw('COALESCE((SELECT COUNT(*) FROM pacientes WHERE pacientes.Id = prestaciones.IdPaciente), 0) as contadorPacientes'),
-                DB::raw('COALESCE((SELECT COUNT(*) FROM pacientes WHERE pacientes.Id = prestaciones.IdPaciente AND prestaciones.Anulado = 0), 0) as cdorPacientesAnulados'))
-            ->join('prestaciones', 'mapas.Id', '=', 'prestaciones.IdMapa')
-            ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-            ->whereIn('prestaciones.NroCEE', $ids)
-            ->where('mapas.Nro', $request->mapa)
-            ->orderBy('pacientes.Id', 'DESC')
-            ->get(); 
+    public function searchMapaPres(Request $request)
+    {
 
-        $pdf = PDF::loadView('layouts.mapas.pdf', ['result' => $mapas]);
-        $path = storage_path('app/public/');
-        $fileName = time() . '.pdf';
-        $pdf->save($path . $fileName);
-        
-        $pdfPath = $path . $fileName;
-        chmod($pdfPath, 0777);
-        return response()->json(['filePath' => $pdfPath]);
+            $NroPrestacion = $request->NroPrestacion;
+            $NroRemito = $request->NroRemito;
+            $Etapa = $request->Etapa;
+            $Estado = $request->Estado;
+
+            $estadoColumnas = [
+                'cerrado' => 'Cerrado',
+                'finalizado' => 'Finalizado',
+                'entregado' => 'Entregado',
+                'anulado' => 'Anulado',
+                'eEnviado' => 'eEnviado'
+            ];
+            
+            $query = $this->queryPrestaciones($request->mapa);
+            $query->when($NroPrestacion, function ($query) use ($NroPrestacion) {
+                $query->where('prestaciones.Id', $NroPrestacion);
+            });
+            
+            $query->when($NroRemito, function ($query) use ($NroRemito) {
+                $query->where('prestaciones.NroCEE', $NroRemito);
+            });
+            
+            $query->when($Estado == 'abierto', function ($query) use ($Estado) {
+                $query->where('prestaciones.Finalizado', '=', 0)
+                    ->where('prestaciones.Cerrado', '=', 0);
+            });
+            
+            if (isset($estadoColumnas[$Estado])) {
+                $query->where("prestaciones.{$estadoColumnas[$Estado]}", '=', 1);
+            }
+
+            if ($Etapa === 'completa') {
+                $query->where(function ($query) {
+                    $query->whereIn('itemsprestaciones.CAdj', [3, 4, 5, 6])
+                        ->where('itemsprestaciones.CInfo', 3);
+                });
+            } 
+            
+            if ($Etapa === 'incompleta') {
+                $query->where(function ($query) {
+                    $query->whereNotIn('itemsprestaciones.CAdj', [3, 4, 5, 6])
+                        ->orWhere('itemsprestaciones.CInfo', '<>', 3);
+                });
+            }
+              
+            $result = $query->distinct()->get();
+
+            /*$result = $result->filter(function ($item) {
+                return $item->Etapa == 'Completo' || $item->Etapa == 'Incompleto';
+            });*/
+            
+            return response()->json(['result' => $result]);
     }
 
     public function show($id)
     {
         // Show
+    }
+
+    public function export(Request $request)
+    {
+        
+        $ids = $request->input('Id');
+        if (! is_array($ids)) {
+            $ids = [$ids];
+        }
+
+        if($request->archivo === 'csv')
+        {
+
+            $mapas = $this->queryBase();
+            
+            $mapas->when($request->modulo === 'remito', function ($mapas) use ($ids, $request) {
+                $mapas->whereIn('prestaciones.NroCEE', $ids)
+                        ->where('mapas.Nro', $request->mapa);
+            });
+
+            $mapas->when($request->tipo === null, function ($mapas) use ($ids) {
+                $mapas->whereIn('mapas.Id', $ids);
+            });
+
+            $result = $mapas->orderBy('pacientes.Id', 'DESC')->groupBy('mapas.Nro')->get(); 
+
+            $csv = "Id,Nro,Art,Empresa,Fecha Corte,Fecha Entrega,Inactivo,Nro de Remito, eEnviado,Cerrado,Entregado,Finalizado,Apellido y Nombre, Total de Prestaciones,Observación\n";
+
+            foreach ($result as $row) {
+                $Id = $row->Id ?? '-';
+                $Nro = $row->Nro ?? '-';
+                $Art = $row->Art ?? '-';
+                $Empresa = $row->Empresa ?? '-';
+                $Fecha = $row->Fecha ?? '-';
+                $FechaE = $row->FechaE ?? '-';
+                $Inactivo = ($row->Inactivo === 0 ? 'No' : ($row->Inactivo === 1 ? 'Sí' : '-')) ?? '-';
+                $nroRemito = ($row->NroCEE === '' || $row->NroCEE === null ? '-' : $row->NroCEE);
+                $eEnviado = ($row->eEnviado === 0 ? 'No' : ($row->eEnviado === 1 ? 'Sí' : '-')) ?? '-';
+                $Cerrado = ($row->Cerrado === 0 ? 'No' : ($row->Cerrado === 1 ? 'Sí' : '-')) ?? '-';
+                $Entregado = ($row->Entregado === 0 ? 'No' : ($row->Entregado === 1 ? 'Sí' : '-')) ?? '-';
+                $Finalizado = ($row->Finalizado === 0 ? 'No' : ($row->Finalizado === 1 ? 'Sí' : '-')) ?? '-';
+                $NombreCompleto = $row->Apellido.' '.$row->Nombre;
+                $TotalPrestaciones = $row->contadorPrestaciones ?? '-';
+                $Obs = str_replace(["\r", "\n", ','], ' ', $row->Obs);
+
+                $csv .= "$Id,$Nro,$Art,$Empresa,$Fecha,$FechaE,$Inactivo,$nroRemito,$eEnviado,$Cerrado,$Entregado,$Finalizado,$NombreCompleto,$TotalPrestaciones,$Obs\n";
+            }
+
+            // Generar un nombre aleatorio para el archivo
+            $name = Str::random(10).'.csv';
+
+            // Guardar el archivo en la carpeta de almacenamiento
+            $filePath = storage_path('app/public/'.$name);
+            file_put_contents($filePath, $csv);
+            chmod($filePath, 0777);
+
+        } elseif($request->archivo === 'pdf'){
+
+            $mapas = $this->queryBase();
+            $mapas->whereIn('prestaciones.NroCEE', $ids)
+            ->where('mapas.Nro', $request->mapa)
+            ->orderBy('pacientes.Id', 'DESC')->groupBy('mapas.Nro')->get(); 
+
+            $pdf = PDF::loadView('layouts.mapas.pdf', ['result' => $mapas]);
+            $path = storage_path('app/public/');
+            $fileName = time() . '.pdf';
+            $pdf->save($path . $fileName);
+            
+            $filePath = $path . $fileName;
+            chmod($filePath, 0777);
+        }
+
+        // Devolver la ruta del archivo generado
+        return response()->json(['filePath' => $filePath]);
     }
 
     //Obtenemos listado mapas
@@ -462,87 +457,6 @@ class MapasController extends Controller
         $this->constanciaseRemito($request->Id, $request->Obs);
     }
 
-
-    public function searchMapaPres(Request $request)
-    {
-
-            $NroPrestacion = $request->NroPrestacion;
-            $NroRemito = $request->NroRemito;
-            $Etapa = $request->Etapa;
-            $Estado = $request->Estado;
-
-            $estadoColumnas = [
-                'cerrado' => 'Cerrado',
-                'finalizado' => 'Finalizado',
-                'entregado' => 'Entregado',
-                'anulado' => 'Anulado',
-                'eEnviado' => 'eEnviado'
-            ];
-            
-            $query = Prestacion::select(
-                'mapas.Id AS Id',
-                'mapas.Nro AS Nro',
-                'mapas.Fecha AS Fecha',
-                'mapas.FechaE AS FechaE',
-                'mapas.Cpacientes AS contadorPacientes',
-                'prestaciones.eEnviado AS eEnviado',
-                'prestaciones.Cerrado AS Cerrado',
-                'prestaciones.Entregado AS Entregado',
-                'prestaciones.Finalizado AS Finalizado',
-                'prestaciones.IdPaciente AS IdPaciente',
-                'prestaciones.Id AS IdPrestacion',
-                'prestaciones.NroCEE AS NroCEE',
-                'prestaciones.Facturado AS Facturado',
-                'pacientes.Apellido AS Apellido',
-                'pacientes.Nombre AS Nombre',
-                DB::raw('(SELECT CASE WHEN COUNT(*) = SUM(CASE WHEN items.CAdj IN (3, 4, 5, 6) AND items.CInfo = 3 THEN 1 ELSE 0 END) THEN "Completo" ELSE "Incompleto" END FROM itemsprestaciones AS items WHERE items.IdPrestacion = prestaciones.Id) AS Etapa')
-            )
-            ->join('mapas', 'prestaciones.IdMapa', '=', 'mapas.Id')
-            ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-            ->leftJoin('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
-            ->where('mapas.Nro', '=', $request->mapa);
-
-            
-            $query->when($NroPrestacion, function ($query) use ($NroPrestacion) {
-                $query->where('prestaciones.Id', $NroPrestacion);
-            });
-            
-            $query->when($NroRemito, function ($query) use ($NroRemito) {
-                $query->where('prestaciones.NroCEE', $NroRemito);
-            });
-            
-            $query->when($Estado == 'abierto', function ($query) use ($Estado) {
-                $query->where('prestaciones.Finalizado', '=', 0)
-                    ->where('prestaciones.Cerrado', '=', 0);
-            });
-            
-            if (isset($estadoColumnas[$Estado])) {
-                $query->where("prestaciones.{$estadoColumnas[$Estado]}", '=', 1);
-            }
-
-            if ($Etapa === 'completa') {
-                $query->where(function ($query) {
-                    $query->whereIn('itemsprestaciones.CAdj', [3, 4, 5, 6])
-                        ->where('itemsprestaciones.CInfo', 3);
-                });
-            } 
-            
-            if ($Etapa === 'incompleta') {
-                $query->where(function ($query) {
-                    $query->whereNotIn('itemsprestaciones.CAdj', [3, 4, 5, 6])
-                        ->orWhere('itemsprestaciones.CInfo', '<>', 3);
-                });
-            }
-              
-            $result = $query->distinct()->get();
-
-            /*$result = $result->filter(function ($item) {
-                return $item->Etapa == 'Completo' || $item->Etapa == 'Incompleto';
-            });*/
-            
-            return response()->json(['result' => $result]);
-    }
-
     public function getPacienteMapa(Request $request)
     {
         $prestacion = Prestacion::where('Id', $request->prestacion)->first('IdPaciente');
@@ -580,61 +494,44 @@ class MapasController extends Controller
          return response()->json($query);
     }
 
-    public function cerrar(Request $request): mixed
+    public function getCerrar(Request $request)
+    {
+        $query = $this->queryCerrar($request->mapa);
+        
+        $query->where(function ($query) {
+            $query->where( 'prestaciones.Cerrado', '=', 0)
+                ->orWhere('prestaciones.Cerrado', '=', 1);
+        });
+
+        $result = $query->get();
+
+        return response()->json(['result' => $result]);
+    }
+
+    public function serchInCerrar(Request $request): mixed
     {
 
         $NroPresCerrar = $request->prestacion;
-        $NroRemitoCerrar = $request->remito;
         $EstadoCerrar = $request->estado;
 
-        $estadoColumnas = [
-            'cerrado' => 'Cerrado',
-            'finalizado' => 'Finalizado',
-            'entregado' => 'Entregado',
-            'anulado' => 'Anulado',
-            'eEnviado' => 'eEnviado'
-        ];
-
-        $query = Prestacion::select(
-            'prestaciones.Id as IdPrestacion',
-            'prestaciones.Fecha as Fecha',
-            DB::raw('(SELECT Nombre FROM pacientes WHERE Id = prestaciones.IdPaciente) AS NombrePaciente'),
-            DB::raw('(SELECT Apellido FROM pacientes WHERE Id = prestaciones.IdPaciente) AS ApellidoPaciente'),
-            'pacientes.Documento as dni',
-            'prestaciones.Finalizado as Finalizado',
-            'prestaciones.eEnviado as eEnviado',
-            'prestaciones.Cerrado as Cerrado',
-            'prestaciones.Entregado AS Entregado',
-            'prestaciones.Anulado AS Anulado')
-            ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-            ->leftJoin('mapas', 'prestaciones.IdMapa', '=', 'mapas.Id')
-            ->leftJoin('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
-            ->where('itemsprestaciones.Ausente', 0)
-            ->where('itemsprestaciones.Incompleto', 0)
-            ->where('prestaciones.Cerrado', 0)
-            ->where('prestaciones.Finalizado', 0)
-            ->where('mapas.Nro', '=', $request->mapa);
+        $query = $this->queryCerrar($request->mapa);
 
         $query->when($NroPresCerrar, function ($query) use ($NroPresCerrar) {
             $query->where('prestaciones.Id', $NroPresCerrar);
         });
 
-        $query->when($NroRemitoCerrar, function ($query) use ($NroRemitoCerrar) {
-            $query->where('prestaciones.NroCEE', $NroRemitoCerrar);
-        });
-
-        $query->when($EstadoCerrar == 'abierto', function ($query) {
+        $query->when($EstadoCerrar === 'abierto', function ($query) {
             $query->where('prestaciones.Finalizado', '=', 0)
                 ->where('prestaciones.Cerrado', '=', 0);
         });
         
-        if (isset($estadoColumnas[$EstadoCerrar])) {
-            $query->where("prestaciones.{$estadoColumnas[$EstadoCerrar]}", '=', 1);
-        }
+        $query->when($EstadoCerrar === 'cerrado', function ($query) {
+            $query->where('prestaciones.Cerrado', '=', 1);
+        });
 
-        $result = $query->distinct()->get();
+        $result = $query->get();
 
-        return response()->json($result);
+        return response()->json(['result' => $result]);
     }
 
     public function saveCerrar(Request $request)
@@ -646,23 +543,7 @@ class MapasController extends Controller
             
             if($prestacion){
                 $prestacion->Cerrado = 1;
-                $prestacion->FechaCierre = Carbon::now()->format('Y-m-d');
-                $prestacion->save();
-            } 
-        }
-    }
-
-    public function saveFinalizar(Request $request): void
-    {
-        
-        $ids = $request->ids;
-
-        foreach ($ids as $id) {
-            $prestacion = Prestacion::where('Id', $id)->where('Cerrado', 1)->first();
-            
-            if($prestacion){
-                $prestacion->Finalizado = 1;
-                $prestacion->FechaFinalizado = Carbon::now()->format('Y-m-d');
+                $prestacion->FechaCierre = now()->format('Y-m-d');
                 $prestacion->save();
             } 
         }
@@ -700,7 +581,22 @@ class MapasController extends Controller
         return response()->json($mapa);
     }
 
-    public function finalizar(Request $request): mixed
+    public function getFinalizar(Request $request)
+    {
+        $query = $this->queryFinalizar($request->mapa);
+        
+        $query->where(function ($query) {
+            $query->where('prestaciones.Finalizado', '=', 0)
+                ->orWhere('prestaciones.Finalizado', '=', 1);
+        });
+
+        $result = $query->distinct()->get();
+
+        return response()->json(['result' => $result]);
+    }
+
+
+    public function searchInFinalizar(Request $request): mixed
     {
 
         $NroRemito = $request->remito;
@@ -738,6 +634,22 @@ class MapasController extends Controller
             $result = $query->distinct()->get();
 
         return response()->json($result);
+    }
+
+    public function saveFinalizar(Request $request): void
+    {
+        
+        $ids = $request->ids;
+
+        foreach ($ids as $id) {
+            $prestacion = Prestacion::where('Id', $id)->where('Cerrado', 1)->first();
+            
+            if($prestacion){
+                $prestacion->Finalizado = 1;
+                $prestacion->FechaFinalizado = now()->format('Y-m-d');
+                $prestacion->save();
+            } 
+        }
     }
 
     public function eEnviar(Request $request): mixed
@@ -804,61 +716,6 @@ class MapasController extends Controller
         }
     }
 
-    public function getCerrar(Request $request)
-    {
-        $query = Prestacion::select(
-            'prestaciones.Id as IdPrestacion',
-            'prestaciones.Fecha as Fecha',
-            DB::raw('(SELECT Nombre FROM pacientes WHERE Id = prestaciones.IdPaciente) AS NombrePaciente'),
-            DB::raw('(SELECT Apellido FROM pacientes WHERE Id = prestaciones.IdPaciente) AS ApellidoPaciente'),
-            'prestaciones.Finalizado as Finalizado',
-            'prestaciones.eEnviado as eEnviado',
-            'prestaciones.Cerrado as Cerrado',
-            'prestaciones.Entregado AS Entregado',
-            'pacientes.Documento AS dni',
-            'prestaciones.Anulado AS Anulado')
-            ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-            ->leftJoin('mapas', 'prestaciones.IdMapa', '=', 'mapas.Id')
-            ->leftJoin('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
-            ->where('itemsprestaciones.Ausente', 0)
-            ->where('itemsprestaciones.Incompleto', 0)
-            ->where(function($query) {
-                $query->where('prestaciones.Cerrado', 0)
-                      ->orWhere('prestaciones.Cerrado', 1);
-            })
-            ->where('prestaciones.Finalizado', 0)
-            ->where('mapas.Nro', '=', $request->mapa)
-            ->distinct()->get();
-        
-        return response()->json($query);
-    }
-
-    public function getFinalizar(Request $request)
-    {
-        $query = Prestacion::select(
-            'prestaciones.Id as IdPrestacion',
-            'prestaciones.Fecha as Fecha',
-            'prestaciones.NroCEE as NroRemito',
-            DB::raw('(SELECT Nombre FROM pacientes WHERE Id = prestaciones.IdPaciente) AS NombrePaciente'),
-            DB::raw('(SELECT Apellido FROM pacientes WHERE Id = prestaciones.IdPaciente) AS ApellidoPaciente'),
-            'prestaciones.Finalizado as Finalizado',
-            'prestaciones.eEnviado as eEnviado',
-            'prestaciones.Cerrado as Cerrado',
-            'prestaciones.Entregado AS Entregado',
-            'prestaciones.Anulado AS Anulado')
-            ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-            ->join('mapas', 'prestaciones.IdMapa', '=', 'mapas.Id')
-            ->where('prestaciones.Cerrado', 1)
-            ->where('prestaciones.Forma', 0)
-            ->where('prestaciones.Devol', 0)
-            ->where('prestaciones.RxPreliminar', 0)
-            ->where('prestaciones.SinEsc', 0)
-            ->where('mapas.Nro', '=', $request->mapa)
-            ->distinct()->get();
-
-        return response()->json($query);
-    }
-
     public function geteEnviar(Request $request)
     {
         $query = Prestacion::select(
@@ -882,7 +739,9 @@ class MapasController extends Controller
 
     public function changeEstado(Request $request)
     {
-        $estado = ($request->estado === 'examen' ? ItemPrestacion::find($request->Id) : Prestacion::find($request->Id));
+        $estado = ($request->estado === 'examen' 
+            ? ItemPrestacion::find($request->Id) 
+            : Prestacion::find($request->Id));
      
         if($estado)
         {
@@ -898,10 +757,7 @@ class MapasController extends Controller
         $remito = Prestacion::with(['constanciase' => function($query) {
             $query->select('Obs');
         }])
-        ->select(
-            'NroCEE',
-            'Id',
-            'Entregado',
+        ->select('NroCEE', 'Id', 'Entregado',
             DB::raw('COUNT(*) as contadorRemitos'))
         ->where('IdMapa', $request->Id)
         ->groupBy('NroCEE')
@@ -911,4 +767,107 @@ class MapasController extends Controller
     }
 
 
+    private function queryBase()
+    {
+        $query = Mapa::select(
+            'mapas.Id as Id',
+            'mapas.Nro as Nro',
+            DB::raw('(Select RazonSocial from clientes where Id = mapas.IdART) AS Art'),
+            DB::raw('(Select RazonSocial from clientes where Id = mapas.IdEMpresa) AS Empresa'),
+            'mapas.Fecha as Fecha',
+            'mapas.FechaE as FechaE',
+            'mapas.Inactivo as Inactivo',
+            'mapas.Obs as Obs',
+            'prestaciones.eEnviado as eEnviado',
+            'prestaciones.Cerrado as Cerrado',
+            'prestaciones.Entregado as Entregado',
+            'prestaciones.Finalizado as Finalizado',
+            'prestaciones.NroCEE as NroCEE',
+            DB::raw('(Select Nombre from pacientes where Id = prestaciones.IdPaciente) AS Nombre'),
+            DB::raw('(Select Apellido from pacientes where Id = prestaciones.IdPaciente) AS Apellido'),
+            'prestaciones.Id as IdPrestacion',
+            DB::raw('COALESCE((SELECT COUNT(*) FROM prestaciones WHERE IdMapa = mapas.Id), 0) as contadorPrestaciones'),
+            DB::raw('COALESCE((SELECT COUNT(*) FROM pacientes WHERE pacientes.Id = prestaciones.IdPaciente), 0) as contadorPacientes'),
+            DB::raw('COALESCE((SELECT COUNT(*) FROM pacientes WHERE pacientes.Id = prestaciones.IdPaciente AND prestaciones.Anulado = 0), 0) as cdorPacientesAnulados'))
+        ->join('prestaciones', 'mapas.Id', '=', 'prestaciones.IdMapa')
+        ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id');
+
+        return $query;
+    }
+
+    private function queryPrestaciones($idmapa)
+    {
+
+        $query = Prestacion::join('mapas', 'prestaciones.IdMapa', '=', 'mapas.Id')
+        ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+        ->leftJoin('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
+        ->select(
+            'mapas.Id AS Id',
+            'mapas.Nro AS Nro',
+            'mapas.Fecha AS Fecha',
+            'mapas.FechaE AS FechaE',
+            'mapas.Cpacientes AS contadorPacientes',
+            'prestaciones.eEnviado AS eEnviado',
+            'prestaciones.Cerrado AS Cerrado',
+            'prestaciones.Entregado AS Entregado',
+            'prestaciones.Finalizado AS Finalizado',
+            'prestaciones.IdPaciente AS IdPaciente',
+            'prestaciones.Id AS IdPrestacion',
+            'prestaciones.NroCEE AS NroCEE',
+            'prestaciones.Facturado AS Facturado',
+            'pacientes.Apellido AS Apellido',
+            'pacientes.Nombre AS Nombre',
+            DB::raw('(SELECT CASE WHEN COUNT(*) = SUM(CASE WHEN items.CAdj IN (3, 4, 5, 6) AND items.CInfo = 3 THEN 1 ELSE 0 END) THEN "Completo" ELSE "Incompleto" END FROM itemsprestaciones AS items WHERE items.IdPrestacion = prestaciones.Id) AS Etapa'))
+        ->where('mapas.Nro', '=', $idmapa);
+
+        return $query;
+    }
+
+    private function queryCerrar($idmapa)
+    {
+        $query = Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+        ->join('mapas', 'prestaciones.IdMapa', '=', 'mapas.Id')
+            ->select(
+            'prestaciones.Id as IdPrestacion',
+            'prestaciones.Fecha as Fecha',
+            'prestaciones.Finalizado as Finalizado',
+            'prestaciones.eEnviado as eEnviado',
+            'prestaciones.Cerrado as Cerrado',
+            'prestaciones.Entregado AS Entregado',
+            'pacientes.Documento AS dni',
+            'prestaciones.Anulado AS Anulado',
+            DB::raw('(SELECT Nombre FROM pacientes WHERE Id = prestaciones.IdPaciente) AS NombrePaciente'),
+            DB::raw('(SELECT Apellido FROM pacientes WHERE Id = prestaciones.IdPaciente) AS ApellidoPaciente'))
+            ->where('mapas.Nro', '=', $idmapa);
+
+        return $query;
+    }
+
+    private function queryFinalizar($idmapa)
+    {
+        $query = Prestacion::select(
+            'prestaciones.Id as IdPrestacion',
+            'prestaciones.Fecha as Fecha',
+            'prestaciones.NroCEE as NroRemito',
+            DB::raw('(SELECT Nombre FROM pacientes WHERE Id = prestaciones.IdPaciente) AS NombrePaciente'),
+            DB::raw('(SELECT Apellido FROM pacientes WHERE Id = prestaciones.IdPaciente) AS ApellidoPaciente'),
+            'prestaciones.Finalizado as Finalizado',
+            'prestaciones.eEnviado as eEnviado',
+            'prestaciones.Cerrado as Cerrado',
+            'prestaciones.Entregado AS Entregado',
+            'prestaciones.Anulado AS Anulado')
+            ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+            ->join('mapas', 'prestaciones.IdMapa', '=', 'mapas.Id')
+            ->where('prestaciones.Cerrado', 1)
+            ->where('prestaciones.Forma', 0)
+            ->where('prestaciones.Devol', 0)
+            ->where('prestaciones.RxPreliminar', 0)
+            ->where('prestaciones.SinEsc', 0)
+            ->where('mapas.Nro', $idmapa);
+
+        return $query;
+    }
+
+
 } 
+

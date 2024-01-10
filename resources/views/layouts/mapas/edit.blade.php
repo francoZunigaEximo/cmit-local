@@ -302,18 +302,15 @@
                     <label for="EstadoCerrar" class="form-label font-weight-bold"><strong>Estado:</strong></label>
                     <select class="form-control" name="EstadoCerrar" id="EstadoCerrar">
                         <option value="" selected>Elija una opción...</option>
-                        <option value="finalizado">Finalizado</option>
                         <option value="abierto">Abierto</option>
-                        <option value="eEnviado">eEnviado</option>
-                        <option value="entregado">Entregado</option>
-                        <option value="anulado">Anulado</option>
+                        <option value="cerrado">Cerrado</option>
                     </select>
                 </div>
             </div> 
 
             <div class="row">
                 <div class="col-sm-12" style="text-align: right;">
-                    <button type="button" class="btn btn-success cerrarMapa waves-effect waves-light">
+                    <button type="button" class="btn botonGeneral cerrarMapa">
                         <i class=" ri-lock-2-fill"></i> Cerrar    
                     </button>
                 </div>
@@ -362,11 +359,11 @@
                     <p style="font-size: small">Al presionar el botón <span class="badge badge-outline-warning">FINALIZAR</span>, se asignará a las prestaciones un Nro de Remito.</p>
                 </div>
                 <div class="col-sm-4" style="text-align: right;">
-                    <button type="button" class="btn btn-warning finalizarMap waves-effect waves-light">
+                    <button type="button" class="btn botonGeneral finalizarMap">
                         <i class="ri-lock-2-fill"></i> Finalizar    
                     </button>
                 </div>
-            </div>
+            </div>4
 
             <div class="table-responsive table-card mt-3 mb-1">
                 <table id="listaFinalizar" class="display table table-bordered" style="width:100%">
@@ -597,15 +594,14 @@
 <script>
 //Rutas
 const getClientes = "{{ route('getClientes') }}";
-const exportExcelMapas = "{{ route('exportExcelMapas') }}";
-const mapasPdf = "{{ route('mapasPdf') }}";
+const fileExport = "{{ route('fileExport') }}";
 const saveRemitos = "{{ route('saveRemitos') }}";
 const updateMapa = "{{ route('updateMapa') }}";
 const searchMapaPres = "{{ route('searchMapaPres') }}";
 const getPacienteMapa = "{{ route('getPacienteMapa') }}";
 const getExamenMapa = "{{ route('getExamenMapa') }}";
-const getCerrarMapa = "{{ route('getCerrarMapa') }}";
-const getFinalizarMapa = "{{ route('getFinalizarMapa') }}";
+const serchInCerrar = "{{ route('serchInCerrar') }}";
+const searchInFinalizar = "{{ route('searchInFinalizar') }}";
 const saveEstado = "{{ route('saveEstado') }}"
 const getEnviarMapa = "{{ route('getEnviarMapa') }}";
 const saveEnviar = "{{ route('saveEnviar') }}";

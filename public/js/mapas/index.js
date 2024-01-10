@@ -30,11 +30,11 @@ $(document).ready(()=>{
         if (ids.length > 0) {
             if (confirm("¿Estás seguro de que deseas generar el reporte de Excel con todos los items seleccionados?")) {
                 $.ajax({
-                    url: exportExcelMapas,
-                    type: "POST",
+                    url: fileExport,
+                    type: "GET",
                     data: {
-                        _token: TOKEN,
-                        Id: ids
+                        Id: ids,
+                        archivo: 'csv'
                     },
                     success: function(response) {
                         let filePath = response.filePath;
@@ -49,7 +49,7 @@ $(document).ready(()=>{
 
                         let link = document.createElement('a');
                         link.href = fullPath;
-                        link.download = "mapas.xlsx";
+                        link.download = "mapas.csv";
                         link.style.display = 'none';
 
                         document.body.appendChild(link);
