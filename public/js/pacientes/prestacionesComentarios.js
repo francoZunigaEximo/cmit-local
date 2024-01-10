@@ -17,9 +17,8 @@ $(document).ready(function(){
 
         $.ajax({
             url: getComentarioPres,
-            type: 'Post',
+            type: 'get',
             data: {
-                _token: TOKEN,
                 Id: IdComentario
             },
             success: function(response){
