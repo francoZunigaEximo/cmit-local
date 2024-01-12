@@ -10,16 +10,6 @@ use App\Models\Mapa;
 trait ObserverMapas
 {
     
-    public function constanciaseRemito(int $id, string $obs): mixed
-    {
-        Constanciase::create([
-            'Id' => Constanciase::max('Id') +1,
-            'NroC' => $id,
-            'Fecha' => Carbon::now()->toDateTimeString(),
-            'Obs' => $obs
-        ]);
-    } 
-
     public function contadorRemitos(int $id): mixed
     {
         $conteo = Prestacion::select(
@@ -120,5 +110,14 @@ trait ObserverMapas
         return $totalProceso;
     }
 
+    public function actualizarRemitoPrestacion(int $id, int $nroRemito): void
+    {
+        $prestacion = Prestacion::find($id);
+        if($prestacion)
+        {
+            $prestacion->NroCEE = $nroRemito;
+            $prestacion->save();
+        }
+    }
 
 }

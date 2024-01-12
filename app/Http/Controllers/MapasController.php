@@ -6,6 +6,8 @@ use App\Models\ItemPrestacion;
 use App\Models\Prestacion;
 use App\Models\Mapa;
 use App\Models\Paciente;
+use App\Models\Constanciase;
+use App\Models\ConstanciaseIt;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -40,7 +42,11 @@ class MapasController extends Controller
 
         if ($request->ajax()) {
 
-            $query = Mapa::select(
+            $query = Mapa::leftJoin('prestaciones', 'mapas.Id', '=', 'prestaciones.IdMapa')
+            ->leftJoin('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+            ->join('clientes', 'mapas.IdART', '=', 'clientes.Id')
+            ->join('clientes AS clientes2', 'mapas.IdEMpresa', '=', 'clientes2.Id')
+            ->select(
                     'mapas.Id AS Id', 
                     'mapas.Nro AS Nro',
                     'mapas.Fecha AS Fecha', 
@@ -66,15 +72,11 @@ class MapasController extends Controller
                 ->selectRaw("COALESCE((SELECT COUNT(*) FROM prestaciones WHERE IdMapa = mapas.Id AND Finalizado = 1), 0) AS cdorFinalizados")
                 ->selectRaw("COALESCE((SELECT COUNT(*) FROM prestaciones WHERE IdMapa = mapas.Id AND Cerrado = 1), 0) AS cdorCerrados")   
                 ->selectRaw("COALESCE((SELECT COUNT(*) FROM prestaciones WHERE IdMapa = mapas.Id AND Entregado = 1), 0) AS cdorEntregados")
-                ->leftJoin('prestaciones', 'mapas.Id', '=', 'prestaciones.IdMapa')
-                ->leftJoin('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-                ->join('clientes', 'mapas.IdART', '=', 'clientes.Id')
-                ->join('clientes AS clientes2', 'mapas.IdEMpresa', '=', 'clientes2.Id')
                 ->where('mapas.Nro', '<>', '0')
                 ->orderByDesc('mapas.Id');
 
             $query->when($Nro, function ($query) use ($Nro) {
-                $query->where('mapas.Nro', '=', $Nro);
+                $query->where('mapas.Nro', $Nro);
                     
             });
 
@@ -101,38 +103,38 @@ class MapasController extends Controller
             //Terminado
             $query->when(is_array($Estado) && in_array('terminado', $Estado), function ($query) {
                 $query->addSelect(DB::raw("'Terminado' as estado"))
-                ->where('prestaciones.Entregado', '=', 1)
-                ->where('prestaciones.Cerrado', '=', 1)
-                ->where('prestaciones.eEnviado', '=', 1);
+                ->where('prestaciones.Entregado', 1)
+                ->where('prestaciones.Cerrado', 1)
+                ->where('prestaciones.eEnviado', 1);
             });
             
             //Abierto
             $query->when(is_array($Estado) && in_array('abierto', $Estado), function ($query) {
                 $query->addSelect(DB::raw("'Abierto' as estado"))
-                    ->where('prestaciones.Finalizado', '=', 0)
-                    ->where('prestaciones.Cerrado', '=', 0)
-                    ->where('prestaciones.Entregado', '=', 0);
+                    ->where('prestaciones.Finalizado', 0)
+                    ->where('prestaciones.Cerrado', 0)
+                    ->where('prestaciones.Entregado', 0);
             });
 
             //Cerrado
             $query->when(is_array($Estado) && in_array('cerrado', $Estado), function ($query){
                 $query->addSelect(DB::raw("'Cerrado' as estado"))
-                ->where('prestaciones.Cerrado', '=', 1);
+                ->where('prestaciones.Cerrado', 1);
             });
 
             //eEnviado
             $query->when(is_array($Estado) && in_array('eEnviado', $Estado), function ($query){
                 $query->addSelect(DB::raw("'eEnviado' as estado"))
-                    ->where('prestaciones.eEnviado', '=', 1);
+                    ->where('prestaciones.eEnviado', 1);
             });
 
             //enProceso
             $query->when(is_array($Estado) && in_array('enProceso', $Estado), function ($query){
                 $query->addSelect(DB::raw("'en proceso' as estado"))
-                ->where('prestaciones.Finalizado', '=', 0)
+                ->where('prestaciones.Finalizado', 0)
                 ->where(function ($subquery) {
-                    $subquery->where('prestaciones.Cerrado', '=', 0)
-                        ->orWhere('prestaciones.Cerrado', '=', 1);
+                    $subquery->where('prestaciones.Cerrado', 0)
+                        ->orWhere('prestaciones.Cerrado', 1);
                 });
             });
 
@@ -144,7 +146,7 @@ class MapasController extends Controller
             //Vacio
             $query->when(is_array($Estado) && in_array('vacio', $Estado), function ($query){
                 $query->addSelect(DB::raw("'Vacio' as estado"))
-                    ->having('contadorPrestaciones', '=', 0);
+                    ->having('contadorPrestaciones', 0);
                 });
 
             $query->when(! empty($corteDesde) && ! empty($corteHasta), function ($query) use ($corteDesde, $corteHasta) {
@@ -157,38 +159,38 @@ class MapasController extends Controller
 
             $query->when(is_array($Vencimiento) && in_array('corteVencido', $Vencimiento), function ($query){
                 $query->where('mapas.Fecha', '<', now()->format('Y-m-d'))
-                    ->where('mapas.Nro', '<>', 0)
-                    ->where('mapas.Fecha', '<>', '0000-00-00')
-                    ->where('mapas.Fecha', '<>', null);
+                    ->whereNot('mapas.Nro', 0)
+                    ->whereNot('mapas.Fecha', '0000-00-00')
+                    ->whereNotNull('mapas.Fecha');
             });
 
             $query->when(is_array($Vencimiento) && in_array('corteVigente', $Vencimiento), function ($query){
                 $query->where('mapas.Fecha', '>=', now()->format('Y-m-d'))
-                    ->where('mapas.Nro', '<>', 0)
-                    ->where('mapas.Fecha', '<>', '0000-00-00')
-                    ->where('mapas.Fecha', '<>', null);
+                    ->whereNot('mapas.Nro', 0)
+                    ->whereNot('mapas.Fecha', '0000-00-00')
+                    ->whereNotNull('mapas.Fecha');
             });
 
             $query->when(is_array($Vencimiento) && in_array('entregaVigente', $Vencimiento), function ($query){
                 $query->where('mapas.FechaE', '>=', now()->format('Y-m-d'))
-                    ->where('mapas.Nro', '<>', 0)
-                    ->where('mapas.FechaE', '<>', '0000-00-00')
-                    ->where('mapas.FechaE', '<>', null);
+                    ->whereNot('mapas.Nro', 0)
+                    ->whereNot('mapas.FechaE', '0000-00-00')
+                    ->whereNotNull('mapas.FechaE');
             });
 
             $query->when(is_array($Vencimiento) && in_array('entregaVencida', $Vencimiento), function ($query){
                 $query->where('mapas.FechaE', '<', now()->format('Y-m-d'))
-                    ->where('mapas.Nro', '<>', 0)
-                    ->where('mapas.FechaE', '<>', '0000-00-00')
-                    ->where('mapas.FechaE', '<>', null);
+                    ->whereNot('mapas.Nro', 0)
+                    ->whereNot('mapas.FechaE', '0000-00-00')
+                    ->whereNotNull('mapas.FechaE');
             });
 
             $query->when($Ver == 'activo', function ($query) {
-                $query->where('mapas.Inactivo', '=', 0);
+                $query->where('mapas.Inactivo', 0);
             });
 
             $query->when($Ver == 'inactivo', function ($query) {
-                $query->where('mapas.Inactivo', '=', 1);
+                $query->where('mapas.Inactivo', 1);
             });
 
             $result = $query->groupBy('Nro');
@@ -262,7 +264,6 @@ class MapasController extends Controller
 
     public function delete(Request $request)
     {
-
         $mapa = Mapa::find($request->Id);
         if($mapa)
         {
@@ -281,7 +282,6 @@ class MapasController extends Controller
 
     public function searchMapaPres(Request $request)
     {
-
             $NroPrestacion = $request->NroPrestacion;
             $NroRemito = $request->NroRemito;
             $Etapa = $request->Etapa;
@@ -305,12 +305,12 @@ class MapasController extends Controller
             });
             
             $query->when($Estado == 'abierto', function ($query) use ($Estado) {
-                $query->where('prestaciones.Finalizado', '=', 0)
-                    ->where('prestaciones.Cerrado', '=', 0);
+                $query->where('prestaciones.Finalizado', 0)
+                    ->where('prestaciones.Cerrado', 0);
             });
             
             if (isset($estadoColumnas[$Estado])) {
-                $query->where("prestaciones.{$estadoColumnas[$Estado]}", '=', 1);
+                $query->where("prestaciones.{$estadoColumnas[$Estado]}", 1);
             }
 
             if ($Etapa === 'completa') {
@@ -323,15 +323,11 @@ class MapasController extends Controller
             if ($Etapa === 'incompleta') {
                 $query->where(function ($query) {
                     $query->whereNotIn('itemsprestaciones.CAdj', [3, 4, 5, 6])
-                        ->orWhere('itemsprestaciones.CInfo', '<>', 3);
+                        ->whereNot('itemsprestaciones.CInfo', 3);
                 });
             }
               
             $result = $query->distinct()->get();
-
-            /*$result = $result->filter(function ($item) {
-                return $item->Etapa == 'Completo' || $item->Etapa == 'Incompleto';
-            });*/
             
             return response()->json(['result' => $result]);
     }
@@ -343,16 +339,15 @@ class MapasController extends Controller
 
     public function export(Request $request)
     {
-        
         $ids = $request->input('Id');
         if (! is_array($ids)) {
             $ids = [$ids];
         }
 
+        $mapas = $this->queryBase();
+
         if($request->archivo === 'csv')
         {
-
-            $mapas = $this->queryBase();
             
             $mapas->when($request->modulo === 'remito', function ($mapas) use ($ids, $request) {
                 $mapas->whereIn('prestaciones.NroCEE', $ids)
@@ -363,7 +358,7 @@ class MapasController extends Controller
                 $mapas->whereIn('mapas.Id', $ids);
             });
 
-            $result = $mapas->orderBy('pacientes.Id', 'DESC')->groupBy('mapas.Nro')->get(); 
+            $result = $mapas->orderBy('prestaciones.Id', 'DESC')->get(); 
 
             $csv = "Id,Nro,Art,Empresa,Fecha Corte,Fecha Entrega,Inactivo,Nro de Remito, eEnviado,Cerrado,Entregado,Finalizado,Apellido y Nombre, Total de Prestaciones,Observación\n";
 
@@ -397,12 +392,11 @@ class MapasController extends Controller
 
         } elseif($request->archivo === 'pdf'){
 
-            $mapas = $this->queryBase();
-            $mapas->whereIn('prestaciones.NroCEE', $ids)
+            $result = $mapas->whereIn('prestaciones.NroCEE', $ids)
             ->where('mapas.Nro', $request->mapa)
-            ->orderBy('pacientes.Id', 'DESC')->groupBy('mapas.Nro')->get(); 
-
-            $pdf = PDF::loadView('layouts.mapas.pdf', ['result' => $mapas]);
+            ->orderBy('prestaciones.Id', 'DESC')->get(); 
+            
+            $pdf = PDF::loadView('layouts.mapas.pdf', ['result' => $result]);
             $path = storage_path('app/public/');
             $fileName = time() . '.pdf';
             $pdf->save($path . $fileName);
@@ -430,8 +424,8 @@ class MapasController extends Controller
                     'mapas.Nro as Nro',
                     'Art.RazonSocial as RSArt',
                     'Empresa.RazonSocial as RSE')
-                ->where('mapas.IdART', '=', $art)
-                ->where('mapas.IdEMpresa', '=', $empresa)
+                ->where('mapas.IdART', $art)
+                ->where('mapas.IdEMpresa', $empresa)
                 ->where('mapas.Cmapeados', '>=', 1)
                 ->whereDate('mapas.Fecha', '>', now()->toDateString())
                 ->get();
@@ -444,17 +438,15 @@ class MapasController extends Controller
 
     public function saveRemitos(Request $request)
     {
-        $prestaciones = Prestacion::where('NroCEE', $request->Id)
-            ->where('Entregado', 0)
-            ->get();
+        $remitos = Prestacion::where('NroCEE', $request->Id)->get();
 
-        foreach ($prestaciones as $prestacion) {
-            $prestacion->Entregado = 1;
-            $prestacion->FechaEntrega = $request->FechaE;
-            $prestacion->save();
+        foreach ($remitos as $remito) {
+            $remito->Entregado = 1;
+            $remito->FechaEntrega = $request->FechaE;
+            $remito->save();
         }
 
-        $this->constanciaseRemito($request->Id, $request->Obs);
+        constanciase::obsRemito($request->Id, $request->Obs);
     }
 
     public function getPacienteMapa(Request $request)
@@ -499,8 +491,7 @@ class MapasController extends Controller
         $query = $this->queryCerrar($request->mapa);
         
         $query->where(function ($query) {
-            $query->where( 'prestaciones.Cerrado', '=', 0)
-                ->orWhere('prestaciones.Cerrado', '=', 1);
+            $query->where( 'prestaciones.Cerrado', '=', 0);
         });
 
         $result = $query->get();
@@ -567,7 +558,7 @@ class MapasController extends Controller
                 
                 if ($prestacion) {
                     $prestacion->$estado = 1;
-                    $prestacion->$fecha = Carbon::now()->format('Y-m-d');
+                    $prestacion->$fecha = now()->format('Y-m-d');
                     $prestacion->save();
                 } 
             }            
@@ -585,12 +576,9 @@ class MapasController extends Controller
     {
         $query = $this->queryFinalizar($request->mapa);
         
-        $query->where(function ($query) {
-            $query->where('prestaciones.Finalizado', '=', 0)
-                ->orWhere('prestaciones.Finalizado', '=', 1);
-        });
+        $query->where('prestaciones.Finalizado', 0);
 
-        $result = $query->distinct()->get();
+        $result = $query->get();
 
         return response()->json(['result' => $result]);
     }
@@ -601,45 +589,52 @@ class MapasController extends Controller
 
         $NroRemito = $request->remito;
         $NroPrestacion = $request->prestacion;
+        $estadoFinalizar = $request->estadoFinalizar;
 
-        $query = Prestacion::select(
-            'prestaciones.Id as IdPrestacion',
-            'prestaciones.Fecha as Fecha',
-            'prestaciones.NroCEE as NroRemito',
-            DB::raw('(SELECT Nombre FROM pacientes WHERE Id = prestaciones.IdPaciente) AS NombrePaciente'),
-            DB::raw('(SELECT Apellido FROM pacientes WHERE Id = prestaciones.IdPaciente) AS ApellidoPaciente'),
-            'prestaciones.Finalizado as Finalizado',
-            'prestaciones.eEnviado as eEnviado',
-            'prestaciones.Cerrado as Cerrado',
-            'prestaciones.Entregado AS Entregado',
-            'prestaciones.Anulado AS Anulado')
-            ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-            ->join('mapas', 'prestaciones.IdMapa', '=', 'mapas.Id')
-            ->where('prestaciones.Cerrado', 1)
-            ->where('prestaciones.Finalizado', 0)
-            ->where('prestaciones.Forma', 0)
-            ->where('prestaciones.Devol', 0)
-            ->where('prestaciones.RxPreliminar', 0)
-            ->where('prestaciones.SinEsc', 0)
-            ->where('mapas.Nro', '=', $request->mapa);
+        $query = $this->queryFinalizar($request->mapa);
 
-            $query->when($NroPrestacion, function ($query) use ($NroPrestacion) {
-                $query->where('prestaciones.Id', $NroPrestacion);
+        $query->when($NroPrestacion, function ($query) use ($NroPrestacion) {
+            $query->where('prestaciones.Id', $NroPrestacion);
+        });
+
+        $query->when($NroRemito, function ($query) use ($NroRemito) {
+            $query->where('prestaciones.NroCEE', $NroRemito);
+        });
+
+        $query->when($estadoFinalizar === 'aFinalizar', function ($query) use ($estadoFinalizar) {
+            $query->where('prestaciones.Cerrado', 1)
+                ->where('prestaciones.Finalizado', 0);
+        });
+
+        $query->when($estadoFinalizar === 'finalizados', function ($query) use ($estadoFinalizar) {
+            $query->where('prestaciones.Cerrado', 1)
+                ->where('prestaciones.Finalizado', 1)
+                ->where('prestaciones.eEnviado', 0);
+        });
+
+        $query->when($estadoFinalizar === 'finalizadosTotal', function ($query) use ($estadoFinalizar) {
+            $query->where('prestaciones.Finalizado', 1)
+                ->where('prestaciones.eEnviado', 1);
+        });
+
+        $query->when($estadoFinalizar === 'todos', function ($query) {
+            $query->where(function ($query) {
+                $query->where('prestaciones.Finalizado', 1)
+                      ->orWhere('prestaciones.Finalizado', 0);
             });
-    
-            $query->when($NroRemito, function ($query) use ($NroRemito) {
-                $query->where('prestaciones.NroCEE', $NroRemito);
-            });
+        });
 
-            $result = $query->distinct()->get();
+        $result = $query->get();
 
-        return response()->json($result);
+        return response()->json(['result' => $result]);
     }
 
     public function saveFinalizar(Request $request): void
     {
         
         $ids = $request->ids;
+        $nuevoNroRemito = Constanciase::max('NroC') + 1;
+        Constanciase::addRemito($nuevoNroRemito);
 
         foreach ($ids as $id) {
             $prestacion = Prestacion::where('Id', $id)->where('Cerrado', 1)->first();
@@ -648,11 +643,15 @@ class MapasController extends Controller
                 $prestacion->Finalizado = 1;
                 $prestacion->FechaFinalizado = now()->format('Y-m-d');
                 $prestacion->save();
-            } 
+            }
+            
+            ConstanciaseIt::addConstPrestacion($id, Constanciase::max('Id'));
+            $this->actualizarRemitoPrestacion($id, $nuevoNroRemito);
         }
+      
     }
 
-    public function eEnviar(Request $request): mixed
+    public function searchInEnviar(Request $request): mixed
     {
         $desde = $request->desde;
         $hasta = $request->hasta;
@@ -661,19 +660,7 @@ class MapasController extends Controller
         $mapa = $request->mapa;
         $NroRemito = $request->NroRemito;
 
-        $query = Prestacion::select(
-            'prestaciones.Id AS IdPrestacion',
-            'prestaciones.Fecha AS Fecha',
-            'prestaciones.TipoPrestacion AS TipoPrestacion',
-            'prestaciones.eEnviado AS eEnviado',
-            'prestaciones.NroCEE AS NroRemito',
-            DB::raw('(SELECT Nombre FROM pacientes WHERE Id = prestaciones.IdPaciente) AS NombrePaciente'),
-            DB::raw('(SELECT Apellido FROM pacientes WHERE Id = prestaciones.IdPaciente) AS ApellidoPaciente'),
-            'pacientes.Documento AS Documento')
-            ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-            ->leftJoin('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
-            ->join('mapas', 'prestaciones.IdMapa', '=', 'mapas.Id')
-            ->where('mapas.Nro', $mapa);
+        $query = $this->queryEnviar($mapa);
 
         $query->when($prestacion, function($query) use ($prestacion) {
             $query->where('prestaciones.Id', $prestacion);
@@ -700,6 +687,19 @@ class MapasController extends Controller
         return response()->json($resutl);
     }
 
+    public function geteEnviar(Request $request)
+    {
+        $query = $this->queryEnviar($request->mapa);
+
+        $query->where(function ($query) {
+            $query->where( 'prestaciones.eEnviado', 0);
+        });
+        
+        $result = $query->distinct()->get();
+
+        return response()->json(['result' => $result]);
+    }
+
     public function saveEnviar(Request $request): void
     {
         
@@ -714,27 +714,6 @@ class MapasController extends Controller
                 $prestacion->save();
             } 
         }
-    }
-
-    public function geteEnviar(Request $request)
-    {
-        $query = Prestacion::select(
-            'prestaciones.Id AS IdPrestacion',
-            'prestaciones.Fecha AS Fecha',
-            'prestaciones.TipoPrestacion AS TipoPrestacion',
-            'prestaciones.eEnviado AS eEnviado',
-            'prestaciones.NroCEE AS NroRemito',
-            DB::raw('(SELECT Nombre FROM pacientes WHERE Id = prestaciones.IdPaciente) AS NombrePaciente'),
-            DB::raw('(SELECT Apellido FROM pacientes WHERE Id = prestaciones.IdPaciente) AS ApellidoPaciente'),
-            'pacientes.Documento AS Documento')
-            ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-            ->leftJoin('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
-            ->join('mapas', 'prestaciones.IdMapa', '=', 'mapas.Id')
-            ->where('prestaciones.eEnviado', 0)
-            ->where('mapas.Nro', $request->mapa)
-            ->distinct()->get();
-
-        return response()->json($query);
     }
 
     public function changeEstado(Request $request)
@@ -754,14 +733,16 @@ class MapasController extends Controller
 
     public function getRemito(Request $request)
     {
-        $remito = Prestacion::with(['constanciase' => function($query) {
-            $query->select('Obs');
-        }])
-        ->select('NroCEE', 'Id', 'Entregado',
-            DB::raw('COUNT(*) as contadorRemitos'))
-        ->where('IdMapa', $request->Id)
-        ->groupBy('NroCEE')
-        ->get();
+        $remito = Prestacion::with(['constanciases:Obs'])
+            ->select(
+                'prestaciones.NroCEE', 
+                'prestaciones.Id', 
+                'prestaciones.Entregado',
+                DB::raw('COUNT(*) as contadorRemitos')
+            )
+            ->where('prestaciones.IdMapa', $request->Id)
+            ->groupBy('prestaciones.NroCEE')
+            ->get();
 
         return response()->json(['result' => $remito]);
     }
@@ -769,7 +750,9 @@ class MapasController extends Controller
 
     private function queryBase()
     {
-        $query = Mapa::select(
+        $query = Mapa::join('prestaciones', 'mapas.Id', '=', 'prestaciones.IdMapa')
+        ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+        ->select(
             'mapas.Id as Id',
             'mapas.Nro as Nro',
             DB::raw('(Select RazonSocial from clientes where Id = mapas.IdART) AS Art'),
@@ -783,14 +766,12 @@ class MapasController extends Controller
             'prestaciones.Entregado as Entregado',
             'prestaciones.Finalizado as Finalizado',
             'prestaciones.NroCEE as NroCEE',
-            DB::raw('(Select Nombre from pacientes where Id = prestaciones.IdPaciente) AS Nombre'),
-            DB::raw('(Select Apellido from pacientes where Id = prestaciones.IdPaciente) AS Apellido'),
+            'pacientes.Nombre as Nombre',
+            'pacientes.Apellido as Apellido',
             'prestaciones.Id as IdPrestacion',
             DB::raw('COALESCE((SELECT COUNT(*) FROM prestaciones WHERE IdMapa = mapas.Id), 0) as contadorPrestaciones'),
             DB::raw('COALESCE((SELECT COUNT(*) FROM pacientes WHERE pacientes.Id = prestaciones.IdPaciente), 0) as contadorPacientes'),
-            DB::raw('COALESCE((SELECT COUNT(*) FROM pacientes WHERE pacientes.Id = prestaciones.IdPaciente AND prestaciones.Anulado = 0), 0) as cdorPacientesAnulados'))
-        ->join('prestaciones', 'mapas.Id', '=', 'prestaciones.IdMapa')
-        ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id');
+            DB::raw('COALESCE((SELECT COUNT(*) FROM pacientes WHERE pacientes.Id = prestaciones.IdPaciente AND prestaciones.Anulado = 0), 0) as cdorPacientesAnulados'));
 
         return $query;
     }
@@ -836,8 +817,8 @@ class MapasController extends Controller
             'prestaciones.Entregado AS Entregado',
             'pacientes.Documento AS dni',
             'prestaciones.Anulado AS Anulado',
-            DB::raw('(SELECT Nombre FROM pacientes WHERE Id = prestaciones.IdPaciente) AS NombrePaciente'),
-            DB::raw('(SELECT Apellido FROM pacientes WHERE Id = prestaciones.IdPaciente) AS ApellidoPaciente'))
+            'pacientes.Nombre as NombrePaciente',
+            'pacientes.Apellido as ApellidoPaciente',)
             ->where('mapas.Nro', '=', $idmapa);
 
         return $query;
@@ -845,20 +826,20 @@ class MapasController extends Controller
 
     private function queryFinalizar($idmapa)
     {
-        $query = Prestacion::select(
+        $query = Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+        ->join('mapas', 'prestaciones.IdMapa', '=', 'mapas.Id')
+        ->select(
             'prestaciones.Id as IdPrestacion',
             'prestaciones.Fecha as Fecha',
             'prestaciones.NroCEE as NroRemito',
-            DB::raw('(SELECT Nombre FROM pacientes WHERE Id = prestaciones.IdPaciente) AS NombrePaciente'),
-            DB::raw('(SELECT Apellido FROM pacientes WHERE Id = prestaciones.IdPaciente) AS ApellidoPaciente'),
+            'pacientes.Nombre as NombrePaciente',
+            'pacientes.Apellido as ApellidoPaciente',
+            'pacientes.Documento as Documento',
             'prestaciones.Finalizado as Finalizado',
             'prestaciones.eEnviado as eEnviado',
             'prestaciones.Cerrado as Cerrado',
             'prestaciones.Entregado AS Entregado',
             'prestaciones.Anulado AS Anulado')
-            ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-            ->join('mapas', 'prestaciones.IdMapa', '=', 'mapas.Id')
-            ->where('prestaciones.Cerrado', 1)
             ->where('prestaciones.Forma', 0)
             ->where('prestaciones.Devol', 0)
             ->where('prestaciones.RxPreliminar', 0)
@@ -868,6 +849,24 @@ class MapasController extends Controller
         return $query;
     }
 
+    public function queryEnviar($idmapa)
+    {
+        $query = Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+        ->leftJoin('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
+        ->join('mapas', 'prestaciones.IdMapa', '=', 'mapas.Id')
+        ->select(
+            'prestaciones.Id AS IdPrestacion',
+            'prestaciones.Fecha AS Fecha',
+            'prestaciones.TipoPrestacion AS TipoPrestacion',
+            'prestaciones.eEnviado AS eEnviado',
+            'prestaciones.NroCEE AS NroRemito',
+            'pacientes.Nombre AS NombrePaciente',
+            'pacientes.Apellido AS ApellidoPaciente',
+            'pacientes.Documento AS Documento')
+            ->where('prestaciones.eEnviado', 0)
+            ->where('mapas.Nro', $idmapa);
 
+        return $query;
+    }
 } 
 

@@ -416,3 +416,9 @@ table.dataTable tr.dtrg-level-0 td {
 	padding: 5px 1.5rem !important;
 	margin: -23px -1.5rem 0.5rem -1.5rem !important;
 }
+
+.comentarioObsEstado {
+	padding: 1em;
+	margin: 0.3em;
+	background-color: #eeeeee;
+}

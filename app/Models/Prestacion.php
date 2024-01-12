@@ -93,8 +93,8 @@ class Prestacion extends Model
         return $this->hasOne(PrestacionComentario::class, 'IdP', 'Id');
     }
 
-    public function constanciase()
+    public function constanciases()
     {
-        return $this->belongsTo(Constanciase::class, 'constanciase_it', 'IdP', 'IdC');
+        return $this->belongsToMany(Constanciase::class, 'constanciase_it', 'IdP', 'IdC');
     }
 }

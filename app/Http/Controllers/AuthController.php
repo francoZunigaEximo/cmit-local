@@ -29,7 +29,7 @@ class AuthController extends Controller
             }
 
             //return redirect('/home');
-            return redirect()->route('prestaciones.index');
+            return redirect()->route('noticias.index');
         } else {
 
             return redirect()->route('login')->withFail('Las credenciales, no son correctas');

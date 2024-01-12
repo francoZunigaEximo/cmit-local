@@ -18,7 +18,7 @@ use App\Http\Controllers\UtilityController;
 use App\Http\Controllers\FacturasVentaController;
 use App\Http\Controllers\NoticiasController;
 use App\Http\Controllers\PrestacionesObsFasesController;
-use Illuminate\Support\Facades\Redis;
+//use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Route;
 
 //Route::get('/password', [AuthController::class, 'testCreate'])->name('password');
@@ -118,7 +118,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     //Ruta de Comentarios de Prestaciones
     Route::post('setComentarioPres', [ComentariosPrestacionesController::class, 'setComentarioPres'])->name('setComentarioPres');
-    Route::post('getComentarioPres', [ComentariosPrestacionesController::class, 'getComentarioPres'])->name('getComentarioPres');
+    Route::get('getComentarioPres', [ComentariosPrestacionesController::class, 'getComentarioPres'])->name('getComentarioPres');
 
     //Rutas de Autorizados
     Route::post('deleteAutorizado', [AutorizadoController::class, 'delete'])->name('deleteAutorizado');
@@ -135,31 +135,32 @@ Route::group(['middleware' => 'auth'], function () {
 
     //Rutas de Mapas
     Route::resource('mapas', MapasController::class);
-    Route::get('searchMapas', [MapasController::class, 'search'])->name('searchMapas');
+    Route::post('updateMapa', [MapasController::class, 'updateMapa'])->name('updateMapa');
     Route::post('deleteMapa', [MapasController::class, 'delete'])->name('deleteMapa');
+    Route::get('getRemito', [MapasController::class, 'getRemito'])->name('getRemito');
     Route::get('getMapas', [MapasController::class, 'getMapas'])->name('getMapas');
-    Route::get('fileExport', [MapasController::class, 'export'])->name('fileExport');
-    Route::post('updateMapa', [MapasController::class, 'updateMapa'])->name('updateMapa'); 
-    Route::post('saveRemitos', [MapasController::class, 'saveRemitos'])->name('saveRemitos');
-    Route::post('searchMapaPres', [MapasController::class, 'searchMapaPres'])->name('searchMapaPres');
     Route::get('getPacienteMapa', [MapasController::class, 'getPacienteMapa'])->name('getPacienteMapa');
     Route::get('getExamenMapa', [MapasController::class, 'examenes'])->name('getExamenMapa');
-    Route::get('serchInCerrar', [MapasController::class, 'serchInCerrar'])->name('serchInCerrar');
-    Route::get('searchInFinalizar', [MapasController::class, 'searchInFinalizar'])->name('searchInFinalizar');
-    Route::post('saveCerrar', [MapasController::class, 'saveCerrar'])->name('saveCerrar');
-    Route::post('saveFinalizar', [MapasController::class, 'saveFinalizar'])->name('saveFinalizar');
-    Route::get('getEnviarMapa', [MapasController::class, 'eEnviar'])->name('getEnviarMapa');
-    Route::post('saveEnviar', [MapasController::class, 'saveEnviar'])->name('saveEnviar');
-    Route::post('saveEstado', [MapasController::class, 'saveEstado'])->name('saveEstado');
-    Route::get('checkMapa', [MapasController::class, 'checker'])->name('checkMapa'); 
     Route::get('getPrestaciones', [MapasController::class, 'prestaciones'])->name('getPrestaciones');
     Route::get('getCerrar', [MapasController::class, 'getCerrar'])->name('getCerrar');
     Route::get('getFinalizar', [MapasController::class, 'getFinalizar'])->name('getFinalizar');
     Route::get('getFMapa', [MapasController::class, 'getFinalizar'])->name('getFMapa');
-    Route::get('enviarMapa', [MapasController::class, 'geteEnviar'])->name('enviarMapa');
+    Route::get('searchMapas', [MapasController::class, 'search'])->name('searchMapas');
+    Route::post('searchMapaPres', [MapasController::class, 'searchMapaPres'])->name('searchMapaPres');
+    Route::get('serchInCerrar', [MapasController::class, 'serchInCerrar'])->name('serchInCerrar');
+    Route::get('searchInFinalizar', [MapasController::class, 'searchInFinalizar'])->name('searchInFinalizar');
+    Route::get('searchInEnviar', [MapasController::class, 'searchInEnviar'])->name('searchInEnviar');
+    Route::post('saveCerrar', [MapasController::class, 'saveCerrar'])->name('saveCerrar');
+    Route::post('saveFinalizar', [MapasController::class, 'saveFinalizar'])->name('saveFinalizar');
+    Route::post('saveEnviar', [MapasController::class, 'saveEnviar'])->name('saveEnviar');
+    Route::post('saveEstado', [MapasController::class, 'saveEstado'])->name('saveEstado');
+    Route::post('saveRemitos', [MapasController::class, 'saveRemitos'])->name('saveRemitos');
+    Route::get('checkMapa', [MapasController::class, 'checker'])->name('checkMapa');
     Route::post('changeEstado', [MapasController::class, 'changeEstado'])->name('changeEstado');
-    Route::get('getRemito', [MapasController::class, 'getRemito'])->name('getRemito');
-
+    Route::get('enviarMapa', [MapasController::class, 'geteEnviar'])->name('enviarMapa');
+    Route::get('fileExport', [MapasController::class, 'export'])->name('fileExport');
+    Route::post('reverseRemito', [MapasController::class, 'reverseRemito'])->name('reverseRemito');
+    
     //Rutas de Profesionales
     Route::resource('profesionales', ProfesionalesController::class);
     Route::get('getEvaluador', [ProfesionalesController::class, 'getEvaluador'])->name('getEvaluador');
@@ -197,7 +198,6 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('uploadAdjunto', [ItemPrestacionesController::class, 'uploadAdjunto'])->name('uploadAdjunto');
     Route::get('deleteIdAdjunto', [ItemPrestacionesController::class, 'deleteIdAdjunto'])->name('deleteIdAdjunto');
 
-
     //Rutas de FacturasdeVenta
     Route::get('getFactura', [FacturasVentaController::class, 'getFactura'])->name('getFactura');
 
@@ -208,4 +208,5 @@ Route::group(['middleware' => 'auth'], function () {
     //Rutas de Observaciones de Fases de Prestaciones
     Route::get('comentariosPriv', [PrestacionesObsFasesController::class, 'comentariosPriv'])->name('comentariosPriv');
     Route::post('savePrivComent', [PrestacionesObsFasesController::class, 'addComentario'])->name('savePrivComent');
+
 });

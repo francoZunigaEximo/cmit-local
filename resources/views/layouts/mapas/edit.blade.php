@@ -306,15 +306,13 @@
                         <option value="cerrado">Cerrado</option>
                     </select>
                 </div>
-            </div> 
 
-            <div class="row">
-                <div class="col-sm-12" style="text-align: right;">
+                <div class="col-sm-4  d-flex justify-content-end align-self-center">
                     <button type="button" class="btn botonGeneral cerrarMapa">
                         <i class=" ri-lock-2-fill"></i> Cerrar    
                     </button>
                 </div>
-            </div>
+            </div> 
 
             <div class="table-responsive table-card mt-3 mb-1">
                 <table id="listaCerrar" class="display table table-bordered" style="width:100%">
@@ -351,6 +349,17 @@
                     <input type="number" class="form-control" id="NroRemitoFinal" name="NroRemitoFinal" placeholder="Buscar por nro de remito">
                     <small>Presione ENTER para buscar</small>
                 </div>
+
+                <div class="col-sm-3 mb-3">
+                    <label for="NroRemitoFinal" class="form-label font-weight-bold"><strong>Estados:</strong></label>
+                    <select class="form-control" name="estadosFinalizar" id="estadosFinalizar">
+                        <option value="" selected>Elija una opción</option>
+                        <option value="aFinalizar">A finalizar</option>
+                        <option value="finalizados">Finalizados</option>
+                        <option value="finalizadosTotal">Finalizados Total</option>
+                        <option value="todos">Todos</option>
+                    </select>
+                </div>
             </div>
 
             <div class="row mt-4">
@@ -369,11 +378,12 @@
                 <table id="listaFinalizar" class="display table table-bordered" style="width:100%">
                     <thead class="table-light">
                         <tr>
-                            <th class="sort">Prestación</th>
                             <th class="sort">Remito Nro.</th>
-                            <th class="sort">Fecha</th>
+                            <th>Fecha</th>
+                            <th>Prestación</th>
                             <th class="sort">Paciente</th>
-                            <th class="sort">Estado</th>
+                            <th>DNI</th>
+                            <th>Estado</th>
                             <th>Ver</th>
                             <th><input type="checkbox" id="checkAll" name="Id"><th>
                         </tr>
@@ -441,11 +451,11 @@
                     <thead class="table-light">
                         <tr>
                             <th class="sort">Remito Nro</th>
-                            <th class="sort">Fecha</th>
-                            <th class="sort">Nro Prestación</th>
+                            <th>Fecha</th>
+                            <th>Prestación</th>
                             <th class="sort">Paciente</th>
-                            <th class="sort">DNI</th>
-                            <th class="sort">Estado</th>
+                            <th>DNI</th>
+                            <th>Estado</th>
                             <th>Ver</th>
                             <th><input type="checkbox" id="checkAll" name="Id"><th>
                         </tr>
@@ -482,8 +492,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary confirmarEntrega">Guardar</button>
+                <button type="button" class="btn btn-sm botonGeneral" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-sm botonGeneral confirmarEntrega">Guardar</button>
             </div>
 
         </div><!-- /.modal-content -->
@@ -505,6 +515,18 @@
                     <div class="col-sm-4" style="text-align: right;">
                         <button class="btn btn-sm botonGeneral"><i class="ri-printer-line"></i> Imprimir</button>
                         <button class="btn btn-sm botonGeneral"><i class="ri-file-text-line"></i> e-Estudio</button>
+                        <button data-id="" title="Observación de Estado" class="btn btn-sm botonGeneral mostrarObsEstado"><i class="ri-chat-1-line"></i> Agregar Obs</button>
+                    </div>
+                </div>
+
+                <div class="comentarioObsEstado">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <p class="mb-0">Escriba una observación sobre el estado:</p>
+                        <i style="font-size:1.5em" class="ri-close-circle-line cerrarObsEstado"></i>
+                    </div>
+                    <textarea class="form-control mt-2 ComObsEstado" name="ComObsEstado" rows="5"></textarea>
+                    <div class="mt-2 text-center">
+                        <button type="button" class="btn btn-sm botonGeneral saveComObsEstado mt-2">Guardar Obs</button>
                     </div>
                 </div>
 
@@ -603,7 +625,7 @@ const getExamenMapa = "{{ route('getExamenMapa') }}";
 const serchInCerrar = "{{ route('serchInCerrar') }}";
 const searchInFinalizar = "{{ route('searchInFinalizar') }}";
 const saveEstado = "{{ route('saveEstado') }}"
-const getEnviarMapa = "{{ route('getEnviarMapa') }}";
+const searchInEnviar = "{{ route('searchInEnviar') }}";
 const saveEnviar = "{{ route('saveEnviar') }}";
 const saveFinalizar = "{{ route('saveFinalizar') }}";
 const saveCerrar = "{{ route('saveCerrar') }}";
@@ -617,6 +639,8 @@ const lnkItemsprestaciones = "{{ route('itemsprestaciones.edit', ['itemsprestaci
 const privateComment = "{{ route('comentariosPriv') }}";
 const savePrivComent = "{{ route('savePrivComent') }}";
 const getRemito = "{{ route('getRemito') }}";
+const getComentarioPres = "{{ route ('getComentarioPres') }}";
+const reverseRemito = "{{ route('reverseRemito') }}";
 //Extras
 const TOKEN = "{{ csrf_token() }}";
 const MAPA = "{{ $mapa->Nro }}";

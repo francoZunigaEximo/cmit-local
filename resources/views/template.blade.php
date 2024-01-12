@@ -91,6 +91,7 @@
                         <!-- item-->
                         <h6 class="dropdown-header">Bienvenido {{ Auth::user()->name }}!</h6>
                         <a class="dropdown-item" href="{{ route('changePassword')}}"><i class="mdi mdi-settings-circle text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Cambiar Constraseña</span></a>
+                        <a class="dropdown-item" href="#"><i class="mdi mdi-email text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Email Config</span></a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="{{ route('logout') }}"><i class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-key="t-logout">Salir</span></a>
                     </div>

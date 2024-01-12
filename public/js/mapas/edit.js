@@ -18,8 +18,29 @@ $(document).ready(()=>{
     listaComentariosPrivados(IDMAPA);
     listarRemitos(IDMAPA);
 
-    $('#remitoFechaE').val(hoy)
-   
+    $('#remitoFechaE').val(hoy);
+    $('.comentarioObsEstado').hide();
+    $('#EstadoCerrar').val('abierto');
+
+    $('#verPrestacionModal').on('shown.bs.modal', function () {
+        $(document).off('click', '.mostrarObsEstado, .cerrarObsEstado');
+        $(document).on('click', '.mostrarObsEstado, .cerrarObsEstado', function(){
+
+            if ($(this).hasClass('mostrarObsEstado')) {
+                $('.comentarioObsEstado').show();
+            } else {
+                $('.comentarioObsEstado').hide();
+            }
+        });
+    });
+
+
+    $('#verPrestacionModa').on('hide.bs.modal', function () {
+        console.log("Modal ocultado");
+        $(".ComObsEstado").val("");
+        $('.comentarioObsEstado').hide();
+    });
+    
     //Exportar
     $(document).on('click', '.excel, .pdf', function(){
         
@@ -39,7 +60,7 @@ $(document).ready(()=>{
                 }
         };
         
-        tipo = $(this).hasClass('excel') ? 'excel' : 'pdf';
+        tipo = $(this).hasClass('pdf') ? 'pdf' : 'excel';
 
         if (ids.length > 0) {
             if (confirm("¿Estás seguro de que deseas generar el reporte?")) {
@@ -48,7 +69,6 @@ $(document).ready(()=>{
                     type: "GET",
                     data: arr[tipo].datos,
                     success: function(response) {
-
                         createFile(arr[tipo].archivo, response.filePath);
                         toastr.success('Se esta generando el reporte. Aguarde', 'Generando reporte');
                     },
@@ -104,7 +124,7 @@ $(document).ready(()=>{
     $(document).on('click', '.entregarRemito', function(){
         let remito = $(this).data('remito');
         $('#IdRemito').text(remito);
-        $('.confirmarEntrega').data('id', remito);
+        $('.confirmarEntrega').attr('data-id', remito);
     });
 
     $('#entregarModal').on('hidden.bs.modal', function(){
@@ -113,7 +133,7 @@ $(document).ready(()=>{
 
     $(document).on('click', '.confirmarEntrega', function(){
 
-        let prestacion = $(this).data('id'),
+        let nroRemito =  $('#IdRemito').text(),
             remitoObs =$('#remitoObs').val(),
             remitoFechaE = $('#remitoFechaE').val();
 
@@ -121,30 +141,32 @@ $(document).ready(()=>{
             toastr.warning('Debe especificar una fecha de entrega', 'Atención');
             return;
         }
-
-        $.ajax({
-            url: saveRemitos,
-            type: 'Post',
-            data: {
-                _token: TOKEN,
-                Obs: remitoObs,
-                FechaE: remitoFechaE,
-                Id: prestacion
-            },
-            success: function(){
-
+        $.post(saveRemitos, {_token: TOKEN, Obs: remitoObs, FechaE: remitoFechaE, Id: nroRemito})
+            .done(function(){
                 toastr.success('Se han registrado las fechas de entrega en los remitos correspondientes', 'Perfecto');
-                $('#remitoObs').val('');
-                $('#entregarModal').modal('hide');
-                listarRemitos(IDMAPA);
-            },
-            error: function(xhr){
+                setTimeout(()=>{
+                    $('#remitoObs').val('');
+                    $('#entregarModal').modal('hide');
+                    listarRemitos(IDMAPA);
+                }, 3000);
+            })
+            .fail(function(xhr){
                 console.error(xhr);
                 toastr.error('Ha ocurrido un error. Consulte con el administrador', 'Error');
-            }
-            
-        });
+            })
 
+    });
+
+    $(document).on('click', '.revertirEntrega', function(){
+        let remito = $(this).data('remito');
+
+        $.post(reverseRemito, {_token: TOKEN, Id: remito})
+            .done(function(){   
+                toastr.success('Se revertirá la entrega en unos segundos...', 'Perfecto');
+                setTimeout(()=>{
+                    listarRemitos(IDMAPA);
+                }, 3000);  
+            })
     });
 
     $(document).on('click', '.buscarPresMapa', function() {
@@ -258,6 +280,8 @@ $(document).ready(()=>{
                 $('#apePaciente').text(data.Apellido);
                 $('#tipoDocPaciente').text(data.TipoDocumento);
                 $('#documentoPaciente').text(data.Documento);
+                $('.mostrarObsEstado').attr('data-id', prestacion);
+                getObsEstado(prestacion);
             })
             .fail(function(xhr) {
                 console.error(xhr);
@@ -296,7 +320,6 @@ $(document).ready(()=>{
                             <td><span data-id="${e.IdItemPrestacion}" data-estado="examen" title="${e.Incompleto === 1 ? `Incompleto` : `Completo`}" class="cambiarEstado custom-badge ${e.Incompleto === 1 ? `rojo` : `verde`}"><i class="ri-lightbulb-line"></i></span></td>
                             <td>
                                 <button type="button" data-id="${e.IdItemPrestacion}" class="btn btn-sm iconGeneral verItemPrestacion" title="Ver exámen"><i class="ri-search-eye-line"></i></button>
-                                <button title="Observación de Estado" class="btn btn-sm iconGeneral" data-bs-toggle="modal" data-bs-target="#ObsEstado"><i class="ri-chat-1-fill"></i></button>
                             </td>
                         </tr>
                     `;
@@ -358,7 +381,7 @@ $(document).ready(()=>{
                 `;
 
                 $('#cerrarMapa').append(contenido);
-                $('#NroPresCerrar, #EtapaCerrar').val('');
+                $('#NroPresCerrar, #EstadoCerrar').val('');
                 
             });
 
@@ -437,12 +460,13 @@ $(document).ready(()=>{
             })
     });
 
-    $(document).on('change', '#NroPresFinal, #NroRemitoFinal', function() {
+    $(document).on('change', '#NroPresFinal, #NroRemitoFinal, #estadosFinalizar', function() {
 
         let prestacionf = $('#NroPresFinal').val(),
-            remitof = $('#NroRemitoFinal').val();
+            remitof = $('#NroRemitoFinal').val(),
+            estadoFinalizar = $('#estadosFinalizar').val();
 
-        $.get(searchInFinalizar, { prestacion: prestacionf, remito: remitof, mapa: MAPA })
+        $.get(searchInFinalizar, { prestacion: prestacionf, remito: remitof, estadoFinalizar: estadoFinalizar, mapa: MAPA })
             .done(function(response){
 
                 $('#finalizarMapa').empty();
@@ -461,13 +485,14 @@ $(document).ready(()=>{
                 
                 let contenido = `
                     <tr>
-                        <td>${f.IdPrestacion}</td>
                         <td>${f.NroRemito}</td>
                         <td>${fecha(f.Fecha)}</td>
+                        <td>${f.IdPrestacion}</td>
                         <td>${f.ApellidoPaciente} ${f.NombrePaciente}</td>
+                        <td>${f.Documento}</td>
                         <td>${estado}</td>
                         <td><button data-id="${f.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
-                        <td>${f.Finalizado === 1 ? '<input type="checkbox" disabed>' : `<input type="checkbox" name="Id" value="${f.IdPrestacion}" checked>`}</td>
+                        <td>${f.Finalizado === 1 ? '<input type="checkbox" disabled>' : `<input type="checkbox" name="Id" value="${f.IdPrestacion}" checked>`}</td>
                         
                     </tr>
                 `;
@@ -509,9 +534,12 @@ $(document).ready(()=>{
             .done(function(){
                 toastr.success('Se han finalizado todos los mapas seleccionados','Perfecto');
                 $('#finalizarMapa').empty();
+                getPrestaMapas();
                 getEnMapa();
                 getFinalMapa();
                 getCerrarMapas();
+                listarRemitos(IDMAPA);
+
             })
             .fail(function(xhr){
                 console.error(xhr);
@@ -528,12 +556,14 @@ $(document).ready(()=>{
             NroPresRemito = $('#NroPresRemito').val();
 
         
-            $.get(getEnviarMapa, {desde: fDesde, hasta: fHasta, prestacion: NroPresEnviar, eEnviado: eEnviadoEnviar, mapa: MAPA, NroRemito: NroPresRemito})
-                .done(function(enviar){
+            $.get(searchInEnviar, {desde: fDesde, hasta: fHasta, prestacion: NroPresEnviar, eEnviado: eEnviadoEnviar, mapa: MAPA, NroRemito: NroPresRemito})
+                .done(function(response){
+
+                    let data = response.result;
 
                     $('#eenviarMapa').empty();
 
-                    $.each(enviar, function(index, en){
+                    $.each(data, function(index, en){
                         
                         let nuevaFecha = fecha(en.Fecha);;
 
@@ -617,6 +647,7 @@ $(document).ready(()=>{
         $('#mostrarNombre').text(nombre);
     });
 
+
     $(document).on('click', '.confirmarComentarioPriv', function(){
 
         let comentario = $('#Comentario').val(), idprest = $('#mostrarIdPrestacion').text();
@@ -643,6 +674,10 @@ $(document).ready(()=>{
 
     $('#comentarioPrivado').on('hidden.bs.modal', function(){
         $("#Comentario").val("");
+    });
+
+    $(document).on('click', '.saveComObsEstado', function(){
+
     });
 
     function quitarDuplicados(selector) {
@@ -770,8 +805,15 @@ $(document).ready(()=>{
                         </tr>
                     `;
     
-                    $('#cerrarMapa').append(contenido);
-                    
+                    $('#cerrarMapa').append(contenido);        
+                });
+
+                $("#listaCerrar").fancyTable({
+                    pagination: true,
+                    perPage: 15,
+                    searchable: false,
+                    globalSearch: false,
+                    sortable: false, 
                 });
                 
             })
@@ -804,13 +846,14 @@ $(document).ready(()=>{
             
             let contenido = `
                 <tr>
-                    <td>${f.IdPrestacion}</td>
                     <td>${f.NroRemito}</td>
                     <td>${fecha(f.Fecha)}</td>
+                    <td>${f.IdPrestacion}</td>
                     <td>${f.ApellidoPaciente} ${f.NombrePaciente}</td>
+                    <td>${f.Documento}</td>
                     <td>${estado}</td>
                     <td><button data-id="${f.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
-                    <td>${f.Finalizado === 1 ? '<input type="checkbox" disabled>' : `<input type="checkbox" name="Id" value="${f.IdPrestacion}" checked>`}</td>
+                    <td>${f.Finalizado === 1 ? `<input type="checkbox" disabled>` : `<input type="checkbox" name="Id" value="${f.IdPrestacion}" checked>`}</td>
                 </tr>
             `;
 
@@ -848,9 +891,11 @@ $(document).ready(()=>{
         $('#eenviarMapa').empty();
 
         $.get(enviarMapa, { mapa: MAPA})
-            .done(function(enviar){
+            .done(function(response){
 
-                $.each(enviar, function(index, en){
+                let data = response.result;
+
+                $.each(data, function(index, en){
                         
                     let tipo = (en.TipoPrestacion ? '<span class="custom-badge nuevoAzulInverso">' + en.TipoPrestacion +'</span>' : '');
 
@@ -934,6 +979,8 @@ $(document).ready(()=>{
 
     function fecha(fe){
 
+        if(fe === '' || fe === undefined) return;
+
         let partesFecha = fe.split("-");
         return  partesFecha[2] + "/" + partesFecha[1] + "/" + partesFecha[0];
     }
@@ -956,9 +1003,9 @@ $(document).ready(()=>{
                             <td>
                                 <span style="text-align=center" class="custom-badge ${r.Entregado === 1 ? 'verde':'rojo'}">${r.Entregado === 1 ? 'Entregado':'Sin Entregar'}</span>
                             </td>
-                            <td>${r.Obs || '-'}</td>
+                            <td>${r.constanciases[0].Obs || '-'}</td>
                             <td>
-                                <button data-remito="${r.Id}" type="button" class="btn botonGeneral entregarRemito" data-bs-toggle="modal" data-bs-target="#entregarModal">${r.Entregado === 1 ? 'Revertir Entrega':'Entregar'}</button> 
+                                <button data-remito="${r.NroCEE}" type="button" class="btn botonGeneral ${r.Entregado === 1 ? 'revertirEntrega' : 'entregarRemito'}" ${r.Entregado === 1 ? '' : 'data-bs-toggle="modal" data-bs-target="#entregarModal"'}>${r.Entregado === 1 ? 'Revertir Entrega':'Entregar'}</button> 
                             </td>
                             <td>
                                 <button data-remito="${r.NroCEE}" type="button" class="pdf btn iconGeneral" title="Generar reporte en Pdf">
@@ -984,37 +1031,7 @@ $(document).ready(()=>{
             })
     }
 
-    function tipoEstado(data){
-
-        let estado;
-
-        if(data.Cerrado === 1){
-            estado = '<span style="text-align=center" class="custom-badge verde">Cerrado</span>';
-        
-        } else if(data.Cerrado === 1 && data.Finalizado === 1){
-            estado = '<span style="text-align=center" class="custom-badge azul">Finalizado</span>';
-        
-        } else if(data.Cerrado === 0 && data.Finalizado === 0 || data.Cerrado === 1 && data.Finalizado === 0) {
-            estado = '<span style="text-align=center" class="custom-badge gris">Abierto</span>';
-        
-        }else if(data.Cerrado === 1 && data.eEnviado === 1) {
-            estado = '<span style="text-align=center" class="custom-badge gris">eEnviado</span>';
-        
-        }else if(data.Anulado === 1) {
-            estado = '<span style="text-align=center" class="custom-badge gris">Anulado</span>';
-        
-        }else if(data.Entregado === 1) {
-            estado = '<span style="text-align=center" class="custom-badge gris">Entregado</span>';
-        
-        }else if(data.Incompleto === 1) {
-            estado = '<span style="text-align=center" class="custom-badge gris">Incompleto</span>';
-        }
-
-        return estado;
-    }
-
     function createFile(tipo, array){
-
         let filePath = array,
             pattern = /storage(.*)/,
             match = filePath.match(pattern),
@@ -1034,6 +1051,18 @@ $(document).ready(()=>{
         setTimeout(function() {
             document.body.removeChild(link);
         }, 100);
+    }
+
+    function getObsEstado(id){
+
+        $.get(getComentarioPres, {Id: id})
+            .done(async function(response){
+
+                let rs = await response.comentario;
+
+                $('.ComObsEstado').val(rs);
+
+            })
     }
 
 });

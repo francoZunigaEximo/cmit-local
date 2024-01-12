@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Prestacion;
 
 class Constanciase extends Model
 {
@@ -24,7 +25,28 @@ class Constanciase extends Model
 
     public function prestacion()
     {
-        return $this->belongsTo(Prestacion::class, 'constanciase_it', 'IdC', 'IdP');
+        return $this->belongsToMany(Prestacion::class, 'constanciase_it', 'IdC', 'IdP');
+    }
+
+    public static function addRemito(int $NroRemito): void
+    {
+        Constanciase::create([
+            'Id' => Constanciase::max('Id') + 1,
+            'NroC' => $NroRemito,
+            'Fecha' => now(),
+            'Obs' => null,
+        ]);
+    }
+
+    public static function obsRemito(int $NroRemito, string $obs): void
+    {
+        $observacion = Constanciase::where('NroC', $NroRemito)->first();
+
+        if($observacion)
+        {
+            $observacion->Obs = $obs ?? '';
+            $observacion->save();
+        }
     }
 }
 
