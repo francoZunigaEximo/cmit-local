@@ -1003,7 +1003,7 @@ $(document).ready(()=>{
                             <td>
                                 <span style="text-align=center" class="custom-badge ${r.Entregado === 1 ? 'verde':'rojo'}">${r.Entregado === 1 ? 'Entregado':'Sin Entregar'}</span>
                             </td>
-                            <td>${r.constanciases[0].Obs || '-'}</td>
+                            <td>${r.constanciases && r.constanciases.length > 0 && r.constanciases[0].Obs !== undefined ? r.constanciases[0].Obs : '-'}</td>
                             <td>
                                 <button data-remito="${r.NroCEE}" type="button" class="btn botonGeneral ${r.Entregado === 1 ? 'revertirEntrega' : 'entregarRemito'}" ${r.Entregado === 1 ? '' : 'data-bs-toggle="modal" data-bs-target="#entregarModal"'}>${r.Entregado === 1 ? 'Revertir Entrega':'Entregar'}</button> 
                             </td>
