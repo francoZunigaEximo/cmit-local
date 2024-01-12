@@ -606,3 +606,24 @@ INSERT INTO `users` (`Id`, `name`, `email`, `IdPersonal`, `SR`, `email_verified_
 
 SET foreign_key_checks = 0;
 ALTER TABLE prestaciones_obsfases ADD FOREIGN KEY(IdUsuario) REFERENCES users(name);
+
+
+CREATE TABLE IF NOT EXISTS tipos_obsfases (
+    Id INT AUTO_INCREMENT NOT NULL,
+    nombre VARCHAR(100) NOT NULL,
+    descripcion BLOB NULL,
+    PRIMARY KEY (Id),
+    UNIQUE(Id)
+) ENGINE = InnoDB;
+
+INSERT INTO tipos_obsfases (Id, nombre, descripcion) VALUES
+(1, '0', NULL),
+(2, 'prestaciones', NULL),
+(3, 'cerrado', NULL),
+(4, 'finalizado', NULL),
+(5, 'entregado', NULL),
+(6, 'eEnviado', NULL);
+SET foreign_key_checks = 0;
+ALTER TABLE prestaciones_obsfases ADD COLUMN obsfases_id INT DEFAULT 1;
+SET foreign_key_checks = 0;
+ALTER TABLE prestaciones_obsfases ADD FOREIGN KEY(obsfases_id) REFERENCES tipos_obsfases(Id);
