@@ -20,7 +20,8 @@ class PrestacionObsFase extends Model
         'IdExamen',
         'IdUsuario',
         'Fecha',
-        'Rol'
+        'Rol',
+        'obsfases_id'
     ];
 
     public $timestamps = false;

@@ -627,3 +627,6 @@ SET foreign_key_checks = 0;
 ALTER TABLE prestaciones_obsfases ADD COLUMN obsfases_id INT DEFAULT 1;
 SET foreign_key_checks = 0;
 ALTER TABLE prestaciones_obsfases ADD FOREIGN KEY(obsfases_id) REFERENCES tipos_obsfases(Id);
+
+ALTER TABLE prestaciones_obsfases MODIFY COLUMN Rol VARCHAR(50) NOT NULL;
+

@@ -15,7 +15,8 @@ $(document).ready(()=>{
     getCerrarMapas();
     getFinalMapa();
     getEnMapa();
-    listaComentariosPrivados(IDMAPA);
+    listaComentariosPrivados(IDMAPA, 'prestaciones');
+    listaComentariosPrivados(IDMAPA, 'cerrado');
     listarRemitos(IDMAPA);
 
     $('#remitoFechaE').val(hoy);
@@ -245,7 +246,7 @@ $(document).ready(()=>{
                                 <button data-id="${dat.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver" data-bs-toggle="modal" data-bs-target="#verPrestacionModal">
                                     <i class="ri-search-eye-line"></i>
                                 </button>
-                                <button title="Observaciones privadas" type="button" class="iconGeneral btn btn-sm comentarioPrivado" data-bs-toggle="modal" data-bs-target="#comentarioPrivado" data-id="${dat.IdPrestacion}" data-nombre="${dat.Apellido} ${dat.Nombre}">
+                                <button title="Observaciones privadas" type="button" class="iconGeneral btn btn-sm comentarioPrivado" data-bs-toggle="modal" data-bs-target="#comentarioPrivado" data-id="${dat.IdPrestacion}" data-nombre="${dat.Apellido} ${dat.Nombre}" data-fase="prestaciones">
                                     <i class="ri-chat-quote-line"></i>
                                 </button>
                             </td>
@@ -375,7 +376,12 @@ $(document).ready(()=>{
                         <td>${d.ApellidoPaciente} ${d.NombrePaciente}</td>
                         <td>${d.dni}</td>
                         <td>${estado}</td>
-                        <td><button data-id="${d.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
+                        <td>
+                            <button data-id="${d.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button>
+                            <button title="Observaciones privadas" type="button" class="iconGeneral btn btn-sm comentarioPrivado" data-bs-toggle="modal" data-bs-target="#comentarioPrivado" data-id="${d.IdPrestacion}" data-nombre="${d.ApellidoPaciente} ${d.NombrePaciente}" data-fase="cerrar">
+                                <i class="ri-chat-quote-line"></i>
+                            </button>
+                        </td>
                         <td>${d.Cerrado === 1 ? '<input type="checkbox" disabled>' : `<input type="checkbox" name="Id" value="${d.IdPrestacion}" checked>`}</td>
                     </tr>
                 `;
@@ -641,32 +647,40 @@ $(document).ready(()=>{
 
     $(document).on('click', '.comentarioPrivado', function(){
 
-        let id = $(this).data('id'), nombre = $(this).data('nombre');
+        let id = $(this).data('id'), nombre = $(this).data('nombre'), fase = $(this).data('fase');
 
         $('#mostrarIdPrestacion').text(id);
         $('#mostrarNombre').text(nombre);
+        $('#fase').text(fase);
     });
 
 
     $(document).on('click', '.confirmarComentarioPriv', function(){
 
-        let comentario = $('#Comentario').val(), idprest = $('#mostrarIdPrestacion').text();
+        let comentario = $('#Comentario').val(), idprest = $('#mostrarIdPrestacion').text(), fase = $('#fase').text();
+        console.log(fase);
+        let lstFases = {
+            prestaciones: 2,
+            cerrar: 3
+        }
 
         if(comentario === ''){
             toastr.warning('La observación no puede estar vacía', 'Atención');
             return;
         }
 
-        $.post(savePrivComent, {_token: TOKEN, Comentario: comentario, IdEntidad: idprest})
+        $.post(savePrivComent, {_token: TOKEN, Comentario: comentario, IdEntidad: idprest, obsfasesid: lstFases[fase]})
             .done(function(){
 
                 toastr.success('Perfecto', 'Se ha generado la observación correctamente');
 
                 setTimeout(() => {
                     $('#privadoPrestaciones').empty();
+                    $('#privadoCerrar').empty();
                     $('#comentarioPrivado').modal('hide');
                     $("#Comentario").val("");
-                    listaComentariosPrivados(IDMAPA);
+                    listaComentariosPrivados(IDMAPA, 'prestaciones');
+                    listaComentariosPrivados(IDMAPA, 'cerrado');
                 }, 3000);
             })
 
@@ -747,7 +761,7 @@ $(document).ready(()=>{
                                 <button data-id="${d.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal">
                                     <i class="ri-search-eye-line"></i>
                                 </button>
-                                <button title="Observaciones privadas" type="button" class="iconGeneral btn btn-sm comentarioPrivado" data-bs-toggle="modal" data-bs-target="#comentarioPrivado"  data-id="${d.IdPrestacion}"data-nombre="${d.Apellido} ${d.Nombre}">
+                                <button title="Observaciones privadas" type="button" class="iconGeneral btn btn-sm comentarioPrivado" data-bs-toggle="modal" data-bs-target="#comentarioPrivado"  data-id="${d.IdPrestacion}"data-nombre="${d.Apellido} ${d.Nombre}" data-fase="prestaciones">
                                     <i class="ri-chat-quote-line"></i>
                                 </button>
                             </td>
@@ -799,7 +813,12 @@ $(document).ready(()=>{
                             <td>${c.ApellidoPaciente} ${c.NombrePaciente}</td>
                             <td>${c.dni}</td>
                             <td>${estado}</td>
-                            <td><button data-id="${c.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
+                            <td>
+                                <button data-id="${c.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button>
+                                <button title="Observaciones privadas" type="button" class="iconGeneral btn btn-sm comentarioPrivado" data-bs-toggle="modal" data-bs-target="#comentarioPrivado" data-id="${c.IdPrestacion}" data-nombre="${c.ApellidoPaciente} ${c.NombrePaciente}" data-fase="cerrar">
+                                <i class="ri-chat-quote-line"></i>
+                            </button>
+                            </td>
                             <td>${c.Cerrado === 1 ? '<input type="checkbox" disabled>' : `<input type="checkbox" name="Id" value="${c.IdPrestacion}" checked>`} </td>
                            
                         </tr>
@@ -943,11 +962,24 @@ $(document).ready(()=>{
             });
     }
 
-    function listaComentariosPrivados(idmapa){
+    function listaComentariosPrivados(idmapa, opcionFase){
 
         $('#privadoPrestaciones').empty();
+        let listaFases = {
+            prestaciones: {
+                id: 2,
+                bodyTable: '#privadoPrestaciones',
+                table: '#lstPrivPrestaciones'
+            },
+            cerrado: {
+                id: 3,
+                bodyTable: '#privadoCerrar',
+                table: '#lstPrivCerrados'
+            },
 
-        $.get(privateComment, {Id: idmapa})
+        }
+
+        $.get(privateComment, {Id: idmapa, obsfasesid: listaFases[opcionFase].id})
             .done(async function(response){
 
                 let data = await response.result;
@@ -964,10 +996,10 @@ $(document).ready(()=>{
                         </tr>
                     `;
 
-                    $('#privadoPrestaciones').append(contenido);
+                    $(listaFases[opcionFase].bodyTable).append(contenido);
                 });
 
-                $("#lstPrivPrestaciones").fancyTable({
+                $(listaFases[opcionFase].table).fancyTable({
                     pagination: true,
                     perPage: 15,
                     searchable: false,

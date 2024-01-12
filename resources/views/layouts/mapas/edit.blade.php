@@ -323,7 +323,7 @@
                             <th class="sort">Paciente</th>
                             <th>DNI</th>
                             <th>Estado</th>
-                            <th>Ver</th>
+                            <th>Acciones</th>
                             <th><input type="checkbox" id="checkAll" name="Id"></th>
                         </tr>
                     </thead>
@@ -331,6 +331,33 @@
     
                     </tbody>
                 </table>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h4 class="card-title mb-0">Observaciones privadas</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive table-card mt-3 mb-1">
+                                <table id="lstPrivCerrados" class="display table table-bordered" style="100%">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th class="sort">Fecha</th>
+                                            <th class="sort">Nro prestación</th>
+                                            <th>Usuario</th>
+                                            <th>Rol</th>
+                                            <th>Comentario</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="list form-check-all" id="privadoCerrar">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -605,6 +632,7 @@
                    <textarea name="Comentario" id="Comentario" class="form-control" rows="10"></textarea>
                 </div>
                 <div class="modal-footer">
+                    <input type="hidden" id="fase">
                     <button type="button" class="btn botonGeneral" id="reset" data-bs-dismiss="modal">Cancelar</button>
                     <button type="button" class="btn botonGeneral confirmarComentarioPriv">Confirmar</button>
                 </div>
