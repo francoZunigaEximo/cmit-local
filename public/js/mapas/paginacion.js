@@ -157,6 +157,7 @@ $(document).ready(()=>{
                 createdRow: function (row, data, dataIndex) {
 
                     let totalDias = getDias(data.FechaE);
+                    let resultado;
 
                     if (totalDias >= 11 && totalDias <= 15 && data.eEnviado === 0) {
                         resultado = $(row).addClass('fondo-amarillo');
