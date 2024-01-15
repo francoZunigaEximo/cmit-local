@@ -8,7 +8,6 @@ use App\Models\Mapa;
 use App\Models\Paciente;
 use App\Models\Constanciase;
 use App\Models\ConstanciaseIt;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -360,7 +359,7 @@ class MapasController extends Controller
 
             $result = $mapas->orderBy('prestaciones.Id', 'DESC')->get(); 
 
-            $csv = "Id,Nro,Art,Empresa,Fecha Corte,Fecha Entrega,Inactivo,Nro de Remito, eEnviado,Cerrado,Entregado,Finalizado,Apellido y Nombre, Total de Prestaciones,Observación\n";
+            $csv = "Id,Nro,Art,Empresa,Fecha Corte,Fecha Entrega,Inactivo,Nro de Remito, eEnviado,Cerrado,Entregado,Finalizado,Apellido y Nombre, Observación\n";
 
             foreach ($result as $row) {
                 $Id = $row->Id ?? '-';
@@ -376,10 +375,9 @@ class MapasController extends Controller
                 $Entregado = ($row->Entregado === 0 ? 'No' : ($row->Entregado === 1 ? 'Sí' : '-')) ?? '-';
                 $Finalizado = ($row->Finalizado === 0 ? 'No' : ($row->Finalizado === 1 ? 'Sí' : '-')) ?? '-';
                 $NombreCompleto = $row->Apellido.' '.$row->Nombre;
-                $TotalPrestaciones = $row->contadorPrestaciones ?? '-';
                 $Obs = str_replace(["\r", "\n", ','], ' ', $row->Obs);
 
-                $csv .= "$Id,$Nro,$Art,$Empresa,$Fecha,$FechaE,$Inactivo,$nroRemito,$eEnviado,$Cerrado,$Entregado,$Finalizado,$NombreCompleto,$TotalPrestaciones,$Obs\n";
+                $csv .= "$Id,$Nro,$Art,$Empresa,$Fecha,$FechaE,$Inactivo,$nroRemito,$eEnviado,$Cerrado,$Entregado,$Finalizado,$NombreCompleto,$Obs\n";
             }
 
             // Generar un nombre aleatorio para el archivo
@@ -684,7 +682,7 @@ class MapasController extends Controller
 
         $resutl = $query->distinct()->get();
 
-        return response()->json($resutl);
+        return response()->json(['result' => $resutl]);
     }
 
     public function geteEnviar(Request $request)
@@ -796,9 +794,10 @@ class MapasController extends Controller
             'prestaciones.Id AS IdPrestacion',
             'prestaciones.NroCEE AS NroCEE',
             'prestaciones.Facturado AS Facturado',
+            'prestaciones.Incompleto AS Incompleto',
             'pacientes.Apellido AS Apellido',
             'pacientes.Nombre AS Nombre',
-            DB::raw('(SELECT CASE WHEN COUNT(*) = SUM(CASE WHEN items.CAdj IN (3, 4, 5, 6) AND items.CInfo = 3 THEN 1 ELSE 0 END) THEN "Completo" ELSE "Incompleto" END FROM itemsprestaciones AS items WHERE items.IdPrestacion = prestaciones.Id) AS Etapa'))
+            DB::raw('(SELECT CASE WHEN COUNT(*) = SUM(CASE WHEN items.Incompleto = 0 THEN 1 ELSE 0 END) THEN "Completo" ELSE "Incompleto" END FROM itemsprestaciones AS items WHERE items.IdPrestacion = prestaciones.Id) AS Etapa'))
         ->where('mapas.Nro', '=', $idmapa);
 
         return $query;
@@ -859,14 +858,33 @@ class MapasController extends Controller
             'prestaciones.Fecha AS Fecha',
             'prestaciones.TipoPrestacion AS TipoPrestacion',
             'prestaciones.eEnviado AS eEnviado',
+            'prestaciones.Cerrado AS Cerrado',
+            'prestaciones.Finalizado AS Finalizado',
             'prestaciones.NroCEE AS NroRemito',
             'pacientes.Nombre AS NombrePaciente',
             'pacientes.Apellido AS ApellidoPaciente',
-            'pacientes.Documento AS Documento')
-            ->where('prestaciones.eEnviado', 0)
+            'pacientes.Documento AS Documento',
+            DB::raw('(SELECT CASE WHEN COUNT(*) = SUM(CASE WHEN items.Incompleto = 0 THEN 1 ELSE 0 END) THEN "Completo" ELSE "Incompleto" END FROM itemsprestaciones AS items WHERE items.IdPrestacion = prestaciones.Id) AS Etapa'))
             ->where('mapas.Nro', $idmapa);
 
         return $query;
+    }
+
+    public function reverseRemito(Request $request)
+    {
+        $remitos = Prestacion::where('NroCEE', $request->Id)->get();
+
+        if($remitos)
+        {
+            foreach($remitos as $prestacion)
+            {
+                $prestacion->Entregado = 0;
+                $prestacion->FechaEntrega = '0000-00-00';
+                $prestacion->save();
+            }
+
+            Constanciase::obsRemito($request->Id, '');
+        }
     }
 } 
 

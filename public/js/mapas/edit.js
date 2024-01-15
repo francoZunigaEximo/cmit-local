@@ -582,12 +582,15 @@ $(document).ready(()=>{
                                 <td>${en.Documento}</td>
                                 <td><span class="custom-badge original">${(en.eEnviado === 1 ? 'eEnviado':'No eEnviado')}</span></td>
                                 <td><button data-id="${en.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
-                                <td>${en.eEnviado === 1 ? '' : en.eEnviado === 0 && en.Finalizado === 1 && en.Cerrado === 1 && en.CInfo === 3 && [3,4,5].includes(en.CAdj) ? `<input type="checkbox" name="Id" value="${en.IdPrestacion}" checked>` : '<span class="custom-badge pequeno">Bloqueado</span>'}</td>     
+                                <td>${en.eEnviado === 1 ? '' : en.eEnviado === 0 && en.Finalizado === 1 && en.Cerrado === 1 && en.Etapa === 'Completo' ? `<input type="checkbox" name="Id" value="${en.IdPrestacion}" checked>` : '<span class="custom-badge pequeno">Bloqueado</span>'}</td>     
                             </tr>
                         `;
                         $('#eenviarMapa').append(contenido);
-                        $('#fDesde, #fHasta, #NroPresEnviar, #eEnviadoEnviar').val('');
+                        
                     });
+
+                    $('#fDesde, #fHasta, #NroPresEnviar, #NroPresRemito').val('');
+                    $('#eEnviadoEnviar option[value=""]').prop('selected', true);
                 })
                 .fail(function(xhr){
 
@@ -643,6 +646,8 @@ $(document).ready(()=>{
         let id = $(this).data('id');
         let status = $(this).data('estado');
         checkEstado(id, status);
+        $('#prestaMapa').empty();
+        getPrestaMapas();
     });
 
     $(document).on('click', '.comentarioPrivado', function(){
@@ -658,7 +663,7 @@ $(document).ready(()=>{
     $(document).on('click', '.confirmarComentarioPriv', function(){
 
         let comentario = $('#Comentario').val(), idprest = $('#mostrarIdPrestacion').text(), fase = $('#fase').text();
-        console.log(fase);
+
         let lstFases = {
             prestaciones: 2,
             cerrar: 3
@@ -929,7 +934,7 @@ $(document).ready(()=>{
                             <td>${en.Documento}</td>
                         <td><span class="custom-badge original">${(en.eEnviado === 1 ? 'eEnviado':'No eEnviado')}</span></td>
                             <td><button data-id="${en.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
-                            <td>${en.eEnviado === 1 ? '' : en.eEnviado === 0 && en.Finalizado === 1 && en.Cerrado === 1 && en.CInfo === 3 && [3,4,5].includes(en.CAdj) ? `<input type="checkbox" name="Id" value="${en.IdPrestacion}" checked>` : '<span class="custom-badge pequeno">Bloqueado</span>'}</td> 
+                            <td>${en.eEnviado === 1 ? '' : en.eEnviado === 0 && en.Finalizado === 1 && en.Cerrado === 1 && en.Etapa === 'Completo' ? `<input type="checkbox" name="Id" value="${en.IdPrestacion}" checked>` : `<span class="custom-badge pequeno">Bloqueado</span>`}</td> 
                         </tr>
                     `;
                     $('#eenviarMapa').append(contenido);

@@ -461,13 +461,12 @@
             <div class="row mt-4">
                 <div class="col-sm-8" style="text-align: left;">
                     <p style="font-size: small"> <span class="custom-badge nuevoAzul">eEnviar</span> solo las prestaciones Cerradas con todos los exámenes cerrados, adjuntados e informados (incluso sus anexos).</p>
-                    <p style="font-size: small">Al presional el botón <span class="custom-badge nuevoAzul">eEnviar</span>se exportará el eEstudio a la carpeta designada en <strong>Mi Empresa</strong> y se marcará la Prestación como eEnviada</p>
                     <p style="font-size: small">Si el estado es <span class="custom-badge nuevoAzul">No eEnviado</span> y <span class="custom-badge nuevoAzul">Bloqueado</span> es porque la prestación no se encuentra cerrada, finalizada y correctamente efectuada e informada.</p>
                 </div>
                 <div class="col-sm-4" style="text-align: right;">
                     <button class="btn botonGeneral" type="button" id="vistaPreviaEnviar" ><i class="ri-file-text-line"></i> Vista Previa</button>
                     <button class="btn botonGeneral" type="button" id="exportarEnviar"><i class="ri-file-add-line"></i> Exportar</button>
-                    <button type="button" class="btn botonGeneral eEnviarDatos" data-bs-toggle="modal" data-bs-target="#eEnviarModal" data-remito="{{ $remito->NroCEE ?? ''}}">
+                    <button type="button" class="btn botonGeneral eEnviarDatos" data-bs-toggle="modal" data-bs-target="#eEnviarModal">
                         <i class="ri-mail-send-line"></i> eEnviar    
                     </button>
                 </div>
