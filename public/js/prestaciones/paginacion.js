@@ -216,7 +216,7 @@ $(document).ready(()=>{
                         
                         bloquear = `<button type="button" data-id="${data.Id}" class="btn btn-sm iconGeneralNegro bloquearPrestacion" title="${(data.Anulado == 1 ? "Bloqueado" : "Bloquear")}" ${ (data.Anulado == 1 ? "disabled" : "")}><i class="ri-forbid-2-line"></i></button>`,
 
-                        baja = `<button data-id="${data.Id}" type="button" class="btn btn-sm iconGeneralNegro downPrestacion" ><i class="ri-delete-bin-2-line"></i></button>`;
+                        baja = `<button data-id="${data.Id}" title="Dar de baja" type="button" class="btn btn-sm iconGeneralNegro downPrestacion" ><i class="ri-delete-bin-2-line"></i></button>`;
 
                         return editar + ' ' + bloquear + ' ' + baja;
                     }

@@ -324,7 +324,7 @@
                             <th>DNI</th>
                             <th>Estado</th>
                             <th>Acciones</th>
-                            <th><input type="checkbox" id="checkAll" name="Id"></th>
+                            <th><input type="checkbox" id="checkAllCerrar" name="Id_cerrar"></th>
                         </tr>
                     </thead>
                     <tbody class="list form-check-all" id="cerrarMapa">
@@ -412,7 +412,7 @@
                             <th>DNI</th>
                             <th>Estado</th>
                             <th>Ver</th>
-                            <th><input type="checkbox" id="checkAll" name="Id"><th>
+                            <th><input type="checkbox" id="checkAllFinalizar" name="Id_finalizar"><th>
                         </tr>
                     </thead>
                     <tbody class="list form-check-all" id="finalizarMapa">
@@ -483,7 +483,7 @@
                             <th>DNI</th>
                             <th>Estado</th>
                             <th>Ver</th>
-                            <th><input type="checkbox" id="checkAll" name="Id"><th>
+                            <th><input type="checkbox" id="checkAllEnviar" name="Id_enviar"><th>
                         </tr>
                     </thead>
                     <tbody class="list form-check-all" id="eenviarMapa">
@@ -540,7 +540,7 @@
                     </div>
                     <div class="col-sm-4" style="text-align: right;">
                         <button class="btn btn-sm botonGeneral"><i class="ri-printer-line"></i> Imprimir</button>
-                        <button class="btn btn-sm botonGeneral"><i class="ri-file-text-line"></i> e-Estudio</button>
+                        <button class="btn btn-sm botonGeneral"><i class="ri-file-text-line"></i> eEstudio</button>
                         <button data-id="" title="Observación de Estado" class="btn btn-sm botonGeneral mostrarObsEstado"><i class="ri-chat-1-line"></i> Agregar Obs</button>
                     </div>
                 </div>
@@ -690,7 +690,6 @@ const IDMAPA = "{{ $mapa->Id }}";
 <script src="{{ asset('js/mapas/edit.js')}}?v={{ time() }}"></script>
 <script src="{{ asset('js/mapas/utils.js')}}?v={{ time() }}"></script>
 <script src="{{ asset('js/mapas/validaciones.js')}}?v={{ time() }}"></script>
-<script src="{{ asset('js/scripts.js') }}?v={{ time() }}"></script>
 <script src="{{ asset('libs/cleave.js/cleave.min.js') }}"></script>
 <script src="{{ asset('js/select2.min.js') }}"></script>
 <script src="{{ asset('js/pages/select2.init.js') }}"></script>

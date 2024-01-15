@@ -382,7 +382,7 @@ $(document).ready(()=>{
                                 <i class="ri-chat-quote-line"></i>
                             </button>
                         </td>
-                        <td>${d.Cerrado === 1 ? '<input type="checkbox" disabled>' : `<input type="checkbox" name="Id" value="${d.IdPrestacion}" checked>`}</td>
+                        <td>${d.Cerrado === 1 ? '<input type="checkbox" disabled>' : `<input type="checkbox" name="Id_cerrar" value="${d.IdPrestacion}" checked>`}</td>
                     </tr>
                 `;
 
@@ -445,7 +445,7 @@ $(document).ready(()=>{
             ids.push($(this).val());
         });
 
-        let checkAll =$('#checkAll').prop('checked');
+        let checkAll =$('#checkAllCerrar').prop('checked');
 
         if(ids.length === 0 && checkAll === false){
             toastr.warning('No hay ninguna prestación seleccionada para cerrar', 'Atención');
@@ -498,7 +498,7 @@ $(document).ready(()=>{
                         <td>${f.Documento}</td>
                         <td>${estado}</td>
                         <td><button data-id="${f.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
-                        <td>${f.Finalizado === 1 ? '<input type="checkbox" disabled>' : `<input type="checkbox" name="Id" value="${f.IdPrestacion}" checked>`}</td>
+                        <td>${f.Finalizado === 1 ? '<input type="checkbox" disabled>' : `<input type="checkbox" name="Id_finalizar" value="${f.IdPrestacion}" checked>`}</td>
                         
                     </tr>
                 `;
@@ -529,7 +529,7 @@ $(document).ready(()=>{
             ids.push($(this).val());
         });
 
-        let checkAll =$('#checkAll').prop('checked');
+        let checkAll =$('#checkAllFinalizar').prop('checked');
 
         if(ids.length === 0 && checkAll === false){
             toastr.warning('No hay ninguna prestación seleccionada para finalizar', 'Atención');
@@ -606,7 +606,7 @@ $(document).ready(()=>{
             ids.push($(this).val());
         });
 
-        let checkAll =$('#checkAll').prop('checked');
+        let checkAll =$('#checkAllEnviar').prop('checked');
 
         if(ids.length === 0 && checkAll === false){
             toastr.warning('No hay ninguna prestación seleccionada para eEnviar', 'Atención');
@@ -632,6 +632,7 @@ $(document).ready(()=>{
 
         let remito = $(this).data('remito');
         $('#verIdRemito').text(remito);
+        console.log(remito);
 
     });
 
@@ -697,6 +698,21 @@ $(document).ready(()=>{
 
     $(document).on('click', '.saveComObsEstado', function(){
 
+    });
+
+    $('#checkAllCerrar').on('click', function() {
+
+        $('input[type="checkbox"][name="Id_cerrar"]:not(#checkAllCerrar)').prop('checked', this.checked);
+    });
+
+    $('#checkAllFinalizar').on('click', function() {
+
+        $('input[type="checkbox"][name="Id_finalizar"]:not(#checkAllFinalizar)').prop('checked', this.checked);
+    });
+
+    $('#checkAllEnviar').on('click', function() {
+
+        $('input[type="checkbox"][name="Id_enviar"]:not(#checkAllEnviar)').prop('checked', this.checked);
     });
 
     function quitarDuplicados(selector) {
@@ -824,7 +840,7 @@ $(document).ready(()=>{
                                 <i class="ri-chat-quote-line"></i>
                             </button>
                             </td>
-                            <td>${c.Cerrado === 1 ? '<input type="checkbox" disabled>' : `<input type="checkbox" name="Id" value="${c.IdPrestacion}" checked>`} </td>
+                            <td>${c.Cerrado === 1 ? '<input type="checkbox" disabled>' : `<input type="checkbox" name="Id_cerrar" value="${c.IdPrestacion}" checked>`} </td>
                            
                         </tr>
                     `;
@@ -877,7 +893,7 @@ $(document).ready(()=>{
                     <td>${f.Documento}</td>
                     <td>${estado}</td>
                     <td><button data-id="${f.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
-                    <td>${f.Finalizado === 1 ? `<input type="checkbox" disabled>` : `<input type="checkbox" name="Id" value="${f.IdPrestacion}" checked>`}</td>
+                    <td>${f.Finalizado === 1 ? `<input type="checkbox" disabled>` : `<input type="checkbox" name="Id_finalizar" value="${f.IdPrestacion}" checked>`}</td>
                 </tr>
             `;
 
