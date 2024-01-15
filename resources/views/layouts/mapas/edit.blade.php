@@ -666,7 +666,8 @@ const lnkItemsprestaciones = "{{ route('itemsprestaciones.edit', ['itemsprestaci
 const privateComment = "{{ route('comentariosPriv') }}";
 const savePrivComent = "{{ route('savePrivComent') }}";
 const getRemito = "{{ route('getRemito') }}";
-const getComentarioPres = "{{ route ('getComentarioPres') }}";
+const getComentarioPres = "{{ route('getComentarioPres') }}";
+const setComentarioPres = "{{ route('setComentarioPres') }}";
 const reverseRemito = "{{ route('reverseRemito') }}";
 //Extras
 const TOKEN = "{{ csrf_token() }}";

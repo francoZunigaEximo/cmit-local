@@ -19,4 +19,14 @@ class ComentariosPrestacionesController extends Controller
         }
 
     }
+
+    public function setComentarioPres(Request $request)
+    {
+        PrestacionComentario::updateOrCreate([
+            'IdP' => $request->Id,
+        ],[
+            'Id' => PrestacionComentario::max('Id') + 1,
+            'Obs' => $request->observacion
+        ]);
+    }
 }

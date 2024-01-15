@@ -697,7 +697,17 @@ $(document).ready(()=>{
     });
 
     $(document).on('click', '.saveComObsEstado', function(){
+        let prestacion = $('#IdPrestacion').text(), observacion = $('.ComObsEstado').val();
 
+        if(observacion === ''){
+            toastr.warning('Debe escribir un observación de la prestación', 'Atención');
+            return;
+        }
+
+        $.post(setComentarioPres, {_token: TOKEN, Id: prestacion, observacion: observacion})
+            .done(function(){
+                toastr.success('Perfecto', 'Se ha actualizado la observacion correctamente');
+            });
     });
 
     $('#checkAllCerrar').on('click', function() {
