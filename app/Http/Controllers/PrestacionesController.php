@@ -105,7 +105,10 @@ class PrestacionesController extends Controller
                 'prestaciones.TipoPrestacion as TipoPrestacion',
                 'prestaciones.eEnviado as eEnviado',
                 'prestaciones.Estado as Estado',
-                'prestaciones.Facturado as Facturado'
+                'prestaciones.Facturado as Facturado',
+                'prestaciones.Cerrado as Cerrado',
+                'prestaciones.Finalizado as Finalizado',
+                'prestaciones.Entregado as Entregado'
             )
             ->where('prestaciones.Estado', 1)
             ->groupBy('prestaciones.Id');
@@ -145,6 +148,24 @@ class PrestacionesController extends Controller
                     ->orWhere('art.Identificacion', 'LIKE', '%'. $request->artSearch .'%')
                     ->orWhere('art.ParaEmpresa', 'LIKE', '%'. $request->artSearch .'%')
                     ->orWhere('art.NombreFantasia', 'LIKE', '%'. $request->artSearch .'%');
+            });
+        }
+
+        if(!empty($request->pacienteSelect2)) {
+            $query->where(function($query) use ($request) {
+                $query->where('paciente.Id', $request->pacienteSelect2);
+            });
+        }
+
+        if(!empty($request->empresaSelect2)) {
+            $query->where(function($query) use ($request) {
+                $query->where('emp.Id', $request->empresaSelect2);
+            });
+        }
+
+        if(!empty($request->artSelect2)) {
+            $query->where(function($query) use ($request) {
+                $query->where('art.Id', $request->artSelect2);
             });
         }
 

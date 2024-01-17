@@ -106,27 +106,27 @@
                                   <div class="card-body" style="background: #eaeef3">
                                     <div class="row">
                                     
-                                        <div class="col-sm-2 mb-3">
+                                        <div class="col-sm-3 mb-3">
                                             <div>
-                                                <label for="paciente" class="form-label font-weight-bold"><strong>Paciente</strong></label>
-                                                <input type="text" placeholder="Nombre y Apellido" class="form-control" id="pacienteSearch">
+                                                <label for="pacienteSelect2" class="form-label font-weight-bold"><strong>Paciente</strong></label>
+                                                <select name="pacienteSelect2" class="form-control" id="pacienteSelect2">
+                                                </select>
                                             </div>
                                         </div>
-
-                                        <div class="col-sm-2 mb-3">
+                                        <div class="col-sm-3 mb-3">
                                             <div>
-                                                <label for="empresa" class="form-label font-weight-bold"><strong>Empresa</strong></label>
-                                                <input type="text" placeholder="Empresa, Para Empresa o Cuit" class="form-control" id="empresaSearch">
+                                                <label for="empresaSelect2" class="form-label font-weight-bold"><strong>Empresa</strong></label>
+                                                <select name="empresaSelect2" class="form-control" id="empresaSelect2">
+                                                </select>
                                             </div>
                                         </div>
-
-                                        <div class="col-sm-2 mb-3">
+                                        <div class="col-sm-3 mb-3">
                                             <div>
-                                                <label for="art" class="form-label font-weight-bold"><strong>Art</strong></label>
-                                                <input type="text" placeholder="Nombre de la ART" class="form-control" id="artSearch">
+                                                <label for="artSelect2" class="form-label font-weight-bold"><strong>Art</strong></label>
+                                                <select name="artSelect2" class="form-control" id="artSelect2">
+                                                </select>
                                             </div>
                                         </div>
-
 
                                     </div>
                                   </div>
@@ -256,6 +256,7 @@ const blockPrestacion = "{{ route('blockPrestacion') }}";
 const ROUTE = "{{ route('prestaciones.index') }}";
 const SEARCH = "{{ route('searchPrestaciones') }}";
 const porcentajeExamen = "{{ route('porcentajeExamen') }}";
+const getOnlyClientes = "{{ route('getOnlyClientes') }}";
 
 $('#excel').click(function(e) {
     e.preventDefault();

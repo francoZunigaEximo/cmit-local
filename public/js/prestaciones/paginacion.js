@@ -9,6 +9,9 @@ $(document).ready(()=>{
             pacienteSearch = $('#pacienteSearch').val(),
             empresaSearch = $('#empresaSearch').val(),
             artSearch = $('#artSearch').val(),
+            empresaSelect2 = $('#empresaSelect2').val(),
+            pacienteSelect2 = $('#pacienteSelect2').val(),
+            artSelect2 = $('#artSelect2').val(),
             tipoPrestacion = $('#TipoPrestacion').val(),
             fechaDesde = $('#fechaDesde').val(),
             fechaHasta = $('#fechaHasta').val(),
@@ -129,11 +132,24 @@ $(document).ready(()=>{
                 },
                 {
                     data: null,
-                    name: 'Anulado',
+                    name: 'Id',
                     orderable: true,
                     targets: 9,
                     render: function(data){
-                        return '<span class="iconGeneralNegro text-uppercase">' + (data.Anulado == 0 ? "Habilitado" : "Anulado") + '</span>';
+
+                        let situacion;
+
+                        if(data.Cerrado === 1 && data.Finalizado === 0 && data.Entregado === 0){
+                            situacion = "Cerrado";
+                        }else if(data.Cerrado === 1 && data.Finalizado === 1 && data.Entregado === 0){
+                            situacion = "Finalizado";
+                        }else if(data.Cerrado === 1 && data.Finalizado === 1 && data.Entregado === 1){
+                            situacion = "Entregado";
+                        }else{
+                            situacion = "Abierto";
+                        }
+
+                        return '<span class="iconGeneralNegro text-uppercase">' + situacion + '</span>';
                     }
                 },
                 {
@@ -285,6 +301,9 @@ $(document).ready(()=>{
                     e.pacienteSearch = pacienteSearch;
                     e.empresaSearch = empresaSearch;
                     e.artSearch = artSearch;
+                    e.pacienteSelect2 = pacienteSelect2;
+                    e.artSelect2 = artSelect2;
+                    e.empresaSelect2 = empresaSelect2;
                     e.nroprestacion = nroprestacion;
                     e.tipoPrestacion = tipoPrestacion;
                     e.fechaDesde = fechaDesde;

@@ -413,4 +413,48 @@ class ClientesController extends Controller
             return response()->json(['cliente' => $cliente]);
         }
     }
+
+    public function getOnlyClientes(Request $request)
+    {
+        $buscar = $request->buscar;
+        $tipo = $request->tipo;
+
+        $resultados = Cache::remember('clientes_'.$buscar, 5, function () use ($buscar, $tipo) {
+            $clientes = Cliente::where(function ($query) use ($buscar, $tipo) {
+                if($tipo === 'E')
+                {
+                    $query->where('RazonSocial', 'LIKE', '%'.$buscar.'%')
+                        ->orWhere('NombreFantasia', 'LIKE', '%'.$buscar.'%')
+                        ->orWhere('ParaEmpresa', 'LIKE', '%'.$buscar.'%');
+
+                }elseif($tipo === 'A'){
+                    $query->where('RazonSocial', 'LIKE', '%'.$buscar.'%');
+                }
+                
+            })
+                ->where('TipoCliente', $tipo)
+                ->get();
+
+            $resultados = [];
+
+            foreach ($clientes as $cliente) {
+                    if($tipo === 'E')
+                    {
+                        $text = 'Empresa: '.$cliente->RazonSocial.' | Alias: '.$cliente->Alias. ' | ParaEmpresa: '.$cliente->ParaEmpresa;
+                    }elseif($tipo === 'A'){
+                        $text = 'ART: '.$cliente->RazonSocial;
+                    }
+                   
+
+                $resultados[] = [
+                    'id' => $cliente->Id,
+                    'text' => $text,
+                ];
+            }
+
+            return $resultados;
+        });
+
+        return response()->json(['clientes' => $resultados]);
+    }
 }
