@@ -51,4 +51,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(Personal::class, 'Id', 'IdPerfil');
     }
+
+    public function auditor()
+    {
+        return $this->hasOne(Auditor::class, 'IdUsuario', 'name');
+    }
 }

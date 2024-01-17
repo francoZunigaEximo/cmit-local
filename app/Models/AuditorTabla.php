@@ -19,4 +19,9 @@ class AuditorTabla extends Model
     ];
 
     public $timestamps = false;
+
+    public function auditor()
+    {
+        return $this->hasOne(Auditor::class, 'IdTabla', 'Id');
+    }
 }

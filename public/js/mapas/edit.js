@@ -613,7 +613,26 @@ $(document).ready(()=>{
             return;
         }
 
-        $.post(saveEnviar, { ids: ids, _token: TOKEN })
+        let enviarArt = $('.enviarArt').prop('checked'),
+            enviarEmpresa = $('.enviarEmpresa').prop('checked'),
+            adjuntarEnvio = $('.adjuntarEnvio').prop('checked'),
+            condiciones = [enviarArt, enviarEmpresa, adjuntarEnvio];
+        
+        let contarTrue = condiciones.filter(condicion => condicion === true).length;
+
+        if(contarTrue !== 1){
+
+            toastr.warning("Solo puede seleccionar una opción", "Atención");
+            return;
+        }
+
+        if(condiciones.every(condicion => condicion === false)){
+
+            toastr.warning("Debe seleccionar una de las opciones de envío", "Atención");
+            return;
+        }
+
+        $.post(saveEnviar, { ids: ids, _token: TOKEN, art: enviarArt, empresa: enviarEmpresa, adjunto: adjuntarEnvio })
             .done(function(){
                 toastr.success('Se han eEnviado todos los mapas seleccionados','Perfecto');
                 $('#eenviarMapa').empty();
@@ -625,7 +644,7 @@ $(document).ready(()=>{
             .fail(function(xhr){
                 console.error(xhr);
                 toastr.error('Ha ocurrido un error. Consulte con el administrador','Error');
-            })
+            });
     });
 
     $(document).on('click', '.eEnviarDatos', function(){
@@ -646,9 +665,12 @@ $(document).ready(()=>{
 
         let id = $(this).data('id');
         let status = $(this).data('estado');
-        checkEstado(id, status);
-        $('#prestaMapa').empty();
-        getPrestaMapas();
+        checkEstado(id, status, function(){
+
+            $('#prestaMapa').empty();
+            getPrestaMapas();
+        });
+        
     });
 
     $(document).on('click', '.comentarioPrivado', function(){
@@ -974,7 +996,7 @@ $(document).ready(()=>{
             })
     }
 
-    function checkEstado(id, who) {
+    function checkEstado(id, who, callback) {
         let btn = $('.cambiarEstado[data-id="' + id + '"]');
         btn.prop('disabled', true);
     
@@ -991,6 +1013,10 @@ $(document).ready(()=>{
             .always(function() {
                 btn.prop('disabled', false);
             });
+
+        setTimeout(() => {
+            callback();
+        }, 1000);
     }
 
     function listaComentariosPrivados(idmapa, opcionFase){

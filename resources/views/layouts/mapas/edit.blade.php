@@ -595,13 +595,13 @@
 
                 <div class="row mb-4 text-center">
                     <div class="col-sm-4" style="padding-left: 10%">
-                        <input  class="form-check-input" type="checkbox" id="art"> ART
+                        <input class="form-check-input enviarArt" type="checkbox"> ART
                     </div>
                     <div class="col-sm-4" style="padding-right: 10%">
-                        <input class="form-check-input" type="checkbox" id="empresa"> Empresa 
+                        <input class="form-check-input enviarEmpresa" type="checkbox"> Empresa 
                     </div>
                     <div class="col-sm-4" style="padding-right: 10%">
-                        <input class="form-check-input" type="checkbox" id="empresa"> Adjuntar 
+                        <input class="form-check-input adjuntarEnvio" type="checkbox"> Adjuntar 
                     </div>
                 </div>
 

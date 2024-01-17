@@ -630,3 +630,16 @@ ALTER TABLE prestaciones_obsfases ADD FOREIGN KEY(obsfases_id) REFERENCES tipos_
 
 ALTER TABLE prestaciones_obsfases MODIFY COLUMN Rol VARCHAR(50) NOT NULL;
 
+INSERT INTO auditoriatabla (Id, Nombre) VALUES ('5', 'MAPAS');
+INSERT INTO auditoriaacciones (Id, Nombre) VALUES 
+('41', 'ENVIO E-ESTUDIO ART'),
+('42', 'ENVIO E-ESTUDIO EMPRESA'),
+('43', 'DESCARGA E-ESTUDIO');
+
+ALTER TABLE auditoria DROP FOREIGN KEY auditoria_ibfk_3;
+ALTER TABLE auditoria MODIFY COLUMN IdUsuario varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;
+
+ALTER TABLE auditoria ADD FOREIGN KEY(IdUsuario) REFERENCES users(name);
+
+composer require setasign/fpdf
+

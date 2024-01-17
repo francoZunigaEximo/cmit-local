@@ -2,22 +2,30 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Auditor;
 use App\Models\ItemPrestacion;
 use App\Models\Prestacion;
 use App\Models\Mapa;
 use App\Models\Paciente;
 use App\Models\Constanciase;
 use App\Models\ConstanciaseIt;
+use App\Models\Parametro;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Yajra\DataTables\DataTables;
 use Barryvdh\DomPDF\Facade\Pdf;
-
+use FPDF;
 use App\Traits\ObserverMapas;
+use Illuminate\Support\Facades\Auth;
+
 class MapasController extends Controller
 {
+
+    const TBLMAPA = 5; // cod de Mapas en la tabla auditariatablas
+    const URLPORTADA = "/archivos/reportes/portada.jpg";
+
     use ObserverMapas;
 
     public function index()
@@ -458,29 +466,36 @@ class MapasController extends Controller
 
     public function examenes(Request $request)
     {
-        
-        $query = ItemPrestacion::select(
-            'examenes.Id AS IdExamen',
-            'examenes.Nombre AS NombreExamen',
-            'itemsprestaciones.CAdj AS CAdj',
-            'itemsprestaciones.CInfo AS CInfo',
-            'itemsprestaciones.Id AS IdItemPrestacion',
-            'itemsprestaciones.Incompleto AS Incompleto',
-            'examenes.Adjunto AS ExamenAdjunto',
-            DB::raw('(SELECT Nombre FROM proveedores WHERE Id = examenes.IdProveedor) AS NombreProveedor'),
-            DB::raw('(SELECT Nombre FROM profesionales WHERE Id = itemsprestaciones.IdProfesional) AS NombreEfector'),
-            DB::raw('(SELECT Apellido FROM profesionales WHERE Id = itemsprestaciones.IdProfesional) AS ApellidoEfector'),
-            DB::raw('(SELECT Nombre FROM profesionales WHERE Id = itemsprestaciones.IdProfesional2) AS NombreInformador'),
-            DB::raw('(SELECT Apellido FROM profesionales WHERE Id = itemsprestaciones.IdProfesional2) AS ApellidoInformador'),
-            DB::raw('(SELECT CASE WHEN COUNT(*) = SUM(CASE WHEN itemsprestaciones.Id = archivosefector.IdEntidad THEN 1 ELSE 0 END) THEN "adjunto" ELSE "sadjunto" END FROM itemsprestaciones WHERE itemsprestaciones.Id = archivosefector.IdEntidad) AS adjuntados')
-        )->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
-         ->leftJoin('archivosefector', 'itemsprestaciones.Id', '=','archivosefector.IdEntidad')
-         ->leftJoin('proveedores', 'itemsprestaciones.IdProveedor', '=', 'proveedores.Id')
-         ->leftJoin('profesionales', 'itemsprestaciones.IdProfesional', '=', 'profesionales.Id')
-         ->where('itemsprestaciones.IdPrestacion', $request->prestacion)
-         ->get();
 
-         //*var_dump($query);
+        $query = Cache::remember('examenes_'.$request, 5, function () use ($request) {
+
+            $q = ItemPrestacion::join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
+                ->leftJoin('archivosefector', 'itemsprestaciones.Id', '=','archivosefector.IdEntidad')
+                ->leftJoin('proveedores', 'itemsprestaciones.IdProveedor', '=', 'proveedores.Id')
+                ->leftJoin('profesionales', 'itemsprestaciones.IdProfesional', '=', 'profesionales.Id')
+                ->select(
+                    'examenes.Id AS IdExamen',
+                    'examenes.Nombre AS NombreExamen',
+                    'itemsprestaciones.CAdj AS CAdj',
+                    'itemsprestaciones.CInfo AS CInfo',
+                    'itemsprestaciones.Id AS IdItemPrestacion',
+                    'itemsprestaciones.Incompleto AS Incompleto',
+                    'examenes.Adjunto AS ExamenAdjunto',
+                    'proveedores.Nombre AS NombreProveedor',
+                    'profesionales.Nombre AS NombreEfector',
+                    DB::raw('(SELECT Nombre FROM profesionales WHERE Id = itemsprestaciones.IdProfesional) AS NombreEfector'),
+                    DB::raw('(SELECT Apellido FROM profesionales WHERE Id = itemsprestaciones.IdProfesional) AS ApellidoEfector'),
+                    DB::raw('(SELECT Nombre FROM profesionales WHERE Id = itemsprestaciones.IdProfesional2) AS NombreInformador'),
+                    DB::raw('(SELECT Apellido FROM profesionales WHERE Id = itemsprestaciones.IdProfesional2) AS ApellidoInformador'),
+                    DB::raw('(SELECT CASE WHEN COUNT(*) = SUM(CASE WHEN itemsprestaciones.Id = archivosefector.IdEntidad THEN 1 ELSE 0 END) THEN "adjunto" ELSE "sadjunto" END FROM itemsprestaciones WHERE itemsprestaciones.Id = archivosefector.IdEntidad) AS adjuntados')
+                )
+                ->where('itemsprestaciones.IdPrestacion', $request->prestacion)
+                ->get();
+
+                return $q;
+
+            });
+
          return response()->json($query);
     }
 
@@ -703,16 +718,27 @@ class MapasController extends Controller
         
         $ids = $request->ids;
 
+        $accion = ($request->art === 'true' ? 41 : ($request->empresa === 'true' ? 42 : ($request->adjunto === 'true' ? 43 : 0)));
+
         foreach ($ids as $id) {
             $prestacion = Prestacion::where('Id', $id)->first();
             
             if($prestacion){
-                $prestacion->eEnviado = 1;
-                $prestacion->FechaEnviado = now()->format('Y-m-d');
+                $prestacion->eEnviado = ($request->art === 'true' || $request->adjunto === 'true' ? 1 : 0);
+                $prestacion->FechaEnviado = ($request->art === 'true' || $request->adjunto === 'true' 
+                    ? now()->format('Y-m-d') 
+                    : '0000-00-00');
                 $prestacion->save();
+                Auditor::setAuditoria($id, self::TBLMAPA, $accion, Auth::user()->name);
+                
+                if($request->adjunto)
+                {
+                    $this->eEstudio($id, "F"); //'F' genera archivo / 'I' muestra en el browser
+                }
             } 
         }
     }
+
 
     public function changeEstado(Request $request)
     {
@@ -731,7 +757,9 @@ class MapasController extends Controller
 
     public function getRemito(Request $request)
     {
-        $remito = Prestacion::with(['constanciases:Obs'])
+        $resultados = Cache::remember('remito_'.$request, 5, function () use ($request) {
+
+            $remito = Prestacion::with(['constanciases:Obs'])
             ->select(
                 'prestaciones.NroCEE', 
                 'prestaciones.Id', 
@@ -742,9 +770,28 @@ class MapasController extends Controller
             ->groupBy('prestaciones.NroCEE')
             ->get();
 
-        return response()->json(['result' => $remito]);
+            return $remito; 
+        });
+
+        return response()->json(['result' => $resultados]);
     }
 
+    public function reverseRemito(Request $request)
+    {
+        $remitos = Prestacion::where('NroCEE', $request->Id)->get();
+
+        if($remitos)
+        {
+            foreach($remitos as $prestacion)
+            {
+                $prestacion->Entregado = 0;
+                $prestacion->FechaEntrega = '0000-00-00';
+                $prestacion->save();
+            }
+
+            Constanciase::obsRemito($request->Id, '');
+        }
+    }
 
     private function queryBase()
     {
@@ -870,21 +917,31 @@ class MapasController extends Controller
         return $query;
     }
 
-    public function reverseRemito(Request $request)
+    private function eEstudio($id, $tipo)
     {
-        $remitos = Prestacion::where('NroCEE', $request->Id)->get();
-
-        if($remitos)
+        $prestacion = Prestacion::find($id);
+        $miEmpresa = Parametro::getMiEmpresa();
+        if($prestacion)
         {
-            foreach($remitos as $prestacion)
-            {
-                $prestacion->Entregado = 0;
-                $prestacion->FechaEntrega = '0000-00-00';
-                $prestacion->save();
-            }
+            $paciente = $prestacion->paciente->Nombre ." ". $prestacion->paciente->Apellido;
 
-            Constanciase::obsRemito($request->Id, '');
+            $pdf = new FPDF();
+            $pdf->AddPage();
+            $pdf->Image(url('/').self::URLPORTADA,1,0,209); 
+            $y=220;
+            $pdf->SetFont('Arial','B',14);
+            $pdf->SetTextColor(255, 255, 255, 255);//white
+            $pdf->SetXY(109,$y);$pdf->Cell(0,3,substr($paciente,0,28),0,0,'L');$y=$y+10;
+            $pdf->SetXY(109,$y);$pdf->Cell(0,3,$prestacion->Fecha,0,0,'L');$y=$y+10;
+            $pdf->SetXY(109,$y);$pdf->Cell(0,3,$prestacion->paciente->TipoDocumento.' '.$prestacion->paciente->Documento,0,0,'L');$y=$y+10;
+            $pdf->SetXY(109,$y);$pdf->Cell(0,3,substr($prestacion->empresa->RazonSocial,0,28),0,0,'L');$y=$y+10;
+            $pdf->SetXY(109,$y);$pdf->Cell(0,3,substr($prestacion->empresa->ParaEmpresa,0,28),0,0,'L');$y=$y+10;
+            $pdf->SetXY(109,$y);$pdf->Cell(0,3,$id,0,0,'L');$y=$y+10;
+            $pdf->SetTextColor(0, 0, 0, 0);
+            $pdf->Output($miEmpresa->Path4."STORB_temporal_".$id.".pdf", $tipo);
         }
+
+        
     }
 } 
 

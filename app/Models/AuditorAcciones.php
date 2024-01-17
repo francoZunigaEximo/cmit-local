@@ -19,4 +19,9 @@ class AuditorAcciones extends Model
     ];
 
     public $timestamps = false;
+
+    public function auditor()
+    {
+        return $this->hasOne(Auditor::class, 'IdAccion', 'Id');
+    }
 }

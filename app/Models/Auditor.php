@@ -23,4 +23,31 @@ class Auditor extends Model
     ];
 
     public $timestamps = false;
+
+    public function auditarTabla()
+    {
+        return $this->hasOne(AuditorTabla::class, 'Id', 'IdTabla');
+    }
+
+    public function auditarAccion()
+    {
+        return $this->hasOne(AuditorAcciones::class, 'Id', 'IdAccion');
+    }
+
+    public function usuario()
+    {
+        return $this->hasOne(User::class, 'name', 'IdUsuario');
+    }
+
+    public static function setAuditoria(int $registro, int $tabla, int $accion, string $usuario)
+    {
+        return Auditor::create([
+            'Id' => Auditor::max('Id') + 1,
+            'IdTabla' => $tabla,
+            'IdAccion' => $accion,
+            'IdRegistro' => $registro,
+            'IdUsuario' => $usuario, 
+            'Fecha' => now()   
+        ]);
+    }
 }
