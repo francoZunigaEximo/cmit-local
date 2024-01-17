@@ -97,6 +97,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('setEvaluador', [PrestacionesController::class, 'setEvaluador'])->name('setEvaluador');
     Route::get('verifyWizard', [PrestacionesController::class, 'verifyWizard'])->name('verifyWizard');
     Route::get('excelPrestaciones', [PrestacionesController::class, 'exportExcel'])->name('excelPrestaciones');
+    Route::get('getBloqueoPrestacion', [PrestacionesController::class, 'getBloqueo'])->name('getBloqueoPrestacion');
 
     //Ruta Ficha Laboral
     Route::post('saveFichaAlta', [FichaAltaController::class, 'save'])->name('saveFichaAlta');

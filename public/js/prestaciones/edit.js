@@ -24,6 +24,7 @@ $(document).ready(()=> {
     selectMedioPago(opcion);
     getMap(empresa, art);
     getFact();
+    checkBloq();
 
     //Hack de carga
     $(document).ready(function(){
@@ -565,6 +566,25 @@ $(document).ready(()=> {
         }else{
             $('.Autoriza').hide();
         }
+    }
+
+    function checkBloq(){
+
+        $.get(getBloqueoPrestacion, {Id: ID})
+            .done(async function(response){
+
+                if(response.prestacion === true){
+
+                    $('#art, #empresa, #paraEmpresa, #Fecha, #TipoPrestacion, #mapas, #cerrar, #finalizar, #entregar, #eEnviar, #pago, #SPago, #Tipo, #Autorizado, #IdEvaluador, #Evaluacion, #Calificacion, #Observaciones, #RxPreliminar, #SinEval, #ObsExamenes, #Obs, #actualizarPrestacion, #paquetes, #exam, #Sucursal, #NroFactura').prop('disabled', true);
+                    $('span.input-group-text').removeClass('cerrar finalizar entregar eEnviar');
+                    $('i.ri-add-circle-line').removeClass('addExamen');
+                    $('i.ri-play-list-add-line').removeClass('addPaquete');
+                    }
+            })
+            .fail(function(xhr){
+                console.error(xhr);
+                toastr.error("Ha ocurrido un error. Consulte con el administrador");
+            });
     }
     
 });

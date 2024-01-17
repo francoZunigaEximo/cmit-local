@@ -529,4 +529,14 @@ class PrestacionesController extends Controller
         return Excel::download(new PrestacionesExport($ids, $filters), 'prestaciones.xlsx');
     }
 
+    public function getBloqueo(Request $request)
+    {
+        $prestacion = Prestacion::where('Id', $request->Id)->first(['Anulado']);
+        
+        if($prestacion->Anulado === 1)
+        {
+            return response()->json(['prestacion' => true]);
+        }
+    }
+
 }

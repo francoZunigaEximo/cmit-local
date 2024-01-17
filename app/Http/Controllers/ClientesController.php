@@ -408,7 +408,7 @@ class ClientesController extends Controller
     {
         $cliente = Cliente::where('Id', $request->Id)->first(['Bloqueado', 'Motivo']);
         
-        if($cliente && $cliente->Bloqueado === 1)
+        if($cliente->Bloqueado === 1)
         {
             return response()->json(['cliente' => $cliente]);
         }

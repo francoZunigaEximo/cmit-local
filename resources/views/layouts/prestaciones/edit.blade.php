@@ -5,7 +5,7 @@
 @section('content')
 
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-    <h4 class="mb-sm-0">Prestación <span class="custom-badge original">N° {{ $prestacione->Id }}</span>&nbsp;<span class="custom-badge verde">Financiador {{ ($prestacione->TipoPrestacion === 'ART' ? 'ART' : 'EMPRESA') }}</span></h4>
+    <h4 class="mb-sm-0">Prestación <span class="custom-badge original">N° {{ $prestacione->Id }}</span>&nbsp;<span class="custom-badge verde">Financiador {{ ($prestacione->TipoPrestacion === 'ART' ? 'ART' : 'EMPRESA') }}</span> {!! ($prestacione->Anulado === 1) ? '<span class="custom-badge rojo">Bloqueado</span>' : '' !!}</h4>
 
     <div class="page-title-right">
         <button type="button" class="btn botonGeneral">
@@ -198,8 +198,8 @@
                                     <option value="R">R</option>
                                     <option value="Z">Z</option>
                                 </select>
-                                <input type="text" class="form-control" style="width: 20%" placeholder="nro sucursal" id="Sucursal">
-                                <input type="text" class="form-control" style="width: 20%" placeholder="nro de factura" id="NroFactura">
+                                <input type="number" class="form-control" style="width: 20%" placeholder="nro sucursal" id="Sucursal">
+                                <input type="number" class="form-control" style="width: 20%" placeholder="nro de factura" id="NroFactura">
                             </div>
                         </div>
 
@@ -208,7 +208,7 @@
                                 <span class="input-group-text">Autorizado por</span>
                                 <select class="form-select" id="Autorizado">
                                     <option value="" selected>Elija una opción...</option>
-                                    <option value="0">Lucas Grunmann</option>
+                                    <option value="lucas">Lucas Grunmann</option>
                                 </select>
                             </div>
                         </div>
@@ -255,6 +255,11 @@
                                 </select>
                             </div>
                         </div>
+
+                                        <div class="input-group input-group mt-2">
+                    <span class="input-group-text">Obs evaluación</span>
+                    <input type="text" class="form-control" placeholder="Observaciones de evaluación" id="Observaciones" value="{{ $prestacione->Observaciones ?? ''}}">
+                </div>
                         
                     </div>
 
@@ -289,16 +294,12 @@
                     <input type="text" class="form-control" placeholder="Observaciones" id="Obs" name="Obs" value="{{ $prestacione->prestacionComentario->Obs ?? ''}}">
                 </div>
 
-                <div class="input-group input-group mt-2">
-                    <span class="input-group-text">Obs evaluación</span>
-                    <input type="text" class="form-control" placeholder="Observaciones de evaluación" id="Observaciones" value="{{ $prestacione->Observaciones ?? ''}}">
-                </div>
             </div>
 
             <div class="row">
                 <div class="col-12 text-center mt-2">
                     <hr class="mt-2 mb-2 d-block">
-                    <a class="btn botonGeneral" id="actualizarPrestacion">Guardar</a>
+                    <button type="button" class="btn botonGeneral" id="actualizarPrestacion">Guardar</button>
                     <hr class="mt-2 mb-2 d-block">
                 </div>
             </div>
@@ -336,7 +337,7 @@
                                 <th title="Ausente">Aus</th>
                                 <th title="Forma">For</th>
                                 <th>Esc</th>
-                                <th>Devolución</th>
+                                <th>Dev</th>
                                 <th>Efector</th>
                                 <th>Informador</th>
                                 <th>Factura</th>
@@ -405,6 +406,7 @@ const paqueteId = "{{ route('paqueteId') }}";
 const itemExamen = "{{ route('itemExamen') }}";
 const checkParaEmpresa = "{{ route('checkParaEmpresa') }}";
 const getFactura = "{{route('getFactura') }}";
+const getBloqueoPrestacion = "{{ route('getBloqueoPrestacion') }}";
 
 //Extras
 const TOKEN = "{{ csrf_token() }}";
