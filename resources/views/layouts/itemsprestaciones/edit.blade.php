@@ -115,7 +115,7 @@
                 <div class="col-md-2">
                     <div class="input-group input-group-sm mb-2">
                         <span class="input-group-text">Adjunto</span>
-                        <input type="text" class="form-control" id="Estado" name="Estado" value="{{ ($itemsprestacione->examenes->Adjunto === 0 ? 'No lleva Adjuntos' : ($itemsprestacione->examenes->Adjunto === 1 && $adjuntoEfector === 0 ? 'Pendiente' : ($itemsprestacione->examenes->Adjunto === 1 && $adjuntoEfector === 1 ? 'Adjuntado' : '-'))) }}" @readonly(true)>
+                        <input type="text" style="{{ ($itemsprestacione->examenes->Adjunto === 1 && $adjuntoEfector === 0 ? 'color: red' : ($itemsprestacione->examenes->Adjunto === 1 && $adjuntoEfector === 1 : 'color: green' : '')) }}" class="form-control" id="Estado" name="Estado" value="{{ ($itemsprestacione->examenes->Adjunto === 0 ? 'No lleva Adjuntos' : ($itemsprestacione->examenes->Adjunto === 1 && $adjuntoEfector === 0 ? 'Pendiente' : ($itemsprestacione->examenes->Adjunto === 1 && $adjuntoEfector === 1 ? 'Adjuntado' : '-'))) }}" @readonly(true)>
                     </div>
                 </div>
             </div>
@@ -206,9 +206,9 @@
                 <table class="display table table-bordered mb-4" style="width:100%"  id="listadoEfector">
                     <thead class="table-light">
                         <tr>
-                            <th class="sort" title="Exámen">Exámen</th>
+                            <th class="sort" title="Adjunto Efector">Adjunto Efector</th>
                             <th>Descripción</th>
-                            <th>Adjunto</th>
+                            <th>Adjuntar</th>
                             <th>Multi</th>
                             <th>Acciones <button type="button" class="btn botonGeneral adjuntarEfector" data-bs-toggle="modal" data-bs-target="#modalEfector">Adjuntar archivo</button></th>
                         </tr>
@@ -221,7 +221,7 @@
             
                 <table class="display table table-bordered mt-4" style="width:100%"  id="listadoInformador">
                     <thead class="table-light">
-                        <th class="sort" title="Exámen">Exámen</th>
+                        <th class="sort" title="Adjunto Informador">Adjunto Informador</th>
                         <th>Descripción</th>
                         <th>Acciones <button type="button" class="btn botonGeneral adjuntarInformador" data-bs-toggle="modal" data-bs-target="#modalInformador">Adjuntar archivo</button></th>
                     </thead>
