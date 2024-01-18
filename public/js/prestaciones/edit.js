@@ -573,7 +573,7 @@ $(document).ready(()=> {
         $.get(getBloqueoPrestacion, {Id: ID})
             .done(async function(response){
 
-                if(response.prestacion === true){
+                if(await response.prestacion === true){
 
                     $('#art, #empresa, #paraEmpresa, #Fecha, #TipoPrestacion, #mapas, #cerrar, #finalizar, #entregar, #eEnviar, #pago, #SPago, #Tipo, #Autorizado, #IdEvaluador, #Evaluacion, #Calificacion, #Observaciones, #RxPreliminar, #SinEval, #ObsExamenes, #Obs, #actualizarPrestacion, #paquetes, #exam, #Sucursal, #NroFactura').prop('disabled', true);
                     $('span.input-group-text').removeClass('cerrar finalizar entregar eEnviar');
