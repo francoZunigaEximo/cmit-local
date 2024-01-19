@@ -27,21 +27,15 @@ $(document).ready(function(){
     $(document).on('click', '.btnAdjEfector, .btnAdjInformador', function () {
         let who = $(this).hasClass('btnAdjEfector') ? 'efector' : 'informador';
         let archivo = (who === 'efector') ? $('input[name="fileEfector"]')[0].files[0] : $('input[name="fileInformador"]')[0].files[0];
-        let tipoArchivo = archivo.type.toLowerCase();
-
         
-        if(tipoArchivo !== 'application/pdf' && !tipoArchivo.startsWith('image/')) {
-            toastr.warning("Los archivos permitidos son imágenes o PDF", "Atención");
-            return;
-        }
+        let descripcionE = $('#DescripcionE').val(),
+            descripcionI = $('#DescripcionI').val(),
+            descripcion = (who === 'efector') ? descripcionE : descripcionI,
+            identificacion = $('#identificacion').val(),
+            prestacion = $('#prestacion').val();
 
-        if (archivo) {
-            let descripcionE = $('#DescripcionE').val(),
-                descripcionI = $('#DescripcionI').val(),
-                descripcion = (who === 'efector') ? descripcionE : descripcionI,
-                identificacion = $('#identificacion').val(),
-                prestacion = $('#prestacion').val();
-    
+        if(verificarArchivo(archivo)){
+
             let formData = new FormData();
             formData.append('archivo', archivo);
             formData.append('Id', ID);
@@ -50,7 +44,7 @@ $(document).ready(function(){
             formData.append('IdPrestacion', prestacion);
             formData.append('who', who);
             formData.append('_token', TOKEN);
-    
+
             $.ajax({
                 type: 'POST',
                 url: fileUpload,
@@ -58,9 +52,12 @@ $(document).ready(function(){
                 processData: false,
                 contentType: false,
                 success: function() {
-                    
-                   setTimeout(() => {
-                        location.reload();
+                    toastr.success("Se ha cargado el reporte de manera correcta.", "Perfecto");
+                    setTimeout(() => {
+                        listadoE();
+                        listadoI();
+                        $('#modalInformador').modal('hide');
+                        $('#modalEfector').modal('hide');
                     }, 3000);
                 },
                 error: function (xhr) {
@@ -68,8 +65,6 @@ $(document).ready(function(){
                     toastr.error("Ha ocurrido un error. Consulte con el administrador", "Atención");
                 }
             });
-        } else {
-            toastr.warning('No se seleccionó ningún archivo.');
         }
     });
     
@@ -163,7 +158,7 @@ $(document).ready(function(){
         }
     });
 
-    $(document).on('click', '#asignar, #asignarI', function(){
+    $(document).on('click', '#asignar, #asignarI', function() {
 
         let who = $(this).hasClass('asignar') ? 'asignar' : 'asignarI',
             check = (who === 'asignar') ? $('#efectores').val() : $('#informadores').val();
@@ -182,11 +177,11 @@ $(document).ready(function(){
             })
     });
 
-    $(document).on('click', '#liberar', function(){
+    $(document).on('click', '#liberar', function() {
 
         let checkEmpty = $('#efectores').val();
 
-        if(checkEmpty !== '0'){
+        if (checkEmpty !== '0') {
 
             $.post(updateAsignado, { Id: ID, _token: TOKEN, IdProfesional: 0, fecha: 0, Para: 'asignar'})
             .done(function(){
@@ -200,13 +195,13 @@ $(document).ready(function(){
    
     });
 
-    $(document).on('click', '#adjuntos', function(){
+    $(document).on('click', '#adjuntos', function() {
 
         let lista = {1: 2, 4: 5, 2: 1, 5: 4};
 
-        if(cadj === '0' || cadj === null) return;
+        if (cadj === '0' || cadj === null) return;
 
-        if(cadj in lista){
+        if (cadj in lista) {
             
             $.post(updateAdjunto, {Id: ID, _token: TOKEN, CAdj: lista[cadj]})
                 .done(function(){
@@ -224,28 +219,76 @@ $(document).ready(function(){
         let ObsExamen = $('#ObsExamen').val(), Profesionales2 = $('#informadores').val(), Obs = $('#Obs').val(), Fecha = $('#Fecha').val();
         
         $.post(updateExamen, {Id: ID, _token: TOKEN, ObsExamen: ObsExamen, Profesionales2: Profesionales2, Obs: Obs, Fecha: Fecha})
-            .done(function(){
+            .done(function() {
 
                 swal('Perfecto', 'Se han actualizado los datos correctamente', 'success');
                 setTimeout(() => {
                     location.reload();
                 }, 3000);
             })
-            .fail(function(xhr){
+            .fail(function(xhr) {
                 swal('Error', 'Ha ocurrido un error. Consulte con el administrador', 'error');
                 console.error(xhr);
             });
     });
 
+    $(document).on('click', '.replaceAdjunto', function() {
+
+        let replaceId = $(this).data('id');
+        let replaceTipo = $(this).data('tipo');
+        
+        $('#replaceId').val(replaceId);
+        $('#replaceTipo').val(replaceTipo);
+      
+    });
+
+    $(document).on('click', '.btnReplaceAdj', function() {
+
+        let archivo = $('input[name="fileReplace"]')[0].files[0], 
+            replace_Id = $('input[name="replaceId"]').val(), 
+            replace_Tipo = $('input[name="replaceTipo"]').val();
+
+        if (verificarArchivo(archivo)) {
+
+            let formData = new FormData();
+            formData.append('archivo', archivo);
+            formData.append('Id', replace_Id);
+            formData.append('who', replace_Tipo);
+            formData.append('_token', TOKEN);
+    
+            $.ajax({
+                type: 'POST',
+                url: replaceIdAdjunto,
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function() {
+    
+                    toastr.success("Se ha reemplazado el archivo de manera correcta. Se actualizará el contenido en unos segundos", "Perfecto");
+                    setTimeout(() => {
+                        listadoE();
+                        listadoI();
+                        $('#replaceAdjunto').modal('hide');
+                    }, 3000);
+                },
+                error: function (xhr) {
+                    console.error(xhr);
+                    toastr.error("Ha ocurrido un error. Consulte con el administrador", "Atención");
+                }
+            });
+        }
+
+    })
+
     async function abrir(val){
         let resultado = await (valAbrir.includes(val));
         
-        if(resultado){
+        if (resultado) {
 
             $('.abrir').show();
             $('#informadores').prop('disabled', false);
         
-        }else{
+        } else {
 
             $('.abrir').hide();  
         }
@@ -253,7 +296,7 @@ $(document).ready(function(){
 
     async function cerrar(val, e, tipo){  
 
-        if(tipo === 'efector'){
+        if (tipo === 'efector') {
 
             let resultado = await (valCerrar.includes(val) && e !== '0');
             
@@ -262,7 +305,7 @@ $(document).ready(function(){
                 $('#informadores').prop('disabled', true);
 
             }
-        }else if(tipo === 'informador'){
+        } else if (tipo === 'informador') {
 
             let resultado = await (efector !== '0' && informador !== '0') && (CInfo !== '3'),
                 final = await (efector !== '0' && informador !== '0') && (Estado === 'Cerrado' && EstadoI === 'Cerrado');
@@ -284,22 +327,22 @@ $(document).ready(function(){
 
     async function asignar(e, tipo){
 
-        if(tipo === 'efector'){
+        if (tipo === 'efector') {
 
             let resultado = await (e === '0' || e === null || e === '');
 
-            if(resultado){
+            if (resultado) {
 
                 $('.asignar').show();
                 $('#informadores').prop('disabled', true);
                 $('.adjuntarInformador').hide();
             }
         
-        }else if(tipo === 'informador'){
+        } else if (tipo === 'informador') {
 
             let resultado = await (e === '0' || e === null || e === '') && (efector !== '0');
             
-            if(resultado){
+            if (resultado) {
                 $('.asignarI').show();
                 $('.abrir').show();
             }
@@ -310,11 +353,10 @@ $(document).ready(function(){
     async function liberar(val, e){
         let resultado = await (e !== '' && e !== null && e !== '0' && valCerrar.includes(val));
         
-        if(resultado){
+        if (resultado) {
             $('.liberar').show();
             $('.asignarI').hide();
             $('.adjuntarEfector').show();
-
         }  
 
     }
@@ -323,11 +365,11 @@ $(document).ready(function(){
         
         let etiqueta, valor;
 
-        if(tipo === 'efector') {
+        if (tipo === 'efector') {
             etiqueta = $('#efectores');
             valor = etiqueta.val();
 
-        }else if (tipo === 'informador') {
+        } else if (tipo === 'informador') {
             etiqueta = $('#informadores');
             valor = etiqueta.val();
         }
@@ -348,6 +390,8 @@ $(document).ready(function(){
 
     function listadoE(){
 
+        $('#listaefectores').empty();
+
         $.get(paginacionGeneral, {Id: ID, tipo: 'efector'})
             .done(function(response){
                 
@@ -362,7 +406,7 @@ $(document).ready(function(){
                             <td>${(d.Adjunto === 0 ? 'Físico' : 'Digital')}</td>
                             <td>${(d.MultiE === 0 ? 'Simple' : 'Multi')}</td>
                             <td>
-                                <div class="d-flex gap-2">
+                                <div class="d-flex justify-content-center align-items-center gap-2">
                                     <div class="edit">
                                         <a href="${descargaE}/${d.RutaE}" target="_blank">
                                             <button type="button" class="btn btn-sm iconGeneral" title="Ver"><i class="ri-search-eye-line"></i></button>
@@ -373,6 +417,13 @@ $(document).ready(function(){
                                             <button type="button" class="btn btn-sm iconGeneral" title="Descargar"><i class="ri-download-2-line"></i></button>
                                         </a>
                                     </div>
+                                    ${(Estado === 'Cerrado') ? `
+                                    <div class="replace">
+                                        <button data-id="${d.IdE}" data-tipo="efector" class="btn btn-sm iconGeneral replaceAdjunto" data-bs-toggle="modal" data-bs-target="#replaceAdjunto" title="Reemplazar archivo">
+                                            <i class="ri-file-edit-line"></i>
+                                        </button>
+                                    </div>
+                                    ` : ``}
                                     ${(Estado === 'Cerrado') ? `` : `
                                         <div class="remove">
                                             <button data-id="${d.IdE}" data-tipo="efector" class="btn btn-sm iconGeneral deleteAdjunto" title="Eliminar">
@@ -393,6 +444,8 @@ $(document).ready(function(){
 
     function listadoI(){
 
+        $('#listainformadores').empty();
+
         $.get(paginacionGeneral, {Id: ID, tipo: 'informador'})
             .done(function(response){
                 
@@ -405,7 +458,7 @@ $(document).ready(function(){
                             <td>${d.Nombre}</td>
                             <td>${(d.DescripcionI !== null && d.DescripcionI !== undefined && d.DescripcionI !== '' ? d.DescripcionI : '')}</td>
                             <td>
-                                <div class="d-flex gap-2">
+                                <div class="d-flex justify-content-center align-items-center gap-2">
                                     <div class="edit">
                                         <a href="${descargaI}/${d.RutaI}" target="_blank">
                                             <button type="button" class="btn btn-sm iconGeneral" title="Ver"><i class="ri-search-eye-line"></i></button>
@@ -415,6 +468,13 @@ $(document).ready(function(){
                                         <a href="${descargaI}/${d.RutaI}" target="_blank" download>
                                             <button type="button" class="btn btn-sm iconGeneral" title="Descargar"><i class="ri-download-2-line"></i></button>
                                         </a>
+                                    </div>
+                                    ${(EstadoI === 'Cerrado') ? `
+                                    <div class="replace">
+                                        <button data-id="${d.IdI}" data-tipo="informador" data-bs-toggle="modal" data-bs-target="#replaceAdjunto" class="btn btn-sm iconGeneral replaceAdjunto" title="Reemplazar archivo">
+                                            <i class="ri-file-edit-line"></i>
+                                        </button>
+                                        `:``}
                                     </div>
                                     ${(EstadoI === 'Cerrado') ? `` : `
                                     <div class="remove">
@@ -431,6 +491,29 @@ $(document).ready(function(){
                     $('#listainformadores').append(contenido);
                 });
             })
+    }
+
+    function verificarArchivo(archivo){
+
+        if (!archivo || archivo.size === 0) {
+            toastr.warning("Debe seleccionar un archivo", "Atención");
+            return false;
+        }
+
+        if (!archivo.name.includes('.')) {
+            toastr.warning("El archivo no tiene extensión o la misma es invalida", "Atención");
+            return false;
+        }
+
+        let tipoArchivo = archivo.type.toLowerCase();
+
+        if(tipoArchivo !== 'application/pdf' && !tipoArchivo.startsWith('image/')) {
+            toastr.warning("Los archivos permitidos son imágenes o PDF", "Atención");
+            return false;
+        }
+
+        return true
+
     }
 
     

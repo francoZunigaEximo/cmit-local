@@ -79,4 +79,9 @@ class ItemPrestacion extends Model
     {
         return $this->hasOne(NotaCreditoIt::class, 'IdIP', 'Id');
     }
+
+    public function archivoEfector()
+    {
+        return $this->hasMany(ArchivoEfector::class, 'IdEntidad', 'Id');
+    }
 }

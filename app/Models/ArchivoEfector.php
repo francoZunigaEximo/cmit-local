@@ -23,4 +23,9 @@ class ArchivoEfector extends Model
     ];
 
     public $timestamps = false;
+
+    public function ItemPrestacion()
+    {
+        return $this->hasOne(Prestacion::class, 'Id', 'IdEntidad');
+    }
 }

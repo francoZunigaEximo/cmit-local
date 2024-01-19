@@ -10,6 +10,7 @@ use App\Models\Profesional;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Traits\ObserverItemsPrestaciones;
+use Illuminate\Support\Facades\Storage;
 
 class ItemPrestacionesController extends Controller
 {
@@ -113,7 +114,7 @@ class ItemPrestacionesController extends Controller
             ->join('proveedores', 'itemsprestaciones.IdProveedor', '=', 'proveedores.Id')
             ->select(
                 'archivosefector.Id as IdE',
-                'examenes.Nombre as Nombre',
+                'archivosefector.Ruta as Nombre',
                 'archivosefector.Descripcion as DescripcionE',
                 'archivosefector.Ruta as RutaE',
                 'examenes.NoImprime as Adjunto',
@@ -129,7 +130,7 @@ class ItemPrestacionesController extends Controller
                 ->join('proveedores', 'itemsprestaciones.IdProveedor', '=', 'proveedores.Id')
                 ->select(
                     'archivosinformador.Id as IdI',
-                    'examenes.Nombre as Nombre',
+                    'archivosinformador.Ruta as Nombre',
                     'archivosinformador.Descripcion as DescripcionI',
                     'archivosinformador.Ruta as RutaI',
                     'examenes.Adjunto as Adjunto',
@@ -228,8 +229,32 @@ class ItemPrestacionesController extends Controller
                 $adj->delete();
                 $this->updateEstado($request->Tipo, $request->ItemP, null, $request->Id);
             }
-        }
+        }       
+    }
+
+    public function replaceIdAdjunto(Request $request): void
+    {
+
+        $arr = [
+            'efector' => [ArchivoEfector::find($request->Id), 'public/ArchivosEfectores'],
+            'informador' => [ArchivoInformador::find($request->Id), 'public/ArchivosInformadores']
+        ];
         
+        if ($request->hasFile('archivo')) 
+        {
+            $query = $arr[$request->who][0];
+            
+            $fotoExistente = $arr[$request->who][1] ."/". $query->Ruta;
+            if (Storage::exists($fotoExistente)) {
+                Storage::delete($fotoExistente);
+            }
+            
+            $filename = pathinfo($query->Ruta, PATHINFO_FILENAME). '.' . $request->archivo->extension();
+            $request->archivo->storeAs($arr[$request->who][1],  $filename);
+
+            $query->update(['Ruta' => $filename]);
+
+        }
 
     }
 

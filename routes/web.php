@@ -18,6 +18,7 @@ use App\Http\Controllers\UtilityController;
 use App\Http\Controllers\FacturasVentaController;
 use App\Http\Controllers\NoticiasController;
 use App\Http\Controllers\PrestacionesObsFasesController;
+use App\Models\ItemPrestacion;
 //use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Route;
 
@@ -198,6 +199,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('updateExamen', [ItemPrestacionesController::class, 'updateExamen'])->name('updateExamen');
     Route::post('uploadAdjunto', [ItemPrestacionesController::class, 'uploadAdjunto'])->name('uploadAdjunto');
     Route::get('deleteIdAdjunto', [ItemPrestacionesController::class, 'deleteIdAdjunto'])->name('deleteIdAdjunto');
+    Route::post('replaceIdAdjunto', [ItemPrestacionesController::class, 'replaceIdAdjunto'])->name('replaceIdAdjunto');
 
     //Rutas de FacturasdeVenta
     Route::get('getFactura', [FacturasVentaController::class, 'getFactura'])->name('getFactura');

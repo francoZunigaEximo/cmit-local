@@ -291,6 +291,29 @@
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+<div id="replaceAdjunto" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel">Reemplazar archivo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>
+            </div>
+            <div class="modal-body">
+                <form id="form-replace">
+                    <input type="file" class="form-control" name="fileReplace"/>
+                    <input type="hidden" name="replaceId" id="replaceId" value="">
+                    <input type="hidden" name="replaceTipo" id="replaceTipo" value="">
+                </form> 
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn botonGeneral" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn botonGeneral btnReplaceAdj">Guardar adjunto</button>
+            </div>
+
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 <script>
     const TOKEN = '{{ csrf_token() }}';
 
@@ -305,6 +328,7 @@
     const descargaE = "{{ asset('storage/ArchivosEfectores') }}";
     const descargaI = "{{ asset('storage/ArchivosInformadores') }}";
     const deleteIdAdjunto = "{{ route('deleteIdAdjunto') }}";
+    const replaceIdAdjunto = "{{ route('replaceIdAdjunto') }}";
 
 
 
