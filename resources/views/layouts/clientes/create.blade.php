@@ -23,35 +23,6 @@
                 Datos Básicos
             </a>
         </li>
-        <li class="nav-item" role="presentation">
-            <a class="nav-link" data-bs-toggle="tab" href="#opciones" role="tab" aria-selected="false" tabindex="-1">
-                <i class="las la-cog"></i>
-                Opciones
-            </a>
-        </li>
-        <li class="nav-item" role="presentation">
-            <a class="nav-link" data-bs-toggle="tab" href="#email" role="tab" aria-selected="false" tabindex="-1">
-                <i class="far fa-envelope"></i>
-                Emails
-            </a>
-        </li>
-        <li class="nav-item" role="presentation">
-            <a class="nav-link" data-bs-toggle="tab" href="#autorizados" role="tab" aria-selected="false" tabindex="-1">
-                <i class="far fa-user"></i>
-                Autorizados                                            </a>
-        </li>
-        <li class="nav-item" role="presentation">
-            <a class="nav-link" data-bs-toggle="tab" href="#obs" role="tab" aria-selected="false" tabindex="-1">
-                <i class="las la-tasks"></i>
-                Observaciones
-            </a>
-        </li>
-        <li class="nav-item" role="presentation">
-            <a class="nav-link text-info" data-bs-toggle="tab" href="#paraEmpresa" role="tab" title="Ver otras empresas asociadas" aria-selected="false" tabindex="-1">
-                <i class="las la-building"></i>
-                Para Empresas
-            </a>
-        </li>
     </ul>
 </div>
 <div class="card-body p-4">
@@ -190,7 +161,7 @@
                                 <span class="input-group-addon">-</span>
                                 <input name="obsExtra" id="obsExtra" type="text" class="form-control" placeholder="Observación">
                                 <span class="input-group-addon">-</span>
-                                <button type="button" class="btn btn-warning" id="addNumero">Agregar Número adicional</button>
+                                <button type="button" class="btn botonGeneral" id="addNumero">Agregar Número adicional</button>
                             </div>
                             <table class="table table-nowrap" style="border: 1px solid #eeeeee">
                                 <thead>
@@ -214,244 +185,14 @@
                     <div class="col-lg-12 mt-3">
                         <div class="hstack gap-2 justify-content-end">
                             
-                            <button type="reset" class="btn btn-soft-danger">Cancelar</button>
-                            <button type="submit" class="btn btn-success">Registrar</button>
+                            <button type="reset" class="btn botonGeneral">Cancelar</button>
+                            <button type="submit" class="btn botonGeneral">Registrar</button>
                         </div>
                     </div>
                     <!--end col-->
                 </div>
                 <!--end row-->
             </form>
-        </div>
-        <!--end tab-pane-->
-        <div class="tab-pane" id="paraEmpresa" role="tabpanel"> 
-                <div class="card mt-xxl-n5">
-                <div class="card-body p-4">
-                    <div class="alert alert-dark" role="alert">
-                        <strong> Atención: </strong> ¡Debe registrar los datos básicos para habilitar esta opción!
-                    </div>
-                <div class="row g-2">
-                    <div class="col-lg-12">
-                        <div>
-                            
-                        </div>
-                    </div>
-                    
-                    <!--end col-->
-                </div>
-                </div>
-                <!--end row-->
-                </div>
-            <div class="mt-4 mb-3 border-bottom pb-2">
-                
-            </div>
-            <div class="d-flex align-items-center mb-3">
-             
-                
-            </div>
-            
-            <div class="d-flex align-items-center">
-            
-                
-            </div>
-        </div>
-        <div class="tab-pane" id="autorizados" role="tabpanel">
-                <div class="row g-2">
-                    <div class="alert alert-dark" role="alert">
-                        <strong> Atención: </strong> ¡Debe registrar los datos básicos para habilitar esta opción!
-                    </div>
-                    <div class="col-lg-6">
-                        <div>
-                            <label for="autorizadoNombre" class="form-label">Nombre</label>
-                            <input type="text" class="form-control" placeholder="Nombre" disabled>
-                        </div>
-                    </div>
-                    <div class="col-lg-6">
-                        <div>
-                            <label for="autorizadoApellido" class="form-label">Apellido</label>
-                            <input type="text" class="form-control" placeholder="Apellido" disabled>
-                        </div>
-                    </div>
-                    <div class="col-lg-6">
-                        <div>
-                            <label for="autorizadoDni" class="form-label">DNI</label>
-                            <input type="text" class="form-control" placeholder="DNI" disabled>
-                        </div>
-                    </div>
-                    <div class="col-lg-6">
-                        <div>
-                            <label for="autorizadoTipo" class="form-label">Autorizado a</label>
-                            <select class="form-select" disabled>
-                                <option selected="">Información (solicitar resultados)</option>
-                                <option value="1">Información + retiro de estudios</option>
-                                <option value="2">Retirar estudios</option>
-                            </select>
-                        </div>
-                    </div>
-                    <!--end col-->
-                    <div class="col-lg-12">
-                        <div class="text-end">
-                            <button type="submit" class="btn btn-primary disabled" disabled>Autorizar</button>
-                            <a class="btn btn-success disabled" href="#" disabled>Guardar</a>
-                        </div>
-                        
-                    </div>
-                    <!--end col-->
-                </div>
-                <!--end row-->
-            </form>
-            <div class="mt-4 mb-3 border-bottom pb-2">
-                
-                <h5 class="card-title">Autorizados</h5>
-            </div>
-            <div class="d-flex align-items-center mb-3">
-                
-            </div>
-            
-            <div class="d-flex align-items-center">
-               
-            </div>
-        </div>
-        <!--end tab-pane-->
-        <div class="tab-pane" id="opciones" role="tabpanel">
-            <form>
-                <div id="newlink">
-                    <div id="1">
-                        <div class="row">
-                            <div class="alert alert-dark" role="alert">
-                                <strong> Atención: </strong> ¡Debe registrar los datos básicos para habilitar esta opción!
-                            </div>
-                            <div class="col-lg-3">
-                                    
-                                    <div class="form-check form-check-success mb-6">
-                                        <input class="form-check-input" type="checkbox" id="formCheck8" disabled>
-                                        <label class="form-check-label" for="formCheck8">
-                                            Retira Físico
-                                        </label>
-                                    </div>
-                                
-                            </div>
-                            <!--end col-->
-                            <div class="col-lg-3">
-                                <div class="form-check form-check-success mb-6">
-                                    <input class="form-check-input" type="checkbox" id="formCheck8" disabled>
-                                    <label class="form-check-label" for="formCheck8">
-                                        Entrega a Domcilio
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col-lg-3">
-                                <div class="form-check form-check-success mb-6">
-                                    <input class="form-check-input" type="checkbox" id="formCheck8" disabled>
-                                    <label class="form-check-label" for="formCheck8">
-                                        Mensajería
-                                    </label>
-                                </div>
-                            </div>
-                            <!--end col-->
-                            <div class="col-lg-3">
-                                <div class="mb-3">
-                                    <div class="form-check form-check-success mb-6">
-                                        <input class="form-check-input" type="checkbox" id="formCheck8" disabled>
-                                        <label class="form-check-label" for="formCheck8">
-                                            Correo
-                                        </label>
-                                    </div>
-                                    <!--end row-->
-                                </div>
-                            </div>
-                            <!--end col-->
-                            
-                            <div style="margin-block: 15px; "></div>
-                            <div class="col-lg-3"></div>
-
-                            <div class="col-lg-3">
-                                <div class="form-check form-check-success mb-6">
-                                    <input class="form-check-input" type="checkbox" id="formCheck8" disabled>
-                                    <label class="form-check-label" for="formCheck8">
-                                        Facturación sin paquetes
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col-lg-3">
-                                <div class="form-check form-check-success mb-6">
-                                    <input class="form-check-input" type="checkbox" id="formCheck8" disabled>
-                                    <label class="form-check-label" for="formCheck8">
-                                        Sin Evaluación
-                                    </label>
-                                </div>
-                            </div>
-
-                            <!--end col-->
-                            <div class="hstack gap-2 justify-content-end">
-                                <a class="btn btn-success disabled" href="#" disabled>Guardar</a>
-                            </div>
-                        </div>
-                        <!--end row-->
-                    </div>
-                </div>
-                <div id="newForm" style="display: none;">
-
-                </div>
-                
-                <!--end col-->
-            </form>
-        </div>
-        <!--end tab-pane-->
-        <div class="tab-pane" id="email" role="tabpanel">
-            <div class="mb-4 pb-2">
-                <div class="alert alert-dark" role="alert">
-                    <strong> Atención: </strong> ¡Debe registrar los datos básicos para habilitar esta opción!
-                </div>
-                <div class="mb-3">
-                    <label for="address1ControlTextarea" class="form-label">Masivos</label>
-                    <input disabled type="text" class="form-control" placeholder="empresa@gmail.com.ar" id="address1ControlTextarea">
-                </div>
-                <div class="mb-3">
-                    <label for="address1ControlTextarea" class="form-label">Informes</label>
-                    <input  disabled type="text" class="form-control" placeholder="empresa@gmail.com.ar" id="address1ControlTextarea">
-                </div>
-                <div class="mb-3">
-                    <label for="address1ControlTextarea" class="form-label">Facturas</label>
-                    <input disabled type="text" class="form-control" placeholder="empresa@gmail.com.ar" id="address1ControlTextarea">
-                </div>
-                <div class="form-check form-check-success mb-6">
-                    <input disabled class="form-check-input" type="checkbox" id="formCheck8" checked="">
-                    <label disabled class="form-check-label" for="formCheck8">
-                        Sin Envío de emails
-                    </label>
-                </div>
-                <div class="hstack gap-2 justify-content-end">
-                    <a class="btn btn-success disabled" disabled href="#">Guardar</a>
-                </div>
-            </div>
-        </div>
-        <div class="tab-pane" id="obs" role="tabpanel">
-            <div class="mb-4 pb-2">
-                <div class="alert alert-dark" role="alert">
-                    <strong> Atención: </strong> ¡Debe registrar los datos básicos para habilitar esta opción!
-                </div>
-                <div class="mb-3">
-                    <label for="address1ControlTextarea" class="form-label">Recepción</label>
-                    <textarea class="form-control" placeholder="Observaciones recepción" disabled></textarea>
-
-                </div>
-                <div class="mb-3">
-                    <label for="address1ControlTextarea" class="form-label">Evaluación</label>
-                    <input type="text" class="form-control" placeholder="Observaciones evaluador" disabled>
-                </div>
-                <div class="mb-3">
-                    <label for="address1ControlTextarea" class="form-label">Remito de estudios</label>
-                    <input type="text" class="form-control" placeholder="Remito de estudios" disabled>
-                </div>
-                <div class="mb-3">
-                    <label for="address1ControlTextarea" class="form-label">Cobranzas</label>
-                    <input type="text" class="form-control" placeholder="Observaciones Cobranzas" disabled>
-                </div>
-            </div>
-            <div class="hstack gap-2 justify-content-end">
-                <a class="btn btn-success disabled" href="#" disabled>Guardar</a>
-            </div>
         </div>
         <!--end tab-pane-->
     </div>

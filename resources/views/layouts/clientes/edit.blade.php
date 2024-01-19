@@ -388,11 +388,16 @@
 
                             <div class="col-lg-3">
                                 <div class="form-check form-check-success mb-6">
-                                    <input class="form-check-input bloqueo-btn" type="checkbox" id="Bloqueado" {{ ($cliente->Bloqueado == 1)?'checked' : '' }}>
+                                    <input class="form-check-input" type="checkbox" id="Bloqueado" {{ ($cliente->Bloqueado == 1)?'checked' : '' }}>
                                     <label class="form-check-label" for="Bloqueado">
                                         Bloquear
                                     </label>
                                 </div>
+                            </div>
+
+                            <div class="col-lg-8 mt-3 p-3" style="background-color: #eeeeee;">
+                                <label for="Motivo" class="form-label">Motivo Bloqueo <span class="required">(*)</span></label>
+                                <textarea name="MotivoB" id="MotivoB" class="form-control" rows="10">{{ $cliente->Motivo ?? '' }}</textarea>
                             </div>
 
                             <!--end col-->
@@ -516,24 +521,6 @@
 </div>
 
 <!-- Default Modals -->
-<div id="blockCliente" class="modal fadeInUp" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="myModalLabel" style="color: red"> Solicitud de bloqueo ({{ $cliente->RazonSocial ?? '' }} - CUIT {{ $cliente->Identificacion ?? ''}})</h5>
-            </div>
-            <div class="modal-body">
-                <p>Escriba el motivo del Bloqueo:</p>
-               <textarea name="MotivoB" id="MotivoB" class="form-control" rows="10"></textarea>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn botonGeneral" id="reset" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn botonGeneral confirmarBloqueo">Confirmar</button>
-            </div>
-
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
 
 <script>
 

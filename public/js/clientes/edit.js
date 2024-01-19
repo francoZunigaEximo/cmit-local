@@ -46,11 +46,24 @@ $(document).ready(()=> {
             facturacionSinPaq = $('#SinPF').prop('checked')?1:0,
             correo = $('#correoItem').prop('checked'),
             mensajeria = $('#mensajeriaItem').prop('checked'),
-            bloqueado = $('#Bloqueado').prop('checked')?1:0;
+            bloqueado = $('#Bloqueado').prop('checked')?1:0,
+            motivo = $('#MotivoB').val();
 
     
         if(correo == true && mensajeria == true){
             toastr.warning('¡No puede tener la opcion Mensajeria y Correo seleccionadas. Debe escoger por una opción!', 'Atención');
+            return;
+        }
+
+        if(motivo === '' && bloqueado === 1){
+        
+            toastr.warning('¡El motivo es un campo obligatorio si ha seleccionado la opción bloquear. Debe escribir un motivo!', 'Atención');
+            return;
+        }
+
+        if(motivo !== '' && bloqueado === 0){
+        
+            toastr.warning('¡No puede escribir un motivo si no ha bloqueado al cliente!', 'Atención');
             return;
         }
         
@@ -70,7 +83,35 @@ $(document).ready(()=> {
             success: function(){
 
                 toastr.success('¡Los datos se han guardado correctamente!', 'Perfecto');
+                
+               if(bloqueado === 1 && motivo !== ''){
+
+                    $.ajax({
+                        url: block,
+                        type: 'POST',
+                        data: {
+                            _token: TOKEN,
+                            motivo: motivo,
+                            cliente: ID
+                        },
+                        success: function() {
+                            
+                            swal('Atención', 'Se recargará la app para bloquear las funcionalidades', 'warning');
+                            setTimeout(()=> {
+                                location.reload();
+                            }, 3000);
+                            
+        
+                        },
+                        error: function(xhr) {
+                            toastr.error('¡Ha ocurrido un inconveniente y la solicitud no podrá llevarse a cabo. Consulte con el administrador!', 'Error');
+                            console.error(xhr);
+                            }
+                        });
+
+               }
                 return;
+          
             },
             error: function(xhr){
                 toastr.error('Hubo un error al obtener los autorizados. Consulte con el administrador', 'Error');
@@ -432,53 +473,6 @@ $(document).ready(()=> {
         telefonos();
         
     });
-
-    $(document).on('click', '.bloqueo-btn', function(e) {
-        
-        let bloqueado = $('#Bloqueado').prop('checked');
-
-        if(bloqueado){
-            $('#blockCliente').modal('show');
-
-            $('.confirmarBloqueo').click(function() {
-                let motivo = $('#MotivoB').val();
-
-                if(motivo === ''){
-    
-                    toastr.warning('¡El motivo es un campo obligatorio. Debe escribir un motivo!', 'Atención');
-                }else{
-                    $.ajax({
-                    url: block,
-                    type: 'POST',
-                    data: {
-                        _token: TOKEN,
-                        motivo: motivo,
-                        cliente: ID
-                    },
-                    success: function() {
-    
-                        toastr.success('El cliente se ha bloqueado de manera correcta', 'Acción realizada');
-                        
-                        $('#blockCliente').modal('hide');
-                        $('#MotivoB').val("");
-                        swal('Atención', 'Se recargará la app para bloquear las funcionalidades', 'warning');
-                        setTimeout(()=> {
-                            location.reload();
-                        }, 3000);
-                        
-    
-                    },
-                    error: function(xhr) {
-                        toastr.error('¡Ha ocurrido un inconveniente y la solicitud no podrá llevarse a cabo. Consulte con el administrador!', 'Error');
-                        console.error(xhr);
-                        }
-                    });
-                }
-            });
-        }
-        
-    });
-
 
     function actualizarInputHidden() {
         $('#hiddens .telefono-input').each(function(index) {
