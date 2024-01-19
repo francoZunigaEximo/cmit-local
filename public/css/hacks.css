@@ -424,5 +424,5 @@ table.dataTable tr.dtrg-level-0 td {
 }
 
 #listaExamenes > :not(caption) > * {
-    padding: 0.45rem 0.6rem;
+    padding: 0.25rem 0.6rem;
 }

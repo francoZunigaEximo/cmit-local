@@ -25,6 +25,8 @@ $(document).ready(()=> {
     getMap(empresa, art);
     getFact();
     checkBloq();
+    comentariosPrivados();
+    cargarAutorizados();
 
     //Hack de carga
     $(document).ready(function(){
@@ -436,6 +438,30 @@ $(document).ready(()=> {
         document.querySelector(".select2-container--open .select2-search__field").focus()
     });
 
+     $(document).on('click', '.confirmarComentarioPriv', function(){
+
+        let comentario = $('#Comentario').val();
+
+        if(comentario === ''){
+            toastr.warning('La observación no puede estar vacía', 'Atención');
+            return;
+        }
+
+        $.post(savePrivComent, {_token: TOKEN, Comentario: comentario, IdEntidad: ID, obsfasesid: 2})
+            .done(function(){
+
+                toastr.success('Perfecto', 'Se ha generado la observación correctamente');
+
+                setTimeout(() => {
+                    $('#privadoPrestaciones').empty();
+                    $('#addObs').modal('hide');
+                    $("#Comentario").val("");
+                    comentariosPrivados();
+                }, 3000);
+            })
+
+    });
+
  
     function precargaMapa(){
         let val = $('#TipoPrestacion').val();
@@ -586,5 +612,77 @@ $(document).ready(()=> {
                 toastr.error("Ha ocurrido un error. Consulte con el administrador");
             });
     }
+
+    function comentariosPrivados(){
+
+        $('#privadoPrestaciones').empty();
+
+        $.get(privateComment, {Id: ID,  tipo: 'prestacion'})
+            .done(async function(response){
+
+                let data = await response.result;
+
+                $.each(data, function(index, d){
+ 
+                    let contenido =  `
+                        <tr>
+                            <td>${fechaNow(d.Fecha, '/', 1)}</td>
+                            <td>${d.IdUsuario}</td>
+                            <td>${d.nombre_perfil}</td>
+                            <td>${d.Comentario}</td>
+                        </tr>
+                    `;
+                    $('#privadoPrestaciones').append(contenido);
+                });
+
+                $('#lstPrivPrestaciones').fancyTable({
+                    pagination: true,
+                    perPage: 15,
+                    searchable: false,
+                    globalSearch: false,
+                    sortable: false, 
+                });
+            })   
+    }
+
+    function cargarAutorizados() {
+
+        $.ajax({
+            url: getAutorizados,
+            type: 'GET',
+            data: {
+                Id: IDEMPRESA,
+            },
+            success: function(response) {
+                let autorizados = response;
+
+                $('#autorizadosPres').empty();
+
+                if (autorizados.length == 0) {
+                    let contenido = '<p> Sin datos de Autorizados </p>';
+                    $('.body-autorizado').append(contenido);
+
+                }else{
+
+                    $.each(autorizados, function(index, autorizado) {
+                        let contenido = `
+                        <tr>
+                            <td>${autorizado.Nombre} ${autorizado.Apellido}</td>
+                            <td>${autorizado.DNI}</td>
+                            <td>${autorizado.Derecho}</td>
+                        </tr>
+                        `;
+                        $('#autorizadosPres').append(contenido);
+                    });
+                }
+            },
+            error: function(xhr){
+
+                toastr.error('Hubo un error al obtener los autorizados. Consulte con el administrador', 'Error');
+                console.error(xhr);
+            }
+        });
+    }
+
     
 });

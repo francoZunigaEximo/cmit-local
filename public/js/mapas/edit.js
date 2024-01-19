@@ -15,8 +15,8 @@ $(document).ready(()=>{
     getCerrarMapas();
     getFinalMapa();
     getEnMapa();
-    listaComentariosPrivados(IDMAPA, 'prestaciones');
-    listaComentariosPrivados(IDMAPA, 'cerrado');
+    listaComentariosPrivados(IDMAPA, 'prestaciones','mapa');
+    listaComentariosPrivados(IDMAPA, 'cerrado','mapa');
     listarRemitos(IDMAPA);
 
     $('#remitoFechaE').val(hoy);
@@ -707,8 +707,8 @@ $(document).ready(()=>{
                     $('#privadoCerrar').empty();
                     $('#comentarioPrivado').modal('hide');
                     $("#Comentario").val("");
-                    listaComentariosPrivados(IDMAPA, 'prestaciones');
-                    listaComentariosPrivados(IDMAPA, 'cerrado');
+                    listaComentariosPrivados(IDMAPA, 'prestaciones','mapa');
+                    listaComentariosPrivados(IDMAPA, 'cerrado','mapa');
                 }, 3000);
             })
 
@@ -1019,7 +1019,7 @@ $(document).ready(()=>{
         }, 1000);
     }
 
-    function listaComentariosPrivados(idmapa, opcionFase){
+    function listaComentariosPrivados(idmapa, opcionFase, tipo){
 
         $('#privadoPrestaciones').empty();
         let listaFases = {
@@ -1036,7 +1036,7 @@ $(document).ready(()=>{
 
         }
 
-        $.get(privateComment, {Id: idmapa, obsfasesid: listaFases[opcionFase].id})
+        $.get(privateComment, {Id: idmapa, obsfasesid: listaFases[opcionFase].id, tipo: tipo})
             .done(async function(response){
 
                 let data = await response.result;

@@ -10,17 +10,23 @@ class PrestacionesObsFasesController extends Controller
 {
     public function comentariosPriv(Request $request)
     {
-        $query = PrestacionObsFase::join('prestaciones', 'prestaciones_obsfases.IdEntidad', '=', 'prestaciones.Id')
-            ->join('mapas', 'prestaciones.IdMapa', '=', 'mapas.Id')
-            ->join('users', 'prestaciones_obsfases.IdUsuario', '=', 'users.name')
-            ->leftJoin('perfiles', 'prestaciones_obsfases.Rol', '=', 'perfiles.Id') 
-            ->select('prestaciones_obsfases.*', 'users.Rol as nombre_perfil')
-            ->where('mapas.Id', $request->Id)
-            ->where('prestaciones_obsfases.obsfases_id', $request->obsfasesid)
-            ->orderBy('prestaciones_obsfases.Id', 'DESC')
-            ->get();
+        
+        $query = $this->queryBasic();
+        
+        if($request->tipo === 'mapa')
+        {
+            $query->where('mapas.Id', $request->Id)
+                ->where('prestaciones_obsfases.obsfases_id', $request->obsfasesid);
 
-        return response()->json(['result' => $query]);
+        } elseif($request->tipo === 'prestacion') {
+
+            $query->where('prestaciones.Id', $request->Id);
+        }
+
+        $result = $query->get();
+            
+
+        return response()->json(['result' => $result]);
     }
 
     public function addComentario(Request $request): void
@@ -35,5 +41,17 @@ class PrestacionesObsFasesController extends Controller
             'Rol' => Auth::user()->IdPerfil,
             'obsfases_id' => $request->obsfasesid
         ]);
+    }
+
+    private function queryBasic()
+    {
+        $query = PrestacionObsFase::join('prestaciones', 'prestaciones_obsfases.IdEntidad', '=', 'prestaciones.Id')
+        ->join('mapas', 'prestaciones.IdMapa', '=', 'mapas.Id')
+        ->join('users', 'prestaciones_obsfases.IdUsuario', '=', 'users.name')
+        ->leftJoin('perfiles', 'prestaciones_obsfases.Rol', '=', 'perfiles.Id') 
+        ->select('prestaciones_obsfases.*', 'users.Rol as nombre_perfil')
+        ->orderBy('prestaciones_obsfases.Id', 'DESC');
+
+        return $query;
     }
 }

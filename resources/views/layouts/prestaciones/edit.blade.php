@@ -209,6 +209,7 @@
                                 <select class="form-select" id="Autorizado">
                                     <option value="" selected>Elija una opción...</option>
                                     <option value="lucas">Lucas Grunmann</option>
+                                    <option value="martin">Martin</option>
                                 </select>
                             </div>
                         </div>
@@ -256,10 +257,15 @@
                             </div>
                         </div>
 
-                                        <div class="input-group input-group mt-2">
-                    <span class="input-group-text">Obs evaluación</span>
-                    <input type="text" class="form-control" placeholder="Observaciones de evaluación" id="Observaciones" value="{{ $prestacione->Observaciones ?? ''}}">
-                </div>
+                        
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="input-group input-group mt-2">
+                                    <span class="input-group-text">Obs evaluación</span>
+                                     <input type="text" class="form-control" placeholder="Observaciones de evaluación" id="Observaciones" value="{{ $prestacione->Observaciones ?? ''}}">
+                                </div>
+                            </div>
+                        </div>
                         
                     </div>
 
@@ -350,6 +356,58 @@
 
                     </div>
 
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h4 class="card-title mb-0">Observaciones privadas</h4><button type="button" class="btn bt-sm botonGeneral" data-bs-toggle="modal" data-bs-target="#addObs">Añadir</button>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive table-card mt-3 mb-1">
+                                        <table id="lstPrivPrestaciones" class="display table table-bordered" style="100%">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th class="sort">Fecha</th>
+                                                    <th>Usuario</th>
+                                                    <th>Rol</th>
+                                                    <th>Comentario</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="list form-check-all" id="privadoPrestaciones">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-2">
+                        <div class="col-lg-12">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h4 class="card-title mb-0">Autorizados</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive table-card mt-3 mb-1">
+                                        <table id="lstAutorizados" class="display table table-bordered" style="100%">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Nombre y Apellido</th>
+                                                    <th>DNI</th>
+                                                    <th>Tipo de Autorización</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="list form-check-all" id="autorizadosPres">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
                 </div>
             </div>
 
@@ -382,6 +440,28 @@
     </div>
 </div>
 
+<div id="addObs" class="modal fadeInUp" tabindex="-1" aria-labelledby="myModalLabel" aria-hidde="true" style="display: none">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel"> Observación privada </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>
+            </div>
+            <div class="modal-body" class="text-center p-3">
+                <div class="modal-body">
+                    <p>Escriba un comentario de la cuestión o situación:</p>
+                   <textarea name="Comentario" id="Comentario" class="form-control" rows="10"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <input type="hidden" id="fase">
+                    <button type="button" class="btn botonGeneral" id="reset" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn botonGeneral confirmarComentarioPriv">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 //Rutas
 const updatePrestacion = "{{ route('updatePrestacion') }}";
@@ -407,11 +487,15 @@ const itemExamen = "{{ route('itemExamen') }}";
 const checkParaEmpresa = "{{ route('checkParaEmpresa') }}";
 const getFactura = "{{route('getFactura') }}";
 const getBloqueoPrestacion = "{{ route('getBloqueoPrestacion') }}";
+const privateComment = "{{ route('comentariosPriv') }}";
+const savePrivComent = "{{ route('savePrivComent') }}";
+const getAutorizados = "{{ route('getAutorizados') }}";
 
 //Extras
 const TOKEN = "{{ csrf_token() }}";
 const UBICACION = "{{ request()->query('location') }}";
 const ID = "{{ $prestacione->Id }}";
+const IDEMPRESA = "{{ $prestacione->empresa->Id }}";
 const editUrl = "{{ route('itemsprestaciones.edit', ['itemsprestacione' => '__examen__'])}}";
 
 
