@@ -204,7 +204,7 @@ $(document).ready(()=>{
 
         $.ajax({
             url: getComentarioPres,
-            type: 'get',
+            type: 'GET',
             data: {
                 Id: IdComentario
             },

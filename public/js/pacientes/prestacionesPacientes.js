@@ -61,7 +61,7 @@ $(document).ready(()=>{
 
         $.ajax({
             url: verificarAlta,
-            type: 'get',
+            type: 'GET',
             data: {
                 Id: ID
             },
@@ -244,7 +244,7 @@ $(document).ready(()=>{
 
         $.ajax({
             url: blockPrestacion,
-            type: 'get',
+            type: 'GET',
             data: {
                 Id: Id,
             },
@@ -268,7 +268,7 @@ $(document).ready(()=>{
 
         $.ajax({
             url: downPrestaActiva,
-            type: 'get',
+            type: 'GET',
             data: {
                 Id: Id,
             },

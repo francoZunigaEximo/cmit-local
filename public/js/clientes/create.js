@@ -8,11 +8,10 @@ $(document).ready(()=>{
         if (cuit && empresa) {
             $.ajax({
                 url: verifycuitEmpresa,
-                type: "POST",
+                type: "GET",
                 data: {
                     Identificacion: cuit,
                     ParaEmpresa: empresa,
-                    _token: TOKEN
                 },
                 success: function (response) {
                     if (response.existe) {
@@ -45,10 +44,9 @@ $(document).ready(()=>{
 
         $.ajax({
             url: verifyIdentificacion,
-            type: "Post",
+            type: "GET",
             data: {
                 Identificacion: cuit,
-                _token: TOKEN
             },
             success: function(response){
                 
@@ -67,10 +65,9 @@ $(document).ready(()=>{
 
             $.ajax({
                 url: searchLocalidad,
-                type: 'get',
+                type: 'GET',
                 data: {
                     Id: id,
-                    _token: TOKEN
                 },
                 success: function(response){
                     let resultado = response.resultado,

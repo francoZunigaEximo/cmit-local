@@ -70,12 +70,12 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('clientes/multipleDown', [ClientesController::class, 'multipleDown'])->name('clientes.multipleDown');
     Route::post('cliente/block', [ClientesController::class, 'block'])->name('clientes.block');
     Route::get('searchClientes', [ClientesController::class, 'search'])->name('searchClientes');
-    Route::post('/verifycuitEmpresa', [ClientesController::class, 'verifyCuitEmpresa'])->name('verifycuitEmpresa');
+    Route::get('/verifycuitEmpresa', [ClientesController::class, 'verifyCuitEmpresa'])->name('verifycuitEmpresa');
     Route::get('getClientes', [ClientesController::class, 'getClientes'])->name('getClientes');
     Route::post('/clientes/setObservaciones', [ClientesController::class, 'setObservaciones'])->name('clientes.setObservaciones');
     Route::post('checkEmail', [ClientesController::class, 'checkEmail'])->name('checkEmail');
     Route::post('checkOpciones', [ClientesController::class, 'checkOpciones'])->name('checkOpciones');
-    Route::post('verifyIdentificacion', [ClientesController::class, 'verifyIdentificacion'])->name('verifyIdentificacion');
+    Route::get('verifyIdentificacion', [ClientesController::class, 'verifyIdentificacion'])->name('verifyIdentificacion');
     Route::get('exportExcelClientes', [ClientesController::class, 'excel'])->name('exportExcelClientes');
     Route::get('checkParaEmpresa', [ClientesController::class, 'checkParaEmpresa'])->name('checkParaEmpresa');
     route::get('getBloqueo', [ClientesController::class, 'getBloqueo'])->name('getBloqueo');

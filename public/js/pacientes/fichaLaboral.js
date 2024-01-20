@@ -319,10 +319,9 @@ $(document).ready(function () {
 
         $.ajax({
             url: verificarAlta,
-            type: 'get',
+            type: 'GET',
             data: {
                 Id: ID,
-                _token: TOKEN
             },
             success: function(response){
                 let verificar = response.fichaLaboral, cliente = response.cliente, clienteArt = response.clienteArt;

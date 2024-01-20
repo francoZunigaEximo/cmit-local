@@ -292,7 +292,6 @@ $(document).ready(function(){
                 type: 'GET',
                 data: {
                     localidad: localidad,
-                    _token: TOKEN
                 },
                 success: function(response){
                     
