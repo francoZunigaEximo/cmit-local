@@ -50,7 +50,7 @@ Route::group(['middleware' => 'auth'], function () {
     //Rutas de Utility
     Route::post('getLocalidades', [UtilityController::class, 'getLocalidades'])->name('getLocalidades');
     Route::post('getCodigoPostal', [UtilityController::class, 'getCodigoPostal'])->name('getCodigoPostal');
-    Route::post('checkProvincia', [UtilityController::class, 'checkProvincia'])->name('checkProvincia');
+    Route::get('checkProvincia', [UtilityController::class, 'checkProvincia'])->name('checkProvincia');
 
     //Rutas de Pacientes
     Route::resource('pacientes', PacientesController::class);

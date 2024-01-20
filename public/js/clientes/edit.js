@@ -130,12 +130,12 @@ $(document).ready(()=> {
             DNI = $('#DNI').val(),
             Derecho = $('#Derecho').val();
 
-        if (Nombre === '' || Apellido === '' || DNI === '' || Derecho === '') {
+        let camposBasicos = [Nombre, Apellido, DNI, Derecho];
 
+        if (camposBasicos.every(contenido => contenido === '')) {
             toastr.warning('Por favor, complete todos los campos obligatorios.', 'Atención');
             return;
         }
-
 
         if(DNI.length > 8 || parseInt(DNI) < 0){
             toastr.warning("El dni no puede contener más de 8 digitos o ser negativo", "Atención");
@@ -340,10 +340,9 @@ $(document).ready(()=> {
         {
             $.ajax({
                 url: checkProvController,
-                type: 'POST',
+                type: 'GET',
                 data: {
                     localidad: localidad,
-                    _token: TOKEN
                 },
                 success: function(response){
                     let provinciaNombre = response.fillProvincia;
@@ -364,43 +363,6 @@ $(document).ready(()=> {
             });
         }
     }
-
-    const idProvincias = [
-        { key: "26", value: "BARILOCHE" },
-        { key: "4", value: "BUENOS AIRES" },
-        { key: "3", value: "CAPITAL FEDERAL" },
-        { key: "15", value: "CATAMARCA" },
-        { key: "29", value: "CHACO" },
-        { key: "11", value: "CHUBUT" },
-        { key: "7", value: "CIUDAD DE BUENOS AIRES" },
-        { key: "28", value: "COLOMBIA" },
-        { key: "6", value: "CORDOBA" },
-        { key: "10", value: "CORRIENTES" },
-        { key: "13", value: "ENTRE RIOS" },
-        { key: "32", value: "FORMOSA" },
-        { key: "30", value: "GENERAL ALVEAL" },
-        { key: "31", value: "GENERAL ALVEAR" },
-        { key: "16", value: "JUJUY" },
-        { key: "5", value: "LA PAMPA" },
-        { key: "14", value: "LA RIOJA" },
-        { key: "27", value: "LAS OVEJAS" },
-        { key: "8", value: "MENDOZA" },
-        { key: "18", value: "MISIONES" },
-        { key: "25", value: "NECOCHEA" },
-        { key: "1", value: "NEUQUEN" },
-        { key: "33", value: "RIO GRANDE" },
-        { key: "2", value: "RIO NEGRO" },
-        { key: "17", value: "ROSARIO" },
-        { key: "9", value: "SALTA" },
-        { key: "22", value: "SAN JUAN" },
-        { key: "19", value: "SAN LUIS" },
-        { key: "23", value: "SANTA CRUZ" },
-        { key: "20", value: "SANTA FE" },
-        { key: "21", value: "SANTIAGO DEL ESTERO" },
-        { key: "34", value: "TIERRA DEL FUEGO" },
-        { key: "12", value: "TUCUMAN" },
-        { key: "24", value: "VENEZUELA" },
-    ];
 
     $(document).on('click', '#addNumero', function() {
         let prefijo = $('#prefijoExtra').val(), numero = $('#numeroExtra').val(), observacion = $('#obsExtra').val();

@@ -60,10 +60,9 @@ $(document).ready(function(){
         {
             $.ajax({
                 url: checkP,
-                type: 'POST',
+                type: 'GET',
                 data: {
                     localidad: localidad,
-                    _token: TOKEN
                 },
                 success: function(response){
                     
