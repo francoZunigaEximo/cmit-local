@@ -46,10 +46,9 @@ $(document).ready(function(){
     function changeProvincia(id){
         $.ajax({
             url: getLocalidad,
-            type: "POST",
+            type: "GET",
             data: {
                 provincia: id,
-                _token: TOKEN
             },
             success: function(response) {
                 let localidades = response.localidades;

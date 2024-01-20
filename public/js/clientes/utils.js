@@ -50,10 +50,9 @@ $(document).ready(()=>{
         let provincia = $(this).val();
         $.ajax({
             url: getLocalidad,
-            type: "POST",
+            type: "GET",
             data: {
                 provincia: provincia,
-                _token: TOKEN
             },
             success: function(response) {
                 let localidades = response.localidades;
@@ -70,10 +69,9 @@ $(document).ready(()=>{
         // Realizar la solicitud Ajax
         $.ajax({
             url: getCodigoPostal,
-            type: "POST",
+            type: "GET",
             data: {
                 localidadId: localidadId,
-                _token: TOKEN
             },
             success: function(response) {
                 // Actualizar el valor del input de Código Postal
