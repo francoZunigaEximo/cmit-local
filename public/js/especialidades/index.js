@@ -18,9 +18,8 @@ $(document).ready(()=> {
             if (confirm("¿Estás seguro de que deseas generar el reporte de Excel con todos los items seleccionados?")) {
                 $.ajax({
                     url: especialidadExcel,
-                    type: "POST",
+                    type: "GET",
                     data: {
-                        _token: TOKEN,
                         Id: ids
                     },
                     success: function(response) {
@@ -104,9 +103,10 @@ $(document).ready(()=> {
             $.post(bajaEspecialidad, {_token: TOKEN, Id: especialidad})
             .done(function(){
                 toastr.success("Se ha dado de baja la especialidad de manera correcta", "Perfecto");
-                $('#listaEspecialidades').DataTable();
+                setTimeout(()=>{
+                    $('#listaEspecialidades').DataTable();
                 $('#listaEspecialidades').DataTable().draw(false);
-
+                },3000);
             })
             .fail(function(xhr){
                 toastr.error("Ha ocurrido un error. Consulte con el administrador", "Error");

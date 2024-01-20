@@ -22,7 +22,7 @@ $(document).ready(function(){
         });
 
         if (ids.length === 0) {
-            swal("Atención", "Debe seleccionar al menos un paciente para la baja múltiple", "warning");
+            toastr.warning("Debe seleccionar al menos un paciente para la baja múltiple", "Atención");
             return; 
         }
 
@@ -37,11 +37,13 @@ $(document).ready(function(){
                 success: function() {
 
                     toastr.success('¡Se ha dado de baja a los pacientes correctamente!', 'Éxito');
-                    $('#listaPac').DataTable();
-                    $('#listaPac').DataTable().draw(false);
+                    setTimeout(() => {
+                        $('#listaPac').DataTable();
+                        $('#listaPac').DataTable().draw(false); 
+                    }, 3000);
                 },
                 error: function(xhr) {
-                    swal("Error", "¡Ha ocurrido un inconveniente. Consulte con el administrador!", "error");
+                    toastr.error("¡Ha ocurrido un inconveniente. Consulte con el administrador!", "Error");
                     console.error(xhr);
                 }
             });
@@ -61,9 +63,8 @@ $(document).ready(function(){
             if (confirm("¿Estás seguro de que deseas generar el reporte de Excel con todos los items seleccionados?")) {
                 $.ajax({
                     url: exportExcel,
-                    type: "POST",
+                    type: "GET",
                     data: {
-                        _token: TOKEN,
                         Id: ids
                     },
                     success: function(response) {
@@ -93,7 +94,7 @@ $(document).ready(function(){
                 });
             }
         } else {
-            swal('Error', 'Debes seleccionar al menos un paciente para exportar.', 'warning');
+            toastr.error('Debes seleccionar al menos un paciente para exportar.', 'Error');
         }
 
     });
@@ -118,7 +119,7 @@ $(document).ready(function(){
                     $('#listaPac').DataTable().draw(false);
                 })
                 .fail(function(xhr){
-                    swal('Error', 'Ha ocurrido un error, consulte con el administrador', 'error');
+                    toastr.error('Ha ocurrido un error, consulte con el administrador', 'Error');
                     console.error(xhr);
                 })
             } 

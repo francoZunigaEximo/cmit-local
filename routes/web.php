@@ -58,7 +58,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('paciente/down', [PacientesController::class, 'down'])->name('down');
     Route::get('verifydocument', [PacientesController::class, 'verifyDocument'])->name('verify');
     Route::post('pacientes/multipleDown', [PacientesController::class, 'multipleDown'])->name('pacientes.multipleDown');
-    Route::post('excelPacientes', [PacientesController::class, 'exportExcel'])->name('excelPacientes');
+    Route::get('excelPacientes', [PacientesController::class, 'exportExcel'])->name('excelPacientes');
     Route::get('getPacientes', [PacientesController::class, 'getPacientes'])->name('getPacientes');
     Route::get('searchPrestPacientes', [PacientesController::class, 'searchPrestPacientes'])->name('searchPrestPacientes');
     Route::get('getNombre', [PacientesController::class, 'getNombre'])->name('getNombre');
@@ -76,7 +76,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('checkEmail', [ClientesController::class, 'checkEmail'])->name('checkEmail');
     Route::post('checkOpciones', [ClientesController::class, 'checkOpciones'])->name('checkOpciones');
     Route::post('verifyIdentificacion', [ClientesController::class, 'verifyIdentificacion'])->name('verifyIdentificacion');
-    Route::post('exportExcelClientes', [ClientesController::class, 'excel'])->name('exportExcelClientes');
+    Route::get('exportExcelClientes', [ClientesController::class, 'excel'])->name('exportExcelClientes');
     Route::get('checkParaEmpresa', [ClientesController::class, 'checkParaEmpresa'])->name('checkParaEmpresa');
     route::get('getBloqueo', [ClientesController::class, 'getBloqueo'])->name('getBloqueo');
 
@@ -181,7 +181,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('especialidades', ProveedoresController::class);
     Route::get('getProveedores', [ProveedoresController::class, 'getProveedores'])->name('getProveedores');
     Route::get('searchEspecialidad', [ProveedoresController::class, 'search'])->name('searchEspecialidad');
-    Route::post('especialidadExcel', [ProveedoresController::class, 'excel'])->name('especialidadExcel');
+    Route::get('especialidadExcel', [ProveedoresController::class, 'excel'])->name('especialidadExcel');
     Route::post('multiDownEspecialidad', [ProveedoresController::class, 'multiDown'])->name('multiDownEspecialidad');
     Route::post('bajaEspecialidad', [ProveedoresController::class, 'down'])->name('bajaEspecialidad');
     Route::get('checkProveedor', [ProveedoresController::class, 'check'])->name('checkProveedor');

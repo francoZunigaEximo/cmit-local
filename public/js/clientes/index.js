@@ -1,6 +1,11 @@
 $(document).ready(function(){
 
-    
+    toastr.options = {
+        closeButton: true,   
+        progressBar: true,    
+        timeOut: 3000,        
+    };
+
     $('#btnBajaMultiple').click(function(e) {
         e.preventDefault();
 
@@ -10,7 +15,7 @@ $(document).ready(function(){
         });
 
         if (ids.length === 0) {
-            swal('Atención', 'Debe seleccionar al menos un cliente para la baja múltiple', 'warning');
+            toastr.warning('Debe seleccionar al menos un cliente para la baja múltiple', 'Atención');
             return; 
         }
 
@@ -23,11 +28,14 @@ $(document).ready(function(){
                     ids: ids
                 },
                 success: function() {
-                    swal('Acción realizada', '¡Se ha dado de baja a los clientes correctamente!', 'success');
-                    $('#listaClientes').DataTable().draw(false);
+                    toastr.success('¡Se ha dado de baja a los clientes correctamente!', 'Acción realizada');
+                    setTimeout(()=>{
+                        $('#listaClientes').DataTable().draw(false);
+                    }, 3000);
+                   
                 },
                 error: function(xhr) {
-                    swal('error', '¡Ha ocurrido un inconveniente y la solicitud no podrá llevarse a cabo. Consulte con el administrador!', 'error');
+                    toastr.error('¡Ha ocurrido un inconveniente y la solicitud no podrá llevarse a cabo. Consulte con el administrador!', 'Error');
                     console.error(xhr);
                 }
             });
@@ -48,9 +56,8 @@ $(document).ready(function(){
             if (confirm("¿Estás seguro de que deseas generar el reporte de Excel con todos los items seleccionados?")) {
                 $.ajax({
                     url: exportExcelClientes,
-                    type: "POST",
+                    type: "GET",
                     data: {
-                        _token: TOKEN,
                         Id: ids
                     },
                     success: function(response) {
@@ -80,7 +87,7 @@ $(document).ready(function(){
                 });
             }
         } else {
-            swal('Error', 'Debes seleccionar al menos un paciente para exportar.', 'error');
+            toastr.error('Debes seleccionar al menos un paciente para exportar.', 'Error');
         }
 
     });
@@ -104,13 +111,14 @@ $(document).ready(function(){
 
             $.post(baja, {_token: TOKEN, Id: cliente})
             .done(function(){
-                swal('Perfecto', 'Se ha dado de baja al cliente de manera correcta', 'success');
-                $('#listaClientes').DataTable();
-                $('#listaClientes').DataTable().draw(false);
-
+                toastr.success('Se ha dado de baja al cliente de manera correcta', 'Perfecto');
+                setTimeout(()=>{
+                    $('#listaClientes').DataTable();
+                    $('#listaClientes').DataTable().draw(false);
+                },3000);
             })
             .fail(function(xhr){
-                swal('Error', 'Ha ocurrido un error. Consulte con el administrador', 'error');
+                toastr('Ha ocurrido un error. Consulte con el administrador', 'Error');
                 console.error(xhr);
             });
         }

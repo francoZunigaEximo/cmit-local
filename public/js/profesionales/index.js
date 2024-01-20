@@ -108,14 +108,13 @@ $(document).ready(()=> {
         $.post(estadoProfesional, {_token: TOKEN, Id: id, tipo: tipo})
 
             .done(function(){
-                toastr.options = {
-                    closeButton: true,   
-                    progressBar: true,    
-                    timeOut: 3000,        
-                };
+
                 toastr.success(`Se ha/han ${listAccion[tipo][0]} correctamente`, `${listAccion[tipo][1]} profesional/es`);
-                $('#listaProf').DataTable();
-                $('#listaProf').DataTable().draw(false);
+                setTimeout(()=>{
+                    $('#listaProf').DataTable();
+                    $('#listaProf').DataTable().draw(false);
+                },3000);
+                
 
             })
             .fail(function(xhr){
