@@ -172,7 +172,7 @@
 
                         <li class="nav-item">
                             <a class="nav-link menu-link" href="{{ route('noticias.edit', 1) }}" aria-expanded="false">
-                                <i data-feather="message-circle" class="icon-dual"></i> <span data-key="t-layers">Noticias</span>
+                                <i data-feather="message-circle" class="icon-dual"></i> <span data-key="t-layers" title="(ALT + N)">Noticias</span>
                             </a>
                         </li>
                         
@@ -306,6 +306,7 @@
         const lnkMapas = "{{ route('mapas.index') }}";
         const lnkProfesionales = "{{ route('profesionales.index') }}";
         const lnkEspecialidades = "{{ route('especialidades.index') }}";
+        const lnkNoticias = "{{ route('noticias.index') }}";
 
         const lnkNuevoPaciente = "{{ route('pacientes.create') }}";
         const lnkExistePaciente = "{{ route('pacientes.edit', ['paciente' => '__paciente__']) }}";

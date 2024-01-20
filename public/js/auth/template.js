@@ -23,21 +23,22 @@ $(document).ready(function(){
         $.get(choisePerfil, {Id: id})
             .done(function(response){
 
-                select = $("#choisePerfil");
+                const perfiles = {
+                    1: ['T1','Efector'],
+                    2: ['T2','Informador'],
+                    3: ['T3','Evaluador'],
+                    4: ['T4','Combinado']
+                };
                 
-                if (response.T1 === 1) {
-                    select.append(`<option value="t1">Efector</option>`);
+                const select = $("#choisePerfil");
+               
+                for(let i = 1; i<= 4; i++){
+
+                    if (response[perfiles[i][0]] === 1) {
+                        select.append(`<option value="${perfiles[i][0].toLowerCase()}">${perfiles[i][1]}</option>`);
+                    }
                 }
-                if (response.T2 === 1) {
-                    select.append(`<option value="t2">Informador</option>`);
-                }
-                if (response.T3 === 1) {
-                    select.append(`<option value="t3">Evaluador</option>`);
-                }
-                if (response.T4 === 1) {
-                    select.append(`<option value="t4">Combinado</option>`);
-                }
-              
+                
             });
     }
 

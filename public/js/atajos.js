@@ -21,7 +21,8 @@ $(document).ready(() => {
         'r': lnkPrestaciones,
         'm': lnkMapas,
         'o': lnkProfesionales,
-        'e': lnkEspecialidades
+        'e': lnkEspecialidades,
+        'n': lnkNoticias
     };
 
     $(document).keydown(function(e) {
