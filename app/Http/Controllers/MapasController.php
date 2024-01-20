@@ -88,23 +88,11 @@ class MapasController extends Controller
             });
 
             $query->when($Art, function ($query) use ($Art) {
-                $query->havingRaw('Art LIKE ?', ['%' . $Art . '%'])
-                      ->orWhere(function ($query) use ($Art) {
-                          $query->havingRaw('NombreFantasia_Art LIKE ?', ['%' . $Art . '%'])
-                                ->orWhere(function ($query) use ($Art) {
-                                    $query->havingRaw('ParaEmpresa_Art LIKE ?', ['%' . $Art . '%']);
-                                });
-                      });
+                $query->where('clientes.Id', $Art);
             });
 
             $query->when($Empresa, function ($query) use ($Empresa) {
-                $query->havingRaw('Empresa LIKE ?', ['%' . $Empresa . '%'])
-                      ->orWhere(function ($query) use ($Empresa) {
-                          $query->havingRaw('NombreFantasia_Empresa LIKE ?', ['%' . $Empresa . '%'])
-                                ->orWhere(function ($query) use ($Empresa) {
-                                    $query->havingRaw('ParaEmpresa_Empresa LIKE ?', ['%' . $Empresa . '%']);
-                                });
-                      });
+                $query->where('clientes2.Id', $Empresa);
             });
 
             //Terminado

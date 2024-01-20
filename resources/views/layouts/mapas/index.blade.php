@@ -33,12 +33,12 @@
 
                                     <div class="col-sm-3 mb-3">
                                         <label for="ART" class="form-label font-weight-bold"><strong>ART:</strong></label>
-                                        <input type="text" class="form-control" id="ART" name="ART" placeholder="Buscar por ART">
+                                        <select class="form-control" name="ART" id="ART"></select>
                                     </div>
 
                                     <div class="col-sm-3 mb-3">
                                         <label for="Empresa" class="form-label font-weight-bold"><strong>Empresa:</strong></label>
-                                        <input type="text" class="form-control" id="Empresa" name="Empresa" placeholder="Buscar por Empresa">
+                                        <select class="form-control" name="Empresa" id="Empresa"></select>
                                     </div>
 
                                     <div class="col-sm-3 mb-3">
@@ -151,6 +151,7 @@
     const routeMapas = "{{ route('deleteMapa', ['mapa' => '']) }}";
     const fileExport = "{{ route('fileExport') }}";
     const deleteMapa = "{{ route('deleteMapa') }}";
+    const getOnlyClientes = "{{ route('getOnlyClientes') }}";
     //Extras
     const TOKEN = "{{ csrf_token() }}";
 
@@ -159,6 +160,8 @@
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/hacks.css')}}?v=?v={{ time() }}">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
+
+<link rel="stylesheet" href="{{ asset('css/fixSelect2.css') }}">
 @endpush
 
 
@@ -170,7 +173,6 @@
 <script src="{{ asset('js/mapas/index.js') }}?v={{ time() }}"></script>
 <script src="{{ asset('js/mapas/paginacion.js') }}?v={{ time() }}"></script>
 
-<script src="{{ asset('js/scripts.js') }}?v={{ time() }}"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/i18n/es.js"></script>
