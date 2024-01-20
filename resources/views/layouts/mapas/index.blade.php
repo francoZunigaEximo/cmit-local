@@ -151,7 +151,7 @@
     const routeMapas = "{{ route('deleteMapa', ['mapa' => '']) }}";
     const fileExport = "{{ route('fileExport') }}";
     const deleteMapa = "{{ route('deleteMapa') }}";
-    const getOnlyClientes = "{{ route('getOnlyClientes') }}";
+    const getClientes = "{{ route('getClientes') }}";
     //Extras
     const TOKEN = "{{ csrf_token() }}";
 

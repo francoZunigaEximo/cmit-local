@@ -356,43 +356,6 @@ class ClientesController extends Controller
         return response()->json(['filePath' => $filePath]);
     }
 
-    //Listado de clientes // Tipo E = Empresa - A = ART
-    public function getClientes(Request $request)
-    {
-        $buscar = $request->buscar;
-        $tipo = $request->tipo;
-        $financiador = $request->financiador ?? 'false';
-
-        $resultados = Cache::remember('clientes_'.$buscar, 5, function () use ($buscar, $tipo, $financiador) {
-            $clientes = Cliente::where(function ($query) use ($buscar) {
-                $query->where('RazonSocial', 'LIKE', '%'.$buscar.'%')
-                    ->orWhere('Identificacion', 'LIKE', '%'.$buscar.'%');
-            })
-                ->where('TipoCliente', '=', $tipo)
-                ->get();
-
-            $resultados = [];
-
-            foreach ($clientes as $cliente) {
-                if ($financiador) {
-                    $text = ($tipo == 'A') ? 'ART: ' : 'EMPRESA: ';
-                    $text .= $cliente->RazonSocial.' - '.$cliente->Identificacion;
-                } else {
-                    $text = $cliente->RazonSocial.' - '.$cliente->Identificacion;
-                }
-
-                $resultados[] = [
-                    'id' => $cliente->Id,
-                    'text' => $text,
-                ];
-            }
-
-            return $resultados;
-        });
-
-        return response()->json(['clientes' => $resultados]);
-    }
-
     public function checkParaEmpresa(Request $request)
     {
 
@@ -414,7 +377,7 @@ class ClientesController extends Controller
         }
     }
 
-    public function getOnlyClientes(Request $request)
+    public function getClientes(Request $request)
     {
         $buscar = $request->buscar;
         $tipo = $request->tipo;

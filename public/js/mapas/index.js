@@ -108,7 +108,7 @@ $(document).ready(()=>{
         placeholder: 'Nombre Empresa, Alias o ParaEmpresa',
         allowClear: true,
         ajax: {
-            url: getOnlyClientes, 
+            url: getClientes, 
             dataType: 'json',
             data: function(params) {
                 return {
@@ -143,7 +143,7 @@ $(document).ready(()=>{
         placeholder: 'Nombre de la ART',
         allowClear: true,
         ajax: {
-            url: getOnlyClientes, 
+            url: getClientes, 
             dataType: 'json',
             data: function(params) {
                 return {

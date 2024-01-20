@@ -256,7 +256,7 @@ const blockPrestacion = "{{ route('blockPrestacion') }}";
 const ROUTE = "{{ route('prestaciones.index') }}";
 const SEARCH = "{{ route('searchPrestaciones') }}";
 const porcentajeExamen = "{{ route('porcentajeExamen') }}";
-const getOnlyClientes = "{{ route('getOnlyClientes') }}";
+const getClientes = "{{ route('getClientes') }}";
 
 $('#excel').click(function(e) {
     e.preventDefault();

@@ -111,7 +111,7 @@
                         </div>
 
                         <div class="input-group input-group-sm  size80porcent">
-                            <span class="input-group-text">Fecha de Corte&nbsp;<span class="required">(*)</span></span>
+                            <span class="input-group-text">Estado&nbsp;<span class="required">(*)</span></span>
                             <select class="form-select" name="Estado" id="Estado">
                                 <option value="{{ $mapa->Inactivo }}" selected>{{ ($mapa->Inactivo == 0? 'Activo' : 'Inactivo') }}</option>
                                 <option value="0">Activo</option>

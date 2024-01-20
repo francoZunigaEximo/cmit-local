@@ -65,9 +65,9 @@ $(document).ready(()=>{
                             let totalDias = getDias(data.Fecha);
                             let fecha = fechaNow(data.Fecha,'/',0);
 
-                            let contenido = `<div style="text-align: center d-inline">
+                            let contenido = `<div class="text-center">
                                                 <span>${fecha === 'NaN/NaN/NaN'? '-' : fecha}</span>
-                                                <span class="custom-badge generalNegro">${(totalDias <= 0) ? 'Cerrado' : ''}</span>
+                                                ${(totalDias <= 0) ? '<span class="custom-badge generalNegro">Cerrado</span>' : ''}
                                             </div>`;
 
                             return contenido;
@@ -81,7 +81,7 @@ $(document).ready(()=>{
                             let totalDias = getDias(data.FechaE),
                                 fecha = fechaNow(data.FechaE,'/',0);
 
-                            let contenido = `<div style="text-align: center">
+                            let contenido = `<div class="text-center">
                                                 <span>${(fecha === 'NaN/NaN/NaN'? 'Sin fecha' : fecha) }</span>
                                                 <span class="custom-badge generalNegro">${(totalDias === NaN || totalDias < 0 ? 0 : totalDias)}</span>
                                             </div>`;
@@ -92,7 +92,7 @@ $(document).ready(()=>{
                         data: null,
                         render: function(data){
 
-                            return `<div style="text-align: center">${data.contadorPrestaciones}/${data.contadorPacientes === 0 && data.contadorPrestaciones !== 0 ? data.contadorPrestaciones : data.contadorPacientes}</div>`;
+                            return `<div class="text-center">${data.contadorPrestaciones}/${data.contadorPacientes === 0 && data.contadorPrestaciones !== 0 ? data.contadorPrestaciones : data.contadorPacientes}</div>`;
                         } 
 
                     },
@@ -109,17 +109,17 @@ $(document).ready(()=>{
                                 let conteo = '(Total Prestaciones: ' + data.contadorPrestaciones + ') (Total Cerrados: ' + data.cdorCerrados + ') (Total Finalizados: ' + data.cdorFinalizados + ') (Total eEnviados:' + data.cdorEEnviados + ')';
 
                             if(enviados){
-                                return '<span title="' + conteo + '" class="custom-badge generalNegro">eEnviado</span>';
+                                return '<div class="text-center><span title="' + conteo + '" class="custom-badge generalNegro">eEnviado</span></div>';
                             }else if(abierto){
-                                return '<span title="' + conteo + '" class="custom-badge generalNegro">Abierto</span>';
+                                return '<div class="text-center><span title="' + conteo + '" class="custom-badge generalNegro">Abierto</span></div>';
                             }else if(terminado){
-                                return '<span title="' + conteo + '" class="custom-badge generalNegro">Terminado</span>';
+                                return '<div class="text-center><span title="' + conteo + '" class="custom-badge generalNegro">Terminado</span></div>';
                             }else if(cerrado){
-                                return '<span title="' + conteo + '" class="custom-badge generalNegro">Cerrado</span>';
+                                return '<div class="text-center><span title="' + conteo + '" class="custom-badge generalNegro">Cerrado</span></div>';
                             }else if(noEnviados){
-                                return '<span title="' + conteo + '" class="custom-badge generalNegro">No eEnviado</span>';
+                                return '<div class="text-center><span title="' + conteo + '" class="custom-badge generalNegro">No eEnviado</span></div>';
                             }else if(data.contadorPrestaciones === 0){
-                                return '<span title="' + conteo + '" class="custom-badge generalNegro">Vacío</span>';
+                                return '<div class="text-center><span title="' + conteo + '" class="custom-badge generalNegro">Vacío</span></div>';
                             }       
                         }
                     },
