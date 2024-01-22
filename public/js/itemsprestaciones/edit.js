@@ -221,13 +221,13 @@ $(document).ready(function(){
         $.post(updateExamen, {Id: ID, _token: TOKEN, ObsExamen: ObsExamen, Profesionales2: Profesionales2, Obs: Obs, Fecha: Fecha})
             .done(function() {
 
-                swal('Perfecto', 'Se han actualizado los datos correctamente', 'success');
+                toastr.success('Se han actualizado los datos correctamente', 'Perfecto');
                 setTimeout(() => {
                     location.reload();
                 }, 3000);
             })
             .fail(function(xhr) {
-                swal('Error', 'Ha ocurrido un error. Consulte con el administrador', 'error');
+                toastr.error('Ha ocurrido un error. Consulte con el administrador', 'Error');
                 console.error(xhr);
             });
     });

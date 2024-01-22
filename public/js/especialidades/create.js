@@ -1,4 +1,10 @@
 $(document).ready(function(){
+
+    toastr.options = {
+        closeButton: true,   
+        progressBar: true,    
+        timeOut: 3000,        
+    };
     
     $('#Provincia').val('NEUQUEN');
     $('#IdLocalidad').val(3); //Elije la ciudad de Neuquen como default
@@ -25,7 +31,7 @@ $(document).ready(function(){
         let Nombre = $('#Nombre').val(), Externo = $('#Externo').val(), Inactivo = $('#Inactivo').val(), Telefono = $('#Telefono').val(), Direccion = $('#Direccion').val(), IdLocalidad = $('#IdLocalidad').val(), Obs = $('#Obs').val();
 
         if(Nombre === ''){
-            swal('Atención', 'El campo Nombre es obligatorio', 'warning');
+            toastr.warning('El campo Nombre es obligatorio', 'Atención');
             return;
         }
 
@@ -34,7 +40,7 @@ $(document).ready(function(){
 
                 let data = response.especialidad;
 
-                swal('Perfecto', 'Se ha registrado la nueva especialidad de manera correcta', 'success');
+                toastr.success('Se ha registrado la nueva especialidad de manera correcta', 'Perfecto');
                 setTimeout(() => {
                     let nuevo = location.href.replace("create", "");
                     let lnk = nuevo + "" + data + "/edit";
@@ -42,7 +48,7 @@ $(document).ready(function(){
                 }, 3000);
             })
             .fail(function(xhr){
-                swal('Error', 'Ha ocurrido un error. Consulte con el administrador', 'error');
+                toastr.error('Ha ocurrido un error. Consulte con el administrador', 'Error');
                 console.error(xhr);
             });
     });

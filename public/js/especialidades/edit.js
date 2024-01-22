@@ -1,5 +1,11 @@
 $(document).ready(function(){
 
+    toastr.options = {
+        closeButton: true,   
+        progressBar: true,    
+        timeOut: 3000,        
+    };
+
     quitarDuplicados("#Externo");
     quitarDuplicados("#Inactivo");
     quitarDuplicados("#Provincia");
@@ -9,26 +15,26 @@ $(document).ready(function(){
         let Nombre = $('#Nombre').val(), Id = $('#Id').val(), Externo = $('#Externo').val(), Inactivo = $('#Inactivo').val(), Telefono = $('#Telefono').val(), Direccion = $('#Direccion').val(), IdLocalidad = $('#IdLocalidad').val(), Obs = $('#Obs').val(), Multi = $('#Multi').prop('checked'), MultiE = $('#MultiE').prop('checked'), Min = $('#Min').val(), PR = $('#PR').val(), InfAdj = $('#InfAdj').val();
         
         if(Nombre === ''){
-            swal('Atención', 'El campo Nombre es obligatorio', 'warning');
+            toastr.warning('El campo Nombre es obligatorio', 'Atención');
             return;
         }
 
         if (PR < 0 || PR > 120){
-            swal('Atención', 'El máximo debe estar entre 0 y 60 y no ser negativo.', 'warning');
+            toastr.warning('El máximo debe estar entre 0 y 60 y no ser negativo.', 'Atención');
             return;
         }
 
         if (Min < 0 || Min > 60){
-            swal('Atención', 'La duración debe estar entre 0 y 60 y no ser negativo.', 'warning');
+            toastr.warning('La duración debe estar entre 0 y 60 y no ser negativo.', 'Atención');
             return;
         }
 
         $.post(updateProveedor, { _token: TOKEN, Id: Id, Nombre: Nombre, Externo: Externo, Inactivo: Inactivo, Telefono: Telefono, Direccion: Direccion, IdLocalidad: IdLocalidad, Obs: Obs, Multi: Multi, MultiE, Min: Min, PR: PR, InfAdj: InfAdj })
             .done(function(){
-                swal('Perfecto', 'Se han cargado los datos de manera correcta', 'success');
+                toastr.success('Se han cargado los datos de manera correcta', 'Perfecto');
             })
             .fail(function(xhr){
-                swal('Error', 'Ha ocurrido un error. Consulte con el administrador.', 'error');
+                toastr.error('Ha ocurrido un error. Consulte con el administrador.', 'Error');
                 console.error(xhr);
             });
 

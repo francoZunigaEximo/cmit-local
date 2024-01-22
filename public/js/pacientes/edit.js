@@ -1,5 +1,11 @@
 $(document).ready(function(){
 
+    toastr.options = {
+        closeButton: true,   
+        progressBar: true,    
+        timeOut: 3000,        
+    };
+
     quitarDuplicados("#tipoDocumento");
     quitarDuplicados("#provincia");
     quitarDuplicados("#tipoIdentificacion");
@@ -75,7 +81,7 @@ $(document).ready(function(){
                     $('#provincia').append(nuevoOption);
                 },
                 error: function(xhr){
-                    swal('Error', 'No se pudo autocompletar la provincia. Debe cargarlo manualmente.', 'error');
+                    toastr.error('No se pudo autocompletar la provincia. Debe cargarlo manualmente.', 'Error');
                     console.error(xhr);
                 }
             });
