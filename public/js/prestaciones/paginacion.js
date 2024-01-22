@@ -139,16 +139,16 @@ $(document).ready(()=>{
 
                         let situacion;
 
-                        if(data.Cerrado === 1 && data.Finalizado === 0 && data.Entregado === 0){
+                        if(data.Cerrado === 1){
                             situacion = "Cerrado";
-                        }else if(data.Cerrado === 1 && data.Finalizado === 1 && data.Entregado === 0){
+                        }else if(data.Finalizado === 1){
                             situacion = "Finalizado";
-                        }else if(data.Cerrado === 1 && data.Finalizado === 1 && data.Entregado === 1){
+                        }else if(data.Entregado === 1){
                             situacion = "Entregado";
-                        }else if(data.Cerrado === 0 && data.Finalizado === 0 && data.Entregado === 0){
+                        }else if(data.Cerrado === 0 && data.Finalizado === 0){
                             situacion = "Abierto";
                         }
-                        
+
                         return '<span class="iconGeneralNegro">' + situacion + '</span>';
                     }
                 },
@@ -210,7 +210,11 @@ $(document).ready(()=>{
                             'P': 'ExCta',
                             'C': 'CC'
                         };
-                        return pagos[data.Pago] === undefined || pagos[data.Pago] === null ? '-' : pagos[data.Pago];
+                        return pagos[data.Pago] === undefined || 
+                               pagos[data.Pago] === null || 
+                               pagos[data.Pago] === '' 
+                               ? '-' 
+                               : pagos[data.Pago];
                     }
                 },
                 {
@@ -219,7 +223,9 @@ $(document).ready(()=>{
                     orderable: false,
                     targets: 16,
                     render: function(data){
-                        return data.Facturado === 1 ? `<div class="text-center"><i class="ri-check-line"></i></div>` : `-`;
+                        return data.Facturado === 1 
+                                ? `<div class="text-center"><i class="ri-check-line"></i></div>` 
+                                : `-`;
                     }
                 },
                 {
