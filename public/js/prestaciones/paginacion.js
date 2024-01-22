@@ -145,11 +145,11 @@ $(document).ready(()=>{
                             situacion = "Finalizado";
                         }else if(data.Cerrado === 1 && data.Finalizado === 1 && data.Entregado === 1){
                             situacion = "Entregado";
-                        }else{
+                        }else if(data.Cerrado === 0 && data.Finalizado === 0 && data.Entregado === 0){
                             situacion = "Abierto";
                         }
-
-                        return '<span class="iconGeneralNegro text-uppercase">' + situacion + '</span>';
+                        
+                        return '<span class="iconGeneralNegro">' + situacion + '</span>';
                     }
                 },
                 {
