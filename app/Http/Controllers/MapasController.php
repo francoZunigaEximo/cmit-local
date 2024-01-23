@@ -487,7 +487,10 @@ class MapasController extends Controller
         $query = $this->queryCerrar($request->mapa);
         
         $query->where(function ($query) {
-            $query->where( 'prestaciones.Cerrado', '=', 0);
+            $query->where('prestaciones.Cerrado', 0)
+                ->where('prestaciones.Finalizado', 0)
+                ->where('prestaciones.Entregado', 0)
+                ->where('prestaciones.eEnviado', 0);
         });
 
         $result = $query->get();
@@ -509,11 +512,16 @@ class MapasController extends Controller
 
         $query->when($EstadoCerrar === 'abierto', function ($query) {
             $query->where('prestaciones.Finalizado', '=', 0)
-                ->where('prestaciones.Cerrado', '=', 0);
+                ->where('prestaciones.Cerrado', '=', 0)
+                ->where('prestaciones.Entregado', 0)
+                ->where('prestaciones.eEnviado', 0);
         });
         
         $query->when($EstadoCerrar === 'cerrado', function ($query) {
-            $query->where('prestaciones.Cerrado', '=', 1);
+            $query->where('prestaciones.Cerrado', 1)
+                ->where('prestaciones.Finalizado', 0)
+                ->where('prestaciones.Entregado', 0)
+                ->where('prestaciones.eEnviado', 0);
         });
 
         $result = $query->get();
@@ -572,7 +580,10 @@ class MapasController extends Controller
     {
         $query = $this->queryFinalizar($request->mapa);
         
-        $query->where('prestaciones.Finalizado', 0);
+        $query->where('prestaciones.Finalizado', 0)
+            ->where('prestaciones.Cerrado', 1)
+            ->where('prestaciones.Entregado', 0)
+            ->where('prestaciones.eEnviado', 0);
 
         $result = $query->get();
 
@@ -599,18 +610,23 @@ class MapasController extends Controller
 
         $query->when($estadoFinalizar === 'aFinalizar', function ($query) use ($estadoFinalizar) {
             $query->where('prestaciones.Cerrado', 1)
-                ->where('prestaciones.Finalizado', 0);
+                ->where('prestaciones.Finalizado', 0)
+                ->where('prestaciones.eEnviado', 0)
+                ->where('prestaciones.Entregado', 0);
         });
 
         $query->when($estadoFinalizar === 'finalizados', function ($query) use ($estadoFinalizar) {
             $query->where('prestaciones.Cerrado', 1)
                 ->where('prestaciones.Finalizado', 1)
-                ->where('prestaciones.eEnviado', 0);
+                ->where('prestaciones.eEnviado', 0)
+                ->where('prestaciones.Entregado', 0);
         });
 
         $query->when($estadoFinalizar === 'finalizadosTotal', function ($query) use ($estadoFinalizar) {
             $query->where('prestaciones.Finalizado', 1)
-                ->where('prestaciones.eEnviado', 1);
+                ->where('prestaciones.eEnviado', 1)
+                ->where('prestaciones.eEnviado', 0)
+                ->where('prestaciones.Entregado', 0);
         });
 
         $query->when($estadoFinalizar === 'todos', function ($query) {
@@ -688,7 +704,9 @@ class MapasController extends Controller
         $query = $this->queryEnviar($request->mapa);
 
         $query->where(function ($query) {
-            $query->where( 'prestaciones.eEnviado', 0);
+            $query->where('prestaciones.eEnviado', 0)
+                ->where('prestaciones.Cerrado', 1)
+                ->where('prestaciones.Finalizado', 1);
         });
         
         $result = $query->distinct()->get();

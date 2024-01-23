@@ -604,7 +604,9 @@ $(document).ready(()=>{
         $('.eTipo').val($(this).hasClass('eArt') ? "eArt" : "eEmpresa");
     });
 
-    $(document).on('click', '.saveEnviar', function(){
+    $(document).on('click', '.saveEnviar', function(event){
+
+        event.preventDefault();
 
         let ids = [];
         $('input[name="Id_enviar"]:checked').each(function() {
@@ -627,7 +629,7 @@ $(document).ready(()=>{
 
         if(contarTrue !== 1){
 
-            toastr.warning("Solo puede seleccionar una opción", "Atención");
+            toastr.warning("Debe seleccionar una opción", "Atención");
             return;
         }
 
@@ -641,11 +643,16 @@ $(document).ready(()=>{
         $.post(saveEnviar, { ids: ids, _token: TOKEN, eTipo: eTipo, adjunto: exportarInforme })
             .done(function(){
                 toastr.success('Se han eEnviado todos los mapas seleccionados','Perfecto');
-                $('#eenviarMapa').empty();
-                $('#eEnviarModal').modal('hide');
-                getEnMapa();
-                getFinalMapa();
-                getCerrarMapas();
+
+                setTimeout(()=>{
+                    $('#eenviarMapa').empty();
+                    $('#eEnviarModal').modal('hide');
+                    getEnMapa();
+                    getFinalMapa();
+                    getCerrarMapas();
+                    $('.saveEnviar').prop('disabled', false);
+                }, 3000);
+                
             })
             .fail(function(xhr){
                 console.error(xhr);
