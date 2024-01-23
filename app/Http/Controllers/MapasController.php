@@ -278,14 +278,6 @@ class MapasController extends Controller
             $NroRemito = $request->NroRemito;
             $Etapa = $request->Etapa;
             $Estado = $request->Estado;
-
-            $estadoColumnas = [
-                'cerrado' => 'Cerrado',
-                'finalizado' => 'Finalizado',
-                'entregado' => 'Entregado',
-                'anulado' => 'Anulado',
-                'eEnviado' => 'eEnviado'
-            ];
             
             $query = $this->queryPrestaciones($request->mapa);
             $query->when($NroPrestacion, function ($query) use ($NroPrestacion) {
@@ -296,26 +288,49 @@ class MapasController extends Controller
                 $query->where('prestaciones.NroCEE', $NroRemito);
             });
             
-            $query->when($Estado == 'abierto', function ($query) use ($Estado) {
+            $query->when($Estado === 'abierto', function ($query) {
+                $query->selectRaw("'Abierto' as estado");
                 $query->where('prestaciones.Finalizado', 0)
-                    ->where('prestaciones.Cerrado', 0);
+                    ->where('prestaciones.Cerrado', 0)
+                    ->where('prestaciones.eEnviado', 0);
             });
-            
-            if (isset($estadoColumnas[$Estado])) {
-                $query->where("prestaciones.{$estadoColumnas[$Estado]}", 1);
-            }
 
-            if ($Etapa === 'completa') {
+            $query->when($Estado === 'cerrado', function ($query) {
+                $query->selectRaw("'Cerrado' as estado");
+                $query->where('prestaciones.Cerrado', 1);
+            });
+
+            $query->when($Estado === 'finalizado', function ($query) {
+                $query->selectRaw("'Finalizado' as estado");
+                $query->where('prestaciones.Finalizado', 1);
+            });
+
+            $query->when($Estado === 'eEnviado', function ($query) {
+                $query->selectRaw("'eEnviado' as estado");
+                $query->where('prestaciones.eEnviado', 1);
+            });
+
+            $query->when($Estado === 'entregado', function ($query) {
+                $query->selectRaw("'Entregado' as estado");
+                $query->where('prestaciones.Entregado', 1);
+            });
+
+            $query->when($Estado === 'anulado', function ($query) {
+                $query->selectRaw("'Anulado' as estado");
+                $query->where('prestaciones.Anulado', 1);
+            });
+
+            $query->when($Etapa === 'completa', function ($query) {
                 $query->where(function ($query) {
                     $query->where('prestaciones.Incompleto', 0);
                 });
-            } 
-            
-            if ($Etapa === 'incompleta') {
+            });
+
+            $query->when($Etapa === 'incompleta', function ($query) {
                 $query->where(function ($query) {
                     $query->where('prestaciones.Incompleto', 1);
                 });
-            }
+            });
               
             $result = $query->distinct()->get();
             
@@ -625,7 +640,7 @@ class MapasController extends Controller
         $query->when($estadoFinalizar === 'finalizadosTotal', function ($query) use ($estadoFinalizar) {
             $query->where('prestaciones.Finalizado', 1)
                 ->where('prestaciones.eEnviado', 1)
-                ->where('prestaciones.eEnviado', 0)
+                ->where('prestaciones.eEnviado', 1)
                 ->where('prestaciones.Entregado', 0);
         });
 

@@ -188,9 +188,10 @@ $(document).ready(()=>{
             NroRemito = $('#NroRPrestacion').val(),
             Etapa = $('#etapaPrestacion').val(),
             Estado = $('#estadoPrestacion').val(),
-            mapa = MAPA;
+            mapa = MAPA,
+            condiciones = [NroRemito, NroPrestacion, Etapa, Estado];
 
-        if(NroRemito === '' && NroPrestacion === '' && Etapa === '' && Estado ===''){
+        if(condiciones.every(condicion => condicion === '')){
             toastr.warning('Debe utilizar algun filtro', 'Atención');
             return;
         }
@@ -217,18 +218,6 @@ $(document).ready(()=>{
                 $('#prestaMapa').empty();
 
                 $.each(data, function(index, dat) {
-
-                   let estado;
-                    
-                   if(dat.Finalizado === 1){
-                        estado = '<span style="text-align=center" class="custom-badge pequeno">Finalizado</span>';
-                  
-                   } else if(dat.Cerrado === 1){
-                        estado = '<span style="text-align=center" class="custom-badge pequeno">Cerrado</span>';
-                   
-                   } else if(dat.Cerrado === 0 && dat.Finalizado === 0) {
-                        estado = '<span style="text-align=center" class="custom-badge pequeno">Abierto</span>';
-                   }
                 
                    let nuevaFecha = fecha(dat.Fecha);
 
@@ -241,12 +230,12 @@ $(document).ready(()=>{
                             <td class="text-center">
                                 <span class="custom-badge ${dat.Etapa === 'Completo' ? 'verde' : 'rojo'}">${dat.Etapa}</span>
                             </td>
-                            <td>${estado}</td>
+                            <td><span style="text-align=center" class="custom-badge pequeno">${dat.estado}</span></td>
                             <td class="text-center">
-                                ${dat.eEnviado === 1 ? `<span style="text-align=center" class="custom-badge original"><i class="ri-check-line"></i></span>`: `` }
+                                ${dat.eEnviado === 1 ? `<span style="text-align=center" class="btn btn-sm iconGeneral"><i class="ri-check-line"></i></span>`: `` }
                             </td>
                             <td class="text-center">
-                                ${dat.Facturado === 1 ? `<span style="text-align=center" class="custom-badge original"><i class="ri-check-line"></i></span>` : ``}
+                                ${dat.Facturado === 1 ? `<span style="text-align=center" class="btn btn-sm iconGeneral"><i class="ri-check-line"></i></span>` : ``}
                             </td>
                             </td>
                             <td>
@@ -785,10 +774,10 @@ $(document).ready(()=>{
 
                     let estado;
                     
-                   if(d.Finalizado === 1){
+                   if(d.Cerrado === 1 && d.Finalizado === 1){
                         estado = '<span style="text-align=center" class="custom-badge pequeno">Finalizado</span>';
                   
-                   } else if(d.Cerrado === 1){
+                   } else if(d.Cerrado === 1 && d.Finalizado === 0){
                         estado = '<span style="text-align=center" class="custom-badge pequeno">Cerrado</span>';
                    
                    } else if(d.Cerrado === 0 && d.Finalizado === 0) {
