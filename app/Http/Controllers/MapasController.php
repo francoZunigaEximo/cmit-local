@@ -9,14 +9,12 @@ use App\Models\Mapa;
 use App\Models\Paciente;
 use App\Models\Constanciase;
 use App\Models\ConstanciaseIt;
-use App\Models\Parametro;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Yajra\DataTables\DataTables;
 use Barryvdh\DomPDF\Facade\Pdf;
-use FPDF;
 use App\Traits\ObserverMapas;
 use Illuminate\Support\Facades\Auth;
 
@@ -24,7 +22,6 @@ class MapasController extends Controller
 {
 
     const TBLMAPA = 5; // cod de Mapas en la tabla auditariatablas
-    const URLPORTADA = "/archivos/reportes/portada.jpg";
 
     use ObserverMapas;
 
@@ -310,15 +307,13 @@ class MapasController extends Controller
 
             if ($Etapa === 'completa') {
                 $query->where(function ($query) {
-                    $query->whereIn('itemsprestaciones.CAdj', [3, 4, 5, 6])
-                        ->where('itemsprestaciones.CInfo', 3);
+                    $query->where('prestaciones.Incompleto', 0);
                 });
             } 
             
             if ($Etapa === 'incompleta') {
                 $query->where(function ($query) {
-                    $query->whereNotIn('itemsprestaciones.CAdj', [3, 4, 5, 6])
-                        ->whereNot('itemsprestaciones.CInfo', 3);
+                    $query->where('prestaciones.Incompleto', 1);
                 });
             }
               
@@ -706,23 +701,30 @@ class MapasController extends Controller
         
         $ids = $request->ids;
 
-        $accion = ($request->art === 'true' ? 41 : ($request->empresa === 'true' ? 42 : ($request->adjunto === 'true' ? 43 : 0)));
+        $accion = ($request->eTipo === 'eArt' 
+                ? 41 
+                : ($request->eTipo === 'eEmpresa' 
+                    ? 42
+                    : null)
+                );
 
         foreach ($ids as $id) {
-            $prestacion = Prestacion::where('Id', $id)->first();
+            $prestacion = Prestacion::with(['art' => function($query){
+                $query->select(['SEMail']);
+            }])->where('Id', $id)->first();
             
-            if($prestacion){
-                $prestacion->eEnviado = ($request->art === 'true' || $request->adjunto === 'true' ? 1 : 0);
-                $prestacion->FechaEnviado = ($request->art === 'true' || $request->adjunto === 'true' 
+            if ($prestacion) {
+
+                $prestacion->eEnviado = ($request->eTipo === 'eArt' ? 1 : 0);
+                $prestacion->FechaEnviado = ($request->eTipo === 'eArt' 
                     ? now()->format('Y-m-d') 
                     : '0000-00-00');
                 $prestacion->save();
-                Auditor::setAuditoria($id, self::TBLMAPA, $accion, Auth::user()->name);
                 
-                if($request->adjunto)
-                {
-                    $this->eEstudio($id, "F"); //'F' genera archivo / 'I' muestra en el browser
-                }
+                if ($accion !== null) {
+                    Auditor::setAuditoria($id, self::TBLMAPA, $accion, Auth::user()->name);
+                }            
+                //$request->adjunto && $this->eEstudio($id);
             } 
         }
     }
@@ -887,6 +889,8 @@ class MapasController extends Controller
     {
         $query = Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
         ->leftJoin('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
+        ->join('clientes as empresa', 'prestaciones.IdART', '=', 'empresa.Id')
+        ->join('clientes as art', 'prestaciones.IdEmpresa', '=', 'art.Id')
         ->join('mapas', 'prestaciones.IdMapa', '=', 'mapas.Id')
         ->select(
             'prestaciones.Id AS IdPrestacion',
@@ -899,37 +903,14 @@ class MapasController extends Controller
             'pacientes.Nombre AS NombrePaciente',
             'pacientes.Apellido AS ApellidoPaciente',
             'pacientes.Documento AS Documento',
+            'empresa.SEMail AS EmpresaSinEnvio',
+            'art.SEMail AS ArtSinEnvio',
             DB::raw('(SELECT CASE WHEN COUNT(*) = SUM(CASE WHEN items.Incompleto = 0 THEN 1 ELSE 0 END) THEN "Completo" ELSE "Incompleto" END FROM itemsprestaciones AS items WHERE items.IdPrestacion = prestaciones.Id) AS Etapa'))
             ->where('mapas.Nro', $idmapa);
 
         return $query;
     }
 
-    private function eEstudio($id, $tipo)
-    {
-        $prestacion = Prestacion::find($id);
-        $miEmpresa = Parametro::getMiEmpresa();
-        if($prestacion)
-        {
-            $paciente = $prestacion->paciente->Nombre ." ". $prestacion->paciente->Apellido;
 
-            $pdf = new FPDF();
-            $pdf->AddPage();
-            $pdf->Image(url('/').self::URLPORTADA,1,0,209); 
-            $y=220;
-            $pdf->SetFont('Arial','B',14);
-            $pdf->SetTextColor(255, 255, 255, 255);//white
-            $pdf->SetXY(109,$y);$pdf->Cell(0,3,substr($paciente,0,28),0,0,'L');$y=$y+10;
-            $pdf->SetXY(109,$y);$pdf->Cell(0,3,$prestacion->Fecha,0,0,'L');$y=$y+10;
-            $pdf->SetXY(109,$y);$pdf->Cell(0,3,$prestacion->paciente->TipoDocumento.' '.$prestacion->paciente->Documento,0,0,'L');$y=$y+10;
-            $pdf->SetXY(109,$y);$pdf->Cell(0,3,substr($prestacion->empresa->RazonSocial,0,28),0,0,'L');$y=$y+10;
-            $pdf->SetXY(109,$y);$pdf->Cell(0,3,substr($prestacion->empresa->ParaEmpresa,0,28),0,0,'L');$y=$y+10;
-            $pdf->SetXY(109,$y);$pdf->Cell(0,3,$id,0,0,'L');$y=$y+10;
-            $pdf->SetTextColor(0, 0, 0, 0);
-            $pdf->Output($miEmpresa->Path4."STORB_temporal_".$id.".pdf", $tipo);
-        }
-
-        
-    }
 } 
 

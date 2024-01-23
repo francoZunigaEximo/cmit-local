@@ -426,3 +426,23 @@ table.dataTable tr.dtrg-level-0 td {
 #listaExamenes > :not(caption) > * {
     padding: 0.25rem 0.6rem;
 }
+
+#prestaMapa > :not(caption) > * {
+    padding: 0.25rem 0.6rem;
+} 
+
+#remitoMapa > :not(caption) > * {
+    padding: 0.25rem 0.6rem;
+}
+
+#cerrarMapa > :not(caption) > * {
+    padding: 0.25rem 0.6rem;
+}
+
+#finalizarMapa > :not(caption) > * {
+    padding: 0.25rem 0.6rem;
+}
+
+#eenviarMapa > :not(caption) > * {
+    padding: 0.25rem 0.6rem;
+}

@@ -122,7 +122,9 @@ $(document).ready(()=>{
         blockExcedente(e);
     });
 
-    $(document).on('click', '.entregarRemito', function(){
+    $(document).on('click', '.entregarRemito', function(event){
+        event.preventDefault();
+
         let remito = $(this).data('remito');
         $('#IdRemito').text(remito);
         $('.confirmarEntrega').attr('data-id', remito);
@@ -132,16 +134,22 @@ $(document).ready(()=>{
         $("#remitoObs").val("");
     });
 
-    $(document).on('click', '.confirmarEntrega', function(){
-
+    $(document).on('click', '.confirmarEntrega', function(event){
+        event.preventDefault();
+    
+        $(this).prop('disabled', true);
+    
         let nroRemito =  $('#IdRemito').text(),
-            remitoObs =$('#remitoObs').val(),
+            remitoObs = $('#remitoObs').val(),
             remitoFechaE = $('#remitoFechaE').val();
-
+    
         if(remitoFechaE === '' || remitoFechaE === null){
             toastr.warning('Debe especificar una fecha de entrega', 'Atención');
+    
+            $(this).prop('disabled', false);
             return;
         }
+    
         $.post(saveRemitos, {_token: TOKEN, Obs: remitoObs, FechaE: remitoFechaE, Id: nroRemito})
             .done(function(){
                 toastr.success('Se han registrado las fechas de entrega en los remitos correspondientes', 'Perfecto');
@@ -149,23 +157,27 @@ $(document).ready(()=>{
                     $('#remitoObs').val('');
                     $('#entregarModal').modal('hide');
                     listarRemitos(IDMAPA);
+                    
+                    $('.confirmarEntrega').prop('disabled', false);
                 }, 3000);
             })
             .fail(function(xhr){
                 console.error(xhr);
                 toastr.error('Ha ocurrido un error. Consulte con el administrador', 'Error');
-            })
-
+            });
     });
-
+    
+    
     $(document).on('click', '.revertirEntrega', function(){
         let remito = $(this).data('remito');
+        $(this).prop('disabled', true);
 
         $.post(reverseRemito, {_token: TOKEN, Id: remito})
             .done(function(){   
                 toastr.success('Se revertirá la entrega en unos segundos...', 'Perfecto');
                 setTimeout(()=>{
                     listarRemitos(IDMAPA);
+                    $('.revertirEntrega').prop('disabled', false);
                 }, 3000);  
             })
     });
@@ -209,13 +221,13 @@ $(document).ready(()=>{
                    let estado;
                     
                    if(dat.Finalizado === 1){
-                        estado = '<span style="text-align=center" class="custom-badge verde">Finalizado</span>';
+                        estado = '<span style="text-align=center" class="custom-badge pequeno">Finalizado</span>';
                   
                    } else if(dat.Cerrado === 1){
-                        estado = '<span style="text-align=center" class="custom-badge azul">Cerrado</span>';
+                        estado = '<span style="text-align=center" class="custom-badge pequeno">Cerrado</span>';
                    
                    } else if(dat.Cerrado === 0 && dat.Finalizado === 0) {
-                        estado = '<span style="text-align=center" class="custom-badge gris">Abierto</span>';
+                        estado = '<span style="text-align=center" class="custom-badge pequeno">Abierto</span>';
                    }
                 
                    let nuevaFecha = fecha(dat.Fecha);
@@ -231,10 +243,10 @@ $(document).ready(()=>{
                             </td>
                             <td>${estado}</td>
                             <td class="text-center">
-                                <span style="text-align=center" class="custom-badge original"><i class="${dat.eEnviado === 1 ? 'ri-check-line' : 'ri-close-line'}"></i></span>
+                                ${dat.eEnviado === 1 ? `<span style="text-align=center" class="custom-badge original"><i class="ri-check-line"></i></span>`: `` }
                             </td>
                             <td class="text-center">
-                                <span style="text-align=center" class="custom-badge original"><i class="${dat.Facturado === 1 ? 'ri-check-line' : 'ri-close-line'}"></i></span>
+                                ${dat.Facturado === 1 ? `<span style="text-align=center" class="custom-badge original"><i class="ri-check-line"></i></span>` : ``}
                             </td>
                             </td>
                             <td>
@@ -358,16 +370,6 @@ $(document).ready(()=>{
             let data = response.result;
 
             $.each(data, function(index, d) {
-
-                let estado;
-
-                if(d.Cerrado === 1){
-                    estado = '<span style="text-align=center" class="custom-badge verde">Cerrado</span>';
-                
-                } else if(d.Cerrado === 0){
-                    estado = '<span style="text-align=center" class="custom-badge rojo">Abierto</span>';
-                
-                } 
                 
                 let contenido = `
                     <tr>
@@ -375,7 +377,7 @@ $(document).ready(()=>{
                         <td>${fecha(d.Fecha)}</td>
                         <td>${d.ApellidoPaciente} ${d.NombrePaciente}</td>
                         <td>${d.dni}</td>
-                        <td>${estado}</td>
+                        <td><span style="text-align=center" class="custom-badge pequeno">${d.Cerrado === 1 ? `Cerrado` : `Abierto`}</span></td>
                         <td>
                             <button data-id="${d.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button>
                             <button title="Observaciones privadas" type="button" class="iconGeneral btn btn-sm comentarioPrivado" data-bs-toggle="modal" data-bs-target="#comentarioPrivado" data-id="${d.IdPrestacion}" data-nombre="${d.ApellidoPaciente} ${d.NombrePaciente}" data-fase="cerrar">
@@ -441,7 +443,7 @@ $(document).ready(()=>{
     $(document).on('click', '.cerrarMapa', function(){
 
         let ids = [];
-        $('input[name="Id"]:checked').each(function() {
+        $('input[name="Id_cerrar"]:checked').each(function() {
             ids.push($(this).val());
         });
 
@@ -479,15 +481,6 @@ $(document).ready(()=>{
                 let data = response.result;
 
                 $.each(data, function(index, f){
-
-                let estado;
-
-                if(f.Finalizado === 1){
-                    estado = '<span style="text-align=center" class="custom-badge verde">Finalizado</span>';
-                
-                } else if(f.Finalizado === 0){
-                    estado = '<span style="text-align=center" class="custom-badge azul">Abierto</span>';
-                } 
                 
                 let contenido = `
                     <tr>
@@ -496,7 +489,7 @@ $(document).ready(()=>{
                         <td>${f.IdPrestacion}</td>
                         <td>${f.ApellidoPaciente} ${f.NombrePaciente}</td>
                         <td>${f.Documento}</td>
-                        <td>${estado}</td>
+                        <td><span style="text-align=center" class="custom-badge pequeno">${f.Finalizado === 1 ? `Finalizado` : `Abierto`}</span></td>
                         <td><button data-id="${f.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
                         <td>${f.Finalizado === 1 ? '<input type="checkbox" disabled>' : `<input type="checkbox" name="Id_finalizar" value="${f.IdPrestacion}" checked>`}</td>
                         
@@ -525,7 +518,7 @@ $(document).ready(()=>{
     $(document).on('click', '.finalizarMap', function(){
 
         let ids = [];
-        $('input[name="Id"]:checked').each(function() {
+        $('input[name="Id_finalizar"]:checked').each(function() {
             ids.push($(this).val());
         });
 
@@ -561,7 +554,6 @@ $(document).ready(()=>{
             eEnviadoEnviar = $('#eEnviadoEnviar').val(),
             NroPresRemito = $('#NroPresRemito').val();
 
-        
             $.get(searchInEnviar, {desde: fDesde, hasta: fHasta, prestacion: NroPresEnviar, eEnviado: eEnviadoEnviar, mapa: MAPA, NroRemito: NroPresRemito})
                 .done(function(response){
 
@@ -577,16 +569,24 @@ $(document).ready(()=>{
                             <tr>
                                 <td>${en.NroRemito}</td>
                                 <td>${nuevaFecha}</td>
-                                <td>${en.IdPrestacion}</td>
+                                <td>${en.IdPrestacion} ${en.EmpresaSinEnvio === 1 ? `<i title="La empresa no tiene habilitado los envios de Emails" class="ri-mail-forbid-line rojo"></i>` : ``} ${en.ArtSinEnvio === 1 ? `<i title="La ART no tiene habilitado los envios de Emails" class="ri-mail-forbid-line rojo"></i>` : ``}</td>
                                 <td>${en.ApellidoPaciente} ${en.NombrePaciente}</td>
                                 <td>${en.Documento}</td>
-                                <td><span class="custom-badge original">${(en.eEnviado === 1 ? 'eEnviado':'No eEnviado')}</span></td>
+                                <td><span class="custom-badge pequeno">${(en.eEnviado === 1 ? 'eEnviado':'No eEnviado')}</span></td>
                                 <td><button data-id="${en.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
                                 <td>${en.eEnviado === 1 ? '' : en.eEnviado === 0 && en.Finalizado === 1 && en.Cerrado === 1 && en.Etapa === 'Completo' ? `<input type="checkbox" name="Id" value="${en.IdPrestacion}" checked>` : '<span class="custom-badge pequeno">Bloqueado</span>'}</td>     
                             </tr>
                         `;
                         $('#eenviarMapa').append(contenido);
                         
+                    });
+
+                    $("#listaeenviar").fancyTable({
+                        pagination: true,
+                        perPage: 10,
+                        searchable: false,
+                        globalSearch: false,
+                        sortable: false, 
                     });
 
                     $('#fDesde, #fHasta, #NroPresEnviar, #NroPresRemito').val('');
@@ -599,10 +599,15 @@ $(document).ready(()=>{
                 });
     });
 
+    $(document).on('click', '.eArt, .eEmpresa', function(){
+
+        $('.eTipo').val($(this).hasClass('eArt') ? "eArt" : "eEmpresa");
+    });
+
     $(document).on('click', '.saveEnviar', function(){
 
         let ids = [];
-        $('input[name="Id"]:checked').each(function() {
+        $('input[name="Id_enviar"]:checked').each(function() {
             ids.push($(this).val());
         });
 
@@ -613,10 +618,10 @@ $(document).ready(()=>{
             return;
         }
 
-        let enviarArt = $('.enviarArt').prop('checked'),
-            enviarEmpresa = $('.enviarEmpresa').prop('checked'),
-            adjuntarEnvio = $('.adjuntarEnvio').prop('checked'),
-            condiciones = [enviarArt, enviarEmpresa, adjuntarEnvio];
+        let enviarMail= $('.enviarMail').prop('checked'),
+            exportarInforme = $('.exportarInforme').prop('checked'),
+            eTipo = $('.eTipo').val();
+            condiciones = [enviarMail, exportarInforme];
         
         let contarTrue = condiciones.filter(condicion => condicion === true).length;
 
@@ -632,7 +637,8 @@ $(document).ready(()=>{
             return;
         }
 
-        $.post(saveEnviar, { ids: ids, _token: TOKEN, art: enviarArt, empresa: enviarEmpresa, adjunto: adjuntarEnvio })
+
+        $.post(saveEnviar, { ids: ids, _token: TOKEN, eTipo: eTipo, adjunto: exportarInforme })
             .done(function(){
                 toastr.success('Se han eEnviado todos los mapas seleccionados','Perfecto');
                 $('#eenviarMapa').empty();
@@ -645,14 +651,6 @@ $(document).ready(()=>{
                 console.error(xhr);
                 toastr.error('Ha ocurrido un error. Consulte con el administrador','Error');
             });
-    });
-
-    $(document).on('click', '.eEnviarDatos', function(){
-
-        let remito = $(this).data('remito');
-        $('#verIdRemito').text(remito);
-        console.log(remito);
-
     });
 
     $(document).on('click', '.verItemPrestacion', function(){
@@ -703,8 +701,7 @@ $(document).ready(()=>{
                 toastr.success('Perfecto', 'Se ha generado la observación correctamente');
 
                 setTimeout(() => {
-                    $('#privadoPrestaciones').empty();
-                    $('#privadoCerrar').empty();
+                    $('#privadoPrestaciones, #privadoCerrar').empty();
                     $('#comentarioPrivado').modal('hide');
                     $("#Comentario").val("");
                     listaComentariosPrivados(IDMAPA, 'prestaciones','mapa');
@@ -782,13 +779,13 @@ $(document).ready(()=>{
                     let estado;
                     
                    if(d.Finalizado === 1){
-                        estado = '<span style="text-align=center" class="custom-badge verde">Finalizado</span>';
+                        estado = '<span style="text-align=center" class="custom-badge pequeno">Finalizado</span>';
                   
                    } else if(d.Cerrado === 1){
-                        estado = '<span style="text-align=center" class="custom-badge azul">Cerrado</span>';
+                        estado = '<span style="text-align=center" class="custom-badge pequeno">Cerrado</span>';
                    
                    } else if(d.Cerrado === 0 && d.Finalizado === 0) {
-                        estado = '<span style="text-align=center" class="custom-badge gris">Abierto</span>';
+                        estado = '<span style="text-align=center" class="custom-badge pequeno">Abierto</span>';
                    }
                 
                    let nuevaFecha = fecha(d.Fecha);
@@ -804,10 +801,10 @@ $(document).ready(()=>{
                             </td>
                             <td class="text-center">${estado}</td>
                             <td class="text-center">
-                                <span style="text-align=center" class="custom-badge original"><i class="${d.eEnviado === 1 ? 'ri-check-line' : 'ri-close-line'}"></i></span>
+                                ${d.eEnviado === 1 ? `<span style="text-align=center" class="btn btn-sm iconGeneral"><i class="ri-check-line"></i></span>`: ``}
                             </td>
                             <td class="text-center">
-                                <span style="text-align=center" class="custom-badge original"><i class="${d.Facturado === 1 ? 'ri-check-line' : 'ri-close-line'}"></i></span>
+                                ${d.Facturado === 1 ? `<span style="text-align=center" class="btn btn-sm iconGeneral"><i class=" ri-check-line"></i></span>` : ``}
                             </td>
                             <td><span data-id="${d.IdPrestacion}" data-estado="prestacion" title="${d.Incompleto === 1 ? `Incompleto` : `Completo`}" class="cambiarEstado custom-badge ${d.Incompleto === 1 ? `rojo` : `verde`}"><i class="ri-lightbulb-line"></i></span></td>
                             <td>
@@ -848,24 +845,14 @@ $(document).ready(()=>{
                 let data = response.result;
 
                 $.each(data, function(index, c) {
-
-                    let estado;
-
-                    if(c.Cerrado === 1){
-                        estado = '<span style="text-align=center" class="custom-badge verde">Cerrado</span>';
-                    
-                    } else if(c.Cerrado === 0){
-                        estado = '<span style="text-align=center" class="custom-badge azul">Abierto</span>';
-                    
-                    } 
-                    
+ 
                     let contenido = `
                         <tr>
                             <td>${fecha(c.Fecha)}</td>
                             <td>${c.IdPrestacion}</td>
                             <td>${c.ApellidoPaciente} ${c.NombrePaciente}</td>
                             <td>${c.dni}</td>
-                            <td>${estado}</td>
+                            <td><span style="text-align=center" class="custom-badge pequeno">${c.Cerrado === 1 ? `Cerrado`: `Abierto`}</span></td>
                             <td>
                                 <button data-id="${c.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button>
                                 <button title="Observaciones privadas" type="button" class="iconGeneral btn btn-sm comentarioPrivado" data-bs-toggle="modal" data-bs-target="#comentarioPrivado" data-id="${c.IdPrestacion}" data-nombre="${c.ApellidoPaciente} ${c.NombrePaciente}" data-fase="cerrar">
@@ -906,15 +893,6 @@ $(document).ready(()=>{
             let data = response.result;
 
             $.each(data, function(index, f){
-
-            let estado;
-
-            if(f.Finalizado === 1){
-                estado = '<span style="text-align=center" class="custom-badge verde">Finalizado</span>';
-            
-            } else if(f.Finalizado === 0){
-                estado = '<span style="text-align=center" class="custom-badge azul">Abierto</span>';
-            } 
             
             let contenido = `
                 <tr>
@@ -923,7 +901,7 @@ $(document).ready(()=>{
                     <td>${f.IdPrestacion}</td>
                     <td>${f.ApellidoPaciente} ${f.NombrePaciente}</td>
                     <td>${f.Documento}</td>
-                    <td>${estado}</td>
+                    <td><span style="text-align=center" class="custom-badge pequeno">${f.Finalizado === 1 ? `Finalizado` : `Abierto`}</span></td>
                     <td><button data-id="${f.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
                     <td>${f.Finalizado === 1 ? `<input type="checkbox" disabled>` : `<input type="checkbox" name="Id_finalizar" value="${f.IdPrestacion}" checked>`}</td>
                 </tr>
@@ -968,25 +946,31 @@ $(document).ready(()=>{
                 let data = response.result;
 
                 $.each(data, function(index, en){
-                        
-                    let tipo = (en.TipoPrestacion ? '<span class="custom-badge nuevoAzulInverso">' + en.TipoPrestacion +'</span>' : '');
 
                     let nuevaFecha = fecha(en.Fecha);
 
                     let contenido = `
                         <tr>
-                            <td>${en.NroRemito}</td>
+                            <td> ${en.NroRemito}</td>
                             <td>${nuevaFecha}</td>
-                            <td>${en.IdPrestacion}</td>
+                            <td>${en.IdPrestacion} ${en.EmpresaSinEnvio === 1 ? `<i title="La empresa no tiene habilitado los envios de Emails" class="ri-mail-forbid-line rojo"></i>` : ``} ${en.ArtSinEnvio === 1 ? `<i title="La ART no tiene habilitado los envios de Emails" class="ri-mail-forbid-line rojo"></i>` : ``}</td>
                             <td>${en.ApellidoPaciente} ${en.NombrePaciente}</td>
                             <td>${en.Documento}</td>
-                        <td><span class="custom-badge original">${(en.eEnviado === 1 ? 'eEnviado':'No eEnviado')}</span></td>
+                            <td><span class="custom-badge pequeno">${(en.eEnviado === 1 ? 'eEnviado':'No eEnviado')}</span></td>
                             <td><button data-id="${en.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
-                            <td>${en.eEnviado === 1 ? '' : en.eEnviado === 0 && en.Finalizado === 1 && en.Cerrado === 1 && en.Etapa === 'Completo' ? `<input type="checkbox" name="Id" value="${en.IdPrestacion}" checked>` : `<span class="custom-badge pequeno">Bloqueado</span>`}</td> 
+                            <td>${en.eEnviado === 1 ? '' : en.eEnviado === 0 && en.Finalizado === 1 && en.Cerrado === 1 && en.Etapa === 'Completo' ? `<input type="checkbox" name="Id_enviar" value="${en.IdPrestacion}" checked>` : `<span class="custom-badge pequeno">Bloqueado</span>`}</td> 
                         </tr>
                     `;
                     $('#eenviarMapa').append(contenido);
                     
+                });
+
+                $("#listaeenviar").fancyTable({
+                    pagination: true,
+                    perPage: 10,
+                    searchable: false,
+                    globalSearch: false,
+                    sortable: false, 
                 });
 
             })

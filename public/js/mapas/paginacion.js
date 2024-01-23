@@ -109,17 +109,17 @@ $(document).ready(()=>{
                                 let conteo = '(Total Prestaciones: ' + data.contadorPrestaciones + ') (Total Cerrados: ' + data.cdorCerrados + ') (Total Finalizados: ' + data.cdorFinalizados + ') (Total eEnviados:' + data.cdorEEnviados + ')';
 
                             if(enviados){
-                                return '<div class="text-center><span title="' + conteo + '" class="custom-badge generalNegro">eEnviado</span></div>';
+                                return '<span title="' + conteo + '" class="custom-badge generalNegro">eEnviado</span>';
                             }else if(abierto){
-                                return '<div class="text-center><span title="' + conteo + '" class="custom-badge generalNegro">Abierto</span></div>';
+                                return '<span title="' + conteo + '" class="custom-badge generalNegro">Abierto</span>';
                             }else if(terminado){
-                                return '<div class="text-center><span title="' + conteo + '" class="custom-badge generalNegro">Terminado</span></div>';
+                                return '<span title="' + conteo + '" class="custom-badge generalNegro">Terminado</span>';
                             }else if(cerrado){
-                                return '<div class="text-center><span title="' + conteo + '" class="custom-badge generalNegro">Cerrado</span></div>';
+                                return '<span title="' + conteo + '" class="custom-badge generalNegro">Cerrado</span>';
                             }else if(noEnviados){
-                                return '<div class="text-center><span title="' + conteo + '" class="custom-badge generalNegro">No eEnviado</span></div>';
+                                return '<span title="' + conteo + '" class="custom-badge generalNegro">No eEnviado</span>';
                             }else if(data.contadorPrestaciones === 0){
-                                return '<div class="text-center><span title="' + conteo + '" class="custom-badge generalNegro">Vacío</span></div>';
+                                return '<span title="' + conteo + '" class="custom-badge generalNegro">Vacío</span>';
                             }       
                         }
                     },

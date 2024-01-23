@@ -236,33 +236,6 @@
     
                     </tbody>
                 </table>
-
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="card">
-                            <div class="card-header d-flex justify-content-between align-items-center">
-                                <h4 class="card-title mb-0">Observaciones privadas</h4>
-                            </div>
-                            <div class="card-body">
-                                <div class="table-responsive table-card mt-3 mb-1">
-                                    <table id="lstPrivPrestaciones" class="display table table-bordered" style="100%">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th class="sort">Fecha</th>
-                                                <th class="sort">Nro prestación</th>
-                                                <th>Usuario</th>
-                                                <th>Rol</th>
-                                                <th>Comentario</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="list form-check-all" id="privadoPrestaciones">
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
 
         </div>
@@ -460,14 +433,17 @@
 
             <div class="row mt-4">
                 <div class="col-sm-8" style="text-align: left;">
-                    <p style="font-size: small"> <span class="custom-badge nuevoAzul">eEnviar</span> solo las prestaciones Cerradas con todos los exámenes cerrados, adjuntados e informados (incluso sus anexos).</p>
-                    <p style="font-size: small">Si el estado es <span class="custom-badge nuevoAzul">No eEnviado</span> y <span class="custom-badge nuevoAzul">Bloqueado</span> es porque la prestación no se encuentra cerrada, finalizada y correctamente efectuada e informada.</p>
+                    <p style="font-size: small"> <span class="custom-badge pequeno">eEnviar</span> solo las prestaciones Cerradas con todos los exámenes cerrados, adjuntados e informados (incluso sus anexos).</p>
+                    <p style="font-size: small">Si el estado es <span class="custom-badge pequeno">No eEnviado</span> y <span class="custom-badge pequeno">Bloqueado</span> es porque la prestación no se encuentra cerrada, finalizada y correctamente efectuada e informada.</p>
+                    <p style="font-size: small">El icono <i class="ri-mail-forbid-line rojo"></i> anuncia que la empresa o la art no aceptan envios de emails.</p>
                 </div>
                 <div class="col-sm-4" style="text-align: right;">
                     <button class="btn botonGeneral" type="button" id="vistaPreviaEnviar" ><i class="ri-file-text-line"></i> Vista Previa</button>
-                    <button class="btn botonGeneral" type="button" id="exportarEnviar"><i class="ri-file-add-line"></i> Exportar</button>
-                    <button type="button" class="btn botonGeneral eEnviarDatos" data-bs-toggle="modal" data-bs-target="#eEnviarModal">
-                        <i class="ri-mail-send-line"></i> eEnviar    
+                    <button type="button" class="btn botonGeneral eArt" data-bs-toggle="modal" data-bs-target="#eEnviarModal">
+                        <i class="ri-mail-send-line"></i> eEnviar ART   
+                    </button>
+                    <button type="button" class="btn botonGeneral eEmpresa" data-bs-toggle="modal" data-bs-target="#eEnviarModal">
+                        <i class="ri-mail-send-line"></i> eEnviar Empresa  
                     </button>
                 </div>
             </div>
@@ -589,25 +565,23 @@
         <div class="modal-content">
             <div class="modal-header"></div>
             <div class="modal-body" class="text-center p-5">
-                <h5 style="text-align:center !important" class="modal-title mb-4" id="myModalLabel"> eEnvío del Remito N° <span id="verIdRemito"></span></h5>
+                <h5 style="text-align:center !important" class="modal-title mb-4" id="myModalLabel">eEnvío de remitos</h5>
                 
-                <p style="text-align:center !important" class="text-muted mb-4">Puede seleccionar el envío del eEstudio por correo electrónico a la ART, a la Empresa o a ambos.</p>
+                <p style="text-align:center !important" class="text-muted mb-4">Puede seleccionar el envío del eEstudio por correo electrónico o la descarga del mismo.</p>
 
                 <div class="row mb-4 text-center">
-                    <div class="col-sm-4" style="padding-left: 10%">
-                        <input class="form-check-input enviarArt" type="checkbox"> ART
+                    <div class="col-sm-6" style="padding-left: 10%">
+                        <input class="form-check-input enviarMail" type="checkbox"> Enviar email
                     </div>
-                    <div class="col-sm-4" style="padding-right: 10%">
-                        <input class="form-check-input enviarEmpresa" type="checkbox"> Empresa 
+                    <div class="col-sm-6" style="padding-right: 10%">
+                        <input class="form-check-input exportarInforme" type="checkbox"> Exportar 
                     </div>
-                    <div class="col-sm-4" style="padding-right: 10%">
-                        <input class="form-check-input adjuntarEnvio" type="checkbox"> Adjuntar 
-                    </div>
+                    <input type="hidden" class="eTipo" value="">
                 </div>
 
                 <div class="d-flex justify-content-center">
                     <button type="button" class="btn botonGeneral me-2" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn botonGeneral saveEnviar">e-Enviar</button>
+                    <button type="button" class="btn botonGeneral saveEnviar">Aplicar</button>
                 </div>
 
             </div>
