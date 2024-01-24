@@ -11,6 +11,21 @@ use Illuminate\Support\Facades\Cache;
 
 class ExamenesController extends Controller
 {
+    public function index()
+    {
+        return view("layouts.examenes.index");
+    }
+
+    public function create()
+    {
+        return view("layouts.examenes.create");
+    }
+
+    public function edit(Request $request)
+    {
+        return view("layouts.examenes.edit");
+    }
+
     //Listado de Paquete de estudios
     public function paquetes(Request $request): mixed
     {

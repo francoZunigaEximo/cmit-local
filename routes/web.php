@@ -105,6 +105,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('checkObs', [FichaAltaController::class, 'checkObs'])->name('checkObs');
 
     //Ruta Examenes
+    Route::resource('examenes', ExamenesController::class);
     Route::post('getExamenes', [ExamenesController::class, 'getExamenes'])->name('getExamenes');
     Route::post('saveExamenes', [ExamenesController::class, 'save'])->name('saveExamenes');
     Route::post('checkExamen', [ExamenesController::class, 'check'])->name('checkExamen');
@@ -187,6 +188,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('checkProveedor', [ProveedoresController::class, 'check'])->name('checkProveedor');
     Route::post('saveBasico', [ProveedoresController::class, 'save'])->name('saveBasico');
     Route::post('updateProveedor', [ProveedoresController::class, 'updateProveedor'])->name('updateProveedor');
+    Route::get('lstProveedores', [ProveedoresController::class, 'lstProveedores'])->name('lstProveedores');
 
     //Rutas de ItemsPrestaciones
     Route::resource('itemsprestaciones', ItemPrestacionesController::class);

@@ -216,6 +216,15 @@ class ProveedoresController extends Controller
 
     }
 
+    public function lstProveedores(Request $request)
+    {
+        $listado = Proveedor::where('Id', '<>', 0)
+        ->orderBy('Nombre', 'ASC')    
+        ->get(['Id', 'Nombre']);
+
+        return response()->json(['result' => $listado]);
+    }
+
 
     
 }
