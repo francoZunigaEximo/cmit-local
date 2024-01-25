@@ -8,6 +8,7 @@ use App\Models\PaqueteEstudio;
 use App\Models\Relpaqest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Yajra\DataTables\DataTables;
 
 class ExamenesController extends Controller
 {
@@ -241,5 +242,114 @@ class ExamenesController extends Controller
         }
     }
 
+    public function searchExamenes(Request $request)
+    {
+        $examen = $request->examen;
+        $especialidad = $request->especialidad;
+        $atributos = $request->atributos;
+        $opciones = $request->opciones;
+        $estado = $request->estado;
+        $codigoex = $request->codigoex;
+        $activo = $request->activo;
+
+        $query = Examen::join('estudios', 'examenes.IdEstudio', '=', 'estudios.Id')
+            ->join('reportes', 'examenes.IdReporte', '=', 'reportes.Id')
+            ->join('proveedores as efector', 'examenes.IdProveedor', '=', 'efector.Id')
+            ->join('proveedores as informador', 'examenes.IdProveedor2', '=', 'informador.Id')
+            ->select(
+                'examenes.Id as IdExamen',
+                'examenes.Inactivo as Inactivo',
+                'examenes.PI as prioridadImpresion',
+                'examenes.Nombre as NombreExamen',
+                'examenes.DiasVencimiento as Vto',
+                'examenes.Cod as CodigoExamen',
+                'examenes.Cod2 as CodigoEfector',
+                'estudios.Nombre as Estudio',
+                'efector.Nombre as ProvEfector',
+                'informador.Nombre as ProvInformador',
+                'reportes.Nombre as NombreReporte'
+            )
+            ->where('examenes.Id', '<>', 0);
+
+            $query->when($examen, function ($query) use ($examen) {
+                $query->where('examenes.Id', $examen);
+            });
+
+            $query->when($especialidad, function ($query) use ($especialidad) {
+                $query->where('efector.Id', $especialidad);
+            });
+
+            $query->when(is_array($atributos) && in_array('informe', $atributos), function ($query)  {
+                $query->where('examenes.Informe', 1);
+            });
+
+            $query->when(is_array($atributos) && in_array('adjunto', $atributos), function ($query) {
+                $query->where('examenes.Adjunto', 1);
+            });
+
+            $query->when(is_array($atributos) && in_array('cerrado', $atributos), function ($query) {
+                $query->where('examenes.Cerrado', 1);
+            });
+
+            $query->when(is_array($atributos) && in_array('fisico', $atributos), function ($query) {
+                $query->where('examenes.NoImprime', 1);
+            });
+
+            $query->when($opciones === 'evalExclusivo', function ($query) {
+                $query->where('examenes.Evaluador', 1);
+            });
+            
+            $query->when($opciones === 'expAnexos', function ($query) {
+                $query->where('examenes.EvalCopia', 1);
+            });
+
+            $query->when($opciones === 'priImpresion', function ($query) {
+                $query->where('examenes.PI', 1);
+            });
+
+            $query->when($opciones === 'formulario', function ($query) {
+                $query->where('examenes.IdForm', '>', 0);
+            });
+
+            $query->when($opciones === 'sinReporte', function ($query) {
+                $query->where('examenes.IdReporte', 0);
+            });
+
+            $query->when($opciones === 'sinVencimiento', function ($query) {
+                $query->where('examenes.DiasVencimiento', 0);
+            });
+
+            $query->when($estado === 'ausente', function ($query) {
+                $query->where('examenes.Ausente', 1);
+            });
+
+            $query->when($estado === 'devolucion', function ($query) {
+                $query->where('examenes.Devol', 1);
+            });
+
+            $query->when($codigoex, function ($query) use ($codigoex) {
+                $query->where('examenes.Cod', 'LIKE', '%'.$codigoex.'%');
+            });
+
+            $query->when($activo === 'Activo', function ($query) {
+                $query->where('examenes.Inactivo', 0);
+            });
+
+            $query->when($activo === 'nActivo', function ($query) {
+                $query->where('examenes.Inactivo', 1);
+            });
+
+            $query->when($activo === 'tActivo', function ($query) {
+                $query->where(function ($subquery) {
+                    $subquery->where('examenes.Inactivo', 0)
+                        ->orWhere('examenes.Inactivo', 1);
+                });
+            });
+
+            $result = $query->orderBy('examenes.Nombre', 'ASC');
+
+            return Datatables::of($result)->make(true);
+    }
 
 }
+ 

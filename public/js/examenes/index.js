@@ -7,28 +7,43 @@ $(document).ready(function(){
         codigoex = $('#codigoex'),
         activo = $('#activo'),
         activoClass = $('.activo'),
+        estado = $('#estado'),
+        estadoClass = $('.estado'),
         examen = $('#examen'),
         reset = $('#reset');
 
     listaProveedores();
     opcionesClass.hide();
     activoClass.hide();
+    estadoClass.hide();
 
     $(document).on('change', "#atributos", function(){
 
         if($(this).val() === 'opciones'){
             opcionesClass.show();
             activoClass.hide();
+            estadoClass.hide();
             activo.val('');
+            estado.val('');
 
         }else if($(this).val() === 'activo'){
             activoClass.show();
             opcionesClass.hide();
+            estadoClass.hide();
             opciones.val('');
+            estado.val('');
         
-        }else{
+        }else if($(this).val() === 'estado'){
+            estadoClass.show();
             activoClass.hide();
             opcionesClass.hide();
+            activo.val('');
+            opciones.val('');
+        }else{
+            estadoClass.hide();
+            activoClass.hide();
+            opcionesClass.hide();
+            estado.val();
             activo.val('');
             opciones.val('');
         }
@@ -46,6 +61,7 @@ $(document).ready(function(){
         activoClass.hide();
         opcionesClass.hide();
         activo.val('');
+        estado.val('');
         opciones.val('');
         atributos.val('');
         especialidad.val('');

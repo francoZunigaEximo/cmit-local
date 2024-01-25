@@ -45,7 +45,7 @@
                                             <option value="fisico">Físico (el adjunto no se imprime)</option>
                                             <option value="cerrado">Cerrado (el exámen se crea cerrado)</option>
                                             <option value="opciones">Opciones</option>
-                                            <option value="atributos">Atributos</option>
+                                            <option value="estado">Estado</option>
                                             <option value="activo">Activo</option>
                                         </select>
                                     </div>
@@ -63,6 +63,15 @@
                                         </select>
                                     </div>
 
+                                    <div class="col-sm-3 mb-3 estado">
+                                        <label for="estado" class="form-label font-weight-bold"><strong>Estado</strong></label>
+                                        <select class="form-control" name="estado" id="estado">
+                                            <option value="" selected>Elija una opción...</option>
+                                            <option value="ausente">Ausente</option>
+                                            <option value="devolucion">Devolución</option>
+                                        </select>
+                                    </div>
+
                                     <div class="col-sm-3 mb-3">
                                         <label for="codigoex" class="form-label font-weight-bold"><strong>Código Ex:</strong></label>
                                         <input type="text" class="form-control" id="codigoex" name="codigoex">
@@ -72,7 +81,7 @@
                                         <label for="activo" class="form-label font-weight-bold"><strong>Activo:</strong></label>
                                         <select class="form-control" name="activo" id="activo">
                                             <option value="" selected>Elija una opción...</option>
-                                            <option value="activo">Activo</option>
+                                            <option value="Activo">Activo</option>
                                             <option value="nActivo">No Activo</option>
                                             <option value="tActivo">Todos</option>
                                         </select>
@@ -96,8 +105,11 @@
                                 <button type="button" class="btn botonGeneral add-btn">
                                     <i class="ri-add-line align-bottom me-1"></i> Nuevo
                                 </button>
-                            </a>   
+                            </a>  
                         </div>
+                    </div>
+                    <div class="col-sm-9 mt-2">
+                        <span class="fondo-celeste p-1 small">Con prioridad de impresión</span>
                     </div>
 
                     <div class="table-responsive table-card mt-3 mb-1 mx-auto">
@@ -109,7 +121,6 @@
                                     <th class="sort">Especialidad Efector</th>
                                     <th class="sort">Especialidad Informador</th>
                                     <th>Vto</th>
-                                    <th>Tipo</th>
                                     <th>Cod.Examen</th>
                                     <th>Cod.Efector</th>
                                     <th class="sort">Tipo</th>
@@ -130,6 +141,7 @@
 <script>
     const lstProveedores = "{{ route('lstProveedores') }}";
     const searchExamen = "{{ route('searchExamen') }}";
+    const SEARCH = "{{ route('searchExamenes') }}";
 </script>
 
 @push('styles')

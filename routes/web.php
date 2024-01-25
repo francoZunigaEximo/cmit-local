@@ -116,7 +116,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('bloquearExamen', [ExamenesController::class, 'bloquearEx'])->name('bloquearExamen');
     Route::post('paqueteId', [ExamenesController::class, 'paqueteId'])->name('paqueteId');
     Route::post('itemExamen', [ExamenesController::class, 'itemExamen'])->name('itemExamen');
-    ROute::get('porcentajeExamen', [ExamenesController::class, 'porcentajeExamen'])->name('porcentajeExamen');
+    Route::get('porcentajeExamen', [ExamenesController::class, 'porcentajeExamen'])->name('porcentajeExamen');
+    Route::get('searchExamenes', [ExamenesController::class, 'searchExamenes'])->name('searchExamenes');
 
     //Ruta de Comentarios de Prestaciones
     Route::post('setComentarioPres', [ComentariosPrestacionesController::class, 'setComentarioPres'])->name('setComentarioPres');

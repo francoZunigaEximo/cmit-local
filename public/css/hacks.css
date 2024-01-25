@@ -446,3 +446,17 @@ table.dataTable tr.dtrg-level-0 td {
 #eenviarMapa > :not(caption) > * {
     padding: 0.25rem 0.6rem;
 }
+
+#listaExamenes th:nth-child(2),
+#listaExamenes td:nth-child(2) {
+    max-width: 300px !important;
+}
+
+#listaExamenes > :not(caption) > * {
+    padding: 0.25rem 0.6rem;
+}
+
+.fondo-celeste {
+	background-color: #00d9ff;
+	color:#0e0d0d;
+}
