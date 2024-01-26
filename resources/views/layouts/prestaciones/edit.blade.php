@@ -475,11 +475,11 @@ const getEvaluador = "{{ route('getEvaluador') }}";
 
 const getPaquetes = "{{ route('getPaquetes') }}";
 const searchExamen = "{{ route('searchExamen') }}";
-const getExamenes = "{{ route('getExamenes') }}";
-const checkExamen = "{{ route('checkExamen') }}";
-const saveExamenes = "{{ route('saveExamenes') }}";
+const getItemExamenes = "{{ route('getItemExamenes') }}";
+const checkItemExamen = "{{ route('checkItemExamen') }}";
+const saveItemExamenes = "{{ route('saveItemExamenes') }}";
 const getId = "{{ route('IdExamen') }}";
-const deleteExamen = "{{ route('deleteExamen')}}";
+const deleteItemExamen = "{{ route('deleteItemExamen')}}";
 const bloquearExamen ="{{ route('bloquearExamen') }}";
 const getClientes = "{{ route('getClientes') }}";
 const paqueteId = "{{ route('paqueteId') }}";

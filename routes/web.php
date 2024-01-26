@@ -106,16 +106,12 @@ Route::group(['middleware' => 'auth'], function () {
 
     //Ruta Examenes
     Route::resource('examenes', ExamenesController::class);
-    Route::post('getExamenes', [ExamenesController::class, 'getExamenes'])->name('getExamenes');
-    Route::post('saveExamenes', [ExamenesController::class, 'save'])->name('saveExamenes');
-    Route::post('checkExamen', [ExamenesController::class, 'check'])->name('checkExamen');
     Route::get('getPaquetes', [ExamenesController::class, 'paquetes'])->name('getPaquetes');
     Route::get('searchExamen', [ExamenesController::class, 'search'])->name('searchExamen');
     Route::post('IdExamen', [ExamenesController::class, 'getId'])->name('IdExamen');
     Route::post('deleteExamen', [ExamenesController::class, 'deleteEx'])->name('deleteExamen');
-    Route::post('bloquearExamen', [ExamenesController::class, 'bloquearEx'])->name('bloquearExamen');
+    
     Route::post('paqueteId', [ExamenesController::class, 'paqueteId'])->name('paqueteId');
-    Route::post('itemExamen', [ExamenesController::class, 'itemExamen'])->name('itemExamen');
     Route::get('porcentajeExamen', [ExamenesController::class, 'porcentajeExamen'])->name('porcentajeExamen');
     Route::get('searchExamenes', [ExamenesController::class, 'searchExamenes'])->name('searchExamenes');
     Route::post('updateExamen', [ExamenesController::class, 'updateExamen'])->name('updateExamen');
@@ -204,6 +200,11 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('deleteIdAdjunto', [ItemPrestacionesController::class, 'deleteIdAdjunto'])->name('deleteIdAdjunto');
     Route::post('replaceIdAdjunto', [ItemPrestacionesController::class, 'replaceIdAdjunto'])->name('replaceIdAdjunto');
     Route::post('deleteItemExamen', [ItemPrestacionesController::class, 'deleteEx'])->name('deleteItemExamen');
+    Route::post('getItemExamenes', [ItemPrestacionesController::class, 'getExamenes'])->name('getItemExamenes');
+    Route::post('saveItemExamenes', [ItemPrestacionesController::class, 'save'])->name('saveItemExamenes');
+    Route::get('checkItemExamen', [ItemPrestacionesController::class, 'check'])->name('checkItemExamen');
+    Route::post('itemExamen', [ItemPrestacionesController::class, 'itemExamen'])->name('itemExamen');
+    Route::post('bloquearExamen', [ItemPrestacionesController::class, 'bloquearEx'])->name('bloquearExamen');
 
     //Rutas de FacturasdeVenta
     Route::get('getFactura', [FacturasVentaController::class, 'getFactura'])->name('getFactura');
