@@ -322,7 +322,7 @@
     const listGeneral = "{{ route('listGeneral') }}";
     const updateAdjunto = "{{ route('updateAdjunto') }}";
     const paginacionGeneral = "{{ route('paginacionGeneral') }}";
-    const updateExamen = "{{ route('updateExamen') }}";
+    const updateItemExamen = "{{ route('updateItemExamen') }}";
     const volver = "{{ route('prestaciones.edit', ['prestacione' => $itemsprestacione->IdPrestacion]) }}";
     const fileUpload = "{{ route('uploadAdjunto') }}";
     const descargaE = "{{ asset('storage/ArchivosEfectores') }}";

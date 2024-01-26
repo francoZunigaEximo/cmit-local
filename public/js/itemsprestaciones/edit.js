@@ -218,7 +218,7 @@ $(document).ready(function(){
 
         let ObsExamen = $('#ObsExamen').val(), Profesionales2 = $('#informadores').val(), Obs = $('#Obs').val(), Fecha = $('#Fecha').val();
         
-        $.post(updateExamen, {Id: ID, _token: TOKEN, ObsExamen: ObsExamen, Profesionales2: Profesionales2, Obs: Obs, Fecha: Fecha})
+        $.post(updateItemExamen, {Id: ID, _token: TOKEN, ObsExamen: ObsExamen, Profesionales2: Profesionales2, Obs: Obs, Fecha: Fecha})
             .done(function() {
 
                 toastr.success('Se han actualizado los datos correctamente', 'Perfecto');

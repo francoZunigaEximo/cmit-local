@@ -118,6 +118,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('itemExamen', [ExamenesController::class, 'itemExamen'])->name('itemExamen');
     Route::get('porcentajeExamen', [ExamenesController::class, 'porcentajeExamen'])->name('porcentajeExamen');
     Route::get('searchExamenes', [ExamenesController::class, 'searchExamenes'])->name('searchExamenes');
+    Route::post('updateExamen', [ExamenesController::class, 'updateExamen'])->name('updateExamen');
 
     //Ruta de Comentarios de Prestaciones
     Route::post('setComentarioPres', [ComentariosPrestacionesController::class, 'setComentarioPres'])->name('setComentarioPres');
@@ -198,10 +199,11 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('listGeneral', [ItemPrestacionesController::class, 'listGeneral'])->name('listGeneral');
     Route::post('updateAdjunto', [ItemPrestacionesController::class, 'updateAdjunto'])->name('updateAdjunto');
     Route::get('paginacionGeneral', [ItemPrestacionesController::class, 'paginacionGeneral'])->name('paginacionGeneral');
-    Route::post('updateExamen', [ItemPrestacionesController::class, 'updateExamen'])->name('updateExamen');
+    Route::post('updateItemExamen', [ItemPrestacionesController::class, 'updateExamen'])->name('updateItemExamen');
     Route::post('uploadAdjunto', [ItemPrestacionesController::class, 'uploadAdjunto'])->name('uploadAdjunto');
     Route::get('deleteIdAdjunto', [ItemPrestacionesController::class, 'deleteIdAdjunto'])->name('deleteIdAdjunto');
     Route::post('replaceIdAdjunto', [ItemPrestacionesController::class, 'replaceIdAdjunto'])->name('replaceIdAdjunto');
+    Route::post('deleteItemExamen', [ItemPrestacionesController::class, 'deleteEx'])->name('deleteItemExamen');
 
     //Rutas de FacturasdeVenta
     Route::get('getFactura', [FacturasVentaController::class, 'getFactura'])->name('getFactura');

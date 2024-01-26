@@ -258,4 +258,14 @@ class ItemPrestacionesController extends Controller
 
     }
 
+    public function deleteEx(Request $request): void
+    {
+
+        $item = ItemPrestacion::find($request->Id);
+
+        if ($item) {
+            $item->delete();
+        }
+    }
+
 }
