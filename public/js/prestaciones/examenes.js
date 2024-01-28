@@ -265,7 +265,7 @@ $(document).ready(()=>{
 
                                 let fila = `
                                         <tr ${examen.Anulado === 1 ? 'class="filaBaja"' : ''}>
-                                            <td data-idexam="${examenId}" id="${examen.IdItem}">${examen.Nombre}</td>
+                                            <td data-idexam="${examenId}" id="${examen.IdItem}" style="text-align:left">${examen.Nombre}</td>
                                             <td>
                                                 <span id="incompleto" class="${(examen.Incompleto === 0 ||  examen.Incompleto === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
                                                     <i class="ri-flag-2-line ${examen.Anulado === 0 ? 'incompleto' : ''}"></i>
