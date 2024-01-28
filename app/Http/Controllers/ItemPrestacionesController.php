@@ -273,9 +273,9 @@ class ItemPrestacionesController extends Controller
     {
         $resultados = Cache::remember('itemsprestaciones', 5, function () use ($request) {
 
-            $query = ItemPrestacion::join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
+            $query = ItemPrestacion::join('profesionales as efector', 'itemsprestaciones.IdProfesional', '=','efector.Id')
                 ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
-                ->join('profesionales as efector', 'itemsprestaciones.IdProfesional', '=','efector.Id')
+                ->join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
                 ->join('profesionales as informador', 'itemsprestaciones.IdProfesional2', '=', 'informador.Id')
                 ->select(
                     'examenes.Nombre as Nombre',
@@ -303,7 +303,10 @@ class ItemPrestacionesController extends Controller
                             ->where('itemsprestaciones.IdPrestacion', $request->Id);
             } 
 
-            return $query->orderBy('examenes.Nombre', 'ASC')->get();
+            return $query->orderBy('efector.IdProveedor', 'ASC')
+                         ->orderBy('ApellidoE', 'ASC')
+                         ->orderBy('itemsprestaciones.Fecha', 'ASC')
+                ->get();
         });
  
         return response()->json(['examenes' => $resultados]);

@@ -87,7 +87,7 @@ $(document).ready(()=>{
             if(confirm("Confirme la eliminación del exámen:")){
 
                 $.ajax({
-                    url: deleteExamen,
+                    url: deleteItemExamen,
                     type: 'Post',
                     data: {
                         Id: idItem,
@@ -110,7 +110,7 @@ $(document).ready(()=>{
             if(confirm('Confirme la baja del exámen:')){
 
                 $.ajax({
-                    url: bloquearExamen,
+                    url: bloquearItemExamen,
                     type: 'Post',
                     data: {
                         Id: idItem,
@@ -158,7 +158,7 @@ $(document).ready(()=>{
 
         $.ajax({
 
-            url: saveExamenes,
+            url: saveItemExamenes,
             type: 'post',
             data: {
                 _token: TOKEN,
@@ -233,11 +233,10 @@ $(document).ready(()=>{
         
         $.ajax({
 
-            url: checkExamen, 
-            method: 'Post',
+            url: checkItemExamen, 
+            method: 'GET',
             data: { 
                 Id: ID,
-                _token: TOKEN,
             },
             success: function(result) {
                 let estado = result.respuesta;
@@ -247,7 +246,7 @@ $(document).ready(()=>{
 
                     $.ajax({
                         
-                        url: getExamenes,
+                        url: getItemExamenes,
                         type: 'post',
                         data: {
                             _token: TOKEN,
@@ -332,7 +331,7 @@ $(document).ready(()=>{
 
                             $("#listado").fancyTable({
                                 pagination: true,
-                                perPage: 10,
+                                perPage: 50,
                                 searchable: false,
                                 globalSearch: false,
                                 sortable: false, 
