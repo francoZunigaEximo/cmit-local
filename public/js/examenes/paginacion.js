@@ -76,7 +76,7 @@ $(document).ready(()=>{
             ],
             language: {
                 processing: "Cargando listado de examenes de CMIT",
-                emptyTable: "No hay mapas con los datos buscados",
+                emptyTable: "No hay examenes con los datos buscados",
                 paginate: {
                     first: "Primera",
                     previous: "Anterior",

@@ -109,7 +109,7 @@ $(document).ready(()=>{
 
                     toastr.success('Se ha eliminado correctamente el exámen. Se redireccionará a la pantalla de creación de examenes');
                     setTimeout(()=>{
-                        location.href = GOCREATE;
+                        location.href = GOINDEX;
                     }, 3000);
                 }
             })

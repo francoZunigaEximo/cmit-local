@@ -29,10 +29,8 @@ class ExamenesController extends Controller
     public function store(Request $request)
     {
 
-        $nuevoId = Examen::max('Id') + 1;
-
         Examen::create([
-            'Id' => $nuevoId,
+            'Id' => Examen::max('Id') + 1,
             'Nombre' => $request->Examen ?? '',
             'IdEstudio' => $request->Estudio ?? 0,
             'Descripcion' => $request->Descripcion ?? '',
@@ -54,7 +52,7 @@ class ExamenesController extends Controller
             'EvalCopia' => ($request->ExpAnexo === 'on' ? '1' : '0')
         ]);
 
-        return redirect()->route('examenes.edit', ['examene' => $nuevoId]);
+        return redirect()->route('examenes.index');
     }
 
     public function edit(Examen $examene)

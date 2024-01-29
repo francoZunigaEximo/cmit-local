@@ -83,7 +83,7 @@
 
                         <div class="col-6 mt-3">
                             <div class="input-group input-group-sm size80porcent mx-auto">
-                                <span class="input-group-text">Vencimiento</span></span>
+                                <span class="input-group-text">Día de vencimiento</span></span>
                                 <input type="number" class="form-control" id="DiasVencimiento" name="DiasVencimiento">
                             </div>
                         </div>
