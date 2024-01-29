@@ -110,7 +110,7 @@ class ExamenesController extends Controller
 
             $examenes = Examen::where(function ($query) use ($buscar) {
                 $query->where('Nombre', 'LIKE', '%'.$buscar.'%');
-            })->where('Inactivo', '<>', 3)->get();
+            })->where('Inactivo', '<>', 2)->get();
 
             $resultados = [];
 
@@ -135,15 +135,19 @@ class ExamenesController extends Controller
     }
 
     public function deleteEx(Request $request): mixed
-    {
+{
+    $examen = Examen::find($request->Id);
 
-        $examen = Examen::find($request->Id);
+    if ($examen && count($this->auditarExamen($request->Id)) > 0) {
+        
+        return response()->json(['estatus' => true]);
 
-        return $examen === 'true' && $this->auditarExamen($request->Id) === 'true' 
-            ? response()->json(['status' => true,]) 
-            : $examen->update(['Inactivo' => 3]);
-
+    } else {
+        
+        $examen->update(['Inactivo' => '2']);
+        return response()->json(['estatus' => false]);
     }
+}
 
     public function searchExamenes(Request $request)
     {
@@ -242,7 +246,7 @@ class ExamenesController extends Controller
                 });
             });
 
-            $result = $query->where('examenes.Inactivo', '<>', 3)->orderBy('examenes.Nombre', 'ASC');
+            $result = $query->where('examenes.Inactivo', '<>', 2)->orderBy('examenes.Nombre', 'ASC');
 
             return Datatables::of($result)->make(true);
     }

@@ -99,13 +99,13 @@ $(document).ready(()=>{
         if (confirm("¿Está seguro que desea eliminar el examen")) {
 
             $.post(deleteExamen, {Id: ID, _token: TOKEN})
-            .done(function(status){
-                
-                if (status === true) {
+            .done(function(estatus){
+
+                if (estatus.estatus === true) {
                     toastr.warning('No se puede eliminar el exámen porque esta siendo utilizada por una prestación');
                     return;
-                
-                } else {
+        
+                } else if(estatus.estatus === false){
 
                     toastr.success('Se ha eliminado correctamente el exámen. Se redireccionará a la pantalla de creación de examenes');
                     setTimeout(()=>{
