@@ -171,6 +171,19 @@
                         </li>
 
                         <li class="nav-item">
+                            <a class="nav-link menu-link collapsed" href="#sidebarConfiguracion" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarConfiguracion">
+                                <i data-feather="settings" class="icon-dual"></i> <span data-key="t-examenes">Configuración</span>
+                            </a>
+                            <div class="menu-dropdown collapse" id="sidebarConfiguracion" style="">
+                                <ul class="nav nav-sm flex-column">
+                                    <li class="nav-item">
+                                        <a href="{{ route('examenes.index') }}" class="nav-link enlace-blanco" data-key="t-examenes"> Examenes </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+
+                        <li class="nav-item">
                             <a class="nav-link menu-link" href="{{ route('noticias.edit', 1) }}" aria-expanded="false">
                                 <i data-feather="message-circle" class="icon-dual"></i> <span data-key="t-layers" title="(ALT + N)">Noticias</span>
                             </a>
@@ -307,6 +320,7 @@
         const lnkProfesionales = "{{ route('profesionales.index') }}";
         const lnkEspecialidades = "{{ route('especialidades.index') }}";
         const lnkNoticias = "{{ route('noticias.index') }}";
+        const lnkExamenes = "{{ route('examenes.index') }}";
 
         const lnkNuevoPaciente = "{{ route('pacientes.create') }}";
         const lnkExistePaciente = "{{ route('pacientes.edit', ['paciente' => '__paciente__']) }}";

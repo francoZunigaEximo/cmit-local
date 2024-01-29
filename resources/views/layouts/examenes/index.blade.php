@@ -110,6 +110,7 @@
                     </div>
                     <div class="col-sm-9 mt-2">
                         <span class="fondo-celeste p-1 small">Con prioridad de impresión</span>
+                        <span class="rojo p-1 small">Inactivo</span>
                     </div>
 
                     <div class="table-responsive table-card mt-3 mb-1 mx-auto">
@@ -127,7 +128,7 @@
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody class="list form-check-all">
+                            <tbody class="list form-check-all" id="resultadoExamenes">
 
                             </tbody>
                         </table>

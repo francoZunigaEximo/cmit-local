@@ -110,7 +110,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('searchExamen', [ExamenesController::class, 'search'])->name('searchExamen');
     Route::post('IdExamen', [ExamenesController::class, 'getId'])->name('IdExamen');
     Route::post('deleteExamen', [ExamenesController::class, 'deleteEx'])->name('deleteExamen');
-    
+    Route::post('saveExamen',[ExamenesController::class, 'saveExamen'])->name('saveExamen');
     Route::post('paqueteId', [ExamenesController::class, 'paqueteId'])->name('paqueteId');
     Route::get('porcentajeExamen', [ExamenesController::class, 'porcentajeExamen'])->name('porcentajeExamen');
     Route::get('searchExamenes', [ExamenesController::class, 'searchExamenes'])->name('searchExamenes');
@@ -204,7 +204,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('saveItemExamenes', [ItemPrestacionesController::class, 'save'])->name('saveItemExamenes');
     Route::get('checkItemExamen', [ItemPrestacionesController::class, 'check'])->name('checkItemExamen');
     Route::post('itemExamen', [ItemPrestacionesController::class, 'itemExamen'])->name('itemExamen');
-    Route::post('bloquearExamen', [ItemPrestacionesController::class, 'bloquearEx'])->name('bloquearExamen');
+    Route::post('bloquearItemExamen', [ItemPrestacionesController::class, 'bloquearEx'])->name('bloquearItemExamen');
 
     //Rutas de FacturasdeVenta
     Route::get('getFactura', [FacturasVentaController::class, 'getFactura'])->name('getFactura');

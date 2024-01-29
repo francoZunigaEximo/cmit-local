@@ -5,24 +5,25 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Estudio extends Model
+class Reporte extends Model
 {
     use HasFactory;
 
-    protected $table = 'estudios';
+    protected $table = "reportes";
 
-    protected $primaryKey = 'Id';
+    protected $primaryKey = "Id";
 
-    protected $fillable = [
+    public $fillable = [
         'Id',
         'Nombre',
-        'Descripcion'
+        'IdReporte',
+        'Inactivo'
     ];
 
     public $timestamps = false;
 
     public function examen()
     {
-        return $this->hasOne(Examen::class, 'IdEstudio', 'Id');
+        return $this->hasOne(Examen::class, 'IdReporte', 'Id');
     }
 }

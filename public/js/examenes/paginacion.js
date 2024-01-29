@@ -35,7 +35,7 @@ $(document).ready(()=>{
                 {
                     data: null,
                     render: function(data){
-                        return `<span title="${data.NombreExamen}">${(data.NombreExamen).length <= 30 ? data.NombreExamen : (data.NombreExamen).substring(0,12) + "..."}</span>`;
+                        return `<span title="${data.NombreExamen}">${(data.NombreExamen).length <= 12 ? data.NombreExamen : (data.NombreExamen).substring(0,12) + "..."}</span>`;
                     }
                 },
                 {
@@ -61,7 +61,7 @@ $(document).ready(()=>{
                 {
                     data: null,
                     render: function(data){
-                        return `<span title="${data.NombreReporte}">${(data.NombreReporte).length <= 30 ? data.NombreReporte : (data.NombreReporte).substring(0,12) + "..."}</span>`;
+                        return `<span title="${data.NombreReporte}">${(data.NombreReporte).length <= 12 ? data.NombreReporte : (data.NombreReporte).substring(0,12) + "..."}</span>`;
                     }
                 },
                 {
@@ -95,9 +95,11 @@ $(document).ready(()=>{
             },
             createdRow: function (row, data, dataIndex) {
 
-                console.log(data);
-                if (data && data.prioridadImpresion === 1) {
+                if (data && data.prioridadImpresion === 1 && data.Inactivo === 0) {
                     $(row).addClass('fondo-celeste');
+                
+                }else if(data && data.Inactivo === 1) {
+                    $(row).addClass('rojo');
                 }
             
             }

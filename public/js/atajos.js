@@ -22,7 +22,8 @@ $(document).ready(() => {
         'm': lnkMapas,
         'o': lnkProfesionales,
         'e': lnkEspecialidades,
-        'n': lnkNoticias
+        'n': lnkNoticias,
+        'x': lnkExamenes
     };
 
     $(document).keydown(function(e) {

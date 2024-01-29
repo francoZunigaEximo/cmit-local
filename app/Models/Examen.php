@@ -43,7 +43,7 @@ class Examen extends Model
 
     public function estudios()
     {
-        return $this->hasMany(PaqueteEstudio::class, 'IdEstudio', 'Id');
+        return $this->hasOne(Estudio::class, 'Id', 'IdEstudio');
     }
 
     public function itemsprestacion()
@@ -59,5 +59,10 @@ class Examen extends Model
     public function proveedor2()
     {
         return $this->hasOne(Proveedor::class, 'Id', 'IdProveedor2');
+    }
+
+    public function reportes()
+    {
+        return $this->hasOne(Reporte::class, 'Id', 'IdReporte');
     }
 }

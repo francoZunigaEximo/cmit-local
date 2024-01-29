@@ -3,15 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Examen;
-use App\Models\ItemPrestacion;
-use App\Models\PaqueteEstudio;
-use App\Models\Relpaqest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Yajra\DataTables\DataTables;
+use App\Traits\ObserverExamenes;
 
 class ExamenesController extends Controller
 {
+    use ObserverExamenes;
+
     public function index()
     {
         return view("layouts.examenes.index");
@@ -19,12 +19,51 @@ class ExamenesController extends Controller
 
     public function create()
     {
-        return view("layouts.examenes.create");
+        $estudios = $this->getEstudios();
+        $reportes = $this->getReportes();
+        $proveedores = $this->getProveedor();
+
+        return view("layouts.examenes.create", compact(['estudios', 'reportes', 'proveedores']));
     }
 
-    public function edit(Request $request)
+    public function store(Request $request)
     {
-        return view("layouts.examenes.edit");
+
+        $nuevoId = Examen::max('Id') + 1;
+
+        Examen::create([
+            'Id' => $nuevoId,
+            'Nombre' => $request->Examen ?? '',
+            'IdEstudio' => $request->Estudio ?? 0,
+            'Descripcion' => $request->Descripcion ?? '',
+            'IdReporte' => $request->Reporte ?? 0,
+            'IdProveedor' => $request->ProvEfector ?? 0,
+            'IdProveedor2' => $request->ProvInformador ?? 0,
+            'DiasVencimiento' => $request->DiasVencimiento ?? 0,
+            'Inactivo' => ($request->Inactivo === 'on' ? '1' : '0'),
+            'IdForm' => $request->Formulario,
+            'Cod' => $request->CodigoEx ?? '',
+            'Cod2' => $request->CodigoE ?? '',
+            'Ausente' => $request->Ausente ?? 0,
+            'Devol' => ($request->Devolucion === 'on' ? '1' : '0'),
+            'Informe' => ($request->Informe === 'on' ? '1' : '0'),
+            'Adjunto' => ($request->Adjunto === 'on' ? '1' : '0'),
+            'NoImprime' => ($request->Fisico === 'on' ? '1' : '0'),
+            'PI' => ($request->priImpresion === 'on' ? '1' : '0'),
+            'Evaluador' => ($request->EvalExclusivo === 'on' ? '1' : '0'),
+            'EvalCopia' => ($request->ExpAnexo === 'on' ? '1' : '0')
+        ]);
+
+        return redirect()->route('examenes.edit', ['examene' => $nuevoId]);
+    }
+
+    public function edit(Examen $examene)
+    {
+        $estudios = $this->getEstudios();
+        $reportes = $this->getReportes();
+        $proveedores = $this->getProveedor();
+
+        return view("layouts.examenes.edit", compact(['examene', 'estudios', 'reportes', 'proveedores']));
     }
 
     //Listado de Paquete de estudios
@@ -35,7 +74,7 @@ class ExamenesController extends Controller
 
         $resultados = Cache::remember('Paquete'.$buscar, 5, function () use ($buscar) {
 
-            $paquetes = PaqueteEstudio::where('Nombre', 'LIKE', '%'.$buscar.'%')->get();
+            $paquetes = $this->buscarEstudio($buscar);
 
             $resultados = [];
 
@@ -56,50 +95,12 @@ class ExamenesController extends Controller
     public function paqueteId(Request $request)
     {
 
-        $query = Relpaqest::where('IdPaquete', $request->IdPaquete)->get();
+        $query = $this->paqueteEstudio($request->IdPaquete);
         $idExamenes = $query->pluck('IdExamen')->toArray();
         $examenes = Examen::whereIn('Id', $idExamenes)->get();
 
         return response()->json(['examenes' => $examenes]);
         
-    }
-
-    public function save(Request $request): void
-    {
-
-        $examenes = $request->idExamen;
-
-        if (!is_array($examenes)) {
-            $examenes = [$examenes];
-        }
-
-        foreach ($examenes as $examen) {
-            
-            $itemPrestacion = ItemPrestacion::where('IdPrestacion', $request->idPrestacion)->where('IdExamen', $examen)->first();
-
-            if(!$itemPrestacion){
-
-                ItemPrestacion::create([
-                    'Id' => ItemPrestacion::max('Id') + 1,
-                    'IdPrestacion' => $request->idPrestacion,
-                    'IdExamen' => $examen,
-                ]);
-            }   
-        }
-    }
-
-    public function check(Request $request): mixed
-    {
-
-        $examenes = ItemPrestacion::where('IdPrestacion', '=', $request->Id)->get() ?? '';
-
-        $idExamenes = [];
-
-        foreach ($examenes as $examen) {
-            $idExamenes[] = $examen->IdExamen;
-        }
-
-        return response()->json(['respuesta' => ! $examenes->isEmpty(), 'examenes' => $idExamenes]);
     }
 
     public function search(Request $request): mixed
@@ -111,7 +112,7 @@ class ExamenesController extends Controller
 
             $examenes = Examen::where(function ($query) use ($buscar) {
                 $query->where('Nombre', 'LIKE', '%'.$buscar.'%');
-            })->get();
+            })->where('Inactivo', '<>', 3)->get();
 
             $resultados = [];
 
@@ -129,117 +130,21 @@ class ExamenesController extends Controller
         return response()->json(['examen' => $resultados]);
     }
 
-    public function getExamenes(Request $request): mixed
-    {
-        $resultados = Cache::remember('itemsprestaciones', 5, function () use ($request) {
-
-            $query = ItemPrestacion::join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
-                ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
-                ->join('profesionales as efector', 'itemsprestaciones.IdProfesional', '=','efector.Id')
-                ->join('profesionales as informador', 'itemsprestaciones.IdProfesional2', '=', 'informador.Id')
-                ->select(
-                    'examenes.Nombre as Nombre',
-                    'examenes.Id as IdExamen',
-                    'examenes.Adjunto as ExaAdj',
-                    'examenes.NoImprime as ExaNI',
-                    'efector.Nombre as NombreE',
-                    'efector.Apellido as ApellidoE',
-                    'informador.Nombre as NombreI',
-                    'informador.Apellido as ApellidoI',
-                    'itemsprestaciones.Ausente as Ausente',
-                    'itemsprestaciones.Forma as Forma',
-                    'itemsprestaciones.Incompleto as Incompleto',
-                    'itemsprestaciones.SinEsc as SinEsc',
-                    'itemsprestaciones.Devol as Devol',
-                    'itemsprestaciones.CAdj as CAdj',
-                    'itemsprestaciones.CInfo as CInfo',
-                    'itemsprestaciones.Id as IdItem',
-                    'itemsprestaciones.Anulado as Anulado'
-                );                
-
-            if ($request->tipo === 'listado' && is_array($request->IdExamen)) {
-
-                    $query->whereIn('examenes.Id', $request->IdExamen)
-                            ->where('itemsprestaciones.IdPrestacion', $request->Id);
-            } 
-
-            return $query->orderBy('examenes.Nombre', 'ASC')->get();
-        });
- 
-        return response()->json(['examenes' => $resultados]);
-    }
-
-    public function itemExamen(Request $request): void
-    {
-        $item = ItemPrestacion::find($request->Id);
-        
-        if($item){
-          
-            switch ($request->opcion) {
-                case 'Incompleto':
-                    $estado = $item->Incompleto;
-                    $cambio = ($estado == 0 || $estado == null ? $item->Incompleto = 1 : $item->Incompleto = 0);
-                    $item->Incompleto = $cambio;
-                    break;
-                
-                case 'Ausente':
-                    $estado = $item->Ausente;
-                    $cambio = ($estado == 0 || $estado == null ? $item->Ausente = 1 : $item->Ausente = 0);
-                    $item->Ausente = $cambio;
-                    break;
-               
-                case 'Forma':
-                    $estado = $item->Forma;
-                    $cambio = ($estado == 0 || $estado == null ? $item->Forma = 1 : $item->Forma = 0);
-                    $item->Forma = $cambio;
-                    break;
-
-                case 'SinEsc':
-                    $estado = $item->SinEsc;
-                    $cambio = ($estado == 0 || $estado == null ? $item->SinEsc = 1 : $item->SinEsc = 0);
-                    $item->SinEsc = $cambio;
-                    break;
-                
-                case 'Devol':
-                    $estado = $item->Devol;
-                    $cambio = ($estado == 0 || $estado == null ? $item->Devol = 1 : $item->Devol = 0);
-                    $item->Devol = $cambio;
-                    break;
-            }
-
-            $item->save();
-        }
-
-    }
-
     public function getId(Request $request): mixed
     {
-
         $getId = Examen::find($request->IdExamen);
-        
-        if($getId){
-            return response()->json(['examenes' => $getId]);
-        }
+        return $getId && response()->json(['examenes' => $getId]);
     }
 
-    public function deleteEx(Request $request): void
+    public function deleteEx(Request $request): mixed
     {
 
-        $item = ItemPrestacion::find($request->Id);
+        $examen = Examen::find($request->Id);
 
-        if ($item) {
-            $item->delete();
-        }
-    }
+        return $examen === 'true' && $this->auditarExamen($request->Id) === 'true' 
+            ? response()->json(['status' => true,]) 
+            : $examen->update(['Inactivo' => 3]);
 
-    public function bloquearEx(Request $request)
-    {
-
-        $item = ItemPrestacion::find($request->Id);
-
-        if ($item) {
-            $item->update(['Anulado' => 1]);
-        }
     }
 
     public function searchExamenes(Request $request)
@@ -251,6 +156,19 @@ class ExamenesController extends Controller
         $estado = $request->estado;
         $codigoex = $request->codigoex;
         $activo = $request->activo;
+
+        $lstAtributos = [
+            'informe' => 'examenes.Informe',
+            'adjunto' => 'examenes.Adjunto',
+            'cerrado' => 'examenes.Cerrado',
+            'fisico'  => 'examenes.NoImprime',
+        ];
+
+        $lstOpciones = [
+            'evalExclusivo' => 'examenes.Evaluador',
+            'expAnexos' => 'examenes.EvalCopia',
+            'priImpresion' => 'examenes.PI',
+        ];
 
         $query = Examen::join('estudios', 'examenes.IdEstudio', '=', 'estudios.Id')
             ->join('reportes', 'examenes.IdReporte', '=', 'reportes.Id')
@@ -279,32 +197,12 @@ class ExamenesController extends Controller
                 $query->where('efector.Id', $especialidad);
             });
 
-            $query->when(is_array($atributos) && in_array('informe', $atributos), function ($query)  {
-                $query->where('examenes.Informe', 1);
+            $query->when(isset($lstAtributos[$atributos]), function ($query) use ($atributos, $lstAtributos) {
+                $query->where($lstAtributos[$atributos], 1);
             });
 
-            $query->when(is_array($atributos) && in_array('adjunto', $atributos), function ($query) {
-                $query->where('examenes.Adjunto', 1);
-            });
-
-            $query->when(is_array($atributos) && in_array('cerrado', $atributos), function ($query) {
-                $query->where('examenes.Cerrado', 1);
-            });
-
-            $query->when(is_array($atributos) && in_array('fisico', $atributos), function ($query) {
-                $query->where('examenes.NoImprime', 1);
-            });
-
-            $query->when($opciones === 'evalExclusivo', function ($query) {
-                $query->where('examenes.Evaluador', 1);
-            });
-            
-            $query->when($opciones === 'expAnexos', function ($query) {
-                $query->where('examenes.EvalCopia', 1);
-            });
-
-            $query->when($opciones === 'priImpresion', function ($query) {
-                $query->where('examenes.PI', 1);
+            $query->when(isset($lstOpciones[$opciones]), function ($query) use ($opciones, $lstOpciones) {
+                $query->where($lstOpciones[$opciones], 1);
             });
 
             $query->when($opciones === 'formulario', function ($query) {
@@ -346,9 +244,40 @@ class ExamenesController extends Controller
                 });
             });
 
-            $result = $query->orderBy('examenes.Nombre', 'ASC');
+            $result = $query->where('examenes.Inactivo', '<>', 3)->orderBy('examenes.Nombre', 'ASC');
 
             return Datatables::of($result)->make(true);
+    }
+
+    public function updateExamen(Request $request)
+    {
+
+        $examen = Examen::find($request->Id);
+        if($examen)
+        {
+            $examen->Nombre = $request->Examen ?? '';
+            $examen->IdEstudio = $request->IdEstudio ?? 0;
+            $examen->Descripcion = $request->Descripcion ?? '';
+            $examen->IdReporte = $request->IdReporte ?? 0;
+            $examen->IdProveedor = $request->IdProveedor ?? 0;
+            $examen->IdProveedor2 = $request->IdProveedor2 ?? 0;
+            $examen->DiasVencimiento = $request->DiasVencimiento ?? 0;
+            $examen->Inactivo = ($request->Inactivo === 'true' ? '1' : '0');
+            $examen->IdForm = $request->IdForm ?? 0;
+            $examen->Cod = $request->Cod ?? '';
+            $examen->Cod2 = $request->Cod2 ?? '';
+            $examen->Ausente = $request->Ausente ?? 0;
+            $examen->Devol = ($request->Devol === 'true' ? '1' : '0');
+            $examen->Informe = ($request->Informe === 'true' ? '1' : '0');
+            $examen->Adjunto = ($request->Adjunto === 'true' ? '1' : '0');
+            $examen->NoImprime = ($request->NoImprime === 'true' ? '1' : '0');
+            $examen->PI = ($request->PI === 'true' ? '1' : '0');
+            $examen->Evaluador = ($request->Evaluador === 'true' ? '1' : '0');
+            $examen->EvalCopia = ($request->EvalCopia === 'true' ? '1' : '0');
+            $examen->save();
+
+        }
+        
     }
 
 }
