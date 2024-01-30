@@ -227,14 +227,14 @@ class PrestacionesExport implements FromCollection,WithHeadings
             $prestacionExcel->art               = $prestacion->ArtRazonSocial ?? '-';
             $prestacionExcel->ccostos           = $prestacion->CCosto ?? '-';
             $prestacionExcel->nroCe             = $prestacion->NroCEE ?? '-';
-            $prestacionExcel->anulada           = $prestacion->Anulado ?? '-';
+            $prestacionExcel->anulada           = $prestacion->Anulado === 1 ? 'Sí' : '-';
             $prestacionExcel->obsAnulado        = $prestacion->ObsAnulado ?? '-';
             $prestacionExcel->examen            = $prestacion->Examen ?? '-';
             $prestacionExcel->exaAnulado        = $prestacion->ExaAnulado ?? '-'; // Consultar Exa Anulado 
-            $prestacionExcel->inc               = $prestacion->Incompleto === 0 ? '-' : 'Sí';
-            $prestacionExcel->aus               = $prestacion->Ausente === 0 ? '-' : 'Sí';
-            $prestacionExcel->for               = $prestacion->Forma === 0 ? '-' : 'Sí';
-            $prestacionExcel->dev               = $prestacion->Devol === 0 ? '-' : 'Sí';
+            $prestacionExcel->inc               = ($prestacion->Incompleto === 1 ? 'Sí' : '-');
+            $prestacionExcel->aus               = $prestacion->Ausente === 1 ? 'Sí' : '-';
+            $prestacionExcel->for               = $prestacion->Forma === 1 ? 'Sí' : '-';
+            $prestacionExcel->dev               = $prestacion->Devol === 1 ? 'Sí' : '-';
             $prestacionExcel->observacionEstado = $prestacion->ObsEstado ?? '-';
 
             $prestacionesExcel->push($prestacionExcel);
@@ -274,13 +274,13 @@ class PrestacionesExport implements FromCollection,WithHeadings
             $prestacionExcel->obsResultado      = $prestacion->Observaciones ?? '-';
             $prestacionExcel->examen            = $prestacion->Examen ?? '-';
             $prestacionExcel->anulado           = $prestacion->ExaAnulado ?? '-';
-            $prestacionExcel->inc               = $prestacion->Incompleto === 0 ? '-' : 'Sí';
-            $prestacionExcel->aus               = $prestacion->Ausente === 0 ? '-' : 'Sí';
-            $prestacionExcel->for               = $prestacion->Forma === 0 ? '-' : 'Sí';
-            $prestacionExcel->dev               = $prestacion->Devol === 0 ? '-' : 'Sí';
+            $prestacionExcel->inc               = $prestacion->Incompleto === 1 ? 'Sí' : '-';
+            $prestacionExcel->aus               = $prestacion->Ausente === 1 ? 'Sí' : '-';
+            $prestacionExcel->for               = $prestacion->Forma === 1 ? 'Sí' : '-';
+            $prestacionExcel->dev               = $prestacion->Devol === 1 ? 'Sí' : '-';
             $prestacionExcel->observacionEstado = $prestacion->ObsEstado ?? '-';
             $prestacionExcel->facturado         = $prestacion->Facturado ?? '-';
-            $prestacionExcel->factura           = $prestacion->Tipo.(sprintf('%05d', $prestacion->Sucursal))."-".$prestacion->NroFactura ?? '-';
+            $prestacionExcel->factura           = $prestacion->Tipo."".(sprintf('%05d', $prestacion->Sucursal))."-".$prestacion->NroFactura ?? '-';
 
             switch ($prestacion->Pago) {
                 case "B":
@@ -380,17 +380,14 @@ class PrestacionesExport implements FromCollection,WithHeadings
         ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
         ->join('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
         ->join('examenes', 'examenes.Id', '=', 'itemsprestaciones.IdExamen')
-        ->join('profesionales as efector', 'profesionales.Id', '=', 'itemsprestaciones.IdProfesional')
-        ->leftJoin('profesionales as informador', 'profesionales.Id', '=', 'itemsprestaciones.IdProfesional2')
-        ->join('proveedores', 'proveedores.Id', '=', 'profesionales.IdProveedor')
+        ->join('profesionales as efector', 'efector.Id', '=', 'itemsprestaciones.IdProfesional')
+        ->leftJoin('profesionales as informador', 'informador.Id', '=', 'itemsprestaciones.IdProfesional2')
+        ->join('proveedores', 'proveedores.Id', '=', 'efector.IdProveedor')
+        ->leftJoin('itemsfacturaventa', 'prestaciones.Id', '=', 'itemsfacturaventa.IdPrestacion')
+        ->leftJoin('facturasventa', 'itemsfacturaventa.IdFactura', '=', 'facturasventa.Id') 
         ->leftJoin('prestaciones_comentarios', 'prestaciones.Id', '=', 'prestaciones_comentarios.IdP')
-        ->leftJoin('itemsprestaciones_info', 'itemsprestacione.Id', '=', 'itemsprestaciones_info.IdIP')
-        ->select(
-            DB::raw("CONCAT(pacientes.Apellido,pacientes.Nombre) AS nombreCompleto"),
-            DB::raw("CONCAT(profesionales.Apellido,profesionales.Nombre) AS Efector"),   
-            'prestaciones.Fecha as FechaAlta',
-            'prestaciones.Id as Id',
-            'prestaciones.TipoPrestacion as TipoPrestacion',
+        ->leftJoin('itemsprestaciones_info', 'itemsprestaciones.Id', '=', 'itemsprestaciones_info.IdIP')
+        ->select( 
             'pacientes.Documento as DNI',
             'pacientes.Nombre as Nombre',
             'pacientes.Apellido as Apellido',
@@ -412,6 +409,9 @@ class PrestacionesExport implements FromCollection,WithHeadings
             'prestaciones.Devol as Devol',
             'prestaciones.Pago as Pago',
             'prestaciones_comentarios.Obs as ObsEstado',
+            'prestaciones.Fecha as FechaAlta',
+            'prestaciones.Id as Id',
+            'prestaciones.TipoPrestacion as TipoPrestacion',
             'itemsprestaciones.ObsExamen as ObsExamen',
             'itemsprestaciones.Anulado as ExaAnulado',
             'itemsprestaciones.FechaAsignado as asignado',
@@ -427,6 +427,9 @@ class PrestacionesExport implements FromCollection,WithHeadings
             'emp.RazonSocial as EmpresaRazonSocial',
             'emp.ParaEmpresa as EmpresaParaEmp',
             'emp.Identificacion as EmpresaIdentificacion',
+            'facturasventa.Tipo as Tipo',
+            'facturasventa.Sucursal as Sucursal',
+            'facturasventa.NroFactura as NroFactura',
             'art.RazonSocial as ArtRazonSocial'
         )
         ->where('prestaciones.Estado', '=', '1');
