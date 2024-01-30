@@ -158,20 +158,20 @@ class PrestacionesExport implements FromCollection,WithHeadings
 
             $prestacionExcel = new stdClass();
 
-            $prestacionExcel->fecha             = Carbon::parse($prestacion->FechaAlta)->format('d-m-Y') ?? '-'; // Formatear
+            $prestacionExcel->fecha             = Carbon::parse($prestacion->FechaAlta)->format('d-m-Y') ?? '-';
             $prestacionExcel->prestacion        = $prestacion->Id ?? '-';
             $prestacionExcel->tipo              = $prestacion->TipoPrestacion ?? '-';
             $prestacionExcel->paciente          = $prestacion->Apellido . " " .  $prestacion->Nombre ?? '-';
             $prestacionExcel->dni               = $prestacion->DNI ?? '-';
-            $prestacionExcel->cliente           = $prestacion->RazonSocial ?? '-'; // Revisar esto
-            $prestacionExcel->empresa           = $prestacion->RazonSocial ?? '-';
-            $prestacionExcel->art               = $prestacion->Art ?? '-';
+            $prestacionExcel->cliente           = $prestacion->EmpresaRazonSocial . ' ' . $prestacion->EmpresaIdentificacion ?? '-'; 
+            $prestacionExcel->empresa           = $prestacion->EmpresaParaEmp ?? '-';
+            $prestacionExcel->art               = $prestacion->ArtRazonSocial ?? '-';
             $prestacionExcel->cerrado           = $prestacion->Cerrado ?? '-';
             $prestacionExcel->finalizado        = $prestacion->Finalizado ?? '-';
             $prestacionExcel->entregado         = $prestacion->Entregado ?? '-';
             $prestacionExcel->eEnviado          = $prestacion->eEnviado ?? '-';
             $prestacionExcel->facturado         = $prestacion->Facturado ?? '-';
-            $prestacionExcel->factura           = '-'; // Consultar como se forma el número de factura.
+            $prestacionExcel->factura           = $prestacion->Tipo.(sprintf('%05d', $prestacion->Sucursal))."-".$prestacion->NroFactura ?? '-';
 
             switch ($prestacion->Pago) {
                 case "B":
@@ -195,7 +195,7 @@ class PrestacionesExport implements FromCollection,WithHeadings
             $prestacionExcel->anulada           = $prestacion->Anulado ?? '-';
             $prestacionExcel->obsAnulado        = $prestacion->ObsAnulado ?? '-';
             $prestacionExcel->nroCe             = $prestacion->NroCEE ?? '-';
-            $prestacionExcel->ccostos           = '-'; // Consultar Ccostos
+            $prestacionExcel->ccostos           = $prestacion->CCosto ?? '-';
             $prestacionExcel->inc               = $prestacion->Incompleto === 0 ? '-' : 'Sí';
             $prestacionExcel->aus               = $prestacion->Ausente === 0 ? '-' : 'Sí';
             $prestacionExcel->for               = $prestacion->Forma === 0 ? '-' : 'Sí';
@@ -222,15 +222,15 @@ class PrestacionesExport implements FromCollection,WithHeadings
             $prestacionExcel->tipo              = $prestacion->TipoPrestacion ?? '-';
             $prestacionExcel->paciente          = $prestacion->Apellido . " " .  $prestacion->Nombre ?? '-';
             $prestacionExcel->dni               = $prestacion->DNI ?? '-';
-            $prestacionExcel->cliente           = $prestacion->RazonSocial ?? '-'; // Revisar esto
-            $prestacionExcel->empresa           = $prestacion->RazonSocial ?? '-';
-            $prestacionExcel->art               = $prestacion->Art ?? '-';
-            $prestacionExcel->ccostos           = '-'; // Consultar Ccostos
+            $prestacionExcel->cliente           = $prestacion->EmpresaRazonSocial . ' ' . $prestacion->EmpresaIdentificacion ?? '-'; 
+            $prestacionExcel->empresa           = $prestacion->EmpresaParaEmp ?? '-';
+            $prestacionExcel->art               = $prestacion->ArtRazonSocial ?? '-';
+            $prestacionExcel->ccostos           = $prestacion->CCosto ?? '-';
             $prestacionExcel->nroCe             = $prestacion->NroCEE ?? '-';
             $prestacionExcel->anulada           = $prestacion->Anulado ?? '-';
             $prestacionExcel->obsAnulado        = $prestacion->ObsAnulado ?? '-';
             $prestacionExcel->examen            = $prestacion->Examen ?? '-';
-            $prestacionExcel->exaAnulado        = '-'; // Consultar Exa Anulado 
+            $prestacionExcel->exaAnulado        = $prestacion->ExaAnulado ?? '-'; // Consultar Exa Anulado 
             $prestacionExcel->inc               = $prestacion->Incompleto === 0 ? '-' : 'Sí';
             $prestacionExcel->aus               = $prestacion->Ausente === 0 ? '-' : 'Sí';
             $prestacionExcel->for               = $prestacion->Forma === 0 ? '-' : 'Sí';
@@ -257,10 +257,10 @@ class PrestacionesExport implements FromCollection,WithHeadings
             $prestacionExcel->tipo              = $prestacion->TipoPrestacion ?? '-';
             $prestacionExcel->paciente          = $prestacion->Apellido . " " .  $prestacion->Nombre ?? '-';
             $prestacionExcel->dni               = $prestacion->DNI ?? '-';
-            $prestacionExcel->cliente           = $prestacion->RazonSocial ?? '-'; // Revisar esto
-            $prestacionExcel->empresa           = $prestacion->RazonSocial ?? '-';
-            $prestacionExcel->art               = $prestacion->Art ?? '-';
-            $prestacionExcel->ccostos           = '-'; // Consultar Ccostos
+            $prestacionExcel->cliente           = $prestacion->EmpresaRazonSocial . ' ' . $prestacion->EmpresaIdentificacion ?? '-';
+            $prestacionExcel->empresa           = $prestacion->EmpresaParaEmp ?? '-';
+            $prestacionExcel->art               = $prestacion->ArtRazonSocial ?? '-';
+            $prestacionExcel->ccostos           = $prestacion->CCosto ?? '-';
             $prestacionExcel->nroCe             = $prestacion->NroCEE ?? '-';
             $prestacionExcel->anulada           = $prestacion->Anulado ?? '-';
             $prestacionExcel->obsAnulado        = $prestacion->ObsAnulado ?? '-';
@@ -273,14 +273,14 @@ class PrestacionesExport implements FromCollection,WithHeadings
             $prestacionExcel->calificacion      = $prestacion->Calificacion ?? '-';
             $prestacionExcel->obsResultado      = $prestacion->Observaciones ?? '-';
             $prestacionExcel->examen            = $prestacion->Examen ?? '-';
-            $prestacionExcel->anulado           = $prestacion->Anulado ?? '-'; // Consultar duplicado 
+            $prestacionExcel->anulado           = $prestacion->ExaAnulado ?? '-';
             $prestacionExcel->inc               = $prestacion->Incompleto === 0 ? '-' : 'Sí';
             $prestacionExcel->aus               = $prestacion->Ausente === 0 ? '-' : 'Sí';
             $prestacionExcel->for               = $prestacion->Forma === 0 ? '-' : 'Sí';
             $prestacionExcel->dev               = $prestacion->Devol === 0 ? '-' : 'Sí';
             $prestacionExcel->observacionEstado = $prestacion->ObsEstado ?? '-';
             $prestacionExcel->facturado         = $prestacion->Facturado ?? '-';
-            $prestacionExcel->factura           = '-'; // Consultar como se forma el número de factura.
+            $prestacionExcel->factura           = $prestacion->Tipo.(sprintf('%05d', $prestacion->Sucursal))."-".$prestacion->NroFactura ?? '-';
 
             switch ($prestacion->Pago) {
                 case "B":
@@ -301,13 +301,13 @@ class PrestacionesExport implements FromCollection,WithHeadings
             $prestacionExcel->EspecialidadEfector   = $prestacion->EspecialidadEfector ?? '-';
             $prestacionExcel->Efector               = $prestacion->apellidoEfector . " " . $prestacion->nombreEfector;
             $prestacionExcel->asignado              = $prestacion->asignado ?? '-';
-            $prestacionExcel->Informador            = '-'; // Consultar
-            $prestacionExcel->Pagadoef              = '-'; // Consultar
-            $prestacionExcel->PagadoInf             = '-'; // Consultar
+            $prestacionExcel->Informador            = $prestacion->apellidoInformador . " " . $prestacion->nombreInformador ??'-';
+            $prestacionExcel->Pagadoef              = $prestacion->pagadoEfector ?? '-';
+            $prestacionExcel->PagadoInf             = $prestacion->pagadoInformador ?? '-';
             $prestacionExcel->ObsExamen             = $prestacion->ObsExamen ?? '-';
             $prestacionExcel->ObsEfector            = '-'; // Consultar
-            $prestacionExcel->ObsInformador         = '-'; // Consultar
-            $prestacionExcel->ObsPrivadas           = '-'; // Consultar
+            $prestacionExcel->ObsInformador         = $prestacion->ObsInformador ?? '-';
+            $prestacionExcel->ObsPrivadas           = $prestacion->ObsEstado ?? '-';
             $prestacionesExcel->push($prestacionExcel);
             
         }
@@ -319,13 +319,13 @@ class PrestacionesExport implements FromCollection,WithHeadings
 
         $query =  DB::table('prestaciones')
         ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-        ->join('clientes', 'prestaciones.IdEmpresa', '=', 'clientes.Id')
         ->join('clientes as emp', 'prestaciones.IdEmpresa', '=', 'emp.Id')
         ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
         ->leftJoin('prestaciones_comentarios', 'prestaciones.Id', '=', 'prestaciones_comentarios.IdP')
+        ->leftJoin('itemsfacturaventa', 'prestaciones.Id', '=', 'itemsfacturaventa.IdPrestacion')
+        ->leftJoin('facturasventa', 'itemsfacturaventa.IdFactura', '=', 'facturasventa.Id') 
+        ->leftJoin('fichaslaborales', 'pacientes.Id', '=', 'fichaslaborales.IdPaciente')
         ->select(
-            DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdART) AS Art'),
-            DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdEmpresa) AS RazonSocial'),
             'prestaciones.Fecha as FechaAlta',
             'prestaciones.Id as Id',
             'prestaciones.TipoPrestacion as TipoPrestacion',
@@ -349,9 +349,17 @@ class PrestacionesExport implements FromCollection,WithHeadings
             'prestaciones.Forma as Forma',
             'prestaciones.Devol as Devol',
             'prestaciones_comentarios.Obs as ObsEstado',
-            'prestaciones.Pago as Pago'
+            'prestaciones.Pago as Pago',
+            'art.RazonSocial as ArtRazonSocial',
+            'emp.RazonSocial as EmpresaRazonSocial',
+            'emp.Identificacion as EmpresaIdentificacion',
+            'emp.ParaEmpresa as EmpresaParaEmp',
+            'facturasventa.Tipo as Tipo',
+            'facturasventa.Sucursal as Sucursal',
+            'facturasventa.NroFactura as NroFactura',
+            'fichaslaborales.CCosto as CCosto'
         )
-        ->where('prestaciones.Estado', '=', '1');
+        ->where('prestaciones.Estado', '1');
 
          if (empty($this->filters)) {
             return $query->whereIn('prestaciones.Id', $this->ids)
@@ -368,17 +376,16 @@ class PrestacionesExport implements FromCollection,WithHeadings
 
         $query = DB::table('prestaciones')
         ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-        ->join('clientes', 'prestaciones.IdEmpresa', '=', 'clientes.Id')
         ->join('clientes as emp', 'prestaciones.IdEmpresa', '=', 'emp.Id')
         ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
         ->join('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
         ->join('examenes', 'examenes.Id', '=', 'itemsprestaciones.IdExamen')
-        ->join('profesionales', 'profesionales.Id', '=', 'itemsprestaciones.IdProfesional')
+        ->join('profesionales as efector', 'profesionales.Id', '=', 'itemsprestaciones.IdProfesional')
+        ->leftJoin('profesionales as informador', 'profesionales.Id', '=', 'itemsprestaciones.IdProfesional2')
         ->join('proveedores', 'proveedores.Id', '=', 'profesionales.IdProveedor')
         ->leftJoin('prestaciones_comentarios', 'prestaciones.Id', '=', 'prestaciones_comentarios.IdP')
+        ->leftJoin('itemsprestaciones_info', 'itemsprestacione.Id', '=', 'itemsprestaciones_info.IdIP')
         ->select(
-            DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdART) AS Art'),
-            DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdEmpresa) AS RazonSocial'),
             DB::raw("CONCAT(pacientes.Apellido,pacientes.Nombre) AS nombreCompleto"),
             DB::raw("CONCAT(profesionales.Apellido,profesionales.Nombre) AS Efector"),   
             'prestaciones.Fecha as FechaAlta',
@@ -403,14 +410,24 @@ class PrestacionesExport implements FromCollection,WithHeadings
             'prestaciones.Ausente as Ausente',
             'prestaciones.Forma as Forma',
             'prestaciones.Devol as Devol',
+            'prestaciones.Pago as Pago',
             'prestaciones_comentarios.Obs as ObsEstado',
+            'itemsprestaciones.ObsExamen as ObsExamen',
+            'itemsprestaciones.Anulado as ExaAnulado',
+            'itemsprestaciones.FechaAsignado as asignado',
+            'itemsprestaciones.FechaPagado as pagadoEfector',
+            'itemsprestaciones.FechaPagado2 as pagadoInformador',
+            'itemsprestaciones_info.Obs as ObsInformador',
+            'efector.Nombre as nombreEfector',
+            'efector.Apellido as apellidoEfector',
+            'informador.Nombre as nombreInformador',
+            'informador.Apellido as apellidoInformador',
             'examenes.Nombre as Examen',
             'proveedores.Nombre as EspecialidadEfector',
-            'itemsprestaciones.ObsExamen as ObsExamen',
-            'profesionales.Nombre as nombreEfector',
-            'profesionales.Apellido as apellidoEfector',
-            'itemsprestaciones.FechaAsignado as asignado',
-            'prestaciones.Pago as Pago'
+            'emp.RazonSocial as EmpresaRazonSocial',
+            'emp.ParaEmpresa as EmpresaParaEmp',
+            'emp.Identificacion as EmpresaIdentificacion',
+            'art.RazonSocial as ArtRazonSocial'
         )
         ->where('prestaciones.Estado', '=', '1');
 
@@ -428,33 +445,23 @@ class PrestacionesExport implements FromCollection,WithHeadings
 
         $filters = $this->filters;
 
-        if(!empty($filters->paciente)) {
-            $query->where(function ($query) use ($filters) {
-                $query->orWhere('pacientes.Nombre', 'LIKE', '%'. $filters->paciente .'%')
-                    ->orWhere('pacientes.Apellido', 'LIKE', '%'. $filters->paciente .'%')
-                    ->orWhere('pacientes.Documento', 'LIKE', '%'. $filters->paciente .'%')
-                    ->orWhere('pacientes.Identificacion', 'LIKE', '%'. $filters->paciente .'%');
-            });
-        }
-
-        if(!empty($filters->empresa)) {
+        if(!empty($filters->pacienteSelect2)) {
             $query->where(function($query) use ($filters) {
-                $query->orWhere('emp.Identificacion', 'LIKE', '%'. $filters->empresa .'%')
-                    ->orWhere('emp.ParaEmpresa', 'LIKE', '%'. $filters->empresa .'%')
-                    ->orWhere('emp.NombreFantasia', 'LIKE', '%'. $filters->empresa .'%')
-                    ->orWhere('emp.RazonSocial', 'LIKE', '%'. $filters->empresa .'%');
+                $query->where('paciente.Id', $filters->pacienteSelect2);
             });
         }
 
-        if(!empty($filters->art)) {
+        if(!empty($filters->empresaSelect2)) {
             $query->where(function($query) use ($filters) {
-                $query->orwhere('art.RazonSocial', 'LIKE', '%'. $filters->art .'%')
-                    ->orWhere('art.Identificacion', 'LIKE', '%'. $filters->art .'%')
-                    ->orWhere('art.ParaEmpresa', 'LIKE', '%'. $filters->art .'%')
-                    ->orWhere('art.NombreFantasia', 'LIKE', '%'. $filters->art .'%');
+                $query->where('emp.Id', $filters->empresaSelect2);
             });
         }
 
+        if(!empty($filters->artSelect2)) {
+            $query->where(function($query) use ($filters) {
+                $query->where('art.Id', $filters->artSelect2);
+            });
+        }
 
         if (!empty($filters->tipoPrestacion)) {
             $query->where('prestaciones.TipoPrestacion', $filters->tipoPrestacion);

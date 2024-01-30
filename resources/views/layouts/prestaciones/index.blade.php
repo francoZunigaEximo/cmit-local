@@ -148,16 +148,16 @@
                                     <i class="ri-add-line align-bottom me-1"></i> Nuevo
                             </button>
                             <button title="Filtros avanzados" class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#filtrosAvanzados" aria-expanded="false" aria-controls="filtrosAvanzados">
-                                <i class="ri-filter-2-line"></i>
+                                Filtros <i class="ri-filter-2-line"></i>
                             </button>
                             <button type="button" class="btn iconGeneral" title="Reporte Simple" onclick="exportExcel('simple')">
-                                <i class="ri-file-excel-line"></i>
+                                Simple <i class="ri-file-excel-line"></i>
                             </button>
                             <button type="button" class="btn iconGeneral" title="Reporte Detallado" onclick="exportExcel('detallado')">
-                                <i class="ri-file-excel-line"></i>
+                                Detallado <i class="ri-file-excel-line"></i>
                             </button>
                             <button type="button" class="btn iconGeneral" title="Reporte Completo" onclick="exportExcel('completo')">
-                                <i class="ri-file-excel-line"></i>
+                                Completo <i class="ri-file-excel-line"></i>
                             </button>
                         </div>
                     </div>
