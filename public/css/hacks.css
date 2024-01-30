@@ -464,3 +464,8 @@ table.dataTable tr.dtrg-level-0 td {
 #resultadoExamenes > :not(caption) > * {
     padding: 0.25rem 0.6rem;
 }
+
+.dropdownLinks {
+	font-size:9px !important;
+	color: #fff !important;
+}

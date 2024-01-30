@@ -1,6 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html lang="en" data-layout="vertical" data-topbar="light" data-sidebar="light" data-sidebar-size="sm-hover" data-sidebar-image="none" data-preloader="disable" data-layout-width="fluid">
+<html lang="en" data-layout="vertical" data-topbar="light" data-sidebar="light" data-sidebar-size="sm-hover" data-sidebar-image="none" data-preloader="enabled" data-layout-width="fluid">
 
 <head>
 
@@ -135,50 +135,74 @@
                         <li class="menu-title"><span data-key="t-menu">Menu</span></li>
 
                         <li class="nav-item">
-                            <a class="nav-link menu-link" href="{{ route('pacientes.index') }}" aria-expanded="false">
-                                <i data-feather="heart" class="icon-dual"></i> <span data-key="t-user" title="(ALT + A)">Pacientes</span>
+                            <a class="nav-link menu-link collapsed" href="#sidebarOperaciones" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarConfiguracion">
+                                <i data-feather="tool" class="icon-dual"></i> <span data-key="t-operaciones">Operaciones</span>
                             </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link menu-link" href="{{ route('clientes.index') }}" aria-expanded="false">
-                                <i data-feather="layers" class="icon-dual"></i> <span data-key="t-user" title="(ALT + C)">Clientes</span>
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link menu-link" href="{{ route('prestaciones.index') }}" aria-expanded="false">
-                                <i data-feather="users" class="icon-dual"></i> <span data-key="t-layers" title="(ALT + R)">Prestaciones</span>
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link menu-link" href="{{ route('mapas.index') }}" aria-expanded="false">
-                                <i data-feather="map" class="icon-dual"></i> <span data-key="t-layers" title="(ALT + M)">Mapas</span>
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link menu-link" href="{{ route('profesionales.index') }}" aria-expanded="false">
-                                <i data-feather="user-check" class="icon-dual"></i> <span data-key="t-layers" title="(ALT + O)">Profesionales</span>
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link menu-link" href="{{ route('especialidades.index') }}" aria-expanded="false">
-                                <i data-feather="list" class="icon-dual"></i> <span data-key="t-layers" title="(ALT + E)">Especialidades</span>
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link menu-link collapsed" href="#sidebarConfiguracion" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarConfiguracion">
-                                <i data-feather="settings" class="icon-dual"></i> <span data-key="t-examenes">Configuración</span>
-                            </a>
-                            <div class="menu-dropdown collapse" id="sidebarConfiguracion" style="">
+                            <div class="menu-dropdown mega-dropdown-menu collapse" id="sidebarOperaciones">
                                 <ul class="nav nav-sm flex-column">
+                                    <li class="nav-item">
+                                        <a href="{{ route('prestaciones.index') }}" class="nav-link enlace-blanco" data-key="t-prestaciones"> Prestaciones </a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <a href="#" class="nav-link enlace-blanco" data-key="t-etapas"> Etapas </a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <a href="{{ route('mapas.index') }}" class="nav-link enlace-blanco" data-key="t-mapas"> Mapas </a>
+                                    </li>
+                                    
+                                </ul>
+                            </div>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link menu-link collapsed" href="#sidebarTablas" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarTablas">
+                                <i data-feather="square" class="icon-dual"></i> <span data-key="t-tablas">Tablas</span>
+                            </a>
+                            <div class="menu-dropdown mega-dropdown-menu collapse" id="sidebarTablas">
+                                <ul class="nav nav-sm flex-column">
+                                    <li class="nav-item">
+                                        <a href="{{ route('pacientes.index') }}" class="nav-link enlace-blanco" data-key="t-pacientes"> Pacientes </a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <a href="{{ route('especialidades.index') }}" class="nav-link enlace-blanco" data-key="t-especialidades"> Especialidades </a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <a href="{{ route('profesionales.index') }}" class="nav-link enlace-blanco" data-key="t-profesionales"> Profesionales </a>
+                                    </li>
+
                                     <li class="nav-item">
                                         <a href="{{ route('examenes.index') }}" class="nav-link enlace-blanco" data-key="t-examenes"> Examenes </a>
                                     </li>
+                                    
+                                    <li class="nav-item">
+                                        <a href="{{ route('clientes.index') }}" class="nav-link enlace-blanco" data-key="t-cliente"> Clientes </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link menu-link collapsed" href="#sidebarVentas" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarVentas">
+                                <i data-feather="dollar-sign" class="icon-dual"></i> <span data-key="t-ventas">Ventas</span>
+                            </a>
+                            <div class="menu-dropdown mega-dropdown-menu collapse" id="sidebarVentas">
+                                <ul class="nav nav-sm flex-column">
+                                    <li class="nav-item">
+                                        <a href="#" class="nav-link enlace-blanco" data-key="t-ExCuenta"> Ex. a Cta </a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <a href="#" class="nav-link enlace-blanco" data-key="t-factura"> Factura </a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <a href="#" class="nav-link enlace-blanco" data-key="t-notaCredito"> Nota de crédito </a>
+                                    </li>
+                                    
                                 </ul>
                             </div>
                         </li>
