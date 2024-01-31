@@ -18,7 +18,7 @@ use App\Http\Controllers\UtilityController;
 use App\Http\Controllers\FacturasVentaController;
 use App\Http\Controllers\NoticiasController;
 use App\Http\Controllers\PrestacionesObsFasesController;
-use App\Models\ItemPrestacion;
+use App\Http\Controllers\OrdenesExamenController;
 //use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Route;
 
@@ -175,6 +175,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('choisePerfil', [ProfesionalesController::class, 'choisePerfil'])->name('choisePerfil');
     Route::get('choiseEspecialidad', [ProfesionalesController::class, 'choiseEspecialidad'])->name('choiseEspecialidad');
     Route::post('savePrestador', [ProfesionalesController::class, 'savePrestador'])->name('savePrestador');
+    Route::get('listGeneral', [ProfesionalesController::class, 'listGeneral'])->name('listGeneral');
 
     //Rutas de Proveedores
     Route::resource('especialidades', ProveedoresController::class);
@@ -192,7 +193,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('itemsprestaciones', ItemPrestacionesController::class);
     Route::post('updateItem', [ItemPrestacionesController::class, 'updateItem'])->name('updateItem');
     Route::post('updateAsignado', [ItemPrestacionesController::class, 'updateAsignado'])->name('updateAsignado');
-    Route::get('listGeneral', [ItemPrestacionesController::class, 'listGeneral'])->name('listGeneral');
+    
     Route::post('updateAdjunto', [ItemPrestacionesController::class, 'updateAdjunto'])->name('updateAdjunto');
     Route::get('paginacionGeneral', [ItemPrestacionesController::class, 'paginacionGeneral'])->name('paginacionGeneral');
     Route::post('updateItemExamen', [ItemPrestacionesController::class, 'updateExamen'])->name('updateItemExamen');
@@ -217,4 +218,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('comentariosPriv', [PrestacionesObsFasesController::class, 'comentariosPriv'])->name('comentariosPriv');
     Route::post('savePrivComent', [PrestacionesObsFasesController::class, 'addComentario'])->name('savePrivComent');
 
+
+    //Rutas de Ordenes de examenes efectores
+    Route::resource('ordenesExamen', OrdenesExamenController::class);
 });

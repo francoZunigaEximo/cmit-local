@@ -69,28 +69,6 @@ class ItemPrestacionesController extends Controller
         }
     }
 
-    public function listGeneral(Request $request): mixed
-    {
-
-        $data = Profesional::join('proveedores', 'profesionales.IdProveedor', '=', 'proveedores.Id')
-            ->select(
-                'profesionales.Id as Id',
-                DB::raw("CONCAT(profesionales.Apellido, ' ', profesionales.Nombre) AS NombreCompleto"),
-            )
-            ->where(function($query) use ($request) {
-                if ($request->tipo === 'efector') {
-                    $query->where('profesionales.T1', '1');
-                } elseif ($request->tipo === 'informador') {
-                    $query->where('profesionales.T2', '1');
-                }
-            })
-            ->where('profesionales.IdProveedor', $request->proveedor)
-            ->where('profesionales.Inactivo', '0')
-            ->get();
-
-        return response()->json(['resultados' => $data]);
-    }
-
     public function updateAdjunto(Request $request):void 
     {
 
