@@ -5,7 +5,7 @@
 @section('content')
 
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-    <h4 class="mb-sm-0">Exámen prestación <span class="custom-badge original">N°{{ $itemsprestacione->IdPrestacion }}</span> | Paciente <span class="custom-badge original">{{ $paciente->Nombre ?? ''}} {{ $paciente->Apellido ?? '' }}</span></h4>
+    <h4 class="mb-sm-0">Exámen prestación <span class="custom-badge original">N°{{ $itemsprestacione->IdPrestacion }}</span> | Paciente <span class="custom-badge original">{{ $paciente->Nombre ?? ''}} {{ $paciente->Apellido ?? '' }}</span> {!! ($itemsprestacione->Anulado === 1) ? '<span class="custom-badge rojo">Bloqueado</span>' : '' !!}</h4>
     <input type="hidden" value="{{ $itemsprestacione->Id }}" id="Id">
     <div class="page-title-right d-inline">
         <p><strong>QR:</strong> {{ $qrTexto ?? ''}}</p>
@@ -194,7 +194,7 @@
     <div class="row mb-3">
         <div class="col-12 box-information text-center">
             <button type="button" class="btn botonGeneral" id="btnVolver">Volver</button>
-            <a class="btn botonGeneral" id="actualizarExamen">Guardar</a>
+            <button type="button" class="btn botonGeneral" id="actualizarExamen">Guardar</button>
         </div>
     </div>
 
@@ -329,6 +329,7 @@
     const descargaI = "{{ asset('storage/ArchivosInformadores') }}";
     const deleteIdAdjunto = "{{ route('deleteIdAdjunto') }}";
     const replaceIdAdjunto = "{{ route('replaceIdAdjunto') }}";
+    const getBloqueoItemPrestacion = "{{ route('getBloqueoItemPrestacion') }}";
 
 
 

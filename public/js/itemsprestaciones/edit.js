@@ -13,6 +13,8 @@ $(document).ready(function(){
     $('#efectores option[value="0"]').text('Elija una opción...');
     $('#informadores option[value="0"]').text('Elija una opción...');
     
+    checkBloq();
+
     asignar(efector, 'efector');
     asignar(informador, 'informador');
     liberar(cadj, efector);
@@ -514,6 +516,25 @@ $(document).ready(function(){
 
         return true
 
+    }
+
+    function checkBloq(){
+
+        $.get(getBloqueoItemPrestacion, {Id: ID})
+            .done(async function(response){
+
+                if(await response.prestacion === true){
+
+                    $('#Fecha, #ObsExamen, #efectores, #informadores').prop('disabled', true);
+                    $('button').removeClass('asignar liberar abrir cerrar asignarI cerrarI');
+                    $('button').removeAttr('id');
+                    $('i.ri-play-list-add-line').removeClass('addPaquete');
+                    }
+            })
+            .fail(function(xhr){
+                console.error(xhr);
+                toastr.error("Ha ocurrido un error. Consulte con el administrador");
+            });
     }
 
     
