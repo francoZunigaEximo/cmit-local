@@ -481,8 +481,7 @@ class MapasController extends Controller
                     'examenes.Adjunto AS ExamenAdjunto',
                     'proveedores.Nombre AS NombreProveedor',
                     'profesionales.Nombre AS NombreEfector',
-                    DB::raw('(SELECT Nombre FROM profesionales WHERE Id = itemsprestaciones.IdProfesional) AS NombreEfector'),
-                    DB::raw('(SELECT Apellido FROM profesionales WHERE Id = itemsprestaciones.IdProfesional) AS ApellidoEfector'),
+                    'profesionales.Apellido AS ApellidoEfector',
                     DB::raw('(SELECT Nombre FROM profesionales WHERE Id = itemsprestaciones.IdProfesional2) AS NombreInformador'),
                     DB::raw('(SELECT Apellido FROM profesionales WHERE Id = itemsprestaciones.IdProfesional2) AS ApellidoInformador'),
                     DB::raw('(SELECT CASE WHEN COUNT(*) = SUM(CASE WHEN itemsprestaciones.Id = archivosefector.IdEntidad THEN 1 ELSE 0 END) THEN "adjunto" ELSE "sadjunto" END FROM itemsprestaciones WHERE itemsprestaciones.Id = archivosefector.IdEntidad) AS adjuntados')
