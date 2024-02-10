@@ -6,12 +6,11 @@ use App\Models\ArchivoEfector;
 use App\Models\ArchivoInformador;
 use App\Models\ItemPrestacion;
 use App\Models\ItemPrestacionInfo;
-use App\Models\Profesional;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use App\Traits\ObserverItemsPrestaciones;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class ItemPrestacionesController extends Controller
 {
@@ -122,7 +121,6 @@ class ItemPrestacionesController extends Controller
         return response()->json(['resultado' => $query]);
     }
 
-
     public function updateExamen(Request $request):void
     {
         $query = ItemPrestacion::find($request->Id);
@@ -144,7 +142,6 @@ class ItemPrestacionesController extends Controller
             $query->save();
         }
     }
-
 
     public function uploadAdjunto(Request $request)
     {
@@ -255,6 +252,7 @@ class ItemPrestacionesController extends Controller
                 ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
                 ->join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
                 ->join('profesionales as informador', 'itemsprestaciones.IdProfesional2', '=', 'informador.Id')
+                ->leftJoin('archivosefector', 'itemsprestaciones.Id', '=', 'archivosefector.IdEntidad')
                 ->select(
                     'examenes.Nombre as Nombre',
                     'examenes.Id as IdExamen',
@@ -272,7 +270,8 @@ class ItemPrestacionesController extends Controller
                     'itemsprestaciones.CAdj as CAdj',
                     'itemsprestaciones.CInfo as CInfo',
                     'itemsprestaciones.Id as IdItem',
-                    'itemsprestaciones.Anulado as Anulado'
+                    'itemsprestaciones.Anulado as Anulado',
+                    DB::raw('(SELECT COUNT(*) FROM archivosefector WHERE IdEntidad = itemsprestaciones.Id) as archivos')
                 );                
 
             if ($request->tipo === 'listado' && is_array($request->IdExamen)) {
@@ -377,6 +376,47 @@ class ItemPrestacionesController extends Controller
 
         $item && $item->update(['Anulado' => 1]);
         
+    }
+
+    public function asignarProfesional(Request $request): mixed
+    {
+
+        $examenes = $request->Ids;
+
+        if (!is_array($examenes)) {
+            $examenes = [$examenes];
+        }
+
+
+        foreach ($examenes as $examen) {
+            
+            $itemPrestacion = ItemPrestacion::where('Id', $examen)->first();
+
+            $listado = [];
+
+            if(!$itemPrestacion){
+
+                $itemPrestacion->update(['IdProfesional' => $request->IdProfesional]);
+                array_push($listado, $examen);
+            }
+        }
+
+        $nombres = $this->getDatosProfesional($request->IdProfesional);
+
+        return empty($listado) === 0
+            ? response()->json(['message' => 'No se ha añadido ningun profesional. Verifique la listado por favor.'])
+            : response()->json(['message' => 'Se han añadido a los examenes ' . implode(",", $listado) . " el profesional " . $nombres]);
+
+    }
+
+    public function getBloqueo(Request $request)
+    {
+        $item = ItemPrestacion::where('Id', $request->Id)->first(['Anulado']);
+        
+        if($item->Anulado === 1)
+        {
+            return response()->json(['prestacion' => true]);
+        }
     }
 
 }
