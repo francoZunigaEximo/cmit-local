@@ -271,9 +271,9 @@ class ProfesionalesController extends Controller
             'EMail' => $request->EMail,
             'Direccion' => $request->Direccion ?? '',
             'Provincia' => $request->Provincia,
-            'IdLocalidad' => $request->IdLocalidad,
+            'IdLocalidad' => $request->IdLocalidad ?? '',
             'Firma' => $request->Firma ?? '',
-            'CP' => $request->CP,
+            'CP' => $request->CP ?? '0',
             'Inactivo' => $request->estado,
             'wImagen' => $request->wImage ?? '0',
             'hImagen' => $request->hImage ?? '0',
@@ -421,6 +421,7 @@ class ProfesionalesController extends Controller
             ->where('profesionales.Inactivo', '0')
             ->get();
 
+            
         return response()->json(['resultados' => $data]);
     }
 
