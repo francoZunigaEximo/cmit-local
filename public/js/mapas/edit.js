@@ -142,6 +142,12 @@ $(document).ready(()=>{
         let nroRemito =  $('#IdRemito').text(),
             remitoObs = $('#remitoObs').val(),
             remitoFechaE = $('#remitoFechaE').val();
+
+        if (nroRemito == 0 || nroRemito == '') {
+            toastr.warning('No se puede realizar la entrega porque no posee numero de remito. Debe Finalizar la Prestación.', 'Atención');
+            $(this).prop('disabled', false);
+            return;
+        }
     
         if(remitoFechaE === '' || remitoFechaE === null){
             toastr.warning('Debe especificar una fecha de entrega', 'Atención');
@@ -149,7 +155,7 @@ $(document).ready(()=>{
             $(this).prop('disabled', false);
             return;
         }
-    
+
         $.post(saveRemitos, {_token: TOKEN, Obs: remitoObs, FechaE: remitoFechaE, Id: nroRemito})
             .done(function(){
                 toastr.success('Se han registrado las fechas de entrega en los remitos correspondientes', 'Perfecto');
@@ -473,7 +479,7 @@ $(document).ready(()=>{
                 
                 let contenido = `
                     <tr>
-                        <td>${f.NroRemito}</td>
+                        <td>${f.NroRemito == 0 ? '-' : f.NroRemito}</td>
                         <td>${fecha(f.Fecha)}</td>
                         <td>${f.IdPrestacion}</td>
                         <td>${f.ApellidoPaciente} ${f.NombrePaciente}</td>
@@ -892,7 +898,7 @@ $(document).ready(()=>{
             
             let contenido = `
                 <tr>
-                    <td>${f.NroRemito}</td>
+                    <td>${f.NroRemito == 0 ? '-' : f.NroRemito}</td>
                     <td>${fecha(f.Fecha)}</td>
                     <td>${f.IdPrestacion}</td>
                     <td>${f.ApellidoPaciente} ${f.NombrePaciente}</td>
@@ -1067,7 +1073,7 @@ $(document).ready(()=>{
 
                     let contenido = `
                         <tr>
-                            <td>${r.NroCEE}</td>
+                            <td>${r.NroCEE == 0 ? '-' : r.NroCEE}</td>
                             <td>${r.contadorRemitos}</td>
                             <td>
                                 <span style="text-align=center" class="custom-badge ${r.Entregado === 1 ? 'verde':'rojo'}">${r.Entregado === 1 ? 'Entregado':'Sin Entregar'}</span>
