@@ -13,6 +13,8 @@ class Profesional extends Model
 
     protected $primaryKey = 'Id';
 
+    protected $appends = ['NombreProfesional'];
+
     protected $fillable = [
         'Id',
         'IdProveedor',
@@ -40,6 +42,11 @@ class Profesional extends Model
     ];
 
     public $timestamps = false;
+
+    public function getNombreProfesionalAttribute()
+    {
+        return $this->Apellido . ' ' . $this->Nombre;
+    }
 
     public function prestacion()
     {

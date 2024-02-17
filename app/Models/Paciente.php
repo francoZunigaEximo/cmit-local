@@ -9,20 +9,12 @@ class Paciente extends Model
 {
     use HasFactory;
 
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
     protected $table = 'pacientes';
 
     protected $primaryKey = 'Id';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
+    protected $appends = ['NombreCompleto'];
+
     protected $fillable = [
         'TipoIdentificacion',
         'Identificacion',
@@ -51,6 +43,11 @@ class Paciente extends Model
     ];
 
     public $timestamps = false;
+
+    public function getNombreCompletoAttribute()
+    {
+        return $this->Apellido . ' ' . $this->Nombre;
+    }
 
     public function prestaciones()
     {

@@ -50,4 +50,9 @@ class Proveedor extends Model
     {
         return $this->hasOne(Localidad::class, 'Id', 'IdLocalidad');
     }
+
+    public function itemsPrestacion()
+    {
+        return $this->hasMany(ItemPrestacion::class, 'IdProveedor', 'Id');
+    }
 }
