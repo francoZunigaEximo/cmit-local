@@ -708,7 +708,7 @@ class MapasController extends Controller
             $query->whereBetween('prestaciones.Fecha', [$desde, $hasta]);
         });
 
-        $resutl = $query->distinct()->get();
+        $resutl = $query->distinct()->orderBy('prestaciones.NroCEE', 'DESC')->orderBy('pacientes.Apellido', 'ASC')->get();
 
         return response()->json(['result' => $resutl]);
     }
@@ -723,7 +723,7 @@ class MapasController extends Controller
                 ->where('prestaciones.Finalizado', 1);
         });
         
-        $result = $query->distinct()->get();
+        $result = $query->orderBy('prestaciones.NroCEE', 'DESC')->orderBy('pacientes.Apellido', 'ASC')->distinct()->get();
 
         return response()->json(['result' => $result]);
     }
