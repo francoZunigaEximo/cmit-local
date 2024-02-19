@@ -32,20 +32,35 @@ class ItemPrestacionesController extends Controller
 
     public function updateItem(Request $request): void
     {
-        $item = ItemPrestacion::find($request->Id);
+        $examenes = $request->Id;
 
-        if($item) 
-        {   
-            if($request->Para === 'cerrar' || $request->Para === 'abrir')
-            {
-                $item->CAdj = $request->CAdj;
-            
-            }elseif($request->Para === 'cerrarI'){
+        $lstAbrir = [3 => 0, 4 => 1, 5 => 2];
+        $lstCerrar = [0 => 3, 2 => 5, 1 => 4];
 
-                $item->CInfo = $request->CInfo;
-            
+        if (!is_array($examenes)) {
+            $examenes = [$examenes];
+        }
+
+        foreach ($examenes as $examen) {
+            $item = ItemPrestacion::find($examen);
+
+            if ($item) 
+            {   
+                if ($request->Para === 'abrir')
+                {
+                    $item->CAdj = empty($request->CAdj) ? $lstAbrir[$item->CAdj] : $request->CAdj;
+                
+                } elseif ($request->Para === 'cerrar' ) {
+
+                    $item->CAdj = empty($request->CAdj) ? $lstCerrar[$item->CAdj] : $request->CAdj;
+
+                } elseif ($request->Para === 'cerrarI'){
+
+                    $item->CInfo = $request->CInfo;
+                
+                }
+                $item->save();
             }
-            $item->save();
         }
     }
 
@@ -316,7 +331,7 @@ class ItemPrestacionesController extends Controller
     public function check(Request $request): mixed
     {
 
-        $examenes = ItemPrestacion::where('IdPrestacion', '=', $request->Id)->get() ?? '';
+        $examenes = ItemPrestacion::where('IdPrestacion', $request->Id)->get() ?? '';
 
         $idExamenes = [];
 
@@ -387,25 +402,21 @@ class ItemPrestacionesController extends Controller
             $examenes = [$examenes];
         }
 
-
         foreach ($examenes as $examen) {
             
             $itemPrestacion = ItemPrestacion::where('Id', $examen)->first();
 
             $listado = [];
 
-            if(!$itemPrestacion){
+            if($itemPrestacion){
 
-                $itemPrestacion->update(['IdProfesional' => $request->IdProfesional]);
+                $idProfesional = $request->IdProfesional ?? 0;
+                $itemPrestacion->update(['IdProfesional' => $idProfesional]);
                 array_push($listado, $examen);
             }
         }
 
-        $nombres = $this->getDatosProfesional($request->IdProfesional);
-
-        return empty($listado) === 0
-            ? response()->json(['message' => 'No se ha añadido ningun profesional. Verifique la listado por favor.'])
-            : response()->json(['message' => 'Se han añadido a los examenes ' . implode(",", $listado) . " el profesional " . $nombres]);
+        return response()->json(['message' => 'Se ha realizo la operación de manera correcta. Se actualizará la grilla']);
 
     }
 
