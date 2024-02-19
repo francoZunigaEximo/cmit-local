@@ -1,6 +1,6 @@
 $(document).ready(() => {
 
-    $('#buscar, #especialidad, #tipo, #opciones').on('change', function() {
+    $(document).on('click', '#buscarProfesional', function(){ 
         
         $('#listaProf').DataTable().clear().destroy();
 

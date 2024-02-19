@@ -57,9 +57,7 @@ class ProfesionalesController extends Controller
                 'profesionales.Pago as Pago',
                 'profesionales.Inactivo as Estado'
             )
-            ->join('proveedores', 'profesionales.IdProveedor', '=', 'proveedores.Id')
-            ->where('profesionales.Id', '<>', 0)
-            ->orderBy('profesionales.Apellido', 'Asc');
+            ->join('proveedores', 'profesionales.IdProveedor', '=', 'proveedores.Id');
 
             $query->when(is_array($tipo), function ($query) use ($tipo) {
                 foreach ($tipo as $valor) {
@@ -106,7 +104,11 @@ class ProfesionalesController extends Controller
                 }
             });
 
-            return Datatables::of($query)->make(true);
+            $result = $query->where('profesionales.Id', '<>', 0)
+                ->where('profesionales.Inactivo', 0)
+                ->orderBy('profesionales.Apellido', 'Asc');
+
+            return Datatables::of($result)->make(true);
         }
         return view('layouts.profesionales.index');
     }
