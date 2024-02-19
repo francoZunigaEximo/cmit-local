@@ -20,12 +20,12 @@
     <div id="msgProfesionales"></div>
 
     <div class="row p-3">
-        <div class="col-3 p-2 mb-2">
+        <div class="col-2 p-2 mb-2">
             <label for="especialidad" class="form-label">Especialidad</label>
             <select class="form-control" name="especialidad" id="especialidad"></select>
         </div>
 
-        <div class="col-3 p-2 mb-2">
+        <div class="col-2 p-2 mb-2">
             <!-- Esto debería ser un select múltiple. -->
             <label for="opciones" class="form-label">Opciones</label>
             <select class="js-example-basic-multiple" name="opciones[]" multiple="multiple" id="opciones" data-placeholder="Opciones ...">
@@ -36,7 +36,7 @@
                 <option value="inactivo2">Baja</option>
             </select>
         </div>
-        <div class="col-3 p-2 mb-2">
+        <div class="col-2 p-2 mb-2">
             <!-- Esto debería ser un select múltiple. -->
             <label for="tipo" class="form-label">Tipo</label>
             <select class="js-example-basic-multiple" name="tipo[]" multiple="multiple" id="tipo" data-placeholder="Elija ...">
@@ -47,13 +47,16 @@
 
             </select>
         </div>
-        <div class="col-3 p-2 mb-2">
+        <div class="col-2 p-2 mb-2">
                 <label for="tipo" class="form-label">Buscar</label>
                 <div class="search-box ms-2">
                     <input type="text" name="buscar" id="buscar" class="form-control search" placeholder="DNI o Apellido y Nombre...">
                     <i class="ri-search-line search-icon"></i>
                 </div>
             
+        </div>
+        <div class="col-2 p-2 mb-2 d-flex align-items-end justify-content-left pb-3">
+            <button type="button" class="btn btn-sm botonGeneral" id="buscarProfesional">Buscar</button>
         </div>
     </div>
     <div class="card-body">
