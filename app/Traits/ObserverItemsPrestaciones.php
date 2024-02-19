@@ -8,6 +8,7 @@ use App\Models\ItemPrestacion;
 use App\Models\ItemPrestacionInfo;
 use App\Models\Prestacion;
 use App\Models\Paciente;
+use App\Models\Profesional;
 
 trait ObserverItemsPrestaciones
 {
@@ -34,7 +35,7 @@ trait ObserverItemsPrestaciones
 
     }
 
-    public function generarQR($tipo, $prestacionId, $examenId, $pacienteId, $out)
+    public function generarQR($tipo, $prestacionId, $examenId, $pacienteId, $out): mixed
     {
         if($out === 'texto')
         {
@@ -53,14 +54,14 @@ trait ObserverItemsPrestaciones
         }
     }
 
-    public function getPaciente($id)
+    public function getPaciente(int $id): mixed
     {
         $query = Prestacion::where('Id', $id)->first(['IdPaciente']);
         $paciente = Paciente::find($query->IdPaciente);
         return $paciente;
     }
 
-    public function updateEstado($tipo, $idItemPrestacion, $idEfector, $idInformador)
+    public function updateEstado(string $tipo, ?int $idItemPrestacion, ?int $idEfector, ?int $idInformador): void
     {
        
         $item = ItemPrestacion::where('Id', $idItemPrestacion)->first();
@@ -115,12 +116,24 @@ trait ObserverItemsPrestaciones
         }
     }
 
-    public function adjuntoEfector($id)
+    public function adjuntoEfector(int $id): ?int 
     {
-        if (empty($id)) return;
+        
+        if (empty($id)) return null;
 
         $archivo = ArchivoEfector::where('IdEntidad', $id)->first();
         
         return $archivo ? 1 : 0;
     }
+
+    public function getDatosProfesional(int $id): string
+    {
+        $profesional = Profesional::find($id);
+
+        if ($profesional)
+        {
+            return $profesional->Nombre . " " . $profesional->Apellido;
+        }
+    }
+    
 }
