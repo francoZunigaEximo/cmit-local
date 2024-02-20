@@ -102,6 +102,56 @@ $(document).ready(()=>{
         }
     });
 
+    $(document).on('click', '.deleteExamenes', function(e){
+
+        e.preventDefault();
+
+        let ids = [], tieneAdjunto = false;
+
+        $('input[name="Id_examenes"]:checked').each(function() {
+            ids.push($(this).val());
+            
+            let adjunto = $(this).data('adjunto'), archivos = $(this).data('archivo');
+
+            if (adjunto == 1 && archivos > 0) {
+                tieneAdjunto = true;
+                return false; 
+            }
+        });
+
+        if (tieneAdjunto) {
+            toastr.warning('Alguno de los exámenes seleccionados tiene un reporte adjuntado. No se puede eliminar.', 'Atención');
+            return;
+        }
+
+        let checkAll =$('#checkAllExamenes').prop('checked');
+
+        if(ids.length === 0 && checkAll === false){
+            toastr.warning('No hay examenes seleccionados', 'Atención');
+            return;
+        }
+    
+        if(confirm("Confirme la eliminación de los examenes")){
+
+            $.ajax({
+                url: deleteItemExamen,
+                type: 'POST',
+                data: {
+                    Id: ids,
+                    _token: TOKEN
+                },
+                success: function(){
+                    toastr.info('Se ha eliminado el exámen.', 'Eliminar');
+                    $('#listaExamenes').empty();
+                    $('#exam').val([]).trigger('change.select2');
+                    $('#addPaquete').val([]).trigger('change.select2');
+                    cargarExamen();
+                }
+            });
+        }
+        
+    });
+
     $(document).on('click', '.bloquear-examen', function() {
 
         let idItem = $(this).data('bloquear');
@@ -128,6 +178,45 @@ $(document).ready(()=>{
         }
     });
 
+    $(document).on('click', '.bloquearExamenes', function(e){
+
+        e.preventDefault();
+
+        let ids = [];
+
+        $('input[name="Id_examenes"]:checked').each(function() {
+            ids.push($(this).val());
+    
+        });
+
+        let checkAll =$('#checkAllExamenes').prop('checked');
+
+        if(ids.length === 0 && checkAll === false){
+            toastr.warning('No hay examenes seleccionados', 'Atención');
+            return;
+        }
+    
+        if(confirm("Confirme el bloqueo de los examenes")){
+
+            $.ajax({
+                url: bloquearItemExamen,
+                type: 'POST',
+                data: {
+                    Id: ids,
+                    _token: TOKEN
+                },
+                success: function(){
+                    toastr.info('Se han dado de baja los examenes', 'Baja realizada');
+                    $('#listaExamenes').empty();
+                    $('#exam').val([]).trigger('change.select2');
+                    $('#addPaquete').val([]).trigger('change.select2');
+                    cargarExamen();
+                }
+            });
+        }
+
+    });
+
     $(document).on('click', '.addExamen', function(){
 
         let id = $("#exam").val();
@@ -142,6 +231,11 @@ $(document).ready(()=>{
 
     $(window).on('popstate', function(event) {
         location.reload();
+    });
+
+    $('#checkAllExamenes').on('click', function() {
+
+        $('input[type="checkbox"][name="Id_examenes"]:not(#checkAllExamenes)').prop('checked', this.checked);
     });
 
     function saveExamen(id){
@@ -269,6 +363,7 @@ $(document).ready(()=>{
 
                                 let fila = `
                                         <tr ${examen.Anulado === 1 ? 'class="filaBaja"' : ''}>
+                                            <td><input type="checkbox" name="Id_examenes" value="${examen.IdItem}" checked data-adjunto="${examen.ExaAdj}" data-archivo="${examen.archivos}"></td>
                                             <td data-idexam="${examenId}" id="${examen.IdItem}" style="text-align:left">${examen.Nombre}</td>
                                             <td>
                                                 <span id="incompleto" class="${(examen.Incompleto === 0 ||  examen.Incompleto === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
@@ -298,7 +393,7 @@ $(document).ready(()=>{
         
                                             <td class="date text-center" title="${examen.ApellidoE} ${examen.NombreE}">${examen.ApellidoE}
                                                 <span class="badge badge-soft-${(examen.CAdj === 0 || examen.CAdj === 1 || examen.CAdj === 2 ? 'danger': (examen.CAdj === 3 || examen.CAdj === 4 || examen.CAdj === 5 ? 'success' : ''))}">${(examen.CAdj === 0 || examen.CAdj === 1 || examen.CAdj === 2 ? 'Abierto': (examen.CAdj === 3 || examen.CAdj === 4 || examen.CAdj === 5 ? 'Cerrado' : ''))}</span>
-                                                ${(examen.CAdj === 2 || examen.CAdj === 5) && examen.ExaAdj === 1 ? `<i class="ri-attachment-line ${((examen.CAdj === 2 || examen.CAdj === 5) && examen.archivos > 0 ? 'verde' : 'gris')}"></i>`: ``}    
+                                                ${([2,5,1,4].includes(examen.CAdj)) && examen.ExaAdj === 1 ? `<i class="ri-attachment-line ${((examen.CAdj === 2 || examen.CAdj === 5) ? 'verde' : (examen.CAdj === 3 || examen.CAdj === 4) ? 'gris' : '')}"></i>`: ``}    
                                             </td>
                                     <!-- muestra el apellido + nombre del efector y debajo el estado (campo CAdj Abierto = 0 - 1 - 2 Cerrado = 3 - 4 - 5)  y al lado el icono de archivo (campo cAdj) gris si no hay archivo o verde si hay adjunto (NA = 0 - 3 Pendiente = 1 - 4  Adjunto = 2 - 5)  -->
                                             <td class="date text-center" title="${examen.ApellidoI} ${examen.NombreI}">${examen.ApellidoI}

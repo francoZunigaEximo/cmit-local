@@ -251,13 +251,22 @@ class ItemPrestacionesController extends Controller
 
     public function deleteEx(Request $request): void
     {
+        $examenes = $request->Id;
 
-        $item = ItemPrestacion::find($request->Id);
+        if (!is_array($examenes)) {
+            $examenes = [$examenes];
+        }
 
-        if ($item) {
-            $item->delete();
+        foreach ($examenes as $examen) {
+
+            $item = ItemPrestacion::find($examen);
+
+            if ($item) {
+                $item->delete();
+            }
         }
     }
+        
 
     public function getExamenes(Request $request): mixed
     {
@@ -386,11 +395,18 @@ class ItemPrestacionesController extends Controller
 
     public function bloquearEx(Request $request)
     {
+        $examenes = $request->Id;
 
-        $item = ItemPrestacion::find($request->Id);
+        if (!is_array($examenes)) {
+            $examenes = [$examenes];
+        }
 
-        $item && $item->update(['Anulado' => 1]);
-        
+        foreach ($examenes as $examen) {
+
+            $item = ItemPrestacion::find($examen);
+
+            $item && $item->update(['Anulado' => 1]);
+        }
     }
 
     public function asignarProfesional(Request $request): mixed
