@@ -235,6 +235,10 @@ label {
 	color: black;
 }
 
+.fondo-grisClaro {
+	background-color: #eee;
+}
+
 .rojo {
 	color: red;
 }

@@ -145,7 +145,7 @@
                                     </li>
 
                                     <li class="nav-item">
-                                        <a href="#" class="nav-link enlace-blanco" data-key="t-etapas"> Etapas </a>
+                                        <a href="{{ route('ordenesExamen.index') }}" class="nav-link enlace-blanco" data-key="t-etapas"> Etapas </a>
                                     </li>
 
                                     <li class="nav-item">

@@ -199,6 +199,22 @@ class ItemPrestacionesController extends Controller
         
     }
 
+    public function uploadAdjuntoAutomatico(Request $request)
+    {
+        $examenes = $request->Ids;
+
+        if(!is_array($examenes))
+        {
+            $examenes = [$examenes];
+        }
+
+        foreach($examenes as $examen) {
+
+
+
+        }
+    }
+
     public function deleteIdAdjunto(Request $request)
     {
 
@@ -267,7 +283,6 @@ class ItemPrestacionesController extends Controller
         }
     }
         
-
     public function getExamenes(Request $request): mixed
     {
         $resultados = Cache::remember('itemsprestaciones', 5, function () use ($request) {
@@ -427,7 +442,8 @@ class ItemPrestacionesController extends Controller
             if($itemPrestacion){
 
                 $idProfesional = $request->IdProfesional ?? 0;
-                $itemPrestacion->update(['IdProfesional' => $idProfesional]);
+                $tipo = $request->tipo == 'asigEfector' ? 'IdProfesional' : 'IdProfesional2';
+                $itemPrestacion->update([$tipo => $idProfesional]);
                 array_push($listado, $examen);
             }
         }

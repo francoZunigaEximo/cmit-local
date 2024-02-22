@@ -334,10 +334,29 @@
                         </div>
                     </div>
 
-                    <div class="table-responsive table-card mt-3 mb-1">
+                    <div class="row text-left">
+                        <div class="col-auto">
+                            <button type="button" class="btn btn-sm botonGeneral deleteExamenes"><i class="ri-delete-bin-2-line"></i>&nbsp;Eliminar</button>
+                        </div>
+                        <div class="col-auto">
+                            <button type="button" class="btn btn-sm botonGeneral bloquearExamenes"><i class="ri-forbid-2-line"></i>&nbsp;Anular</button>
+                        </div>
+                        <div class="col-auto">
+                            <button type="button" class="btn btn-sm botonGeneral abrirExamenes">Abrir</button>
+                        </div>
+                        <div class="col-auto">
+                            <button type="button" class="btn btn-sm botonGeneral adjuntoExamenes"><i class="ri-attachment-line"></i>&nbsp;Adjuntado</button>
+                        </div>
+                        <div class="col-auto">
+                            <button type="button" class="btn btn-sm botonGeneral liberarExamenes">Liberar</button>
+                        </div>
+                    </div>
 
+                    <div class="table-responsive table-card mt-3 mb-1">
+                        
                         <table class="display table table-bordered" style="width:100%"  id="listado">
                             <thead class="table-light">
+                                <th><input type="checkbox" id="checkAllExamenes" name="Id_examenes"></th>
                                 <th class="sort">Exámen</th>
                                 <th title="Incompleto">Inc</th>
                                 <th title="Ausente">Aus</th>

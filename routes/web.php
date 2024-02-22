@@ -19,6 +19,7 @@ use App\Http\Controllers\FacturasVentaController;
 use App\Http\Controllers\NoticiasController;
 use App\Http\Controllers\PrestacionesObsFasesController;
 use App\Http\Controllers\OrdenesExamenController;
+use App\Models\ItemPrestacion;
 //use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Route;
 
@@ -193,7 +194,6 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('itemsprestaciones', ItemPrestacionesController::class);
     Route::post('updateItem', [ItemPrestacionesController::class, 'updateItem'])->name('updateItem');
     Route::post('updateAsignado', [ItemPrestacionesController::class, 'updateAsignado'])->name('updateAsignado');
-    
     Route::post('updateAdjunto', [ItemPrestacionesController::class, 'updateAdjunto'])->name('updateAdjunto');
     Route::get('paginacionGeneral', [ItemPrestacionesController::class, 'paginacionGeneral'])->name('paginacionGeneral');
     Route::post('updateItemExamen', [ItemPrestacionesController::class, 'updateExamen'])->name('updateItemExamen');
@@ -206,6 +206,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('checkItemExamen', [ItemPrestacionesController::class, 'check'])->name('checkItemExamen');
     Route::post('itemExamen', [ItemPrestacionesController::class, 'itemExamen'])->name('itemExamen');
     Route::post('bloquearItemExamen', [ItemPrestacionesController::class, 'bloquearEx'])->name('bloquearItemExamen');
+    Route::post('asignarProfesional', [ItemPrestacionesController::class, 'asignarProfesional'])->name('asignarProfesional');
+    Route::get('getBloqueoItemPrestacion', [ItemPrestacionesController::class, 'getBloqueo'])->name('getBloqueoItemPrestacion');
 
     //Rutas de FacturasdeVenta
     Route::get('getFactura', [FacturasVentaController::class, 'getFactura'])->name('getFactura');
@@ -221,4 +223,10 @@ Route::group(['middleware' => 'auth'], function () {
 
     //Rutas de Ordenes de examenes efectores
     Route::resource('ordenesExamen', OrdenesExamenController::class);
+    Route::get('seachOrdenesExamen', [OrdenesExamenController::class, 'search'])->name('seachOrdenesExamen');
+    Route::get('searchOrExaAsignados', [OrdenesExamenController::class, 'searchA'])->name('searchOrExaAsignados');
+    Route::get('searchOrExaAdjunto', [OrdenesExamenController::class, 'searchAdj'])->name('searchOrExaAdjunto');
+    Route::get('seachOrExInf', [OrdenesExamenController::class, 'searchInf'])->name('seachOrExInf');
+    Route::get('seachOrExAsigInf', [OrdenesExamenController::class, 'searchInfA'])->name('seachOrExAsigInf');
+    Route::get('searchOrExaAdjInf', [OrdenesExamenController::class, 'searchInfAdj'])->name('searchOrExaAdjInf');
 });
