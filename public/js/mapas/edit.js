@@ -156,6 +156,13 @@ $(document).ready(()=>{
             return;
         }
 
+        if(remitoObs === '' || remitoObs === null){
+            toastr.warning('Debe escribir una observación', 'Atención');
+    
+            $(this).prop('disabled', false);
+            return;
+        }
+
         $.post(saveRemitos, {_token: TOKEN, Obs: remitoObs, FechaE: remitoFechaE, Id: nroRemito})
             .done(function(){
                 toastr.success('Se han registrado las fechas de entrega en los remitos correspondientes', 'Perfecto');
@@ -1078,16 +1085,13 @@ $(document).ready(()=>{
                             <td>
                                 <span style="text-align=center" class="custom-badge ${r.Entregado === 1 ? 'verde':'rojo'}">${r.Entregado === 1 ? 'Entregado':'Sin Entregar'}</span>
                             </td>
-                            <td>${r.constanciases && r.constanciases.length > 0 && r.constanciases[0].Obs !== undefined ? r.constanciases[0].Obs : '-'}</td>
+                            <td>${r.constanciases && r.constanciases.length > 0 && r.constanciases[0].Obs !== null && r.constanciases[0].Obs !== undefined ? r.constanciases[0].Obs : '-'}</td>
                             <td>
                                 <button data-remito="${r.NroCEE}" type="button" class="btn botonGeneral ${r.Entregado === 1 ? 'revertirEntrega' : 'entregarRemito'}" ${r.Entregado === 1 ? '' : 'data-bs-toggle="modal" data-bs-target="#entregarModal"'}>${r.Entregado === 1 ? 'Revertir Entrega':'Entregar'}</button> 
                             </td>
                             <td>
                                 <button data-remito="${r.NroCEE}" type="button" class="pdf btn iconGeneral" title="Generar reporte en Pdf">
                                     <i class="ri-file-pdf-line"></i>
-                                </button>
-                                <button data-remito="${r.NroCEE }" type="button" class="excel btn iconGeneral" title="Generar reporte en Excel">
-                                    <i class="ri-file-excel-line"></i>
                                 </button>
                             </td>
                         </tr>
