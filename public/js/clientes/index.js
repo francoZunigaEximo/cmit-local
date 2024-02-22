@@ -87,7 +87,7 @@ $(document).ready(function(){
                 });
             }
         } else {
-            toastr.error('Debes seleccionar al menos un paciente para exportar.', 'Error');
+            toastr.error('Debes seleccionar al menos un cliente para exportar.', 'Error');
         }
 
     });
