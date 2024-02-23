@@ -497,8 +497,6 @@ $(document).ready(function(){
     $(document).on('click', '.automaticUpload', function(e){
 
         e.preventDefault();
-
-        $('#preloader-overlay').show();
         
         let ids = [], tipo = $(this).data('forma');
 
@@ -519,6 +517,9 @@ $(document).ready(function(){
             toastr.warning('No hay examenes seleccionados', 'Atención');
             return;
         }
+
+        $('#preloader-overlay').show();
+        
         $.post(archivosAutomatico, { _token: TOKEN, Ids: ids })
             .done(function(response){
 
