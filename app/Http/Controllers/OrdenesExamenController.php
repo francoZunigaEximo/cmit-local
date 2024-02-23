@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ArchivoEfector;
 use App\Models\ItemPrestacion;
+use App\Traits\ObserverItemsPrestaciones;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
-use App\Traits\ObserverItemsPrestaciones;
+use Illuminate\Support\Facades\Storage;
 
 class OrdenesExamenController extends Controller
 {
@@ -281,4 +283,5 @@ class OrdenesExamenController extends Controller
 
         return $query;
     }
+
 }

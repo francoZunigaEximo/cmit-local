@@ -313,7 +313,7 @@ $(document).ready(function(){
             toastr.warning('No hay examenes seleccionados', 'Atención');
             return;
         }
-        console.log(ids)
+
         $.post(asignarProfesional, { _token: TOKEN, Ids: ids, IdProfesional: 0, tipo: obj[seleccion][3]})
             .done(function(response){
 
@@ -492,6 +492,57 @@ $(document).ready(function(){
             });
            
         }
+    });
+
+    $(document).on('click', '.automaticUpload', function(e){
+
+        e.preventDefault();
+
+        $('#preloader-overlay').show();
+        
+        let ids = [], tipo = $(this).data('forma');
+
+        if(tipo === 'individual') {
+
+                ids.push($(this).data('id'));  
+        }else{
+
+            $('input[name="Id_adjunto"]:checked').each(function() {
+                ids.push($(this).val());
+            });
+
+        }
+    
+        let checkAll = $("#checkAllAdj").prop('checked');
+
+        if(ids.length === 0 && checkAll === false){
+            toastr.warning('No hay examenes seleccionados', 'Atención');
+            return;
+        }
+        $.post(archivosAutomatico, { _token: TOKEN, Ids: ids })
+            .done(function(response){
+
+                response.forEach(function(msg) {
+
+                    let tipoToastr = msg.estado == 'success' ? 'success' : 'info';
+                    toastr[tipoToastr](msg.message, "Atención", { timeOut: 10000 })
+
+                    if(msg.estado == 'success') {
+                        let table = $('#listaOrdenesEfectoresAdj').DataTable();
+                        table.draw(false);
+                    }
+                });
+
+            })
+            .fail(function(xhr){
+                console.error(xhr)
+                toastr.error("Ha ocurrido un error. Consulte con el administrador", "Error");
+            })
+            .always(function() {
+                // Ocultar el preloader después de completar la solicitud
+                $('#preloader-overlay').hide();
+            });
+        
     });
 
     function verificarArchivo(archivo){

@@ -352,7 +352,8 @@
                                                     </div>
         
                                                     <div class="row">
-                                                        <div class="col-sm-9 mb-3">
+                                                        <div class="col-sm-9 mb-3" style="text-align: right;">
+                                                            <button type="button" class="btn btn-sm botonGeneral automaticUpload" data-forma="masivo">Asignar masivo</button>
                                                         </div>
                                                         <div class="col-sm-3" style="text-align: right;">
                                                             <button type="button" id="resetAdjunto" class="btn botonGeneral">Reiniciar</button>
@@ -369,6 +370,10 @@
                                             <div class="col-12 mt-2 mb-2 text-center generarQr p-3 fondo-grisClaro">
                                                 
                                             </div>
+                                        </div>
+
+                                        <div id="preloader-overlay" class="preloader-overlay" style="display: none;">
+                                            <div class="preloader"></div>
                                         </div>
                     
                                         <div class="table-responsive table-card mt-3 mb-1 mx-auto">
@@ -786,6 +791,7 @@
     const asignarProfesional = "{{ route('asignarProfesional') }}";
     const updateItem = "{{ route('updateItem') }}";
     const fileUpload = "{{ route('uploadAdjunto') }}";
+    const archivosAutomatico = "{{ route('archivosAutomatico') }}";
 
 </script>
 

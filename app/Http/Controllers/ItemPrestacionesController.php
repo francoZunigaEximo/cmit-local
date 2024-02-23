@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ArchivoEfector;
 use App\Models\ArchivoInformador;
+use App\Models\Auditor;
 use App\Models\ItemPrestacion;
 use App\Models\ItemPrestacionInfo;
 use Illuminate\Http\Request;
@@ -11,10 +12,14 @@ use App\Traits\ObserverItemsPrestaciones;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 
 class ItemPrestacionesController extends Controller
 {
     use ObserverItemsPrestaciones;
+
+    const RUTA = '/var/IMPORTARPDF/SALIDA/';
 
     public function index()
     {
@@ -167,7 +172,7 @@ class ItemPrestacionesController extends Controller
         ];
 
         if($request->hasFile('archivo')) {
-            $fileName = $arr[$request->who][1].$arr[$request->who][0]. '_'. $request->IdPrestacion .'.' . $request->archivo->extension();
+            $fileName = $arr[$request->who][1].$arr[$request->who][0]. '_P'. $request->IdPrestacion .'.' . $request->archivo->extension();
             $request->archivo->storeAs($arr[$request->who][2], $fileName);
         }
 
@@ -199,20 +204,69 @@ class ItemPrestacionesController extends Controller
         
     }
 
-    public function uploadAdjuntoAutomatico(Request $request)
+    public function archivosAutomatico(Request $request)
     {
         $examenes = $request->Ids;
 
-        if(!is_array($examenes))
-        {
+        if (!is_array($examenes)) {
             $examenes = [$examenes];
         }
 
-        foreach($examenes as $examen) {
+        foreach ($examenes as $examen) {
+            
+            $item = ItemPrestacion::with('prestaciones')->where('Id', $examen)->first(['IdPrestacion', 'IdExamen']);
+            
+            if($item)
+            {
+                $archivo = $this->generarCodigo($item->IdPrestacion, $item->IdExamen, $item->prestaciones->IdPaciente);
+                $ruta = self::RUTA.$archivo;
+                $buscar = glob($ruta);
 
+                if (count($buscar) === 1) {
 
+                    copy($ruta, self::RUTA."AdjuntadasAuto/".$archivo);
 
+                    $nuevoId = ArchivoEfector::max('Id') + 1;
+                    $nuevoNombre = 'AEF'.$nuevoId.'_P'.$item->IdPrestacion.'.pdf';
+                    $nuevaRuta = storage_path('app/public/ArchivosEfectores/'.$nuevoNombre);
+
+                    ArchivoEfector::create([
+                        'Id' => $nuevoId,
+                        'IdEntidad' => $examen,
+                        'Descripcion' => 'Se adjunto por automático',
+                        'Ruta' => $nuevoNombre,
+                        'IdPrestacion' => $item->IdPrestacion,
+                        'Tipo' => '0'
+                    ]);
+
+                    $actualizarItem = ItemPrestacion::find($examen);
+                    
+                    if ($actualizarItem) {
+                        $actualizarItem->CAdj = 5;
+                        $actualizarItem->save();
+                    }
+
+                    copy($ruta, $nuevaRuta);
+                    chmod($nuevaRuta, 0664);
+                    Auditor::setAuditoria($item->IdPrestacion, 1, 36, Auth::user()->name);
+
+                    $resultado = ["message" => "Se ha adjuntado automáticamente un archivo al exámen {$examen}", "estado" => "success"];
+                    
+                } elseif(count($buscar) > 1) {
+                    
+                    $resultado = ["message" => "En el examen {$examen} de la prestación, tiene un archivo duplicado. No se ha realizado la acción", "estado" => "fail"];
+                
+                }elseif(count($buscar) === 0) {
+
+                    $resultado = ["message" => "No hay archivo con coincidencias para el exámen {$examen}", "estado" => "fail"];
+                }
+
+                $resultados[] = $resultado;
+
+            }
         }
+
+        return response()->json($resultados);
     }
 
     public function deleteIdAdjunto(Request $request)
@@ -460,6 +514,11 @@ class ItemPrestacionesController extends Controller
         {
             return response()->json(['prestacion' => true]);
         }
+    }
+
+    private function generarCodigo(int $idprest, int $idex, int $idpac)
+    {
+        return 'A'.str_pad($idprest, 9, "0", STR_PAD_LEFT).str_pad($idex, 5, "0", STR_PAD_LEFT).str_pad($idpac, 7, "0", STR_PAD_LEFT).".pdf";
     }
 
 }
