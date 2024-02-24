@@ -134,5 +134,17 @@ trait ObserverItemsPrestaciones
             return $profesional->Nombre . " " . $profesional->Apellido;
         }
     }
+
+    public function registarArchivo(int $id, string $entidad, string $ruta, int $prestacion): void
+    {
+        ArchivoEfector::create([
+            'Id' => $id,
+            'IdEntidad' => $entidad,
+            'Descripcion' => 'Se adjunto por automático',
+            'Ruta' => $ruta,
+            'IdPrestacion' => $prestacion,
+            'Tipo' => '0'
+        ]);
+    }
     
 }

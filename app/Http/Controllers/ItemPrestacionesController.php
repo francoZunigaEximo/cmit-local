@@ -230,14 +230,7 @@ class ItemPrestacionesController extends Controller
                     $nuevoNombre = 'AEF'.$nuevoId.'_P'.$item->IdPrestacion.'.pdf';
                     $nuevaRuta = storage_path('app/public/ArchivosEfectores/'.$nuevoNombre);
 
-                    ArchivoEfector::create([
-                        'Id' => $nuevoId,
-                        'IdEntidad' => $examen,
-                        'Descripcion' => 'Se adjunto por automático',
-                        'Ruta' => $nuevoNombre,
-                        'IdPrestacion' => $item->IdPrestacion,
-                        'Tipo' => '0'
-                    ]);
+                    $this->registarArchivo($nuevoId, $examen, $nuevoNombre, $item->IdPrestacion);
 
                     $actualizarItem = ItemPrestacion::find($examen);
                     
