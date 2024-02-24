@@ -56,9 +56,8 @@ trait ObserverItemsPrestaciones
 
     public function getPaciente(int $id): mixed
     {
-        $query = Prestacion::where('Id', $id)->first(['IdPaciente']);
-        $paciente = Paciente::find($query->IdPaciente);
-        return $paciente;
+        return Prestacion::where('Id', $id)->with('paciente')->first();
+    
     }
 
     public function updateEstado(string $tipo, ?int $idItemPrestacion, ?int $idEfector, ?int $idInformador): void

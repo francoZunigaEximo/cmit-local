@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ArchivoEfector;
 use App\Models\ItemPrestacion;
 use App\Traits\ObserverItemsPrestaciones;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
+
 
 class OrdenesExamenController extends Controller
 {
@@ -24,7 +23,6 @@ class OrdenesExamenController extends Controller
 
         if($request->ajax())
         {
-
             $query = $this->queryBasico($request);
 
             $query->when(!empty($request->prestacion), function ($query) use ($request) {

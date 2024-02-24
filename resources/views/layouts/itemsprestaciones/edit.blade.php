@@ -5,7 +5,7 @@
 @section('content')
 
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-    <h4 class="mb-sm-0">Exámen prestación <span class="custom-badge original">N°{{ $itemsprestacione->IdPrestacion }}</span> | Paciente <span class="custom-badge original">{{ $paciente->Nombre ?? ''}} {{ $paciente->Apellido ?? '' }}</span> {!! ($itemsprestacione->Anulado === 1) ? '<span class="custom-badge rojo">Bloqueado</span>' : '' !!}</h4>
+    <h4 class="mb-sm-0">Exámen prestación <span class="custom-badge original">N°{{ $itemsprestacione->IdPrestacion }}</span> | Paciente <span class="custom-badge original">{{ $paciente->paciente->Nombre ?? ''}} {{ $paciente->paciente->Apellido ?? '' }}</span> {!! ($itemsprestacione->Anulado === 1) ? '<span class="custom-badge rojo">Bloqueado</span>' : '' !!}</h4>
     <input type="hidden" value="{{ $itemsprestacione->Id }}" id="Id">
     <div class="page-title-right d-inline">
         <p><strong>QR:</strong> {{ $qrTexto ?? ''}}</p>
