@@ -124,7 +124,15 @@
                 <div class="col-12 mb-3">
                     <label for="Multi" class="form-label"><br /></label> <!-- la selección se guarda en el campo Calificacion -->
                     <div class="form-check">
-                        <label class="form-check-label" for="Multi">Multi Examen Informador (Un informe puede corresponder a varios exámenes)</label>
+                        <label class="form-check-label" for="InfAdj">Multi Examen Informador (Un informe puede corresponder a varios exámenes)</label>
+                        <input class="form-check-input" type="checkbox" id="InfAdj" disabled>
+                    </div>
+                </div>
+
+                <div class="col-12 mb-3">
+                    <label for="Multi" class="form-label"><br /></label> <!-- la selección se guarda en el campo Calificacion -->
+                    <div class="form-check">
+                        <label class="form-check-label" for="Multi">Informe en adjuntos informador (El informe es un adjunto que no se genera desde la aplicación)</label>
                         <input class="form-check-input" type="checkbox" id="Multi" disabled>
                     </div>
                 </div>
@@ -138,6 +146,7 @@
                     <label for="Maximo" class="form-label">Máximo Pacientes (capacidad de llamar en simultáneo)</label>
                     <input type="text" class="form-control" name="maximo" id="maximo" placeholder="¿Cuántos pacientes es posible llamar en simultáneo?" disabled>
                 </div>
+                
     
                 <div class="col-lg-12 pt-4">
                     <div class="hstack gap-2 justify-content-end">

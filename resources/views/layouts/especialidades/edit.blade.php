@@ -123,6 +123,14 @@
                         <input class="form-check-input" type="checkbox" id="MultiE" {{ $especialidade->MultiE == 'null' || $especialidade->MultiE == 0 ? '' : 'checked'}}>
                     </div>
                 </div>
+
+                <div class="col-12 mb-3">
+                    <label for="Multi" class="form-label"><br /></label> <!-- la selección se guarda en el campo Calificacion -->
+                    <div class="form-check">
+                        <label class="form-check-label" for="InfAdj">Multi Examen Informador (Un informe puede corresponder a varios exámenes)</label>
+                        <input class="form-check-input" type="checkbox" id="InfAdj" {{ $especialidade->InfAdj == 'null' || $especialidade->InfAdj == 0 ? '' : 'checked'}}>
+                    </div>
+                </div>
     
                 <div class="col-6">
                     <label for="Min" class="form-label">Duración Turno (en minutos)</label>
