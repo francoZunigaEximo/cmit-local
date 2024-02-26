@@ -22,8 +22,8 @@ $(document).ready(function () {
         '.UltimoPuesto': ['OCUPACIONAL', 'OTRO', 'INGRESO', 'ART'],
         '.SectorActual': ['PERIODICO', 'OCUPACIONAL', 'EGRESO', 'OTRO', 'ART'],
         '.AntiguedadPuesto': ['PERIODICO', 'OCUPACIONAL', 'EGRESO', 'OTRO', 'ART'],
-        '.AntiguedadEmpresa': ['EGRESO', 'OCUPACIONAL', 'OTRO', 'PERIODICO', 'ART'],
-        '.FechaIngreso': ['EGRESO', 'OCUPACIONAL', 'OTRO', 'PERIODICO', 'ART'],
+        '.AntiguedadEmpresa': ['EGRESO', 'OCUPACIONAL', 'OTRO', 'PERIODICO', 'ART', ],
+        '.FechaIngreso': ['EGRESO', 'OCUPACIONAL', 'OTRO', 'PERIODICO', 'ART', 'INGRESO'],
         '.FechaEgreso': ['EGRESO', 'OCUPACIONAL', 'OTRO', 'ART'],
         '.CCosto': ['INGRESO', 'S/C_OCUPACIO', 'RECMED', 'CARNET', 'OTRO', 'ART', 'EGRESO', 'OCUPACIONAL', 'PERIODICO']
     };
@@ -217,6 +217,9 @@ $(document).ready(function () {
             antiguedadPuesto = $('#AntiguedadPuesto').val(),
             fechaIngreso = $('#FechaIngreso').val(),
             fechaEgreso = $('#FechaEgreso').val(),
+            fechaPreocupacional = $('#FechaPreocupacional').val(),
+            fechaUltPeriod =$('#FechaUltPeriod').val(),
+            fechaExArt = $('#FechaExArt').val(),
             antiguedadEmpresa = $('#AntiguedadEmpresa').val();
 
         if(tipoPrestacion === 'OTRO' && tipoPrestacionPresOtros) {
@@ -261,6 +264,9 @@ $(document).ready(function () {
             fechaIngreso: fechaIngreso,
             fechaEgreso: fechaEgreso,
             antiguedadEmpresa: antiguedadEmpresa,
+            fechaPreocupacional: fechaPreocupacional,
+            fechaUltPeriod: fechaUltPeriod,
+            fechaExArt: fechaExArt,
             _token: TOKEN,
             }) 
             .done(function() {
@@ -274,7 +280,7 @@ $(document).ready(function () {
 
             })
             .fail(function(xhr) {
-                toastr.danger('Hubo un problema para procesar la información. Consulte con el administrador del sistema.', 'Error');
+                toastr.error('Hubo un problema para procesar la información. Consulte con el administrador del sistema.', 'Error');
                 console.error(xhr);
             });
     });

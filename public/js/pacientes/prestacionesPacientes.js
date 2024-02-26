@@ -117,7 +117,7 @@ $(document).ready(()=>{
     });
 
     //Buscador de prestaciones en Pacientes
-    $('#buscarPrestPaciente').on('keypress', function(){
+    $('#buscarPrestPaciente').on('keypress', function(event){
 
         if (event.keyCode === 13){
             event.preventDefault();

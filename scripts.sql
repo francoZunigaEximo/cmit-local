@@ -643,3 +643,6 @@ ALTER TABLE auditoria ADD FOREIGN KEY(IdUsuario) REFERENCES users(name);
 
 composer require setasign/fpdf
 
+ALTER TABLE fichaslaborales  ADD FechaPreocupacional DATE NULL;
+ALTER TABLE fichaslaborales  ADD FechaUltPeriod DATE NULL;
+ALTER TABLE fichaslaborales  ADD FechaExArt DATE NULL;

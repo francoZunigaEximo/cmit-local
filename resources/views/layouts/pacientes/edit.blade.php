@@ -484,6 +484,7 @@
                                         </div>
                                     </div>
 
+
                                 </div>
 
                                 <div class="col-6">
@@ -501,6 +502,23 @@
                                             <option value="ROTATIVO">Rotativo</option>
                                             <option value="FULLTIME">Fulltime</option>
                                     </select>
+                                    </div>
+
+                                    <div class="mt-3">
+                                        <div class="input-group input-group-sm mb-2">
+                                            <span class="input-group-text">Fecha Preocupacional</span>
+                                            <input type="date" class="form-control" id="FechaPreocupacional">
+                                        </div>
+
+                                        <div class="input-group input-group-sm mb-2">
+                                            <span class="input-group-text">Fecha Ult. Periodico Empresa</span>
+                                            <input type="date" class="form-control"  id="FechaUltPeriod">
+                                        </div>
+
+                                        <div class="input-group input-group-sm mb-2">
+                                            <span class="input-group-text">Fecha Ex ART</span>
+                                            <input type="date" class="form-control" id="FechaExArt">
+                                        </div>
                                     </div>
 
                                     <div class="mt-3">

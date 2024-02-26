@@ -30,6 +30,9 @@ class FichaAltaController extends Controller
             $ficha->AntigPuesto = $request->antiguedadPuesto ?? '';
             $ficha->FechaIngreso = $request->fechaIngreso ?? '';
             $ficha->FechaEgreso = $request->fechaEgreso ?? '';
+            $ficha->FechaPreocupacional = $request->fechaPreocupacional ?? '';
+            $ficha->FechaUltPeriod = $request->fechaUltPeriod ?? '';
+            $ficha->FechaExArt = $request->fechaExArt ?? '';
             $ficha->save();
 
         } else {
@@ -52,6 +55,9 @@ class FichaAltaController extends Controller
                 'AntigPuesto' => $request->antiguedadPuesto ?? '',
                 'FechaIngreso' => $request->fechaIngreso ?? '',
                 'FechaEgreso' => $request->fechaEgreso ?? '',
+                'FechaPreocupacional' => $request->fechaPreocupacional ?? '',
+                'FechaUltPeriod' => $request->fechaUltPeriod ?? '',
+                'FechaExArt' => $request->fechaExArt ?? ''
             ]);
         }
 
