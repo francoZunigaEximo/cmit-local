@@ -31,7 +31,10 @@ class Fichalaboral extends Model
         'CCosto',
         'Pago',
         'Estado',
-        'TipoPrestacion'
+        'TipoPrestacion',
+        'FechaPreocupacional',
+        'FechaUltPeriod',
+        'FechaExArt'
     ];
 
     public $timestamps = false;
