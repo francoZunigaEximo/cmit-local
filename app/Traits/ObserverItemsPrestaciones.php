@@ -135,16 +135,31 @@ trait ObserverItemsPrestaciones
         }
     }
 
-    public function registarArchivo(int $id, string $entidad, string $ruta, int $prestacion): void
+    public function registarArchivo(int $id, string $entidad, ?string $descripcion, string $ruta, int $prestacion, string $tipo): void
     {
-        ArchivoEfector::create([
-            'Id' => $id,
-            'IdEntidad' => $entidad,
-            'Descripcion' => 'Se adjunto por automático',
-            'Ruta' => $ruta,
-            'IdPrestacion' => $prestacion,
-            'Tipo' => '0'
-        ]);
+        if($tipo === 'efector')
+        {
+            ArchivoEfector::create([
+                'Id' => $id,
+                'IdEntidad' => $entidad,
+                'Descripcion' => $descripcion ?? '',
+                'Ruta' => $ruta,
+                'IdPrestacion' => $prestacion,
+                'Tipo' => '0'
+            ]);
+        
+        } elseif($tipo === 'informador') {
+
+            ArchivoInformador::create([
+                'Id' => $id,
+                'IdEntidad' => $entidad,
+                'Descripcion' => $descripcion ?? '',
+                'Ruta' => $ruta,
+                'IdPrestacion' => $prestacion
+            ]);
+        }
+
     }
+        
     
 }

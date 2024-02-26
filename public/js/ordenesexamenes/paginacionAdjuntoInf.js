@@ -113,7 +113,7 @@ $(document).ready(()=>{
                     render: function(data){
 
                         let masivo = `<span title="Subir automáticamente el reporte" class="custom-badge iconGeneral"><i class="ri-file-upload-line"></i></span>`,
-                            individual = `<span data-id="${data.IdItem}" data-idprestacion="${data.IdPrestacion}" title="Subir manualmente el reporte" class="custom-badge iconGeneral uploadFile"><i class="ri-folder-line"></i></span><input type="file" class="fileManual" style="display: none;">`;
+                            individual = `<span data-id="${data.IdItem}" data-idprestacion="${data.IdPrestacion}" data-who="informador" title="Subir manualmente el reporte" class="custom-badge iconGeneral uploadFile"><i class="ri-folder-line"></i></span><input type="file" class="fileManual" style="display: none;">`;
 
                         return `${masivo} ${individual}`;
                     }

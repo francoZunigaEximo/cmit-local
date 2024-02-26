@@ -88,7 +88,12 @@ $(document).ready(()=>{
                     data: null,
                     render: function(data) {
                         let recorte = (data.Examen).substring(0,10) + "...";
-                        return recorte.length >= 10 ? `<span title="${data.Examen}">${recorte}</span>` : data.Examen;
+                        console.log(data.MultiEfector);
+                        return data.MultiEfector === 1
+                            ? `<span class="custom-badge pequeno">Multi Exámen</span>`
+                            : recorte.length >= 10 
+                                ? `<span title="${data.Examen}">${recorte}</span>` 
+                                : data.Examen;
                     }
                 },
                 {
@@ -125,7 +130,7 @@ $(document).ready(()=>{
                     render: function(data){
 
                         let masivo = `<span title="Subir automáticamente el reporte" class="custom-badge iconGeneral"><i class="ri-file-upload-line automaticUpload" data-id="${data.IdItem}" data-forma="individual"></i></span>`,
-                            individual = `<span data-id="${data.IdItem}" data-idprestacion="${data.IdPrestacion}" title="Subir manualmente el reporte" class="custom-badge iconGeneral uploadFile"><i class="ri-folder-line"></i></span><input type="file" class="fileManual" style="display: none;">`,
+                            individual = `<span data-id="${data.IdItem}" data-idprestacion="${data.IdPrestacion}" data-who="${data.MultiEfector === 1 ? 'efectorMulti' : 'efector'}" title="Subir manualmente el reporte" class="custom-badge iconGeneral uploadFile"><i class="ri-folder-line"></i></span><input type="file" class="fileManual" style="display: none;">`,
                             qr = `<span title="Generar un QR" class="custom-badge iconGeneral mostrarQr" data-prestacion="${data.IdPrestacion}" data-paciente="${data.IdPaciente}" data-examen="${data.Examen}" data-examenid="${data.IdExamen}">
                                 <i class="ri-qr-code-line"></i>
                             </span>`;

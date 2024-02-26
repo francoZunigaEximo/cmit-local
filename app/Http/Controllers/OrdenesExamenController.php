@@ -84,10 +84,11 @@ class OrdenesExamenController extends Controller
             $query->when(!empty($request->efectores), function ($query) use ($request){
                 $query->where('itemsprestaciones.IdProfesional', $request->efectores);
             });
-
+        
             $filtrado = $query->whereNot('itemsprestaciones.IdProfesional', 0);
 
             $result = $this->condicionesComunes($filtrado);
+            
 
             return Datatables::of($result)->make(true);
         }
@@ -108,17 +109,33 @@ class OrdenesExamenController extends Controller
             $query->when(!empty($request->art), function ($query) use ($request) {
                 $query->where('art.Id', $request->art);
             });
+
+            $subquery = $this->queryBasico($request);
+            $subFiltrado = $subquery->where('examenes.Adjunto', 1)
+                                    ->whereNotExists(function ($query) {
+                                        $query->select(DB::raw(1))
+                                            ->from('archivosefector')
+                                            ->whereRaw('archivosefector.IdEntidad = itemsprestaciones.Id');
+                                    })
+                                    ->where('proveedores.Multi', 1)
+                                    ->whereIn('itemsprestaciones.CAdj', [1, 4])
+                                    ->whereNot('itemsprestaciones.IdProfesional', 0)
+                                    ->groupBy('itemsprestaciones.IdPrestacion');
+            $subResult = $this->condicionesComunes($subFiltrado);
+        
             
             $filtrado = $query->where('examenes.Adjunto', 1)
                             ->whereNotExists(function ($query) {
                                 $query->select(DB::raw(1))
                                     ->from('archivosefector')
                                     ->whereRaw('archivosefector.IdEntidad = itemsprestaciones.Id');
-                            })
+                            })->whereNot('proveedores.Multi', 1)
                             ->whereIn('itemsprestaciones.CAdj', [1,4])
                             ->whereNot('itemsprestaciones.IdProfesional', 0);
             
-            $result = $this->condicionesComunes($filtrado);
+            $preResult = $this->condicionesComunes($filtrado);
+
+            $result = $preResult->union($subResult);
 
             return Datatables::of($result)->make(true);
         }
@@ -236,6 +253,7 @@ class OrdenesExamenController extends Controller
             'itemsprestaciones.IdProfesional as IdProfesional',
             'proveedores.Nombre as Especialidad',
             'proveedores.Id as IdEspecialidad',
+            'proveedores.MultiE as MultiEfector',
             'prestaciones.Id as IdPrestacion',
             'clientes.RazonSocial as Empresa',
             DB::raw("CONCAT(pacientes.Apellido, ' ', pacientes.Nombre) as NombreCompleto"),

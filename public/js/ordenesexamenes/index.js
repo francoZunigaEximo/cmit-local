@@ -458,20 +458,21 @@ $(document).ready(function(){
         $(this).next('.fileManual')
             .data('id', id)
             .data('idprestacion', idprestacion)
+            .data('tipo', tipo)
             .click();
     });
 
     $(document).on('change', '.fileManual', function(){
-        let id = $(this).data('id'), idprestacion = $(this).data('idprestacion'), archivo = $('.fileManual')[0].files[0];
-        debugger;
+        let id = $(this).data('id'), idprestacion = $(this).data('idprestacion'), archivo = $('.fileManual')[0].files[0], who = $(this).data('tipo');
+       
         if (verificarArchivo(archivo)) {
-            debugger;
+            
             let formData = new FormData();
             formData.append('archivo', archivo);
             formData.append('IdEntidad', id);
             formData.append('IdPrestacion', idprestacion)
             formData.append('_token', TOKEN);
-            formData.append('who', 'efector');
+            formData.append('who', who);
 
             $.ajax({
                 type: 'POST',
