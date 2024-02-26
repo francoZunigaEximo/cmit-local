@@ -389,7 +389,7 @@ class PrestacionesController extends Controller
             'Financiador' => $request->financiador,
         ]);
 
-        Auditor::setAuditoria($request->Id, 1, 44, Auth::user()->name);
+        Auditor::setAuditoria($nuevoId, 1, 44, Auth::user()->name);
 
         $empresa = ($request->tipoPrestacion === 'ART' ? $request->IdART : $request->IdEmpresa);
 
