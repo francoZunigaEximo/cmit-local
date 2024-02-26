@@ -34,7 +34,7 @@ $(document).ready(()=>{
                     {
                         data: null,
                         render: function(data){
-                            return `<strong>${data.NombreCompleto}</strong>`;
+                            return `<strong>${data.Apellido} ${data.Nombre}</strong>`;
                         }
                     },
                     {

@@ -40,7 +40,8 @@ class PacientesController extends Controller
             $query = Paciente::join('telefonos', 'pacientes.Id', '=', 'telefonos.IdEntidad')
             ->select(
                 'pacientes.Id as Id',
-                DB::raw("CONCAT(pacientes.Apellido, ' ', pacientes.Nombre) as NombreCompleto"),
+                'pacientes.Nombre as Nombre',
+                'pacientes.Apellido as Apellido',
                 DB::raw("CONCAT(pacientes.TipoDocumento, ' ', pacientes.Documento) as Documento"),
                 'telefonos.NumeroTelefono as Telefono',
                 'telefonos.CodigoArea as Cp'
