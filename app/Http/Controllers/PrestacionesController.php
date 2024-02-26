@@ -10,6 +10,7 @@ use App\Models\Prestacion;
 use App\Models\PrestacionesTipo;
 use App\Traits\ObserverFacturasVenta;
 use App\Traits\ObserverPrestaciones;
+use App\Models\Auditor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -17,6 +18,7 @@ use Yajra\DataTables\DataTables;
 use App\Exports\PrestacionesExport;
 use Maatwebsite\Excel\Facades\Excel;
 use stdClass;
+use Illuminate\Support\Facades\Auth;
 
 class PrestacionesController extends Controller
 {
@@ -340,6 +342,7 @@ class PrestacionesController extends Controller
         if($prestaciones)
         {
             $prestaciones->update(['Estado' => '0']);
+            Auditor::setAuditoria($request->Id, 1, 14, Auth::user()->name);
         }
         
     }
@@ -351,6 +354,7 @@ class PrestacionesController extends Controller
         if($prestaciones)
         {
             $prestaciones->update(['Anulado' => '1']); // 0 => Habilitado, 1 => Anulado
+            Auditor::setAuditoria($request->Id, 1, 3, Auth::user()->name);
         }
         
     }
@@ -384,6 +388,8 @@ class PrestacionesController extends Controller
             'Fecha' => now()->format('Y-m-d'),
             'Financiador' => $request->financiador,
         ]);
+
+        Auditor::setAuditoria($request->Id, 1, 44, Auth::user()->name);
 
         $empresa = ($request->tipoPrestacion === 'ART' ? $request->IdART : $request->IdEmpresa);
 
@@ -436,7 +442,7 @@ class PrestacionesController extends Controller
         
         $this->updateFichaLaboral($request->IdPaciente, $request->Art, $request->Empresa);
         $this->addFactura($request->tipo, $request->sucursal, $request->nroFactura, $empresa, $request->tipoPrestacion, $request->Id);
-
+        Auditor::setAuditoria($request->Id, 1, 2, Auth::user()->name);
     }
 
     public function vencimiento(Request $request): void
@@ -444,6 +450,7 @@ class PrestacionesController extends Controller
         $prestacion = Prestacion::find($request->Id);
         if($prestacion){
             $prestacion->update(['Vto' => 1]);
+            Auditor::setAuditoria($request->Id, 1, 8, Auth::user()->name);
         }  
     }
 
