@@ -453,7 +453,7 @@ $(document).ready(function(){
     });
 
     $(document).on('click', '.uploadFile', function(){
-        let id = $(this).data('id'), idprestacion = $(this).data('idprestacion');
+        let id = $(this).data('id'), idprestacion = $(this).data('idprestacion'), tipo = $(this).data('tipo');
         $(this).off('click'); 
         $(this).next('.fileManual')
             .data('id', id)
@@ -467,6 +467,8 @@ $(document).ready(function(){
        
         if (verificarArchivo(archivo)) {
             
+            let tabla = ['efector','multiefector'].includes(who) ? "#listaOrdenesEfectoresAdj" : "#listaOrdenesInformadoresAdj";
+
             let formData = new FormData();
             formData.append('archivo', archivo);
             formData.append('IdEntidad', id);
@@ -482,7 +484,7 @@ $(document).ready(function(){
                 contentType: false,
                 success: function() {
                     toastr.success("Se ha cargado el reporte de manera correcta.", "Perfecto");
-                    let table = $('#listaOrdenesEfectoresAdj').DataTable();
+                    let table = $(tabla).DataTable();
                     table.draw(false);
 
                 },

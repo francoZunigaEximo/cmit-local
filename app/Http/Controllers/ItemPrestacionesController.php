@@ -354,7 +354,7 @@ class ItemPrestacionesController extends Controller
 
     }
 
-    public function deleteEx(Request $request): void
+    public function deleteEx(Request $request): mixed
     {
         $examenes = $request->Id;
 
@@ -364,11 +364,17 @@ class ItemPrestacionesController extends Controller
 
         foreach ($examenes as $examen) {
 
-            $item = ItemPrestacion::find($examen);
+            $item = ItemPrestacion::with('prestaciones')->find($examen);
 
-            if ($item) {
+            if ($item && ($item->prestaciones->Cerrado <> 0 || $item->CInfo <> 3 || $item->CAdj <> 5 || $item->IdProfesional2 === 0 || $item->IdProfesional2 === 0)) {
                 $item->delete();
+                $resultado = ['message' => 'Se ha eliminado con éxito'];
+            
+            }else{
+                $resultado = ['message' => 'es probable que la prestación se encuentre cerrada, informada o con profesionales asignados'];
             }
+
+            return response()->json($resultado);
         }
     }
         

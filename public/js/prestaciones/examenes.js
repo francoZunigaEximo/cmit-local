@@ -93,8 +93,8 @@ $(document).ready(()=>{
                         Id: idItem,
                         _token: TOKEN
                     },
-                    success: function(){
-                        toastr.info('Se ha eliminado el exámen.', 'Eliminar');
+                    success: function(response){
+                        toastr.info(response.message, 'Atención');
                     }
                 });
             }
