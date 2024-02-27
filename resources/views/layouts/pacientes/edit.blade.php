@@ -196,7 +196,7 @@
                                         $cerradoAdjunto = $prespaciente->CerradoAdjunto ?? 0;
                                         $total = $prespaciente->Total ?? 1;
                                         $calculo = ($total != 0) ? number_format(($cerradoAdjunto / $total) * 100, 2) : 0;
-                                        $resultado;
+                                        $resultado = 0;
                                 
                                     if ($calculo === 100) {
                                         $resultado = 'fondo-blanco';
