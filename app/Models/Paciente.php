@@ -58,4 +58,9 @@ class Paciente extends Model
     {
         return $this->hasOne(Localidad::class, 'Id', 'IdLocalidad');
     }
+
+    public function fichaLaboral()
+    {
+        return $this->hasOne(Fichalaboral::class, 'IdPaciente', 'Id');
+    }
 }

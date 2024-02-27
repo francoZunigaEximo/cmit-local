@@ -49,4 +49,9 @@ class Fichalaboral extends Model
         return $this->hasOne(Cliente::class, 'Id', 'IdART');
     }
 
+    public function paciente()
+    {
+        return $this->hasOne(Paciente::class, 'Id', 'IdPaciente');
+    }
+
 }
