@@ -130,7 +130,7 @@ $(document).ready(()=>{
                     render: function(data){
 
                         let masivo = `<span title="Subir automáticamente el reporte" class="custom-badge iconGeneral"><i class="ri-file-upload-line automaticUpload" data-id="${data.IdItem}" data-forma="individual"></i></span>`,
-                            individual = `<span data-id="${data.IdItem}" data-idprestacion="${data.IdPrestacion}" data-who="${data.MultiEfector === 1 ? 'efectorMulti' : 'efector'}" title="Subir manualmente el reporte" class="custom-badge iconGeneral uploadFile"><i class="ri-folder-line"></i></span><input type="file" class="fileManual" style="display: none;">`,
+                            individual = `<span data-id="${data.IdItem}" data-idprestacion="${data.IdPrestacion}" data-tipo="${data.MultiEfector === 1 ? 'multiefector' : 'efector'}" title="Subir manualmente el reporte" class="custom-badge iconGeneral uploadFile"><i class="ri-folder-line"></i></span><input type="file" class="fileManual" style="display: none;">`,
                             qr = `<span title="Generar un QR" class="custom-badge iconGeneral mostrarQr" data-prestacion="${data.IdPrestacion}" data-paciente="${data.IdPaciente}" data-examen="${data.Examen}" data-examenid="${data.IdExamen}">
                                 <i class="ri-qr-code-line"></i>
                             </span>`;

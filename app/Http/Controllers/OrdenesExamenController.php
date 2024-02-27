@@ -224,7 +224,13 @@ class OrdenesExamenController extends Controller
                               ->where('prestaciones.Cerrado', 0)
                               ->where('prestaciones.Finalizado', 0)
                               ->whereNot('itemsprestaciones.IdProfesional', 0)
-                              ->where('itemsprestaciones.CAdj', 5);
+                              ->whereNot('itemsprestaciones.IdProfesional2', 0)
+                              ->where('itemsprestaciones.CAdj', 5)
+                              ->whereNotExists(function ($query) {
+                                $query->select(DB::raw(1))
+                                    ->from('archivosinformador')
+                                    ->whereRaw('archivosinformador.IdEntidad = itemsprestaciones.Id');
+                            });
 
             $result = $this->condicionesComunes($filtrado);
 
