@@ -507,17 +507,17 @@
                                     <div class="mt-3">
                                         <div class="input-group input-group-sm mb-2">
                                             <span class="input-group-text">Fecha Preocupacional</span>
-                                            <input type="date" class="form-control" id="FechaPreocupacional">
+                                            <input type="date" class="form-control" id="FechaPreocupacional" value="{{ (isset($fichaLaboral->FechaPreocupacional) && $fichaLaboral->FechaPreocupacional !== '0000-00-00') ? \Carbon\Carbon::parse($fichaLaboral->FechaPreocupacional)->format('Y-m-d') : '' }}">
                                         </div>
 
                                         <div class="input-group input-group-sm mb-2">
                                             <span class="input-group-text">Fecha Ult. Periodico Empresa</span>
-                                            <input type="date" class="form-control"  id="FechaUltPeriod">
+                                            <input type="date" class="form-control"  id="FechaUltPeriod" value="{{ (isset($fichaLaboral->FechaUltPeriod) && $fichaLaboral->FechaUltPeriod !== '0000-00-00') ? \Carbon\Carbon::parse($fichaLaboral->FechaUltPeriod)->format('Y-m-d') : '' }}">
                                         </div>
 
                                         <div class="input-group input-group-sm mb-2">
                                             <span class="input-group-text">Fecha Ex ART</span>
-                                            <input type="date" class="form-control" id="FechaExArt">
+                                            <input type="date" class="form-control" id="FechaExArt" value="{{ (isset($fichaLaboral->FechaExArt) && $fichaLaboral->FechaExArt !== '0000-00-00') ? \Carbon\Carbon::parse($fichaLaboral->FechaExArt)->format('Y-m-d') : '' }}">
                                         </div>
                                     </div>
 

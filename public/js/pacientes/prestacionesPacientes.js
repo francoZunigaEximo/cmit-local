@@ -68,7 +68,7 @@ $(document).ready(()=>{
             success: function(response){
                 let cliente = response.cliente;
                 let clienteArt = response.clienteArt;
-
+                console.log(response)
                 $.ajax({
                     url: savePrestacion,
                     method: 'post',
@@ -290,6 +290,14 @@ $(document).ready(()=>{
             $('#buscar').val(" ");
 
             window.location.reload();
+        }
+    });
+
+    $(document).on('change', '#Pago', function(){
+        
+        let pago = $(this).val();
+        if (pago != 'B') {
+            $('#SPago, #Tipo, #Sucursal, #NroFactura').val(" ");
         }
     });
 
