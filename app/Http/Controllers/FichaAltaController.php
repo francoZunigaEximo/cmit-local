@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Cliente;
 use App\Models\Fichalaboral;
 use App\Models\PrestacionesTipo;
-use App\Models\Paciente;
 use Illuminate\Http\Request;
 
 class FichaAltaController extends Controller
@@ -66,15 +65,11 @@ class FichaAltaController extends Controller
     //Verificamos para emplear la vista full
     public function verificar(Request $request)
     {
-        $fichaLaboral = Fichalaboral::where('IdPaciente', $request->Id)->first();
+        $fichaLaboral = Fichalaboral::with(['empresa','art'])->where('IdPaciente', $request->Id)->first();
 
         if ($fichaLaboral) {
 
-            $clienteArt = Cliente::where('Id', $fichaLaboral->IdART)->first();
-            $cliente = Cliente::where('Id', $fichaLaboral->IdEmpresa)->first();
-
-            return response()->json(['fichaLaboral' => $fichaLaboral, 'clienteArt' => $clienteArt, 'cliente' => $cliente]);
-
+            return response()->json(['fichaLaboral' => $fichaLaboral, 'clienteArt' => $fichaLaboral->art, 'cliente' => $fichaLaboral->empresa]);
         }
 
     }
@@ -82,18 +77,14 @@ class FichaAltaController extends Controller
     public function checkObs(Request $request): mixed
     {
 
-        $fichaLaboral = Fichalaboral::where('IdPaciente', $request->Id)->first(['IdArt', 'IdEmpresa']);
+        $fichaLaboral = Fichalaboral::with(['paciente','art','empresa'])->where('IdPaciente', $request->Id)->first();
 
         if($fichaLaboral){
-
-            $obsArt = Cliente::where('Id', $fichaLaboral->IdArt)->first(['Motivo', 'Observaciones']);
-            $obsEmpresa = Cliente::where('Id', $fichaLaboral->IdEmpresa)->first(['Motivo', 'Observaciones']);
-            $obsPaciente = Paciente::where('Id', $request->Id)->first(['Observaciones']);
-
+            
             return response()->json([
-                'obsArt' => $obsArt,
-                'obsEmpresa' => $obsEmpresa,
-                'obsPaciente' => $obsPaciente
+                'obsArt' => $fichaLaboral->art,
+                'obsEmpresa' => $fichaLaboral->empresa,
+                'obsPaciente' => $fichaLaboral
             ]);
         }
     }
