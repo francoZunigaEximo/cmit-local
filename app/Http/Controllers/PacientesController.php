@@ -78,54 +78,31 @@ class PacientesController extends Controller
             $buscar = trim($request->buscar);
             $paciente = $request->paciente;
 
-            $query = Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-                ->join('clientes as emp', 'prestaciones.IdEmpresa', '=', 'emp.Id')
-                ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
-                ->join('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
-                ->select(
-                    DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdART) AS Art'),
-                    DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdEmpresa) AS Empresa'),
-                    DB::raw('COALESCE(COUNT(itemsprestaciones.IdPrestacion), 0) as Total'),
-                    DB::raw('COALESCE(COUNT(CASE WHEN itemsprestaciones.CAdj = 5 THEN itemsprestaciones.IdPrestacion END), 0) as CerradoAdjunto'),
-                    'emp.ParaEmpresa as ParaEmpresa',
-                    'emp.Identificacion as Identificacion',
-                    'prestaciones.Fecha as FechaAlta',
-                    'prestaciones.Id as Id',
-                    'pacientes.Nombre as Nombre',
-                    'pacientes.Apellido as Apellido',
-                    'prestaciones.TipoPrestacion as Tipo',
-                    'prestaciones.Anulado as Anulado',
-                    'prestaciones.Pago as Pago',
-                    'prestaciones.FechaVto as FechaVencimiento',
-                    'prestaciones.Ausente as Ausente',
-                    'prestaciones.IdPaciente as Paciente',
-                    'prestaciones.Estado as Estado',
-                    'prestaciones.Facturado as Facturado');
+            $query = $this->queryBasico();
 
-            $query->when($buscar, function ($query) use ($buscar, $paciente) {
-                $query->where(function ($query) use ($buscar, $paciente) {
-                    $query->where('emp.RazonSocial', 'LIKE', '%'.$buscar.'%')
-                        ->orWhere('emp.ParaEmpresa', 'LIKE', '%'.$buscar.'%');
-                    $query->orWhere(function ($query) use ($buscar, $paciente) {
-                        $query->whereExists(function ($subquery) use ($buscar, $paciente) {
-                            $subquery->select(DB::raw(1))
-                                ->from('clientes')
-                                ->whereColumn('art.Id', 'prestaciones.IdART')
-                                ->where('art.RazonSocial', 'LIKE', '%'.$buscar.'%');
+            if (!empty($buscar)) 
+            {
+                $query->when($buscar, function ($query) use ($buscar, $paciente) {
+                    $query->where(function ($query) use ($buscar, $paciente) {
+                        $query->where('emp.RazonSocial', 'LIKE', '%'.$buscar.'%')
+                            ->orWhere('emp.ParaEmpresa', 'LIKE', '%'.$buscar.'%');
+                        $query->orWhere(function ($query) use ($buscar, $paciente) {
+                            $query->whereExists(function ($subquery) use ($buscar, $paciente) {
+                                $subquery->select(DB::raw(1))
+                                    ->from('clientes')
+                                    ->whereColumn('art.Id', 'prestaciones.IdART')
+                                    ->where('art.RazonSocial', 'LIKE', '%'.$buscar.'%');
+                            });
+                        });
+                        $query->orWhere(function ($query) use ($buscar, $paciente) {
+                            $query->where('prestaciones.Id', '=', $buscar)
+                                ->where('prestaciones.IdPaciente', '=', $paciente);
                         });
                     });
-                    $query->orWhere(function ($query) use ($buscar, $paciente) {
-                        $query->where('prestaciones.Id', '=', $buscar)
-                            ->where('prestaciones.IdPaciente', '=', $paciente);
-                    });
                 });
-            });
+            }
 
-            return $query->groupBy('prestaciones.Id')
-                        ->where('prestaciones.Estado', 1)
-                        ->where('prestaciones.IdPaciente', '=', $paciente)
-                        ->orderBy('prestaciones.Id', 'DESC')
-                        ->paginate(500);
+            return $this->condicionesBasicas($query, $paciente);
         });
 
         return response()->json(['pacientes' => $prestacion]);
@@ -374,5 +351,43 @@ class PacientesController extends Controller
         $paciente->Foto = 'foto-default.png';
         $paciente->save();
         
+    }
+
+    private function queryBasico()
+    {
+        return Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+        ->join('clientes as emp', 'prestaciones.IdEmpresa', '=', 'emp.Id')
+        ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
+        ->join('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
+        ->select(
+            DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdART) AS Art'),
+            DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdEmpresa) AS Empresa'),
+            DB::raw('COALESCE(COUNT(itemsprestaciones.IdPrestacion), 0) as Total'),
+            DB::raw('COALESCE(COUNT(CASE WHEN itemsprestaciones.CAdj = 5 THEN itemsprestaciones.IdPrestacion END), 0) as CerradoAdjunto'),
+            'emp.ParaEmpresa as ParaEmpresa',
+            'emp.Identificacion as Identificacion',
+            'prestaciones.Fecha as FechaAlta',
+            'prestaciones.Id as Id',
+            'pacientes.Nombre as Nombre',
+            'pacientes.Apellido as Apellido',
+            'prestaciones.TipoPrestacion as Tipo',
+            'prestaciones.Anulado as Anulado',
+            'prestaciones.Pago as Pago',
+            'prestaciones.FechaVto as FechaVencimiento',
+            'prestaciones.Ausente as Ausente',
+            'prestaciones.IdPaciente as Paciente',
+            'prestaciones.Estado as Estado',
+            'prestaciones.Facturado as Facturado');
+    }
+
+    private function condicionesBasicas($query, $paciente)
+    {
+        $resultado = $query->groupBy('prestaciones.Id')
+                        ->where('prestaciones.Estado', 1)
+                        ->where('prestaciones.IdPaciente', '=', $paciente)
+                        ->orderBy('prestaciones.Id', 'DESC')
+                        ->paginate(500);
+
+        return $resultado;
     }
 }
