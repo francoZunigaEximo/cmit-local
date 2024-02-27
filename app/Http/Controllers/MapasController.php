@@ -209,8 +209,9 @@ class MapasController extends Controller
         $enProceso = $this->contadorEnProceso($mapa->Id);
         $presentes = $enProceso + $completas + $cerradas + $finalizados + $entregados;
         $ausentes = (intval($mapa->Cpacientes) ?? 0) - $presentes;
+        $auditorias = Auditor::with('auditarAccion')->where('IdTabla', 5)->where('IdRegistro', $mapa->Id)->orderBy('Id', 'Desc')->get();
 
-        return view('layouts.mapas.edit', compact(['mapa', 'cerradas', 'finalizados', 'entregados', 'conEstado', 'presentes', 'completas', 'enProceso', 'ausentes']));
+        return view('layouts.mapas.edit', compact(['mapa', 'cerradas', 'finalizados', 'entregados', 'conEstado', 'presentes', 'completas', 'enProceso', 'ausentes', 'auditorias']));
     }
 
 

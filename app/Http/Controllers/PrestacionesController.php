@@ -274,8 +274,9 @@ class PrestacionesController extends Controller
 
         $tipoPrestacion = PrestacionesTipo::all();
         $financiador = Cliente::find($prestacione->Financiador, ['RazonSocial', 'Id', 'Identificacion']);
+        $auditorias = Auditor::with('auditarAccion')->where('IdTabla', 1)->where('IdRegistro', $prestacione->Id)->orderBy('Id', 'Desc')->get();
 
-        return view('layouts.prestaciones.edit', compact(['tipoPrestacion', 'prestacione', 'financiador']));
+        return view('layouts.prestaciones.edit', compact(['tipoPrestacion', 'prestacione', 'financiador', 'auditorias']));
 
     }
 
@@ -450,7 +451,6 @@ class PrestacionesController extends Controller
         $prestacion = Prestacion::find($request->Id);
         if($prestacion){
             $prestacion->update(['Vto' => 1]);
-            Auditor::setAuditoria($request->Id, 1, 8, Auth::user()->name);
         }  
     }
 

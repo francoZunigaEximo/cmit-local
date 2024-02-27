@@ -399,17 +399,41 @@ body .selectArt2 .select2.select2-container {
 
 #listaClientes th, td,
 #listaPacientes th, td,
-#listaMapas th, td,
+#listaMapas th, td, 
+#auditoriaPres th, td,
+#autorizadosPres th, td,
+#lstPrivPrestaciones th, td,
+#listaOrdenesEfectores th, td,
+#listaOrdenesEfectoresAsig th, td,
+#listaOrdenesEfectoresAdj th, td,
+#listaOrdenesInformadores th, td,
+#listaOrdenesInformadores th, td,
 #listaPrestaciones th, td { white-space: nowrap !important; }
 
 #listaClientes tr,
 #listaPacientes tr,
 #listaMapas tr,
-#listaPrestaciones tr { height: 37px !important;}
+#auditoriaPres tr,
+#autorizadosPres tr,
+#lstPrivPrestaciones tr,
+#listaOrdenesEfectores tr,
+#listaOrdenesEfectoresAsig tr,
+#listaOrdenesEfectoresAdj tr,
+#listaOrdenesInformadores tr,
+#listaOrdenesInformadores tr,
+#listaPrestaciones tr { height: 25px !important;}
 
 #listaClientes tbody tr td,
 #listaPacientes tbody tr td,
 #listaMapas tbody tr td,
+#auditoriaPres tbody tr td,
+#autorizadosPres tbody tr td,
+#lstPrivPrestaciones tbody tr td,
+#listaOrdenesEfectores tbody tr td,
+#listaOrdenesEfectoresAsig tbody tr td,
+#listaOrdenesEfectoresAdj tbody tr td,
+#listaOrdenesInformadores tbody tr td,
+#listaOrdenesInformadores tbody tr td,
 #listaPrestaciones tbody tr td { padding: 5px 8px 2px 8px };
 
 table.dataTable tr.dtrg-level-0 td {
@@ -427,24 +451,21 @@ table.dataTable tr.dtrg-level-0 td {
 	background-color: #eeeeee;
 }
 
-#listaExamenes > :not(caption) > * {
-    padding: 0.25rem 0.6rem;
-}
-
-#prestaMapa > :not(caption) > * {
-    padding: 0.25rem 0.6rem;
-} 
-
-#remitoMapa > :not(caption) > * {
-    padding: 0.25rem 0.6rem;
-}
-
-#cerrarMapa > :not(caption) > * {
-    padding: 0.25rem 0.6rem;
-}
-
+#listaOrdenesEfectores > :not(caption) > *,
+#lstPrivPrestaciones > :not(caption) > *,
+#autorizadosPres > :not(caption) > *,
+#auditoriaPres > :not(caption) > *,
+#listaExamenes > :not(caption) > *,
+#prestaMapa > :not(caption) > *,
+#remitoMapa > :not(caption) > *,
+#cerrarMapa > :not(caption) > *,
 #finalizarMapa > :not(caption) > * {
     padding: 0.25rem 0.6rem;
+}
+
+.titulo-tabla .card-header:first-child {
+    border-radius: var(--vz-card-inner-border-radius) var(--vz-card-inner-border-radius) 0 0;
+    padding: 10px;
 }
 
 #eenviarMapa > :not(caption) > * {

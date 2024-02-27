@@ -377,12 +377,12 @@
 
                     <div class="row">
                         <div class="col-lg-12">
-                            <div class="card">
+                            <div class="card titulo-tabla">
                                 <div class="card-header d-flex justify-content-between align-items-center">
                                     <h4 class="card-title mb-0">Observaciones privadas</h4><button type="button" class="btn bt-sm botonGeneral" data-bs-toggle="modal" data-bs-target="#addObs">Añadir</button>
                                 </div>
                                 <div class="card-body">
-                                    <div class="table-responsive table-card mt-3 mb-1">
+                                    <div class="table-responsive table-card mb-1">
                                         <table id="lstPrivPrestaciones" class="display table table-bordered" style="100%">
                                             <thead class="table-light">
                                                 <tr>
@@ -403,12 +403,12 @@
 
                     <div class="row mt-2">
                         <div class="col-lg-12">
-                            <div class="card">
+                            <div class="card titulo-tabla">
                                 <div class="card-header d-flex justify-content-between align-items-center">
                                     <h4 class="card-title mb-0">Autorizados</h4>
                                 </div>
                                 <div class="card-body">
-                                    <div class="table-responsive table-card mt-3 mb-1">
+                                    <div class="table-responsive table-card mb-1">
                                         <table id="lstAutorizados" class="display table table-bordered" style="100%">
                                             <thead class="table-light">
                                                 <tr>
@@ -426,6 +426,43 @@
                         </div>
                     </div>
 
+                    <div class="row mt-2">
+                        <div class="col-lg-12">
+                            <div class="card titulo-tabla">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h4 class="card-title mb-0">Auditoria</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive table-card mb-1">
+                                        <table id="lstAuditorias" class="display table table-bordered" style="100%">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Fecha y hora</th>
+                                                    <th>Accion</th>
+                                                    <th>Usuario</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="list form-check-all" id="auditoriaPres">
+                                                @forelse($auditorias as $auditoria)
+                                                <tr>
+                                                    <th>{{ isset($auditoria->Fecha) ? \Carbon\Carbon::parse($auditoria->Fecha)->format('d/m/Y H:i:s') : '' }}</th>
+                                                    <th>{{ $auditoria->auditarAccion->Nombre ?? '' }}</th>
+                                                    <th>{{ $auditoria->IdUsuario ?? '' }}</th>
+                                                </tr>
+                                                @empty
+                                                <tr>
+                                                    <th>No hay registros actualmente</th>
+                                                </tr>
+
+                                                @endforelse
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
 
                 </div>
             </div>
