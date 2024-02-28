@@ -282,6 +282,7 @@ class ClientesController extends Controller
                 'EMailResultados' => $request->resultados,
                 'EMailInformes' => $request->informes,
                 'EMailFactura' => $request->facturas,
+                'EMailAnexo' => $request->anexo
             ]);
             $cliente->SEMail = ($request->sinEnvio === 'true') ? 1 : 0;
             $cliente->save();
@@ -299,7 +300,8 @@ class ClientesController extends Controller
                 'RF' => $request->fisico,
                 'SinEval' => $request->sinEvaluacion,
                 'SinPF' => $request->facturacionSinPaq,
-                'Bloqueado' => $request->bloqueado
+                'Bloqueado' => $request->bloqueado,
+                'Anexo' => $request->anexo,
             ]);
             $cliente->Entrega = ($request->mensajeria === 'true' ? 2 : ($request->correo === 'true' ? 4 : 0)); 
             $cliente->save();

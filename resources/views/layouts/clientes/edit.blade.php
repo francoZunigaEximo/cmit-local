@@ -224,7 +224,7 @@
                 <!--end row-->
             </form>
         </div>
-        <!--end tab-pane-->
+        
         <div class="tab-pane" id="paraEmpresa" role="tabpanel">                
                 <div class="card mt-xxl-n5">
                 <div class="card-body p-4">
@@ -274,6 +274,7 @@
                 </tbody>
             </table>
         </div>
+
         <div class="tab-pane" id="autorizados" role="tabpanel">
                 <div class="row g-2">
                     <label for="oldpasswordInput" class="form-label">Autorizado <span class="required">(*)</span></label>
@@ -328,7 +329,7 @@
                 
             </div>
         </div>
-        <!--end tab-pane-->
+        
         <div class="tab-pane" id="opciones" role="tabpanel">
             <form>
                 <div id="newlink">
@@ -360,6 +361,18 @@
                                         <input class="form-check-input" type="checkbox" id="correoItem" {{ ($cliente->Entrega == 4)?'checked':'' }}>
                                         <label class="form-check-label" for="correoItem">
                                             Correo
+                                        </label>
+                                    </div>
+                                    <!--end row-->
+                                </div>
+                            </div>
+
+                            <div class="col-lg-3">
+                                <div class="mb-3">
+                                    <div class="form-check form-check-success mb-6">
+                                        <input class="form-check-input" type="checkbox" id="anexo" {{ ($cliente->Anexo == 1)?'checked':'' }}>
+                                        <label class="form-check-label" for="anexo">
+                                            Mail eAnexos
                                         </label>
                                     </div>
                                     <!--end row-->
@@ -415,7 +428,7 @@
                 <!--end col-->
             </form>
         </div>
-        <!--end tab-pane-->
+        
         <div class="tab-pane" id="eMail" role="tabpanel">
             <div class="mb-4 pb-2">
                 <div class="mb-3">
@@ -433,6 +446,11 @@
                     <input type="email" class="form-control" id="EMailFactura" value="{{ $cliente->EMailFactura }}">
                     <small style="color: #666666">Recuerde separar los correos con comas (,)</small>
                 </div>
+                <div class="mb-3">
+                    <label for="EMailAnexo" class="form-label">Solo anexos</label>
+                    <input type="email" class="form-control" id="EMailAnexo" value="{{ $cliente->EMailAnexo }}">
+                    <small style="color: #666666">Recuerde separar los correos con comas (,)</small>
+                </div>
                 <div class="form-check form-check-success mb-6">
                     <input class="form-check-input" type="checkbox" id="SEMail" {{ ($cliente->SEMail == 1)? 'checked':'' }}>
                     <label class="form-check-label" for="SEMail">
@@ -444,6 +462,7 @@
                 </div>
             </div>
         </div>
+
         <div class="tab-pane" id="obs" role="tabpanel">
             <div class="mb-4 pb-2">
                 <div class="mb-3">
@@ -473,7 +492,7 @@
                 <button type="button" class="btn botonGeneral" id="btnObservaciones" >Guardar</button>
             </div>
         </div>
-        <!--end tab-pane-->
+        
     </div>
 </div>
 

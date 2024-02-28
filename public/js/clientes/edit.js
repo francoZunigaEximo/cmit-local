@@ -47,6 +47,7 @@ $(document).ready(()=> {
             correo = $('#correoItem').prop('checked'),
             mensajeria = $('#mensajeriaItem').prop('checked'),
             bloqueado = $('#Bloqueado').prop('checked')?1:0,
+            anexo =$('#anexo').prop('checked')?1:0,
             motivo = $('#MotivoB').val();
 
     
@@ -78,6 +79,7 @@ $(document).ready(()=> {
                 correo: correo,
                 mensajeria: mensajeria,
                 bloqueado: bloqueado,
+                anexo: anexo,
                 Id: ID,
             },
             success: function(){
@@ -187,9 +189,10 @@ $(document).ready(()=> {
         let emailsResultados = $('#EMailResultados').val(),
             emailsInformes = $('#EMailInformes').val(),
             emailsFactura = $('#EMailFactura').val(),
+            emailsAnexo = $('#EMailAnexo').val(),
             sinEnvio = $('#SEMail').prop('checked');
     
-        if (!verificarCorreos(emailsResultados) || !verificarCorreos(emailsInformes) || !verificarCorreos(emailsFactura)) {
+        if (!verificarCorreos(emailsResultados) || !verificarCorreos(emailsInformes) || !verificarCorreos(emailsFactura) || !verificarCorreos(emailsAnexo)) {
             controlEjecucion = false;
         }
             
@@ -204,6 +207,7 @@ $(document).ready(()=> {
                 informes: emailsInformes,
                 facturas: emailsFactura,
                 sinEnvio: sinEnvio,
+                anexo: emailsAnexo,
                 Id: ID
             },
             success: function(){
