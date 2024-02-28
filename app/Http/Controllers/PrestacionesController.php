@@ -104,7 +104,7 @@ class PrestacionesController extends Controller
                 'prestaciones.Devol as Devol',
                 'prestaciones.Forma as Forma',
                 'prestaciones.SinEsc as SinEsc',
-                'prestaciones.TipoPrestacion as TipoPrestacion',
+                'prestaciones.TipoPrestacion as Tipo',
                 'prestaciones.eEnviado as eEnviado',
                 'prestaciones.Estado as Estado',
                 'prestaciones.Facturado as Facturado',

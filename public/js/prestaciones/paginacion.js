@@ -90,11 +90,11 @@ $(document).ready(()=>{
                 },
                 {
                     data: null,
-                    name: 'TipoPrestacion',
+                    name: 'Tipo',
                     orderable: true,
                     targets: 5,
                     render: function(data){
-                        return data.TipoPrestacion; 
+                        return data.Tipo; 
                     }
                 },
                 {
@@ -146,6 +146,8 @@ $(document).ready(()=>{
                         }else if(data.Entregado === 1){
                             situacion = "Entregado";
                         }else if(data.Cerrado === 0 && data.Finalizado === 0){
+                            situacion = "Abierto";
+                        }else{
                             situacion = "Abierto";
                         }
 
