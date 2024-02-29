@@ -26,6 +26,6 @@ class ArchivoEfector extends Model
 
     public function ItemPrestacion()
     {
-        return $this->hasOne(Prestacion::class, 'Id', 'IdEntidad');
+        return $this->hasMany(ItemPrestacion::class, 'Id', 'IdEntidad');
     }
 }
