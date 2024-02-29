@@ -646,3 +646,7 @@ composer require setasign/fpdf
 ALTER TABLE fichaslaborales  ADD FechaPreocupacional DATE NULL;
 ALTER TABLE fichaslaborales  ADD FechaUltPeriod DATE NULL;
 ALTER TABLE fichaslaborales  ADD FechaExArt DATE NULL;
+ALTER TABLE clientes ADD Anexo INT DEFAULT 0 NULL;
+ALTER TABLE clientes ADD EMailAnexo varchar(100) NULL;
+
+

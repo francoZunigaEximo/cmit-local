@@ -57,6 +57,8 @@ class Cliente extends Model
         'RF',
         'Observaciones',
         'Estado',
+        'Anexo',
+        'EMailAnexo'
     ];
 
     public $timestamps = false;
