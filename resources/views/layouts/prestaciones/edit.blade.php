@@ -528,6 +528,9 @@ const GOPRESTACIONES = "{{ route('prestaciones.index') }}";
 const GOPACIENTES = "{{ route('pacientes.index') }}";
 const actualizarVto = "{{ route('actualizarVto') }}";
 const getEvaluador = "{{ route('getEvaluador') }}";
+const updateEstadoItem = "{{ route('updateEstadoItem') }}";
+const liberarExamen = "{{ route('liberarExamen') }}";
+const marcarExamenAdjunto = "{{ route('marcarExamenAdjunto') }}";
 
 const getPaquetes = "{{ route('getPaquetes') }}";
 const searchExamen = "{{ route('searchExamen') }}";

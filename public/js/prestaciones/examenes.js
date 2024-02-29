@@ -57,7 +57,7 @@ $(document).ready(()=>{
             toastr.warning("Debe seleccionar un paquete para poder añadirlo en su totalidad", "Atención");
             return;
         }
-
+        mostrarPreloader('#preloader');
        $.ajax({
             url: paqueteId,
             type: 'POST',
@@ -72,67 +72,58 @@ $(document).ready(()=>{
                     ids = data.map(function(item) {
                     return item.Id;
                   });
-                saveExamen(ids);   
+                saveExamen(ids);  
+                ocultarPreloader('#preloader');
+                $('.addPaquete').val([]).trigger('change.select2');
             }
        });
        
     });
 
-    $(document).on('click', '.delete-examen', function() {
-
-        let idItem = $(this).data('delete');
-        $(this).closest('tr').remove();
-
-        if (idItem !== undefined) {
-            if(confirm("Confirme la eliminación del exámen:")){
-
-                $.ajax({
-                    url: deleteItemExamen,
-                    type: 'Post',
-                    data: {
-                        Id: idItem,
-                        _token: TOKEN
-                    },
-                    success: function(response){
-                        toastr.info(response.message, 'Atención');
-                    }
-                });
-            }
-            
-        }
-    });
-
-    $(document).on('click', '.deleteExamenes', function(e){
+    $(document).on('click', '.deleteExamenes, .deleteExamen', function(e){
 
         e.preventDefault();
 
-        let ids = [], tieneAdjunto = false;
+        let ids = [], tieneAdjunto = false, id = $(this).data('delete'), adjunto, archivos;
+        var checkAll ='';
 
-        $('input[name="Id_examenes"]:checked').each(function() {
-            ids.push($(this).val());
-            
-            let adjunto = $(this).data('adjunto'), archivos = $(this).data('archivo');
+        if ($(this).hasClass('deleteExamenes')) {
+
+            $('input[name="Id_examenes"]:checked').each(function() {
+        
+                adjunto = $(this).data('adjunto'), archivos = $(this).data('archivo');
+
+                if (adjunto == 1 && archivos > 0) {
+                    tieneAdjunto = true;
+                } else {
+                    ids.push($(this).val());
+                }
+            });
+    
+            checkAll = $('#checkAllExamenes').prop('checked');
+
+        } else if($(this).hasClass('deleteExamen')) {
+
+            adjunto = $(this).data('adjunto'), archivos = $(this).data('archivo');
 
             if (adjunto == 1 && archivos > 0) {
                 tieneAdjunto = true;
-                return false; 
+            } else {
+                ids.push(id);
             }
-        });
-
-        if (tieneAdjunto) {
-            toastr.warning('Alguno de los exámenes seleccionados tiene un reporte adjuntado. No se puede eliminar.', 'Atención');
-            return;
         }
-
-        let checkAll =$('#checkAllExamenes').prop('checked');
-
+        
         if(ids.length === 0 && checkAll === false){
             toastr.warning('No hay examenes seleccionados', 'Atención');
             return;
         }
+
+        if (tieneAdjunto) {
+            toastr.warning('El o los examenes seleccionados tienen un reporte adjuntado. El mismo no se podrá eliminar.', 'Atención');
+        }
     
         if(confirm("Confirme la eliminación de los examenes")){
-
+            mostrarPreloader('#preloader');
             $.ajax({
                 url: deleteItemExamen,
                 type: 'POST',
@@ -140,56 +131,53 @@ $(document).ready(()=>{
                     Id: ids,
                     _token: TOKEN
                 },
-                success: function(){
-                    toastr.info('Se ha eliminado el exámen.', 'Eliminar');
-                    $('#listaExamenes').empty();
-                    $('#exam').val([]).trigger('change.select2');
-                    $('#addPaquete').val([]).trigger('change.select2');
-                    cargarExamen();
-                }
-            });
-        }
-        
-    });
+                success: function(response){
+                    var estados = [];
 
-    $(document).on('click', '.bloquear-examen', function() {
+                    response.forEach(function(msg) {
+                        
+                        let tipoRespuesta = {
+                            success: 'success',
+                            fail: 'info'
+                        }
+                        ocultarPreloader('#preloader');
+                        toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 });
+                        estados.push(msg.estado);
+      
+                    });
 
-        let idItem = $(this).data('bloquear');
-
-        if (idItem !== undefined) {
-            if(confirm('Confirme la baja del exámen:')){
-
-                $.ajax({
-                    url: bloquearItemExamen,
-                    type: 'Post',
-                    data: {
-                        Id: idItem,
-                        _token: TOKEN
-                    },
-                    success: function(){
-                        toastr.info('Se ha dado de baja el exámen', 'Baja realizada');
+                    if(estados.includes('success')) {
                         $('#listaExamenes').empty();
                         $('#exam').val([]).trigger('change.select2');
                         $('#addPaquete').val([]).trigger('change.select2');
                         cargarExamen();
                     }
-                });
-            }   
+
+                }
+            });
         }
     });
 
-    $(document).on('click', '.bloquearExamenes', function(e){
+    $(document).on('click', '.bloquearExamenes, .bloquearExamen', function(e){
 
         e.preventDefault();
 
-        let ids = [];
+        let ids = [], id = $(this).data('bloquear');
+        var checkAll ='';
 
-        $('input[name="Id_examenes"]:checked').each(function() {
-            ids.push($(this).val());
+        if ($(this).hasClass('bloquearExamenes')) {
+
+            $('input[name="Id_examenes"]:checked').each(function() {
+                ids.push($(this).val());
+        
+            });
     
-        });
+            checkAll =$('#checkAllExamenes').prop('checked');
+        
+        }else if($(this).hasClass('bloquearExamen')){
 
-        let checkAll =$('#checkAllExamenes').prop('checked');
+            ids.push(id);
+        }
 
         if(ids.length === 0 && checkAll === false){
             toastr.warning('No hay examenes seleccionados', 'Atención');
@@ -197,23 +185,149 @@ $(document).ready(()=>{
         }
     
         if(confirm("Confirme el bloqueo de los examenes")){
-
-            $.ajax({
+            
+            mostrarPreloader('#preloader');
+            $.ajax({    
                 url: bloquearItemExamen,
                 type: 'POST',
                 data: {
                     Id: ids,
                     _token: TOKEN
                 },
-                success: function(){
-                    toastr.info('Se han dado de baja los examenes', 'Baja realizada');
-                    $('#listaExamenes').empty();
-                    $('#exam').val([]).trigger('change.select2');
-                    $('#addPaquete').val([]).trigger('change.select2');
-                    cargarExamen();
+                success: function(response){
+                    var estados = [];
+                    
+                    
+                    response.forEach(function(msg) {
+
+                        let tipoRespuesta = {
+                            success: 'success',
+                            fail: 'info'
+                        }
+                        ocultarPreloader('#preloader');
+                        toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 })
+                        
+                        estados.push(msg.estado)
+                        
+                    });
+                    
+                    if(estados.includes('success')) {
+                        $('#listaExamenes').empty();
+                        $('#exam').val([]).trigger('change.select2');
+                        $('#addPaquete').val([]).trigger('change.select2');
+                        cargarExamen();
+                    }
                 }
             });
         }
+
+    });
+
+    $(document).on('click', '.abrirExamenes', function(e) {
+        e.preventDefault();
+
+        let ids = [];
+
+        $('input[name="Id_examenes"]:checked').each(function() {
+            ids.push($(this).val());
+        });
+
+        let checkAll = $('#checkAllExamenes').prop('checked');
+
+        if(ids.length === 0 && checkAll === false){
+            toastr.warning('No hay examenes seleccionados', 'Atención');
+            return;
+        }
+        if(confirm("Confirme la apertura de los examenes")){
+
+            mostrarPreloader('#preloader');
+            $.ajax({
+                url: updateEstadoItem,
+                type: 'POST',
+                data: {
+                    Ids: ids,
+                    _token: TOKEN
+                },
+                success: function(response){
+                    var estados = [];
+
+                    response.forEach(function(msg) {
+                        
+                        let tipoRespuesta = {
+                            success: 'success',
+                            fail: 'info'
+                        }
+                        ocultarPreloader('#preloader');
+                        toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 });
+                        estados.push(msg.estado);
+      
+                    });
+
+                    if(estados.includes('success')) {
+                        $('#listaExamenes').empty();
+                        $('#exam').val([]).trigger('change.select2');
+                        $('#addPaquete').val([]).trigger('change.select2');
+                        cargarExamen();
+                    }
+
+                }
+            });
+        }
+
+    });
+
+    $(document).on('click', '.adjuntoExamenes', function(e){
+        e.preventDefault();
+
+        let ids = [];
+
+        $('input[name="Id_examenes"]:checked').each(function() {
+            ids.push($(this).val());
+        });
+
+        let checkAll = $('#checkAllExamenes').prop('checked');
+
+        if(ids.length === 0 && checkAll === false){
+            toastr.warning('No hay examenes seleccionados', 'Atención');
+            return;
+        }
+
+        if(confirm("Confirme la marca de adjunto de los examenes")){
+
+            mostrarPreloader('#preloader');
+            $.ajax({
+                url: marcarExamenAdjunto,
+                type: 'POST',
+                data: {
+                    Ids: ids,
+                    _token: TOKEN
+                },
+                success: function(response){
+                    var estados = [];
+
+                    response.forEach(function(msg) {
+                        
+                        let tipoRespuesta = {
+                            success: 'success',
+                            fail: 'info'
+                        }
+                        ocultarPreloader('#preloader');
+                        toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 });
+                        estados.push(msg.estado);
+      
+                    });
+
+                    if(estados.includes('success')) {
+                        $('#listaExamenes').empty();
+                        $('#exam').val([]).trigger('change.select2');
+                        $('#addPaquete').val([]).trigger('change.select2');
+                        cargarExamen();
+                    }
+
+                }
+            });
+        }
+    
 
     });
 
@@ -410,12 +524,12 @@ $(document).ready(()=>{
                                             </div>
                                             ${examen.Anulado === 0 ? `
                                                 <div class="bloquear">
-                                                    <button data-bloquear="${examen.IdItem}" class="btn btn-sm iconGeneral bloquear-examen" title="Baja">
+                                                    <button data-bloquear="${examen.IdItem}" class="btn btn-sm iconGeneral bloquearExamen" title="Baja">
                                                         <i class="ri-forbid-2-line"></i>
                                                     </button>
                                                 </div>
                                                 <div class="remove">
-                                                    <button data-delete="${examen.IdItem}"  class="btn btn-sm iconGeneral delete-examen" title="Eliminar">
+                                                    <button data-delete="${examen.IdItem}"  class="btn btn-sm iconGeneral deleteExamen" title="Eliminar">
                                                         <i class="ri-delete-bin-2-line"></i>
                                                     </button>
                                                 </div>    
@@ -443,6 +557,20 @@ $(document).ready(()=>{
                 console.error(xhr);
                 toastr.error("Ha ocurrido un error. Consulte con el administrador", "Error");
             }
+        });
+    }
+
+    function mostrarPreloader(arg) {
+        $(arg).css({
+            opacity: '0.3',
+            visibility: 'visible'
+        });
+    }
+    
+    function ocultarPreloader(arg) {
+        $(arg).css({
+            opacity: '0',
+            visibility: 'hidden'
         });
     }
 });
