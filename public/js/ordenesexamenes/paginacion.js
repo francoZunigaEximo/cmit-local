@@ -32,6 +32,7 @@ $(document).ready(()=>{
             processing: true,
             lengthChange: false,
             pageLength: 50,
+            deferRender: true,
             responsive: true,
             serverSide: true,
             ajax: {
@@ -106,7 +107,7 @@ $(document).ready(()=>{
                 },
             ],
             language: {
-                processing: "Cargando listado de examenes de CMIT",
+                processing: "<div style='text-align: center; margin-top: 20px;'><img src='./images/spinner.gif' /><p>Cargando...</p></div>",
                 emptyTable: "No hay examenes con los datos buscados",
                 paginate: {
                     first: "Primera",

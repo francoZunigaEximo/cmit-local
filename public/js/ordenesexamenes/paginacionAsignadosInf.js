@@ -14,19 +14,7 @@ $(document).ready(()=>{
             return;
         }
 
-        var especialidad = $('#especialidadAsignadosInf').val(), profesional = $('#informadorAsignadoInf').val();
-
-        $(document).on('change', '#especialidadAsignadosInf', function(){
-            var nuevoValor = $(this).val();
-            
-            if (nuevoValor !== especialidad) {
-
-                especialidad = nuevoValor;
-
-            }
-        });
-
-        
+        $('#LiberarInf').show();
 
         $('#listaOrdenesInformadoresAsig').DataTable().clear().destroy();
 
@@ -37,6 +25,7 @@ $(document).ready(()=>{
             processing: true,
             lengthChange: false,
             pageLength: 50,
+            deferRender: true,
             responsive: true,
             serverSide: true,
             ajax: {
@@ -103,18 +92,14 @@ $(document).ready(()=>{
                     data: null,
                     render: function(data) {
                     
-                        especialidad !== '' && (data.IdEspecialidad == especialidad) ? $('#LiberarInf').show(): '';
-
-                        return  especialidad == 0 || especialidad == ''
+                        return  data.IdItem == 0 || data.IdItem == ''
                             ? `<input type ="checkbox" disabled>`
-                            : data.IdEspecialidad == especialidad
-                                ? `<input type="checkbox" name="Id_asignadoInf" value="${data.IdItem}" checked>`
-                                : `<input type ="checkbox" disabled>`;       
+                            : `<input type="checkbox" name="Id_asignadoInf" value="${data.IdItem}" checked>`;     
                     }
                 },
             ],
             language: {
-                processing: "Cargando listado de examenes de CMIT",
+                processing: "<div style='text-align: center; margin-top: 20px;'><img src='./images/spinner.gif' /><p>Cargando...</p></div>",
                 emptyTable: "No hay examenes con los datos buscados",
                 paginate: {
                     first: "Primera",
@@ -153,5 +138,11 @@ $(document).ready(()=>{
             return (format === '0') ? `${dia}${divider}${mes}${divider}${anio}` : `${anio}${divider}${mes}${divider}${dia}`;
         }
 
+        function generarCodigo(idprest, idex, idpac) {
+            return 'A' + ('000000000' + idprest).slice(-9) + ('00000' + idex).slice(-5) + ('0000000' + idpac).slice(-7) + '.pdf';
+        }
+
     });
+
+    
 });

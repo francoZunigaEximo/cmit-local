@@ -32,6 +32,7 @@ $(document).ready(()=>{
             processing: true,
             lengthChange: false,
             pageLength: 50,
+            deferRender: true,
             responsive: true,
             serverSide: true,
             ajax: {
@@ -88,7 +89,7 @@ $(document).ready(()=>{
                     data: null,
                     render: function(data) {
                         let recorte = (data.Examen).substring(0,10) + "...";
-                        console.log(data.MultiEfector);
+                        
                         return data.MultiEfector === 1
                             ? `<span class="custom-badge pequeno">Multi Exámen</span>`
                             : recorte.length >= 10 
@@ -115,7 +116,7 @@ $(document).ready(()=>{
                                             ? 'Cerrado'
                                             : 'sin datos';
 
-                        return `<span class="custom-badge pequeno">${mostrar}</span>`;
+                        return `<span title="Indicador: ${generarCodigo(data.IdPrestacion, data.IdExamen, data.IdPaciente)}" class="custom-badge pequeno">${mostrar}</span>`;
                     }
                 },
                 {
@@ -140,7 +141,7 @@ $(document).ready(()=>{
                 }
             ],
             language: {
-                processing: "Cargando listado de examenes de CMIT",
+                processing: "<div style='text-align: center; margin-top: 20px;'><img src='./images/spinner.gif' /><p>Cargando...</p></div>",
                 emptyTable: "No hay examenes con los datos buscados",
                 paginate: {
                     first: "Primera",
@@ -177,6 +178,10 @@ $(document).ready(()=>{
             }
         
             return (format === '0') ? `${dia}${divider}${mes}${divider}${anio}` : `${anio}${divider}${mes}${divider}${dia}`;
+        }
+
+        function generarCodigo(idprest, idex, idpac) {
+            return 'A' + ('000000000' + idprest).slice(-9) + ('00000' + idex).slice(-5) + ('0000000' + idpac).slice(-7) + '.pdf';
         }
 
     });

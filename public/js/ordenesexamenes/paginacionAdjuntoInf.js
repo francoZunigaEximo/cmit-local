@@ -20,6 +20,7 @@ $(document).ready(()=>{
             processing: true,
             lengthChange: false,
             pageLength: 50,
+            deferRender: true,
             responsive: true,
             serverSide: true,
             ajax: {
@@ -76,7 +77,12 @@ $(document).ready(()=>{
                     data: null,
                     render: function(data) {
                         let recorte = (data.Examen).substring(0,10) + "...";
-                        return recorte.length >= 10 ? `<span title="${data.Examen}">${recorte}</span>` : data.Examen;
+                        
+                        return data.MultiInformador === 1
+                            ? `<span class="custom-badge pequeno">Multi Exámen</span>`
+                            : recorte.length >= 10 
+                                ? `<span title="${data.Examen}">${recorte}</span>` 
+                                : data.Examen;
                     }
                 },
                 {
@@ -98,7 +104,7 @@ $(document).ready(()=>{
                                             ? 'Cerrado'
                                             : 'sin datos';
 
-                        return `<span class="custom-badge pequeno">${mostrar}</span>`;
+                        return `<span title="Indicador: ${generarCodigo(data.IdPrestacion, data.IdExamen, data.IdPaciente)}" class="custom-badge pequeno">${mostrar}</span>`;
                     }
                 },
                 {
@@ -112,15 +118,15 @@ $(document).ready(()=>{
                     data: null,
                     render: function(data){
 
-                        let masivo = `<span title="Subir automáticamente el reporte" class="custom-badge iconGeneral"><i class="ri-file-upload-line"></i></span>`,
-                            individual = `<span data-id="${data.IdItem}" data-idprestacion="${data.IdPrestacion}" data-tipo="informador" title="Subir manualmente el reporte" class="custom-badge iconGeneral uploadFile"><i class="ri-folder-line"></i></span><input type="file" class="fileManual" style="display: none;">`;
+                        let masivo = `<span title="Subir automáticamente el reporte" class="custom-badge iconGeneral"><i class="ri-file-upload-line automaticUploadI" data-id="${data.IdItem}" data-forma="individual"></i></span>`,
+                            individual = `<span data-id="${data.IdItem}" data-idprestacion="${data.IdPrestacion}" data-tipo="${data.MultiInformador === 1 ? 'multiInformador' : 'informador'}" title="Subir manualmente el reporte" class="custom-badge iconGeneral uploadFile"><i class="ri-folder-line"></i></span><input type="file" class="fileManual" style="display: none;">`;
 
                         return `${masivo} ${individual}`;
                     }
                 }
             ],
             language: {
-                processing: "Cargando listado de examenes de CMIT",
+                processing: "<div style='text-align: center; margin-top: 20px;'><img src='./images/spinner.gif' /><p>Cargando...</p></div>",
                 emptyTable: "No hay examenes con los datos buscados",
                 paginate: {
                     first: "Primera",
@@ -159,5 +165,11 @@ $(document).ready(()=>{
             return (format === '0') ? `${dia}${divider}${mes}${divider}${anio}` : `${anio}${divider}${mes}${divider}${dia}`;
         }
 
+        function generarCodigo(idprest, idex, idpac) {
+            return 'A' + ('000000000' + idprest).slice(-9) + ('00000' + idex).slice(-5) + ('0000000' + idpac).slice(-7) + '.pdf';
+        }
+
     });
+
+    
 });
