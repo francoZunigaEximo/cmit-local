@@ -407,7 +407,9 @@ body .selectArt2 .select2.select2-container {
 #listaOrdenesEfectoresAsig th, td,
 #listaOrdenesEfectoresAdj th, td,
 #listaOrdenesInformadores th, td,
-#listaOrdenesInformadores th, td,
+#listaOrdenesInformadoresAsig th, td,
+#listaOrdenesEfectoresAdj th, td,
+#listaOrdenesInformadoresAdj th, td,
 #listaPrestaciones th, td { white-space: nowrap !important; }
 
 #listaClientes tr,
@@ -420,7 +422,9 @@ body .selectArt2 .select2.select2-container {
 #listaOrdenesEfectoresAsig tr,
 #listaOrdenesEfectoresAdj tr,
 #listaOrdenesInformadores tr,
-#listaOrdenesInformadores tr,
+#listaOrdenesInformadoresAsig tr,
+#listaOrdenesEfectoresAdj tr,
+#listaOrdenesInformadoresAdj tr,
 #listaPrestaciones tr { height: 25px !important;}
 
 #listaClientes tbody tr td,
@@ -433,7 +437,8 @@ body .selectArt2 .select2.select2-container {
 #listaOrdenesEfectoresAsig tbody tr td,
 #listaOrdenesEfectoresAdj tbody tr td,
 #listaOrdenesInformadores tbody tr td,
-#listaOrdenesInformadores tbody tr td,
+#listaOrdenesInformadoresAsig tbody tr td,
+#listaOrdenesInformadoresAdj tbody tr td,
 #listaPrestaciones tbody tr td { padding: 5px 8px 2px 8px };
 
 table.dataTable tr.dtrg-level-0 td {
@@ -459,6 +464,7 @@ table.dataTable tr.dtrg-level-0 td {
 #prestaMapa > :not(caption) > *,
 #remitoMapa > :not(caption) > *,
 #cerrarMapa > :not(caption) > *,
+#listaOrdenesEfectoresAdj > :not(caption) > *,
 #finalizarMapa > :not(caption) > * {
     padding: 0.25rem 0.6rem;
 }
