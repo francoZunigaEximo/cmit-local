@@ -28,13 +28,24 @@ $(document).ready(function(){
 
     $(document).on('click', '.btnAdjEfector, .btnAdjInformador', function () {
         let who = $(this).hasClass('btnAdjEfector') ? 'efector' : 'informador';
-        let archivo = (who === 'efector') ? $('input[name="fileEfector"]')[0].files[0] : $('input[name="fileInformador"]')[0].files[0];
         
-        let descripcionE = $('#DescripcionE').val(),
-            descripcionI = $('#DescripcionI').val(),
-            descripcion = (who === 'efector') ? descripcionE : descripcionI,
-            identificacion = $('#identificacion').val(),
+        let archivo = (who === 'efector') ? $('input[name="fileEfector"]')[0].files[0] : $('input[name="fileInformador"]')[0].files[0];
+
+        let multi = $('#multi').val(), ids = [];
+
+        $('[id^="Id_multiAdj_"]:checked').each(function() {
+            ids.push($(this).val());
+        });
+
+        if(ids.length === 0 && multi == "success"){
+            toastr.warning('No hay examenes seleccionados', 'Atención');
+            return;
+        }
+        
+        let descripcion = (who === 'efector') ? $('#DescripcionE').val() : $('#DescripcionI').val(),
+            identificacion = (multi == 'success') ? ids : $('identificacion').val(),
             prestacion = $('#prestacion').val();
+
 
         if(verificarArchivo(archivo)){
 
@@ -45,6 +56,7 @@ $(document).ready(function(){
             formData.append('IdEntidad', identificacion);
             formData.append('IdPrestacion', prestacion);
             formData.append('who', who);
+            formData.append('multi', multi);
             formData.append('_token', TOKEN);
 
             $.ajax({
@@ -56,10 +68,7 @@ $(document).ready(function(){
                 success: function() {
                     toastr.success("Se ha cargado el reporte de manera correcta.", "Perfecto");
                     setTimeout(() => {
-                        listadoE();
-                        listadoI();
-                        $('#modalInformador').modal('hide');
-                        $('#modalEfector').modal('hide');
+                        location.reload();
                     }, 3000);
                 },
                 error: function (xhr) {

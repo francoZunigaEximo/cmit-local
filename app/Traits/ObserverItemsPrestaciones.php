@@ -60,7 +60,7 @@ trait ObserverItemsPrestaciones
     
     }
 
-    public function updateEstado(string $tipo, ?int $idItemPrestacion, ?int $idEfector, ?int $idInformador): void
+    public function updateEstado(string $tipo, ?int $idItemPrestacion, ?int $idEfector, ?int $idInformador, ?string $multi): void
     {
        
         $item = ItemPrestacion::where('Id', $idItemPrestacion)->first();
@@ -70,12 +70,12 @@ trait ObserverItemsPrestaciones
         if($item)
         {
 
-            if($tipo === 'efector' && $efectores)
+            if(in_array($tipo, ['efector', 'multiefector']) && $efectores)
             {
 
                 switch ($item->CAdj) {
                     case 0:
-                        $item->CAdj = 1; 
+                        $item->CAdj = $multi === 'multi' ? 5 : 1; 
                         break;
                     
                     case 3:
@@ -86,7 +86,7 @@ trait ObserverItemsPrestaciones
                         $item->CAdj = 5;
                         break;
                 }
-            }elseif($tipo === 'efector' && !($efectores)){
+            }elseif(in_array($tipo, ['efector', 'multiefector']) && !($efectores)){
                 
                 switch($item->CAdj) {
                     
@@ -104,9 +104,9 @@ trait ObserverItemsPrestaciones
                 }
             }
 
-            if($tipo === 'informador' && $informadores){
+            if(in_array($tipo, ['informador', 'multiInformador']) && $informadores){
 
-                $item->CInfo = 1;
+                $item->CInfo = 2;
             }else{
                 $item->CInfo = 0;
             }
@@ -137,7 +137,7 @@ trait ObserverItemsPrestaciones
 
     public function registarArchivo(int $id, string $entidad, ?string $descripcion, string $ruta, int $prestacion, string $tipo): void
     {
-        if($tipo === 'efector')
+        if(in_array($tipo, ['efector','multiefector']))
         {
             ArchivoEfector::create([
                 'Id' => $id,
@@ -148,7 +148,7 @@ trait ObserverItemsPrestaciones
                 'Tipo' => '0'
             ]);
         
-        } elseif($tipo === 'informador') {
+        } elseif(in_array($tipo, ['informador', 'multiInformador'])) {
 
             ArchivoInformador::create([
                 'Id' => $id,

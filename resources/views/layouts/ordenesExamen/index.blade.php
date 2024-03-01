@@ -713,6 +713,9 @@
         
                                                     <div class="row">
                                                         <div class="col-sm-9 mb-3">
+                                                            <div class="col-sm-9 mb-3" style="text-align: right;">
+                                                                <button type="button" class="btn btn-sm botonGeneral automaticUploadI" data-forma="masivo">Asignar masivo</button>
+                                                            </div>
                                                         </div>
                                                         <div class="col-sm-3" style="text-align: right;">
                                                             <button type="button" id="resetAdjuntoInf" class="btn botonGeneral">Reiniciar</button>
@@ -792,6 +795,7 @@
     const updateItem = "{{ route('updateItem') }}";
     const fileUpload = "{{ route('uploadAdjunto') }}";
     const archivosAutomatico = "{{ route('archivosAutomatico') }}";
+    const archivosAutomaticoI = "{{ route('archivosAutomaticoI') }}";
 
 </script>
 

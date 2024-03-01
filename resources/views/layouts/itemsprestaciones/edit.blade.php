@@ -246,12 +246,28 @@
             </div>
             <div class="modal-body">
                 <form id="form-efector">
+                    @if($itemsprestacione->examenes->proveedor1->Multi == 1)
+                    <div class="alert alert-info alert-border-left alert-dismissible fade show mb-2" role="alert">
+                        Exámen con multi adjunto habilitado. Elija a que exámen quiere asociar el reporte.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                   
+                    <div class="list-group">
+                         @foreach($multiEfector as $examen)
+                        <label class="list-group-item">
+                            <input class="form-check-input me-1" type="checkbox" id="Id_multiAdj_{{ $examen->Id }}" value="{{ $examen->Id}}" {{ $verificarArchivo === 'success' ? 'disabled' : '' }}> 
+                            {!! $verificarArchivo === 'success' ? '<s>'.$examen->examenes->Nombre.'</s>' : $examen->examenes->Nombre !!}
+                        </label>
+                        @endforeach
+                    </div>
+                    @endif
                     
                     <input type="file" class="form-control fileA" name="fileEfector"/>
                 
                     <div class="mt-3">
                         <label for="Descripcion" class="form-label">Descripción</label>
                         <textarea class="form-control" name="DescripcionE" id="DescripcionE" rows="5"></textarea>
+                        <input type="hidden" id="multi" value="{{ $itemsprestacione->examenes->proveedor1->Multi == 1 ? 'success' : 'fail'}}"
                     </div>
                 </form> 
             </div>

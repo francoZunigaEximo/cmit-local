@@ -220,19 +220,48 @@ class OrdenesExamenController extends Controller
         {
             $query = $this->queryBasico($request);
 
+            $query->when(!empty($request->informadores), function ($query) use ($request){
+                $query->where('itemsprestaciones.IdProfesional2', $request->informadores);
+            });
+
+            $query->when(!empty($request->art), function ($query) use ($request) {
+                $query->where('art.Id', $request->art);
+            });
+
+            $subquery = $this->queryBasico($request);
+            $subFiltrado = $subquery->whereNotExists(function ($query) {
+                                        $query->select(DB::raw(1))
+                                            ->from('archivosinformador')
+                                            ->whereRaw('archivosinformador.IdEntidad = itemsprestaciones.Id');
+                                    })
+                                    ->where('itemsprestaciones.CAdj', 5)
+                                    ->where('prestaciones.Cerrado', 1)
+                                    ->where('prestaciones.Finalizado', 1)
+                                    ->where('proveedores.MultiE', 1)
+                                    ->where('proveedores.InfAdj', 1)
+                                    ->where('itemsprestaciones.CInfo', 1)
+                                    ->whereNot('itemsprestaciones.IdProfesional', 0)
+                                    ->whereNot('itemsprestaciones.IdProfesional2', 0)
+                                    ->groupBy('itemsprestaciones.IdPrestacion');
+            $subResult = $this->condicionesComunes($subFiltrado);
+
             $filtrado = $query->where('itemsprestaciones.CInfo', 1)
-                              ->where('prestaciones.Cerrado', 0)
-                              ->where('prestaciones.Finalizado', 0)
+                              ->where('prestaciones.Cerrado', 1)
+                              ->where('prestaciones.Finalizado', 1)
                               ->whereNot('itemsprestaciones.IdProfesional', 0)
                               ->whereNot('itemsprestaciones.IdProfesional2', 0)
                               ->where('itemsprestaciones.CAdj', 5)
+                              ->whereNot('proveedores.MultiE', 1)
+                              ->where('proveedores.InfAdj', 1)
                               ->whereNotExists(function ($query) {
                                 $query->select(DB::raw(1))
                                     ->from('archivosinformador')
                                     ->whereRaw('archivosinformador.IdEntidad = itemsprestaciones.Id');
                             });
 
-            $result = $this->condicionesComunes($filtrado);
+            $preResult = $this->condicionesComunes($filtrado);
+
+            $result = $preResult->union($subResult);
 
             return Datatables::of($result)->make(true);
         }
@@ -259,7 +288,8 @@ class OrdenesExamenController extends Controller
             'itemsprestaciones.IdProfesional as IdProfesional',
             'proveedores.Nombre as Especialidad',
             'proveedores.Id as IdEspecialidad',
-            'proveedores.MultiE as MultiEfector',
+            'proveedores.Multi as MultiEfector',
+            'proveedores.MultiE as MultiInformador',
             'prestaciones.Id as IdPrestacion',
             'clientes.RazonSocial as Empresa',
             DB::raw("CONCAT(pacientes.Apellido, ' ', pacientes.Nombre) as NombreCompleto"),

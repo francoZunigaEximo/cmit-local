@@ -194,7 +194,7 @@ $(document).ready(function(){
             asigInf: ['#informadores', '#checkAllAsigInf', '#listaOrdenesInformadores', 'Id_asigInf']
         }
 
-        let seleccion = $(this).attr('id'), profesional = $(obj[seleccion][0]).val();
+        let seleccion = $(this).attr('id'), profesional = $(obj[seleccion][0]).val(); 
         
         let ids = [], checkAll = $(obj[seleccion][1]).prop('checked');
 
@@ -206,13 +206,15 @@ $(document).ready(function(){
             toastr.warning('No se ha seleccionado un Profesional para asignar', 'Atención');
             return;
         }
-
+        debugger;
         if(ids.length === 0 && checkAll === false){
             toastr.warning('No hay ningun exámen seleccionado para asignar', 'Atención');
             return;
         }
-
-        $.post(asignarProfesional, { _token: TOKEN, Ids: ids, IdProfesional: profesional, tipo: seleccion })
+        
+        if (confirm("¿Desea confirmar la operación?")) {
+        
+            $.post(asignarProfesional, { _token: TOKEN, Ids: ids, IdProfesional: profesional, tipo: seleccion })
             .done(function(response){
 
                 let data = response.message;
@@ -226,7 +228,8 @@ $(document).ready(function(){
                 console.error(xhr);
                 toastr.error("Ha ocurrido un error en la asignación. Consulte con el administrador");
             });
-
+        }
+        
     });
 
     $(document).on('click', '.btnAbrir', function(e){
@@ -245,8 +248,10 @@ $(document).ready(function(){
             toastr.warning('No hay examenes seleccionados', 'Atención');
             return;
         }
-
-        $.post(updateItem, {Id : ids, _token: TOKEN, Para: 'abrir' })
+        
+        if (confirm("¿Desea confirmar la operación?")) {
+            
+            $.post(updateItem, {Id : ids, _token: TOKEN, Para: 'abrir' })
             .done(function(){
                 toastr.success('Se ha realizado la acción correctamente', 'Actualizacion realizada');
                 
@@ -257,6 +262,9 @@ $(document).ready(function(){
                 toastr.success('Ha ocurrido un error. Consulte con el administrador', 'Error');
                 console.error(xhr);
             });
+        
+        }
+        
     });
 
     $(document).on('click', '.btnCerrar', function(e){
@@ -276,7 +284,9 @@ $(document).ready(function(){
             return;
         }
 
-        $.post(updateItem, {Id : ids, _token: TOKEN, Para: 'cerrar' })
+        if (confirm("¿Desea confirmar la operación?")) {
+            
+            $.post(updateItem, {Id : ids, _token: TOKEN, Para: 'cerrar' })
             .done(function(){
                 toastr.success('Se ha realizado la acción correctamente', 'Actualizacion realizada');
                 
@@ -287,6 +297,9 @@ $(document).ready(function(){
                 toastr.success('Ha ocurrido un error. Consulte con el administrador', 'Error');
                 console.error(xhr);
             });
+        
+        }
+        
     });
 
     $(document).on('click', '.btnLiberar, .btnLiberarInf', function(e){
@@ -300,21 +313,23 @@ $(document).ready(function(){
             btnLiberar: ['Id_asignado', '#checkAllAsignado', '#listaOrdenesEfectoresAsig', 'asigEfector'], 
             btnLiberarInf: ['Id_asignadoInf', '#checkAllAsignadoInf', '#listaOrdenesInformadoresAsig', 'asigInf']
         }
-
+        
         let ids = [];
 
         $('input[name="' + obj[seleccion][0] + '"]:checked').each(function() {
             ids.push($(this).val());
         });
 
-        let checkAll =$(obj[seleccion[1]]).prop('checked');
+        let checkAll =$(obj[seleccion][1]).prop('checked');
 
         if(ids.length === 0 && checkAll === false){
             toastr.warning('No hay examenes seleccionados', 'Atención');
             return;
         }
+       
+        if (confirm("¿Desea confirmar la operación?")) {
 
-        $.post(asignarProfesional, { _token: TOKEN, Ids: ids, IdProfesional: 0, tipo: obj[seleccion][3]})
+            $.post(asignarProfesional, { _token: TOKEN, Ids: ids, IdProfesional: 0, tipo: obj[seleccion][3]})
             .done(function(response){
 
                 let data = response.message;
@@ -328,6 +343,9 @@ $(document).ready(function(){
                 console.error(xhr);
                 toastr.error("Ha ocurrido un error en la desasignación. Consulte con el administrador");
             });
+
+        }
+        
 
 
     });
@@ -369,13 +387,35 @@ $(document).ready(function(){
         $('#fechaHastaAsignado').val(fechaNow(null, "-", 0));
     });
 
+    $('#resetAsignadoInf').click(function(){ 
+        $('#form-index :input, #form-index select').val('');
+        $('#examenAsignadosInf').val([]).trigger('change.select2');
+        $('#pacienteAsignadosInf').val([]).trigger('change.select2');
+        $('#empresaAsignadosInf').val([]).trigger('change.select2');
+        $('#especialidadAsignadosInf').val('');
+        $('#informadorAsignadoInf').val('');
+        $('#listaOrdenesInformadoresAsig').DataTable().clear().destroy();
+        $('#fechaDesdeAsignadosInf').val(fechaNow(null, "-", 0));
+    });
+
     $('#resetAdjunto').click(function(){ 
         $('#form-index :input, #form-index select').val('');
         $('#empresaAdjunto').val([]).trigger('change.select2');
+        $('#artAdjunto').val([]).trigger('change.select2');
         $('#especialidadAdjunto').val('');
         $('#efectorAdjunto').val('');
         $('#listaOrdenesEfectoresAdj').DataTable().clear().destroy();
         $('#fechaHastaAdjunto').val(fechaNow(null, "-", 0));
+    });
+
+    $('#resetAdjuntoInf').click(function(){ 
+        $('#form-index :input, #form-index select').val('');
+        $('#empresaAdjuntoInf').val([]).trigger('change.select2');
+        $('#artAdjuntoInf').val([]).trigger('change.select2');
+        $('#especialidadAdjuntoInf').val('');
+        $('#informadorAdjuntoInf').val('');
+        $('#listaOrdenesInformadoresAdj').DataTable().clear().destroy();
+        $('#fechaHastaAdjuntoInf').val(fechaNow(null, "-", 0));
     });
 
     $('#checkAllAsignar').on('click', function() {
@@ -391,6 +431,11 @@ $(document).ready(function(){
     $('#checkAllAdj').on('click', function() {
 
         $('input[type="checkbox"][name="Id_adjunto"]:not(#checkAllAdj)').prop('checked', this.checked);
+    });
+
+    $('#checkAllAsigInf').on('click', function() {
+
+        $('input[type="checkbox"][name="Id_asigInf"]:not(#checkAllAsigInf)').prop('checked', this.checked);
     });
 
     $('#checkAllAsignadoInf').on('click', function() {
@@ -413,7 +458,6 @@ $(document).ready(function(){
         let seleccion = $(this).attr('id'), botonAsignar = $(obj[seleccion][0]);
 
         botonAsignar.prop('disabled', true);
-        debugger;
         let table = $(obj[seleccion][1]).DataTable();
         table.draw(false);
 
@@ -476,6 +520,8 @@ $(document).ready(function(){
             formData.append('_token', TOKEN);
             formData.append('who', who);
 
+            $('#preloader-overlay').show();
+
             $.ajax({
                 type: 'POST',
                 url: fileUpload,
@@ -485,36 +531,43 @@ $(document).ready(function(){
                 success: function() {
                     toastr.success("Se ha cargado el reporte de manera correcta.", "Perfecto");
                     let table = $(tabla).DataTable();
-                    table.draw(false);
+                    table.clear().draw(false);
 
                 },
                 error: function (xhr) {
                     console.error(xhr);
                     toastr.error("Ha ocurrido un error. Consulte con el administrador", "Atención");
                 }
+            }).always(function() {
+                $('#preloader-overlay').hide();
             });
            
         }
     });
 
-    $(document).on('click', '.automaticUpload', function(e){
+    $(document).on('click', '.automaticUpload, .automaticUploadI', function(e){
 
         e.preventDefault();
+
+        let obj= {
+            automaticUpload: ['Id_adjunto', '#checkAllAdj', 'archivosAutomatico', '#listaOrdenesEfectoresAdj'],
+            automaticUploadI: ['Id_adjuntoInf', '#checkAllAdjInf', 'archivosAutomaticoI', '#listaOrdenesInformadoresAdj']
+        }
         
-        let ids = [], tipo = $(this).data('forma');
+        let ids = [], tipo = $(this).data('forma'), opcion = $(this).hasClass('automaticUpload') ? 'automaticUpload' : 'automaticUploadI';
 
         if(tipo === 'individual') {
 
                 ids.push($(this).data('id'));  
         }else{
 
-            $('input[name="Id_adjunto"]:checked').each(function() {
+            $('input[name="' + obj[opcion][0] + '"]:checked').each(function() {
                 ids.push($(this).val());
             });
 
         }
     
-        let checkAll = $("#checkAllAdj").prop('checked');
+        let checkAll = $(obj[opcion][1]).prop('checked');
 
         if(ids.length === 0 && checkAll === false){
             toastr.warning('No hay examenes seleccionados', 'Atención');
@@ -523,19 +576,21 @@ $(document).ready(function(){
 
         $('#preloader-overlay').show();
         
-        $.post(archivosAutomatico, { _token: TOKEN, Ids: ids })
+        $.post(obj[opcion][2], { _token: TOKEN, Ids: ids })
             .done(function(response){
-
+                var estados = [];
                 response.forEach(function(msg) {
 
                     let tipoToastr = msg.estado == 'success' ? 'success' : 'info';
-                    toastr[tipoToastr](msg.message, "Atención", { timeOut: 10000 })
 
-                    if(msg.estado == 'success') {
-                        let table = $('#listaOrdenesEfectoresAdj').DataTable();
-                        table.draw(false);
-                    }
+                    toastr[tipoToastr](msg.message, "Atención", { timeOut: 10000 })
+                    estados.push(msg.estado);
                 });
+
+                if(estados.includes('success')) {
+                    let table = $(tabla).DataTable();
+                    table.clear().destroy().ajax.reload();
+                }
 
             })
             .fail(function(xhr){
@@ -543,7 +598,7 @@ $(document).ready(function(){
                 toastr.error("Ha ocurrido un error. Consulte con el administrador", "Error");
             })
             .always(function() {
-                // Ocultar el preloader después de completar la solicitud
+               
                 $('#preloader-overlay').hide();
             });
         
@@ -552,7 +607,7 @@ $(document).ready(function(){
     function verificarArchivo(archivo){
 
         if (!archivo || archivo.size === 0) {
-            toastr.warning("Debe seleccionar un archivo valido PDF", "Atención");
+            toastr.warning("El archivo se encuentra vacío o no es PDF", "Atención");
             return false;
         }
 
