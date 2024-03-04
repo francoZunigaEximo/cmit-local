@@ -77,8 +77,10 @@ $(document).ready(()=>{
                 {
                     data: null,
                     render: function(data){
-                        let recorte = (data.NombreCompleto).substring(0,10) + "...";
-                        return recorte.length >= 10 ? `<span title="${data.NombreCompleto}">${recorte}</span>` : data.NombreCompleto;
+
+
+                        let NombreCompleto = data.pacNombre + ' ' + data.pacApellido, recorte = (NombreCompleto).substring(0,10) + "...";
+                        return recorte.length >= 10 ? `<span title="${NombreCompleto}">${recorte}</span>` : NombreCompleto;
                     }
                 },
                 {
@@ -88,20 +90,19 @@ $(document).ready(()=>{
                 {
                     data: null,
                     render: function(data) {
-                        let recorte = (data.Examen).substring(0,10) + "...";
+                        let recorte = (data.examen_nombre).substring(0,10) + "...";
                         
-                        return data.MultiEfector === 1
-                            ? `<span class="custom-badge pequeno">Multi Exámen</span>`
-                            : recorte.length >= 10 
-                                ? `<span title="${data.Examen}">${recorte}</span>` 
-                                : data.Examen;
+                        return recorte.length >= 10 
+                        ? `<span title="${data.examen_nombre}">${recorte}</span>` 
+                        : data.examen_nombre;
                     }
                 },
                 {
                     data: null,
                     render: function(data){
-                        let recorte = (data.NombreProfesional).substring(0, 10) + "...";
-                        return recorte.length >= 10 ? `<span title="${data.NombreProfesional}">${recorte}</span>` : data.NombreProfesional;
+                        let NombreProfesional = data.proApellido + " " + data.proNombre; 
+                        let recorte = (NombreProfesional).substring(0, 10) + "...";
+                        return recorte.length >= 10 ? `<span title="${NombreProfesional}">${recorte}</span>` : NombreProfesional;
                     }
                 },
                 {

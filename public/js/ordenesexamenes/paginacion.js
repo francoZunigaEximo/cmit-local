@@ -79,8 +79,9 @@ $(document).ready(()=>{
                 {
                     data: null,
                     render: function(data){
-                        let recorte = (data.NombreCompleto).substring(0,15) + "...";
-                        return recorte.length >= 15 ? `<span title="${data.NombreCompleto}">${recorte}</span>` : data.NombreCompleto;
+                        let NombreCompleto = data.pacNombre + ' ' + data.pacApellido;
+                        let recorte = (NombreCompleto).substring(0,15) + "...";
+                        return recorte.length >= 15 ? `<span title="${NombreCompleto}">${recorte}</span>` : NombreCompleto;
                     }
                 },
                 {

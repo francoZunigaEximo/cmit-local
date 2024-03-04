@@ -23,7 +23,27 @@ class OrdenesExamenController extends Controller
 
         if($request->ajax())
         {
-            $query = $this->queryBasico($request);
+            $query = ItemPrestacion::join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
+            ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
+            ->join('proveedores', 'itemsprestaciones.IdProveedor', '=', 'proveedores.Id')
+            ->join('clientes', 'prestaciones.IdEmpresa', '=', 'clientes.Id')
+            ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
+            ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+            ->select(
+                'itemsprestaciones.Id as IdItem',
+                'itemsprestaciones.Fecha as Fecha',
+                'itemsprestaciones.IdProfesional as IdProfesional',
+                'proveedores.Nombre as Especialidad',
+                'proveedores.Id as IdEspecialidad',
+                'prestaciones.Id as IdPrestacion',
+                'clientes.RazonSocial as Empresa',
+                'pacientes.Apellido as pacApellido',
+                'pacientes.Nombre as pacNombre',
+                'pacientes.Documento as Documento',
+                'examenes.Nombre as Examen',
+            )->whereNot('itemsprestaciones.Id', 0);
+
+            $query = $this->filtrosBasicos($query, $request);
 
             $query->when(!empty($request->prestacion), function ($query) use ($request) {
                 $query->where('prestaciones.Id', $request->prestacion);
@@ -52,7 +72,31 @@ class OrdenesExamenController extends Controller
     {
         if($request->ajax())
         {
-            $query = $this->queryBasico($request);
+            $query = ItemPrestacion::join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
+            ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
+            ->join('proveedores', 'examenes.IdProveedor', '=', 'proveedores.Id')
+            ->join('clientes', 'prestaciones.IdEmpresa', '=', 'clientes.Id')
+            ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
+            ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+            ->join('profesionales', 'itemsprestaciones.IdProfesional', '=', 'profesionales.Id')
+            ->select(
+                'itemsprestaciones.Id as IdItem',
+                'itemsprestaciones.Fecha as Fecha',
+                'itemsprestaciones.CAdj as Estado',
+                'itemsprestaciones.CInfo as Informado',
+                'itemsprestaciones.IdProfesional as IdProfesional',
+                'proveedores.Nombre as Especialidad',
+                'proveedores.Id as IdEspecialidad',
+                'prestaciones.Id as IdPrestacion',
+                'clientes.RazonSocial as Empresa',
+                'pacientes.Apellido as pacApellido',
+                'pacientes.Nombre as pacNombre',
+                'pacientes.Documento as Documento',
+                'pacientes.Id as IdPaciente',
+                'examenes.Nombre as Examen',
+            )->whereNot('itemsprestaciones.Id', 0);
+
+            $query = $this->filtrosBasicos($query, $request);
 
             $query->when(!empty($request->prestacion), function ($query) use ($request) {
                 $query->where('prestaciones.Id', $request->prestacion);
@@ -89,8 +133,8 @@ class OrdenesExamenController extends Controller
 
             $result = $this->condicionesComunes($filtrado);
             
-
             return Datatables::of($result)->make(true);
+            
         }
         
         return view('layouts.ordenesExamen.index');
@@ -100,7 +144,37 @@ class OrdenesExamenController extends Controller
     {
         if($request->ajax())
         {
-            $query = $this->queryBasico($request);
+            $query = ItemPrestacion::join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
+            ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
+            ->join('proveedores', 'examenes.IdProveedor', '=', 'proveedores.Id')
+            ->join('clientes', 'prestaciones.IdEmpresa', '=', 'clientes.Id')
+            ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
+            ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+            ->leftJoin('archivosefector', 'itemsprestaciones.Id', '=', 'archivosefector.IdEntidad')
+            ->join('profesionales', 'itemsprestaciones.IdProfesional', '=', 'profesionales.Id')
+            ->select(
+                DB::raw('CASE 
+                            WHEN proveedores.Multi = 1 THEN "Multi Examen"
+                            ELSE examenes.Nombre
+                        END AS examen_nombre'),
+                'itemsprestaciones.Id as IdItem',
+                'itemsprestaciones.Fecha as Fecha',
+                'itemsprestaciones.CAdj as Estado',
+                'proveedores.Nombre as Especialidad',
+                'proveedores.Multi as MultiEfector',
+                'prestaciones.Id as IdPrestacion',
+                'clientes.RazonSocial as Empresa',
+                'pacientes.Apellido as pacApellido',
+                'pacientes.Nombre as pacNombre',
+                'profesionales.Apellido as proApellido',
+                'profesionales.Nombre as proNombre',
+                'pacientes.Documento as Documento',
+                'pacientes.Id as IdPaciente',
+                'examenes.Nombre as Examen',
+                'examenes.Id as IdExamen',
+            )->whereNot('itemsprestaciones.Id', 0);
+    
+            $query = $this->filtrosBasicos($query, $request);
 
             $query->when(!empty($request->efectores), function ($query) use ($request){
                 $query->where('itemsprestaciones.IdProfesional', $request->efectores);
@@ -109,36 +183,26 @@ class OrdenesExamenController extends Controller
             $query->when(!empty($request->art), function ($query) use ($request) {
                 $query->where('art.Id', $request->art);
             });
-
-            $subquery = $this->queryBasico($request);
-            $subFiltrado = $subquery->where('examenes.Adjunto', 1)
-                                    ->whereNotExists(function ($query) {
-                                        $query->select(DB::raw(1))
-                                            ->from('archivosefector')
-                                            ->whereRaw('archivosefector.IdEntidad = itemsprestaciones.Id');
-                                    })
-                                    ->where('proveedores.Multi', 1)
-                                    ->whereIn('itemsprestaciones.CAdj', [1, 4])
-                                    ->whereNot('itemsprestaciones.IdProfesional', 0)
-                                    ->groupBy('itemsprestaciones.IdPrestacion');
-            $subResult = $this->condicionesComunes($subFiltrado);
-        
             
             $filtrado = $query->where('examenes.Adjunto', 1)
-                            ->whereNotExists(function ($query) {
-                                $query->select(DB::raw(1))
-                                    ->from('archivosefector')
-                                    ->whereRaw('archivosefector.IdEntidad = itemsprestaciones.Id');
-                            })->whereNot('proveedores.Multi', 1)
-                            ->whereIn('itemsprestaciones.CAdj', [1,4])
-                            ->whereNot('itemsprestaciones.IdProfesional', 0);
-            
-            $preResult = $this->condicionesComunes($filtrado);
+                ->whereNotExists(function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('archivosefector')
+                        ->whereRaw('archivosefector.IdEntidad = itemsprestaciones.Id');
+                })
+                ->whereIn('itemsprestaciones.CAdj', [1,4])
+                ->whereNot('itemsprestaciones.IdProfesional', 0)
+                ->groupBy(DB::raw('
+                    CASE 
+                        WHEN proveedores.Multi = 1 THEN prestaciones.Id
+                        ELSE itemsprestaciones.Id
+                    END')
+                );
 
-            $result = $preResult->union($subResult);
-
+            $result = $this->condicionesComunes($filtrado);
+     
             return Datatables::of($result)->make(true);
-        }
+            }
 
         return view('layouts.ordenesExamen.index');
     }
@@ -218,7 +282,37 @@ class OrdenesExamenController extends Controller
     {
         if($request->ajax())
         {
-            $query = $this->queryBasico($request);
+            $query = ItemPrestacion::join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
+            ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
+            ->join('proveedores', 'examenes.IdProveedor', '=', 'proveedores.Id')
+            ->join('clientes', 'prestaciones.IdEmpresa', '=', 'clientes.Id')
+            ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
+            ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+            ->leftJoin('archivosefector', 'itemsprestaciones.Id', '=', 'archivosefector.IdEntidad')
+            ->join('profesionales', 'itemsprestaciones.IdProfesional', '=', 'profesionales.Id')
+            ->select(
+                DB::raw('CASE 
+                            WHEN proveedores.MultiE = 1 THEN "Multi Examen"
+                            ELSE examenes.Nombre
+                        END AS examen_nombre'),
+                'itemsprestaciones.Id as IdItem',
+                'itemsprestaciones.Fecha as Fecha',
+                'itemsprestaciones.CAdj as Estado',
+                'proveedores.Nombre as Especialidad',
+                'proveedores.Multi as MultiEfector',
+                'prestaciones.Id as IdPrestacion',
+                'clientes.RazonSocial as Empresa',
+                'pacientes.Apellido as pacApellido',
+                'pacientes.Nombre as pacNombre',
+                'profesionales.Apellido as proApellido',
+                'profesionales.Nombre as proNombre',
+                'pacientes.Documento as Documento',
+                'pacientes.Id as IdPaciente',
+                'examenes.Nombre as Examen',
+                'examenes.Id as IdExamen',
+            )->whereNot('itemsprestaciones.Id', 0);
+    
+            $query = $this->filtrosBasicos($query, $request);
 
             $query->when(!empty($request->informadores), function ($query) use ($request){
                 $query->where('itemsprestaciones.IdProfesional2', $request->informadores);
@@ -228,40 +322,26 @@ class OrdenesExamenController extends Controller
                 $query->where('art.Id', $request->art);
             });
 
-            $subquery = $this->queryBasico($request);
-            $subFiltrado = $subquery->whereNotExists(function ($query) {
-                                        $query->select(DB::raw(1))
-                                            ->from('archivosinformador')
-                                            ->whereRaw('archivosinformador.IdEntidad = itemsprestaciones.Id');
-                                    })
-                                    ->where('itemsprestaciones.CAdj', 5)
-                                    ->where('prestaciones.Cerrado', 1)
-                                    ->where('prestaciones.Finalizado', 1)
-                                    ->where('proveedores.MultiE', 1)
-                                    ->where('proveedores.InfAdj', 1)
-                                    ->where('itemsprestaciones.CInfo', 1)
-                                    ->whereNot('itemsprestaciones.IdProfesional', 0)
-                                    ->whereNot('itemsprestaciones.IdProfesional2', 0)
-                                    ->groupBy('itemsprestaciones.IdPrestacion');
-            $subResult = $this->condicionesComunes($subFiltrado);
-
             $filtrado = $query->where('itemsprestaciones.CInfo', 1)
                               ->where('prestaciones.Cerrado', 1)
                               ->where('prestaciones.Finalizado', 1)
                               ->whereNot('itemsprestaciones.IdProfesional', 0)
                               ->whereNot('itemsprestaciones.IdProfesional2', 0)
                               ->where('itemsprestaciones.CAdj', 5)
-                              ->whereNot('proveedores.MultiE', 1)
                               ->where('proveedores.InfAdj', 1)
                               ->whereNotExists(function ($query) {
                                 $query->select(DB::raw(1))
                                     ->from('archivosinformador')
                                     ->whereRaw('archivosinformador.IdEntidad = itemsprestaciones.Id');
-                            });
+                            })
+                            ->groupBy(DB::raw('
+                                CASE 
+                                    WHEN proveedores.MultiE = 1 THEN prestaciones.Id
+                                    ELSE itemsprestaciones.Id
+                                END')
+                            );
 
-            $preResult = $this->condicionesComunes($filtrado);
-
-            $result = $preResult->union($subResult);
+            $result = $this->condicionesComunes($filtrado);
 
             return Datatables::of($result)->make(true);
         }
@@ -298,7 +378,6 @@ class OrdenesExamenController extends Controller
             'pacientes.Id as IdPaciente',
             'examenes.Nombre as Examen',
             'examenes.Id as IdExamen',
-            DB::raw('(SELECT COUNT(*) FROM archivosefector WHERE IdEntidad = itemsprestaciones.Id) as archivos')
         )->whereNot('itemsprestaciones.Id', 0);
 
         $query = $this->filtrosBasicos($query, $request);

@@ -92,8 +92,12 @@ $(document).ready(()=>{
                     }
                 },
                 {
-                    data: 'NombreCompleto',
-                    name: 'NombreCompleto',
+                    data: null,
+                    render: function(data){
+                        let NombreCompleto = data.pacNombre + ' ' + data.pacApellido;
+                        let recorte = (NombreCompleto).substring(0,15) + "...";
+                        return recorte.length >= 15 ? `<span title="${NombreCompleto}">${recorte}</span>` : NombreCompleto;
+                    }
                 },
                 {
                     data: 'Documento',
