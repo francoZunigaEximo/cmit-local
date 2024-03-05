@@ -28,12 +28,17 @@ $(document).ready(function(){
 
     $(document).on('click', '.btnAdjEfector, .btnAdjInformador', function () {
         let who = $(this).hasClass('btnAdjEfector') ? 'efector' : 'informador';
+
+        let obj = {
+            efector: ['input[name="fileEfector"]', '[id^="Id_multiAdj_"]:checked', '#DescripcionE'],
+            informador: ['input[name="fileInformador"]', '[id^="Id_multiAdjInf_"]:checked', '#DescripcionI']
+        }
         
-        let archivo = (who === 'efector') ? $('input[name="fileEfector"]')[0].files[0] : $('input[name="fileInformador"]')[0].files[0];
+        let archivo = $(obj[who][0])[0].files[0];
 
         let multi = $('#multi').val(), ids = [];
 
-        $('[id^="Id_multiAdj_"]:checked').each(function() {
+        $(obj[who][1]).each(function() {
             ids.push($(this).val());
         });
 
@@ -42,13 +47,12 @@ $(document).ready(function(){
             return;
         }
         
-        let descripcion = (who === 'efector') ? $('#DescripcionE').val() : $('#DescripcionI').val(),
-            identificacion = (multi == 'success') ? ids : $('identificacion').val(),
+        let descripcion = $(obj[who][2]).val(),
+            identificacion = (multi == 'success') ? ids : $('#identificacion').val(),
             prestacion = $('#prestacion').val();
 
-
         if(verificarArchivo(archivo)){
-
+            debugger;
             let formData = new FormData();
             formData.append('archivo', archivo);
             formData.append('Id', ID);
@@ -58,7 +62,7 @@ $(document).ready(function(){
             formData.append('who', who);
             formData.append('multi', multi);
             formData.append('_token', TOKEN);
-
+            debugger;
             $.ajax({
                 type: 'POST',
                 url: fileUpload,
@@ -111,17 +115,18 @@ $(document).ready(function(){
         let id = $(this).data('id'), tipo = $(this).data('tipo');
 
         if(confirm("¿Está seguro que desea eliminar?")){
-
+           
             if(id === '' || tipo === ''){
                 toastr.warning("Hay un problema porque no podemos identificar el tipo o la id a eliminar", "Atención");
                 return;
             }
-    
+            
             $.get(deleteIdAdjunto, {Id: id, Tipo: tipo, ItemP: ID})
                 .done(function(){
                     toastr.success("Se ha eliminado el adjunto de manera correcta", "Perfecto");
+                    
                     setTimeout(() => {
-                        location.reload();
+                        listadoI();
                     }, 3000);
                 })
                 .fail(function(xhr){
@@ -484,9 +489,9 @@ $(document).ready(function(){
                                     <div class="replace">
                                         <button data-id="${d.IdI}" data-tipo="informador" data-bs-toggle="modal" data-bs-target="#replaceAdjunto" class="btn btn-sm iconGeneral replaceAdjunto" title="Reemplazar archivo">
                                             <i class="ri-file-edit-line"></i>
-                                        </button>
-                                        `:``}
+                                        </button> 
                                     </div>
+                                        `:``}
                                     ${(EstadoI === 'Cerrado') ? `` : `
                                     <div class="remove">
                                         <button data-id="${d.IdI}" data-tipo="informador" class="btn btn-sm iconGeneral deleteAdjunto" title="Eliminar">

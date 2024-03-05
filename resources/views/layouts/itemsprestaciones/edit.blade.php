@@ -213,7 +213,6 @@
                             <th>Acciones <button type="button" class="btn botonGeneral adjuntarEfector" data-bs-toggle="modal" data-bs-target="#modalEfector">Adjuntar archivo</button></th>
                         </tr>
                     </thead>
-                    <input type="file" name="archivo" id="archivoEfector" style="display: none;" />
                     <tbody id="listaefectores" class="list form-check-all">
             
                     </tbody>
@@ -237,7 +236,7 @@
 
 </div>
 
-<div id="modalEfector" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+<div id="modalEfector" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel1" aria-hidden="true" style="display: none;">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -255,8 +254,8 @@
                     <div class="list-group">
                          @foreach($multiEfector as $examen)
                         <label class="list-group-item">
-                            <input class="form-check-input me-1" type="checkbox" id="Id_multiAdj_{{ $examen->Id }}" value="{{ $examen->Id}}" {{ $verificarArchivo === 'success' ? 'disabled' : '' }}> 
-                            {!! $verificarArchivo === 'success' ? '<s>'.$examen->examenes->Nombre.'</s>' : $examen->examenes->Nombre !!}
+                            <input class="form-check-input me-1" type="checkbox" id="Id_multiAdj_{{ $examen->Id }}" value="{{ $examen->Id}}" {{ $examen->archivos_count > 0 ? 'disabled' : '' }}> 
+                            {!! $examen->archivos_count > 0 ? '<s>'.$examen->examenes->Nombre.'</s>' : $examen->examenes->Nombre !!}
                         </label>
                         @endforeach
                     </div>
@@ -267,7 +266,7 @@
                     <div class="mt-3">
                         <label for="Descripcion" class="form-label">Descripción</label>
                         <textarea class="form-control" name="DescripcionE" id="DescripcionE" rows="5"></textarea>
-                        <input type="hidden" id="multi" value="{{ $itemsprestacione->examenes->proveedor1->Multi == 1 ? 'success' : 'fail'}}"
+                        <input type="hidden" id="multi" value="{{ $itemsprestacione->examenes->proveedor1->Multi == 1 ? 'success' : 'fail'}}">
                     </div>
                 </form> 
             </div>
@@ -280,34 +279,7 @@
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
-<div id="modalInformador" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="myModalLabel">Adjuntar archivo Informador</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>
-            </div>
-            <div class="modal-body">
-                <form id="form-informador">
-                    
-                    <input type="file" class="form-control fileA" name="fileInformador"/>
-                
-                    <div class="mt-3">
-                        <label for="Descripcion" class="form-label">Descripción</label>
-                        <textarea class="form-control" name="DescripcionI" id="DescripcionI" rows="5"></textarea>
-                    </div>
-                </form> 
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn botonGeneral" data-bs-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn botonGeneral btnAdjInformador">Guardar adjunto</button>
-            </div>
-
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
-
-<div id="replaceAdjunto" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+<div id="replaceAdjunto" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel3" aria-hidden="true" style="display: none">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -324,6 +296,47 @@
             <div class="modal-footer">
                 <button type="button" class="btn botonGeneral" data-bs-dismiss="modal">Cerrar</button>
                 <button type="button" class="btn botonGeneral btnReplaceAdj">Guardar adjunto</button>
+            </div>
+
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div id="modalInformador" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel2" aria-hidden="true" style="display: none">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel">Adjuntar archivo Informador</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>
+            </div>
+            <div class="modal-body">
+                <form id="form-informador">
+                    @if($itemsprestacione->examenes->proveedor2->MultiE == 1)
+                    <div class="alert alert-info alert-border-left alert-dismissible fade show mb-2" role="alert">
+                        Exámen con multi adjunto habilitado. Elija el reporte que quiere asociar.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                   
+                    <div class="list-group">
+                         @foreach($multiInformador as $informe)
+                        <label class="list-group-item">
+                            <input class="form-check-input me-1" type="checkbox" id="Id_multiAdjInf_{{ $informe->Id }}" value="{{ $informe->Id}}" {{ $informe->archivos_count > 0 ? 'disabled' : '' }}> 
+                            {!! $informe->archivos_count > 0 ? '<s>'.$informe->examenes->Nombre.'</s> ('.$informe->examenes->proveedor2->Nombre.')' : $informe->examenes->Nombre .' ('.$informe->examenes->proveedor2->Nombre.')' !!}
+                        </label>
+                        @endforeach
+                    </div>
+                    @endif
+                    <input type="file" class="form-control fileA" name="fileInformador"/>
+                
+                    <div class="mt-3">
+                        <label for="Descripcion" class="form-label">Descripción</label>
+                        <textarea class="form-control" name="DescripcionI" id="DescripcionI" rows="5"></textarea>
+                    </div>
+                </form> 
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn botonGeneral" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn botonGeneral btnAdjInformador">Guardar adjunto</button>
             </div>
 
         </div><!-- /.modal-content -->

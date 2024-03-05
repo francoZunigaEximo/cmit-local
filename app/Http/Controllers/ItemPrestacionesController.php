@@ -18,6 +18,7 @@ class ItemPrestacionesController extends Controller
     use ObserverItemsPrestaciones;
 
     const RUTA = '/var/IMPORTARPDF/SALIDA/';
+    const RUTAINF = '/var/IMPORTARPDF/SALIDAINFORMADOR/';
 
     public function index()
     {
@@ -29,15 +30,22 @@ class ItemPrestacionesController extends Controller
         $paciente = $this->getPaciente($itemsprestacione->IdPrestacion);
         $qrTexto = $this->generarQR('A', $itemsprestacione->IdPrestacion, $itemsprestacione->IdExamen, $paciente->Id, 'texto');
         $adjuntoEfector = $this->adjuntoEfector($itemsprestacione->Id);
-        $multiEfector = ItemPrestacion::with('examenes.proveedor1')
-                ->where('IdPrestacion', $itemsprestacione->IdPrestacion)
-                ->whereHas('examenes.proveedor1', function($query) {
-                    $query->where('Multi', 1);
-                })
-                ->get();
-        $verificarArchivo = ArchivoEfector::where('IdEntidad', $itemsprestacione->Id)->where('IdPrestacion', $itemsprestacione->IdPrestacion)->first() ? 'success' : 'fail';
+        $multiEfector = ItemPrestacion::join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
+        ->join('proveedores', 'examenes.IdProveedor', '=', 'proveedores.Id')
+        ->select('itemsprestaciones.*', DB::raw('(SELECT COUNT(*) FROM archivosefector WHERE archivosefector.IdEntidad = itemsprestaciones.Id) as archivos_count'))
+        ->where('itemsprestaciones.IdPrestacion', $itemsprestacione->IdPrestacion)
+        ->where('proveedores.Multi', 1)
+        ->orderBy('proveedores.Nombre', 'DESC')
+        ->get();
+        $multiInformador = ItemPrestacion::join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
+        ->join('proveedores', 'examenes.IdProveedor2', '=', 'proveedores.Id')
+        ->select('itemsprestaciones.*', DB::raw('(SELECT COUNT(*) FROM archivosinformador WHERE archivosinformador.IdEntidad = itemsprestaciones.Id) as archivos_count'))
+        ->where('itemsprestaciones.IdPrestacion', $itemsprestacione->IdPrestacion)
+        ->where('proveedores.MultiE', 1)
+        ->orderBy('proveedores.Nombre', 'DESC')
+        ->get();
 
-        return view('layouts.itemsprestaciones.edit', compact(['itemsprestacione', 'qrTexto', 'paciente', 'adjuntoEfector','multiEfector', 'verificarArchivo']));
+        return view('layouts.itemsprestaciones.edit', compact(['itemsprestacione', 'qrTexto', 'paciente', 'adjuntoEfector','multiEfector', 'multiInformador']));
     }
 
     public function updateItem(Request $request)
@@ -310,12 +318,14 @@ class ItemPrestacionesController extends Controller
             $this->registarArchivo($arr[$who][0], $request->IdEntidad, $request->Descripcion, $fileName, $request->IdPrestacion, "efector");
 
             $this->updateEstado($who, $request->IdEntidad, $arr[$who][0], null, null);
+            Auditor::setAuditoria($request->IdPrestacion, 1, 36, Auth::user()->name);
 
         }elseif($who === 'informador'){
 
             $this->registarArchivo($arr[$who][0], $request->IdEntidad, $request->Descripcion, $fileName, $request->IdPrestacion, "informador");
 
             $this->updateEstado($who, $request->IdEntidad, null, $arr[$who][0], null);
+            Auditor::setAuditoria($request->IdPrestacion, 1, 37, Auth::user()->name);
         
         }elseif($who === 'multiefector'){
             
@@ -331,6 +341,7 @@ class ItemPrestacionesController extends Controller
                         $this->registarArchivo($identi, $request->IdEntidad, $request->Descripcion, $fileName, $prestacion->Id, "multiefector");
 
                         $this->updateEstado($who, $request->IdEntidad, $arr[$who][0], null, null);
+                        Auditor::setAuditoria($prestacion->IdPrestacion, 1, 36, Auth::user()->name);
                         
                     }
                 }
@@ -346,7 +357,7 @@ class ItemPrestacionesController extends Controller
                     $this->registarArchivo($identi, $examen, $request->Descripcion, $fileName, $item->IdPrestacion, "multiefector");
 
                     $this->updateEstado($who, $item->Id, $arr[$who][0], null, 'multi');
-
+                    Auditor::setAuditoria($item->IdPrestacion, 1, 36, Auth::user()->name);
                 }
                 
             }
@@ -354,18 +365,36 @@ class ItemPrestacionesController extends Controller
             
         }elseif($who === 'multiInformador'){
 
-            $prestaciones = ItemPrestacion::where('IdPrestacion', $request->IdPrestacion)->get();
+            if($request->multi <> 'success'){
 
-            if($prestaciones)
-            {
-                foreach($prestaciones as $prestacion){
+                $prestaciones = ItemPrestacion::where('IdPrestacion', $request->IdPrestacion)->get();
 
-                    $identi = ArchivoInformador::max('Id') + 1;
-                    $this->registarArchivo($identi, $request->IdEntidad, $request->Descripcion, $fileName, $prestacion->Id, "informador");
+                if($prestaciones)
+                {
+                    foreach($prestaciones as $prestacion){
 
-                    $this->updateEstado($request->who, $request->IdEntidad, null, $arr[$request->who][0], null);
-                    
+                        $identi = ArchivoInformador::max('Id') + 1;
+                        $this->registarArchivo($identi, $request->IdEntidad, $request->Descripcion, $fileName, $prestacion->Id, "multiInformador");
+
+                        $this->updateEstado($who, $request->IdEntidad, null, $arr[$who][0], null);
+                        Auditor::setAuditoria($prestacion->Id, 1, 37, Auth::user()->name);
+                    }
                 }
+            
+            }elseif($request->multi === 'success'){
+
+                $informes = explode(',', $request->IdEntidad);
+
+                foreach($informes as $informe){
+
+                    $item = ItemPrestacion::find($informe);
+                    $identi = ArchivoInformador::max('Id') + 1;
+                    $this->registarArchivo($identi, $informe, $request->Descripcion, $fileName, $item->IdPrestacion, "multiInformador");
+
+                    $this->updateEstado($who, $item->Id, null, $arr[$who][0], 'multi');
+                    Auditor::setAuditoria($item->IdPrestacion, 1, 37, Auth::user()->name);
+                }
+                
             }
         }
         
@@ -383,7 +412,6 @@ class ItemPrestacionesController extends Controller
             $resultado = "";
             $item = ItemPrestacion::with('prestaciones','proveedores')->where('Id', $examen)->first(['IdPrestacion', 'IdExamen', 'IdProveedor']);
 
-            //return response()->json($item);
             if($item && $item->proveedores->Multi === 0)
             {
                
@@ -514,7 +542,7 @@ class ItemPrestacionesController extends Controller
                     $resultado = ["message" => "No hay archivo con coincidencias para el exámen {$examen}", "estado" => "fail"];
                 }
 
-            } else {
+            } elseif($item && $item->proveedores->MultiE === 1 && $item->proveedores->Id <> 3) {
 
                 $prestaciones = ItemPrestacion::where('IdPrestacion', $item->IdPrestacion)->get();
 
@@ -553,7 +581,72 @@ class ItemPrestacionesController extends Controller
                         }
 
                     }
-                }   
+                }elseif($item && $item->proveedores->MultiE === 1 && $item->proveedores->Id === 3) { // Esquema para laboratorios
+
+                    $archivoEncontrar = $item->Fecha.'_'.$item->prestaciones->paciente->Documento;
+                    $ruta = self::RUTA.'*.pdf';
+                    $archivos = glob($ruta);
+
+                    $duplicados = 0;
+                    $unico = 0;
+
+                    foreach($archivos as $archivo) {
+
+                        $filename = pathinfo($archivo, PATHINFO_FILENAME);
+                        $multiArchivo = substr($filename, 9, 16);
+                        $unicoArchivo = substr($filename, 0, 16);
+                        
+                        if ($multiArchivo === $item->prestaciones->paciente->Documento) {
+                        
+                            $duplicados++;
+                        
+                        }elseif($archivoEncontrar === $unicoArchivo) {
+
+                            $unico++;
+                        }
+                    }
+
+                    if($duplicados > 1)
+                    {
+                        $resultado = ['message' => 'Hay prestaciones con el mismo DNI. No se podrá adjuntar', 'estado' => 'fail'];
+                    
+                    }elseif($unico > 1){
+
+                        $resultado = ['message' => 'Hay prestaciones con el mismo DNI y Fecha. No se podrá adjuntar', 'estado' => 'fail'];
+                    
+                    }elseif($unico === 1) {
+
+                        $nombreArchivo = '/(\d{8}_\d{8})/';
+
+                        foreach ($archivos as $archivo) {
+                            $filename = pathinfo($archivo, PATHINFO_FILENAME);
+
+                            if (preg_match($nombreArchivo, $filename, $respuesta)) {
+
+                                copy(self::RUTAINF.$archivo, self::RUTAINF."AdjuntadasAuto/".$archivo);
+
+                                $nuevoId = ArchivoInformador::max('Id') + 1;
+                                $nuevoNombre = 'AINF'.$nuevoId.'_P'.$item->IdPrestacion.'.pdf';
+                                $nuevaRuta = storage_path('app/public/ArchivosInformadores/'.$nuevoNombre);
+
+                                $actualizarItem = ItemPrestacion::where('IdPrestacion', $item->IdPrestacion)->first();
+                        
+                                if ($actualizarItem) {
+                                    $actualizarItem->CInfo = 3; //Cerrado
+                                    $actualizarItem->save();
+                                }
+
+                                copy(self::RUTAINF.$archivo, $nuevaRuta);
+                                chmod($nuevaRuta, 0664);
+                                Auditor::setAuditoria($item->IdPrestacion, 1, 37, Auth::user()->name);
+
+                                $resultado = ["message" => "Se ha adjuntado automáticamente un archivo a un MultiExamen {$examen}", "estado" => "success"];
+                            }
+                        }
+                    }
+
+
+                }  
             }
             
             $resultados[] = $resultado;

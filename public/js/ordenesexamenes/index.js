@@ -588,8 +588,9 @@ $(document).ready(function(){
                 });
 
                 if(estados.includes('success')) {
-                    let table = $(tabla).DataTable();
-                    table.clear().destroy().ajax.reload();
+                    
+                    let table = $(obj[opcion][3]).DataTable();
+                    table.clear().draw(false);
                 }
 
             })
