@@ -95,7 +95,7 @@ class ItemPrestacionesController extends Controller
 
         foreach($examenes as $examen) {
 
-            $item = ItemPrestacion::with(['proveedores', 'prestaciones'])->find($examen);
+            $item = ItemPrestacion::with(['examenes', 'prestaciones'])->find($examen);
 
             if ($item && $item->prestaciones->Cerrado === 0) 
             {   
@@ -104,14 +104,13 @@ class ItemPrestacionesController extends Controller
                     $resultado = ['message' => 'El exámen no se encuentra cerrado', 'estado' => 'fail'];
 
                 }else{
-
-                    $item->CAdj = $lstAbrir[$request->CAdj];
+                    $item->CAdj = $lstAbrir[$item->CAdj];
                     $item->save();
                     $resultado = ['message' => 'Se ha realizado el cambio de estado al examen '.$item->proveedores->Nombre.' correctamente', 'estado' => 'success'];
                 }
             } else {
 
-                $resultado = ['message' => 'EL exámen '.$item->proveedores->Nombre.' no se puede abrir porque la prestación se encuentra Cerrada', 'estado' => 'fail'];
+                $resultado = ['message' => 'EL exámen '.$item->examenes->Nombre.' no se puede abrir porque la prestación se encuentra Cerrada', 'estado' => 'fail'];
             }
 
             $resultados[] = $resultado;
