@@ -606,8 +606,6 @@ INSERT INTO `users` (`Id`, `name`, `email`, `IdPersonal`, `SR`, `email_verified_
 
 SET foreign_key_checks = 0;
 ALTER TABLE prestaciones_obsfases ADD FOREIGN KEY(IdUsuario) REFERENCES users(name);
-
-
 CREATE TABLE IF NOT EXISTS tipos_obsfases (
     Id INT AUTO_INCREMENT NOT NULL,
     nombre VARCHAR(100) NOT NULL,
@@ -615,7 +613,6 @@ CREATE TABLE IF NOT EXISTS tipos_obsfases (
     PRIMARY KEY (Id),
     UNIQUE(Id)
 ) ENGINE = InnoDB;
-
 INSERT INTO tipos_obsfases (Id, nombre, descripcion) VALUES
 (1, '0', NULL),
 (2, 'prestaciones', NULL),
@@ -627,15 +624,12 @@ SET foreign_key_checks = 0;
 ALTER TABLE prestaciones_obsfases ADD COLUMN obsfases_id INT DEFAULT 1;
 SET foreign_key_checks = 0;
 ALTER TABLE prestaciones_obsfases ADD FOREIGN KEY(obsfases_id) REFERENCES tipos_obsfases(Id);
-
 ALTER TABLE prestaciones_obsfases MODIFY COLUMN Rol VARCHAR(50) NOT NULL;
-
-INSERT INTO auditoriatabla (Id, Nombre) VALUES ('5', 'MAPAS');
+INSERT INTO auditoriatablas (Id, Nombre) VALUES ('5', 'MAPAS');
 INSERT INTO auditoriaacciones (Id, Nombre) VALUES 
 ('41', 'ENVIO E-ESTUDIO ART'),
 ('42', 'ENVIO E-ESTUDIO EMPRESA'),
 ('43', 'DESCARGA E-ESTUDIO');
-
 ALTER TABLE auditoria DROP FOREIGN KEY auditoria_ibfk_3;
 ALTER TABLE auditoria MODIFY COLUMN IdUsuario varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;
 
@@ -648,5 +642,5 @@ ALTER TABLE fichaslaborales  ADD FechaUltPeriod DATE NULL;
 ALTER TABLE fichaslaborales  ADD FechaExArt DATE NULL;
 ALTER TABLE clientes ADD Anexo INT DEFAULT 0 NULL;
 ALTER TABLE clientes ADD EMailAnexo varchar(100) NULL;
-
+INSERT INTO auditoriaacciones (Id, Nombre) VALUES ('44', 'ENVIO E-ESTUDIO ART');
 
