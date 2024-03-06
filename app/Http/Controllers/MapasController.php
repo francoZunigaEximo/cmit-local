@@ -638,8 +638,8 @@ class MapasController extends Controller
         });
 
         $query->when($estadoFinalizar === 'finalizadosTotal', function ($query) use ($estadoFinalizar) {
-            $query->where('prestaciones.Finalizado', 1)
-                ->where('prestaciones.eEnviado', 1)
+            $query->where('prestaciones.Cerrado', 1)
+                ->where('prestaciones.Finalizado', 1)
                 ->where('prestaciones.eEnviado', 1)
                 ->where('prestaciones.Entregado', 0);
         });
@@ -867,7 +867,16 @@ class MapasController extends Controller
             'prestaciones.Incompleto AS Incompleto',
             'pacientes.Apellido AS Apellido',
             'pacientes.Nombre AS Nombre',
-            DB::raw('(SELECT CASE WHEN COUNT(*) = SUM(CASE WHEN items.Incompleto = 0 THEN 1 ELSE 0 END) THEN "Completo" ELSE "Incompleto" END FROM itemsprestaciones AS items WHERE items.IdPrestacion = prestaciones.Id) AS Etapa'))
+            DB::raw('(
+                SELECT 
+                    CASE 
+                    WHEN COUNT(*) = SUM(CASE WHEN (items.CAdj = 5 OR items.CAdj = 3) AND items.CInfo = 3 THEN 1 ELSE 0 END)
+                        THEN "Completo" 
+                        ELSE "Incompleto" 
+                    END 
+                FROM itemsprestaciones AS items 
+                WHERE items.IdPrestacion = prestaciones.Id
+            ) AS Etapa'))
         ->where('mapas.Nro', '=', $idmapa);
 
         return $query;
