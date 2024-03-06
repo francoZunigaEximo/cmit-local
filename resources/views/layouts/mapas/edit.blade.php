@@ -354,9 +354,9 @@
                     <label for="NroRemitoFinal" class="form-label font-weight-bold"><strong>Estados:</strong></label>
                     <select class="form-control" name="estadosFinalizar" id="estadosFinalizar">
                         <option value="" selected>Elija una opción</option>
-                        <option value="aFinalizar">A finalizar</option>
-                        <option value="finalizados">Finalizados</option>
-                        <option value="finalizadosTotal">Finalizados Total</option>
+                        <option value="aFinalizar">A finalizar (Cerrados no finalizados)</option>
+                        <option value="finalizados">Finalizados (cerrados, finalizados y no enviado)</option>
+                        <option value="finalizadosTotal">Finalizados Total (finalizados y eEnviados)</option>
                         <option value="todos">Todos</option>
                     </select>
                 </div>
@@ -372,7 +372,7 @@
                         <i class="ri-lock-2-fill"></i> Finalizar    
                     </button>
                 </div>
-            </div>4
+            </div>
 
             <div class="table-responsive table-card mt-3 mb-1">
                 <table id="listaFinalizar" class="display table table-bordered" style="width:100%">

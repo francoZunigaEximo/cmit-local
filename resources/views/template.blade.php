@@ -192,7 +192,7 @@
                             <div class="menu-dropdown mega-dropdown-menu collapse" id="sidebarVentas">
                                 <ul class="nav nav-sm flex-column">
                                     <li class="nav-item">
-                                        <a href="#" class="nav-link enlace-blanco" data-key="t-ExCuenta"> Ex. a Cta </a>
+                                        <a href="{{ route('examenesCuenta.index')}}" class="nav-link enlace-blanco" data-key="t-ExCuenta"> Ex. a Cta </a>
                                     </li>
 
                                     <li class="nav-item">

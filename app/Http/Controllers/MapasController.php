@@ -626,22 +626,19 @@ class MapasController extends Controller
         $query->when($estadoFinalizar === 'aFinalizar', function ($query) use ($estadoFinalizar) {
             $query->where('prestaciones.Cerrado', 1)
                 ->where('prestaciones.Finalizado', 0)
-                ->where('prestaciones.eEnviado', 0)
-                ->where('prestaciones.Entregado', 0);
+                ->where('prestaciones.eEnviado', 0);
         });
 
         $query->when($estadoFinalizar === 'finalizados', function ($query) use ($estadoFinalizar) {
             $query->where('prestaciones.Cerrado', 1)
                 ->where('prestaciones.Finalizado', 1)
-                ->where('prestaciones.eEnviado', 0)
-                ->where('prestaciones.Entregado', 0);
+                ->where('prestaciones.eEnviado', 0);
         });
 
         $query->when($estadoFinalizar === 'finalizadosTotal', function ($query) use ($estadoFinalizar) {
             $query->where('prestaciones.Cerrado', 1)
                 ->where('prestaciones.Finalizado', 1)
-                ->where('prestaciones.eEnviado', 1)
-                ->where('prestaciones.Entregado', 0);
+                ->where('prestaciones.eEnviado', 1);
         });
 
         $query->when($estadoFinalizar === 'todos', function ($query) {
