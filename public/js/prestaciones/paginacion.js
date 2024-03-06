@@ -271,7 +271,7 @@ $(document).ready(()=>{
                     total = data.Total || 1,
                     calculo = parseFloat(((cerradoAdjunto / total) * 100).toFixed(2)),
                     resultado;
-            
+
                 if (calculo === 100) {
                     resultado = $(row).addClass('fondo-blanco');
                 } else if (data.Anulado === 0 && calculo >= 86 && calculo <= 99) {
@@ -285,7 +285,9 @@ $(document).ready(()=>{
                 } else if(data.Anulado === 1) {
                     resultado = $(row).addClass('rojo');
                 }
-            
+                console.log("Total: " + total);
+                console.log("Cerrados y con adjuntos: " + cerradoAdjunto);
+                console.log("Porcentaje total: " + calculo + "%");
                 return resultado;
             }
         };
