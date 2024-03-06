@@ -331,6 +331,61 @@ $(document).ready(()=>{
 
     });
 
+    $(document).on('click', '.liberarExamenes', function(e){
+
+        e.preventDefault();
+
+        let ids = [];
+
+        $('input[name="Id_examenes"]:checked').each(function() {
+            ids.push($(this).val());
+        });
+
+        let checkAll = $('#checkAllExamenes').prop('checked');
+
+        if(ids.length === 0 && checkAll === false){
+            toastr.warning('No hay examenes seleccionados', 'Atención');
+            return;
+        }
+
+        if(confirm("Confirme la marca de adjunto de los examenes")){
+        
+            mostrarPreloader('#preloader');
+
+            $.ajax({
+                url: liberarExamen,
+                type: 'POST',
+                data: {
+                    Ids: ids,
+                    _token: TOKEN
+                },
+                success: function(response){
+                    var estados = [];
+
+                    response.forEach(function(msg) {
+                        
+                        let tipoRespuesta = {
+                            success: 'success',
+                            fail: 'info'
+                        }
+                        ocultarPreloader('#preloader');
+                        toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 });
+                        estados.push(msg.estado);
+      
+                    });
+
+                    if(estados.includes('success')) {
+                        $('#listaExamenes').empty();
+                        $('#exam').val([]).trigger('change.select2');
+                        $('#addPaquete').val([]).trigger('change.select2');
+                        cargarExamen();
+                    }
+
+                }
+            });
+        }
+    });
+
     $(document).on('click', '.addExamen', function(){
 
         let id = $("#exam").val();

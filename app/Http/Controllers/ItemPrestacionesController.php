@@ -130,9 +130,9 @@ class ItemPrestacionesController extends Controller
 
         foreach($examenes as $examen) {
 
-            $item = ItemPrestacion::with(['prestaciones', 'proveedores'])->find($examen);
+            $item = ItemPrestacion::with('prestaciones')->find($examen);
 
-            if ($item && $item->prestaciones->Cerrado === 0) 
+            if ($item && in_array($item->CAdj, [3,5])) 
             {  
                 if($item->IdProfesional === 0)
                 {
@@ -152,7 +152,7 @@ class ItemPrestacionesController extends Controller
 
             }else{
 
-                $resultado = ['message' => 'EL exámen '.$item->proveedores->Nombre.' no se puede liberar porque la prestación se encuentra Cerrada', 'estado' => 'fail'];
+                $resultado = ['message' => 'EL exámen no se puede liberar porque la prestación se encuentra Cerrada', 'estado' => 'fail'];
             }
 
             $resultados[] = $resultado;
@@ -171,13 +171,13 @@ class ItemPrestacionesController extends Controller
 
         foreach($examenes as $examen) {
         
-            $item = ItemPrestacion::with(['prestaciones', 'archivoEfector','proveedores'])->find($examen);
+            $item = ItemPrestacion::with(['prestaciones', 'archivoEfector','examenes'])->find($examen);
 
             if($item->IdProfesional === 0) 
             {
                 $resultado = ['message' => 'EL exámen '.$item->proveedores->Nombre.' no tiene efector asignado', 'estado' => 'fail'];
             
-            }elseif($item->IdProveedor === 0 || $item->proveedores->Adjunto === 0){
+            }elseif($item->examenes->Adjunto == 0){
 
                 $resultado = ['message' => 'EL exámen '.$item->proveedores->Nombre.' no se puede adjuntar porque el mismo no acepta adjuntos', 'estado' => 'fail'];
                   
