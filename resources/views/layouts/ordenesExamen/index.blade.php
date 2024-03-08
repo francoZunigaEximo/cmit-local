@@ -81,12 +81,12 @@
         
                                                         <div class="col-sm-2 mb-3">
                                                             <label for="fechaDesde" class="form-label font-weight-bold"><strong>Fecha desde: <span class="required">(*)</span></strong></label>
-                                                            <input type="date" class="form-control" id="fechaDesde" name="fechaDesde">
+                                                            <input type="date" class="form-control" id="fechaDesde" name="fechaDesde" max="9999-12-31">
                                                         </div>
                     
                                                         <div class="col-sm-2 mb-3">
                                                             <label for="fechaDesde" class="form-label font-weight-bold"><strong>Fecha hasta: <span class="required">(*)</span></strong></label>
-                                                            <input type="date" class="form-control" id="fechaHasta" name="fechaHasta">
+                                                            <input type="date" class="form-control" id="fechaHasta" name="fechaHasta" max="9999-12-31">
                                                         </div>
         
                                                         <div class="col-sm-2 mb-3">
@@ -197,12 +197,12 @@
         
                                                         <div class="col-sm-2 mb-3">
                                                             <label for="fechaDesdeAsignados" class="form-label font-weight-bold"><strong>Fecha desde: <span class="required">(*)</span></strong></label>
-                                                            <input type="date" class="form-control" id="fechaDesdeAsignados" name="fechaDesdeAsignados">
+                                                            <input type="date" class="form-control" id="fechaDesdeAsignados" name="fechaDesdeAsignados" max="9999-12-31">
                                                         </div>
                     
                                                         <div class="col-sm-2 mb-3">
                                                             <label for="fechaDesdeAsignados" class="form-label font-weight-bold"><strong>Fecha hasta: <span class="required">(*)</span></strong></label>
-                                                            <input type="date" class="form-control" id="fechaHastaAsignados" name="fechaHastaAsignados">
+                                                            <input type="date" class="form-control" id="fechaHastaAsignados" name="fechaHastaAsignados" max="9999-12-31">
                                                         </div>
         
                                                         <div class="col-sm-2 mb-3">
@@ -321,12 +321,12 @@
         
                                                         <div class="col-sm-2 mb-3">
                                                             <label for="fechaDesdeAdjunto" class="form-label font-weight-bold"><strong>Fecha desde: <span class="required">(*)</span></strong></label>
-                                                            <input type="date" class="form-control" id="fechaDesdeAdjunto" name="fechaDesdeAdjunto">
+                                                            <input type="date" class="form-control" id="fechaDesdeAdjunto" name="fechaDesdeAdjunto" max="9999-12-31">
                                                         </div>
                     
                                                         <div class="col-sm-2 mb-3">
                                                             <label for="fechaHastaAdjunto" class="form-label font-weight-bold"><strong>Fecha hasta: <span class="required">(*)</span></strong></label>
-                                                            <input type="date" class="form-control" id="fechaHastaAdjunto" name="fechaHastaAdjunto">
+                                                            <input type="date" class="form-control" id="fechaHastaAdjunto" name="fechaHastaAdjunto" max="9999-12-31">
                                                         </div>
         
                                                         <div class="col-sm-2 mb-3">
@@ -453,12 +453,12 @@
         
                                                         <div class="col-sm-2 mb-3">
                                                             <label for="fechaDesdeInf" class="form-label font-weight-bold"><strong>Fecha desde: <span class="required">(*)</span></strong></label>
-                                                            <input type="date" class="form-control" id="fechaDesdeInf" name="fechaDesdeInf">
+                                                            <input type="date" class="form-control" id="fechaDesdeInf" name="fechaDesdeInf" max="9999-12-31">
                                                         </div>
                     
                                                         <div class="col-sm-2 mb-3">
                                                             <label for="fechaDesde" class="form-label font-weight-bold"><strong>Fecha hasta: <span class="required">(*)</span></strong></label>
-                                                            <input type="date" class="form-control" id="fechaHastaInf" name="fechaHastaInf">
+                                                            <input type="date" class="form-control" id="fechaHastaInf" name="fechaHastaInf" max="9999-12-31">
                                                         </div>
         
                                                         <div class="col-sm-2 mb-3">
@@ -569,12 +569,12 @@
         
                                                         <div class="col-sm-2 mb-3">
                                                             <label for="fechaDesdeAsignadosInf" class="form-label font-weight-bold"><strong>Fecha desde: <span class="required">(*)</span></strong></label>
-                                                            <input type="date" class="form-control" id="fechaDesdeAsignadosInf" name="fechaDesdeAsignadosInf">
+                                                            <input type="date" class="form-control" id="fechaDesdeAsignadosInf" name="fechaDesdeAsignadosInf" max="9999-12-31">
                                                         </div>
                     
                                                         <div class="col-sm-2 mb-3">
                                                             <label for="fechaDesdeAsignadosInf" class="form-label font-weight-bold"><strong>Fecha hasta: <span class="required">(*)</span></strong></label>
-                                                            <input type="date" class="form-control" id="fechaHastaAsignadosInf" name="fechaHastaAsignadosInf">
+                                                            <input type="date" class="form-control" id="fechaHastaAsignadosInf" name="fechaHastaAsignadosInf" max="9999-12-31">
                                                         </div>
         
                                                         <div class="col-sm-2 mb-3">
@@ -681,12 +681,12 @@
         
                                                         <div class="col-sm-2 mb-3">
                                                             <label for="fechaDesdeAdjuntoInf" class="form-label font-weight-bold"><strong>Fecha desde: <span class="required">(*)</span></strong></label>
-                                                            <input type="date" class="form-control" id="fechaDesdeAdjuntoInf" name="fechaDesdeAdjuntoInf">
+                                                            <input type="date" class="form-control" id="fechaDesdeAdjuntoInf" name="fechaDesdeAdjuntoInf" maxlength="10">
                                                         </div>
                     
                                                         <div class="col-sm-2 mb-3">
                                                             <label for="fechaHastaAdjuntoInf" class="form-label font-weight-bold"><strong>Fecha hasta: <span class="required">(*)</span></strong></label>
-                                                            <input type="date" class="form-control" id="fechaHastaAdjuntoInf" name="fechaHastaAdjuntoInf">
+                                                            <input type="date" class="form-control" id="fechaHastaAdjuntoInf" name="fechaHastaAdjuntoInf" maxlength="10">
                                                         </div>
         
                                                         <div class="col-sm-2 mb-3">
