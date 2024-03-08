@@ -56,7 +56,7 @@
             
         </div>
         <div class="col-2 p-2 mb-2 d-flex align-items-end justify-content-left pb-3">
-            <button type="button" class="btn btn-sm botonGeneral" id="buscarProfesional">Buscar</button>
+            <button type="button" class="btn btn-sm botonGeneral" id="buscarProfesional"><i class="ri-zoom-in-line"></i>&nbsp;Buscar</button>
         </div>
     </div>
     <div class="card-body">
