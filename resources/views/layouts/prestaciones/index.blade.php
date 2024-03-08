@@ -96,8 +96,8 @@
                                 </div>
 
                                 <div class="col-sm-2 mb-3 d-flex align-items-center">
-                                    <button type="button" class="btn botonGeneral buscarPrestaciones">Buscar</button>&nbsp;
-                                    <button type="button" class="btn botonGeneral hoyPrestaciones">Mostrar Hoy</button>
+                                    <button type="button" class="btn botonGeneral buscarPrestaciones"><i class="ri-zoom-in-line"></i>&nbsp;Buscar</button>&nbsp;
+                                    <button type="button" class="btn botonGeneral hoyPrestaciones"><i class="ri-zoom-in-line"></i>&nbsp;Solo Hoy</button>
                                 </div>
 
                                <!-- Filtros avanzados --> 

@@ -137,7 +137,7 @@
                                                             <div class="col-sm-6 d-flex align-items-center justify-content-center">
                                                                 <span class="font-weight-bold"><strong>Profesional:</strong></span>&nbsp;
                                                                 <select class="form-control" name="efectores" id="efectores"></select>&nbsp;
-                                                                <button type="button" id="asigEfector" class="btn btn-sm botonGeneral">Asignar</button>
+                                                                <button type="button" id="asigEfector" class="btn btn-sm botonGeneral"><i class="ri-arrow-right-line"></i>&nbsp;Asignar</button>
                                                             </div> 
                                                         </div>
                                                         
@@ -145,7 +145,7 @@
                                                         
                                                         <div class="col-sm-3" style="text-align: right;">
                                                             <button type="button" id="reset" class="btn botonGeneral">Reiniciar</button>
-                                                            <button type="button" id="buscar" class="btn botonGeneral">Buscar</button>
+                                                            <button type="button" id="buscar" class="btn botonGeneral"><i class="ri-zoom-in-line"></i>&nbsp;Buscar</button>
                                                         </div>
                                                     </div>
                                                 
@@ -258,16 +258,16 @@
         
                                                     <div class="row">
                                                         <div class="col-sm-9 mb-3" style="text-align: right;">
-                                                            <button type="button" id="Liberar" class="btn botonGeneral btnLiberar">Desasignar</button>
-                                                            <button type="button" id="Cerrar" class="btn botonGeneral btnCerrar">Cerrar</button>
-                                                            <button type="button" id="Abrir" class="btn botonGeneral btnAbrir">Abrir</button>
+                                                            <button type="button" id="Liberar" class="btn botonGeneral btnLiberar"><i class="ri-arrow-right-line"></i>&nbsp;Desasignar</button>
+                                                            <button type="button" id="Cerrar" class="btn botonGeneral btnCerrar"><i class="ri-arrow-right-line"></i>&nbsp;Cerrar</button>
+                                                            <button type="button" id="Abrir" class="btn botonGeneral btnAbrir"><i class="ri-arrow-right-line"></i>&nbsp;Abrir</button>
                                                         </div>
                                                         <div class="col-sm-3" style="text-align: right;">
                                                             <button title="Filtros avanzados" class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#filtrosAvanzadosAsignados" aria-expanded="false" aria-controls="filtrosAvanzados">
                                                                 Filtros <i class="ri-filter-2-line"></i>
                                                             </button>
                                                             <button type="button" id="resetAsignado" class="btn botonGeneral">Reiniciar</button>
-                                                            <button type="button" id="buscarAsignados" class="btn botonGeneral">Buscar</button>
+                                                            <button type="button" id="buscarAsignados" class="btn botonGeneral"><i class="ri-zoom-in-line"></i>&nbsp;Buscar</button>
                                                         </div>
                                                     </div>
                                                 
@@ -353,11 +353,11 @@
         
                                                     <div class="row">
                                                         <div class="col-sm-9 mb-3" style="text-align: right;">
-                                                            <button type="button" class="btn btn-sm botonGeneral automaticUpload" data-forma="masivo">Asignar masivo</button>
+                                                            <button type="button" class="btn btn-sm botonGeneral automaticUpload" data-forma="masivo"><i class="ri-arrow-right-line"></i>&nbsp;Asignar masivo</button>
                                                         </div>
                                                         <div class="col-sm-3" style="text-align: right;">
                                                             <button type="button" id="resetAdjunto" class="btn botonGeneral">Reiniciar</button>
-                                                            <button type="button" id="buscarAdjunto" class="btn botonGeneral">Buscar</button>
+                                                            <button type="button" id="buscarAdjunto" class="btn botonGeneral"><i class="ri-zoom-in-line"></i>&nbsp;Buscar</button>
                                                         </div>
                                                     </div>
                                                 
@@ -509,7 +509,7 @@
                                                             <div class="col-sm-6 d-flex align-items-center justify-content-center">
                                                                 <span class="font-weight-bold"><strong>Profesional:</strong></span>&nbsp;
                                                                 <select class="form-control" name="informadores" id="informadores"></select>&nbsp;
-                                                                <button type="button" id="asigInf" class="btn btn-sm botonGeneral">Asignar</button>
+                                                                <button type="button" id="asigInf" class="btn btn-sm botonGeneral"><i class="ri-arrow-right-line"></i>&nbsp;Asignar</button>
                                                             </div> 
                                                         </div>
                                                         
@@ -517,7 +517,7 @@
                                                         
                                                         <div class="col-sm-3" style="text-align: right;">
                                                             <button type="button" id="resetInf" class="btn botonGeneral">Reiniciar</button>
-                                                            <button type="button" id="buscarInf" class="btn botonGeneral">Buscar</button>
+                                                            <button type="button" id="buscarInf" class="btn botonGeneral"><i class="ri-zoom-in-line"></i>&nbsp;Buscar</button>
                                                         </div>
                                                     </div>
                                                 
@@ -620,14 +620,14 @@
         
                                                     <div class="row">
                                                         <div class="col-sm-9 mb-3" style="text-align: right;">
-                                                            <button type="button" id="LiberarInf" class="btn botonGeneral btnLiberarInf">Desasignar</button>
+                                                            <button type="button" id="LiberarInf" class="btn botonGeneral btnLiberarInf"><i class="ri-arrow-right-line"></i>&nbsp;Desasignar</button>
                                                         </div>
                                                         <div class="col-sm-3" style="text-align: right;">
                                                             <button title="Filtros avanzados" class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#filtrosAvanzadosAsignados" aria-expanded="false" aria-controls="filtrosAvanzados">
                                                                 Filtros <i class="ri-filter-2-line"></i>
                                                             </button>
                                                             <button type="button" id="resetAsignadoInf" class="btn botonGeneral">Reiniciar</button>
-                                                            <button type="button" id="buscarAsignadosInf" class="btn botonGeneral">Buscar</button>
+                                                            <button type="button" id="buscarAsignadosInf" class="btn botonGeneral"><i class="ri-zoom-in-line"></i>&nbsp;Buscar</button>
                                                         </div>
                                                     </div>
                                                 
@@ -714,12 +714,12 @@
                                                     <div class="row">
                                                         <div class="col-sm-9 mb-3">
                                                             <div class="col-sm-9 mb-3" style="text-align: right;">
-                                                                <button type="button" class="btn btn-sm botonGeneral automaticUploadI" data-forma="masivo">Asignar masivo</button>
+                                                                <button type="button" class="btn btn-sm botonGeneral automaticUploadI" data-forma="masivo"><i class="ri-arrow-right-line"></i>&nbsp;Asignar masivo</button>
                                                             </div>
                                                         </div>
                                                         <div class="col-sm-3" style="text-align: right;">
                                                             <button type="button" id="resetAdjuntoInf" class="btn botonGeneral">Reiniciar</button>
-                                                            <button type="button" id="buscarAdjuntoInf" class="btn botonGeneral">Buscar</button>
+                                                            <button type="button" id="buscarAdjuntoInf" class="btn botonGeneral"><i class="ri-zoom-in-line"></i>&nbsp;Buscar</button>
                                                         </div>
                                                     </div>
                                                 

@@ -27,8 +27,8 @@ i, .cerrar, .finalizar, .entregar, .eEnviar {
 	border: 1px solid #cccccc !important;
 }
 
-.sort-icon {
-	display: inline-block;
+/*.sort-icon {
+	display: none;
 	margin-left: 5px;
 	font-size: 0.8em;
   }
@@ -40,7 +40,7 @@ i, .cerrar, .finalizar, .entregar, .eEnviar {
   .sort-icon.asc i.ri-arrow-up-line,
   .sort-icon.desc i.ri-arrow-down-line {
 	opacity: 1;
-  }
+  }*/
 
 .column {
 	max-width: 100px; 
@@ -527,3 +527,45 @@ table.dataTable tr.dtrg-level-0 td {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+/* Evita problemas de selectores combinados */
+#listaExamenes_wrapper .sorting::before,
+#listaExamenes_wrapper .sorting_asc::before,
+#listaExamenes_wrapper .sorting_desc::before,
+#listaExamenes_wrapper .sorting_asc::after,
+#listaExamenes_wrapper .sorting_desc::after {
+    display: none !important;
+}
+
+#listaMapas_wrapper .sorting::before,
+#listaMapas_wrapper .sorting_asc::before,
+#listaMapas_wrapper .sorting_desc::before,
+#listaMapas_wrapper .sorting_asc::after,
+#listaMapas_wrapper .sorting_desc::after {
+    display: none !important;
+}
+
+#listaPac_wrapper .sorting::before,
+#listaPac_wrapper .sorting_asc::before,
+#listaPac_wrapper .sorting_desc::before,
+#listaPac_wrapper .sorting_asc::after,
+#listaPac_wrapper .sorting_desc::after {
+    display: none !important;
+}
+
+#listaClientes_wrapper .sorting::before,
+#listaClientes_wrapper .sorting_asc::before,
+#listaClientes_wrapper .sorting_desc::before,
+#listaClientes_wrapper .sorting_asc::after,
+#listaClientes_wrapper .sorting_desc::after {
+    display: none !important;
+}
+
+#listaProf_wrapper .sorting::before,
+#listaProf_wrapper .sorting_asc::before,
+#listaProf_wrapper .sorting_desc::before,
+#listaProf_wrapper .sorting_asc::after,
+#listaProf_wrapper .sorting_desc::after {
+    display: none !important;
+}
+/* Evita problemas de selectores combinados */
