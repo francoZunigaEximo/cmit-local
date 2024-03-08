@@ -57,12 +57,30 @@ $(document).ready(function() {
 
     fechaNacimiento.change(function() {
       let fechaNacimientoValor = new Date($(this).val()),
-          fechaActual = new Date(),
-          añoActual = fechaActual.getFullYear(),
-          edad = añoActual - fechaNacimientoValor.getFullYear();
+          fechaActual = new Date();
+    
+          let diff = fechaActual.getFullYear() - fechaNacimientoValor.getFullYear();
 
-      $('#edad').val("Edad: " + edad);
+          if (fechaActual.getMonth() < fechaNacimientoValor.getMonth() || (fechaActual.getMonth() === fechaNacimientoValor.getMonth() && fechaActual.getDate() < fechaNacimientoValor.getDate())) {
+              diff--;
+          }
+
+      $('#edad').val("Edad: " + diff);
     });
+
+    let ingreso = $('#FechaIngreso').val();
+        let egreso = $('#FechaEgreso').val();
+
+        let dateIngreso = new Date(ingreso);
+        let dateEgreso = egreso ? new Date(egreso) : new Date();
+
+        let diff = dateEgreso.getFullYear() - dateIngreso.getFullYear();
+
+        if (dateEgreso.getMonth() < dateIngreso.getMonth() || (dateEgreso.getMonth() === dateIngreso.getMonth() && dateEgreso.getDate() < dateIngreso.getDate())) {
+            diff--;
+        }
+
+        $('#AntiguedadEmpresa').val(diff);
 
 
     $('#identificacion').on('input', function() {
