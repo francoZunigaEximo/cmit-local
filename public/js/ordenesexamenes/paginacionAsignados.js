@@ -8,12 +8,18 @@ $(document).ready(()=>{
         let fechaDesde = $('#fechaDesdeAsignados').val(),
             fechaHasta = $('#fechaHastaAsignados').val(),
             estado = $('#estadoAsignados').val(),
-            nroPrestacion = $('#prestacionAsignados').val();
+            nroPrestacion = $('#prestacionAsignados').val(),
+            especialidad = $('#especialidadAsignados').val();
 
-            if ((fechaDesde === '' || fechaHasta === '') && nroPrestacion === '') {
-                toastr.warning("Las fechas son obligatorias");
-                return;
-            }
+        if ((fechaDesde === '' || fechaHasta === '') && nroPrestacion === '') {
+            toastr.warning("Las fechas son obligatorias");
+            return;
+        }
+
+        if (especialidad === '') {
+            toastr.warning('Debe seleccionar una especialidad para continuar', 'Atención');
+            return;
+        }
 
         if ((estado == '' || estado == 0) && nroPrestacion === '') {
             toastr.warning("Debe seleccionar un estado para continuar", "Atención");

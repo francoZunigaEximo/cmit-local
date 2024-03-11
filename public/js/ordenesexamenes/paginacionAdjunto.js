@@ -6,10 +6,16 @@ $(document).ready(()=>{
         $('#Liberar, #Cerrar, #Abrir').hide();
 
         let fechaDesde = $('#fechaDesdeAdjunto').val(),
-            fechaHasta = $('#fechaHastaAdjunto').val();
+            fechaHasta = $('#fechaHastaAdjunto').val(),
+            especialidad = $('#especialidadAdjunto').val();
 
         if (fechaDesde === '' || fechaHasta === '') {
             toastr.warning("Las fechas son obligatorias", "Atención");
+            return;
+        }
+
+        if (especialidad === '') {
+            toastr.warning('Debe seleccionar una especialidad para continuar', 'Atención');
             return;
         }
 

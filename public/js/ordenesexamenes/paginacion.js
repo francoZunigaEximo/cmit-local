@@ -7,11 +7,16 @@ $(document).ready(()=>{
             fechaHasta = $('#fechaHasta').val();
 
         if (fechaDesde === '' || fechaHasta === '') {
-            toastr.warning("Las fechas son obligatorias");
+            toastr.warning("Las fechas son obligatorias", "Atención");
             return;
         }
 
         var especialidad = $('#especialidad').val();
+
+        if(especialidad === '') {
+            toastr.warning('Debe seleccionar una especialidad para continuar', 'Atención');
+            return;
+        }
 
         $(document).on('change', '#especialidad', function(){
             var nuevoValor = $(this).val();
