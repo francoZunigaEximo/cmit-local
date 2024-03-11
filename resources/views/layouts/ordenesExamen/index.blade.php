@@ -90,7 +90,7 @@
                                                         </div>
         
                                                         <div class="col-sm-2 mb-3">
-                                                            <label for="especialidad" class="form-label font-weight-bold"><strong>Especialidad:</strong></label>
+                                                            <label for="especialidad" class="form-label font-weight-bold"><strong>Especialidad: <span class="required">(*)</span></strong></label>
                                                             <select class="form-control especialidad" name="especialidad" id="especialidad"></select>
                                                         </div>
 
@@ -206,7 +206,7 @@
                                                         </div>
         
                                                         <div class="col-sm-2 mb-3">
-                                                            <label for="especialidadAsignados" class="form-label font-weight-bold"><strong>Especialidad:</strong></label>
+                                                            <label for="especialidadAsignados" class="form-label font-weight-bold"><strong>Especialidad: <span class="required">(*)</span></strong></label>
                                                             <select class="form-control especialidadAsignados" name="especialidadAsignados" id="especialidadAsignados"></select>
                                                         </div>
         
@@ -221,7 +221,7 @@
                                                         </div>
 
                                                         <div class="col-sm-2 mb-3">
-                                                            <label for="estadoAsignados" class="form-label font-weight-bold"><strong>Estado:</strong></label>
+                                                            <label for="estadoAsignados" class="form-label font-weight-bold"><strong>Estado: <span class="required">(*)</span></strong></label>
                                                             <select class="form-control" name="estadoAsignados" id="estadoAsignados">
                                                                 <option value="" selected>Elija una opción...</option>
                                                                 <option value="cerrados">Cerrados</option>
@@ -330,7 +330,7 @@
                                                         </div>
         
                                                         <div class="col-sm-2 mb-3">
-                                                            <label for="especialidadAdjunto" class="form-label font-weight-bold"><strong>Especialidad:</strong></label>
+                                                            <label for="especialidadAdjunto" class="form-label font-weight-bold"><strong>Especialidad: <span class="required">(*)</span></strong></label>
                                                             <select class="form-control especialidadAdjunto" name="especialidadAdjunto" id="especialidadAdjunto"></select>
                                                         </div>
         
@@ -462,7 +462,7 @@
                                                         </div>
         
                                                         <div class="col-sm-2 mb-3">
-                                                            <label for="especialidad" class="form-label font-weight-bold"><strong>Especialidad:</strong></label>
+                                                            <label for="especialidad" class="form-label font-weight-bold"><strong>Especialidad: <span class="required">(*)</span></strong></label>
                                                             <select class="form-control especialidadInf" name="especialidadInf" id="especialidadInf"></select>
                                                         </div>
     
@@ -578,7 +578,7 @@
                                                         </div>
         
                                                         <div class="col-sm-2 mb-3">
-                                                            <label for="especialidadAsignadosInf" class="form-label font-weight-bold"><strong>Especialidad:</strong></label>
+                                                            <label for="especialidadAsignadosInf" class="form-label font-weight-bold"><strong>Especialidad: <span class="required">(*)</span></strong></label>
                                                             <select class="form-control especialidadAsignadosInf" name="especialidadAsignadosInf" id="especialidadAsignadosInf"></select>
                                                         </div>
         
@@ -690,8 +690,8 @@
                                                         </div>
         
                                                         <div class="col-sm-2 mb-3">
-                                                            <label for="especialidadAdjuntoInf" class="form-label font-weight-bold"><strong>Especialidad:</strong></label>
-                                                            <select class="form-control especialidadAdjuntoInf" name="especialidadAdjuntoInf" id="especialidadAdjunto"></select>
+                                                            <label for="especialidadAdjuntoInf" class="form-label font-weight-bold"><strong>Especialidad: <span class="required">(*)</span></strong></label>
+                                                            <select class="form-control especialidadAdjuntoInf" name="especialidadAdjuntoInf" id="especialidadAdjuntoInf"></select>
                                                         </div>
         
                                                         <div class="col-sm-2 mb-3">

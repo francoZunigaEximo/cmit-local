@@ -4,10 +4,16 @@ $(document).ready(()=>{
     $(document).on('click', '#buscarAdjuntoInf', function() {
 
         let fechaDesde = $('#fechaDesdeAdjuntoInf').val(),
-            fechaHasta = $('#fechaHastaAdjuntoInf').val();
+            fechaHasta = $('#fechaHastaAdjuntoInf').val(),
+            especialidad = $('#especialidadAdjuntoInf').val();
 
         if (fechaDesde === '' || fechaHasta === '') {
             toastr.warning("Las fechas son obligatorias", "Atención");
+            return;
+        }
+
+        if (especialidad === '') {
+            toastr.warning('Debe seleccionar una especialidad para continuar', 'Atención');
             return;
         }
 

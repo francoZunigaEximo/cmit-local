@@ -14,6 +14,11 @@ $(document).ready(()=>{
 
         var especialidad = $('#especialidadInf').val();
 
+        if (especialidad === '') {
+            toastr.warning('Debe seleccionar una especialidad para continuar', 'Atención');
+            return;
+        }
+
         $(document).on('change', '#especialidadInf', function(){
             var nuevoValor = $(this).val();
             
