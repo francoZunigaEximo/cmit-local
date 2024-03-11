@@ -60,24 +60,29 @@ trait ObserverItemsPrestaciones
     
     }
 
-    public function updateEstado(string $tipo, ?int $idItemPrestacion, ?int $idEfector, ?int $idInformador, ?string $multi): void
+    public function updateEstado(string $tipo, ?int $idItemPrestacion, ?int $idEfector, ?int $idInformador, ?string $multi, ?int $profesional): void
     {
        
-        $item = ItemPrestacion::where('Id', $idItemPrestacion)->first();
+        $item = ItemPrestacion::with('examenes')->where('Id', $idItemPrestacion)->first();
         $efectores = ArchivoEfector::where('Id', $idEfector)->first();
         $informadores = ArchivoInformador::where('Id', $idInformador)->first();
 
         if($item)
         {
-
+            
             if(in_array($tipo, ['efector', 'multiefector']) && $efectores)
             {
-
+     
                 switch ($item->CAdj) {
+                    
                     case 0:
                         $item->CAdj = $multi === 'multi' ? 5 : 1; 
                         break;
                     
+                    case 1:
+                        $item->CAdj = 2;
+                        break;
+
                     case 3:
                         $item->CAdj = 4;
                         break;
@@ -86,6 +91,9 @@ trait ObserverItemsPrestaciones
                         $item->CAdj = 5;
                         break;
                 }
+
+               
+
             }elseif(in_array($tipo, ['efector', 'multiefector']) && !($efectores)){
                 
                 switch($item->CAdj) {
@@ -104,12 +112,37 @@ trait ObserverItemsPrestaciones
                 }
             }
 
-            if(in_array($tipo, ['informador', 'multiInformador']) && $informadores){
+            if(in_array($tipo, ['informador', 'multiInformador']) && $informadores)
+            {
 
-                $item->CInfo = 2;
-            }else{
-                $item->CInfo = 0;
+                switch($item->CInfo) {
+
+                    case 0:
+                    case 1:
+                        $item->CInfo = 2;
+                        break;
+                    
+                    case 2:
+                        $item->CInfo = 3;
+                        break;
+                }
+
+            }elseif(in_array($tipo, ['informador', 'multiInformador']) && !($informadores)){
+                
+               
+                switch($item->CInfo) {
+
+                    case 3:
+                        $item->CInfo = 2;
+                        break;
+                    
+                    case 2:
+                        $item->CInfo = 1;
+                        break;
+                }
             }
+            $item->IdProfesional2 = $tipo === 'multiInformador' && $item->IdProfesional2 === 0 ? $profesional : $item->IdProfesional2;
+            $item->IdProfesional = $tipo === 'multiefector' && $item->IdProfesional === 0 ? $profesional : $item->IdProfesional;
 
             $item->save();
         }
@@ -125,6 +158,16 @@ trait ObserverItemsPrestaciones
         return $archivo ? 1 : 0;
     }
 
+    public function adjuntoInformador(int $id): ?int 
+    {
+        
+        if (empty($id)) return null;
+
+        $archivo = ArchivoInformador::where('IdEntidad', $id)->first();
+        
+        return $archivo ? 1 : 0;
+    }
+
     public function getDatosProfesional(int $id): string
     {
         $profesional = Profesional::find($id);
@@ -135,12 +178,12 @@ trait ObserverItemsPrestaciones
         }
     }
 
-    public function registarArchivo(int $id, string $entidad, ?string $descripcion, string $ruta, int $prestacion, string $tipo): void
+    public function registarArchivo(?int $id, string $entidad, ?string $descripcion, string $ruta, int $prestacion, string $tipo): void
     {
         if(in_array($tipo, ['efector','multiefector']))
         {
             ArchivoEfector::create([
-                'Id' => $id,
+                'Id' => empty($id) ? ArchivoEfector::max('Id') + 1 : $id,
                 'IdEntidad' => $entidad,
                 'Descripcion' => $descripcion ?? '',
                 'Ruta' => $ruta,
@@ -151,7 +194,7 @@ trait ObserverItemsPrestaciones
         } elseif(in_array($tipo, ['informador', 'multiInformador'])) {
 
             ArchivoInformador::create([
-                'Id' => $id,
+                'Id' => empty($id) ? ArchivoInformador::max('Id') + 1 : $id,
                 'IdEntidad' => $entidad,
                 'Descripcion' => $descripcion ?? '',
                 'Ruta' => $ruta,

@@ -19,33 +19,41 @@ class ItemPrestacionesController extends Controller
 
     const RUTA = '/var/IMPORTARPDF/SALIDA/';
     const RUTAINF = '/var/IMPORTARPDF/SALIDAINFORMADOR/';
-
-    public function index()
-    {
-        //
-    }
+    const RUTAINTERNAEFECTORES = 'public/ArchivosEfectores';
+    const RUTAINTERNAINFO = 'public/ArchivosInformadores';
+    
 
     public function edit(ItemPrestacion $itemsprestacione): mixed
     {
         $paciente = $this->getPaciente($itemsprestacione->IdPrestacion);
         $qrTexto = $this->generarQR('A', $itemsprestacione->IdPrestacion, $itemsprestacione->IdExamen, $paciente->Id, 'texto');
         $adjuntoEfector = $this->adjuntoEfector($itemsprestacione->Id);
+        $adjuntoInformador = $this->adjuntoInformador($itemsprestacione->Id);
+        
         $multiEfector = ItemPrestacion::join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
         ->join('proveedores', 'examenes.IdProveedor', '=', 'proveedores.Id')
         ->select('itemsprestaciones.*', DB::raw('(SELECT COUNT(*) FROM archivosefector WHERE archivosefector.IdEntidad = itemsprestaciones.Id) as archivos_count'))
         ->where('itemsprestaciones.IdPrestacion', $itemsprestacione->IdPrestacion)
+        ->whereIn('itemsprestaciones.IdProfesional', [$itemsprestacione->IdProfesional, 0])
+        ->where('examenes.IdProveedor', $itemsprestacione->examenes->IdProveedor)
         ->where('proveedores.Multi', 1)
+        ->whereNot('itemsprestaciones.Anulado', 1)
         ->orderBy('proveedores.Nombre', 'DESC')
         ->get();
+
         $multiInformador = ItemPrestacion::join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
         ->join('proveedores', 'examenes.IdProveedor2', '=', 'proveedores.Id')
         ->select('itemsprestaciones.*', DB::raw('(SELECT COUNT(*) FROM archivosinformador WHERE archivosinformador.IdEntidad = itemsprestaciones.Id) as archivos_count'))
         ->where('itemsprestaciones.IdPrestacion', $itemsprestacione->IdPrestacion)
+        ->whereIn('itemsprestaciones.IdProfesional2', [$itemsprestacione->IdProfesional2, 0])
+        ->where('examenes.IdProveedor2', $itemsprestacione->examenes->IdProveedor)
         ->where('proveedores.MultiE', 1)
+        ->where('proveedores.InfAdj', 1)
+        ->whereNot('itemsprestaciones.Anulado', 1)
         ->orderBy('proveedores.Nombre', 'DESC')
         ->get();
 
-        return view('layouts.itemsprestaciones.edit', compact(['itemsprestacione', 'qrTexto', 'paciente', 'adjuntoEfector','multiEfector', 'multiInformador']));
+        return view('layouts.itemsprestaciones.edit', compact(['itemsprestacione', 'qrTexto', 'paciente', 'adjuntoEfector','multiEfector', 'multiInformador', 'adjuntoInformador']));
     }
 
     public function updateItem(Request $request)
@@ -300,8 +308,8 @@ class ItemPrestacionesController extends Controller
         }
 
         $arr = [
-            'efector' => [ArchivoEfector::max('Id') + 1, 'AEF', 'public/ArchivosEfectores'],
-            'informador' => [ArchivoInformador::max('Id') + 1, 'AINF', 'public/ArchivosInformadores'],
+            'efector' => [ArchivoEfector::max('Id') + 1, 'AEF', self::RUTAINTERNAEFECTORES],
+            'informador' => [ArchivoInformador::max('Id') + 1, 'AINF', self::RUTAINTERNAINFO],
         ];
         
         $arr['multiefector'] = &$arr['efector'];
@@ -311,24 +319,17 @@ class ItemPrestacionesController extends Controller
             $fileName = $arr[$who][1].$arr[$who][0]. '_P'. $request->IdPrestacion .'.' . $request->archivo->extension();
             $request->archivo->storeAs($arr[$who][2], $fileName);
         }
-
-        if($who === 'efector'){
-
-            $this->registarArchivo($arr[$who][0], $request->IdEntidad, $request->Descripcion, $fileName, $request->IdPrestacion, "efector");
-
-            $this->updateEstado($who, $request->IdEntidad, $arr[$who][0], null, null);
-            Auditor::setAuditoria($request->IdPrestacion, 1, 36, Auth::user()->name);
-
-        }elseif($who === 'informador'){
-
-            $this->registarArchivo($arr[$who][0], $request->IdEntidad, $request->Descripcion, $fileName, $request->IdPrestacion, "informador");
-
-            $this->updateEstado($who, $request->IdEntidad, null, $arr[$who][0], null);
-            Auditor::setAuditoria($request->IdPrestacion, 1, 37, Auth::user()->name);
         
-        }elseif($who === 'multiefector'){
+        if(in_array($who, ['efector', 'informador'])){
+
+            $this->registarArchivo(null, $request->IdEntidad, $request->Descripcion, $fileName, $request->IdPrestacion, $who);
+            $this->updateEstado($who, $request->IdEntidad, $who === 'efector' ? $arr[$who][0] : null, $who === 'informador' ? $arr[$who][0] : null, null, null);
+            Auditor::setAuditoria($request->IdPrestacion, 1, $who === 'efector' ? 36 : 37, Auth::user()->name);
+
             
-            if($request->multi <> 'success'){
+        }elseif(in_array($who, ['multiefector', 'multiInformador'])){
+            
+            if($request->multi !== 'success'){
 
                 $prestaciones = ItemPrestacion::where('IdPrestacion', $request->IdPrestacion)->get();
 
@@ -336,65 +337,25 @@ class ItemPrestacionesController extends Controller
                 {
                     foreach($prestaciones as $prestacion){
 
-                        $identi = ArchivoEfector::max('Id') + 1;
-                        $this->registarArchivo($identi, $request->IdEntidad, $request->Descripcion, $fileName, $prestacion->Id, "multiefector");
-
-                        $this->updateEstado($who, $request->IdEntidad, $arr[$who][0], null, null);
-                        Auditor::setAuditoria($prestacion->IdPrestacion, 1, 36, Auth::user()->name);
-                        
+                        $this->registarArchivo(null, $request->IdEntidad, $request->Descripcion, $fileName, $prestacion->Id, $who);
+                        $this->updateEstado($who, $request->IdEntidad, $who === 'multiefector' ? $arr[$who][0] : null, $who === 'multiInformador' ? $arr[$who][0] : null, null, null);
+                        Auditor::setAuditoria($request->IdPrestacion, 1, $who === 'multiefector' ? 36 : 37, Auth::user()->name);
                     }
                 }
             
             }elseif($request->multi === 'success'){
 
                 $examenes = explode(',', $request->IdEntidad);
-
+                
                 foreach($examenes as $examen){
 
                     $item = ItemPrestacion::find($examen);
-                    $identi = ArchivoEfector::max('Id') + 1;
-                    $this->registarArchivo($identi, $examen, $request->Descripcion, $fileName, $item->IdPrestacion, "multiefector");
-
-                    $this->updateEstado($who, $item->Id, $arr[$who][0], null, 'multi');
-                    Auditor::setAuditoria($item->IdPrestacion, 1, 36, Auth::user()->name);
+                    $this->registarArchivo(null, $examen, $request->Descripcion, $fileName, $item->IdPrestacion, $who);
+                    $this->updateEstado($who, $examen, $who === 'multiefector' ? $arr[$who][0] : null, $who === 'multiInformador' ? $arr[$who][0] : null, 'multi', $who === 'multiInformador' ? $request->anexoProfesional : ($who === 'multiefector'? $request->anexoProfesional : null)) ;
+                    Auditor::setAuditoria($item->IdPrestacion, 1, $who === 'efector' ? 36 : 37, Auth::user()->name);
                 }
                 
-            }
-            
-            
-        }elseif($who === 'multiInformador'){
-
-            if($request->multi <> 'success'){
-
-                $prestaciones = ItemPrestacion::where('IdPrestacion', $request->IdPrestacion)->get();
-
-                if($prestaciones)
-                {
-                    foreach($prestaciones as $prestacion){
-
-                        $identi = ArchivoInformador::max('Id') + 1;
-                        $this->registarArchivo($identi, $request->IdEntidad, $request->Descripcion, $fileName, $prestacion->Id, "multiInformador");
-
-                        $this->updateEstado($who, $request->IdEntidad, null, $arr[$who][0], null);
-                        Auditor::setAuditoria($prestacion->Id, 1, 37, Auth::user()->name);
-                    }
-                }
-            
-            }elseif($request->multi === 'success'){
-
-                $informes = explode(',', $request->IdEntidad);
-
-                foreach($informes as $informe){
-
-                    $item = ItemPrestacion::find($informe);
-                    $identi = ArchivoInformador::max('Id') + 1;
-                    $this->registarArchivo($identi, $informe, $request->Descripcion, $fileName, $item->IdPrestacion, "multiInformador");
-
-                    $this->updateEstado($who, $item->Id, null, $arr[$who][0], 'multi');
-                    Auditor::setAuditoria($item->IdPrestacion, 1, 37, Auth::user()->name);
-                }
-                
-            }
+            }    
         }
         
     }
@@ -656,34 +617,21 @@ class ItemPrestacionesController extends Controller
 
     public function deleteIdAdjunto(Request $request)
     {
-
-        if($request->Tipo === 'efector')
-        {
-            $adjunto = ArchivoEfector::find($request->Id);
+            $adjunto = $request->Tipo === 'efector' ? ArchivoEfector::find($request->Id) : ArchivoInformador::find($request->Id);
 
             if ($adjunto) {
                 $adjunto->delete();
-                $this->updateEstado($request->Tipo, $request->ItemP, $request->Id, null, null);
+                $this->updateEstado($request->Tipo, $request->ItemP, $request->Tipo === 'efector' ? $request->Id : null, $request->Tipo === 'informador' ? $request->Id : null, null, null);
             }
-        
-        }elseif($request->Tipo === 'informador')
-        {
-
-            $adj = ArchivoInformador::find($request->Id);
-
-            if ($adj) {
-                $adj->delete();
-                $this->updateEstado($request->Tipo, $request->ItemP, null, $request->Id, null);
-            }
-        }       
+            
     }
 
     public function replaceIdAdjunto(Request $request): void
     {
 
         $arr = [
-            'efector' => [ArchivoEfector::find($request->Id), 'public/ArchivosEfectores'],
-            'informador' => [ArchivoInformador::find($request->Id), 'public/ArchivosInformadores']
+            'efector' => [ArchivoEfector::find($request->Id), self::RUTAINTERNAEFECTORES],
+            'informador' => [ArchivoInformador::find($request->Id), self::RUTAINTERNAINFO]
         ];
         
         if ($request->hasFile('archivo')) 
@@ -765,6 +713,7 @@ class ItemPrestacionesController extends Controller
 
             $query = ItemPrestacion::join('profesionales as efector', 'itemsprestaciones.IdProfesional', '=','efector.Id')
                 ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
+                ->join('proveedores as proveedor2', 'examenes.IdProveedor', '=', 'proveedor2.Id')
                 ->join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
                 ->join('profesionales as informador', 'itemsprestaciones.IdProfesional2', '=', 'informador.Id')
                 ->leftJoin('archivosefector', 'itemsprestaciones.Id', '=', 'archivosefector.IdEntidad')
@@ -772,6 +721,7 @@ class ItemPrestacionesController extends Controller
                     'examenes.Nombre as Nombre',
                     'examenes.Id as IdExamen',
                     'examenes.Adjunto as ExaAdj',
+                    'proveedor2.InfAdj as InfAdj',
                     'examenes.NoImprime as ExaNI',
                     'efector.Nombre as NombreE',
                     'efector.Apellido as ApellidoE',
@@ -798,6 +748,7 @@ class ItemPrestacionesController extends Controller
             return $query->orderBy('efector.IdProveedor', 'ASC')
                          ->orderBy('ApellidoE', 'ASC')
                          ->orderBy('itemsprestaciones.Fecha', 'ASC')
+                         //->groupBy('itemsprestaciones.Id')
                 ->get();
         });
  

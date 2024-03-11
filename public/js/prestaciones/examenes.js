@@ -561,12 +561,12 @@ $(document).ready(()=>{
                                             </td><!-- este botón marca o desmarca el campo devolucion - debe ser rojo si es que el valor del campo es 1 -->
         
                                             <td class="date text-center" title="${examen.ApellidoE} ${examen.NombreE}">${examen.ApellidoE}
-                                                <span class="badge badge-soft-${(examen.CAdj === 0 || examen.CAdj === 1 || examen.CAdj === 2 ? 'danger': (examen.CAdj === 3 || examen.CAdj === 4 || examen.CAdj === 5 ? 'success' : ''))}">${(examen.CAdj === 0 || examen.CAdj === 1 || examen.CAdj === 2 ? 'Abierto': (examen.CAdj === 3 || examen.CAdj === 4 || examen.CAdj === 5 ? 'Cerrado' : ''))}</span>
-                                                ${([2,5,1,4].includes(examen.CAdj)) && examen.ExaAdj === 1 ? `<i class="ri-attachment-line ${((examen.CAdj === 2 || examen.CAdj === 5) ? 'verde' : (examen.CAdj === 3 || examen.CAdj === 4) ? 'gris' : '')}"></i>`: ``}    
+                                                <span class="badge badge-soft-${([0,1,2].includes(examen.CAdj) ? 'danger': ([3,4,5].includes(examen.CAdj) ? 'success' : ''))}">${([0,1,2].includes(examen.CAdj) ? 'Abierto': ([3,4,5].includes(examen.CAdj) ? 'Cerrado' : ''))}</span>
+                                                ${examen.ExaAdj === 1 ? `<i class="ri-attachment-line ${[2,5].includes(examen.CAdj) ? 'verde' : [1,4].includes(examen.CAdj) ? 'gris' : ''}"></i>`: ``}    
                                             </td>
-                                    <!-- muestra el apellido + nombre del efector y debajo el estado (campo CAdj Abierto = 0 - 1 - 2 Cerrado = 3 - 4 - 5)  y al lado el icono de archivo (campo cAdj) gris si no hay archivo o verde si hay adjunto (NA = 0 - 3 Pendiente = 1 - 4  Adjunto = 2 - 5)  -->
                                             <td class="date text-center" title="${examen.ApellidoI} ${examen.NombreI}">${examen.ApellidoI}
-                                                <span class="badge badge-soft-${(examen.CInfo === 3 ? 'success' : (examen.CInfo === 2 ? 'danger' : (examen.CInfo === 1 || examen.CInfo === 0 ? 'danger': '')))}">${(examen.CInfo === 3 ? 'Cerrado' : (examen.CInfo === 2 ? 'Borrador' : (examen.CInfo === 1 || examen.CInfo === 0 ? 'Pendiente': '')))}</span>
+                                                <span class="badge badge-soft-${(examen.CInfo === 3 ? 'success' : ([0,1,2].includes(examen.CInfo)) ? 'danger' : '')}">${(examen.CInfo === 3 ? 'Cerrado' : (examen.CInfo == 2 ? 'Borrador' : ([0,1].includes(examen.CInfo) ? 'Pendiente': '')))}</span>
+                                                ${examen.InfAdj === 1 ? `<i class="ri-attachment-line ${[2,3].includes(examen.CInfo) ? 'verde' : [1].includes(examen.CInfo) ? 'gris' : ''}"></i>`: ``}   
                                             </td>
                                     <!-- muestra el apellido + nombre del informador y debajo el estado (campo CInfo - Cerrado = 3, Borrador = 2 o pendiente = 0 y 1)   -->
                                     <td class="phone"><span class="${examen.Facturado === 1 ? 'badge badge-soft-success' : 'custom-badge gris'}"><i class="ri-check-line"></i></span></td> <!-- > campo Facturado gris si el campo tiene valor 0 verde si el campo tiene valor 1</!-->
