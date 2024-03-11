@@ -25,7 +25,7 @@ class OrdenesExamenController extends Controller
         {
             $query = ItemPrestacion::join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
             ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
-            ->join('proveedores', 'itemsprestaciones.IdProveedor', '=', 'proveedores.Id')
+            ->join('proveedores', 'examenes.IdProveedor', '=', 'proveedores.Id')
             ->join('clientes', 'prestaciones.IdEmpresa', '=', 'clientes.Id')
             ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
             ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
@@ -211,7 +211,33 @@ class OrdenesExamenController extends Controller
     {
         if($request->ajax())
         {
-            $query = $this->queryBasico($request);
+            $query = ItemPrestacion::join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
+            ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
+            ->join('proveedores', 'examenes.IdProveedor2', '=', 'proveedores.Id')
+            ->join('clientes', 'prestaciones.IdEmpresa', '=', 'clientes.Id')
+            ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
+            ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+            ->leftJoin('archivosefector', 'itemsprestaciones.Id', '=', 'archivosefector.IdEntidad')
+            ->join('profesionales', 'itemsprestaciones.IdProfesional', '=', 'profesionales.Id')
+            ->select(
+                'itemsprestaciones.Id as IdItem',
+                'itemsprestaciones.Fecha as Fecha',
+                'itemsprestaciones.CAdj as Estado',
+                'itemsprestaciones.CInfo as Informado',
+                'itemsprestaciones.IdProfesional as IdProfesional',
+                'proveedores.Nombre as Especialidad',
+                'proveedores.Id as IdEspecialidad',
+                'proveedores.Multi as MultiEfector',
+                'proveedores.MultiE as MultiInformador',
+                'prestaciones.Id as IdPrestacion',
+                'clientes.RazonSocial as Empresa',
+                DB::raw("CONCAT(pacientes.Apellido, ' ', pacientes.Nombre) as NombreCompleto"),
+                DB::raw("CONCAT(profesionales.Apellido, ' ', profesionales.Nombre) as NombreProfesional"),
+                'pacientes.Documento as Documento',
+                'pacientes.Id as IdPaciente',
+                'examenes.Nombre as Examen',
+                'examenes.Id as IdExamen',
+            )->whereNot('itemsprestaciones.Id', 0);;
 
             $query->when(!empty($request->prestacion), function ($query) use ($request) {
                 $query->where('prestaciones.Id', $request->prestacion);
@@ -241,7 +267,33 @@ class OrdenesExamenController extends Controller
     {
         if($request->ajax())
         {
-            $query = $this->queryBasico($request);
+            $query = ItemPrestacion::join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
+            ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
+            ->join('proveedores', 'examenes.IdProveedor2', '=', 'proveedores.Id')
+            ->join('clientes', 'prestaciones.IdEmpresa', '=', 'clientes.Id')
+            ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
+            ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+            ->leftJoin('archivosefector', 'itemsprestaciones.Id', '=', 'archivosefector.IdEntidad')
+            ->join('profesionales', 'itemsprestaciones.IdProfesional', '=', 'profesionales.Id')
+            ->select(
+                'itemsprestaciones.Id as IdItem',
+                'itemsprestaciones.Fecha as Fecha',
+                'itemsprestaciones.CAdj as Estado',
+                'itemsprestaciones.CInfo as Informado',
+                'itemsprestaciones.IdProfesional as IdProfesional',
+                'proveedores.Nombre as Especialidad',
+                'proveedores.Id as IdEspecialidad',
+                'proveedores.Multi as MultiEfector',
+                'proveedores.MultiE as MultiInformador',
+                'prestaciones.Id as IdPrestacion',
+                'clientes.RazonSocial as Empresa',
+                DB::raw("CONCAT(pacientes.Apellido, ' ', pacientes.Nombre) as NombreCompleto"),
+                DB::raw("CONCAT(profesionales.Apellido, ' ', profesionales.Nombre) as NombreProfesional"),
+                'pacientes.Documento as Documento',
+                'pacientes.Id as IdPaciente',
+                'examenes.Nombre as Examen',
+                'examenes.Id as IdExamen',
+            )->whereNot('itemsprestaciones.Id', 0);
 
             $query->when(!empty($request->informadores), function ($query) use ($request){
                 $query->where('itemsprestaciones.IdProfesional', $request->informadores);
@@ -284,7 +336,7 @@ class OrdenesExamenController extends Controller
         {
             $query = ItemPrestacion::join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
             ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
-            ->join('proveedores', 'examenes.IdProveedor', '=', 'proveedores.Id')
+            ->join('proveedores', 'examenes.IdProveedor2', '=', 'proveedores.Id')
             ->join('clientes', 'prestaciones.IdEmpresa', '=', 'clientes.Id')
             ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
             ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
@@ -354,7 +406,7 @@ class OrdenesExamenController extends Controller
         
         $query = ItemPrestacion::join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
         ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
-        ->join('proveedores', 'itemsprestaciones.IdProveedor', '=', 'proveedores.Id')
+        ->join('proveedores', 'examenes.IdProveedor', '=', 'proveedores.Id')
         ->join('clientes', 'prestaciones.IdEmpresa', '=', 'clientes.Id')
         ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
         ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
