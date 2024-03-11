@@ -774,6 +774,7 @@ class ItemPrestacionesController extends Controller
                     'Id' => ItemPrestacion::max('Id') + 1,
                     'IdPrestacion' => $request->idPrestacion,
                     'IdExamen' => $examen,
+                    'Fecha' => now()->format('Y-m-d')
                 ]);
             }   
         }

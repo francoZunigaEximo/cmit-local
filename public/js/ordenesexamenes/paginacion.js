@@ -4,16 +4,17 @@ $(document).ready(()=>{
     $(document).on('click', '#buscar', function() {
 
         let fechaDesde = $('#fechaDesde').val(),
-            fechaHasta = $('#fechaHasta').val();
+            fechaHasta = $('#fechaHasta').val(),
+            prestacion = $('#prestacion').val();
 
-        if (fechaDesde === '' || fechaHasta === '') {
+        if ((fechaDesde === '' || fechaHasta === '') && prestacion === '') {
             toastr.warning("Las fechas son obligatorias", "Atención");
             return;
         }
 
         var especialidad = $('#especialidad').val();
 
-        if(especialidad === '') {
+        if(especialidad === '' && prestacion === '') {
             toastr.warning('Debe seleccionar una especialidad para continuar', 'Atención');
             return;
         }
