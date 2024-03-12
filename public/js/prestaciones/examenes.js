@@ -112,15 +112,15 @@ $(document).ready(()=>{
                 ids.push(id);
             }
         }
-        
-        if(ids.length === 0 && checkAll === false){
-            toastr.warning('No hay examenes seleccionados', 'Atención');
+        if (tieneAdjunto) {
+            toastr.warning('El o los examenes seleccionados tienen un reporte adjuntado. El mismo no se podrá eliminar.', 'Atención');
             return;
         }
 
-        if (tieneAdjunto) {
-            toastr.warning('El o los examenes seleccionados tienen un reporte adjuntado. El mismo no se podrá eliminar.', 'Atención');
-        }
+        if(ids.length === 0 && checkAll === false){
+            toastr.warning('No hay examenes seleccionados', 'Atención');
+            return;
+        }  
     
         if(confirm("Confirme la eliminación de los examenes")){
             mostrarPreloader('#preloader');

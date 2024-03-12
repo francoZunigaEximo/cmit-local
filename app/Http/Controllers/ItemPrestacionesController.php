@@ -6,6 +6,7 @@ use App\Models\ArchivoInformador;
 use App\Models\Auditor;
 use App\Models\ItemPrestacion;
 use App\Models\ItemPrestacionInfo;
+use App\Models\Examen;
 use Illuminate\Http\Request;
 use App\Traits\ObserverItemsPrestaciones;
 use Illuminate\Support\Facades\Storage;
@@ -139,7 +140,7 @@ class ItemPrestacionesController extends Controller
 
             $item = ItemPrestacion::with('prestaciones')->find($examen);
 
-            if ($item && in_array($item->CAdj, [3,5])) 
+            if ($item && $item->prestaciones->Cerrado === 0) 
             {  
                 if($item->IdProfesional === 0)
                 {
@@ -159,7 +160,7 @@ class ItemPrestacionesController extends Controller
 
             }else{
 
-                $resultado = ['message' => 'EL exámen no se puede liberar porque la prestación se encuentra Cerrada', 'estado' => 'fail'];
+                $resultado = ['message' => 'EL exámen no se puede liberar porque la prestación se encuentra cerrada', 'estado' => 'fail'];
             }
 
             $resultados[] = $resultado;
@@ -770,11 +771,14 @@ class ItemPrestacionesController extends Controller
 
             if(!$itemPrestacion){
 
+                $result = Examen::where('Id', $examen)->value('Adjunto');
+
                 ItemPrestacion::create([
                     'Id' => ItemPrestacion::max('Id') + 1,
                     'IdPrestacion' => $request->idPrestacion,
                     'IdExamen' => $examen,
-                    'Fecha' => now()->format('Y-m-d')
+                    'Fecha' => now()->format('Y-m-d'),
+                    'CAdj' => ($result === 1) ? 1 : 0
                 ]);
             }   
         }
