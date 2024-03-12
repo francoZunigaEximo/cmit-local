@@ -644,3 +644,7 @@ ALTER TABLE clientes ADD Anexo INT DEFAULT 0 NULL;
 ALTER TABLE clientes ADD EMailAnexo varchar(100) NULL;
 INSERT INTO auditoriaacciones (Id, Nombre) VALUES ('44', 'ENVIO E-ESTUDIO ART');
 
+CREATE INDEX itemsprestaciones_CAdj_IDX USING BTREE ON itemsprestaciones (CAdj);
+CREATE INDEX itemsprestaciones_CInfo_IDX USING BTREE ON itemsprestaciones (CInfo);
+CREATE INDEX itemsprestaciones_Fecha_IDX USING BTREE ON itemsprestaciones (Fecha);
+CREATE INDEX examenes_Nombre_IDX USING BTREE ON examenes (Nombre);
