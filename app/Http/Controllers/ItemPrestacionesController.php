@@ -74,11 +74,11 @@ class ItemPrestacionesController extends Controller
             {   
                 if ($request->Para === 'abrir')
                 {  
-                    $item->CAdj = empty($request->CAdj) ? $lstAbrir[$item->CAdj] : $request->CAdj;
+                    $item->CAdj = $lstAbrir[$item->CAdj] ?? $request->CAdj;
                    
                 } elseif ($request->Para === 'cerrar' ) {
 
-                    $item->CAdj = empty($request->CAdj) ? $lstCerrar[$item->CAdj] : $request->CAdj;
+                    $item->CAdj = $lstCerrar[$item->CAdj] ?? $request->CAdj;
 
                 } elseif ($request->Para === 'cerrarI'){
 

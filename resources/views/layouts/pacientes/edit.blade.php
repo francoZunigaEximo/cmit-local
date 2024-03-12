@@ -656,11 +656,7 @@ const getMapas = "{{ route('getMapas') }}";
 const deletePicture = "{{ route('deletePicture') }}";
 const GOINDEX = "{{ route('pacientes.index') }}";
 
-//Solucionamos fix de url
-let prespacienteId = "{{ $prespaciente->Id ?? ''}}";
-let ubicacion = "paciente";
-let urlEdicion = "{{ route('prestaciones.edit', ['prestacione' => 'prespaciente_id', 'location' => 'ubicacion']) }}".replace('prespaciente_id', prespacienteId).replace('ubicacion', ubicacion);
-
+let url = "{{ route('prestaciones.edit', ['prestacione' => '__prestacion__']) }}";
 
 //Extras
 const editUrl = "{{ route('pacientes.edit', ['paciente' => '__paciente__']) }}";
