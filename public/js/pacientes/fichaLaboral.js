@@ -159,6 +159,13 @@ $(document).ready(function () {
             $('.Autoriza').hide();
         }
     });
+    
+    $('#selectClientes').on('select2:select', function (e) {
+        if (!confirm('¿Está seguro que desea seleccionar esta empresa para el paciente?')) {
+            e.preventDefault();
+        }
+        
+    });
 
     //Alerta - verificacion de clientes bloqueados
     $('#selectClientes').on('select2:select', function (e) {
@@ -246,7 +253,7 @@ $(document).ready(function () {
             toastr.warning('¡Debe seleccionar una empresa para el tipo de prestación seleccionado!', 'Alerta');
             return;
         }
-
+        mostrarPreloader('#preloader');
         $.post(saveFichaAlta, {paciente: paciente,
             cliente: cliente,
             art: art,
@@ -270,7 +277,7 @@ $(document).ready(function () {
             _token: TOKEN,
             }) 
             .done(function() {
-                
+                ocultarPreloader('#preloader');
                 toastr.success('¡Los datos se han actualizado. Nos redirigimos a la nueva prestación.!', 'Perfecto');
                 mostrarFinanciador();
                 selectMedioPago();
@@ -280,6 +287,7 @@ $(document).ready(function () {
 
             })
             .fail(function(xhr) {
+                ocultarPreloader('#preloader');
                 toastr.error('Hubo un problema para procesar la información. Consulte con el administrador del sistema.', 'Error');
                 console.error(xhr);
             });
@@ -549,6 +557,18 @@ $(document).ready(function () {
         }
     }
 
-
+    function mostrarPreloader(arg) {
+        $(arg).css({
+            opacity: '0.3',
+            visibility: 'visible'
+        });
+    }
+    
+    function ocultarPreloader(arg) {
+        $(arg).css({
+            opacity: '0',
+            visibility: 'hidden'
+        });
+    }
     
 });

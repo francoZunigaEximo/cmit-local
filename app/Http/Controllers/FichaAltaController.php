@@ -11,31 +11,6 @@ class FichaAltaController extends Controller
 {
     public function save(Request $request): void
     {
-
-        $ficha = Fichalaboral::where('IdPaciente', $request->paciente)->first();
-        if ($ficha) {
-            $ficha->IdEmpresa = $request->cliente ?? 0;
-            $ficha->IdART = $request->art ?? 0;
-            $ficha->Tareas = $request->tareaRealizar ?? '';
-            $ficha->Pago = $request->pago ?? '';
-            $ficha->TipoPrestacion = $request->tipoPrestacion ?? '';
-            $ficha->Jornada = $request->horario ?? '';
-            $ficha->TipoJornada = $request->tipo ?? '';
-            $ficha->Observaciones = $request->observaciones ?? '';
-            $ficha->TareasEmpAnterior = $request->ultimoPuesto;
-            $ficha->Puesto = $request->puestoActual ?? '';
-            $ficha->Sector = $request->sectorActual ?? '';
-            $ficha->CCosto = $request->ccosto ?? '';
-            $ficha->AntigPuesto = $request->antiguedadPuesto ?? '';
-            $ficha->FechaIngreso = $request->fechaIngreso ?? '';
-            $ficha->FechaEgreso = $request->fechaEgreso ?? '';
-            $ficha->FechaPreocupacional = $request->fechaPreocupacional ?? '';
-            $ficha->FechaUltPeriod = $request->fechaUltPeriod ?? '';
-            $ficha->FechaExArt = $request->fechaExArt ?? '';
-            $ficha->save();
-
-        } else {
-
             Fichalaboral::create([
                 'Id' => Fichalaboral::max('Id') + 1,
                 'IdPaciente' => $request->paciente,
@@ -58,7 +33,6 @@ class FichaAltaController extends Controller
                 'FechaUltPeriod' => $request->fechaUltPeriod ?? '',
                 'FechaExArt' => $request->fechaExArt ?? ''
             ]);
-        }
 
     }
 

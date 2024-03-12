@@ -271,7 +271,6 @@
                                     <div class="input-group input-group-sm mb-2 selectClientes2">
                                         <span class="input-group-text">Empresa</span>
                                         <select class="form-control-sm" id="selectClientes" s>
-                                            <option value="{{ $dataCliente->Id ?? '' }}">{{ $dataCliente->RazonSocial ?? '' }}</option>
                                         </select>
                                     </div>
     
@@ -283,7 +282,6 @@
                                     <div class="input-group input-group-sm  mb-2 selectArt2">
                                         <span class="input-group-text">ART</span>
                                         <select class="form-control" id="selectArt">
-                                            <option value="{{ $dataArt->Id ?? '' }}">{{ $dataArt->RazonSocial ?? '' }}</option>
                                         </select>
                                     </div>
                                 </div>
@@ -292,32 +290,32 @@
                             <div class="row text-center">
                                 <div class="col-12">
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="ART" value="ART" {{ ($fichaLaboral && $fichaLaboral->TipoPrestacion === 'ART' ? 'checked' : '') }}>
+                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="ART" value="ART">
                                         <label class="form-check-label" for="ART">ART</label>
                                     </div>
 
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="INGRESO" value="INGRESO" {{ ($fichaLaboral && $fichaLaboral->TipoPrestacion === 'INGRESO' ? 'checked' : '') }}>
+                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="INGRESO" value="INGRESO">
                                         <label class="form-check-label" for="ingreso">INGRESO</label>
                                     </div>
                             
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="PERIODICO" value="PERIODICO" {{ ($fichaLaboral && $fichaLaboral->TipoPrestacion === 'PERIODICO' ? 'checked' : '' ) }}>
+                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="PERIODICO" value="PERIODICO">
                                         <label class="form-check-label" for="periodico">PERIODICO</label>
                                     </div>
 
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="OCUPACIONAL" value="OCUPACIONAL" {{ ($fichaLaboral && $fichaLaboral->TipoPrestacion === 'OCUPACIONAL' ? 'checked' : '') }}>
+                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="OCUPACIONAL" value="OCUPACIONAL">
                                         <label class="form-check-label" for="ocupacional">OCUPACIONAL</label>
                                     </div>
 
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="EGRESO" value="EGRESO" {{ ($fichaLaboral && $fichaLaboral->TipoPrestacion === 'EGRESO' ? 'checked' : '' ) }}>
+                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="EGRESO" value="EGRESO">
                                         <label class="form-check-label" for="egreso">EGRESO</label>
                                     </div>
 
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="TipoPrestacion" id="OTRO" value="OTRO" {{ ($fichaLaboral && $fichaLaboral->TipoPrestacion === 'OTRO' ? 'checked' : '') }}>
+                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="TipoPrestacion" id="OTRO" value="OTRO">
                                         <label class="form-check-label" for="otro">OTRO</label>
                                     </div>
                                     <div class="form-check form-check-inline" id="divtipoPrestacionPresOtros" style="display:none">
@@ -338,27 +336,27 @@
 
                                     <div class="input-group input-group-sm mb-2 TareaRealizar">
                                         <span class="input-group-text">Tareas a realizar</span>
-                                        <input type="text" class="form-control" id="TareaRealizar" name="TareaRealizar" value="{{ $fichaLaboral->Tareas ?? '' }}">
+                                        <input type="text" class="form-control" id="TareaRealizar" name="TareaRealizar">
                                     </div>
 
                                     <div class="input-group input-group-sm mb-2 UltimoPuesto">
                                         <span class="input-group-text">Última empresa y puesto</span>
-                                        <input type="text" class="form-control" id="UltimoPuesto" name="UltimoPuesto" value="{{ $fichaLaboral->TareasEmpAnterior ?? '' }}">
+                                        <input type="text" class="form-control" id="UltimoPuesto" name="UltimoPuesto">
                                     </div>
 
                                     <div class="input-group input-group-sm mb-2 PuestoActual">
                                         <span class="input-group-text">Puesto actual</span>
-                                        <input type="text" class="form-control" id="PuestoActual" name="PuestoActual" value="{{ $fichaLaboral->Puesto ?? '' }}">
+                                        <input type="text" class="form-control" id="PuestoActual" name="PuestoActual">
                                     </div>
 
                                     <div class="input-group input-group-sm mb-2 SectorActual">
                                         <span class="input-group-text">Sector Actual</span>
-                                        <input type="text" class="form-control" id="SectorActual" name="SectorActual" value="{{ $fichaLaboral->Sector ?? '' }}">
+                                        <input type="text" class="form-control" id="SectorActual" name="SectorActual">
                                     </div>
 
                                     <div class="input-group input-group-sm mb-2 CCosto">
                                         <span class="input-group-text">C.Costos</span>
-                                        <input type="text" class="form-control" id="CCostos" name="CCostos" value="{{ $fichaLaboral->CCosto ?? '' }}">
+                                        <input type="text" class="form-control" id="CCostos" name="CCostos">
                                     </div>
 
                                     <div class="row">
@@ -366,7 +364,7 @@
                                             
                                             <div class="input-group input-group-sm mb-2 AntiguedadPuesto">
                                                 <span class="input-group-text">Antig. Puesto</span>
-                                                <input type="number" class="form-control" placeholder="0" id="AntiguedadPuesto" value="{{ $fichaLaboral->AntigPuesto ?? '' }}">
+                                                <input type="number" class="form-control" placeholder="0" id="AntiguedadPuesto">
                                             </div>
 
                                             <div class="input-group input-group-sm mb-2 AntiguedadEmpresa">
@@ -379,12 +377,12 @@
 
                                             <div class="input-group input-group-sm mb-2 FechaIngreso">
                                                 <span class="input-group-text">Fecha Ingreso</span>
-                                                <input type="date" class="form-control" id="FechaIngreso" value="{{ (isset($fichaLaboral->FechaIngreso) && $fichaLaboral->FechaIngreso !== '0000-00-00') ? \Carbon\Carbon::parse($fichaLaboral->FechaIngreso)->format('Y-m-d') : '' }}">
+                                                <input type="date" class="form-control" id="FechaIngreso">
                                             </div>
 
                                             <div class="input-group input-group-sm mb-2 FechaEgreso">
                                                 <span class="input-group-text">Fecha Egreso</span>
-                                                <input type="date" class="form-control" id="FechaEgreso" value="{{ (isset($fichaLaboral->FechaIngreso) && $fichaLaboral->FechaEgreso !== '0000-00-00') ? \Carbon\Carbon::parse($fichaLaboral->FechaEgreso)->format('Y-m-d') : '' }}">
+                                                <input type="date" class="form-control" id="FechaEgreso">
                                             </div>
 
                                         </div>
@@ -397,12 +395,10 @@
                                     <div class="input-group input-group-sm mb-2">
                                         <span class="input-group-text">Jornada</span>
                                         <select class="form-select" id="TipoJornada">
-                                            <option selected value="{{ $fichaLaboral->TipoJornada ?? ''}}">{{ $fichaLaboral->TipoJornada ?? 'Elija una opción...'}}</option>
                                             <option value="NORMAL">Normal</option>
                                             <option value="PROLONGADA">Prolongada</option>
                                         </select>
                                         <select class="form-select" id="Horario">
-                                            <option selected value="{{ $fichaLaboral->Jornada ?? '' }}">{{ $fichaLaboral->Jornada ?? 'Elija una opción...' }}</option>
                                             <option value="DIURNA">Diurna</option>
                                             <option value="NOCTURNO">Nocturno</option>
                                             <option value="ROTATIVO">Rotativo</option>
@@ -413,23 +409,23 @@
                                     <div class="mt-3">
                                         <div class="input-group input-group-sm mb-2">
                                             <span class="input-group-text">Fecha Preocupacional</span>
-                                            <input type="date" class="form-control" id="FechaPreocupacional" value="{{ (isset($fichaLaboral->FechaPreocupacional) && $fichaLaboral->FechaPreocupacional !== '0000-00-00') ? \Carbon\Carbon::parse($fichaLaboral->FechaPreocupacional)->format('Y-m-d') : '' }}">
+                                            <input type="date" class="form-control" id="FechaPreocupacional">
                                         </div>
 
                                         <div class="input-group input-group-sm mb-2">
                                             <span class="input-group-text">Fecha Ult. Periodico Empresa</span>
-                                            <input type="date" class="form-control"  id="FechaUltPeriod" value="{{ (isset($fichaLaboral->FechaUltPeriod) && $fichaLaboral->FechaUltPeriod !== '0000-00-00') ? \Carbon\Carbon::parse($fichaLaboral->FechaUltPeriod)->format('Y-m-d') : '' }}">
+                                            <input type="date" class="form-control"  id="FechaUltPeriod">
                                         </div>
 
                                         <div class="input-group input-group-sm mb-2">
                                             <span class="input-group-text">Fecha Ex ART</span>
-                                            <input type="date" class="form-control" id="FechaExArt" value="{{ (isset($fichaLaboral->FechaExArt) && $fichaLaboral->FechaExArt !== '0000-00-00') ? \Carbon\Carbon::parse($fichaLaboral->FechaExArt)->format('Y-m-d') : '' }}">
+                                            <input type="date" class="form-control" id="FechaExArt">
                                         </div>
                                     </div>
 
                                     <div class="mt-3">
                                         <label for="Observaciones" class="form-label">Observaciones</label>
-                                        <textarea class="form-control" style="height: 100px" placeholder="Observaciones de la jornada laboral" id="ObservacionesFicha">{{ $fichaLaboral->Observaciones ?? '' }}</textarea>
+                                        <textarea class="form-control" style="height: 100px" placeholder="Observaciones de la jornada laboral" id="ObservacionesFicha"></textarea>
                                     </div>
 
                                 </div>
@@ -443,14 +439,7 @@
                                     <div class="input-group input-group-sm mb-2">
                                         <span class="input-group-text">Forma de Pago</span>
                                         <select class="form-select" id="PagoLaboral">
-                                            <option value="{{ $fichaLaboral->Pago ?? ''}}" selected>
-                                                {{ 
-                                                    ($fichaLaboral && $fichaLaboral->Pago === 'B' ? 'Contado' :
-                                                    ($fichaLaboral && $fichaLaboral->Pago === 'C' ? 'Cuenta Corriente' :
-                                                    ($fichaLaboral && $fichaLaboral->Pago === 'P' ? 'Examen a Cuenta' :
-                                                    'Elija una opción...')))
-                                                }}
-                                            </option>
+                                            <option value="" selected>Elija una opción...</option>
                                             <option value="B">Contado</option>
                                             <option value="C">Cuenta Corriente</option>
                                             <option value="P">Exámen a Cuenta</option>
@@ -464,7 +453,7 @@
                                 <div class="row">
                                     <div class="col-12 text-center mt-2">
                                         <button type="button" class="btn botonGeneral eventDelete" data-bs-dismiss="modal">Cancelar</button>
-                                        <button type="button" id="guardarFicha" class="btn botonGeneral">Actualizar y continuar...</button>
+                                        <button type="button" id="guardarFicha" class="btn botonGeneral">Generar y continuar...</button>
                                     </div>
                                 </div>
                                 
