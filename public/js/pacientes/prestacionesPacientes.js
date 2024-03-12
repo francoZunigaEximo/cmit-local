@@ -318,7 +318,8 @@ $(document).ready(()=>{
 
                     let cerradoAdjunto = papre.CerradoAdjunto || 0,
                         total = papre.Total || 1,
-                        calculo = parseFloat(((cerradoAdjunto / total) * 100).toFixed(2));
+                        calculo = parseFloat(((cerradoAdjunto / total) * 100).toFixed(2)),
+                        resultado = 0;
                 
                     if (calculo === 100) {
                         resultado = 'fondo-blanco';
@@ -383,7 +384,7 @@ $(document).ready(()=>{
                                 </td>
                                 <td>
                                     <div class="d-flex gap-2">
-                                        <a title="Editar" href="${urlEdicion}">
+                                        <a title="Editar" href="${url.replace('__prestacion__', papre.Id)}">
                                             <button type="button" class="btn btn-sm iconGeneralNegro"><i class="ri-edit-line"></i></button>
                                         </a>
                                         <div class="bloquear">
