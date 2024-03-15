@@ -374,12 +374,10 @@ class OrdenesExamenController extends Controller
                 $query->where('art.Id', $request->art);
             });
 
-            $filtrado = $query->where('itemsprestaciones.CInfo', 1)
-                              ->where('prestaciones.Cerrado', 1)
-                              ->where('prestaciones.Finalizado', 1)
+            $filtrado = $query->whereIn('itemsprestaciones.CInfo', [0,1])
                               ->whereNot('itemsprestaciones.IdProfesional', 0)
                               ->whereNot('itemsprestaciones.IdProfesional2', 0)
-                              ->where('itemsprestaciones.CAdj', 5)
+                              ->whereIn('itemsprestaciones.CAdj', [3,5])
                               ->where('proveedores.InfAdj', 1)
                               ->whereNotExists(function ($query) {
                                 $query->select(DB::raw(1))
@@ -399,42 +397,6 @@ class OrdenesExamenController extends Controller
         }
 
         return view('layouts.ordenesExamen.index');
-    }
-
-    private function queryBasico($request): mixed
-    {
-        
-        $query = ItemPrestacion::join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
-        ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
-        ->join('proveedores', 'examenes.IdProveedor', '=', 'proveedores.Id')
-        ->join('clientes', 'prestaciones.IdEmpresa', '=', 'clientes.Id')
-        ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
-        ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-        ->leftJoin('archivosefector', 'itemsprestaciones.Id', '=', 'archivosefector.IdEntidad')
-        ->join('profesionales', 'itemsprestaciones.IdProfesional', '=', 'profesionales.Id')
-        ->select(
-            'itemsprestaciones.Id as IdItem',
-            'itemsprestaciones.Fecha as Fecha',
-            'itemsprestaciones.CAdj as Estado',
-            'itemsprestaciones.CInfo as Informado',
-            'itemsprestaciones.IdProfesional as IdProfesional',
-            'proveedores.Nombre as Especialidad',
-            'proveedores.Id as IdEspecialidad',
-            'proveedores.Multi as MultiEfector',
-            'proveedores.MultiE as MultiInformador',
-            'prestaciones.Id as IdPrestacion',
-            'clientes.RazonSocial as Empresa',
-            DB::raw("CONCAT(pacientes.Apellido, ' ', pacientes.Nombre) as NombreCompleto"),
-            DB::raw("CONCAT(profesionales.Apellido, ' ', profesionales.Nombre) as NombreProfesional"),
-            'pacientes.Documento as Documento',
-            'pacientes.Id as IdPaciente',
-            'examenes.Nombre as Examen',
-            'examenes.Id as IdExamen',
-        )->whereNot('itemsprestaciones.Id', 0);
-
-        $query = $this->filtrosBasicos($query, $request);
-
-        return $query;
     }
 
     private function filtrosBasicos($query, $request): mixed

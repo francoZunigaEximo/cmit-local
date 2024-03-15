@@ -71,8 +71,9 @@ $(document).ready(()=>{
                 {
                     data: null,
                     render: function(data){
-                        let recorte = (data.NombreCompleto).substring(0,10) + "...";
-                        return recorte.length >= 10 ? `<span title="${data.NombreCompleto}">${recorte}</span>` : data.NombreCompleto;
+                        let NombreCompleto = data.pacApellido + ' ' + data.pacNombre;
+                        let recorte = (NombreCompleto).substring(0,10) + "...";
+                        return recorte.length >= 10 ? `<span title="${NombreCompleto}">${recorte}</span>` : NombreCompleto;
                     }
                 },
                 {
@@ -94,8 +95,9 @@ $(document).ready(()=>{
                 {
                     data: null,
                     render: function(data){
-                        let recorte = (data.NombreProfesional).substring(0, 10) + "...";
-                        return recorte.length >= 10 ? `<span title="${data.NombreProfesional}">${recorte}</span>` : data.NombreProfesional;
+                        let NombreProfesional = data.proApellido + ' ' + data.proNombre;
+                        let recorte = (NombreProfesional).substring(0, 10) + "...";
+                        return recorte.length >= 10 ? `<span title="${NombreProfesional}">${recorte}</span>` : data.NombreProfesional;
                     }
                 },
                 {
