@@ -40,6 +40,11 @@ $(document).ready(()=>{
             return;
         }
 
+        if(tipoPrestacion === 'ART' && mapa == '0'){
+            toastr.warning('Debe seleccionar un mapa vigente para continuar si su prestacion es ART', 'Alerta');
+            return;
+        }
+
         if(pago === 'B' && spago === '') {
             toastr.warning('Debe seleccionar un "medio de pago" cuando la "forma de pago" es "contado"', 'Alerta');
             return;
@@ -252,7 +257,7 @@ $(document).ready(()=>{
                 
                 if(mapas.length === 0)
                 {
-                    $('#mapas').empty().append('<option title=""value="Sin mapas disponibles para esta ART y Empresa." selected>Sin mapas disponibles.</option>');
+                    $('#mapas').empty().append('<option title="Sin mapas disponibles para esta ART y Empresa." value="0" selected>Sin mapas disponibles.</option>');
                 }else{
 
                     $.each(mapas, function(index, d){

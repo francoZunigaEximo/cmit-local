@@ -39,11 +39,11 @@ class FichaAltaController extends Controller
     //Verificamos para emplear la vista full
     public function verificar(Request $request)
     {
-        $fichaLaboral = Fichalaboral::with(['empresa','art'])->where('IdPaciente', $request->Id)->first();
+        $fichaLaboral = Fichalaboral::with(['empresa','art'])->where('IdPaciente', $request->Id)->orderBy('Id', 'Desc')->first();
 
         if ($fichaLaboral) {
 
-            return response()->json(['fichaLaboral' => $fichaLaboral, 'clienteArt' => $fichaLaboral->art, 'cliente' => $fichaLaboral->empresa]);
+            return response()->json(['fichaLaboral' => $fichaLaboral, 'clienteArt' => $fichaLaboral->art ?? '', 'cliente' => $fichaLaboral->empresa ?? '']);
         }
 
     }

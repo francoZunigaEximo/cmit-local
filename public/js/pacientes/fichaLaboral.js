@@ -238,8 +238,7 @@ $(document).ready(function () {
             toastr.warning('¡El campo tipo de prestación es obligatorio!', 'Alerta');
             return;
         }
-
-        if(cliente === '0' && art === '0' || cliente === '' && art === ''){
+        if(cliente == '0' && art == '0' || cliente === '' && art === '' || cliente === null && art === null){
             toastr.warning('¡Debe seleccionar una empresa o una art!', 'Alerta');
             return;
         }
@@ -253,6 +252,7 @@ $(document).ready(function () {
             toastr.warning('¡Debe seleccionar una empresa para el tipo de prestación seleccionado!', 'Alerta');
             return;
         }
+
         mostrarPreloader('#preloader');
         $.post(saveFichaAlta, {paciente: paciente,
             cliente: cliente,

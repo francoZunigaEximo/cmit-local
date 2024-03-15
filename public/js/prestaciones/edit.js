@@ -72,28 +72,33 @@ $(document).ready(()=> {
 
             
          //Validamos la factura
-        if(spago === 'G' && autorizado === ''){
+        if (spago === 'G' && autorizado === ''){
             toastr.warning('Si el medio de pago es gratuito, debe seleccionar quien autoriza.', 'Alerta');
             return;
         }
 
-        if(pago === 'B' && spago === '') {
+        if (pago === 'B' && spago === '') {
             toastr.warning('Debe seleccionar un "medio de pago" cuando la "forma de pago" es "contado"', 'Alerta');
             return;
         }
 
-        if(pago === '' || spago === null || pago === undefined) {
+        if (pago === '' || spago === null || pago === undefined) {
             toastr.warning('Debe seleccionar una "forma de pago"', 'Alerta');
             return;
         }
 
-        if(pago === 'B' && (tipo == '' || sucursal === '' || nroFactura === '')){
+        if (pago === 'B' && (tipo == '' || sucursal === '' || nroFactura === '')){
             toastr.warning('El pago es contado, asi que debe agregar el número de factura para continuar.', 'Alerta');
             return;
         }
 
-        if(tipoPrestacion === ''){
+        if (tipoPrestacion === ''){
             swal("Atención", "El tipo de prestación no puede ser un campo vacío", "warning");
+            return;
+        }
+
+        if (tipoPrestacion === 'ART' && mapa === '') {
+            toastr.warning("Debe seleccionar un mapa si la prestación es ART");
             return;
         }
 
