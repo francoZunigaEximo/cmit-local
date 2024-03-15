@@ -236,4 +236,6 @@ Route::group(['middleware' => 'auth'], function () {
 
     //Rutas de Examenes a Cuenta
     Route::resource('examenesCuenta', ExamenesCuentaController::class);
+    Route::get('searchExCuenta', [ExamenesCuentaController::class, 'search'])->name('searchExCuenta');
+    Route::post('cambiarPago', [ExamenesCuentaController::class, 'cambiarPago'])->name('cambiarPago');
 });

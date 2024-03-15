@@ -26,4 +26,9 @@ class ExamenCuenta extends Model
     ];
 
     public $timestamps = false;
+
+    public function empresa()
+    {
+        return $this->hasMany(Cliente::class, 'Id', 'IdEmpresa');
+    }
 }

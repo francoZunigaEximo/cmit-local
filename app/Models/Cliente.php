@@ -82,5 +82,10 @@ class Cliente extends Model
     {
         return $this->hasMany(Fichalaboral::class, ['IdArt', 'IdEmpresa'], 'Id');
     }
+
+    public function examenCueta()
+    {
+        return $this->hasOne(ExamenCuenta::class, 'IdEmpresa', 'Id');
+    }
 }
 
