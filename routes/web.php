@@ -238,4 +238,5 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('examenesCuenta', ExamenesCuentaController::class);
     Route::get('searchExCuenta', [ExamenesCuentaController::class, 'search'])->name('searchExCuenta');
     Route::post('cambiarPago', [ExamenesCuentaController::class, 'cambiarPago'])->name('cambiarPago');
+    Route::get('detallesExamenes', [ExamenesCuentaController::class, 'detalles'])->name('detallesExamenes');
 });

@@ -24,12 +24,12 @@
                 Saldos
             </a>
         </li>
-        <li class="nav-item" role="presentation">
+        <!-- <li class="nav-item" role="presentation">
             <a class="nav-link" data-bs-toggle="tab" href="#pago" role="tab" aria-selected="false" tabindex="-1">
                 <i class=" ri-window-line"></i>
                 Pagos
             </a>
-        </li>
+        </li> -->
         
     </ul>
 </div>
@@ -77,7 +77,7 @@
                                                 </div>
 
                                                 <div class="col-sm-2 mb-3">
-                                                    <label for="examen" class="form-label font-weight-bold"><strong>Examen:</strong></label>
+                                                    <label for="examen" class="form-label fw-bolder">Examen:</label>
                                                     <select class="form-control" name="examen" id="examen"></select>
                                                 </div>
 
@@ -86,14 +86,23 @@
                                             <div class="row">
                                                 
                                                 <div class="col-sm-2 mb-3">
-                                                    <label for="paciente" class="form-label font-weight-bold"><strong>Paciente / DNI:</strong></label>
+                                                    <label for="paciente" class="form-label fw-bolder">Paciente / DNI:</label>
                                                     <select class="form-control" name="paciente" id="paciente"></select>
+                                                </div>
+
+                                                <div class="col-sm-2 mb-3">
+                                                    <label for="estado" class="form-label fw-bolder">Estado: </label>
+                                                    <select class="form-control" name="estado" id="estado">
+                                                        <option value="" selected>Elija una opción...</option>
+                                                        <option value="pago">Pagos</option>
+                                                        <option value="todos">Todos</option>
+                                                    </select>
                                                 </div>
             
                                                 
-                                                <div class="col-sm-10 d-flex align-items-center justify-content-end">
+                                                <div class="col-sm-8 d-flex align-items-center justify-content-end">
                                                     <button type="button" id="buscar" class="btn botonGeneral"><i class="ri-zoom-in-line"></i>&nbsp;Buscar</button>&nbsp;
-                                                    <button type="button" id="agregar" class="btn botonGeneral"><i class="ri-add-fill"></i>&nbsp;Agregar</button>
+                                                    <a id="agregar" class="btn botonGeneral" href="{{ route('examenesCuenta.create') }}"><i class="ri-add-fill"></i>&nbsp;Agregar</a>
                                                 </div>
                                                 
             
@@ -131,10 +140,118 @@
         </div>
 
         <div class="tab-pane" id="saldo" role="tabpanel">
+
+            <div class="row justify-content-md-center">
+                <form id="form-index">
+                    <div class="col p-2 border border-1 border-color" style="border-color: #666666;">
+                        
+                        <div class="row justify-content-center">
+                            <div class="col-sm-2 mb-3">
+                                <label for="empresaSaldo" class="form-label font-weight-bold"><strong>Empresa:</strong></label>
+                                <select class="form-control" name="empresaSaldo" id="empresaSaldo"></select>
+                            </div>
+
+                            <div class="col-sm-2 mb-3">
+                                <label for="examenSaldo" class="form-label font-weight-bold"><strong>Examen:</strong></label>
+                                <select class="form-control" name="examenSaldo" id="examenSaldo"></select>
+                            </div>
+
+                            <div class="col-sm-2 mb-3 d-flex align-items-end">
+                                <label class="form-label" for=""></label>
+                                <button type="button" class="btn btn-sm botonGeneral" id="buscarSaldo"><i class="ri-zoom-in-line"></i>&nbsp;Buscar</i></button>
+                            </div>
+
+                        </div>
+                    </div>
+                </form>  
+            </div> 
+
+            <div class="row">
+
+                <div class="table-responsive table-card mt-3 mb-1 mx-auto">
+                    <table id="listadoExamenesCuentas" class="display table table-bordered" style="width:100%">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="sort">Empresa</th>
+                                <th class="sort">Examen</th>
+                                <th>Saldo</th>
+                            </tr>
+                        </thead>
+                        <tbody class="list form-check-all">
+
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
         </div>
 
-        <div class="tab-pane" id="pago" role="tabpanel">
-        </div>
+       <!-- <div class="tab-pane" id="pago" role="tabpanel">
+
+            <div class="row justify-content-md-center">
+                <form id="form-index">
+                    <div class="col p-2 border border-1 border-color" style="border-color: #666666;">
+                        <div class="row justify-content-center">
+
+                            <div class="col-sm-2 mb-3">
+                                <label for="fechaDesdePago" class="form-label font-weight-bold"><strong>Fecha desde: <span class="required">(*)</span></strong></label>
+                                <input type="date" class="form-control" id="fechaDesdePago" name="fechaDesdePago">
+                            </div>
+
+                            <div class="col-sm-2 mb-3">
+                                <label for="fechaDesdePago" class="form-label font-weight-bold"><strong>Fecha hasta: <span class="required">(*)</span></strong></label>
+                                <input type="date" class="form-control" id="fechaHastaPago" name="fechaHastaPago">
+                            </div>
+
+                            <div class="col-sm-2 mb-3">
+                                <label for="estadoPago" class="form-label"><strong>Estado: <span class="required">(*)</span></strong></label>
+                                <select class="form-control" name="estadoPago" id="estadoPago">
+                                    <option value="" selected>Elija una opción...</option>
+                                    <option value="pago">Pago</option>
+                                    <option value="impago">Impago</option>
+                                    <option value="todos">Todos</option>
+                                </select>
+                            </div>
+
+                            <div class="col-sm-2 mb-3">
+                                <label for="empresaPago" class="form-label font-weight-bold">Empresa:</label>
+                                <select class="form-control" name="empresaPago" id="empresaPago"></select>
+                            </div>
+
+                            <div class="col-sm-2 mb-3 d-flex align-items-end">
+                                <label class="form-label" for="buscarPago"></label>
+                                <button type="button" class="btn btn-sm botonGeneral" id="buscarPago"><i class="ri-zoom-in-line"></i>&nbsp;Buscar</i></button>
+                            </div>
+
+                        </div> 
+                    </div>
+                </form>
+            </div>
+
+            <div class="row">
+
+                <div class="table-responsive table-card mt-3 mb-1 mx-auto">
+                    <table id="listadoExamenesCuentas" class="display table table-bordered" style="width:100%">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="sort">Número</th>
+                                <th class="sort">Factura</th>
+                                <th class="sort">Fecha</th>
+                                <th class="sort">Empresa</th>
+                                <th class="sort">Para Empresa</th>
+                                <th class="sort">Pagado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody class="list form-check-all">
+
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+        </div> -->
     </div>
 </div>
 
@@ -147,6 +264,7 @@
     const TOKEN = "{{ @csrf_token() }}";
     const SEARCH = "{{ route('searchExCuenta') }}";
     const cambiarPago = "{{ route('cambiarPago') }}";
+    const detallesExamenes = "{{ route('detallesExamenes') }}";
 </script>
 
 @push('styles')
@@ -170,6 +288,7 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/i18n/es.js"></script>
 <script src="{{ asset('js/pages/select2.init.js') }}"></script>
+<script src="{{ asset('js/fancyTable.js') }}"></script>
 @endpush
 
 @endsection

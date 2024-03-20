@@ -8,9 +8,9 @@ $(document).ready(()=> {
         timeOut: 3000,        
     };
 
-    $('#fechaHasta').val(fechaNow(null, "-", 0));
+    $('#fechaHasta, #FechaCreate').val(fechaNow(null, "-", 0));
 
-    $('#empresa').each(function() {
+    $('#empresa, #empresaSaldo, #empresaPago, #empresaCreate').each(function() {
         $(this).select2({
             language: {
                 noResults: function() {
@@ -47,7 +47,7 @@ $(document).ready(()=> {
         });
     });
 
-    $('#examen').each(function(){
+    $('#examen, #examenSaldo').each(function(){
         $(this).select2({
             language: {
                 noResults: function() {
@@ -98,7 +98,7 @@ $(document).ready(()=> {
                     return "Por favor, ingrese 2 o más caracteres";
                 }
             },
-            placeholder: 'Nombre y/o apellido del paciente',
+            placeholder: 'Apellido y/o nombre del paciente',
             allowClear: true,
             ajax: {
                 url: getPacientes, 
@@ -138,7 +138,7 @@ $(document).ready(()=> {
         }
     });
     
-    $("#rangoDesde, #rangoHasta").inputmask('rango');
+    $("#rangoDesde, #rangoHasta, #FacturaCreate").inputmask('rango');
     
     $(document).on('click', '.cambiarBoton', function(e) {
         

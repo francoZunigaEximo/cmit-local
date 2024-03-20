@@ -324,7 +324,8 @@ class PacientesController extends Controller
 
         $resultados = Cache::remember('pacientes_'.$buscar, 5, function () use ($buscar) {
 
-            $pacientes = Paciente::where('Nombre', 'LIKE', '%'.$buscar.'%')
+            $pacientes = Paciente::whereRaw("CONCAT(Apellido, ' ', Nombre) LIKE ?", ['%'.$buscar.'%'])
+                ->orWhere('Nombre', 'LIKE', '%'.$buscar.'%')
                 ->orWhere('Apellido', 'LIKE', '%'.$buscar.'%')
                 ->orWhere('Documento', 'LIKE', '%'.$buscar.'%')
                 ->get();
@@ -334,7 +335,7 @@ class PacientesController extends Controller
             foreach ($pacientes as $paciente) {
                 $resultados[] = [
                     'id' => $paciente->Id,
-                    'text' => $paciente->Nombre.' '.$paciente->Apellido.' | '.$paciente->Documento,
+                    'text' => $paciente->Apellido.' '.$paciente->Nombre.' | '.$paciente->Documento,
                 ];
             }
 

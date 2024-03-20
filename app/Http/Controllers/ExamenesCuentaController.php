@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\ExamenCuenta;
+use App\Models\Prestacion;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class ExamenesCuentaController extends Controller
 {
@@ -21,6 +23,7 @@ class ExamenesCuentaController extends Controller
             $query = ExamenCuenta::join('clientes', 'pagosacuenta.IdEmpresa', '=', 'clientes.Id')
                 ->join('pagosacuenta_it', 'pagosacuenta.Id', '=', 'pagosacuenta_it.IdPago')
                 ->join('prestaciones', 'pagosacuenta_it.IdPrestacion', '=', 'prestaciones.Id')
+                ->join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
                 ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
                 ->select(
                     'pagosacuenta.Id as IdEx',
@@ -66,6 +69,19 @@ class ExamenesCuentaController extends Controller
                 $query->where('pacientes.Id', $request->paciente);
             });
 
+            $query->when(empty($request->estado), function ($query) {
+                $query->where('pagosacuenta.Pagado', 0);
+            });
+
+            $query->when(!empty($request->estado) && $request->estado === 'pago', function ($query) {
+                $query->where('pagosacuenta.Pagado', 1)
+                      ->whereNot('pagosacuenta.Pagado', 0);
+            });
+
+            $query->when(!empty($request->estado) && $request->estado === 'todos', function ($query) {
+                $query->whereIn('pagosacuenta.Pagado', [0,1]);
+            });
+
             $result = $query->groupBy('pagosacuenta.Id', 'pagosacuenta.Tipo', 'pagosacuenta.Suc', 'pagosacuenta.Nro', 'pagosacuenta.Pagado');
 
             return Datatables::of($result)->make(true);
@@ -100,5 +116,34 @@ class ExamenesCuentaController extends Controller
         return response()->json($resultado);
     }
 
+    public function create()
+    {
+        return view('layouts.examenesCuenta.create');
+    }
+
+    public function edit(ExamenCuenta $examenesCuentum)
+    {
+        return view('layout.examenesCuenta.edit');
+    }
+
+    public function detalles(Request $request)
+    {
+
+        $detalle = ExamenCuenta::join('pagosacuenta_it', 'pagosacuenta.Id', '=', 'pagosacuenta_it.IdPago')
+            ->join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
+            ->join('prestaciones', 'pagosacuenta_it.IdPrestacion', '=', 'prestaciones.Id')
+            ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+            ->select(
+                'prestaciones.Id as IdPrestacion',
+                'examenes.Nombre as NombreExamen',
+                'pacientes.Nombre as NombrePaciente',
+                'pacientes.Apellido as ApellidoPaciente'
+            )
+            ->where('pagosacuenta.Id', $request->Id)
+            ->orderBy('pacientes.Apellido', 'ASC')
+            ->get();
+
+        return response()->json(['result' => $detalle]);   
+    }
 
 }

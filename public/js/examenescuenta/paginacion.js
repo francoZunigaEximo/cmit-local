@@ -1,5 +1,4 @@
 
-
 $(document).ready(()=>{
 
     $('th.sort').off("click");
@@ -15,6 +14,7 @@ $(document).ready(()=>{
         }
 
         $('#listadoExamenesCuentas').DataTable().clear().destroy();
+        //$('#listadoExamenesCuentas').DataTable().clear().draw();
 
         var table = new DataTable("#listadoExamenesCuentas", {
 
@@ -38,6 +38,7 @@ $(document).ready(()=>{
                     d.empresa = $('#empresa').val();
                     d.paciente = $('#paciente').val();
                     d.examen = $('#examen').val();
+                    d.estado = $('#estado').val();
                 }
             },
             dataType: 'json',
@@ -146,24 +147,28 @@ $(document).ready(()=>{
                 info: "Mostrando _START_ a _END_ de _TOTAL_ de facturas",
             },
         });
-
-        $('#listadoExamenesCuentas tbody').on('click', 'td.details-control', function(){
+        
+        $('#listadoExamenesCuentas tbody').off('click', 'td.details-control').on('click', 'td.details-control', function(){
             var tr = $(this).closest('tr');
-            var row = table.row( tr );
-    
+            var row = table.row(tr);
+        
             if(row.child.isShown()){
                 // This row is already open - close it
                 row.child.hide();
                 tr.removeClass('shown');
             } else {
                 // Open this row
-                row.child(format(row.data())).show();
-                tr.addClass('shown');
+                format(row.data()).then(function(div){
+                    row.child(div).show();
+                    tr.addClass('shown');
+                }).catch(function(error){
+                    console.error('Error al cargar detalles:', error);
+                });
             }
         });
-    
+
         // Handle click on "Expand All" button
-        $('#btn-show-all-children').on('click', function(){
+        $(document).on('click', '#btn-show-all-children', function(){
             // Enumerate all rows
             table.rows().every(function(){
                 // If row has details collapsed
@@ -176,7 +181,7 @@ $(document).ready(()=>{
         });
     
         // Handle click on "Collapse All" button
-        $('#btn-hide-all-children').on('click', function(){
+        $(document).on('click', '#btn-hide-all-children', function(){
             // Enumerate all rows
             table.rows().every(function(){
                 // If row has details expanded
@@ -188,23 +193,55 @@ $(document).ready(()=>{
             });
         });
 
-        function format ( d ) {
-            // `d` is the original data object for the row
-            return '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">'+
-                '<tr>'+
-                    '<td>Pagado:</td>'+
-                    '<td>' + d.Pagado + '</td>'+
-                '</tr>'+
-                '<tr>'+
-                    '<td></td>'+
-                    '<td></td>'+
-                '</tr>'+
-                '<tr>'+
-                    '<td></td>'+
-                    '<td></td>'+
-                '</tr>'+
-            '</table>';
+        function format(rowData) {
+            return new Promise((resolve, reject) => {
+                var div = `<div class="table-responsive table-card mt-3 mb-1 mx-auto">
+                                <table id="detalles" class="display table table-bordered mx-auto" style="width:70%">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Examen</th>
+                                            <th>Prestación</th>
+                                            <th>Paciente</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="list form-check-all">`;
+                preloader('on');
+                $.get(detallesExamenes, {Id: (rowData.IdEx === '' || rowData.IdEx === undefined ? 0 : rowData.IdEx)})
+                    .done(async function(response){
+                        let data = await response.result;
+                        preloader('off');
+                        $.each(data, function(index, d){
+                           let nombreCompleto =  d.ApellidoPaciente + ' ' + d.NombrePaciente;
+
+                            div += `<tr>
+                                        <td>${d.NombreExamen === undefined ? '-' : d.NombreExamen}</td>
+                                        <td>${d.IdPrestacion === undefined || d.IdPrestacion === 0 ? '-' : d.IdPrestacion}</td>
+                                        <td>${nombreCompleto}</td>
+                                    </tr>`;
+                        });
+                        div += `</tbody>
+                                </table>
+                            </div>`;
+
+                       
+
+                        resolve(div);
+                    })
+                    .fail(function(error){
+                        preloader('off');
+                        reject(error);
+                    });
+
+                $("#detalles").fancyTable({
+                    pagination: true,
+                    perPage: 5,
+                    searchable: false,
+                    globalSearch: false,
+                    sortable: false, 
+                });
+            });
         }
+
 
         function fechaNow(fechaAformatear, divider, format) {
             let dia, mes, anio; 
@@ -223,6 +260,13 @@ $(document).ready(()=>{
             }
         
             return (format === '0') ? `${dia}${divider}${mes}${divider}${anio}` : `${anio}${divider}${mes}${divider}${dia}`;
+        }
+
+        function preloader(opcion) {
+            $('#preloader').css({
+                opacity: '0.3',
+                visibility: opcion === 'on' ? 'visible' : 'hidden'
+            });
         }
 
     });
