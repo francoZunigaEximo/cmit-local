@@ -227,10 +227,10 @@ class MapasController extends Controller
             'Fecha' => $request->Fecha ?? '0000-00-00',
             'FechaE' => $request->FechaE ?? '0000-00-00',
             'Estado' => $request->Estado,
-            'Cpacientes' => $request->Cpacientes,
-            'Cmapeados' => $request->Cpacientes,
+            'Cpacientes' => $request->Cpacientes ?? 0,
+            'Cmapeados' => $request->Cpacientes ?? 0,
             'Inactivo' => $request->Estado ?? 0,
-            'Obs' => $request->Obs,
+            'Obs' => $request->Obs ?? '',
             'eEnviado' => 0,
         ]);
 

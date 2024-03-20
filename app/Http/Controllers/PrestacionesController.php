@@ -410,13 +410,13 @@ class PrestacionesController extends Controller
 
     public function updatePrestacion(Request $request)
     {
-   
+
         $prestacion = Prestacion::find($request->Id);
         $prestacion->IdEmpresa = $request->Empresa ?? 0;
         $prestacion->IdART = $request->Art ?? 0;
         $prestacion->Fecha = $request->Fecha ?? '';
         $prestacion->TipoPrestacion = $request->TipoPrestacion ?? '';
-        $prestacion->IdMapa = $request->Mapas ?? 0;
+        $prestacion->IdMapa = ($request->Art === null || $request->Art === 0 ? 0 : $request->Mapas ?? 0);
         $prestacion->Pago = $request->Pago ?? '';
         $prestacion->SPago = $request->SPago ?? '';
         $prestacion->Financiador = ($request->TipoPrestacion == 'ART' ? $request->Art : $request->Empresa) ?? 0;
