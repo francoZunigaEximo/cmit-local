@@ -65,4 +65,9 @@ class Examen extends Model
     {
         return $this->hasOne(Reporte::class, 'Id', 'IdReporte');
     }
+
+    public function examenCuenta()
+    {
+        return $this->belongToMany(ExamenCuenta::class, 'pagoacuenta_it', 'IdExamen', 'IdPago');
+    }
 }

@@ -26,4 +26,19 @@ class ExamenCuenta extends Model
     ];
 
     public $timestamps = false;
+
+    public function empresa()
+    {
+        return $this->hasMany(Cliente::class, 'Id', 'IdEmpresa');
+    }
+
+    public function prestacion()
+    {
+        return $this->belongsToMany(Prestacion::class, 'pagosacuenta_it', 'IdPago', 'IdPrestacion');
+    }
+
+    public function examen()
+    {
+        return $this->belongsToMany(Examen::class, 'pagosacuenta_it', 'IdPago', 'IdExamen');
+    }
 }

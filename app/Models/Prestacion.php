@@ -97,4 +97,9 @@ class Prestacion extends Model
     {
         return $this->belongsToMany(Constanciase::class, 'constanciase_it', 'IdP', 'IdC');
     }
+
+    public function examenCuenta()
+    {
+        return $this->belongToMany(ExamenCuenta::class, 'pagoacuenta_it', 'IdPrestacion', 'IdPago');
+    }
 }

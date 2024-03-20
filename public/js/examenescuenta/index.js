@@ -1,14 +1,16 @@
 $(document).ready(()=> {
 
+    const tabla = "#listadoExamenesCuentas";
+
     toastr.options = {
         closeButton: true,   
         progressBar: true,    
         timeOut: 3000,        
     };
 
-    $('#fechaHasta').val(fechaNow(null, "-", 0));
+    $('#fechaHasta, #FechaCreate').val(fechaNow(null, "-", 0));
 
-    $('#empresa').each(function() {
+    $('#empresa, #empresaSaldo, #empresaPago, #empresaCreate').each(function() {
         $(this).select2({
             language: {
                 noResults: function() {
@@ -45,7 +47,7 @@ $(document).ready(()=> {
         });
     });
 
-    $('#examen').each(function(){
+    $('#examen, #examenSaldo').each(function(){
         $(this).select2({
             language: {
                 noResults: function() {
@@ -96,7 +98,7 @@ $(document).ready(()=> {
                     return "Por favor, ingrese 2 o más caracteres";
                 }
             },
-            placeholder: 'Nombre y/o apellido del paciente',
+            placeholder: 'Apellido y/o nombre del paciente',
             allowClear: true,
             ajax: {
                 url: getPacientes, 
@@ -123,7 +125,7 @@ $(document).ready(()=> {
             placeholder: "X-0000-00000000",
             clearMaskOnLostFocus: true,
             onBeforePaste: function (pastedValue, opts) {
-                // Capitalizar la primera letra
+                
                 return pastedValue.charAt(0).toUpperCase() + pastedValue.slice(1);
             },
             definitions: {
@@ -136,8 +138,34 @@ $(document).ready(()=> {
         }
     });
     
-    $("#rangoDesde, #rangoHasta").inputmask('rango');
+    $("#rangoDesde, #rangoHasta, #FacturaCreate").inputmask('rango');
     
+    $(document).on('click', '.cambiarBoton', function(e) {
+        
+        e.preventDefault();
+        let id = $(this).data('id');
+
+        if(confirm('¿Está seguro que desea realizar la operación?')){
+
+            preloader('on');
+            $.post(cambiarPago, {Id: id, _token: TOKEN})
+                .done(function(response){
+
+                    preloader('off');
+                    let tipoToastr = response.estado == 'success' ? ['success', 'Perfecto'] : ['info', 'Atención'];
+
+                    toastr[tipoToastr[0]](response.message, [tipoToastr[1]], { timeOut: 10000 })
+                    let table = $(tabla).DataTable();
+                    table.draw(false);
+                })
+                .fail(function(xhr){
+
+                    preloader('off');
+                    toastr.error('Ha ocurrido un error. Consulte con el administrador', 'Error');
+                })
+        }
+        
+    })
 
     function fechaNow(fechaAformatear, divider, format) {
         let dia, mes, anio; 
@@ -158,4 +186,11 @@ $(document).ready(()=> {
         return (format === 1) ? `${dia}${divider}${mes}${divider}${anio}` : `${anio}${divider}${mes}${divider}${dia}`;
     }
 
+    function preloader(opcion) {
+        $('#preloader').css({
+            opacity: '0.3',
+            visibility: opcion === 'on' ? 'visible' : 'hidden'
+        });
+    }
+    
 });
