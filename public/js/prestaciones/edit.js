@@ -1,12 +1,27 @@
 $(document).ready(()=> {
 
-    let fecha = $('#FechaVto').val(), opcion = $('#pago').val(), opcionPago = $('#SPago').val(), empresa = $('#empresa').val(),art = $('#art').val();
-
+    let fecha = $('#FechaVto').val(), opcion = $('#pago').val(), opcionPago = $('#SPago').val();
+    var empresa = $('#empresa').val(), art = $('#art').val();
+    console.log("valor inicial art: " + art)
     toastr.options = {
         closeButton: true,   
         progressBar: true,     
         timeOut: 3000,        
     };
+
+    precargaMapa();
+    
+    $('#empresa').on('select2:select', function (e) {
+        var data = e.params.data;
+        empresa = data.id;
+        actualizarMapa();
+    });
+    
+    $('#art').on('select2:select', function (e) {
+        var data = e.params.data;
+        art = data.id;
+        actualizarMapa();
+    });
     
     quitarDuplicados("#tipoPrestacion");
     quitarDuplicados("#pago");
@@ -18,15 +33,19 @@ $(document).ready(()=> {
     quitarDuplicados("#Financiador");
     quitarDuplicados("#mapas");
 
-    precargaMapa();
+    
     cargarFinanciador($("#tipoPrestacion").val());
     cambiosVencimiento(fecha);
     selectMedioPago(opcion);
-    getMap(empresa, art);
+    //getMap(empresa, art);
     getFact();
     checkBloq();
     comentariosPrivados();
     cargarAutorizados();
+
+    $(document).on('change', '#empresa, #art', function() {
+        precargaMapa();
+    });
 
     //Hack de carga
     $(document).ready(function(){
@@ -97,11 +116,16 @@ $(document).ready(()=> {
             return;
         }
 
-        if (tipoPrestacion === 'ART' && (mapas === '' || mapas === 0)) {
+        if (tipoPrestacion === 'ART' && (mapas === '' || mapas == '0')) {
             toastr.warning("Debe seleccionar un mapa si la prestación es ART");
             return;
         }
 
+        if ((art === 0 || art === null) && tipoPrestacion === 'ART') {
+            toastr.warning("Debe seleccionar un cliente ART si el tipo de prestación es ART");
+            return;
+        }
+        preloader('on');
         $.ajax({
             url: updatePrestacion,
             type: 'Post',
@@ -129,12 +153,14 @@ $(document).ready(()=> {
                 _token: TOKEN
             },
             success: function(){
+                preloader('off');
                 toastr.success("La prestación se ha actualizado correctamente. Se recargaran los datos.", "Actualización realizada");
                 setTimeout(function(){
                     location.reload();
                 }, 3000);  
             },
             error: function(xhr){
+                preloader('off');
                 console.error(xhr);
             }
         });
@@ -469,9 +495,11 @@ $(document).ready(()=> {
 
  
     function precargaMapa(){
-        let val = $('#TipoPrestacion').val();
-        if(val === 'ART'){
-
+        
+        let val = $('#TipoPrestacion').val(), val2 = $('#art').val();
+        if(val === 'ART' && (val2 !== '' && val2 != '0' && val2 !== null)){
+            console.log("Val: " + val);
+            console.log("Val2: " + val2);
             $('.mapas').show();
         }else{
             $('.mapas').hide();
@@ -556,6 +584,8 @@ $(document).ready(()=> {
     }
 
     function getMap(empresaIn, artIn){
+
+        $('#mapas').empty();
 
         $.get(getMapas, {empresa: empresaIn, art: artIn})
             .done(function(response){
@@ -689,5 +719,16 @@ $(document).ready(()=> {
         });
     }
 
+    function preloader(arg) {
+        $(arg).css({
+            opacity: '0.3',
+            visibility: arg === 'on' ? 'visible' : 'hidden'
+        });
+    }
+
+    function actualizarMapa() {
+        getMap(empresa, art);
+    }
     
+
 });
