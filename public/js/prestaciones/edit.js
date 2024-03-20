@@ -97,7 +97,7 @@ $(document).ready(()=> {
             return;
         }
 
-        if (tipoPrestacion === 'ART' && mapa === '') {
+        if (tipoPrestacion === 'ART' && mapas === '') {
             toastr.warning("Debe seleccionar un mapa si la prestación es ART");
             return;
         }
