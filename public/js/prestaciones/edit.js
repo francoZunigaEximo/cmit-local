@@ -126,7 +126,7 @@ $(document).ready(()=> {
             return;
         }
 
-        if ((art !== 0 || art !== null) && tipoPrestacion === 'ART' && (mapas === '' || mapas == '0')) {
+        if ((art !== 0 || art !== null) && tipoPrestacion === 'ART' && (mapas === '' || mapas == '0' || mapas === null)) {
             toastr.warning("Debe seleccionar un mapa vigente si la prestación es ART y tiene un cliente ART cargado");
             return;
         }
