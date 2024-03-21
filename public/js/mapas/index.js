@@ -64,7 +64,7 @@ $(document).ready(()=>{
                 });
             }
         } else {
-            toastr.warning('Error', 'Debes seleccionar al menos un mapa para exportar.');
+            toastr.warning('Debes seleccionar al menos un mapa para exportar.', 'Alerta');
         }
     });
 
