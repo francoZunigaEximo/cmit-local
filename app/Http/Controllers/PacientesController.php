@@ -223,9 +223,9 @@ class PacientesController extends Controller
         $paciente = Paciente::find($request->Id);
 
         if($paciente){
-
-            $paciente->update(['Estado', '0']);
-
+            
+            $paciente->Estado = 0;
+            $paciente->save();
         } 
     }
 
