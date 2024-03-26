@@ -165,7 +165,73 @@ $(document).ready(()=> {
                 })
         }
         
-    })
+    });
+
+    $(document).on('click', '.deleteExamen', function(e){
+        e.preventDefault();
+
+        let id = $(this).data('id');
+        
+        if (confirm("¿Estas seguro que deseas eliminar el examen a cuenta?")) {
+            preloader('on');
+            $.post(eliminarExCuenta, {Id: id, _token: TOKEN})
+                .done(function(response){
+
+                    preloader('off');
+                    let tipoToastr = response.estado == 'success' ? ['success', 'Perfecto'] : ['info', 'Atención'];
+
+                    toastr[tipoToastr[0]](response.message, [tipoToastr[1]], { timeOut: 10000 })
+                    let table = $(tabla).DataTable();
+                    table.draw(false);
+
+                })
+        }
+    });
+
+    $('#checkAll').on('click', function() {
+        $('input[type="checkbox"][name="Id"]:not(#checkAll)').prop('checked', this.checked);
+    });
+
+    $(document).on('click', '.botonPagar, .quitarPago', function(e){
+        e.preventDefault();
+
+        let ids = [];
+        $('input[name="Id"]:checked').each(function() {
+            ids.push($(this).val());
+        });
+
+        if(ids.length > 0) {
+            if (confirm('¿Esta seguro que desea realizar esta operación?')) {
+
+                preloader('on');
+                $.post(cambiarPago, {Id: ids, _token: TOKEN})
+                    .done(function(response){
+
+                        preloader('off');
+                        let tipoToastr = response.estado == 'success' ? ['success', 'Perfecto'] : ['info', 'Atención'];
+
+                        toastr[tipoToastr[0]](response.message, [tipoToastr[1]], { timeOut: 10000 })
+                        let table = $(tabla).DataTable();
+                        table.draw(false);
+                    })
+                    .fail(function(xhr){
+
+                        preloader('off');
+                        toastr.error('Ha ocurrido un error. Consulte con el administrador', 'Error');
+                    })
+           }
+        
+        }else{
+            toastr.warning('Debes seleccionar al menos un item para realizar la operación.','Alerta');
+        }
+    });
+
+    $(document).on('click', '.sieteFacturas', function(e){
+        e.preventDefault();
+        /*let table = $(tabla).DataTable();
+        table.ajax.url(INDEX).page.len(7).load();*/
+        location.reload();
+    });
 
     function fechaNow(fechaAformatear, divider, format) {
         let dia, mes, anio; 
@@ -192,5 +258,5 @@ $(document).ready(()=> {
             visibility: opcion === 'on' ? 'visible' : 'hidden'
         });
     }
-    
+
 });

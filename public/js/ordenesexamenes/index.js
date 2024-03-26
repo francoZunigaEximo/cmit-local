@@ -206,7 +206,7 @@ $(document).ready(function(){
             toastr.warning('No se ha seleccionado un Profesional para asignar', 'Atención');
             return;
         }
-        debugger;
+    
         if(ids.length === 0 && checkAll === false){
             toastr.warning('No hay ningun exámen seleccionado para asignar', 'Atención');
             return;

@@ -11,11 +11,6 @@ use App\Models\Reporte;
 
 trait ObserverExamenes
 {
-    public function buscarEstudio(string $buscar): mixed
-    {
-        return PaqueteEstudio::where('Nombre', 'LIKE', '%'.$buscar.'%')->get();
-    }
-
     public function paqueteEstudio(int $id): mixed
     {
         return Relpaqest::where('IdPaquete', $id)->get();
