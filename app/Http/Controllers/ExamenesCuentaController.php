@@ -91,7 +91,6 @@ class ExamenesCuentaController extends Controller
             ->join('clientes', 'pagosacuenta.IdEmpresa', '=', 'clientes.Id')
             ->join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
             ->join('prestaciones', 'pagosacuenta_it.IdPrestacion', '=', 'prestaciones.Id')
-            ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
             ->select(
                 'clientes.RazonSocial as Empresa',
                 'examenes.Nombre as Examen'
@@ -99,17 +98,40 @@ class ExamenesCuentaController extends Controller
 
             $query->selectRaw('COUNT(CASE WHEN pagosacuenta_it.IdPrestacion = 0 THEN 1 END) AS contadorSaldos');
 
-            $query->when(!empty($request->examen), function ($query) use ($request) {
-                $query->where('examenes.Id', $request->examen);
+            $query->when(!empty($request->examen) && empty($request->empresa), function ($query) use ($request) {
+                $query->where('examenes.Id', $request->examen)
+                        ->groupBy('examenes.Id')
+                        ->groupBy('clientes.Id');
             });
 
-            $query->when(!empty($request->empresa), function ($query) use ($request) {
-                $query->where('clientes.Id', $request->empresa);
+            $query->when(!empty($request->empresa) && empty($request->examen), function ($query) use ($request) {
+                $query->where('clientes.Id', $request->empresa)
+                        ->groupBy('examenes.Nombre');
+            });
+
+            $query->when(empty($request->empresa) && empty($request->examen), function ($query) {
+                $query->groupBy('clientes.RazonSocial')
+                        ->groupBy('clientes.ParaEmpresa')
+                        ->groupBy('clientes.Identificacion')
+                        ->groupBy('examenes.Nombre');
+            });
+
+            $query->when(!empty($request->empresa) && !empty($request->examen), function ($query) use ($request){
+                $query->where('examenes.Id', $request->examen)
+                    ->where('clientes.Id', $request->empresa)
+                    ->groupBy('pagosacuenta.Id')
+                    ->groupBy('pagosacuenta.Fecha')
+                    ->groupBy('pagosacuenta.Tipo')
+                    ->groupBy('pagosacuenta.Suc')
+                    ->groupBy('pagosacuenta.Nro')
+                    ->groupBy('clientes.RazonSocial')
+                    ->groupBy('clientes.ParaEmpresa')
+                    ->groupBy('clientes.Identificacion')
+                    ->groupBy('examenes.Nombre');
             });
 
             $result = $query->havingRaw('contadorSaldos > 0')
                 ->whereNot('pagosacuenta_it.Obs', 'provisorio')
-                ->groupBy('examenes.Nombre')
                 ->orderBy('clientes.RazonSocial')
                 ->orderBy('examenes.Nombre');
 
