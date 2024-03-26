@@ -20,6 +20,9 @@ use App\Http\Controllers\NoticiasController;
 use App\Http\Controllers\PrestacionesObsFasesController;
 use App\Http\Controllers\OrdenesExamenController;
 use App\Http\Controllers\ExamenesCuentaController;
+use App\Http\Controllers\PaqueteEstudioController;
+use App\Http\Controllers\PaqueteFacturacionController;
+use App\Models\ExamenCuenta;
 //use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Route;
 
@@ -107,12 +110,10 @@ Route::group(['middleware' => 'auth'], function () {
 
     //Ruta Examenes
     Route::resource('examenes', ExamenesController::class);
-    Route::get('getPaquetes', [ExamenesController::class, 'paquetes'])->name('getPaquetes');
     Route::get('searchExamen', [ExamenesController::class, 'search'])->name('searchExamen');
     Route::post('IdExamen', [ExamenesController::class, 'getId'])->name('IdExamen');
     Route::post('deleteExamen', [ExamenesController::class, 'deleteEx'])->name('deleteExamen');
     Route::post('saveExamen',[ExamenesController::class, 'saveExamen'])->name('saveExamen');
-    Route::post('paqueteId', [ExamenesController::class, 'paqueteId'])->name('paqueteId');
     Route::get('porcentajeExamen', [ExamenesController::class, 'porcentajeExamen'])->name('porcentajeExamen');
     Route::get('searchExamenes', [ExamenesController::class, 'searchExamenes'])->name('searchExamenes');
     Route::post('updateExamen', [ExamenesController::class, 'updateExamen'])->name('updateExamen');
@@ -239,4 +240,17 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('searchExCuenta', [ExamenesCuentaController::class, 'search'])->name('searchExCuenta');
     Route::post('cambiarPago', [ExamenesCuentaController::class, 'cambiarPago'])->name('cambiarPago');
     Route::get('detallesExamenes', [ExamenesCuentaController::class, 'detalles'])->name('detallesExamenes');
+    Route::post('eliminarExCuenta', [ExamenesCuentaController::class, 'delete'])->name('eliminarExCuenta');
+    Route::get('searchSaldo', [ExamenesCuentaController::class, 'saldo'])->name('searchSaldo');
+    Route::post('saveExamenCuenta', [ExamenesCuentaController::class, 'save'])->name('saveExamenCuenta');
+    Route::post('addExamen', [ExamenesCuentaController::class, 'addExamen'])->name('addExamen');
+    Route::get('listadoExCta', [ExamenesCuentaController::class, 'listado'])->name('listadoExCta');
+
+    //Rutas de Paquete de Estudio
+    Route::get('getPaquetes', [PaqueteEstudioController::class, 'paquetes'])->name('getPaquetes');
+    Route::post('paqueteId', [PaqueteEstudioController::class, 'paqueteId'])->name('paqueteId');
+
+    //RUtas de Paquete de Facturación
+    Route::get('getPaqueteFact', [PaqueteFacturacionController::class, 'paquetes'])->name('getPaqueteFact');
+    
 });

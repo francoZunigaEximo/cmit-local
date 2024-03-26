@@ -23,14 +23,7 @@
                 <i class="ri-window-line"></i>
                 Saldos
             </a>
-        </li>
-        <!-- <li class="nav-item" role="presentation">
-            <a class="nav-link" data-bs-toggle="tab" href="#pago" role="tab" aria-selected="false" tabindex="-1">
-                <i class=" ri-window-line"></i>
-                Pagos
-            </a>
-        </li> -->
-        
+        </li>        
     </ul>
 </div>
 
@@ -41,6 +34,11 @@
         <div class="tab-pane active" id="exCuenta" role="tabpanel">
             <div class="row">
                 <div class="col-lg-12">
+
+                    <div class="row">
+                        <div class="small col-sm-12 mb-2"><span class="required">(*)</span> El campo es obligatorio.</div>
+                    </div>
+
                     <div class="card">
                         <div class="card-body">
                             <div class="listjs-table" id="customerList">
@@ -48,31 +46,31 @@
             
                                     <form id="form-index">
                                         <div class="col-12 p-4 border border-1 border-color" style="border-color: #666666;">
-                                            
+
                                             <div class="row">
             
                                                 <div class="col-sm-2 mb-3">
-                                                    <label for="fechaDesde" class="form-label font-weight-bold"><strong>Fecha desde: <span class="required">(*)</span></strong></label>
+                                                    <label for="fechaDesde" class="form-label fw-bolder">Fecha desde: <span class="required">(*)</span></label>
                                                     <input type="date" class="form-control" id="fechaDesde" name="fechaDesde">
                                                 </div>
             
                                                 <div class="col-sm-2 mb-3">
-                                                    <label for="fechaDesde" class="form-label font-weight-bold"><strong>Fecha hasta: <span class="required">(*)</span></strong></label>
+                                                    <label for="fechaDesde" class="form-label fw-bolder">Fecha hasta: <span class="required">(*)</span></label>
                                                     <input type="date" class="form-control" id="fechaHasta" name="fechaHasta">
                                                 </div>
             
                                                 <div class="col-sm-2 mb-3">
-                                                    <label for="rangoDesde" class="form-label font-weight-bold"><strong>Factura Desde o Individual: </strong></label>
+                                                    <label for="rangoDesde" class="form-label fw-bolder">Factura Desde o Individual: </label>
                                                     <input type="text" class="form-control" id="rangoDesde" name="rangoDesde">
                                                 </div>
             
                                                 <div class="col-sm-2 mb-3">
-                                                    <label for="rangoDesde" class="form-label font-weight-bold"><strong>Factura Hasta: </strong></label>
+                                                    <label for="rangoDesde" class="form-label fw-bolder">Factura Hasta: </label>
                                                     <input type="text" class="form-control" id="rangoHasta" name="rangoHasta">
                                                 </div>
 
                                                 <div class="col-sm-2 mb-3">
-                                                    <label for="empresa" class="form-label font-weight-bold"><strong>Empresa:</strong></label>
+                                                    <label for="empresa" class="form-label fw-bolder">Empresa:</label>
                                                     <select class="form-control" name="empresa" id="empresa"></select>
                                                 </div>
 
@@ -94,6 +92,7 @@
                                                     <label for="estado" class="form-label fw-bolder">Estado: </label>
                                                     <select class="form-control" name="estado" id="estado">
                                                         <option value="" selected>Elija una opción...</option>
+                                                        <option value="">Impagos</option>
                                                         <option value="pago">Pagos</option>
                                                         <option value="todos">Todos</option>
                                                     </select>
@@ -109,13 +108,26 @@
                                             </div>
                                         
                                         </div>
-                                    </form>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-8 text-start">
+                                        <span class="fw-normal">Busquedas rápidas:</span>
+                                        <button type="button" class="btn btn-sm botonGeneral sieteFacturas"><i class="ri-calendar-2-line"></i>&nbsp;Ultimas 7 facturas</button>
+                                        <button type="button" class="btn btn-sm botonGeneral sieteDias"><i class="ri-calendar-2-line"></i>&nbsp;Ultimos 7 días</button>
+                                        <button type="button" class="btn btn-sm botonGeneral tresMeses"><i class="ri-calendar-2-line"></i>&nbsp;Ultimos 3 meses</button>
+                                    </div>
+                                    <div class="col-4 text-end">
+                                        <button type="button" class="btn btn-sm botonGeneral botonPagar"><i class=" ri-money-dollar-circle-line"></i>&nbsp;Pagar masivo</button>
+                                        <button type="button" class="btn btn-sm botonGeneral quitarPago"><i class=" ri-money-dollar-circle-line"></i>&nbsp;Quitar pago masivo</button>
+                                    </div>
                                 </div>
 
                                 <div class="table-responsive table-card mt-3 mb-1 mx-auto">
-                                    <table id="listadoExamenesCuentas" class="display table table-bordered" style="width:100%">
+                                    <table id="listadoExamenesCuentas" class="display table table-bordered">
                                         <thead class="table-light">
                                             <tr>
+                                                <th><input type="checkbox" id="checkAll" name="Id"></th>
                                                 <th class="sort">Número</th>
                                                 <th class="sort">Factura</th>
                                                 <th class="sort">Fecha</th>
@@ -130,6 +142,7 @@
             
                                         </tbody>
                                     </table>
+                                </form>
                                 </div>           
                             </div>
                         </div>
@@ -147,12 +160,12 @@
                         
                         <div class="row justify-content-center">
                             <div class="col-sm-2 mb-3">
-                                <label for="empresaSaldo" class="form-label font-weight-bold"><strong>Empresa:</strong></label>
+                                <label for="empresaSaldo" class="form-label font-weight-bold"><strong>Empresa: </strong></label>
                                 <select class="form-control" name="empresaSaldo" id="empresaSaldo"></select>
                             </div>
 
                             <div class="col-sm-2 mb-3">
-                                <label for="examenSaldo" class="form-label font-weight-bold"><strong>Examen:</strong></label>
+                                <label for="examenSaldo" class="form-label font-weight-bold"><strong>Examen: </strong></label>
                                 <select class="form-control" name="examenSaldo" id="examenSaldo"></select>
                             </div>
 
@@ -166,10 +179,10 @@
                 </form>  
             </div> 
 
-            <div class="row">
+            <div class="row auto-mx">
 
-                <div class="table-responsive table-card mt-3 mb-1 mx-auto">
-                    <table id="listadoExamenesCuentas" class="display table table-bordered" style="width:100%">
+                <div class="table-responsive table-card mt-3 mb-1 mx-auto col-sm-7">
+                    <table id="listadoExCtasSaldos" class="display table table-bordered">
                         <thead class="table-light">
                             <tr>
                                 <th class="sort">Empresa</th>
@@ -185,73 +198,6 @@
                 </div>
             </div>
         </div>
-
-       <!-- <div class="tab-pane" id="pago" role="tabpanel">
-
-            <div class="row justify-content-md-center">
-                <form id="form-index">
-                    <div class="col p-2 border border-1 border-color" style="border-color: #666666;">
-                        <div class="row justify-content-center">
-
-                            <div class="col-sm-2 mb-3">
-                                <label for="fechaDesdePago" class="form-label font-weight-bold"><strong>Fecha desde: <span class="required">(*)</span></strong></label>
-                                <input type="date" class="form-control" id="fechaDesdePago" name="fechaDesdePago">
-                            </div>
-
-                            <div class="col-sm-2 mb-3">
-                                <label for="fechaDesdePago" class="form-label font-weight-bold"><strong>Fecha hasta: <span class="required">(*)</span></strong></label>
-                                <input type="date" class="form-control" id="fechaHastaPago" name="fechaHastaPago">
-                            </div>
-
-                            <div class="col-sm-2 mb-3">
-                                <label for="estadoPago" class="form-label"><strong>Estado: <span class="required">(*)</span></strong></label>
-                                <select class="form-control" name="estadoPago" id="estadoPago">
-                                    <option value="" selected>Elija una opción...</option>
-                                    <option value="pago">Pago</option>
-                                    <option value="impago">Impago</option>
-                                    <option value="todos">Todos</option>
-                                </select>
-                            </div>
-
-                            <div class="col-sm-2 mb-3">
-                                <label for="empresaPago" class="form-label font-weight-bold">Empresa:</label>
-                                <select class="form-control" name="empresaPago" id="empresaPago"></select>
-                            </div>
-
-                            <div class="col-sm-2 mb-3 d-flex align-items-end">
-                                <label class="form-label" for="buscarPago"></label>
-                                <button type="button" class="btn btn-sm botonGeneral" id="buscarPago"><i class="ri-zoom-in-line"></i>&nbsp;Buscar</i></button>
-                            </div>
-
-                        </div> 
-                    </div>
-                </form>
-            </div>
-
-            <div class="row">
-
-                <div class="table-responsive table-card mt-3 mb-1 mx-auto">
-                    <table id="listadoExamenesCuentas" class="display table table-bordered" style="width:100%">
-                        <thead class="table-light">
-                            <tr>
-                                <th class="sort">Número</th>
-                                <th class="sort">Factura</th>
-                                <th class="sort">Fecha</th>
-                                <th class="sort">Empresa</th>
-                                <th class="sort">Para Empresa</th>
-                                <th class="sort">Pagado</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody class="list form-check-all">
-
-                        </tbody>
-                    </table>
-                </div>
-
-            </div>
-
-        </div> -->
     </div>
 </div>
 
@@ -263,8 +209,11 @@
     const getPacientes = "{{ route('getPacientes') }}";
     const TOKEN = "{{ @csrf_token() }}";
     const SEARCH = "{{ route('searchExCuenta') }}";
+    const INDEX = "{{ route('examenesCuenta.index') }}";
+    const SALDOS = "{{ route('searchSaldo') }}";
     const cambiarPago = "{{ route('cambiarPago') }}";
     const detallesExamenes = "{{ route('detallesExamenes') }}";
+    const eliminarExCuenta = "{{ route('eliminarExCuenta') }}";
 </script>
 
 @push('styles')
@@ -284,6 +233,7 @@
 
 <script src="{{ asset('js/examenescuenta/index.js')}}?=v{{ time() }}"></script>
 <script src="{{ asset('js/examenescuenta/paginacion.js')}}?=v{{ time() }}"></script>
+<script src="{{ asset('js/examenescuenta/paginacionSaldos.js')}}?=v{{ time() }}"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/i18n/es.js"></script>

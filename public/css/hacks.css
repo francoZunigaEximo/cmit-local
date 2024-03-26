@@ -411,6 +411,8 @@ body .selectArt2 .select2.select2-container {
 #listaOrdenesEfectoresAdj th, td,
 #listaOrdenesInformadoresAdj th, td,
 #listadoExamenesCuentas th, td,
+#listadoExCtasSaldos th, td,
+#listadoSaldos th, td,
 #listaPrestaciones th, td { white-space: nowrap !important; }
 
 #listaClientes tr,
@@ -428,6 +430,8 @@ body .selectArt2 .select2.select2-container {
 #listaOrdenesInformadoresAdj tr,
 #listadoExamenesCuentas tr,
 #destalles tr,
+#listadoExCtasSaldos tr,
+#listadoSaldos tr,
 #listaPrestaciones tr { height: 25px !important;}
 
 #listaClientes tbody tr td,
@@ -444,6 +448,8 @@ body .selectArt2 .select2.select2-container {
 #listaOrdenesInformadoresAdj tbody tr td,
 #listadoExamenesCuentas tbody tr td,
 #detalles tbody tr td,
+#listadoExCtasSaldos tbody tr td,
+#listadoSaldos tbody tr td,
 #listaPrestaciones tbody tr td { padding: 5px 8px 2px 8px };
 
 table.dataTable tr.dtrg-level-0 td {
@@ -472,6 +478,7 @@ table.dataTable tr.dtrg-level-0 td {
 #cerrarMapa > :not(caption) > *,
 #listaOrdenesEfectoresAdj > :not(caption) > *,
 #listadoExamenesCuentas > :not(caption) > *,
+#listadoExCtasSaldos > :not(caption) > *,
 #finalizarMapa > :not(caption) > * {
     padding: 0.25rem 0.6rem;
 }

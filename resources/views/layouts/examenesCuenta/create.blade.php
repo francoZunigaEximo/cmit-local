@@ -10,6 +10,10 @@
     <div class="page-title-right"></div>
 </div>
 
+<div class="row">
+    <div class="small col-sm-12 mb-2"><span class="required">(*)</span> El campo es obligatorio.</div>
+</div>
+
 <div class="row justify-content-md-center">
     <form id="form-index">
         <div class="col p-2 border border-1 border-color" style="border-color: #666666;">
@@ -21,24 +25,20 @@
                 </div>
 
                 <div class="col-sm-2 mb-3">
-                    <label for="empresaCreate" class="form-label fw-bolder">Empresa: </label>
+                    <label for="empresaCreate" class="form-label fw-bolder">Empresa: <span class="required">(*)</span></label>
                     <select class="form-control" name="empresaCreate" id="empresaCreate"></select>
                 </div>
-            </div>
 
-            <div class="row justify-content-center">
                 <div class="col-sm-2 mb-3">
-                    <label for="FechaCreate" class="form-label fw-bolder">Fecha: </label>
+                    <label for="FechaCreate" class="form-label fw-bolder">Fecha: <span class="required">(*)</span></label>
                     <input type="date" id="FechaCreate" name="FechaCreate" class="form-control">
                 </div>
 
                 <div class="col-sm-2 mb-3">
-                    <label for="FacturaCreate" class="form-label fw-bolder">Nro. Factura: </label>
+                    <label for="FacturaCreate" class="form-label fw-bolder">Nro. Factura: <span class="required">(*)</span></label>
                     <input type="text" id="FacturaCreate" name="FacturaCreate" class="form-control">
                 </div>
-            </div>
 
-            <div class="row justify-content-center">
                 <div class="col-sm-2 mb-3">
                     <label for="FechaPago" class="form-label fw-bolder">Fecha Pago: </label>
                     <input type="date" id="FechaPago" name="FechaPago" class="form-control">
@@ -52,7 +52,7 @@
 
             <div class="row justify-content-center">
                 <div class="col-sm-4 mb-3 text-center">
-                    <button type="button" class="btn btn-sm botonGeneral crearPagoCuenta">Guardar</button>
+                    <button type="button" class="btn btn-sm botonGeneral crearPagoCuenta">Generar</button>
                     <button type="button" class="btn btn-sm botonGeneral volverPagoCuenta">Volver</button>
                 </div>
             </div>
@@ -60,72 +60,10 @@
     </form>  
 </div> 
 
-<div class="row">
-    <div class="col-12 p-4 mt-3 border border-1 border-color" style="border-color: #666666;">
-        <div class="row">
-
-            <div class="col-sm-3 mb-3 text-center">
-                <label for="dniCrear" class="form-label fw-bolder">DNI Paciente</label>
-                <input type="number" max="8" id="dniCrear" name="dniCrear">
-            </div>
-
-            <div class="col-sm-3 mb-3 text-center">
-                <label for="cantidadCrear" class="form-label fw-bolder">Cantidad</label>
-                <input type="number" max="5" id="cantidadCrear" name="cantidadCrear">
-            </div>
-
-            <div class="col-sm-3 mb-3">
-                <div class="row">
-                    <div class="col text-end">
-                        <label for="examenCrear" class="form-label fw-bolder">Examen:</label>
-                        <input type="number" max="5" id="examenCrear" name="examenCrear">
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col text-end">
-                        <label for="paqueteCrear" class="form-label fw-bolder">Paquete</label>
-                        <input type="number" max="5" id="paqueteCrear" name="paqueteCrear">
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col text-end">
-                        <label for="facturacionCrear" class="form-label fw-bolder">Paq de Facturación</label>
-                        <input type="number" max="5" id="facturacionCrear" name="facturacionCrear">
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="col-sm-3 mb-3 text-center">
-                <button type="button" class="btn btn-sm botonGeneral confirmarCrear">Confirmar</button>
-            </div>
-
-        </div>
-    </div>
-</div>
-
-<div class="row">
-    <div class="table-responsive table-card mt-3 mb-1 mx-auto">
-        <table id="listadoExamenesCuentas" class="display table table-bordered" style="width:100%">
-            <thead class="table-light">
-                <tr>
-                    <th class="sort">Empresa</th>
-                    <th class="sort">Examen</th>
-                    <th>Saldo</th>
-                </tr>
-            </thead>
-            <tbody class="list form-check-all">
-
-            </tbody>
-        </table>
-
-    </div>
-</div>
-
 <script>
     const getClientes = "{{ route('getClientes') }}";
+    const saveExamenCuenta = "{{ route('saveExamenCuenta') }}";
+    const TOKEN = "{{ csrf_token() }}";
 </script>
 
 @push('styles')
@@ -139,7 +77,7 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/inputmask/dist/jquery.inputmask.min.js"></script>
 <script src="{{ asset('js/examenescuenta/index.js')}}?=v{{ time() }}"></script>
-<script src="{{ asset('js/examenescuenta/pagos.js')}}?=v{{ time() }}"></script>
+<script src="{{ asset('js/examenescuenta/create.js')}}?=v{{ time() }}"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/i18n/es.js"></script>
