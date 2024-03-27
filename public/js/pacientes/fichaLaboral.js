@@ -162,9 +162,9 @@ $(document).ready(function () {
     
     $('#selectClientes').on('select2:select', function (e) {
         if (!confirm('¿Está seguro que desea seleccionar esta empresa para el paciente?')) {
-            e.preventDefault();
+            $(this).val(null).trigger('change.select2');
+            e.stopPropagation();
         }
-        
     });
 
     //Alerta - verificacion de clientes bloqueados
