@@ -43,14 +43,25 @@
             </a>
         </li>
         <li class="nav-item" role="presentation">
-            <a class="nav-link text-info" data-bs-toggle="tab" href="#paraEmpresa" role="tab" title="Ver otras empresas asociadas" aria-selected="false" tabindex="-1">
+            <a class="nav-link" data-bs-toggle="tab" href="#paraEmpresa" role="tab" title="Ver otras empresas asociadas" aria-selected="false" tabindex="-1">
                 <i class="las la-building"></i>
                 Para Empresas
             </a>
         </li>
-    </ul>
 
-    <button type="button" id="clonar" class="btn botonGeneral"><i class="ri-file-copy-2-line"></i> Clonar</button>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link text-info" data-bs-toggle="tab" href="#examenCuenta" role="tab" title="Examenes a cuenta del cliente" aria-selected="false" tabindex="-1">
+                <i class="ri-list-unordered"></i>
+                Examenes a cuenta
+            </a>
+        </li>
+    </ul>
+    <div class="row">
+        <div class="col-sm-12 text-end">
+            <button type="button" class="btn botonGeneral" id="clonar"><i class="ri-file-copy-2-line"></i> Clonar</button>
+        </div>
+    </div>
+    
 </div>
 <div class="card-body p-4">
     <div class="tab-content">
@@ -492,6 +503,24 @@
                 <button type="button" class="btn botonGeneral" id="btnObservaciones" >Guardar</button>
             </div>
         </div>
+
+        <div class="tab-pane" id="examenCuenta" role="tabpanel">
+            <div class="row">
+                <div class="col-sm-12 text-end">
+                    <button type="button" class="btn btn-sm botonGeneral"><i class="ri-add-line"></i> Alta Ex. a Cta</button>
+                </div>
+            </div>
+
+            <div class="row mx-auto">
+                <div class="table-responsive table-card mt-3 mb-1 mx-auto col-sm-8">
+                    <table id="lstFactCliente" class="display table table-bordered">
+                        <tbody class="list form-check-all" id="lstFact">
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
         
     </div>
 </div>
@@ -564,6 +593,9 @@ const deleteTelefono = "{{ route('deleteTelefono') }}";
 const saveTelefono = "{{ route('saveTelefono') }}";
 const block = "{{ route('clientes.block') }}";
 const getBloqueo = "{{ route('getBloqueo') }}";
+const lstClientes = "{{ route('lstClientes') }}";
+const listadoDni = "{{ route('listadoDni') }}";
+const listadoEx = "{{ route('listadoEx') }}";
 
 </script>
 

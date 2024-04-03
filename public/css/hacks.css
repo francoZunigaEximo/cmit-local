@@ -98,11 +98,6 @@ i, .cerrar, .finalizar, .entregar, .eEnviar {
 	cursor: pointer;
 }
 
-#clonar {
-	margin-bottom: 10px;
-}
-
-
 .optionsExamenes {
 	border: #c8d1db 1px solid;
 	padding: 1em;
@@ -237,6 +232,10 @@ label {
 
 .fondo-grisClaro {
 	background-color: #eee;
+}
+
+.fondo-gris {
+	background-color: #b3a7a7;
 }
 
 .rojo {
@@ -413,6 +412,7 @@ body .selectArt2 .select2.select2-container {
 #listadoExamenesCuentas th, td,
 #listadoExCtasSaldos th, td,
 #listadoSaldos th, td,
+#lstFactCliente th, td,
 #listaPrestaciones th, td { white-space: nowrap !important; }
 
 #listaClientes tr,
@@ -432,6 +432,7 @@ body .selectArt2 .select2.select2-container {
 #destalles tr,
 #listadoExCtasSaldos tr,
 #listadoSaldos tr,
+#lstFactCliente tr,
 #listaPrestaciones tr { height: 25px !important;}
 
 #listaClientes tbody tr td,
@@ -450,6 +451,7 @@ body .selectArt2 .select2.select2-container {
 #detalles tbody tr td,
 #listadoExCtasSaldos tbody tr td,
 #listadoSaldos tbody tr td,
+#lstFactCliente tbody tr td,
 #listaPrestaciones tbody tr td { padding: 5px 8px 2px 8px };
 
 table.dataTable tr.dtrg-level-0 td {
@@ -555,4 +557,8 @@ td.details-control {
 tr.shown td.details-control {
     background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1em' height='1em' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='m12 10.587l4.95-4.95l1.414 1.414l-4.95 4.95l4.95 4.95l-1.415 1.414l-4.95-4.95l-4.949 4.95l-1.414-1.415l4.95-4.95l-4.95-4.95L7.05 5.638z'/%3E%3C/svg%3E") no-repeat center center;
     color: blue; 
+}
+
+.border-grueso {
+	border-bottom: 2px solid black !important;
 }

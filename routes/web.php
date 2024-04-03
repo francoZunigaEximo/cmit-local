@@ -243,8 +243,15 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('eliminarExCuenta', [ExamenesCuentaController::class, 'delete'])->name('eliminarExCuenta');
     Route::get('searchSaldo', [ExamenesCuentaController::class, 'saldo'])->name('searchSaldo');
     Route::post('saveExamenCuenta', [ExamenesCuentaController::class, 'save'])->name('saveExamenCuenta');
-    Route::post('addExamen', [ExamenesCuentaController::class, 'addExamen'])->name('addExamen');
     Route::get('listadoExCta', [ExamenesCuentaController::class, 'listado'])->name('listadoExCta');
+    Route::post('updateExamenCuenta', [ExamenesCuentaController::class, 'update'])->name('updateExamenCuenta');
+    Route::get('deleteItemExCta', [ExamenesCuentaController::class, 'deleteItem'])->name('deleteItemExCta');
+    Route::get('liberarItemExCta', [ExamenesCuentaController::class, 'liberarItem'])->name('liberarItemExCta');
+    Route::post('savePrecarga', [ExamenesCuentaController::class, 'precarga'])->name('savePrecarga');
+    Route::post('savePaquete', [ExamenesCuentaController::class, 'saveEx'])->name('savePaquete');
+    Route::get('lstClientes', [ExamenesCuentaController::class, 'lstClientes'])->name('lstClientes');
+    Route::get('listadoDni', [ExamenesCuentaController::class, 'listadoDni'])->name('listadoDni');
+    Route::get('listadoEx', [ExamenesCuentaController::class, 'listadoEx'])->name('listadoEx');
 
     //Rutas de Paquete de Estudio
     Route::get('getPaquetes', [PaqueteEstudioController::class, 'paquetes'])->name('getPaquetes');
