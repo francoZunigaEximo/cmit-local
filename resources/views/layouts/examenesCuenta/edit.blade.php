@@ -48,13 +48,13 @@
 
                 <div class="col-sm-2 mb-3">
                     <label for="Obs" class="form-label fw-bolder">Observación: </label>
-                    <textarea class="form-control" name="ObsPago" id="ObsPago" cols="30" rows="3">{{ $examenesCuentum->Obs ?? ''}}</textarea>
+                    <textarea class="form-control" name="Obs" id="Obs" cols="30" rows="3">{{ $examenesCuentum->Obs ?? ''}}</textarea>
                 </div>
             </div>
 
             <div class="row justify-content-center">
                 <div class="col-sm-4 mb-3 text-center">
-                    <button type="button" class="btn btn-sm botonGeneral crearPagoCuenta">Actualizar</button>
+                    <button type="button" class="btn btn-sm botonGeneral actualizarPagoCuenta">Actualizar</button>
                     <button type="button" class="btn btn-sm botonGeneral volverPrincipal">Volver</button>
                 </div>
             </div>
@@ -68,7 +68,7 @@
 
             <div class="col-sm-2 mb-3 text-center">
                 <label for="dni" class="form-label fw-bolder">DNI Paciente:</label>
-                <select name="dni" id="dni" class="form-control"></select>
+                <input type="number" max="8" name="dni" id="dni" class="form-control">
             </div>
 
             <div class="col-sm-2 mb-3 text-center">
@@ -99,11 +99,24 @@
     </div>
 </div>
 
-<div class="row auto-mx">
+<div class="row mt-3">
+    <div class="col-sm-7 text-end">
+        <button type="button" class="btn btn-sm botonGeneral editarMasivo" data-bs-toggle="modal" data-bs-target="#editarDNI"><i class="ri-edit-line"></i> Editar</button>
+        <button type="button" class="btn btn-sm botonGeneral liberarItemMasivo"><i class="ri-logout-circle-line"></i> Liberar</button>
+        <button type="button" class="btn btn-sm botonGeneral deleteItemMasivo"><i class="ri-delete-bin-2-line"></i> Eliminar</button>
+    </div>
+    <div class="col-sm-5 text-center">
+        <button type="button" class="btn btn-sm botonGeneral exportar"><i class="ri-file-excel-line"></i>Exportar</button>
+        <button type="button" class="btn btn-sm botonGeneral imprimir"><i class=" ri-file-pdf-line"></i>Imprimir</button>
+    </div>
+</div>
+
+<div class="row auto-mx mb-3">
     <div class="table-responsive table-card mt-3 mb-1 mx-auto col-sm-7">
         <table id="listadoSaldos" class="display table table-bordered">
             <thead class="table-light">
                 <tr>
+                    <th><input type="checkbox" id="checkAll" name="Id"></th>
                     <th class="sort">Precarga</th>
                     <th class="sort">Examen</th>
                     <th class="sort">Prestación</th>
@@ -119,6 +132,26 @@
     </div>
 </div>
 
+<div id="editarDNI" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel">Editar precarga de DNI</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>
+            </div>
+            <div class="modal-body text-center p-5">
+                <label for="dniNuevo" class="form-label">Escribir el nuevo DNI</label>
+                <input type="number" max="8" class="form-control" name="dniNuevo" id="dniNuevo">
+                <input type="hidden" id="cargarId" value="">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn botonGeneral" data-bs-dismiss="modal">Cancelar edición</button>
+                <button type="button" class="btn botonGeneral saveCambiosEdit">Modificar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     const getPacientes = "{{ route('getPacientes') }}";
     const searchExamen = "{{ route('searchExamen') }}";
@@ -127,9 +160,14 @@
     const INDEX = "{{ route('examenesCuenta.index') }}";
     const getPaquetes = "{{ route('getPaquetes') }}";
     const getPaqueteFact = "{{ route('getPaqueteFact') }}";
-    const addExamen = "{{ route('addExamen') }}";
     const ID = "{{ $examenesCuentum->Id }}";
     const listadoExCta = "{{ route('listadoExCta') }}";
+    const updateExamenCuenta = "{{ route('updateExamenCuenta') }}";
+    const deleteItemExCta = "{{ route('deleteItemExCta') }}";
+    const liberarItemExCta = "{{ route('liberarItemExCta') }}";
+    const savePrecarga = "{{ route('savePrecarga') }}";
+    const savePaquete = "{{ route('savePaquete') }}";
+
 </script>
 
 @push('styles')
@@ -147,6 +185,7 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/i18n/es.js"></script>
 <script src="{{ asset('js/pages/select2.init.js') }}"></script>
+<script src="{{ asset('js/fancyTable.js') }}"></script>
 @endpush
 
 @endsection

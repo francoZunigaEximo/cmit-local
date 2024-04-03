@@ -24,8 +24,8 @@ $(document).ready(()=>{
     $('#EstadoCerrar').val('abierto');
 
     $('#verPrestacionModal').on('shown.bs.modal', function () {
-        $(document).off('click', '.mostrarObsEstado, .cerrarObsEstado');
-        $(document).on('click', '.mostrarObsEstado, .cerrarObsEstado', function(){
+        $('.comentarioObsEstado').hide();
+        $(document).off('click', '.mostrarObsEstado, .cerrarObsEstado').on('click', '.mostrarObsEstado, .cerrarObsEstado', function(){
 
             if ($(this).hasClass('mostrarObsEstado')) {
                 $('.comentarioObsEstado').show();
@@ -721,20 +721,28 @@ $(document).ready(()=>{
     });
 
     $('#comentarioPrivado').on('hidden.bs.modal', function(){
-        $("#Comentario").val("");
+        $("#Comentario, .ComObsEstado").val("");
     });
 
-    $(document).on('click', '.saveComObsEstado', function(){
+    $('#closeModalButton').click(function() {
+        $('.ComObsEstado').val('');
+    });
+
+    $(document).off('click', '.saveComObsEstado').on('click', '.saveComObsEstado', function(){
         let prestacion = $('#IdPrestacion').text(), observacion = $('.ComObsEstado').val();
 
         if(observacion === ''){
             toastr.warning('Debe escribir un observación de la prestación', 'Atención');
             return;
         }
-
+        preloader('on');
         $.post(setComentarioPres, {_token: TOKEN, Id: prestacion, observacion: observacion})
             .done(function(){
+                preloader('off');
                 toastr.success('Perfecto', 'Se ha actualizado la observacion correctamente');
+                setTimeout(()=>{
+                    $('.comentarioObsEstado').hide();
+                }, 2000);
             });
     });
 
@@ -1133,15 +1141,23 @@ $(document).ready(()=>{
     }
 
     function getObsEstado(id){
-
-        $.get(getComentarioPres, {Id: id})
+        preloader('on');
+        $('.ComObsEstado').val("");
+        $.get(getComentarioPres, {Id: id})    
             .done(async function(response){
-
+                preloader('off');
                 let rs = await response.comentario;
 
                 $('.ComObsEstado').val(rs);
 
             })
+    }
+
+    function preloader(opcion) {
+        $('#preloader').css({
+            opacity: '0.3',
+            visibility: opcion === 'on' ? 'visible' : 'hidden'
+        });
     }
 
 });

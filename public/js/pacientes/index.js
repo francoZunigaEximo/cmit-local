@@ -109,16 +109,17 @@ $(document).ready(function(){
             buttons: ["Cancelar", "Dar de baja"],
         }).then((confirmar) => {
             if(confirmar) {
-                
+                preloader('on');
                 $.post(down, {_token: TOKEN, Id: paciente})
                 .done(function(){
-                   
+                    preloader('off');
                     toastr.success('Se ha realizado de manera correcta la baja', 'Perfecto');
 
                     $('#listaPac').DataTable();
                     $('#listaPac').DataTable().draw(false);
                 })
                 .fail(function(xhr){
+                    preloader('off');
                     toastr.error('Ha ocurrido un error, consulte con el administrador', 'Error');
                     console.error(xhr);
                 })
@@ -126,5 +127,12 @@ $(document).ready(function(){
         });
   
     });
+
+    function preloader(opcion) {
+        $('#preloader').css({
+            opacity: '0.3',
+            visibility: opcion === 'on' ? 'visible' : 'hidden'
+        });
+    }
 
 });

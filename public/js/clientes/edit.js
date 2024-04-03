@@ -15,6 +15,7 @@ $(document).ready(()=> {
     quitarDuplicados("#Provincia");
     quitarDuplicados("#CondicionIva");
     checkBloq();
+    examenes();
 
     $(document).on('click', '.delete-icon', function() {
         let Id = $(this).data('id');
@@ -664,5 +665,121 @@ $(document).ready(()=> {
                 toastr.error("Ha ocurrido un error. Consulte con el administrador");
             });
     }
+
+    async function examenes(){
+    $('#lstFact').empty();
+    preloader('on');
+    $.get(lstClientes, {Id: ID})
+        .done(async function(response){
+            preloader('off');
+            let promises = response.map(async function(r) {
+                if(response && response.length) {
+                    let suc = (r.Suc).toString().padStart(4, '0'), numero = (r.Nro).toString().padStart(8, '0');
+                    let moduloResult = await modulo(r.Id);
+                    let contenido = `
+                    <tr class="fondo-gris mb-2">
+                        <td><span class="fw-bolder text-capitalize">fecha </span> ${fechaNow(r.Fecha,'/',0)}</td>
+                        <td><span class="fw-bolder text-capitalize">factura </span> ${r.Tipo}${suc}${numero}</td>
+                        <td><span class="fw-bolder text-capitalize">cantidad Pacientes </span>${r.Cantidad}</td>
+                        <td>
+                            <tr>
+                                <td colspan="4">
+                                    <span class="fw-bolder text-capitalize">Observación: </span><span>${r.Obs}</span>
+                                </td>
+                            </tr>
+                        </td>  
+                        ${moduloResult}
+                    </tr>`;
+                    return contenido;
+                }else{
+                    return '<tr class="mb-2"><td>No hay historial de facturas disponible</td></tr>';
+                } 
+            });
+            let contents = await Promise.all(promises);
+            contents.forEach(content => $('#lstFact').append(content));
+        });
+}
+
+    async function modulo(id) {
+        return new Promise((resolve, reject) => {
+            preloader('on');
+            $.get(listadoDni, {Id: id})
+                .done(async function(response){
+                    preloader('off');
+                    if (response && response.length) {
+                        let result = '';
+                        for (let r of response) {
+                            let detallesResult = await detalles(r.IdPrestacion, r.IdPago); 
+                            result += `
+                                <tr class="fondo-grisClaro">
+                                    <td colspan="4" class="fw-bolder"><span class="fw-bolder">${r.IdPrestacion === 0 ? 'Generales' : 'DNI'}</span> ${r.IdPrestacion === 0 ? '' : r.Documento}</td>
+                                    ${detallesResult}
+                                </tr>
+                            `;
+                        }
+                        resolve(result);
+                    }
+                })
+                .fail(function(error){
+                    reject(error);
+                });
+        });
+    }
+    
+
+    async function detalles(id, idpago) {
+        return new Promise((resolve, reject) => {
+            preloader('on');
+            $.get(listadoEx, {Id: id, IdPago: idpago})
+                .done(async function(response){
+                    preloader('off');
+                    if (response && response.length) {
+                        let result =  '';
+                        for (let r of response) {
+                            let suc = (r.Suc).toString().padStart(4, '0'), numero = (r.Nro).toString().padStart(8, '0');
+                            result += `
+                            <tr>
+                                <td>${r.Cantidad}</td>
+                                <td>${r.NombreExamen}</td>
+                                <td colspan="2"><span class="${r.Pagado === 0 ? 'rojo': ''}">${r.Tipo}${suc}${numero}</span></td>
+                            </tr>
+                            `;
+                        }
+                        resolve(result);
+                    }
+                })
+                .fail(function(error){
+                    reject(error);
+                });
+        });
+        
+    }
+
+    function preloader(opcion) {
+        $('#preloader').css({
+            opacity: '0.3',
+            visibility: opcion === 'on' ? 'visible' : 'hidden'
+        });
+    }
+
+    function fechaNow(fechaAformatear, divider, format) {
+        let dia, mes, anio; 
+    
+        if (fechaAformatear === null) {
+            let fechaHoy = new Date();
+    
+            dia = fechaHoy.getDate().toString().padStart(2, '0');
+            mes = (fechaHoy.getMonth() + 1).toString().padStart(2, '0');
+            anio = fechaHoy.getFullYear();
+        } else {
+            let nuevaFecha = fechaAformatear.split("-"); 
+            dia = nuevaFecha[0]; 
+            mes = nuevaFecha[1]; 
+            anio = nuevaFecha[2];
+        }
+    
+        return (format === 1) ? `${dia}${divider}${mes}${divider}${anio}` : `${anio}${divider}${mes}${divider}${dia}`;
+    }
+    
 
 });
