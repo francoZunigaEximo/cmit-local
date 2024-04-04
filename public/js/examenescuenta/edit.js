@@ -210,7 +210,7 @@ $(document).ready(function(){
                             <td>${r.Precarga === '' ? '-' : r.Precarga}</td>
                             <td>${r.Examen}</td>
                             <td>${r.Prestacion}</td>
-                            <td>${r.NombrePaciente}</td>
+                            <td>${r.ApellidoPaciente} ${r.NombrePaciente}</td>
                             <td>
                                 <button data-id="${r.IdEx}" type="button" class="btn iconGeneral editarDNI" title="Agregar/Editar DNI" data-bs-toggle="modal" data-bs-target="#editarDNI">
                                     <i class="ri-edit-line"></i>
@@ -386,6 +386,8 @@ $(document).ready(function(){
                         Id: id
                     },
                     success: function(response) {
+                        let fecha = new Date(), dia = fecha.getDate(), mes = fecha.getMonth() + 1, anio = fecha.getFullYear();
+
                         let filePath = response.filePath,
                             pattern = /storage(.*)/,
                             match = filePath.match(pattern),
@@ -397,7 +399,7 @@ $(document).ready(function(){
 
                         let link = document.createElement('a');
                         link.href = fullPath;
-                        link.download = "examenes.xlsx";
+                        link.download = response.Factura + "---" + dia + "-" + mes + "-" + anio + ".xlsx";
                         link.style.display = 'none';
 
                         document.body.appendChild(link);

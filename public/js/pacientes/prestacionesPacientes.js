@@ -173,6 +173,7 @@ $(document).ready(()=>{
             success: function() {
                 toastr.success('Se ha dado de baja la prestación del paciente de manera correcta. Puede que tarde unos minutos en cargar el cambio.', 'Acción realizada');
                 cambioEstadoDown();
+                getListado(null);
             },
             error: function(xhr){
                 swal('Error', 'No se ha podido dar de baja la prestación. Consulte con el administrador', 'error');
