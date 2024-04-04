@@ -441,6 +441,13 @@ $(document).ready(()=> {
         
     });
 
+    $(document).on('click', '.nuevoExamen', function(e){
+        e.preventDefault();
+        localStorage.setItem('nuevaId', $(this).data('id'));
+        localStorage.setItem('nuevaRazonSocial', $(this).data('name'));
+        window.location.href = RUTAEXAMEN;
+    });
+
     function actualizarInputHidden() {
         $('#hiddens .telefono-input').each(function(index) {
             $(this).attr('name', `telefonos[]`);

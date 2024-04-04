@@ -365,7 +365,55 @@ $(document).ready(function(){
                     },2000);
                 });
         }
-    })
+    });
+
+        //Exportar Excel a clientes
+        $(document).on('click', '.exportar' ,function(e) {
+            e.preventDefault();
+    
+            let id = $(this).data('id');
+
+            if([null, undefined, ""].includes(id)) {
+                toastr.warning('No hay datos para exportar');
+                return;
+            }
+    
+            if (confirm("¿Estás seguro de que deseas generar el reporte de Excel?")) {
+                $.ajax({
+                    url: exportExCta,
+                    type: "GET",
+                    data: {
+                        Id: id
+                    },
+                    success: function(response) {
+                        let filePath = response.filePath,
+                            pattern = /storage(.*)/,
+                            match = filePath.match(pattern),
+                            path = match ? match[1] : '';
+
+                        let url = new URL(location.href), baseUrl = url.origin; // Obtener la URL base (por ejemplo, http://localhost)
+
+                        let fullPath = baseUrl + '/cmit/storage' + path;
+
+                        let link = document.createElement('a');
+                        link.href = fullPath;
+                        link.download = "examenes.xlsx";
+                        link.style.display = 'none';
+
+                        document.body.appendChild(link);
+                        link.click();
+                        setTimeout(function() {
+                            document.body.removeChild(link);
+                        }, 100);
+                    },
+                    error: function(xhr, status, error) {
+                        console.log(xhr.responseText);
+                    }
+                });
+            
+            }
+    
+        });
 
     function preloader(opcion) {
         $('#preloader').css({
@@ -373,5 +421,7 @@ $(document).ready(function(){
             visibility: opcion === 'on' ? 'visible' : 'hidden'
         });
     }
+
+
 
 });

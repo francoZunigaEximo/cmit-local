@@ -106,8 +106,8 @@
         <button type="button" class="btn btn-sm botonGeneral deleteItemMasivo"><i class="ri-delete-bin-2-line"></i> Eliminar</button>
     </div>
     <div class="col-sm-5 text-center">
-        <button type="button" class="btn btn-sm botonGeneral exportar"><i class="ri-file-excel-line"></i>Exportar</button>
-        <button type="button" class="btn btn-sm botonGeneral imprimir"><i class=" ri-file-pdf-line"></i>Imprimir</button>
+        <button type="button" data-id="{{ $examenesCuentum->Id }}" class="btn btn-sm botonGeneral exportar"><i class="ri-file-excel-line"></i>Exportar</button>
+        <button type="button" data-id="{{ $examenesCuentum->Id }}" class="btn btn-sm botonGeneral imprimir"><i class=" ri-file-pdf-line"></i>Imprimir</button>
     </div>
 </div>
 
@@ -167,6 +167,7 @@
     const liberarItemExCta = "{{ route('liberarItemExCta') }}";
     const savePrecarga = "{{ route('savePrecarga') }}";
     const savePaquete = "{{ route('savePaquete') }}";
+    const exportExCta = "{{ route('exportExCta') }}";
 
 </script>
 
