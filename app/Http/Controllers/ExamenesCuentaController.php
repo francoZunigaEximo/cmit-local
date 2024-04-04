@@ -503,7 +503,7 @@ class ExamenesCuentaController extends Controller
         $sheet->getStyle('A1')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
         $sheet->getStyle('A1')->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
 
-        $sheet->getStyle('A1:A4')->getFill()
+        $sheet->getStyle('A1:A6')->getFill()
         ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
         ->getStartColor()->setARGB('CCCCCCCC'); 
 
@@ -518,31 +518,37 @@ class ExamenesCuentaController extends Controller
         ];
         $sheet->getStyle('A1')->applyFromArray($styleArray);
 
-        $sheet->getStyle('A1:A4')->getFont()->setBold(true);
-        $sheet->getStyle('A2:A4')->getFont()->setSize(11);
+        $sheet->getStyle('A1:A6')->getFont()->setBold(true);
+        $sheet->getStyle('A2:A6')->getFont()->setSize(11);
 
-        for ($i = 2; $i <= 4; $i++) {
+        for ($i = 2; $i <= 6; $i++) {
             $sheet->getRowDimension($i)->setRowHeight(30); 
         }
+
+        $factura = $examen->Tipo . '-' . sprintf('%04d', $examen->Suc) . '-' . sprintf('%08d', $examen->Nro);
 
         $sheet->setCellValue('A2', 'Fecha: ');
         $sheet->setCellValue('B2', Carbon::parse($examen->Fecha)->format('d/m/Y'));
         $sheet->setCellValue('A3', 'Factura: ');
-        $sheet->setCellValue('B3', $examen->Tipo . '-' . sprintf('%04d', $examen->Suc) . '-' . sprintf('%08d', $examen->Nro));
+        $sheet->setCellValue('B3', $factura);
         $sheet->setCellValue('A4', 'Cliente: ');
         $sheet->setCellValue('B4', sprintf('%05d', $examen->IdEmpresa) . ' - Empresa: ' . $examen->Empresa . ' - ' . $examen->Cuit);
+        $sheet->setCellValue('A5', 'Total Ex: ');
+        $sheet->setCellValue('B5', $this->totalExamenes($examen->Id));
+        $sheet->setCellValue('A6', 'Ex Disponibles: ');
+        $sheet->setCellValue('B6', $this->totalDisponibles($examen->Id));
 
         $examenes = $this->examenesExcel($examen->Id);
 
-        $sheet->setCellValue('A6', 'Prestación');
-        $sheet->setCellValue('B6', 'Estudio');
-        $sheet->setCellValue('C6', 'Examen');
-        $sheet->setCellValue('D6', 'Paciente');
+        $sheet->setCellValue('A8', 'Prestación');
+        $sheet->setCellValue('B8', 'Estudio');
+        $sheet->setCellValue('C8', 'Examen');
+        $sheet->setCellValue('D8', 'Paciente');
 
-        $sheet->getStyle('A6:D6')->getFont()->setBold(true)->setSize(11);
-        $sheet->getRowDimension('6')->setRowHeight(30);
+        $sheet->getStyle('A8:D8')->getFont()->setBold(true)->setSize(11);
+        $sheet->getRowDimension('8')->setRowHeight(30);
 
-        $sheet->getStyle('A6:D6')->getFill()
+        $sheet->getStyle('A8:D8')->getFill()
         ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
         ->getStartColor()->setARGB('CCCCCCCC'); 
 
@@ -555,13 +561,13 @@ class ExamenesCuentaController extends Controller
                 ],
             ],
         ];
-        $sheet->getStyle('A6:D6')->applyFromArray($styleArray);
+        $sheet->getStyle('A8:D8')->applyFromArray($styleArray);
 
-        $sheet->getStyle('A6:D6')->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+        $sheet->getStyle('A8:D8')->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
 
-        $fila = 7;
+        $fila = 9;
         foreach($examenes as $reporte){
-            $sheet->setCellValue('A'.$fila, $reporte->IdPrestacion);
+            $sheet->setCellValue('A'.$fila, $reporte->IdPrestacion === 0 ? '-' : $reporte->IdPrestacion);
             $sheet->setCellValue('B'.$fila, $reporte->NombreEstudio);
             $sheet->setCellValue('C'.$fila, $reporte->NombreExamen);
             $sheet->setCellValue('D'.$fila, $reporte->Apellido . " " . $reporte->Nombre);
@@ -579,7 +585,7 @@ class ExamenesCuentaController extends Controller
         chmod($filePath, 0777);
 
         // Devolver la ruta del archivo generado
-        return response()->json(['filePath' => $filePath]);
+        return response()->json(['filePath' => $filePath, 'Factura' => $factura]);
 
         
     }
@@ -622,7 +628,12 @@ class ExamenesCuentaController extends Controller
 
     private function totalExamenes(?int $id)
     {
-        return ExamenCuentaIt::where('IdPago')->count();
+        return ExamenCuentaIt::where('IdPago', $id)->count();
+    }
+
+    private function totalDisponibles(?int $id)
+    {
+        return ExamenCuentaIt::where('IdPago', $id)->where('IdPrestacion', 0)->count();
     }
 
     private function queryBasico()
