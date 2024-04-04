@@ -181,7 +181,7 @@
 
             <div class="row auto-mx">
 
-                <div class="table-responsive table-card mt-3 mb-1 mx-auto col-sm-7">
+                <div class="table-responsive table-card mt-3 mb-1 mx-auto col-sm-10">
                     <table id="listadoExCtasSaldos" class="display table table-bordered">
                         <thead class="table-light">
                             <tr>
