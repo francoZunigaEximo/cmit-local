@@ -9,7 +9,11 @@ use App\Models\Relpaqfact;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use App\Traits\ObserverExamenesCuenta;
+use Carbon\Carbon;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class ExamenesCuentaController extends Controller
 {
@@ -468,12 +472,157 @@ class ExamenesCuentaController extends Controller
             )
             ->where('pagosacuenta_it.IdPrestacion', $request->Id)
             ->where('pagosacuenta_it.IdPago', $request->IdPago)
+            ->whereNot('pagosacuenta_it.IdExamen', 0)
             ->groupBy('pagosacuenta_it.IdExamen')
             ->orderBy('pagosacuenta_it.IdPrestacion', 'ASC')
             ->get();
         
         return response()->json($clientes);
         
+    }
+
+    public function exportar(Request $request)
+    {
+        $examen = $this->tituloExcel($request->Id);
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+
+        $sheet->mergeCells('A1:D1');
+        $sheet->mergeCells('B4:D4');
+        
+        $sheet->getColumnDimension('A')->setAutoSize(true);
+        $sheet->getColumnDimension('B')->setAutoSize(true);
+        $sheet->getColumnDimension('C')->setAutoSize(true);
+        $sheet->getColumnDimension('D')->setAutoSize(true);
+
+        $sheet->setCellValue('A1', 'DETALLE DE EXAMENES A CUENTA');
+        $sheet->getStyle('A1')->getFont()->setSize(14);
+        $sheet->getRowDimension('1')->setRowHeight(40);
+
+        $sheet->getStyle('A1')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A1')->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+
+        $sheet->getStyle('A1:A4')->getFill()
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('CCCCCCCC'); 
+
+        // Agregar bordes gruesos a la celda
+        $styleArray = [
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK,
+                    'color' => ['argb' => '00000000'],
+                ],
+            ],
+        ];
+        $sheet->getStyle('A1')->applyFromArray($styleArray);
+
+        $sheet->getStyle('A1:A4')->getFont()->setBold(true);
+        $sheet->getStyle('A2:A4')->getFont()->setSize(11);
+
+        for ($i = 2; $i <= 4; $i++) {
+            $sheet->getRowDimension($i)->setRowHeight(30); 
+        }
+
+        $sheet->setCellValue('A2', 'Fecha: ');
+        $sheet->setCellValue('B2', Carbon::parse($examen->Fecha)->format('d/m/Y'));
+        $sheet->setCellValue('A3', 'Factura: ');
+        $sheet->setCellValue('B3', $examen->Tipo . '-' . sprintf('%04d', $examen->Suc) . '-' . sprintf('%08d', $examen->Nro));
+        $sheet->setCellValue('A4', 'Cliente: ');
+        $sheet->setCellValue('B4', sprintf('%05d', $examen->IdEmpresa) . ' - Empresa: ' . $examen->Empresa . ' - ' . $examen->Cuit);
+
+        $examenes = $this->examenesExcel($examen->Id);
+
+        $sheet->setCellValue('A6', 'Prestación');
+        $sheet->setCellValue('B6', 'Estudio');
+        $sheet->setCellValue('C6', 'Examen');
+        $sheet->setCellValue('D6', 'Paciente');
+
+        $sheet->getStyle('A6:D6')->getFont()->setBold(true)->setSize(11);
+        $sheet->getRowDimension('6')->setRowHeight(30);
+
+        $sheet->getStyle('A6:D6')->getFill()
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('CCCCCCCC'); 
+
+        // Agregar bordes gruesos a la celda
+        $styleArray = [
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK,
+                    'color' => ['argb' => '00000000'],
+                ],
+            ],
+        ];
+        $sheet->getStyle('A6:D6')->applyFromArray($styleArray);
+
+        $sheet->getStyle('A6:D6')->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+
+        $fila = 7;
+        foreach($examenes as $reporte){
+            $sheet->setCellValue('A'.$fila, $reporte->IdPrestacion);
+            $sheet->setCellValue('B'.$fila, $reporte->NombreEstudio);
+            $sheet->setCellValue('C'.$fila, $reporte->NombreExamen);
+            $sheet->setCellValue('D'.$fila, $reporte->Apellido . " " . $reporte->Nombre);
+            $fila++;
+        }
+        
+        // Generar un nombre aleatorio para el archivo
+        $name = Str::random(10).'.xlsx';
+
+        // Guardar el archivo en la carpeta de almacenamiento
+        $filePath = storage_path('app/public/'.$name);
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save($filePath);
+        chmod($filePath, 0777);
+
+        // Devolver la ruta del archivo generado
+        return response()->json(['filePath' => $filePath]);
+
+        
+    }
+
+    private function tituloExcel(?int $id): mixed
+    {
+        return ExamenCuenta::join('clientes', 'pagosacuenta.IdEmpresa', '=', 'clientes.Id')
+            ->select(
+                'clientes.RazonSocial as Empresa',
+                'clientes.Identificacion as Cuit',
+                'clientes.Id as IdEmpresa',
+                'pagosacuenta.Fecha as Fecha',
+                'pagosacuenta.Tipo as Tipo',
+                'pagosacuenta.Suc as Suc',
+                'pagosacuenta.Nro as Nro',
+                'pagosacuenta.Id as Id'
+            )
+            ->where('pagosacuenta.Id', $id)
+            ->first();
+    }
+
+    private function examenesExcel(?int $id): mixed
+    {
+        return ExamenCuentaIt::join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
+            ->join('prestaciones', 'pagosacuenta_it.IdPrestacion', '=', 'prestaciones.Id')
+            ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+            ->join('estudios', 'examenes.IdEstudio', '=', 'estudios.Id')
+            ->select(
+                'prestaciones.Id as IdPrestacion',
+                'estudios.Nombre as NombreEstudio',
+                'examenes.Nombre as NombreExamen',
+                'pacientes.Nombre as Nombre',
+                'pacientes.Apellido as Apellido'  
+            )
+            ->where('pagosacuenta_it.IdPago', $id)
+            ->orderBy('examenes.Nombre')
+            ->orderBy('estudios.Nombre')
+            ->get();
+    }
+
+    private function totalExamenes(?int $id)
+    {
+        return ExamenCuentaIt::where('IdPago')->count();
     }
 
     private function queryBasico()

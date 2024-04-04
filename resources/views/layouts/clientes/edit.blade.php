@@ -507,7 +507,7 @@
         <div class="tab-pane" id="examenCuenta" role="tabpanel">
             <div class="row">
                 <div class="col-sm-12 text-end">
-                    <button type="button" class="btn btn-sm botonGeneral"><i class="ri-add-line"></i> Alta Ex. a Cta</button>
+                    <button data-id="{{ $cliente->Id }}" data-name="{{ $cliente->RazonSocial }}" class="btn btn-sm botonGeneral nuevoExamen"><i class="ri-add-line"></i> Alta Ex. a Cta</button>
                 </div>
             </div>
 
@@ -577,6 +577,7 @@ const TOKEN = '{{ csrf_token() }}';
 let contadorFilas = 1;
 const GOINDEX = "{{ route('clientes.index') }}";
 const GOCREATE = "{{ route('clientes.create') }}";
+const RUTAEXAMEN = "{{ route('examenesCuenta.create') }}";
 
 //Rutas
 const deleteAutorizado = "{{ route('deleteAutorizado') }}";

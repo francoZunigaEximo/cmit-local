@@ -252,6 +252,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('lstClientes', [ExamenesCuentaController::class, 'lstClientes'])->name('lstClientes');
     Route::get('listadoDni', [ExamenesCuentaController::class, 'listadoDni'])->name('listadoDni');
     Route::get('listadoEx', [ExamenesCuentaController::class, 'listadoEx'])->name('listadoEx');
+    Route::get('exportExCta', [ExamenesCuentaController::class, 'exportar'])->name('exportExCta');
 
     //Rutas de Paquete de Estudio
     Route::get('getPaquetes', [PaqueteEstudioController::class, 'paquetes'])->name('getPaquetes');

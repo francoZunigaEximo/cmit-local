@@ -6,6 +6,8 @@ $(document).ready(function(){
         timeOut: 3000,        
     };
 
+    nuevoEmpresa(localStorage.getItem('nuevaId'), localStorage.getItem('nuevaRazonSocial'));
+
     $(document).on('click', '.crearPagoCuenta', function(){
         
         let empresaCreate = $('#empresaCreate').val(), FechaCreate = $('#FechaCreate').val(), FacturaCreate = $('#FacturaCreate').val(), FechaPago = $('#FechaPago').val(), ObsPago = $('#ObsPago').val(),
@@ -40,5 +42,20 @@ $(document).ready(function(){
             visibility: opcion === 'on' ? 'visible' : 'hidden'
         });
     }
+
+    function nuevoEmpresa(id, name) {
+        if (id && name) {
+            console.log(id, name)
+            if ($('#empresaCreate').data('select2')) {
+                var nuevaOpcion = new Option(name, id, true, true);
+                $('#empresaCreate').append(nuevaOpcion).trigger('change');
+                localStorage.removeItem('nuevaId');
+                localStorage.removeItem('nuevaRazonSocial');
+            } else {
+                setTimeout(function() { nuevoEmpresa(id, name); }, 500);
+            }
+        }
+    }
+    
 
 });
