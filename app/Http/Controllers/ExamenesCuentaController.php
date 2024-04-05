@@ -104,7 +104,8 @@ class ExamenesCuentaController extends Controller
             ->join('prestaciones', 'pagosacuenta_it.IdPrestacion', '=', 'prestaciones.Id')
             ->select(
                 'clientes.RazonSocial as Empresa',
-                'examenes.Nombre as Examen'
+                'examenes.Nombre as Examen',
+                'pagosacuenta.IdEmpresa as IdEmpresa'
             );
 
             $query->selectRaw('COUNT(CASE WHEN pagosacuenta_it.IdPrestacion = 0 THEN 1 END) AS contadorSaldos');
@@ -496,10 +497,11 @@ class ExamenesCuentaController extends Controller
         $sheet->mergeCells('A1:D1');
         $sheet->mergeCells('B4:D4');
         
-        $sheet->getColumnDimension('A')->setAutoSize(true);
-        $sheet->getColumnDimension('B')->setAutoSize(true);
-        $sheet->getColumnDimension('C')->setAutoSize(true);
-        $sheet->getColumnDimension('D')->setAutoSize(true);
+        $columnas = ['A', 'B', 'C', 'D'];
+
+        foreach($columnas as $columna){
+            $sheet->getColumnDimension($columna)->setAutoSize(true);
+        }
 
         $sheet->setCellValue('A1', 'DETALLE DE EXAMENES A CUENTA');
         $sheet->getStyle('A1')->getFont()->setSize(14);
@@ -591,11 +593,11 @@ class ExamenesCuentaController extends Controller
 
         $listado = $this->totalReporte($examen->Id);
         
-        $filasFinales = $nuevaFila + 1;
+        $ultimasFilas = $nuevaFila + 1;
         foreach($listado as $items){
-            $sheet->setCellValue('A'.$filasFinales, $items->Cantidad);
-            $sheet->setCellValue('B'.$filasFinales, $items->NombreExamen);
-            $filasFinales++;
+            $sheet->setCellValue('A'.$ultimasFilas, $items->Cantidad);
+            $sheet->setCellValue('B'.$ultimasFilas, $items->NombreExamen);
+            $ultimasFilas++;
         }
 
 
@@ -718,6 +720,84 @@ class ExamenesCuentaController extends Controller
 
     }
 
+    public function reporteGeneral(Request $request)
+    {
+        $examenes = $this->querySalDet($request->Id);
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+
+        $columnas = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+
+        foreach ($columnas as $columna) {
+            $sheet->getColumnDimension($columna)->setAutoSize(true);
+        }
+
+        $condicion = $request->Tipo === 'detalles' ? 'G' : 'D';
+
+        $sheet->getStyle('A1:'.$condicion.'1')->getFill()
+                ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                ->getStartColor()->setARGB('CCCCCCCC'); 
+        
+        $fila = 2;
+
+        switch ($request->Tipo) {
+            case 'detalles':
+                $sheet->setCellValue('A1', 'Numero ');
+                $sheet->setCellValue('B1', 'Pago ');
+                $sheet->setCellValue('C1', 'Fecha ');
+                $sheet->setCellValue('D1', 'Cliente ');
+                $sheet->setCellValue('E1', 'Empresa ');
+                $sheet->setCellValue('F1', 'Cant ');
+                $sheet->setCellValue('G1', 'Examen ');
+
+                foreach($examenes as $examen){
+                    $factura = $examen->Tipo . sprintf('%04d', $examen->Suc) . sprintf('%08d', $examen->Nro);
+
+                    $sheet->setCellValue('A'.$fila, $examen->Id);
+                    $sheet->setCellValue('B'.$fila, $factura);
+                    $sheet->setCellValue('C'.$fila, $examen->Fecha);
+                    $sheet->setCellValue('D'.$fila, $examen->Empresa);
+                    $sheet->setCellValue('E'.$fila, $examen->ParaEmpresa);
+                    $sheet->setCellValue('F'.$fila, $examen->Cantidad);
+                    $sheet->setCellValue('G'.$fila, $examen->NombreExamen);
+                    $fila++;
+                }
+                
+                break;
+            
+            case 'saldo':
+                $sheet->setCellValue('A1', 'Cliente ');
+                $sheet->setCellValue('B1', 'ParaEmpresa ');
+                $sheet->setCellValue('C1', 'Cantidad ');
+                $sheet->setCellValue('D1', 'Examen ');
+
+                foreach($examenes as $examen){
+                    $sheet->setCellValue('A'.$fila, $examen->Empresa);
+                    $sheet->setCellValue('B'.$fila, $examen->ParaEmpresa);
+                    $sheet->setCellValue('C'.$fila, $examen->Cantidad);
+                    $sheet->setCellValue('D'.$fila, $examen->NombreExamen);
+                    $fila++;
+                }
+
+                break;
+        }
+
+        // Generar un nombre aleatorio para el archivo
+        $name = Str::random(10).'.xlsx';
+
+        // Guardar el archivo en la carpeta de almacenamiento
+        $filePath = storage_path('app/public/'.$name);
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save($filePath);
+        chmod($filePath, 0777);
+
+        // Devolver la ruta del archivo generado
+        return response()->json(['filePath' => $filePath]);      
+
+    }
 
     private function tituloReporte(?int $id): mixed
     {
@@ -761,29 +841,56 @@ class ExamenesCuentaController extends Controller
             ->get();
     }
 
-    private function totalExamenes(?int $id)
+    private function totalExamenes(?int $id): int
     {
         return ExamenCuentaIt::where('IdPago', $id)->count();
     }
 
-    private function totalReporte(?int $id)
+    private function totalReporte(?int $id): mixed
     {
         return ExamenCuentaIt::join('examenes', 'examenes.Id', '=', 'pagosacuenta_it.IdExamen')
         ->select(
             DB::raw('COUNT(pagosacuenta_it.IdExamen) as Cantidad'), 
             'examenes.Nombre as NombreExamen')
         ->where('pagosacuenta_it.IdPago', $id)
-        ->groupBy('examenes.Nombre')
         ->orderBy('examenes.Nombre')
         ->get();
     }
 
-    private function totalDisponibles(?int $id)
+    private function totalDisponibles(?int $id): int
     {
         return ExamenCuentaIt::where('IdPago', $id)->where('IdPrestacion', 0)->count();
     }
 
-    private function queryBasico()
+    private function querySalDet(?int $id): mixed
+    {
+        return ExamenCuenta::join('pagosacuenta_it', 'pagosacuenta.Id', '=', 'pagosacuenta_it.IdPago')
+            ->join('clientes', 'pagosacuenta.IdEmpresa', '=', 'clientes.Id')
+            ->join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
+            ->select(
+                'pagosacuenta.Id as Id',
+                'pagosacuenta.Tipo as Tipo',
+                'pagosacuenta.Suc as Suc',
+                'pagosacuenta.Nro as Nro',
+                'pagosacuenta.Fecha as Fecha',
+                'clientes.RazonSocial as Empresa',
+                'clientes.ParaEmpresa as ParaEmpresa',
+                'examenes.Nombre as NombreExamen',
+                DB::raw('COUNT(pagosacuenta_it.IdExamen) as Cantidad')
+            )
+            ->where('pagosacuenta.IdEmpresa', $id)
+            ->where('pagosacuenta_it.IdPrestacion', 0)
+            ->groupBy('examenes.Nombre')
+            ->orderBy('clientes.RazonSocial', 'DESC')
+            ->orderBy('clientes.ParaEmpresa', 'DESC')
+            ->orderBy('pagosacuenta.Tipo', 'DESC')
+            ->orderBy('pagosacuenta.Suc', 'DESC')
+            ->orderBy('pagosacuenta.Nro', 'DESC')
+            ->orderBy('examenes.Nombre', 'DESC')
+            ->get();
+    }
+
+    private function queryBasico(): mixed
     {
         return ExamenCuenta::join('clientes', 'pagosacuenta.IdEmpresa', '=', 'clientes.Id')
         ->join('pagosacuenta_it', 'pagosacuenta.Id', '=', 'pagosacuenta_it.IdPago')

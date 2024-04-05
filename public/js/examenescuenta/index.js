@@ -233,6 +233,27 @@ $(document).ready(()=> {
         location.reload();
     });
 
+    $(document).on('click', '.detalles, .saldo', function(e){
+        e.preventDefault();
+
+        let id = $(this).data('id'), tipo = $(this).hasClass('detalles') ? 'detalles' : 'saldo';
+
+        if([null, undefined, ''].includes(id)) {
+            toastr.warning("No posee identificador para iniciar el proceso");
+            return;
+        }
+        if(confirm("¿Estas seguro que deseas generar el reporte de " + tipo)) {
+
+            $.get(exportGeneral, {Id: id, Tipo: tipo})
+            .done(function(response){
+
+                createFile(response.filePath);
+                toastr.success("Se esta generando el reporte");
+            })
+
+        }
+    });
+
     function fechaNow(fechaAformatear, divider, format) {
         let dia, mes, anio; 
     
@@ -257,6 +278,33 @@ $(document).ready(()=> {
             opacity: '0.3',
             visibility: opcion === 'on' ? 'visible' : 'hidden'
         });
+    }
+
+    function createFile(array){
+        let fecha = new Date(),
+            dia = fecha.getDay(),
+            mes = fecha.getMonth() + 1,
+            anio = fecha.getFullYear();
+
+        let filePath = array,
+            pattern = /storage(.*)/,
+            match = filePath.match(pattern),
+            path = match ? match[1] : '';
+
+        let url = new URL(location.href),
+            baseUrl = url.origin,
+            fullPath = baseUrl + '/cmit/storage' + path;
+
+        let link = document.createElement('a');
+        link.href = fullPath;
+        link.download = "reporte-"+ dia + "-" + mes + "-" + anio +".xlsx";
+        link.style.display = 'none';
+
+        document.body.appendChild(link);
+        link.click();
+        setTimeout(function() {
+            document.body.removeChild(link);
+        }, 100);
     }
 
 });
