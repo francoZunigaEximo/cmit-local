@@ -491,7 +491,7 @@ $(document).ready(()=>{
                         <td>${f.IdPrestacion}</td>
                         <td>${f.ApellidoPaciente} ${f.NombrePaciente}</td>
                         <td>${f.Documento}</td>
-                        <td><span style="text-align=center" class="custom-badge pequeno">${f.Finalizado === 1 ? `Finalizado` : `Abierto`}</span></td>
+                        <td><span style="text-align=center" class="custom-badge pequeno">${f.Finalizado === 1 ? `Finalizado` : `Cerrado`}</span></td>
                         <td><button data-id="${f.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
                         <td>${f.Finalizado === 1 ? '<input type="checkbox" disabled>' : `<input type="checkbox" name="Id_finalizar" value="${f.IdPrestacion}" checked>`}</td>
                         
@@ -918,7 +918,7 @@ $(document).ready(()=>{
                     <td>${f.IdPrestacion}</td>
                     <td>${f.ApellidoPaciente} ${f.NombrePaciente}</td>
                     <td>${f.Documento}</td>
-                    <td><span style="text-align=center" class="custom-badge pequeno">${f.Finalizado === 1 ? `Finalizado` : `Abierto`}</span></td>
+                    <td><span style="text-align=center" class="custom-badge pequeno">${f.Finalizado === 1 ? `Finalizado` : `Cerrado`}</span></td>
                     <td><button data-id="${f.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
                     <td>${f.Finalizado === 1 ? `<input type="checkbox" disabled>` : `<input type="checkbox" name="Id_finalizar" value="${f.IdPrestacion}" checked>`}</td>
                 </tr>
