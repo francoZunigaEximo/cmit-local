@@ -188,6 +188,7 @@
                                 <th class="sort">Empresa</th>
                                 <th class="sort">Examen</th>
                                 <th>Saldo</th>
+                                <th>Reportes</th>
                             </tr>
                         </thead>
                         <tbody class="list form-check-all">
@@ -214,6 +215,7 @@
     const cambiarPago = "{{ route('cambiarPago') }}";
     const detallesExamenes = "{{ route('detallesExamenes') }}";
     const eliminarExCuenta = "{{ route('eliminarExCuenta') }}";
+    const exportGeneral = "{{ route('exportGeneral') }}";
 </script>
 
 @push('styles')

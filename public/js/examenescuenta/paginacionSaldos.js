@@ -15,7 +15,7 @@ $(document).ready(()=>{
 
             searching: false,
             ordering: true,
-            order: [[0, 'desc'], [1, 'desc'], [2, 'desc']],
+            order: [[0, 'desc'], [1, 'desc'], [2, 'desc'], [3, 'desc']],
             fixedColumns: true,
             processing: true,
             lengthChange: false,
@@ -60,6 +60,20 @@ $(document).ready(()=>{
                     targets: 2,
                     render: function(data){
                         return data.contadorSaldos;
+                    }
+                },
+                {
+                    data: null,
+                    name: 'acciones',
+                    orderable: false,
+                    targets: 3,
+                    render: function(data){
+                
+                        detalle = `<button data-id="${data.IdEmpresa}" title="Detalles" type="button" class="btn btn-sm botonGeneral detalles"><i class="ri-file-list-2-line"></i> Detalle</button>`,
+                        
+                        saldo = `<button type="button" data-id="${data.IdEmpresa}" class="btn btn-sm botonGeneral saldo"><i class="ri-file-list-2-line"></i> Saldo</button>`;
+
+                    return detalle + ' ' + saldo;  
                     }
                 },
             ],

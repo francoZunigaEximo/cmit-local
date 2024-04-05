@@ -167,7 +167,8 @@
     const liberarItemExCta = "{{ route('liberarItemExCta') }}";
     const savePrecarga = "{{ route('savePrecarga') }}";
     const savePaquete = "{{ route('savePaquete') }}";
-    const exportExCta = "{{ route('exportExCta') }}";
+    const exportExcel = "{{ route('exportExcel') }}";
+    const exportPDF = "{{ route('exportPDF') }}";
 
 </script>
 
