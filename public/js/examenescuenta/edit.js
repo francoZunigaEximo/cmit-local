@@ -367,61 +367,61 @@ $(document).ready(function(){
         }
     });
 
-        //Exportar Excel a clientes
-        $(document).on('click', '.exportar' ,function(e) {
-            e.preventDefault();
-    
-            let id = $(this).data('id');
+    //Exportar Excel a clientes
+    $(document).on('click', '.exportar, .imprimir', function(e) {
+        e.preventDefault();
 
-            if([null, undefined, ""].includes(id)) {
-                toastr.warning('No hay datos para exportar');
-                return;
-            }
-    
-            if (confirm("¿Estás seguro de que deseas generar el reporte de Excel?")) {
-                $.ajax({
-                    url: exportExCta,
-                    type: "GET",
-                    data: {
-                        Id: id
-                    },
-                    success: function(response) {
-                        let fecha = new Date(), dia = fecha.getDate(), mes = fecha.getMonth() + 1, anio = fecha.getFullYear();
+        let id = $(this).data('id'), tipo = $(this).hasClass('exportar') ? 'excel' : 'pdf';
 
-                        let filePath = response.filePath,
-                            pattern = /storage(.*)/,
-                            match = filePath.match(pattern),
-                            path = match ? match[1] : '';
+        if([null, undefined, ""].includes(id)) {
+            toastr.warning('No hay datos para exportar');
+            return;
+        }
 
-                        let url = new URL(location.href), baseUrl = url.origin; // Obtener la URL base (por ejemplo, http://localhost)
+        if (confirm("¿Estás seguro de que deseas generar el reporte de " + tipo.charAt(0).toUpperCase() + tipo.slice(1) + "?")) {
+            $.ajax({
+                url: tipo === 'excel' ? exportExcel : exportPDF,
+                type: "GET",
+                data: {
+                    Id: id
+                },
+                success: function(response) {
+                    
+                    createFile(tipo, response.filePath);
+                    toastr.success('Se ha generado el reporte ' + tipo);
+                }
+            });
+        }
 
-                        let fullPath = baseUrl + '/cmit/storage' + path;
-
-                        let link = document.createElement('a');
-                        link.href = fullPath;
-                        link.download = response.Factura + "---" + dia + "-" + mes + "-" + anio + ".xlsx";
-                        link.style.display = 'none';
-
-                        document.body.appendChild(link);
-                        link.click();
-                        setTimeout(function() {
-                            document.body.removeChild(link);
-                        }, 100);
-                    },
-                    error: function(xhr, status, error) {
-                        console.log(xhr.responseText);
-                    }
-                });
-            
-            }
-    
-        });
+    });
 
     function preloader(opcion) {
         $('#preloader').css({
             opacity: '0.3',
             visibility: opcion === 'on' ? 'visible' : 'hidden'
         });
+    }
+
+    function createFile(tipo, array){
+        let filePath = array,
+            pattern = /storage(.*)/,
+            match = filePath.match(pattern),
+            path = match ? match[1] : '';
+
+        let url = new URL(location.href),
+            baseUrl = url.origin,
+            fullPath = baseUrl + '/cmit/storage' + path;
+
+        let link = document.createElement('a');
+        link.href = fullPath;
+        link.download = tipo === 'pdf' ? "reporte.pdf" : "reporte.xlsx";
+        link.style.display = 'none';
+
+        document.body.appendChild(link);
+        link.click();
+        setTimeout(function() {
+            document.body.removeChild(link);
+        }, 100);
     }
 
 
