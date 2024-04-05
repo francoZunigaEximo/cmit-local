@@ -106,7 +106,7 @@
                         </div>
 
                         <div class="input-group input-group-sm mb-2 size80porcent">
-                            <span class="input-group-text">Fecha de Corte&nbsp;<span class="required">(*)</span></span>
+                            <span class="input-group-text">Fecha de Entrega&nbsp;<span class="required">(*)</span></span>
                             <input type="date" class="form-control" id="FechaEEdicion" name="FechaEEdicion" value="{{ $mapa->FechaE }}">
                         </div>
 
