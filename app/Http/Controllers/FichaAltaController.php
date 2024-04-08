@@ -51,7 +51,7 @@ class FichaAltaController extends Controller
     public function checkObs(Request $request): mixed
     {
 
-        $fichaLaboral = Fichalaboral::with(['paciente','art','empresa'])->where('IdPaciente', $request->Id)->first();
+        $fichaLaboral = Fichalaboral::with(['paciente','art','empresa'])->where('IdPaciente', $request->Id)->orderBy('Id', 'Desc')->first();
 
         if($fichaLaboral){
             
