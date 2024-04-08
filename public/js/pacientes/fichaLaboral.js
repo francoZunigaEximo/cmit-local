@@ -1,7 +1,7 @@
 $(document).ready(function () {
 
     let pagoLaboral = $('#PagoLaboral').val(), changeTipo = $('input[name="TipoPrestacion"]:checked').val();
-    $('.nuevaPrestacionModal, .observacionesModal, .nuevaPrestacion, .ObBloqueoEmpresa, .ObBloqueoArt, .ObEmpresa, .ObsPaciente, .ObsPres, .Factura, .TareaRealizar, .UltimoPuesto, .PuestoActual, .SectorActual, .AntiguedadPuesto, .AntiguedadEmpresa, .FechaIngreso, .FechaEgreso, .selectMapaPres, .Autoriza').hide();
+    $('.nuevaPrestacionModal, .observacionesModal, .nuevaPrestacion, .ObBloqueoEmpresa, .ObBloqueoArt, .ObEmpresa, .ObsPaciente, .ObsPres, .Factura, .TareaRealizar, .UltimoPuesto, .PuestoActual, .SectorActual, .AntiguedadPuesto, .AntiguedadEmpresa, .FechaIngreso, .FechaEgreso, .selectMapaPres, .Autoriza, .listadoExCta, #alertaExCta').hide();
 
     quitarDuplicados("#Horario");
     quitarDuplicados("#Tipo");
@@ -9,6 +9,7 @@ $(document).ready(function () {
     quitarDuplicados('#PagoLaboral');
     calcularAntiguedad();
     mostrarFinanciador();
+    checkExamenesCuenta($('selectClientes').val());
     
     toastr.options = {
         closeButton: true,   
@@ -205,7 +206,8 @@ $(document).ready(function () {
     });
 
     //Guardar FichaLaboral
-    $(document).on('click', '#guardarFicha', function(){
+    $(document).on('click', '#guardarFicha', function(e){
+        e.preventDefault();
 
         let paciente = ID,
             cliente = $('#selectClientes').val(),
@@ -253,7 +255,7 @@ $(document).ready(function () {
             return;
         }
 
-        mostrarPreloader('#preloader');
+        preloader('on');
         $.post(saveFichaAlta, {paciente: paciente,
             cliente: cliente,
             art: art,
@@ -277,7 +279,7 @@ $(document).ready(function () {
             _token: TOKEN,
             }) 
             .done(function() {
-                ocultarPreloader('#preloader');
+                preloader('off');
                 toastr.success('¡Los datos se han actualizado. Nos redirigimos a la nueva prestación.!', 'Perfecto');
                 mostrarFinanciador();
                 selectMedioPago();
@@ -287,7 +289,7 @@ $(document).ready(function () {
 
             })
             .fail(function(xhr) {
-                ocultarPreloader('#preloader');
+                preloader('off');
                 toastr.error('Hubo un problema para procesar la información. Consulte con el administrador del sistema.', 'Error');
                 console.error(xhr);
             });
@@ -308,6 +310,26 @@ $(document).ready(function () {
         document.querySelector(".select2-container--open .select2-search__field").focus()
     });
     
+    $(document).on('click', '.verListadoExCta', function(e){
+        e.preventDefault();
+        $('.listadoExCta').show();
+        $('.fichaLaboralModal').hide();
+
+        let id = $('#selectClientes').val();
+        examenesCta(id);
+        
+    });
+
+    $(document).on('click', '.cerrarlstExCta', function(e){
+        e.preventDefault();
+        $('.listadoExCta').hide();
+        $('.fichaLaboralModal').show();
+    });
+
+    $(document).on('change', '#selectClientes', function(){
+        let id = $(this).val();
+        checkExamenesCuenta(id);
+    });
 
     //Bloqueo de cliente si existe
     function cargarBloqueo(response) {
@@ -557,17 +579,63 @@ $(document).ready(function () {
         }
     }
 
-    function mostrarPreloader(arg) {
-        $(arg).css({
-            opacity: '0.3',
-            visibility: 'visible'
-        });
+    function examenesCta(id) {
+
+        $('#lstSaldos').empty();
+        preloader('on');
+
+        $.get(lstExDisponibles, {Id: id})
+            .done(function(response) {
+                var contenido = '';
+                preloader('off');
+
+                if(response && response.length > 0){
+
+                    $.each(response, function(index, r) {
+                    
+                        contenido = `
+                        <tr>
+                            <td>${r.Precarga === '' ? '-' : r.Precarga}</td>
+                            <td>${r.NombreExamen}</td>
+                        </tr>
+                        `;
+                        $('#lstSaldos').append(contenido);  
+                    });
+                }else{
+                    contenido = `
+                        <tr>
+                            <td>No hay registros de examenes a cuenta</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        `;
+                        $('#lstSaldos').append(contenido); 
+                }
+
+                
+                
+            });    
     }
-    
-    function ocultarPreloader(arg) {
-        $(arg).css({
-            opacity: '0',
-            visibility: 'hidden'
+
+    function checkExamenesCuenta(id){
+
+        $.get(lstExDisponibles, {Id: id})
+            .done(function(response){
+                if(response && response.length > 0) {
+                    console.log('check: ' + response)
+                    $('#alertaExCta').show();
+                    $('#PagoLaboral').val('P');
+                } else {
+                    $('#alertaExCta').hide();
+                    $('#PagoLaboral').val('');
+                }
+            })
+    }
+
+    function preloader(opcion) {
+        $('#preloader').css({
+            opacity: '0.3',
+            visibility: opcion === 'on' ? 'visible' : 'hidden'
         });
     }
     

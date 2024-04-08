@@ -799,6 +799,27 @@ class ExamenesCuentaController extends Controller
 
     }
 
+    public function disponibilidad(Request $request)
+    {
+        $examen = ExamenCuentaIt::join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
+            ->join('clientes', 'pagosacuenta.IdEmpresa', '=', 'clientes.Id')
+            ->join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
+            ->select(
+                'pagosacuenta.Id as Id',
+                'pagosacuenta_it.Obs as Precarga',
+                'examenes.Nombre as NombreExamen', 
+                //DB::raw('COUNT(pagosacuenta_it.IdExamen) as Cantidad')
+            )
+            ->where('pagosacuenta.IdEmpresa', $request->Id)
+            ->where('pagosacuenta_it.IdPrestacion', 0)
+            ->whereNot('pagosacuenta_it.Obs', 'provisorio')
+            ->orderBy('examenes.Nombre', 'Asc')
+            ->orderBy('pagosacuenta_it.Obs', 'Desc')
+            ->get();
+
+        return response()->json($examen);  
+    }
+
     private function tituloReporte(?int $id): mixed
     {
         return ExamenCuenta::join('clientes', 'pagosacuenta.IdEmpresa', '=', 'clientes.Id')

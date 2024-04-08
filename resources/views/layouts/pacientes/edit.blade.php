@@ -203,7 +203,7 @@
 </div>
 
 
-<!-- Default Modals -->
+<!-- Default Modals Alerto de registro -->
 <div id="myModal" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -257,7 +257,14 @@
             </div>
             <div class="modal-body">
                 <div class="row fichaLaboralModal">
-                    <h3 class="ff-secondary fw-bold mt-1 text-center">Ficha Laboral</h3>
+                    <div class="row">
+                        <div class="col-sm-4"></div>
+                        <div class="col-sm-4 text-center"><h3 class="ff-secondary fw-bold mt-1 text-center">Ficha Laboral</h3></div>
+                        <div class="col-sm-4 text-center">
+                            <button type="button" class=" btn btn-sm botonGeneral verListadoExCta"><i class="ri-list-unordered"></i> Examenes a cuenta</button>
+                        </div>
+                    </div>
+                   
                     <div class="row">
                         <div class="col-9 mx-auto box-information">
                             <div class="row">
@@ -434,7 +441,7 @@
                             <hr class="mt-1 mb-1">
 
                             <div class="row">
-                                <div class="col-6">
+                                <div class="col-sm-6">
 
                                     <div class="input-group input-group-sm mb-2">
                                         <span class="input-group-text">Forma de Pago</span>
@@ -445,8 +452,12 @@
                                             <option value="P">Exámen a Cuenta</option>
                                         </select>
                                     </div>
-                                    </div>
                                 </div>
+
+                                <div class="col-sm-6 justify-content-left d-flex align-items-center" >
+                                    <span id="alertaExCta" class="fw-bolder rojo">Exa Cta Disponible</span>
+                                </div>
+                            </div>
 
                                 <hr class="mt-1 mb-1">
 
@@ -617,6 +628,42 @@
                     </div>
                    
                 </div>
+
+                <div class="row listadoExCta">
+                    <div class="row">
+                        <div class="col-sm-4"></div>
+                        <div class="col-sm-4 text-center"><h3 class="ff-secondary fw-bold mt-1 text-center">Listado de examenes a cuenta</h3></div>
+                        <div class="col-sm-4 text-center"></div>
+                    </div>
+                   
+                    <div class="row">
+                        <div class="col-9 mx-auto box-information">
+                            <div class="row">
+                                <div class="col-sm-12 text-end">
+                                    <button type="button" class="btn btn-sm botonGeneral cerrarlstExCta">Cerrar</button>
+                                </div>
+                            </div>
+
+                            <div class="row auto-mx mb-3">
+                                <div class="table-responsive table-card mt-3 mb-1 mx-auto col-sm-7">
+                                    <table id="listadoSaldos" class="display table table-bordered">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th class="sort">Precarga</th>
+                                                <th class="sort">Examen</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="list form-check-all" id="lstSaldos">
+                            
+                                        </tbody>
+                                    </table>
+                            
+                                </div>
+                            </div>
+                        
+                        </div>
+                    </div>
+                </div>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
@@ -639,6 +686,7 @@ const downPrestaActiva = "{{ route('downPrestaActiva') }}";
 const getComentarioPres = "{{ route('getComentarioPres') }}";
 const setComentarioPres = "{{ route('setComentarioPres') }}";
 const searchPrestPacientes = "{{ route('searchPrestPacientes') }}";
+const lstExDisponibles = "{{ route('lstExDisponibles') }}";
 
 const getMapas = "{{ route('getMapas') }}";
 
