@@ -259,8 +259,6 @@ class PrestacionesController extends Controller
         return $query;
     }
     
-    
-
     public function create()
     {
         $tipoPrestacion = PrestacionesTipo::all();
@@ -380,7 +378,7 @@ class PrestacionesController extends Controller
             'IdPaciente' => $request->paciente,
             'TipoPrestacion' => $request->tipoPrestacion,
             'Fecha' => $request->fecha,
-            'IdMapa' => $request->mapas ?? '0',
+            'IdMapa' => $request->tipoPrestacion <> 'ART' ? 0 : ($request->mapas ?? 0),
             'Pago' => $request->pago,
             'SPago' => $request->spago ?? '',
             'Observaciones' => $request->observaciones ??  '',
@@ -394,17 +392,14 @@ class PrestacionesController extends Controller
 
         $empresa = ($request->tipoPrestacion === 'ART' ? $request->IdART : $request->IdEmpresa);
 
-        if($request->mapas)
-        {
-            $this->updateMapeados($request->mapas);
-        }
+        $request->mapas && $this->updateMapeados($request->mapas);
+        
 
         if($request->tipo && $request->sucursal && $request->nroFactura && $nuevoId)
         {
             $this->addFactura($request->tipo, $request->sucursal, $request->nroFactura, $empresa, $request->tipoPrestacion, $nuevoId);
         }
-        
-
+    
         return response()->json(['nuevoId' => $nuevoId]);
     }
 
@@ -416,7 +411,7 @@ class PrestacionesController extends Controller
         $prestacion->IdART = $request->Art ?? 0;
         $prestacion->Fecha = $request->Fecha ?? '';
         $prestacion->TipoPrestacion = $request->TipoPrestacion ?? '';
-        $prestacion->IdMapa = ($request->Art === null || $request->Art === 0 ? 0 : $request->Mapas ?? 0);
+        $prestacion->IdMapa = ($request->Art === null || $request->Art === 0 ? 0 : ($request->TipoPrestacion <> 'ART' ? 0 : $request->Mapas));
         $prestacion->Pago = $request->Pago ?? '';
         $prestacion->SPago = $request->SPago ?? '';
         $prestacion->Financiador = ($request->TipoPrestacion == 'ART' ? $request->Art : $request->Empresa) ?? 0;
@@ -429,16 +424,8 @@ class PrestacionesController extends Controller
         $prestacion->ObsExamenes = $request->ObsExamenes ?? '';
         $prestacion->save();
         
-        if($request->SinEval)
-        {
-            $this->setPrestacionAtributo($request->Id, $request->SinEval);
-        }
-
-        if($request->Obs)
-        {
-            $this->setPrestacionComentario($request->Id, $request->Obs);
-        }
-
+        $request->SinEval && $this->setPrestacionAtributo($request->Id, $request->SinEval);
+        $request->Obs && $this->setPrestacionComentario($request->Id, $request->Obs);
         $empresa = ($request->tipoPrestacion === 'ART' ? $request->ART : $request->Empresa);
         
         $this->updateFichaLaboral($request->IdPaciente, $request->Art, $request->Empresa);

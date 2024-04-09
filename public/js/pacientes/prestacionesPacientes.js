@@ -1,10 +1,11 @@
 $(document).ready(()=>{
     
+    var empresaInput = $('#selectClientes').val(), artInput = $('#selectArt').val();
     let hoy = new Date().toISOString().slice(0, 10), precarga = $('#tipoPrestacionPres').val();
     $('#Fecha').val(hoy);
-    
+
     precargaTipoPrestacion(precarga);
-    getMap();
+    getMap(empresaInput, artInput);
     getListado(null);
 
     toastr.options = {
@@ -12,6 +13,20 @@ $(document).ready(()=>{
         progressBar: true,    
         timeOut: 3000,        
     };
+
+    $(document).on('change', '#tipoPrestacionPres', function(){
+        let actPrecarga = $('#tipoPrestacionPres').val();
+        precargaTipoPrestacion(actPrecarga);
+    });
+
+    $(document).on('change', '#selectClientes, #selectArt', function(){
+
+        let empresaCap = $('#selectClientes').val();
+        let artCap = $('#selectArt').val();
+        
+        getMap(empresaCap, artCap);
+    });
+    
 
     //Guardamos la prestación
     $('#guardarPrestacion').click(function(){
@@ -30,41 +45,42 @@ $(document).ready(()=>{
             financiador = $('#financiador').val();
 
         //Validamos la factura
-        if(spago === 'G' && autorizado === ''){
+        if (spago === 'G' && autorizado === ''){
             toastr.warning('Si el medio de pago es gratuito, debe seleccionar quien autoriza.', 'Alerta');
             return;
         }
 
-        if(tipoPrestacion === ''){
+        if (['', null].includes(tipoPrestacion)) {
             toastr.warning('El tipo de prestación no puede ser un campo vacío', 'Alerta');
             return;
         }
 
-        if(tipoPrestacion === 'ART' && mapa == '0'){
+        if (tipoPrestacion === 'ART' && (mapa == '0' || mapa === '')){
             toastr.warning('Debe seleccionar un mapa vigente para continuar si su prestacion es ART', 'Alerta');
             return;
         }
 
-        if(pago === 'B' && spago === '') {
+        if (pago === 'B' && spago === '') {
             toastr.warning('Debe seleccionar un "medio de pago" cuando la "forma de pago" es "contado"', 'Alerta');
             return;
         }
 
-        if(pago === '' || pago === null || pago === undefined) {
+        if (['',null,undefined].includes(pago)) {
             toastr.warning('Debe seleccionar una "forma de pago"', 'Alerta');
             return;
         }
 
-        if(pago === 'B' && (tipo == '' || sucursal === '' || nroFactura === '')){
+        if (pago === 'B' && (tipo == '' || sucursal === '' || nroFactura === '')){
             toastr.warning('El pago es contado, asi que debe agregar el número de factura para continuar.', 'Alerta');
             return;
         }
 
-        if(financiador === ''){
+        if (financiador === ''){
             toastr.warning('El campo financiador es obligatorio', 'Alerta');
             return;
         }
-
+        
+        preloader('on');
         $.ajax({
             url: verificarAlta,
             type: 'GET',
@@ -72,9 +88,10 @@ $(document).ready(()=>{
                 Id: ID
             },
             success: function(response){
+                preloader('off');
                 let cliente = response.cliente;
                 let clienteArt = response.clienteArt;
-                console.log(response)
+                
                 $.ajax({
                     url: savePrestacion,
                     method: 'post',
@@ -151,7 +168,7 @@ $(document).ready(()=>{
                 cambioEstadoBlock();
             },
             error: function(xhr) {
-                toastr.error('No se ha podido bloquear la prestación. Consulte con el administrador', 'Error');
+                toastr.error('No se ha podido bloquear la prestación. Consulte con el administrador');
                 console.error(xhr);
             }
         });
@@ -171,12 +188,12 @@ $(document).ready(()=>{
                 Id: Id,
             },
             success: function() {
-                toastr.success('Se ha dado de baja la prestación del paciente de manera correcta. Puede que tarde unos minutos en cargar el cambio.', 'Acción realizada');
+                toastr.success('Se ha dado de baja la prestación del paciente de manera correcta. Puede que tarde unos minutos en cargar el cambio.');
                 cambioEstadoDown();
                 getListado(null);
             },
             error: function(xhr){
-                swal('Error', 'No se ha podido dar de baja la prestación. Consulte con el administrador', 'error');
+                toastr.error('No se ha podido dar de baja la prestación. Consulte con el administrador');
                 console.error(xhr);
             }
         });
@@ -199,21 +216,7 @@ $(document).ready(()=>{
             $('#SPago, #Tipo, #Sucursal, #NroFactura').val(" ");
         }
     });
-
-    function mostrarPreloader(arg) {
-        $(arg).css({
-            opacity: '0.3',
-            visibility: 'visible'
-        });
-    }
-    
-    function ocultarPreloader(arg) {
-        $(arg).css({
-            opacity: '0',
-            visibility: 'hidden'
-        });
-    }
-    
+  
     //Obtener fechas
     function fechaNow(fechaAformatear, divider, format) {
         let dia, mes, anio; 
@@ -245,10 +248,9 @@ $(document).ready(()=>{
         $('#estadoBadge').text('Bloqueado');
     }
 
-    function getMap(){
+    function getMap(x, y){
 
-        let empresa = $('#selectClientes').val(),
-            art = $('#selectArt').val();
+        let empresa = x, art = y;
 
         $.get(getMapas, {empresa: empresa, art: art})
             .done(function(response){
@@ -274,29 +276,15 @@ $(document).ready(()=>{
 
     function precargaTipoPrestacion(val){
         if(val === 'ART'){
-
             $('.selectMapaPres').show();
-        }else{
+        }else if(val !== 'ART'){
             $('.selectMapaPres').hide();
-        }
-    }
-
-    function actualizarFinanciador(estado){
-        if (estado !== 'ART') {
-            $("#empresaFinanciador").prop("selected", true);
-            
-        } else if (estado === '') {
-            $("#emptyFinanciador").prop("selected", true);
-            
-        } else {
-            $("#artFinanciador").prop("selected", true);
-            
         }
     }
 
     function getListado(buscar) {
 
-        mostrarPreloader('#preloader');
+        preloader('on');
         $.ajax({
             url: searchPrestPacientes,
             type: 'GET',
@@ -306,7 +294,7 @@ $(document).ready(()=>{
             },
             success: function(response){
 
-                ocultarPreloader('#preloader');
+                preloader('off');
                 let pacientes = response.pacientes;
                 $('#results').hide();
 
@@ -405,6 +393,13 @@ $(document).ready(()=>{
                     $('#listaPacientes tbody').append(row);
                 });
             }
+        });
+    }
+
+    function preloader(opcion) {
+        $('#preloader').css({
+            opacity: '0.3',
+            visibility: opcion === 'on' ? 'visible' : 'hidden'
         });
     }
 

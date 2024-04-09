@@ -88,7 +88,7 @@
                     </div>
 
                     <div class="col-12 box-information mt-2 text-center">
-                        <button type="submit" class="btn botonGeneral" id="crearMapa">Guardar</button>
+                        <button type="submit" class="btn botonGeneral" id="crearMapa"><i class="ri-save-line"></i>Guardar</button>
                     </div>
                 </div>
             </form>

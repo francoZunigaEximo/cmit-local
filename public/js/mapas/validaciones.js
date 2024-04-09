@@ -62,7 +62,7 @@ $(document).ready(()=>{
     }, "La fecha debe ser posterior a la fecha de hoy");
 
     $.validator.addMethod("noNegative", function(value, element) {
-        return this.optional(element) || (/^[a-zA-Z]+$/.test(value) || parseFloat(value) >= 0);
+        return this.optional(element) || (/^[a-zA-Z0-9]+$/.test(value) || parseFloat(value) >= 0);
     }, "Solo se permiten letras o números no negativos");
 
 

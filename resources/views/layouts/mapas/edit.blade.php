@@ -12,7 +12,7 @@
     </div>
 </div>
 
-<h4 class="mb-4 mt-3"></span> {{ $mapa->artMapa->RazonSocial }} | {{ $mapa->empresaMapa->RazonSocial }} <span class="custom-badge original">{{$mapa->Nro }}</h4>
+<h4 class="mb-4 mt-3 d-flex align-items-center"></span> {{ $mapa->artMapa->RazonSocial }} | {{ $mapa->empresaMapa->RazonSocial }} &nbsp;<span class="custom-badge original">{{$mapa->Nro }}</h4>
 
 <div class="card-header">
     <ul class="nav nav-tabs-custom rounded card-header-tabs border-bottom-0" role="tablist">
@@ -128,7 +128,7 @@
                     </div>
 
                     <div class="col-12 box-information mt-2 text-center">
-                        <button type="button" id="updateMapa" class="btn botonGeneral">Actualizar</button>
+                        <button type="button" id="updateMapa" class="btn botonGeneral"><i class="ri-save-line"></i>Actualizar</button>
                     </div>
                 </div>
             </form>

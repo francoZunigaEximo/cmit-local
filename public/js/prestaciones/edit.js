@@ -2,7 +2,7 @@ $(document).ready(()=> {
 
     let fecha = $('#FechaVto').val(), opcion = $('#pago').val(), opcionPago = $('#SPago').val();
     var empresa = $('#empresa').val(), art = $('#art').val();
-    console.log("valor inicial art: " + art)
+
     toastr.options = {
         closeButton: true,   
         progressBar: true,     
@@ -11,16 +11,9 @@ $(document).ready(()=> {
 
     precargaMapa();
     
-    $('#empresa').on('select2:select', function (e) {
-        var data = e.params.data;
-        empresa = data.id;
-        actualizarMapa();
-    });
-    
-    $('#art').on('select2:select', function (e) {
-        var data = e.params.data;
-        art = data.id;
-        actualizarMapa();
+    $(document).on('change', '#empresa, #art, #TipoPrestacion', function(){
+        let emp = $('#empresa').val(), art = $('#art').val();
+        getMap(emp, art);
     });
     
     quitarDuplicados("#tipoPrestacion");
@@ -37,7 +30,6 @@ $(document).ready(()=> {
     cargarFinanciador($("#tipoPrestacion").val());
     cambiosVencimiento(fecha);
     selectMedioPago(opcion);
-    //getMap(empresa, art);
     getFact();
     checkBloq();
     comentariosPrivados();
@@ -504,8 +496,7 @@ $(document).ready(()=> {
         
         let val = $('#TipoPrestacion').val(), val2 = $('#art').val();
         if(val === 'ART' && (val2 !== '' && val2 != '0' && val2 !== null)){
-            console.log("Val: " + val);
-            console.log("Val2: " + val2);
+
             $('.mapas').show();
         }else{
             $('.mapas').hide();
@@ -725,15 +716,11 @@ $(document).ready(()=> {
         });
     }
 
-    function preloader(arg) {
-        $(arg).css({
+    function preloader(opcion) {
+        $('#preloader').css({
             opacity: '0.3',
-            visibility: arg === 'on' ? 'visible' : 'hidden'
+            visibility: opcion === 'on' ? 'visible' : 'hidden'
         });
-    }
-
-    function actualizarMapa() {
-        getMap(empresa, art);
     }
     
 

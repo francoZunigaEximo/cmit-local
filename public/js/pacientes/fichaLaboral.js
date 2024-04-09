@@ -352,7 +352,7 @@ $(document).ready(function () {
 
 
      function mostrarFinanciador(){
-
+        preloader('on');
         $.ajax({
             url: verificarAlta,
             type: 'GET',
@@ -360,6 +360,7 @@ $(document).ready(function () {
                 Id: ID,
             },
             success: function(response){
+                preloader('off');
                 let verificar = response.fichaLaboral, cliente = response.cliente, clienteArt = response.clienteArt;
 
                 if(verificar !== undefined && verificar.Id ) {
@@ -367,7 +368,7 @@ $(document).ready(function () {
                     $('.updateFinanciador').empty();
     
                     let prestacion = `<select class="form-select" name="financiador" id="financiador">
-                                        <option id="emptyFinanciador" value="" selected="">Elija una opción...</option>
+                                        <option id="emptyFinanciador" value="" selected>Elija una opción...</option>
                                         <option id="artFinanciador" value="${clienteArt.Id}">ART:  ${clienteArt.RazonSocial} - ${clienteArt.Identificacion}</option>
                                         <option id="empresaFinanciador" value="${cliente.Id}">EMPRESA: ${cliente.RazonSocial} - ${cliente.Identificacion}</option>
                                     </select>`;
@@ -400,7 +401,7 @@ $(document).ready(function () {
      }
 
     function filtrarTipoPrestacion(idFinanciador, estado) {
-
+        preloader('on');
         $.ajax({
             url: getTipoPrestacion,
             type: "GET",
@@ -409,11 +410,12 @@ $(document).ready(function () {
                 _token: TOKEN
             },
             success: function(response) {
+                preloader('off');
                 let tiposPrestacion = response.tiposPrestacion;
                 
                 if(tiposPrestacion) {
                     $('#tipoPrestacionPres').empty();
-                    $('#tipoPrestacionPres').append('<option selected>Elija una opción...</option>');
+                    $('#tipoPrestacionPres').append('<option value="" selected>Elija una opción...</option>');
 
                     tiposPrestacion.forEach(function(tipoPrestacion) {
                         $('#tipoPrestacionPres').append('<option value="' + tipoPrestacion.nombre + '">' + tipoPrestacion.nombre + '</option>');
@@ -530,7 +532,7 @@ $(document).ready(function () {
                 let alerta = `
                 <!-- Warning Alert -->
                     <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                        <strong> No existen observaciones para generar la prestación. </strong>
+                        <strong> No existen observaciones para mostrar en la prestación. </strong>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 `;
@@ -539,6 +541,9 @@ $(document).ready(function () {
                 $('.nuevaPrestacion').show();
 
                 $(".messagePrestacion").html(alerta);
+                setTimeout(()=>{
+                    $(".messagePrestacion").hide();
+                }, 4000);
             
             }else{
 
@@ -622,10 +627,12 @@ $(document).ready(function () {
         $.get(lstExDisponibles, {Id: id})
             .done(function(response){
                 if(response && response.length > 0) {
-                    console.log('check: ' + response)
+                    
                     $('#alertaExCta').show();
-                    $('#PagoLaboral').val('P');
+                    $('#PagoLaboral, #Pago').val('P');
+
                 } else {
+
                     $('#alertaExCta').hide();
                     $('#PagoLaboral').val('');
                 }
