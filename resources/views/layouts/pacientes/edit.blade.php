@@ -617,11 +617,58 @@
                                 </div>
                             </div>
 
+                            <hr class="mt-3 mb-3 ultimasFacturadas">
+
+                            <div class="row mt-2 ultimasFacturadas">
+                                <div class="col-lg-12">
+                                    <div class="card titulo-tabla">
+                                        <div class="card-header d-flex justify-content-between align-items-center">
+                                            <h4 class="card-title mb-0">Ultimas prestaciones facturadas</h4>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="table-responsive table-card mb-1 col-sm-12">
+                                                <table id="lstDisponibles" class="display table table-bordered">
+                                                    <thead class="table-light">
+                                                    </thead>
+                                                    <tbody class="list form-check-all" id="grillaFacturadas">
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mt-2 examenesDisponibles">
+                                <div class="col-lg-12">
+                                    <div class="card titulo-tabla">
+                                        <div class="card-header d-flex justify-content-between align-items-center">
+                                            <h4 class="card-title mb-0">Examenes a cuenta disponibles <span class="small">(Total: <span id="totalCantidad"></span>)</span></h4>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="col-sm-12">
+                                                <table id="lstDisponibles" class="table table-bordered dt-responsive nowrap table-striped align-middle dataTable no-footer dtr-inline collapsed">
+                                                    <thead class="table-light">
+                                                        <tr>
+                                                            <th>Cantidad </th>
+                                                            <th>Nombre de exámen</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody class="list form-check-all" id="disponiblesExamenes">
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="row">
                                 <div class="col-12 text-center mt-2">
                                     <hr class="mt-2 mb-2 d-block">
-                                    <button type="button" class="btn botonGeneral eventDelete" data-bs-dismiss="modal">Cancelar</button>
-                                    <button type="button" id="guardarPrestacion" class="btn botonGeneral">Guardar</button>
+                                    <button type="button" class="btn botonGeneral eventDelete" data-bs-dismiss="modal"><i class="ri-close-circle-line"></i>Cancelar</button>
+                                    <button type="button" id="guardarPrestacion" class="btn botonGeneral"><i class="ri-save-line"></i>Guardar</button>
+                                    <button type="button" id="siguienteExCta" class="btn botonGeneral"><i class="ri-arrow-right-line"></i>Siguiente</button>
                                 </div>
                             </div>
                         </div>
@@ -664,6 +711,35 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="row seleccionExCta">
+                    <div class="row">
+                        <div class="col-sm-4"></div>
+                        <div class="col-sm-4 text-center"><h3 class="ff-secondary fw-bold mt-1 text-center">Agregar examenes a cuenta</h3></div>
+                        <div class="col-sm-4 text-center"></div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12 mx-auto box-information">
+                            <div class="row">
+                                <div class="col-sm-12 text-end">
+                                    <button type="button" class="btn btn-sm botonGeneral volverPrestacion"><i class="ri-arrow-left-line"></i>Volver</button>
+                                </div>
+                            </div>
+                            <div class="row mx-auto">
+                                <div class="table-responsive table-card mt-3 mb-1 mx-auto col-sm-8">
+                                    <table id="lstExCta" class="display table table-bordered">
+                                        <tbody class="list form-check-all" id="lstEx">
+                                            
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
@@ -687,6 +763,14 @@ const getComentarioPres = "{{ route('getComentarioPres') }}";
 const setComentarioPres = "{{ route('setComentarioPres') }}";
 const searchPrestPacientes = "{{ route('searchPrestPacientes') }}";
 const lstExDisponibles = "{{ route('lstExDisponibles') }}";
+const lstFacturadas = "{{ route('lstFacturadas')}}";
+const lstExamenes = "{{ route('lstExamenes') }}";
+const saldoNoDatatable = "{{ route('saldoNoDatatable') }}";
+const cantTotalDisponibles = "{{ route('cantTotalDisponibles') }}";
+const lstClientes = "{{ route('lstClientes') }}";
+const listadoPrecarga = "{{ route('listadoPrecarga') }}";
+const listadoEx = "{{ route('listadoEx') }}";
+const lstExClientes = "{{ route('lstExClientes') }}";
 
 const getMapas = "{{ route('getMapas') }}";
 

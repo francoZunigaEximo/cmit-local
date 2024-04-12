@@ -1,7 +1,7 @@
 $(document).ready(function () {
 
     let pagoLaboral = $('#PagoLaboral').val(), changeTipo = $('input[name="TipoPrestacion"]:checked').val();
-    $('.nuevaPrestacionModal, .observacionesModal, .nuevaPrestacion, .ObBloqueoEmpresa, .ObBloqueoArt, .ObEmpresa, .ObsPaciente, .ObsPres, .Factura, .TareaRealizar, .UltimoPuesto, .PuestoActual, .SectorActual, .AntiguedadPuesto, .AntiguedadEmpresa, .FechaIngreso, .FechaEgreso, .selectMapaPres, .Autoriza, .listadoExCta, #alertaExCta').hide();
+    $('.nuevaPrestacionModal, .observacionesModal, .nuevaPrestacion, .ObBloqueoEmpresa, .ObBloqueoArt, .ObEmpresa, .ObsPaciente, .ObsPres, .Factura, .TareaRealizar, .UltimoPuesto, .PuestoActual, .SectorActual, .AntiguedadPuesto, .AntiguedadEmpresa, .FechaIngreso, .FechaEgreso, .selectMapaPres, .Autoriza, .listadoExCta, #alertaExCta, #examenesDisponibles, #ultimasFacturadas').hide();
 
     quitarDuplicados("#Horario");
     quitarDuplicados("#Tipo");
@@ -193,7 +193,6 @@ $(document).ready(function () {
     });
 
     $(document).on('change', '#Pago', function(){
-        
         selectMedioPago();
     });
 
@@ -543,7 +542,7 @@ $(document).ready(function () {
                 $(".messagePrestacion").html(alerta);
                 setTimeout(()=>{
                     $(".messagePrestacion").hide();
-                }, 4000);
+                }, 10000);
             
             }else{
 
@@ -576,8 +575,7 @@ $(document).ready(function () {
                     $('.ObPaciente').show();
                     $('.ObPaciente p').text(obsPaciente.Observaciones);
                 }
-            }
-            
+            } 
         } catch (error) {
             console.error(error);
             toastr.warning('Se ha producido un error. Consulte con el administrador', 'Error');
@@ -615,10 +613,7 @@ $(document).ready(function () {
                         </tr>
                         `;
                         $('#lstSaldos').append(contenido); 
-                }
-
-                
-                
+                }  
             });    
     }
 
@@ -628,13 +623,14 @@ $(document).ready(function () {
             .done(function(response){
                 if(response && response.length > 0) {
                     
-                    $('#alertaExCta').show();
+                    $('#alertaExCta, .examenesDisponibles, .ultimasFacturadas, #siguienteExCta').show();
                     $('#PagoLaboral, #Pago').val('P');
-
+                    $('#guardarPrestacion').hide();
                 } else {
 
-                    $('#alertaExCta').hide();
+                    $('#alertaExCta, .examenesDisponibles, .ultimasFacturadas, #siguienteExCta').hide();
                     $('#PagoLaboral').val('');
+                    $('#guardarPrestacion').show();
                 }
             })
     }

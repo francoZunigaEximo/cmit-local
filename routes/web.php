@@ -214,6 +214,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('updateEstadoItem', [ItemPrestacionesController::class, 'updateEstadoItem'])->name('updateEstadoItem');
     Route::post('liberarExamen', [ItemPrestacionesController::class, 'liberarExamen'])->name('liberarExamen');
     Route::post('marcarExamenAdjunto', [ItemPrestacionesController::class, 'marcarExamenAdjunto'])->name('marcarExamenAdjunto');
+    Route::get('lstExamenes', [ItemPrestacionesController::class, 'lstExamenes'])->name('lstExamenes');
 
     //Rutas de FacturasdeVenta
     Route::get('getFactura', [FacturasVentaController::class, 'getFactura'])->name('getFactura');
@@ -250,12 +251,17 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('savePrecarga', [ExamenesCuentaController::class, 'precarga'])->name('savePrecarga');
     Route::post('savePaquete', [ExamenesCuentaController::class, 'saveEx'])->name('savePaquete');
     Route::get('lstClientes', [ExamenesCuentaController::class, 'lstClientes'])->name('lstClientes');
+    Route::get('lstExClientes', [ExamenesCuentaController::class, 'lstExClientes'])->name('lstExClientes');
     Route::get('listadoDni', [ExamenesCuentaController::class, 'listadoDni'])->name('listadoDni');
+    Route::get('listadoPrecarga', [ExamenesCuentaController::class, 'listadoPrecarga'])->name('listadoPrecarga');
     Route::get('listadoEx', [ExamenesCuentaController::class, 'listadoEx'])->name('listadoEx');
     Route::get('exportExcel', [ExamenesCuentaController::class, 'excel'])->name('exportExcel');
     Route::get('exportPDF', [ExamenesCuentaController::class, 'pdf'])->name('exportPDF');
     Route::get('exportGeneral', [ExamenesCuentaController::class, 'reporteGeneral'])->name('exportGeneral');
     Route::get('lstExDisponibles', [ExamenesCuentaController::class, 'disponibilidad'])->name('lstExDisponibles');
+    Route::get('lstFacturadas', [ExamenesCuentaController::class, 'listadoUltimas'])->name('lstFacturadas');
+    Route::get('saldoNoDatatable', [ExamenesCuentaController::class, 'saldoNoDatatable'])->name('saldoNoDatatable');
+    Route::get('cantTotalDisponibles', [ExamenesCuentaController::class, 'disponibles'])->name('cantTotalDisponibles');
 
     //Rutas de Paquete de Estudio
     Route::get('getPaquetes', [PaqueteEstudioController::class, 'paquetes'])->name('getPaquetes');

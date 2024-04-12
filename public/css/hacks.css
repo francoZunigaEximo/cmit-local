@@ -254,6 +254,10 @@ label {
 	color: green;
 }
 
+.borde-inferior {
+	border-bottom: 2px solid rgb(26, 24, 24);
+}
+
 .boton-azul {
 	color: white !important;
 	background-color: #24dcfc !important;
@@ -414,6 +418,9 @@ body .selectArt2 .select2.select2-container {
 #listadoSaldos th, td,
 #lstFactCliente th, td,
 #listaPac th, td,
+#disponblesExamenes th, td,
+#lstDisponibles th, td,
+#lstExCta th, td,
 #listaPrestaciones th, td { white-space: nowrap !important; }
 
 #listaClientes tr,
@@ -435,6 +442,8 @@ body .selectArt2 .select2.select2-container {
 #listadoSaldos tr,
 #lstFactCliente tr,
 #listaPac tr,
+#lstDisponibles tr,
+#lstExCta tr,
 #listaPrestaciones tr { height: 25px !important;}
 
 #listaClientes tbody tr td,
@@ -455,6 +464,9 @@ body .selectArt2 .select2.select2-container {
 #listadoSaldos tbody tr td,
 #lstFactCliente tbody tr td,
 #listaPac tbody tr td,
+#disponblesExamenes tbody tr td,
+#lstDisponibles tbody tr td,
+#lstExCta tbody tr td,
 #listaPrestaciones tbody tr td { padding: 5px 8px 2px 8px };
 
 table.dataTable tr.dtrg-level-0 td {
@@ -484,6 +496,9 @@ table.dataTable tr.dtrg-level-0 td {
 #listaOrdenesEfectoresAdj > :not(caption) > *,
 #listadoExamenesCuentas > :not(caption) > *,
 #listadoExCtasSaldos > :not(caption) > *,
+#disponblesExamenes > :not(caption) > *,
+#lstDisponibles :not(caption) > *,
+#lstExCta :not(caption) > *,
 #finalizarMapa > :not(caption) > * {
     padding: 0.25rem 0.6rem;
 }
@@ -505,6 +520,10 @@ table.dataTable tr.dtrg-level-0 td {
 .fondo-celeste {
 	background-color: #00d9ff;
 	color:#0e0d0d;
+}
+
+.fondo-base {
+	background-color:#e9ebec;
 }
 
 .enlace-blanco {

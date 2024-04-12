@@ -26,9 +26,9 @@ class OrdenesExamenController extends Controller
         {
             $cacheKey = 'search:' . $request->fechaDesde . ':' . $request->fechaHasta . ':' . $request->especialidad;
 
-            $result = Cache::get($cacheKey);
+            $data = Cache::get($cacheKey);
 
-            if (!$result) {
+            if (!$data) {
 
                 $query = ItemPrestacion::join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
                 ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
@@ -68,12 +68,13 @@ class OrdenesExamenController extends Controller
 
                 $result = $this->condicionesComunes($filtrado);
 
-                $dataTable = Datatables::of($result);
+                Cache::put($cacheKey, $result->get(), 60);
 
-                return $dataTable->make(true);
+            }else{
+                $result = collect($data);
             }
 
-            return $result;
+            return Datatables::of($result)->make(true);
         }
 
         return view('layouts.ordenesExamen.index');
@@ -85,9 +86,9 @@ class OrdenesExamenController extends Controller
         {
             $cacheKey = 'searchA:' . $request->fechaDesde . ':' . $request->fechaHasta . ':' . $request->especialidad;
 
-            $result = Cache::get($cacheKey);
+            $data = Cache::get($cacheKey);
 
-            if (!$result) {
+            if (!$data) {
 
                 $query = ItemPrestacion::join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
                 ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
@@ -150,14 +151,13 @@ class OrdenesExamenController extends Controller
 
                 $result = $this->condicionesComunes($filtrado);
 
-                $dataTable = Datatables::of($result);
+                Cache::put($cacheKey, $result->get(), 60);
 
-                Cache::put($cacheKey, $dataTable->make(true), 60);
-
-                return $dataTable->make(true);
+            }else{
+                $result = collect($data);
             }
 
-            return $result;  
+            return Datatables::of($result)->make(true);
         }
         
         return view('layouts.ordenesExamen.index');
@@ -169,9 +169,9 @@ class OrdenesExamenController extends Controller
         {
             $cacheKey = 'searchAdj:' . $request->fechaDesde . ':' . $request->fechaHasta . ':' . $request->especialidad;
 
-            $result = Cache::get($cacheKey);
+            $data = Cache::get($cacheKey);
 
-            if (!$result) {
+            if (!$data) {
 
                 $query = ItemPrestacion::join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
                 ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
@@ -229,17 +229,12 @@ class OrdenesExamenController extends Controller
                     );
 
                 $result = $this->condicionesComunes($filtrado);
-
-                $dataTable = Datatables::of($result);
-
-                Cache::put($cacheKey, $dataTable->make(true), 60);
-
-                return $dataTable->make(true);
+                Cache::put($cacheKey, $result->get(), 60);
+            }else{
+                $result = collect($data);
             }
-
-            return $result;
+            return Datatables::of($result)->make(true);
         }
-
         return view('layouts.ordenesExamen.index');
     }
 
@@ -249,9 +244,9 @@ class OrdenesExamenController extends Controller
         {
             $cacheKey = 'searchInf:' . $request->fechaDesde . ':' . $request->fechaHasta . ':' . $request->especialidad;
 
-            $result = Cache::get($cacheKey);
+            $data = Cache::get($cacheKey);
 
-            if (!$result) {
+            if (!$data) {
 
                 $query = ItemPrestacion::join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
                 ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
@@ -300,17 +295,13 @@ class OrdenesExamenController extends Controller
                                 ->where('itemsprestaciones.CAdj', 5);
 
                 $result = $this->condicionesComunes($filtrado);
+                Cache::put($cacheKey, $result->get(), 60);
 
-                $dataTable = Datatables::of($result);
-
-                Cache::put($cacheKey, $dataTable->make(true), 60);
-
-                return $dataTable->make(true);
+            }else{
+                $result = collect($data);
             }
-
-            return $result;
+            return Datatables::of($result)->make(true);
         }
-
         return view('layouts.ordenesExamen.index');
     }
 
@@ -320,9 +311,9 @@ class OrdenesExamenController extends Controller
         {
             $cacheKey = 'searchInfA:' . $request->fechaDesde . ':' . $request->fechaHasta . ':' . $request->especialidad;
 
-            $result = Cache::get($cacheKey);
+            $data = Cache::get($cacheKey);
 
-            if (!$result) {
+            if (!$data) {
             
                 $query = ItemPrestacion::join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
                 ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
@@ -383,14 +374,15 @@ class OrdenesExamenController extends Controller
 
                 $result = $this->condicionesComunes($filtrado);
 
-                $dataTable = Datatables::of($result);
+                Cache::put($cacheKey, $result->get(), 60);
 
-                Cache::put($cacheKey, $dataTable->make(true), 60);
+                
+            }else{
+                $result = collect($data);
 
-                return $dataTable->make(true);
             }
 
-            return $result;
+            return Datatables::of($result)->make(true);
         }
 
         return view('layouts.ordenesExamen.index');
@@ -402,9 +394,9 @@ class OrdenesExamenController extends Controller
         {
             $cacheKey = 'searchInfAdj:' . $request->fechaDesde . ':' . $request->fechaHasta . ':' . $request->especialidad;
 
-            $result = Cache::get($cacheKey);
+            $data = Cache::get($cacheKey);
 
-            if (!$result) {
+            if (!$data) {
 
                 $query = ItemPrestacion::join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
                 ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
@@ -465,13 +457,12 @@ class OrdenesExamenController extends Controller
 
                 $result = $this->condicionesComunes($filtrado);
 
-                $dataTable = Datatables::of($result);
-
-                Cache::put($cacheKey, $dataTable->make(true), 60);
-
-                return $dataTable->make(true);
+                Cache::put($cacheKey, $result->get(), 60);
+            
+            }else {
+                $result = collect($data);
             }
-            return $result;
+            return Datatables::of($result)->make(true);
         }
 
         return view('layouts.ordenesExamen.index');

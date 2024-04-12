@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
 use App\Exports\PrestacionesExport;
+use App\Models\ExamenCuentaIt;
 use Maatwebsite\Excel\Facades\Excel;
 use stdClass;
 use Illuminate\Support\Facades\Auth;
@@ -533,5 +534,7 @@ class PrestacionesController extends Controller
             return response()->json(['prestacion' => true]);
         }
     }
+
+
 
 }

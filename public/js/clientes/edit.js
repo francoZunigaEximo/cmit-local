@@ -705,7 +705,7 @@ $(document).ready(()=> {
             let contents = await Promise.all(promises);
             contents.forEach(content => $('#lstFact').append(content));
         });
-}
+    }
 
     async function modulo(id) {
         return new Promise((resolve, reject) => {

@@ -4,10 +4,15 @@ $(document).ready(()=>{
     let hoy = new Date().toISOString().slice(0, 10), precarga = $('#tipoPrestacionPres').val();
     $('#Fecha').val(hoy);
 
+    $('#siguienteExCta, .seleccionExCta').hide();
+
     precargaTipoPrestacion(precarga);
     getMap(empresaInput, artInput);
     getListado(null);
-
+    listadoConSaldos(empresaInput);
+    cantidadDisponibles(empresaInput);
+    examenes(empresaInput);
+    
     toastr.options = {
         closeButton: true,   
         progressBar: true,    
@@ -20,14 +25,24 @@ $(document).ready(()=>{
     });
 
     $(document).on('change', '#selectClientes, #selectArt', function(){
-
         let empresaCap = $('#selectClientes').val();
         let artCap = $('#selectArt').val();
         
         getMap(empresaCap, artCap);
+        getUltimasFacturadas(empresaCap);
+        listadoConSaldos(empresaCap);
+        cantidadDisponibles(empresaCap);
+        examenes(empresaCap);
+    });
+
+    $(document).on('change', '#financiador', function(){
+        let updateFinanciador = $('#financiador').val();
+        getUltimasFacturadas(updateFinanciador);
+        listadoConSaldos(updateFinanciador);
+        cantidadDisponibles(updateFinanciador);
+        examenes(updateFinanciador);
     });
     
-
     //Guardamos la prestación
     $('#guardarPrestacion').click(function(){
     
@@ -151,8 +166,6 @@ $(document).ready(()=>{
         }
     });
 
-
-
     //Bloqueo de prestación
     $(document).on('click', '#blockPrestPaciente', function() {
         let Id = $(this).data('idprest');
@@ -176,7 +189,6 @@ $(document).ready(()=>{
         cambioEstadoBlock();      
     });
 
-    
     //Baja logica de prestación
     $(document).on('click', '#downPrestPaciente', function() {
         let Id = $(this).data('idprest');
@@ -210,11 +222,23 @@ $(document).ready(()=>{
     });
 
     $(document).on('change', '#Pago', function(){
-        
+
         let pago = $(this).val();
         if (pago != 'B') {
             $('#SPago, #Tipo, #Sucursal, #NroFactura').val(" ");
         }
+    });
+
+    $(document).on('click', '#siguienteExCta', function(e){
+        e.preventDefault();
+        $('.seleccionExCta').show();
+        $('.nuevaPrestacion').hide();
+    });
+
+    $(document).on('click', '.volverPrestacion', function(e){
+        e.preventDefault();
+        $('.seleccionExCta').hide();
+        $('.nuevaPrestacion').show();
     });
   
     //Obtener fechas
@@ -233,7 +257,6 @@ $(document).ready(()=>{
             mes = nuevaFecha[1]; 
             anio = nuevaFecha[2];
         }
-    
         return (format === 1) ? `${dia}${divider}${mes}${divider}${anio}` : `${anio}${divider}${mes}${divider}${dia}`;
     }
 
@@ -269,8 +292,7 @@ $(document).ready(()=>{
     
                         $('#mapas').append(contenido);
                     });
-                }
-                
+                } 
             })
     }
 
@@ -394,6 +416,189 @@ $(document).ready(()=>{
                 });
             }
         });
+    }
+
+    async function getUltimasFacturadas(id) {
+
+        $('#grillaFacturadas').empty();
+        preloader('on');
+        $.get(lstFacturadas, {Id: id})
+            .done(async function(response){
+                preloader('off');
+                let promises = response.map(async function(r){
+                    let listadoResultado = await lstFacturados(r.NroPrestacion);
+                    
+                    // Divide el texto en trozos de 147 caracteres
+                    let resultadoDividido = listadoResultado.match(/.{1,147}/g);
+                    
+                    // Une los trozos con un salto de línea
+                    let resultadoFormateado = resultadoDividido.join('<br>');
+                    
+                    let contenido = `
+                        <tr>
+                            <td><span class="rojo fw-bolder">${r.NroPrestacion}</span> - ${r.TipoPrestacion} - ${r.Apellido} ${r.Nombre}</td>
+                        </tr>
+                        <tr class="borde-inferior">
+                            <td class="text-break small">${resultadoFormateado}</td>
+                        </tr>
+                    `;
+                    return contenido;
+                });
+    
+                let mostrar = await Promise.all(promises);
+                mostrar.forEach(ver => $('#grillaFacturadas').append(ver));
+            });
+    }
+    
+
+    async function lstFacturados(id)
+    {
+        return new Promise((resolve, reject) => {
+            $.get(lstExamenes, {Id: id})
+                .done(async function(response){
+                    let result = '';
+                    if(response && response.length) {
+
+                        for (let r of response) {
+
+                            result += r.NombreExamen + ' - ';
+                        }
+                        
+                    }else{
+                        result = "No hay examenes";
+                    }
+                    resolve(result);
+                })
+                .fail(function(error){
+                    reject(error);
+                })
+        });
+    }
+
+    function listadoConSaldos(id) //Desde financiador tomo empresa
+    {
+        $('#disponiblesExamenes').empty();
+     
+        preloader('on');
+        $.get(saldoNoDatatable, {Id: id})
+            .done(function(response){
+                preloader('off');
+                
+                $.each(response, function(index, r){
+                    let contenido = `
+                        <tr>
+                            <td>${r.contadorSaldos}</td>
+                            <td>${r.Examen}</td>
+                        </tr>
+                    `;
+                    $('#disponiblesExamenes').append(contenido);
+
+                });
+            });
+    }
+
+    async function cantidadDisponibles(id)
+    {
+        $('#totalCantidad').empty();
+
+        $.get(cantTotalDisponibles, {Id: id})
+            .done(await function(response){
+                $('#totalCantidad').text(response);
+                if(response === 0) {
+                    $('#siguienteExCta').hide();
+                    $('#guardarPrestacion').show();
+                }else if(response > 0) {
+                    $('#siguienteExCta').show();
+                    $('#guardarPrestacion').hide();
+                }
+            })
+    }
+
+    async function examenes(id){
+        $('#lstEx').empty();
+        preloader('on');
+        $.get(lstExClientes, {Id: id})
+            .done(async function(response){
+                preloader('off');
+                let promises = response.map(async function(r) {
+                    if(response && response.length) {
+                        let suc = (r.Suc).toString().padStart(4, '0'), numero = (r.Nro).toString().padStart(8, '0');
+                        let moduloResult = await modulo(r.Id);
+                        let contenido = `
+                        <tr class="fondo-gris mb-2">
+                            <td colspan="3"><span class="fw-bolder text-capitalize">fact </span> ${r.Tipo}${suc}${numero}</td>
+                            <td>
+                                <tr>
+                                    <td colspan="4">
+                                        <span class="fw-bolder text-capitalize">Observación: </span><span>${r.Obs}</span>
+                                    </td>
+                                </tr>
+                            </td>  
+                            ${moduloResult}
+                        </tr>`;
+                        return contenido;
+                    }else{
+                        return '<tr class="mb-2"><td>No hay historial de facturas disponible</td></tr>';
+                    } 
+                });
+                let contents = await Promise.all(promises);
+                contents.forEach(content => $('#lstEx').append(content));
+            });
+    }
+
+    async function modulo(id) {
+        return new Promise((resolve, reject) => {
+            preloader('on');
+            $.get(listadoPrecarga, {Id: id})
+                .done(async function(response){
+                    preloader('off');
+                    if (response && response.length) {
+                        let result = '';
+                        for (let r of response) {
+                            let detallesResult = await detalles(r.IdPrestacion, r.IdPago); 
+                            result += `
+                                <tr class="fondo-grisClaro">
+                                    <td colspan="4" class="fw-bolder"><span class="fw-bolder">${r.IdPrestacion === 0 ? 'Generales' : 'DNI'}</span> ${r.IdPrestacion === 0 ? '' : r.Documento}</td>
+                                    ${detallesResult}
+                                </tr>
+                            `;
+                        }
+                        resolve(result);
+                    }
+                })
+                .fail(function(error){
+                    reject(error);
+                });
+        });
+    }
+
+    function detalles(id){}
+
+    async function detalles(id, idpago) {
+        return new Promise((resolve, reject) => {
+            preloader('on');
+            $.get(listadoEx, {Id: id, IdPago: idpago})
+                .done(async function(response){
+                    preloader('off');
+                    if (response && response.length) {
+                        let result =  ``;
+                        for (let r of response) {
+                            result += `
+                            <tr>    
+                                <td>${r.Cantidad}</td>
+                                <td>${r.NombreExamen}</td>
+                                <td><input type="checkbox" class="form-control"></td>
+                            </tr>
+                            `;
+                        }
+                        resolve(result);
+                    }
+                })
+                .fail(function(error){
+                    reject(error);
+                });
+        });
+        
     }
 
     function preloader(opcion) {

@@ -7,6 +7,7 @@ use App\Models\Auditor;
 use App\Models\ItemPrestacion;
 use App\Models\ItemPrestacionInfo;
 use App\Models\Examen;
+use App\Models\ExamenCuentaIt;
 use Illuminate\Http\Request;
 use App\Traits\ObserverItemsPrestaciones;
 use Illuminate\Support\Facades\Storage;
@@ -877,6 +878,17 @@ class ItemPrestacionesController extends Controller
         {
             return response()->json(['prestacion' => true]);
         }
+    }
+
+    public function lstExamenes(Request $request)
+    {
+        $items = ItemPrestacion::join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
+            ->select('examenes.Nombre as NombreExamen')
+            ->where('itemsprestaciones.IdPrestacion', $request->Id)
+            ->orderBy('examenes.Nombre')
+            ->get();
+
+        return response()->json($items);
     }
 
     private function generarCodigo(int $idprest, int $idex, int $idpac)
