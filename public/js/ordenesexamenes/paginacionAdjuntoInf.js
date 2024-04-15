@@ -57,8 +57,10 @@ $(document).ready(()=>{
                     }
                 },
                 {
-                    data: 'IdPrestacion',
-                    name: 'IdPrestacion',
+                    data: null,
+                    render: function(data){
+                        return `<span>${data.IdPrestacion} ${data.prestacionCerrado === 1 ? '<i class="ri-information-line rojo"></i>' : ''}</span>`;
+                    }
                 },
                 {
                     data: null,
@@ -127,9 +129,10 @@ $(document).ready(()=>{
                     render: function(data){
 
                         let masivo = `<span title="Subir automáticamente el reporte" class="custom-badge iconGeneral"><i class="ri-file-upload-line automaticUploadI" data-id="${data.IdItem}" data-forma="individual"></i></span>`,
+                            masivoCerrar = `<span title="Subir automáticamente el reporte y cerrar" class="custom-badge iconGeneral"><i class="ri-file-upload-line automaticUploadIC" data-id="${data.IdItem}" data-forma="individual"></i></span>`,
                             individual = `<span data-id="${data.IdItem}" data-idprestacion="${data.IdPrestacion}" data-tipo="${data.MultiInformador === 1 ? 'multiInformador' : 'informador'}" title="Subir manualmente el reporte" class="custom-badge iconGeneral uploadFile"><i class="ri-folder-line"></i></span><input type="file" class="fileManual" style="display: none;">`;
 
-                        return `${masivo} ${individual}`;
+                        return `${masivo} ${masivoCerrar} ${individual}`;
                     }
                 }
             ],

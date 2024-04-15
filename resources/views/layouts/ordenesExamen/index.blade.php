@@ -13,7 +13,13 @@
 <div class="card-header d-flex justify-content-between">
     <ul class="nav nav-tabs-custom rounded card-header-tabs border-bottom-0" role="tablist">
         <li class="nav-item" role="presentation">
-            <a class="nav-link active" data-bs-toggle="tab" href="#efector" role="tab" aria-selected="true">
+            <a class="nav-link active" data-bs-toggle="tab" href="#prestacion" role="tab" aria-selected="true">
+                <i class="ri-window-line"></i>
+                Prestaciones
+            </a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" data-bs-toggle="tab" href="#efector" role="tab" aria-selected="true">
                 <i class="ri-window-line"></i>
                 Efector
             </a>
@@ -38,7 +44,172 @@
     <div class="tab-content">
         <div id="messageClientes"></div>
 
-        <div class="tab-pane active" id="efector" role="tabpanel">
+        <div class="tab-pane active" id="prestacion" role="tabpanel">
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <span class="small">
+                        <span class="required">(*)</span> El campo es obligatorio
+                    </span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="listjs-table" id="customerList">
+                                <div class="row g-4 mb-3">
+            
+                                    <form id="form-index">
+                                        <div class="col-12 p-4 border border-1 border-color" style="border-color: #666666;">
+                                            
+                                            <div class="row">
+
+                                                <div class="col-sm-2 mb-3">
+                                                    <label for="fechaDesdePres" class="form-label font-weight-bold"><strong>Fecha desde: <span class="required">(*)</span></strong></label>
+                                                    <input type="date" class="form-control" id="fechaDesdePres" name="fechaDesdePres" max="9999-12-31">
+                                                </div>
+            
+                                                <div class="col-sm-2 mb-3">
+                                                    <label for="fechaHastaPres" class="form-label font-weight-bold"><strong>Fecha hasta: <span class="required">(*)</span></strong></label>
+                                                    <input type="date" class="form-control" id="fechaHastaPres" name="fechaHastaPres" max="9999-12-31">
+                                                </div>
+
+                                                <div class="col-sm-2 mb-3">
+                                                    <label for="especialidadPres" class="form-label font-weight-bold"><strong>Especialidad: <span class="required"></span></strong></label>
+                                                    <select class="form-control especialidadPres" name="especialidadPres" id="especialidadPres"></select>
+                                                </div>
+
+                                                <div class="col-sm-2 mb-3">
+                                                    <label for="estadoPres" class="form-label font-weight-bold"><strong>Estado prestación: </strong></label>
+                                                    <select name="estadoPres" id="estadoPres" class="form-control">
+                                                        <option value="" selected>Elija una opción...</option>
+                                                        <option value="abierto">Abierto</option>
+                                                        <option value="cerrado">Cerrado</option>
+                                                        <option value="finalizado">Finalizado</option>
+                                                        <option value="entregado">Entregado</option>
+                                                        <option value="eenviado">eEnviado</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="col-sm-2 mb-3">
+                                                    <label for="efectorPres" class="form-label font-weight-bold"><strong>Efector: </strong></label>
+                                                    <select name="efectorPres" id="efectorPres" class="form-control">
+                                                        <option value="" selected>Elija una opción...</option>
+                                                        <option value="pendientes">Pendientes</option>
+                                                        <option value="cerrados">Cerrados</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="col-sm-2 mb-3">
+                                                    <label for="informadorPres" class="form-label font-weight-bold"><strong>Informador: </strong></label>
+                                                    <select name="informadorPres" id="informadorPres" class="form-control">
+                                                        <option value="" selected>Elija una opción...</option>
+                                                        <option value="pendientes">Pendientes</option>
+                                                        <option value="borrador">Borrador</option>
+                                                        <option value="pendienteYborrador">Pendiente y borrador</option>
+                                                        <option value="todos">Todos</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="col-sm-2 mb-3">
+                                                    <label for="profEfePres" class="form-label font-weight-bold"><strong>Profesional Efector: </strong></label>
+                                                    <select name="profEfePres" id="profEfePres" class="form-control">
+                                                        <option value="" selected>Elija una opción...</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="col-sm-2 mb-3">
+                                                    <label for="profInfPres" class="form-label font-weight-bold"><strong>Profesional Informador: </strong></label>
+                                                    <select name="profInfPres" id="profInfPres" class="form-control">
+                                                        <option value="" selected>Elija una opción...</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="col-sm-2 mb-3">
+                                                    <label for="tipoPres" class="form-label font-weight-bold"><strong>Tipo prov: </strong></label>
+                                                    <select name="tipoPres" id="tipoPres" class="form-control">
+                                                        <option value="" selected>Elija una opción...</option>
+                                                        <option value="interno">Interno</option>
+                                                        <option value="externo">Externo</option>
+                                                        <option value="todos">Todos</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="col-sm-2 mb-3">
+                                                    <label for="adjuntoPres" class="form-label font-weight-bold"><strong>Adjunto: </strong></label>
+                                                    <select name="adjuntoPres" id="adjuntoPres" class="form-control">
+                                                        <option value="" selected>Elija una opción...</option>
+                                                        <option value="fisico">Físico</option>
+                                                        <option value="digital">Digital</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="col-sm-2 mb-3">
+                                                    <label for="examenPres" class="form-label font-weight-bold"><strong>Examen:</strong></label>
+                                                    <select class="form-control" name="examenPres" id="examenPres"></select>
+                                                </div>
+
+                                                <div class="col-sm-2 mb-3 d-flex align-items-center justify-content-center">
+                                                    <input type="checkbox" class="form-check-input" name="pendientePres" name="pendientePres" id="pendientePres">&nbsp;
+                                                    <label for="pendientePres" class="form-check-label font-weight-bold"><strong>Con pendiente</strong></label>
+                                                </div>
+
+                                                <div class="col-sm-2 mb-3 d-flex align-items-center justify-content-center">
+                                                    <input type="checkbox" class="form-check-input" name="vencidoPres" id="vencidoPres">&nbsp;
+                                                    <label for="vencidoPres" class="form-check-label font-weight-bold"><strong>Exámen vencido</strong></label>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-sm-12" style="text-align: right;">
+                                                    <button type="button" id="resetPres" class="btn botonGeneral">Reiniciar</button>
+                                                    <button type="button" id="buscarPres" class="btn botonGeneral"><i class="ri-zoom-in-line"></i>&nbsp;Buscar</button>
+                                                </div>
+                                            </div>
+                                        
+                                        </div>
+                                    </form>
+            
+                                </div>
+            
+                                <div class="table-responsive table-card mt-3 mb-1 mx-auto">
+                                    <table id="listaOrdenesPrestaciones" class="display table table-bordered" style="width:100%">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th class="sort">Especialidad</th>
+                                                <th class="sort">Fecha</th>
+                                                <th class="sort">Prestación</th>
+                                                <th class="sort">Empresa</th>
+                                                <th class="sort">Paciente</th>
+                                                <th class="sort">Estado</th>
+                                                <th class="sort">Examen</th>
+                                                <th class="sort">Efector</th>
+                                                <th class="sort">Est Efector</th>
+                                                <th class="sort">TipoAdjunto</th>
+                                                <th class="sort">Informador</th>
+                                                <th class="sort">Est Inf</th>
+                                                <th class="sort">Fecha Vta</th>
+                                                <th class="sort">Acción</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="list form-check-all">
+            
+                                        </tbody>
+                                    </table>
+                                </div>           
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+            </div>
+
+
+        </div>
+
+        <div class="tab-pane" id="efector" role="tabpanel">
             
             <div class="card-header d-flex justify-content-between">
                 <ul class="nav nav-tabs-custom rounded card-header-tabs border-bottom-0" role="tablist">
@@ -409,8 +580,6 @@
             </div>
         </div>
 
-
-
         <div class="tab-pane" id="informador" role="tabpanel">
             <div class="card-header d-flex justify-content-between">
                 <ul class="nav nav-tabs-custom rounded card-header-tabs border-bottom-0" role="tablist">
@@ -676,7 +845,9 @@
                     
                                             <form id="form-index">
                                                 <div class="col-12 p-4 border border-1 border-color" style="border-color: #666666;">
-                                                    
+                                                    <div class="row mb-4">
+                                                        <span class="small"><i class="ri-information-line rojo"></i>&nbsp;El icono indica que la prestación ya se encuentra cerrada.</span>
+                                                    </div>
                                                     <div class="row">
         
                                                         <div class="col-sm-2 mb-3">
@@ -713,7 +884,7 @@
         
                                                     <div class="row">
                                                         <div class="col-sm-9 mb-3">
-                                                            <div class="col-sm-9 mb-3" style="text-align: right;">
+                                                            <div class="col-sm-12 mb-3" style="text-align: right;">
                                                                 <button type="button" class="btn btn-sm botonGeneral automaticUploadI" data-forma="masivo"><i class="ri-arrow-right-line"></i>&nbsp;Asignar masivo</button>
                                                             </div>
                                                         </div>
@@ -768,8 +939,6 @@
 
         </div>
 
-
-
         <div class="tab-pane" id="eenviar" role="tabpanel">
             <h3>eEnviar</h3>
         </div>
@@ -785,18 +954,21 @@
     const searchExamen = "{{ route('searchExamen') }}";
     const getPacientes = "{{ route('getPacientes') }}";
 
+    const linkPrestaciones = "{{ route('prestaciones.index') }}";
+    const linkItemPrestacion = "{{ route('itemsprestaciones.index') }}";
+
     const SEARCH = "{{ route('seachOrdenesExamen')}}";
     const SEARCHASIG = "{{ route('searchOrExaAsignados') }}";
     const SEARCHADJ = "{{ route('searchOrExaAdjunto') }}";
     const SEARCHINF = "{{ route('seachOrExInf')}}";
     const SEARCHASIGINF = "{{ route('seachOrExAsigInf')}}";
     const SEARCHADJINF = "{{ route('searchOrExaAdjInf') }}";
+    const SEARCHPRESTACION = "{{ route('searchPrestacion') }}";
     const asignarProfesional = "{{ route('asignarProfesional') }}";
     const updateItem = "{{ route('updateItem') }}";
     const fileUpload = "{{ route('uploadAdjunto') }}";
     const archivosAutomatico = "{{ route('archivosAutomatico') }}";
     const archivosAutomaticoI = "{{ route('archivosAutomaticoI') }}";
-
 </script>
 
 @push('styles')
@@ -816,6 +988,7 @@
 <script src="{{ asset('js/ordenesexamenes/validaciones.js')}}?v={{ time() }}"></script>
 <script src="{{ asset('js/ordenesexamenes/index.js')}}?=v{{ time() }}"></script>
 <script src="{{ asset('js/ordenesexamenes/paginacion.js')}}?=v{{ time() }}"></script>
+<script src="{{ asset('js/ordenesexamenes/paginacionPrestacion.js')}}?=v{{ time() }}"></script>
 <script src="{{ asset('js/ordenesexamenes/paginacionInf.js')}}?=v{{ time() }}"></script>
 <script src="{{ asset('js/ordenesexamenes/paginacionAsignados.js')}}?=v{{ time() }}"></script>
 <script src="{{ asset('js/ordenesexamenes/paginacionAsignadosInf.js')}}?=v{{ time() }}"></script>

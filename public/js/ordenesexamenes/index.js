@@ -6,7 +6,7 @@ $(document).ready(function(){
         timeOut: 3000,        
     };
 
-    $('#fechaHasta, #fechaHastaAsignados, #fechaHastaAdjunto, #fechaHastaInf, #fechaHastaAsignadosInf, #fechaHastaAdjuntoInf').val(fechaNow(null, "-", 0));
+    $('#fechaHasta, #fechaHastaAsignados, #fechaHastaAdjunto, #fechaHastaInf, #fechaHastaAsignadosInf, #fechaHastaAdjuntoInf, #fechaHastaPres').val(fechaNow(null, "-", 0)), $('#efectorPres').val('pendientes'),$('#tipoPres').val('todos');
     
     let especialidadVal = $('#especialidad').val(),
         especialidadAsigVal = $('#especialidadAsignados').val(),
@@ -14,26 +14,31 @@ $(document).ready(function(){
         especialidadInf = $('#especialidadInf').val(),
         especialidadAsigVaInf = $('#especialidadAsignadosInf').val(),
         especialidadAdjValInf = $('#especialidadAdjuntoInf').val(),
-        lstEspecialidades = $('#especialidad, #especialidadAsignados, #especialidadAdjunto, #especialidadInf, #especialidadAsignadosInf, #especialidadAdjuntoInf');
+        especialidadPres = $('#especialidadPres').val(),
+        lstEspecialidades = $('#especialidad, #especialidadAsignados, #especialidadAdjunto, #especialidadInf, #especialidadAsignadosInf, #especialidadAdjuntoInf, #especialidadPres');
 
     $('#Liberar, #Cerrar, #Abrir, #qrExamen, #LiberarInf').hide();
 
     listaProveedores();
-    optionsGeneral(especialidadVal, "efector", "informador");
-    optionsGeneral(especialidadAsigVal, "efectorAsignado", "informador");
-    optionsGeneral(especialidadAdjVal, "efectorAdjunto", "informador");
+    optionsGeneral(especialidadVal, "efector", "efector");
+    optionsGeneral(especialidadAsigVal, "efectorAsignado", "efector");
+    optionsGeneral(especialidadAdjVal, "efectorAdjunto", "efector");
+    optionsGeneral(especialidadPres, "efectorPres", "efector");
     optionsGeneral(especialidadInf, "informador", "informador");
     optionsGeneral(especialidadAsigVaInf, "informadorAsignadoInf", "informador");
     optionsGeneral(especialidadAdjValInf, "informadorAdjuntoInf", "informador");
+    optionsGeneral(especialidadPres, "informadorPres", "informador");
 
-    $(document).on('change', '.especialidad, .especialidadAsignados, .especialidadAdjunto, .especialidadInf, .especialidadAsignadosInf, .especialidadAdjuntoInf', function() {
+    $(document).on('change', '.especialidad, .especialidadAsignados, .especialidadAdjunto, .especialidadInf, .especialidadAsignadosInf, .especialidadAdjuntoInf, .especialidadPres', function() {
 
         let newEspecialidadVal = $('.especialidad').val(),
             newEspecialidadAsigVal = $('.especialidadAsignados').val(),
             newEspecialidadAdjVal = $('.especialidadAdjunto').val(),
             newEspecialidadInf = $('.especialidadInf').val(),
             newEspecialidadAsigValInf = $('.especialidadAsignadosInf').val(),
-            newEspecialidadAdjValInf = $('.especialidadAdjuntoInf').val();
+            newEspecialidadAdjValInf = $('.especialidadAdjuntoInf').val(),
+            newEspecialidadEfePres = $('.especialidadPres').val(),
+            newEspecialidadInfPres = $('.especialidadPres').val();
 
         optionsGeneral(newEspecialidadVal, "efector", "efector");
         optionsGeneral(newEspecialidadAsigVal, "efectorAsignado", "efector");
@@ -41,6 +46,8 @@ $(document).ready(function(){
         optionsGeneral(newEspecialidadInf, "informador", "informador");
         optionsGeneral(newEspecialidadAsigValInf, "informadorAsignadoInf", "informador");
         optionsGeneral(newEspecialidadAdjValInf, "informadorAdjuntoInf", "informador");
+        optionsGeneral(newEspecialidadEfePres, "efectorPres", "efector");
+        optionsGeneral(newEspecialidadInfPres, "informadorPres", "informador");
     });
     
     $('#empresa, #empresaInf, #empresaAsignados, #empresaAdjunto, #empresaAsignadosInf, #empresaAdjuntoInf').each(function() {
@@ -115,7 +122,7 @@ $(document).ready(function(){
         minimumInputLength: 2 
     });
 
-    $('#examen, #examenAsignados, #examenInf, #examenAsignadosInf').each(function(){
+    $('#examen, #examenAsignados, #examenInf, #examenAsignadosInf, #examenPres').each(function(){
         $(this).select2({
             language: {
                 noResults: function() {
@@ -354,6 +361,15 @@ $(document).ready(function(){
         document.querySelector(".select2-container--open .select2-search__field").focus()
     });
 
+    $('#resetPres').click(function(){ 
+        $('#form-index :input, #form-index select').val('');
+        $('#examenPres').val([]).trigger('change.select2');
+        $('#especialidadPres').val('');
+        $('#efectoresPres').val('');
+        $('#listaOrdenesPrestaciones').DataTable().clear().destroy();
+        $('#fechaHastaPres').val(fechaNow(null, "-", 0));
+    });
+
     $('#reset').click(function(){ 
         $('#form-index :input, #form-index select').val('');
         $('#examen').val([]).trigger('change.select2');
@@ -545,16 +561,19 @@ $(document).ready(function(){
         }
     });
 
-    $(document).on('click', '.automaticUpload, .automaticUploadI', function(e){
+    $(document).on('click', '.automaticUpload, .automaticUploadI, .automaticUploadIC', function(e){
 
         e.preventDefault();
 
         let obj= {
             automaticUpload: ['Id_adjunto', '#checkAllAdj', 'archivosAutomatico', '#listaOrdenesEfectoresAdj'],
-            automaticUploadI: ['Id_adjuntoInf', '#checkAllAdjInf', 'archivosAutomaticoI', '#listaOrdenesInformadoresAdj']
+            automaticUploadI: ['Id_adjuntoInf', '#checkAllAdjInf', 'archivosAutomaticoI', '#listaOrdenesInformadoresAdj'],
+            automaticUploadIC: ['Id_adjuntoInf', '#checkAllAdjInf', 'archivosAutomaticoI', '#listaOrdenesInformadoresAdj']
         }
+
+
         
-        let ids = [], tipo = $(this).data('forma'), opcion = $(this).hasClass('automaticUpload') ? 'automaticUpload' : 'automaticUploadI';
+        let ids = [], tipo = $(this).data('forma'), opcion = $(this).hasClass('automaticUpload') === 'automaticUpload' ? 'automaticUpload' : 'automaticUploadI';
 
         if(tipo === 'individual') {
 
@@ -574,9 +593,9 @@ $(document).ready(function(){
             return;
         }
 
-        $('#preloader-overlay').show();
-        
-        $.post(obj[opcion][2], { _token: TOKEN, Ids: ids })
+        preloader('on');
+
+        $.post(obj[opcion][2], { _token: TOKEN, Ids: ids, AutoCerrar: $(this).hasClass('automaticUploadIC') ? true : null })
             .done(function(response){
                 var estados = [];
                 response.forEach(function(msg) {
@@ -600,7 +619,7 @@ $(document).ready(function(){
             })
             .always(function() {
                
-                $('#preloader-overlay').hide();
+                preloader('off');
             });
         
     });
@@ -688,17 +707,19 @@ $(document).ready(function(){
         });
     }
 
-    function optionsGeneral(id, ident, tipo) {
+    async function optionsGeneral(id, ident, tipo) {
 
         let obj = {
             efector: '#efectores',
             efectorAsignado: '#efectorAsignado',
             efectorAdjunto: '#efectorAdjunto',
+            efectorPres: '#profEfePres',
             informador: '#informadores',
             informadorAsignadoInf: '#informadorAsignadoInf',
-            informadorAdjuntoInf: '#informadorAdjuntoInf'
+            informadorAdjuntoInf: '#informadorAdjuntoInf',
+            informadorPres: '#profInfPres'
         }
-        
+   
         let etiqueta;
 
         if (ident in obj) {
@@ -706,16 +727,22 @@ $(document).ready(function(){
         }
 
         etiqueta.empty().append('<option value="" selected>Elija una opción...</option>')
-
+        
         $.get(listGeneral, { proveedor: id, tipo: tipo })
             .done(async function (response) {
                 let data = await response.resultados;
-
                 $.each(data, function (index, d) {
                     let contenido = `<option value="${d.Id}">${d.NombreCompleto}</option>`;
                     etiqueta.append(contenido);
                 });
             });
+    }
+
+    function preloader(opcion) {
+        $('#preloader').css({
+            opacity: '0.3',
+            visibility: opcion === 'on' ? 'visible' : 'hidden'
+        });
     }
 
 });
