@@ -161,6 +161,14 @@
                                                     <label for="vencidoPres" class="form-check-label font-weight-bold"><strong>Exámen vencido</strong></label>
                                                 </div>
                                             </div>
+                                            <div class="row mt-2 mb-2 fondo-base">
+                                                <div class="col-sm-12 p-2 text-end">
+                                                    <button type="button" class="btn btn-sm botonGeneral">60 días</button>
+                                                    <button type="button" class="btn btn-sm botonGeneral">90 días</button>
+                                                    <button type="button" class="btn btn-sm botonGeneral">Total</button>
+                                                    <button type="button" class="btn btn-sm botonGeneral">Ausente</button>
+                                                </div>
+                                            </div>
 
                                             <div class="row">
                                                 <div class="col-sm-12" style="text-align: right;">
@@ -261,7 +269,7 @@
                                                         </div>
         
                                                         <div class="col-sm-2 mb-3">
-                                                            <label for="especialidad" class="form-label font-weight-bold"><strong>Especialidad: <span class="required">(*)</span></strong></label>
+                                                            <label for="especialidad" class="form-label font-weight-bold"><strong>Especialidad: <span class="required"></span></strong></label>
                                                             <select class="form-control especialidad" name="especialidad" id="especialidad"></select>
                                                         </div>
 
@@ -631,7 +639,7 @@
                                                         </div>
         
                                                         <div class="col-sm-2 mb-3">
-                                                            <label for="especialidad" class="form-label font-weight-bold"><strong>Especialidad: <span class="required">(*)</span></strong></label>
+                                                            <label for="especialidad" class="form-label font-weight-bold"><strong>Especialidad: <span class="required"></span></strong></label>
                                                             <select class="form-control especialidadInf" name="especialidadInf" id="especialidadInf"></select>
                                                         </div>
     
@@ -747,7 +755,7 @@
                                                         </div>
         
                                                         <div class="col-sm-2 mb-3">
-                                                            <label for="especialidadAsignadosInf" class="form-label font-weight-bold"><strong>Especialidad: <span class="required">(*)</span></strong></label>
+                                                            <label for="especialidadAsignadosInf" class="form-label font-weight-bold"><strong>Especialidad: <span class="required"></span></strong></label>
                                                             <select class="form-control especialidadAsignadosInf" name="especialidadAsignadosInf" id="especialidadAsignadosInf"></select>
                                                         </div>
         
@@ -861,7 +869,7 @@
                                                         </div>
         
                                                         <div class="col-sm-2 mb-3">
-                                                            <label for="especialidadAdjuntoInf" class="form-label font-weight-bold"><strong>Especialidad: <span class="required">(*)</span></strong></label>
+                                                            <label for="especialidadAdjuntoInf" class="form-label font-weight-bold"><strong>Especialidad: <span class="required"></span></strong></label>
                                                             <select class="form-control especialidadAdjuntoInf" name="especialidadAdjuntoInf" id="especialidadAdjuntoInf"></select>
                                                         </div>
         
@@ -917,7 +925,7 @@
                                                         <th class="sort">DNI</th>
                                                         <th class="sort">Examen</th>
                                                         <th class="sort">Efector</th>
-                                                        <th class="sort">Estado</th>
+                                                        <th class="sort">Est Efector</th>
                                                         <th><input type="checkbox" id="checkAllAdjInf" name="Id_adjuntoInf"></th>
                                                         <th>Acciones</th>
                                                     </tr>

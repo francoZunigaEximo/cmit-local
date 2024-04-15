@@ -14,10 +14,10 @@ $(document).ready(()=>{
 
         var especialidad = $('#especialidadInf').val();
 
-        if (especialidad === '') {
+        /*if (especialidad === '') {
             toastr.warning('Debe seleccionar una especialidad para continuar', 'Atención');
             return;
-        }
+        }*/
 
         $(document).on('change', '#especialidadInf', function(){
             var nuevoValor = $(this).val();
@@ -71,8 +71,10 @@ $(document).ready(()=>{
                     }
                 },
                 {
-                    data: 'IdPrestacion',
-                    name: 'IdPrestacion',
+                    data: null,
+                    render: function(data) {
+                        return `<div class="text-center"><a href="${linkPrestaciones}/${data.IdPrestacion}/edit" target="_blank">${data.IdPrestacion}</a></div>`;
+                    } 
                 },
                 {
                     data: null,

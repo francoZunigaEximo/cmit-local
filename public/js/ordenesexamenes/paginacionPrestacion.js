@@ -66,8 +66,10 @@ $(document).ready(()=>{
                     }
                 },
                 {//3
-                    data: 'IdPrestacion',
-                    name: 'IdPrestacion'
+                    data: null,
+                    render: function(data) {
+                        return `<div class="text-center">${data.IdPrestacion}</div>`;
+                    } 
                 },
                 {//4
                     data: null,

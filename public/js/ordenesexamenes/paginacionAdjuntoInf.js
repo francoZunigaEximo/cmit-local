@@ -4,18 +4,18 @@ $(document).ready(()=>{
     $(document).on('click', '#buscarAdjuntoInf', function() {
 
         let fechaDesde = $('#fechaDesdeAdjuntoInf').val(),
-            fechaHasta = $('#fechaHastaAdjuntoInf').val(),
-            especialidad = $('#especialidadAdjuntoInf').val();
+            fechaHasta = $('#fechaHastaAdjuntoInf').val()/*
+            especialidad = $('#especialidadAdjuntoInf').val()*/;
 
         if (fechaDesde === '' || fechaHasta === '') {
             toastr.warning("Las fechas son obligatorias", "Atención");
             return;
         }
 
-        if (especialidad === '') {
+        /*if (especialidad === '') {
             toastr.warning('Debe seleccionar una especialidad para continuar', 'Atención');
             return;
-        }
+        }*/
 
         $('#listaOrdenesInformadoresAdj').DataTable().clear().destroy();
 
@@ -59,7 +59,7 @@ $(document).ready(()=>{
                 {
                     data: null,
                     render: function(data){
-                        return `<span>${data.IdPrestacion} ${data.prestacionCerrado === 1 ? '<i class="ri-information-line rojo"></i>' : ''}</span>`;
+                        return `<span><a href="${linkPrestaciones}/${data.IdPrestacion}/edit" target="_blank">${data.IdPrestacion}</a> ${data.prestacionCerrado === 1 ? '<i class="ri-information-line rojo"></i>' : ''}</span>`;
                     }
                 },
                 {

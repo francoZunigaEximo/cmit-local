@@ -69,8 +69,10 @@ $(document).ready(()=>{
                     }
                 },
                 {
-                    data: 'IdPrestacion',
-                    name: 'IdPrestacion',
+                    data: null,
+                    render: function(data) {
+                        return `<div class="text-center"><a href="${linkPrestaciones}/${data.IdPrestacion}/edit" target="_blank">${data.IdPrestacion}</a></div>`;
+                    } 
                 },
                 {
                     data: null,

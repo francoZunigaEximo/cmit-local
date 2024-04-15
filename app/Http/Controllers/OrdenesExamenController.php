@@ -685,7 +685,7 @@ class OrdenesExamenController extends Controller
         ->where('pacientes.Estado', 1)
         ->where('examenes.Inactivo', 0)
         ->limit(5000)
-        ->orderBy('proveedores.Id', 'DESC');
+        ->orderBy('itemsprestaciones.Id', 'DESC');
 
         return $query;
     }

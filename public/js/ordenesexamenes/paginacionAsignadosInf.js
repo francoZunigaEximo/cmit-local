@@ -7,18 +7,18 @@ $(document).ready(()=>{
 
         let fechaDesde = $('#fechaDesdeAsignadosInf').val(),
             fechaHasta = $('#fechaHastaAsignadosInf').val(),
-            nroPrestacion = $('#prestacionAsignados').val(),
-            especialidad = $('#especialidadAsignadosInf').val();
+            nroPrestacion = $('#prestacionAsignados').val()
+            /*especialidad = $('#especialidadAsignadosInf').val()*/;
 
         if ((fechaDesde === '' || fechaHasta === '') && nroPrestacion === '') {
             toastr.warning("Las fechas son obligatorias");
             return;
         }
 
-        if (especialidad === '') {
+        /*if (especialidad === '') {
             toastr.warning('Debe seleccionar una especialidad para continuar', 'Atención');
             return;
-        }
+        }*/
 
         $('#LiberarInf').show();
 
@@ -61,8 +61,10 @@ $(document).ready(()=>{
                     name: 'Especialidad',
                 },
                 {
-                    data: 'IdPrestacion',
-                    name: 'IdPrestacion',
+                    data: null,
+                    render: function(data) {
+                        return `<div class="text-center"><a href="${linkPrestaciones}/${data.IdPrestacion}/edit" target="_blank">${data.IdPrestacion}</a></div>`;
+                    } 
                 },
                 {
                     data: null,
