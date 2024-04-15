@@ -365,7 +365,7 @@ class OrdenesExamenController extends Controller
                                 ->whereNot('itemsprestaciones.IdProfesional2', 0)
                                 ->where('itemsprestaciones.CAdj', 5)
                                 ->whereNot('itemsprestaciones.CInfo', 3)
-                                ->whereNot('itemsprestaciones.FechaPagado', '0000-00-00')
+                                ->where('itemsprestaciones.FechaPagado', '0000-00-00')
                                 ->whereNotExists(function ($query) {
                                     $query->select(DB::raw(1))
                                         ->from('itemsprestaciones_info')
@@ -645,7 +645,7 @@ class OrdenesExamenController extends Controller
                     return $query->whereRaw('DATE_ADD(itemsprestaciones.Fecha, INTERVAL examenes.DiasVencimiento DAY) <= CURDATE()');
                 });
                 
-                $limit = $query->limit(3000)->orderBy('itemsprestaciones.Fecha', 'Desc');
+                $limit = $query->orderBy('itemsprestaciones.Fecha', 'Desc');
                 $result = $this->condicionesComunes($limit);
 
                 Cache::put($cacheKey, $result->get(), 5);
@@ -684,6 +684,7 @@ class OrdenesExamenController extends Controller
         ->where('clientes.Bloqueado', 0)
         ->where('pacientes.Estado', 1)
         ->where('examenes.Inactivo', 0)
+        ->limit(5000)
         ->orderBy('proveedores.Id', 'DESC');
 
         return $query;
