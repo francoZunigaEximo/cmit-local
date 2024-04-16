@@ -624,6 +624,60 @@ $(document).ready(function(){
         
     });
 
+    $(document).on('click', '.Exportar', function(e) {
+        e.preventDefault();
+    
+        var ids = [];
+        $('#listaOrdenesPrestaciones #listado').each(function() {
+            var id = $(this).data('id');
+            if (id) {
+                ids.push(id);
+            }
+        });
+
+        if(ids.length === 0) {
+            toastr.warning('No hay examenes para exportar');
+            return;
+        }
+        
+        if(confirm("¿Estas seguro que deseas generar el reporte de  examenes/prestaciones?")) {
+            preloader('on');
+            $.get(exportarOrdExa, {Id: ids})
+                .done(function(response){
+                    preloader('off');
+                    createFile(response.filePath);
+                    toastr.success("Se esta generando el reporte");
+                })
+        }
+    });
+    
+    function createFile(array){
+        let fecha = new Date(),
+            dia = fecha.getDay(),
+            mes = fecha.getMonth() + 1,
+            anio = fecha.getFullYear();
+
+        let filePath = array,
+            pattern = /storage(.*)/,
+            match = filePath.match(pattern),
+            path = match ? match[1] : '';
+
+        let url = new URL(location.href),
+            baseUrl = url.origin,
+            fullPath = baseUrl + '/cmit/storage' + path;
+
+        let link = document.createElement('a');
+        link.href = fullPath;
+        link.download = "reporte-"+ dia + "-" + mes + "-" + anio +".xlsx";
+        link.style.display = 'none';
+
+        document.body.appendChild(link);
+        link.click();
+        setTimeout(function() {
+            document.body.removeChild(link);
+        }, 100);
+    }
+
     function verificarArchivo(archivo){
 
         if (!archivo || archivo.size === 0) {

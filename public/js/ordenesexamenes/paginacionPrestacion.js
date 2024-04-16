@@ -1,22 +1,49 @@
+function obtenerFormato(date) {
+    return date.toISOString().slice(0, 10);
+};
+
 $(document).ready(()=>{
 
     //Botón de busqueda de Mapas
-    $(document).on('click', '#buscarPres', function() {
+    $(document).on('click', '#buscarPres, .sesentaDias, .noventaDias, .totalDias, .ausenteDias', function() {
 
-        let fechaDesde = $('#fechaDesdePres').val(),
-        fechaHasta = $('#fechaHastaPres').val();
+        let fechaHasta = $(this).hasClass('sesentaDias') || $(this).hasClass('noventaDias') || $(this).hasClass('totalDias') || $(this).hasClass('ausenteDias')
+            ? new Date() 
+            : $('#fechaHastaPres').val(); 
+        
+        let fechaDesde = $(this).hasClass('sesentaDias') || $(this).hasClass('noventaDias') || $(this).hasClass('totalDias') || $(this).hasClass('ausenteDias')
+            ? new Date(fechaHasta) 
+            : $('#fechaDesdePres').val();
+        
+        $(this).hasClass('sesentaDias') 
+            ? fechaDesde.setDate(fechaHasta.getDate() - 60) 
+            : $(this).hasClass('noventaDias') 
+                ? fechaDesde.setDate(fechaHasta.getDate() - 90) 
+                : $(this).hasClass('totalDias')
+                    ?  fechaDesde.setDate(fechaHasta.getDate() - 90) 
+                    : $(this).hasClass('ausenteDias') 
+                        ? fechaDesde.setDate(fechaHasta.getDate() - 90) 
+                        : $('#fechaDesde').val();
+        
+        $(this).hasClass('sesentaDias') || $(this).hasClass('noventaDias') || $(this).hasClass('totalDias') || $(this).hasClass('ausenteDias') ? fechaDesde = obtenerFormato(fechaDesde) : $('#fechaDesdePres').val();
+        $(this).hasClass('sesentaDias') || $(this).hasClass('noventaDias') || $(this).hasClass('totalDias') || $(this).hasClass('ausenteDias') ? fechaHasta = obtenerFormato(fechaHasta) : $('#fechaHastaPres').val();
+
+        let tipo = $(this).hasClass('sesentaDias') || $(this).hasClass('totalDias') || $(this).hasClass('ausenteDias') ? 'todos' : $('#tipoPres').val();
+        
+        let ausente = $(this).hasClass('sesentaDias') ||  $(this).hasClass('noventaDias') 
+                        ? 'noAusente' 
+                        : $(this).hasClass('totalDias') 
+                            ? 'todos'
+                            : $(this).hasClass('ausenteDias')
+                                ? 'ausente'
+                                : null;
+        
+        let conPendiente = $(this).hasClass('sesentaDias') || $(this).hasClass('noventaDias') || $(this).hasClass('totalDias') || $(this).hasClass('ausenteDias') ? 1 : (($('#pendientePres').prop('checked') ? 1:0));
 
         if (fechaDesde === '' || fechaHasta === '') {
             toastr.warning("Las fechas son obligatorias");
             return;
         }
-
-        /*var especialidad = $('#especialidadPres').val();
-
-        if (especialidad === '') {
-            toastr.warning('Debe seleccionar una especialidad para continuar');
-            return;
-        }*/
 
         $('#listaOrdenesPrestaciones').DataTable().clear().destroy();
 
@@ -26,26 +53,27 @@ $(document).ready(()=>{
             ordering: false,
             processing: true,
             lengthChange: false,
-            pageLength: 50,
+            pageLength: 100,
             deferRender: true,
             responsive: true,
             serverSide: true,
             ajax: {
                 url: SEARCHPRESTACION,
                 data: function(d){
-                    d.fechaDesde = $('#fechaDesdePres').val();
-                    d.fechaHasta = $('#fechaHastaPres').val();
+                    d.fechaDesde = fechaDesde;
+                    d.fechaHasta = fechaHasta;
                     d.especialidad = $('#especialidadPres').val();
                     d.estado = $('#estadoPres').val();
                     d.efector = $('#efectorPres').val();
                     d.informador = $('#informadorPres').val();
                     d.profEfector = $('#profEfePres').val();
                     d.profInformador = $('#profInfPres').val();
-                    d.tipo = $('#tipoPres').val();
+                    d.tipo = tipo;
                     d.adjunto = $('#adjuntoPres').val();
                     d.examen = $('#examenPres').val();
-                    d.pendiente = $('#pendientePres').prop('checked') ? 1:0;
+                    d.pendiente = conPendiente;
                     d.vencido = $('#vencidoPres').prop('checked') ? 1:0;
+                    d.ausente = ausente;
                 }
             },
             dataType: 'json',
@@ -56,7 +84,7 @@ $(document).ready(()=>{
                     render: function(data) {
 
                         let recorte = (data.Especialidad).substring(0,5) + "...";
-                        return recorte.length >= 5 ? `<span title="${data.Especialidad}">${recorte}</span>` : data.Especialidad;
+                        return recorte.length >= 5 ? `<div id="listado" data-id="${data.IdItem}"><span title="${data.Especialidad}">${recorte}</span></div>` : `<div id="listado" data-id="${data.IdItem}">${data.Especialidad}</div>`;
                     }
                 },
                 {//2

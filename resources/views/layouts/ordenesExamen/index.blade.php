@@ -163,10 +163,11 @@
                                             </div>
                                             <div class="row mt-2 mb-2 fondo-base">
                                                 <div class="col-sm-12 p-2 text-end">
-                                                    <button type="button" class="btn btn-sm botonGeneral">60 días</button>
-                                                    <button type="button" class="btn btn-sm botonGeneral">90 días</button>
-                                                    <button type="button" class="btn btn-sm botonGeneral">Total</button>
-                                                    <button type="button" class="btn btn-sm botonGeneral">Ausente</button>
+                                                    <button type="button" class="btn btn-sm botonGeneral Exportar"><i class="ri-file-excel-line"></i>&nbsp;Exportar</button>
+                                                    <button type="button" class="btn btn-sm botonGeneral sesentaDias">60 días</button>
+                                                    <button type="button" class="btn btn-sm botonGeneral noventaDias">90 días</button>
+                                                    <button type="button" class="btn btn-sm botonGeneral totalDias">Total</button>
+                                                    <button type="button" class="btn btn-sm botonGeneral ausenteDias">Ausente</button>
                                                 </div>
                                             </div>
 
@@ -977,6 +978,8 @@
     const fileUpload = "{{ route('uploadAdjunto') }}";
     const archivosAutomatico = "{{ route('archivosAutomatico') }}";
     const archivosAutomaticoI = "{{ route('archivosAutomaticoI') }}";
+
+    const exportarOrdExa = "{{ route('exportarOrdExa') }}";
 </script>
 
 @push('styles')
