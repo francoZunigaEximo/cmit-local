@@ -25,6 +25,7 @@ $(document).ready(()=>{
         });
 
         $('#listaOrdenesEfectores').DataTable().clear().destroy();
+        let currentDraw = 1;
 
         new DataTable("#listaOrdenesEfectores", {
 
@@ -46,7 +47,20 @@ $(document).ready(()=>{
                     d.empresa = $('#empresa').val();
                     d.paciente = $('#paciente').val();
                     d.examen = $('#examen').val();
-                }
+                    d.page = d.start / d.length + 1;
+                },
+                dataSrc: function (response) {
+                    let data = {
+                        draw: currentDraw,
+                        recordsTotal: response.total,
+                        recordsFiltered: response.total,
+                        data: response.data,
+                    };
+    
+                    currentDraw++;
+    
+                    return data.data;
+                },
             },
             dataType: 'json',
             type: 'POST',

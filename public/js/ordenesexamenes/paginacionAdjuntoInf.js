@@ -18,6 +18,7 @@ $(document).ready(()=>{
         }*/
 
         $('#listaOrdenesInformadoresAdj').DataTable().clear().destroy();
+        let currentDraw = 1;
 
         new DataTable("#listaOrdenesInformadoresAdj", {
 
@@ -38,7 +39,20 @@ $(document).ready(()=>{
                     d.empresa = $('#empresaAdjuntoInf').val();
                     d.efectores = $('#informadorAdjuntoInf').val();
                     d.art = $('#artAdjuntoInf').val();
-                }
+                    d.page = d.start / d.length + 1;
+                },
+                dataSrc: function (response) {
+                    let data = {
+                        draw: currentDraw,
+                        recordsTotal: response.total,
+                        recordsFiltered: response.total,
+                        data: response.data,
+                    };
+    
+                    currentDraw++;
+    
+                    return data.data;
+                },
             },
             dataType: 'json',
             type: 'POST',

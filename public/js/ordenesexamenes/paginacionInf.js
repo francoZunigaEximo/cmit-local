@@ -30,6 +30,7 @@ $(document).ready(()=>{
         });
 
         $('#listaOrdenesInformadores').DataTable().clear().destroy();
+        let currentDraw = 1;
 
         new DataTable("#listaOrdenesInformadores", {
 
@@ -51,7 +52,20 @@ $(document).ready(()=>{
                     d.empresa = $('#empresaInf').val();
                     d.paciente = $('#pacienteInf').val();
                     d.examen = $('#examenInf').val();
-                }
+                    d.page = d.start / d.length + 1;
+                },
+                dataSrc: function (response) {
+                    let data = {
+                        draw: currentDraw,
+                        recordsTotal: response.total,
+                        recordsFiltered: response.total,
+                        data: response.data,
+                    };
+    
+                    currentDraw++;
+    
+                    return data.data;
+                },
             },
             dataType: 'json',
             type: 'POST',

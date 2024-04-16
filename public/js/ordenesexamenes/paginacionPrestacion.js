@@ -46,6 +46,7 @@ $(document).ready(()=>{
         }
 
         $('#listaOrdenesPrestaciones').DataTable().clear().destroy();
+        let currentDraw = 1;
 
         new DataTable("#listaOrdenesPrestaciones", {
 
@@ -74,7 +75,20 @@ $(document).ready(()=>{
                     d.pendiente = conPendiente;
                     d.vencido = $('#vencidoPres').prop('checked') ? 1:0;
                     d.ausente = ausente;
-                }
+                    d.page = d.start / d.length + 1;
+                },
+                dataSrc: function (response) {
+                    let data = {
+                        draw: currentDraw,
+                        recordsTotal: response.total,
+                        recordsFiltered: response.total,
+                        data: response.data,
+                    };
+    
+                    currentDraw++;
+    
+                    return data.data;
+                },
             },
             dataType: 'json',
             type: 'POST',

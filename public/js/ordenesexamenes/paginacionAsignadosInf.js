@@ -23,6 +23,7 @@ $(document).ready(()=>{
         $('#LiberarInf').show();
 
         $('#listaOrdenesInformadoresAsig').DataTable().clear().destroy();
+        let currentDraw = 1;
 
         new DataTable("#listaOrdenesInformadoresAsig", {
 
@@ -45,7 +46,20 @@ $(document).ready(()=>{
                     d.paciente = $('#pacienteAsignadosInf').val();
                     d.examen = $('#examenAsignadosInf').val();
                     d.informadores = $('#informadorAsignadoInf').val();
-                }
+                    d.page = d.start / d.length + 1;
+                },
+                dataSrc: function (response) {
+                    let data = {
+                        draw: currentDraw,
+                        recordsTotal: response.total,
+                        recordsFiltered: response.total,
+                        data: response.data,
+                    };
+    
+                    currentDraw++;
+    
+                    return data.data;
+                },
             },
             dataType: 'json',
             type: 'POST',
