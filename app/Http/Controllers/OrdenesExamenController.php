@@ -492,6 +492,7 @@ class OrdenesExamenController extends Controller
                 ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
                 ->join('profesionales as prof1', 'itemsprestaciones.IdProfesional', '=', 'prof1.Id')
                 ->join('profesionales as prof2', 'itemsprestaciones.IdProfesional2', '=', 'prof2.Id')
+                ->join('archivosefector', 'itemsprestaciones.Id', '=', 'archivosefector.IdEntidad')
                 ->select(
                     'itemsprestaciones.Id as IdItem',
                     'itemsprestaciones.Fecha as Fecha',
@@ -617,6 +618,14 @@ class OrdenesExamenController extends Controller
                     $query->where('proveedores.Externo', 0);
                 });
 
+                $query->when(!empty($request->tipo) && ($request->tipo === 'externo'), function ($query) {
+                    $query->where('proveedores.Externo', 1);
+                });
+
+                $query->when(!empty($request->tipo) && ($request->tipo === 'todos'), function ($query) {
+                    $query->whereIn('proveedores.Externo', [0,1]);
+                });
+
                 $query->when(!empty($request->ausente) && ($request->ausente === 'ausente'), function ($query) {
                     $query->where('itemsprestaciones.Ausente', 1);
                 });
@@ -627,14 +636,6 @@ class OrdenesExamenController extends Controller
 
                 $query->when(!empty($request->ausente) && ($request->ausente === 'todos'), function ($query) {
                     $query->whereIn('itemsprestaciones.Ausente', [0,1]);
-                });
-
-                $query->when(!empty($request->tipo) && ($request->tipo === 'externo'), function ($query) {
-                    $query->where('proveedores.Externo', 1);
-                });
-
-                $query->when(!empty($request->tipo) && ($request->tipo === 'todos'), function ($query) {
-                    $query->whereIn('proveedores.Externo', [0,1]);
                 });
 
                 $query->when(!empty($request->adjunto) && ($request->adjunto === 'fisico'), function ($query) {
@@ -658,6 +659,11 @@ class OrdenesExamenController extends Controller
                 //Sumamos los dias de vencimiento y comparamos
                 $query->when(!empty($request->vencido) && ($request->vencido === 1), function ($query){
                     return $query->whereRaw('DATE_ADD(itemsprestaciones.Fecha, INTERVAL examenes.DiasVencimiento DAY) <= CURDATE()');
+                });
+
+                $query->when(!empty($request->adjuntoEfector) && ($request->adjuntoEfector === 1), function ($query) use ($request) {
+                    $query->whereNot('archivosefector.IdEntidad', $request->IdItem)
+                        ->where('examenes.adjunto', 1);
                 });
                 
                 $limit = $query->orderBy('itemsprestaciones.Fecha', 'Desc');

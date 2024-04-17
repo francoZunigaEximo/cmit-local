@@ -164,6 +164,8 @@
                                             <div class="row mt-2 mb-2 fondo-base">
                                                 <div class="col-sm-12 p-2 text-end">
                                                     <button type="button" class="btn btn-sm botonGeneral Exportar"><i class="ri-file-excel-line"></i>&nbsp;Exportar</button>
+                                                    <button type="button" class="btn btn-sm botonGeneral hoyDias">Hoy</button>
+                                                    <button type="button" class="btn btn-sm botonGeneral treintaDias">30 días</button>
                                                     <button type="button" class="btn btn-sm botonGeneral sesentaDias">60 días</button>
                                                     <button type="button" class="btn btn-sm botonGeneral noventaDias">90 días</button>
                                                     <button type="button" class="btn btn-sm botonGeneral totalDias">Total</button>

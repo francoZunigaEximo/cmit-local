@@ -5,13 +5,13 @@ function obtenerFormato(date) {
 $(document).ready(()=>{
 
     //Botón de busqueda de Mapas
-    $(document).on('click', '#buscarPres, .sesentaDias, .noventaDias, .totalDias, .ausenteDias', function() {
+    $(document).on('click', '#buscarPres, .sesentaDias, .noventaDias, .totalDias, .ausenteDias, .hoyDias, .treintaDias', function() {
 
-        let fechaHasta = $(this).hasClass('sesentaDias') || $(this).hasClass('noventaDias') || $(this).hasClass('totalDias') || $(this).hasClass('ausenteDias')
+        let fechaHasta = $(this).hasClass('sesentaDias') || $(this).hasClass('noventaDias') || $(this).hasClass('totalDias') || $(this).hasClass('ausenteDias') || $(this).hasClass('hoyDias') || $(this).hasClass('treintaDias')
             ? new Date() 
             : $('#fechaHastaPres').val(); 
         
-        let fechaDesde = $(this).hasClass('sesentaDias') || $(this).hasClass('noventaDias') || $(this).hasClass('totalDias') || $(this).hasClass('ausenteDias')
+        let fechaDesde = $(this).hasClass('sesentaDias') || $(this).hasClass('noventaDias') || $(this).hasClass('totalDias') || $(this).hasClass('ausenteDias') || $(this).hasClass('hoyDias') || $(this).hasClass('treintaDias')
             ? new Date(fechaHasta) 
             : $('#fechaDesdePres').val();
         
@@ -23,14 +23,22 @@ $(document).ready(()=>{
                     ?  fechaDesde.setDate(fechaHasta.getDate() - 90) 
                     : $(this).hasClass('ausenteDias') 
                         ? fechaDesde.setDate(fechaHasta.getDate() - 90) 
-                        : $('#fechaDesde').val();
+                        : $(this).hasClass('hoyDias') 
+                            ? fechaDesde.setDate(fechaHasta.getDate() - 0) 
+                            : $(this).hasClass('treintaDias')
+                                ? fechaDesde.setDate(fechaHasta.getDate() - 30) 
+                                : $('#fechaDesde').val();
         
-        $(this).hasClass('sesentaDias') || $(this).hasClass('noventaDias') || $(this).hasClass('totalDias') || $(this).hasClass('ausenteDias') ? fechaDesde = obtenerFormato(fechaDesde) : $('#fechaDesdePres').val();
-        $(this).hasClass('sesentaDias') || $(this).hasClass('noventaDias') || $(this).hasClass('totalDias') || $(this).hasClass('ausenteDias') ? fechaHasta = obtenerFormato(fechaHasta) : $('#fechaHastaPres').val();
+        $(this).hasClass('sesentaDias') || $(this).hasClass('noventaDias') || $(this).hasClass('totalDias') || $(this).hasClass('ausenteDias') || $(this).hasClass('hoyDias') || $(this).hasClass('treintaDias') ? fechaDesde = obtenerFormato(fechaDesde) : $('#fechaDesdePres').val();
+        $(this).hasClass('sesentaDias') || $(this).hasClass('noventaDias') || $(this).hasClass('totalDias') || $(this).hasClass('ausenteDias') || $(this).hasClass('hoyDias') || $(this).hasClass('treintaDias') ? fechaHasta = obtenerFormato(fechaHasta) : $('#fechaHastaPres').val();
 
-        let tipo = $(this).hasClass('sesentaDias') || $(this).hasClass('totalDias') || $(this).hasClass('ausenteDias') ? 'todos' : $('#tipoPres').val();
+        let tipo = $(this).hasClass('sesentaDias') || $(this).hasClass('totalDias') || $(this).hasClass('ausenteDias') || $(this).hasClass('treintaDias')
+                        ? 'todos' 
+                        : $(this).hasClass('hoyDias')
+                            ?  'interno'
+                            : $('#tipoPres').val();
         
-        let ausente = $(this).hasClass('sesentaDias') ||  $(this).hasClass('noventaDias') 
+        let ausente = $(this).hasClass('sesentaDias') ||  $(this).hasClass('noventaDias') || $(this).hasClass('treintaDias') || $(this).hasClass('hoyDias')
                         ? 'noAusente' 
                         : $(this).hasClass('totalDias') 
                             ? 'todos'
@@ -38,7 +46,9 @@ $(document).ready(()=>{
                                 ? 'ausente'
                                 : null;
         
-        let conPendiente = $(this).hasClass('sesentaDias') || $(this).hasClass('noventaDias') || $(this).hasClass('totalDias') || $(this).hasClass('ausenteDias') ? 1 : (($('#pendientePres').prop('checked') ? 1:0));
+        let conPendiente = $(this).hasClass('sesentaDias') || $(this).hasClass('noventaDias') || $(this).hasClass('totalDias') || $(this).hasClass('ausenteDias') || $(this).hasClass('treintaDias') ? 1 : (($('#pendientePres').prop('checked') ? 1:0));
+
+        let adjuntoEfector = $(this).hasClass('hoyDias') ? 1 : null;
 
         if (fechaDesde === '' || fechaHasta === '') {
             toastr.warning("Las fechas son obligatorias");
@@ -75,6 +85,7 @@ $(document).ready(()=>{
                     d.pendiente = conPendiente;
                     d.vencido = $('#vencidoPres').prop('checked') ? 1:0;
                     d.ausente = ausente;
+                    d.adjuntoEfector = adjuntoEfector;
                     d.page = d.start / d.length + 1;
                 },
                 dataSrc: function (response) {
