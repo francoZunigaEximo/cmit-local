@@ -9,7 +9,6 @@ use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use Illuminate\Support\Facades\Cache;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use DateTime;
@@ -26,59 +25,71 @@ class OrdenesExamenController extends Controller
 
     public function search(Request $request): mixed
     {   
-
         if($request->ajax())
         {
-            $cacheKey = 'search:' . $request->fechaDesde . ':' . $request->fechaHasta . ':' . $request->especialidad;
+            $query = DB::table('itemsprestaciones')
+            ->select(
+                'itemsprestaciones.Id as IdItem',
+                'itemsprestaciones.Fecha as Fecha',
+                'itemsprestaciones.IdProfesional as IdProfesional',
+                'proveedores.Nombre as Especialidad',
+                'proveedores.Id as IdEspecialidad',
+                'prestaciones.Id as IdPrestacion',
+                'clientes.RazonSocial as Empresa',
+                'pacientes.Apellido as pacApellido',
+                'pacientes.Nombre as pacNombre',
+                'pacientes.Documento as Documento',
+                'examenes.Nombre as Examen',
+            )
+            ->join('prestaciones', function ($join) use ($request) {
+                $join->on('itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
+                        ->where('prestaciones.Estado', 1);
+                if (!empty($request->prestacion)) {
+                    $join->where('prestaciones.Estado', $request->prestacion);
+                }
+            })
+            ->join('examenes', function ($join) use ($request) {
+                $join->on('itemsprestaciones.IdExamen', '=', 'examenes.Id')
+                    ->where('examenes.Inactivo', 0);
+                if (!empty($request->examen)) {
+                    $join->where('examenes.Id', $request->examen);
+                }
+            })
+            ->join('proveedores', function ($join) use ($request) {
+                $join->on('examenes.IdProveedor', '=', 'proveedores.Id')
+                        ->where('proveedores.Inactivo', '=', 0);
+                        if (!empty($request->especialidad)) {
+                            $join->where('proveedores.Id', $request->especialidad);
+                        }
+            })
+            ->join('clientes', function($join) {
+                $join->on('prestaciones.IdEmpresa', '=', 'clientes.Id')
+                ->where('clientes.Bloqueado', 0);
+            })
+            ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
+            
+            ->join('pacientes', function($join) use ($request) {
+                $join->on('prestaciones.IdPaciente', '=', 'pacientes.Id')
+                        ->where('pacientes.Estado', 1);
+                    if(!empty($request->paciente)) {
+                        $join->where('pacientes.Id', $request->paciente);
+                    }
+            })
+            ->whereNot('itemsprestaciones.Id', 0)
+            ->where('itemsprestaciones.Anulado', 0);
 
-            $data = Cache::get($cacheKey);
+            $query->when(!empty($request->fechaDesde) && !empty($request->fechaHasta), function ($query) use ($request) {
+                $query->whereBetween('itemsprestaciones.Fecha', [$request->fechaDesde, $request->fechaHasta]);
+            });
+    
+            $query->when(!empty($request->empresa), function ($query) use ($request) {
+                $query->where('clientes.Id', $request->empresa);
+            });
 
-            if (!$data) {
+            $filtrado = $query->where('itemsprestaciones.IdProfesional', 0);
 
-                $query = ItemPrestacion::join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
-                ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
-                ->join('proveedores', 'examenes.IdProveedor', '=', 'proveedores.Id')
-                ->join('clientes', 'prestaciones.IdEmpresa', '=', 'clientes.Id')
-                ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
-                ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-                ->select(
-                    'itemsprestaciones.Id as IdItem',
-                    'itemsprestaciones.Fecha as Fecha',
-                    'itemsprestaciones.IdProfesional as IdProfesional',
-                    'proveedores.Nombre as Especialidad',
-                    'proveedores.Id as IdEspecialidad',
-                    'prestaciones.Id as IdPrestacion',
-                    'clientes.RazonSocial as Empresa',
-                    'pacientes.Apellido as pacApellido',
-                    'pacientes.Nombre as pacNombre',
-                    'pacientes.Documento as Documento',
-                    'examenes.Nombre as Examen',
-                )->whereNot('itemsprestaciones.Id', 0);
-
-                $query = $this->filtrosBasicos($query, $request);
-
-                $query->when(!empty($request->prestacion), function ($query) use ($request) {
-                    $query->where('prestaciones.Id', $request->prestacion);
-                });
-
-                $query->when(!empty($request->paciente), function ($query) use ($request) {
-                    $query->where('pacientes.Id', $request->paciente);
-                });
-
-                $query->when(!empty($request->examen), function ($query) use ($request) {
-                    $query->where('examenes.Id', $request->examen);
-                });
-
-                $filtrado = $query->where('itemsprestaciones.IdProfesional', 0);
-
-                $result = $this->condicionesComunes($filtrado);
-
-                Cache::put($cacheKey, $result->get(), 60);
-
-            }else{
-                $result = collect($data);
-            }
-
+            $result = $this->condicionesComunes($filtrado);
+            
             return Datatables::of($result)->make(true);
         }
 
@@ -89,82 +100,19 @@ class OrdenesExamenController extends Controller
     {
         if($request->ajax())
         {
-            $cacheKey = 'searchA:' . $request->fechaDesde . ':' . $request->fechaHasta . ':' . $request->especialidad;
-
-            $data = Cache::get($cacheKey);
-
-            if (!$data) {
-
-                $query = ItemPrestacion::join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
-                ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
-                ->join('proveedores', 'examenes.IdProveedor', '=', 'proveedores.Id')
-                ->join('clientes', 'prestaciones.IdEmpresa', '=', 'clientes.Id')
-                ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
-                ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-                ->join('profesionales', 'itemsprestaciones.IdProfesional', '=', 'profesionales.Id')
-                ->select(
-                    'itemsprestaciones.Id as IdItem',
-                    'itemsprestaciones.Fecha as Fecha',
-                    'itemsprestaciones.CAdj as Estado',
-                    'itemsprestaciones.CInfo as Informado',
-                    'itemsprestaciones.IdProfesional as IdProfesional',
-                    'proveedores.Nombre as Especialidad',
-                    'proveedores.Id as IdEspecialidad',
-                    'prestaciones.Id as IdPrestacion',
-                    'clientes.RazonSocial as Empresa',
-                    'pacientes.Apellido as pacApellido',
-                    'pacientes.Nombre as pacNombre',
-                    'pacientes.Documento as Documento',
-                    'pacientes.Id as IdPaciente',
-                    'examenes.Nombre as Examen',
-                )->whereNot('itemsprestaciones.Id', 0);
-
-                $query = $this->filtrosBasicos($query, $request);
-
-                $query->when(!empty($request->prestacion), function ($query) use ($request) {
-                    $query->where('prestaciones.Id', $request->prestacion);
-                });
-
-                $query->when(!empty($request->examen), function ($query) use ($request) {
-                    $query->where('examenes.Id', $request->examen);
-                });
-
-                $query->when(!empty($request->paciente), function ($query) use ($request) {
-                    $query->where('pacientes.Id', $request->paciente);
-                });
-
-                $query->when(!empty($request->estados) && ($request->estados === 'abiertos'), function ($query) {
-                    $query->whereIn('itemsprestaciones.CAdj', ['0', '1', '2'])
-                            ->where('itemsprestaciones.CInfo', 0);
-                });
-
-                $query->when(!empty($request->estados) && ($request->estados === 'cerrados'), function ($query) {
-                    $query->whereIn('itemsprestaciones.CAdj', ['3', '4', '5']);
-                });
-
-                $query->when(!empty($request->estados) && ($request->estados === 'asignados'), function ($query) {
-                    $query->where('itemsprestaciones.IdProfesional', '<>', 0)
-                        ->havingRaw('(SELECT COUNT(*) FROM archivosefector WHERE IdEntidad = itemsprestaciones.Id) = 0')
-                        ->whereIn('itemsprestaciones.CAdj', ['0', '1', '2']);
-                });
-
-                $query->when(!empty($request->efectores), function ($query) use ($request){
-                    $query->where('itemsprestaciones.IdProfesional', $request->efectores);
-                });
-            
-                $filtrado = $query->whereNot('itemsprestaciones.IdProfesional', 0);
-
-                $result = $this->condicionesComunes($filtrado);
-
-                Cache::put($cacheKey, $result->get(), 60);
-
-            }else{
-                $result = collect($data);
-            }
-
-            return Datatables::of($result)->make(true);
-        }
+            $query = DB::select("CALL getSearchA(".
+                ($request->fechaDesde ? "'".$request->fechaDesde."'" : "NULL").", ".
+                ($request->fechaHasta ? "'".$request->fechaHasta."'" : "NULL").", ".
+                ($request->prestacion ? $request->prestacion : "NULL").", ".
+                ($request->examen ? $request->examen : "NULL").", ".
+                ($request->paciente ? $request->paciente : "NULL").", ".
+                ($request->estados ? "'".$request->estados."'" : "NULL").", ".
+                ($request->efector ? $request->efector : "NULL").", ".
+                ($request->especialidad ? $request->especialidad : "NULL").", ".
+                ($request->empresa ? $request->empresa : "NULL").")");
         
+            return Datatables::of($query)->make(true);
+        }
         return view('layouts.ordenesExamen.index');
     }
 
@@ -172,73 +120,15 @@ class OrdenesExamenController extends Controller
     {
         if($request->ajax())
         {
-            $cacheKey = 'searchAdj:' . $request->fechaDesde . ':' . $request->fechaHasta . ':' . $request->especialidad;
+            $query = DB::select("CALL getSearchAdj(".
+                ($request->fechaDesde ? "'".$request->fechaDesde."'" : "NULL").", ".
+                ($request->fechaHasta ? "'".$request->fechaHasta."'" : "NULL").", ".
+                ($request->efector ? $request->efector : "NULL").", ".
+                ($request->especialidad ? $request->especialidad : "NULL").", ".
+                ($request->empresa ? $request->empresa : "NULL").", ".
+                ($request->art ? $request->art : "NULL").")");
 
-            $data = Cache::get($cacheKey);
-
-            if (!$data) {
-
-                $query = ItemPrestacion::join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
-                ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
-                ->join('proveedores', 'examenes.IdProveedor', '=', 'proveedores.Id')
-                ->join('clientes', 'prestaciones.IdEmpresa', '=', 'clientes.Id')
-                ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
-                ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-                ->leftJoin('archivosefector', 'itemsprestaciones.Id', '=', 'archivosefector.IdEntidad')
-                ->join('profesionales', 'itemsprestaciones.IdProfesional', '=', 'profesionales.Id')
-                ->select(
-                    DB::raw('CASE 
-                                WHEN proveedores.Multi = 1 THEN "Multi Examen"
-                                ELSE examenes.Nombre
-                            END AS examen_nombre'),
-                    'itemsprestaciones.Id as IdItem',
-                    'itemsprestaciones.Fecha as Fecha',
-                    'itemsprestaciones.CAdj as Estado',
-                    'proveedores.Nombre as Especialidad',
-                    'proveedores.Multi as MultiEfector',
-                    'prestaciones.Id as IdPrestacion',
-                    'clientes.RazonSocial as Empresa',
-                    'pacientes.Apellido as pacApellido',
-                    'pacientes.Nombre as pacNombre',
-                    'profesionales.Apellido as proApellido',
-                    'profesionales.Nombre as proNombre',
-                    'pacientes.Documento as Documento',
-                    'pacientes.Id as IdPaciente',
-                    'examenes.Nombre as Examen',
-                    'examenes.Id as IdExamen',
-                )->whereNot('itemsprestaciones.Id', 0);
-        
-                $query = $this->filtrosBasicos($query, $request);
-
-                $query->when(!empty($request->efectores), function ($query) use ($request){
-                    $query->where('itemsprestaciones.IdProfesional', $request->efectores);
-                });
-
-                $query->when(!empty($request->art), function ($query) use ($request) {
-                    $query->where('art.Id', $request->art);
-                });
-                
-                $filtrado = $query->where('examenes.Adjunto', 1)
-                    ->whereNotExists(function ($query) {
-                        $query->select(DB::raw(1))
-                            ->from('archivosefector')
-                            ->whereRaw('archivosefector.IdEntidad = itemsprestaciones.Id');
-                    })
-                    ->whereIn('itemsprestaciones.CAdj', [1,4])
-                    ->whereNot('itemsprestaciones.IdProfesional', 0)
-                    ->groupBy(DB::raw('
-                        CASE 
-                            WHEN proveedores.Multi = 1 THEN prestaciones.Id
-                            ELSE itemsprestaciones.Id
-                        END')
-                    );
-
-                $result = $this->condicionesComunes($filtrado);
-                Cache::put($cacheKey, $result->get(), 60);
-            }else{
-                $result = collect($data);
-            }
-            return Datatables::of($result)->make(true);
+            return Datatables::of($query)->make(true);
         }
         return view('layouts.ordenesExamen.index');
     }
@@ -247,65 +137,17 @@ class OrdenesExamenController extends Controller
     {
         if($request->ajax())
         {
-            $cacheKey = 'searchInf:' . $request->fechaDesde . ':' . $request->fechaHasta . ':' . $request->especialidad;
+            $query = DB::select("CALL getSearchInf(".
+            ($request->fechaDesde ? "'".$request->fechaDesde."'" : "NULL").", ".
+            ($request->fechaHasta ? "'".$request->fechaHasta."'" : "NULL").", ".
+            ($request->informador ? $request->informador : "NULL").", ".
+            ($request->especialidad ? $request->especialidad : "NULL").", ".
+            ($request->empresa ? $request->empresa : "NULL").", ".
+            ($request->prestacion ? $request->prestacion : "NULL").", ".
+            ($request->paciente ? $request->paciente : "NULL").", ".
+            ($request->examen ? $request->examen : "NULL").")");
 
-            $data = Cache::get($cacheKey);
-
-            if (!$data) {
-
-                $query = ItemPrestacion::join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
-                ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
-                ->join('proveedores', 'examenes.IdProveedor2', '=', 'proveedores.Id')
-                ->join('clientes', 'prestaciones.IdEmpresa', '=', 'clientes.Id')
-                ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
-                ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-                ->leftJoin('archivosefector', 'itemsprestaciones.Id', '=', 'archivosefector.IdEntidad')
-                ->join('profesionales', 'itemsprestaciones.IdProfesional', '=', 'profesionales.Id')
-                ->select(
-                    'itemsprestaciones.Id as IdItem',
-                    'itemsprestaciones.Fecha as Fecha',
-                    'itemsprestaciones.CAdj as Estado',
-                    'itemsprestaciones.CInfo as Informado',
-                    'itemsprestaciones.IdProfesional as IdProfesional',
-                    'proveedores.Nombre as Especialidad',
-                    'proveedores.Id as IdEspecialidad',
-                    'proveedores.Multi as MultiEfector',
-                    'proveedores.MultiE as MultiInformador',
-                    'prestaciones.Id as IdPrestacion',
-                    'clientes.RazonSocial as Empresa',
-                    DB::raw("CONCAT(pacientes.Apellido, ' ', pacientes.Nombre) as NombreCompleto"),
-                    DB::raw("CONCAT(profesionales.Apellido, ' ', profesionales.Nombre) as NombreProfesional"),
-                    'pacientes.Documento as Documento',
-                    'pacientes.Id as IdPaciente',
-                    'examenes.Nombre as Examen',
-                    'examenes.Id as IdExamen',
-                )->whereNot('itemsprestaciones.Id', 0);
-
-                $query = $this->filtrosBasicos($query, $request);
-
-                $query->when(!empty($request->prestacion), function ($query) use ($request) {
-                    $query->where('prestaciones.Id', $request->prestacion);
-                });
-
-                $query->when(!empty($request->paciente), function ($query) use ($request) {
-                    $query->where('pacientes.Id', $request->paciente);
-                });
-
-                $query->when(!empty($request->examen), function ($query) use ($request) {
-                    $query->where('examenes.Id', $request->examen);
-                });
-
-                $filtrado = $query->whereNot('itemsprestaciones.IdProfesional', 0)
-                                ->where('itemsprestaciones.IdProfesional2', 0)
-                                ->where('itemsprestaciones.CAdj', 5);
-
-                $result = $this->condicionesComunes($filtrado);
-                Cache::put($cacheKey, $result->get(), 10);
-
-            }else{
-                $result = collect($data);
-            }
-            return Datatables::of($result)->make(true);
+            return Datatables::of($query)->make(true);
         }
         return view('layouts.ordenesExamen.index');
     }
@@ -314,80 +156,17 @@ class OrdenesExamenController extends Controller
     {
         if($request->ajax())
         {
-            $cacheKey = 'searchInfA:' . $request->fechaDesde . ':' . $request->fechaHasta . ':' . $request->especialidad;
+            $query = DB::select("CALL getSearchInfA(".
+            ($request->fechaDesde ? "'".$request->fechaDesde."'" : "NULL").", ".
+            ($request->fechaHasta ? "'".$request->fechaHasta."'" : "NULL").", ".
+            ($request->informador ? $request->informador : "NULL").", ".
+            ($request->especialidad ? $request->especialidad : "NULL").", ".
+            ($request->examen ? $request->examen : "NULL").", ".
+            ($request->prestacion ? $request->prestacion : "NULL").", ".
+            ($request->empresa ? $request->empresa : "NULL").", ".
+            ($request->paciente ? $request->paciente : "NULL").")");
 
-            $data = Cache::get($cacheKey);
-
-            if (!$data) {
-            
-                $query = ItemPrestacion::join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
-                ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
-                ->join('proveedores', 'examenes.IdProveedor2', '=', 'proveedores.Id')
-                ->join('clientes', 'prestaciones.IdEmpresa', '=', 'clientes.Id')
-                ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
-                ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-                ->leftJoin('archivosefector', 'itemsprestaciones.Id', '=', 'archivosefector.IdEntidad')
-                ->join('profesionales', 'itemsprestaciones.IdProfesional', '=', 'profesionales.Id')
-                ->select(
-                    'itemsprestaciones.Id as IdItem',
-                    'itemsprestaciones.Fecha as Fecha',
-                    'itemsprestaciones.CAdj as Estado',
-                    'itemsprestaciones.CInfo as Informado',
-                    'itemsprestaciones.IdProfesional as IdProfesional',
-                    'proveedores.Nombre as Especialidad',
-                    'proveedores.Id as IdEspecialidad',
-                    'proveedores.Multi as MultiEfector',
-                    'proveedores.MultiE as MultiInformador',
-                    'prestaciones.Id as IdPrestacion',
-                    'clientes.RazonSocial as Empresa',
-                    DB::raw("CONCAT(pacientes.Apellido, ' ', pacientes.Nombre) as NombreCompleto"),
-                    DB::raw("CONCAT(profesionales.Apellido, ' ', profesionales.Nombre) as NombreProfesional"),
-                    'pacientes.Documento as Documento',
-                    'pacientes.Id as IdPaciente',
-                    'examenes.Nombre as Examen',
-                    'examenes.Id as IdExamen',
-                )->whereNot('itemsprestaciones.Id', 0);
-
-                $query = $this->filtrosBasicos($query, $request);
-
-                $query->when(!empty($request->informadores), function ($query) use ($request){
-                    $query->where('itemsprestaciones.IdProfesional', $request->informadores);
-                });
-
-                $query->when(!empty($request->examen), function ($query) use ($request) {
-                    $query->where('examenes.Id', $request->examen);
-                });
-
-                $query->when(!empty($request->prestacion), function ($query) use ($request) {
-                    $query->where('prestaciones.Id', $request->prestacion);
-                });
-
-                $query->when(!empty($request->paciente), function ($query) use ($request) {
-                    $query->where('pacientes.Id', $request->paciente);
-                });
-
-                $filtrado = $query->whereNot('itemsprestaciones.IdProfesional', 0)
-                                ->whereNot('itemsprestaciones.IdProfesional2', 0)
-                                ->where('itemsprestaciones.CAdj', 5)
-                                ->whereNot('itemsprestaciones.CInfo', 3)
-                                ->where('itemsprestaciones.FechaPagado', '0000-00-00')
-                                ->whereNotExists(function ($query) {
-                                    $query->select(DB::raw(1))
-                                        ->from('itemsprestaciones_info')
-                                        ->whereRaw('itemsprestaciones_info.IdIP = itemsprestaciones.Id');
-                                });
-
-                $result = $this->condicionesComunes($filtrado);
-
-                Cache::put($cacheKey, $result->get(), 15);
-
-                
-            }else{
-                $result = collect($data);
-
-            }
-
-            return Datatables::of($result)->make(true);
+            return Datatables::of($query)->make(true);
         }
 
         return view('layouts.ordenesExamen.index');
@@ -397,284 +176,42 @@ class OrdenesExamenController extends Controller
     {
         if($request->ajax())
         {
-            $cacheKey = 'searchInfAdj:' . $request->fechaDesde . ':' . $request->fechaHasta . ':' . $request->especialidad;
+            $query = DB::select("CALL getSearchInfAdj(".
+            ($request->fechaDesde ? "'".$request->fechaDesde."'" : "NULL").", ".
+            ($request->fechaHasta ? "'".$request->fechaHasta."'" : "NULL").", ".
+            ($request->informador ? $request->informador : "NULL").", ".
+            ($request->especialidad ? $request->especialidad : "NULL").", ".
+            ($request->art ? $request->art : "NULL").", ".
+            ($request->empresa ? $request->empresa : "NULL").")");
 
-            $data = Cache::get($cacheKey);
-
-            if (!$data) {
-
-                $query = ItemPrestacion::join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
-                ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
-                ->join('proveedores', 'examenes.IdProveedor2', '=', 'proveedores.Id')
-                ->join('clientes', 'prestaciones.IdEmpresa', '=', 'clientes.Id')
-                ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
-                ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-                ->leftJoin('archivosefector', 'itemsprestaciones.Id', '=', 'archivosefector.IdEntidad')
-                ->join('profesionales', 'itemsprestaciones.IdProfesional', '=', 'profesionales.Id')
-                ->select(
-                    DB::raw('CASE 
-                                WHEN proveedores.MultiE = 1 THEN "Multi Examen"
-                                ELSE examenes.Nombre
-                            END AS examen_nombre'),
-                    'itemsprestaciones.Id as IdItem',
-                    'itemsprestaciones.Fecha as Fecha',
-                    'itemsprestaciones.CAdj as Estado',
-                    'proveedores.Nombre as Especialidad',
-                    'proveedores.Multi as MultiEfector',
-                    'prestaciones.Id as IdPrestacion',
-                    'clientes.RazonSocial as Empresa',
-                    'pacientes.Apellido as pacApellido',
-                    'pacientes.Nombre as pacNombre',
-                    'profesionales.Apellido as proApellido',
-                    'profesionales.Nombre as proNombre',
-                    'pacientes.Documento as Documento',
-                    'pacientes.Id as IdPaciente',
-                    'examenes.Nombre as Examen',
-                    'examenes.Id as IdExamen',
-                    'prestaciones.Cerrado as prestacionCerrado'
-                )->whereNot('itemsprestaciones.Id', 0);
-        
-                $query = $this->filtrosBasicos($query, $request);
-
-                $query->when(!empty($request->informadores), function ($query) use ($request){
-                    $query->where('itemsprestaciones.IdProfesional2', $request->informadores);
-                });
-
-                $query->when(!empty($request->art), function ($query) use ($request) {
-                    $query->where('art.Id', $request->art);
-                });
-
-                $filtrado = $query->whereIn('itemsprestaciones.CInfo', [0,1])
-                                ->whereNot('itemsprestaciones.IdProfesional', 0)
-                                ->whereNot('itemsprestaciones.IdProfesional2', 0)
-                                ->whereIn('itemsprestaciones.CAdj', [3,5])
-                                ->where('proveedores.InfAdj', 1)
-                                ->whereNotExists(function ($query) {
-                                    $query->select(DB::raw(1))
-                                        ->from('archivosinformador')
-                                        ->whereRaw('archivosinformador.IdEntidad = itemsprestaciones.Id');
-                                })
-                                ->groupBy(DB::raw('
-                                    CASE 
-                                        WHEN proveedores.MultiE = 1 THEN prestaciones.Id
-                                        ELSE itemsprestaciones.Id
-                                    END')
-                                );
-
-                $result = $this->condicionesComunes($filtrado);
-
-                Cache::put($cacheKey, $result->get(), 15);
-            
-            }else {
-                $result = collect($data);
-            }
-            return Datatables::of($result)->make(true);
-        }
-
-        return view('layouts.ordenesExamen.index');
+        return Datatables::of($query)->make(true);
     }
 
-    public function searchPrestacion(Request $request)
+    return view('layouts.ordenesExamen.index');
+}
+
+public function searchPrestacion(Request $request)
+{
+    if($request->ajax())
     {
-        if($request->ajax())
-        {
-            $cacheKey = 'searchInfA:' . $request->fechaDesde . ':' . $request->fechaHasta . ':' . $request->especialidad;
+        $query = $query = DB::select("CALL getSearchPrestacion(".
+        ($request->fechaDesde ? "'".$request->fechaDesde."'" : "NULL").", ".
+        ($request->fechaHasta ? "'".$request->fechaHasta."'" : "NULL").", ".
+        ($request->estado ? "'".$request->estado."'" : "NULL").", ".
+        ($request->efector ? "'".$request->efector."'" : "NULL").", ".
+        ($request->informador ? "'".$request->informador."'" : "NULL").", ".
+        ($request->profEfector ? $request->profEfector : "NULL").", ".
+        ($request->profInformador ? $request->profInformador : "NULL").", ".
+        ($request->tipo ? "'".$request->tipo."'" : "NULL").", ".
+        ($request->adjunto ? "'".$request->adjunto."'" : "NULL").", ".
+        ($request->examen ? $request->examen : "NULL").", ".
+        ($request->pendiente ? $request->pendiente : "NULL").", ".
+        ($request->vencido ? $request->vencido : "NULL").", ".
+        ($request->especialidad ? $request->especialidad : "NULL").", ".
+        ($request->ausente ? "'".$request->ausente."'" : "NULL").", ".
+        ($request->adjuntoEfector ? $request->adjuntoEfector : "NULL").")");
 
-            $data = Cache::get($cacheKey);
-
-            if (!$data) {
-
-                $query = ItemPrestacion::join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
-                ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
-                ->join('proveedores', 'examenes.IdProveedor2', '=', 'proveedores.Id')
-                ->join('clientes', 'prestaciones.IdEmpresa', '=', 'clientes.Id')
-                ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
-                ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-                ->join('profesionales as prof1', 'itemsprestaciones.IdProfesional', '=', 'prof1.Id')
-                ->join('profesionales as prof2', 'itemsprestaciones.IdProfesional2', '=', 'prof2.Id')
-                ->join('archivosefector', 'itemsprestaciones.Id', '=', 'archivosefector.IdEntidad')
-                ->select(
-                    'itemsprestaciones.Id as IdItem',
-                    'itemsprestaciones.Fecha as Fecha',
-                    'itemsprestaciones.CAdj as Efector',
-                    'itemsprestaciones.CInfo as Informador',
-                    'itemsprestaciones.IdProfesional as IdProfesional',
-                    'proveedores.Nombre as Especialidad',
-                    'proveedores.Id as IdEspecialidad',
-                    'prestaciones.Id as IdPrestacion',
-                    'prestaciones.Cerrado as PresCerrado',
-                    'prestaciones.Finalizado as PresFinalizado',
-                    'prestaciones.Entregado as PresEntregado',
-                    'prestaciones.eEnviado as PresEnviado',
-                    'clientes.RazonSocial as Empresa',
-                    'pacientes.Nombre as NombrePaciente',
-                    'pacientes.Apellido as ApellidoPaciente',
-                    'prof1.Nombre as NombreProfesional',
-                    'prof1.Apellido as ApellidoProfesional',
-                    'prof2.Nombre as NombreProfesional2',
-                    'prof2.Apellido as ApellidoProfesional2',
-                    'examenes.Nombre as Examen',
-                    'examenes.Id as IdExamen',
-                    'examenes.DiasVencimiento as DiasVencimiento',
-                    'examenes.NoImprime as NoImprime'
-                )->whereNot('itemsprestaciones.Id', 0);
-
-                $query->when(!empty($request->fechaDesde) && !empty($request->fechaHasta), function ($query) use ($request) {
-                    $query->whereBetween('itemsprestaciones.Fecha', [$request->fechaDesde, $request->fechaHasta]);
-                });
-        
-                $query->when(!empty($request->especialidad), function ($query) use ($request) {
-                    $query->where('proveedores.Id', $request->especialidad);
-                });
-
-                $query->when(!empty($request->especialidad), function ($query) use ($request) {
-                    $query->where('proveedores.Id', $request->especialidad);
-                });
-
-                //Abierto
-                $query->when(!empty($request->estado) && ($request->estado === 'abierto'), function ($query) {
-                    $query->addSelect(DB::raw("'Abierto' as estado"))
-                        ->where('prestaciones.Finalizado', 0)
-                        ->where('prestaciones.Cerrado', 0)
-                        ->where('prestaciones.Entregado', 0);
-                });
-
-                //Cerrado
-                $query->when(!empty($request->estado) && ($request->estado === 'cerrado'), function ($query) {
-                    $query->addSelect(DB::raw("'Cerrado' as estado"))
-                    ->where('prestaciones.Cerrado', 1)
-                    ->where('prestaciones.Finalizado', 0);
-                });
-
-                //Finalizado
-                $query->when(!empty($request->estado) && ($request->estado === 'finalizado'), function ($query) {
-                    $query->addSelect(DB::raw("'Finalizado' as estado"))
-                    ->where('prestaciones.Cerrado', 1)
-                    ->where('prestaciones.Finalizado', 1);
-                });
-
-                //Entregado
-                $query->when(!empty($request->estado) && ($request->estado === 'entregado'), function ($query) {
-                    $query->addSelect(DB::raw("'Entregado' as estado"))
-                    ->where('prestaciones.Cerrado', 1)
-                    ->where('prestaciones.Finalizado', 1)
-                    ->where('prestaciones.Entregado', 1);
-                });
-
-                //eEnviado
-                $query->when(!empty($request->estado) && ($request->estado === 'eenviado'), function ($query) {
-                    $query->addSelect(DB::raw("'eEnviado' as estado"))
-                        ->where('prestaciones.eEnviado', 1);
-                });
-
-                $query->when(!empty($request->efector) && ($request->efector === 'pendientes'), function ($query) {
-                    $query->addSelect(DB::raw("'Pendiente' as EstadoEfector"))
-                    ->whereIn('itemsprestaciones.CAdj', [1,4]);
-                });
-
-                $query->when(!empty($request->efector) && ($request->efector === 'cerrados'), function ($query) {
-                    $query->addSelect(DB::raw("'Cerrado' as EstadoEfector"))
-                        ->whereIn('itemsprestaciones.CAdj', [3,4,5]);
-                });
-
-                $query->when(!empty($request->informador) && ($request->informador === 'pendientes'), function ($query) {
-                    $query->addSelect(DB::raw("'Pendiente' as EstadoInformador"))
-                        ->where('itemsprestaciones.CInfo', 0);
-                });
-
-                $query->when(!empty($request->informador) && ($request->informador === 'borrador'), function ($query) {
-                    $query->addSelect(DB::raw("'Borrador' as EstadoInformador"))
-                        ->where('itemsprestaciones.CInfo', 1);
-                });
-
-                $query->when(!empty($request->informador) && ($request->informador === 'pendienteYborrador'), function ($query) {
-                    $query->addSelect(DB::raw("
-                        CASE itemsprestaciones.CInfo
-                            WHEN 0 THEN 'Pendiente'
-                            WHEN 1 THEN 'Borrador'
-                        END as EstadoInformador
-                    "));
-                });
-                $query->when(!empty($request->informador) && ($request->informador === 'todos'), function ($query) {
-                    $query->addSelect(DB::raw("
-                    CASE 
-                        WHEN itemsprestaciones.CInfo = 0 THEN 'Pendiente'
-                        WHEN itemsprestaciones.CInfo = 1 THEN 'Pendiente'
-                        WHEN itemsprestaciones.CInfo = 2 THEN 'Borrador'
-                        WHEN itemsprestaciones.CInfo = 3 THEN 'Cerrado'
-                    END as EstadoInformador
-                    "));
-                });
-
-                $query->when(!empty($request->profEfector), function ($query) use ($request) {
-                    $query->where('itemsprestaciones.IdProfesional', $request->profEfector);
-                });
-
-                $query->when(!empty($request->profInformador), function ($query) use ($request) {
-                    $query->where('itemsprestaciones.IdProfesional2', $request->profInformador);
-                });
-
-                $query->when(!empty($request->tipo) && ($request->tipo === 'interno'), function ($query) {
-                    $query->where('proveedores.Externo', 0);
-                });
-
-                $query->when(!empty($request->tipo) && ($request->tipo === 'externo'), function ($query) {
-                    $query->where('proveedores.Externo', 1);
-                });
-
-                $query->when(!empty($request->tipo) && ($request->tipo === 'todos'), function ($query) {
-                    $query->whereIn('proveedores.Externo', [0,1]);
-                });
-
-                $query->when(!empty($request->ausente) && ($request->ausente === 'ausente'), function ($query) {
-                    $query->where('itemsprestaciones.Ausente', 1);
-                });
-
-                $query->when(!empty($request->ausente) && ($request->ausente === 'noAusente'), function ($query) {
-                    $query->where('itemsprestaciones.Ausente', 0);
-                });
-
-                $query->when(!empty($request->ausente) && ($request->ausente === 'todos'), function ($query) {
-                    $query->whereIn('itemsprestaciones.Ausente', [0,1]);
-                });
-
-                $query->when(!empty($request->adjunto) && ($request->adjunto === 'fisico'), function ($query) {
-                    $query->where('examenes.NoImprime', 0);
-                });
-
-                $query->when(!empty($request->adjunto) && ($request->adjunto === 'digital'), function ($query) {
-                    $query->where('examenes.NoImprime', 1);
-                });
-
-                $query->when(!empty($request->examen), function ($query) use ($request) {
-                    $query->where('examenes.Id', $request->examen);
-                });
-
-                $query->when(!empty($request->pendiente) && ($request->pendiente === 1), function ($query){
-                    $query->addSelect(DB::raw("'eEnviado' as estado"))
-                        ->whereIn('itemsprestaciones.CAdj', [1,4])
-                        ->where('itemsprestaciones.CInfo', 0);
-                }); 
-
-                //Sumamos los dias de vencimiento y comparamos
-                $query->when(!empty($request->vencido) && ($request->vencido === 1), function ($query){
-                    return $query->whereRaw('DATE_ADD(itemsprestaciones.Fecha, INTERVAL examenes.DiasVencimiento DAY) <= CURDATE()');
-                });
-
-                $query->when(!empty($request->adjuntoEfector) && ($request->adjuntoEfector === 1), function ($query) use ($request) {
-                    $query->whereNot('archivosefector.IdEntidad', $request->IdItem)
-                        ->where('examenes.adjunto', 1);
-                });
-                
-                $limit = $query->orderBy('itemsprestaciones.Fecha', 'Desc');
-                $result = $this->condicionesComunes($limit);
-
-                Cache::put($cacheKey, $result->get(), 15);
-
-            }else {
-                $result = collect($data);
-            }
-            return Datatables::of($result)->make(true);   
+        return Datatables::of($query)->make(true);   
         }
 
         return view('layouts.ordenesExamen.index');
@@ -797,32 +334,9 @@ class OrdenesExamenController extends Controller
 
     }
 
-    private function filtrosBasicos($query, $request): mixed
-    {
-        $query->when(!empty($request->fechaDesde) && !empty($request->fechaHasta), function ($query) use ($request) {
-            $query->whereBetween('itemsprestaciones.Fecha', [$request->fechaDesde, $request->fechaHasta]);
-        });
-
-        $query->when(!empty($request->especialidad), function ($query) use ($request) {
-            $query->where('proveedores.Id', $request->especialidad);
-        });
-
-        $query->when(!empty($request->empresa), function ($query) use ($request) {
-            $query->where('clientes.Id', $request->empresa);
-        });
-
-        return $query;
-    }
-
     private function condicionesComunes($query): mixed
     {
-        $query->where('itemsprestaciones.Anulado', 0)
-        ->where('proveedores.Inactivo', 0)
-        ->where('prestaciones.Estado', 1)
-        ->where('clientes.Bloqueado', 0)
-        ->where('pacientes.Estado', 1)
-        ->where('examenes.Inactivo', 0)
-        ->limit(5000)
+        $query->limit(5000)
         ->orderBy('itemsprestaciones.Id', 'DESC');
 
         return $query;

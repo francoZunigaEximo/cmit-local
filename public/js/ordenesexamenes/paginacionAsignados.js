@@ -92,24 +92,26 @@ $(document).ready(()=>{
                 {
                     data: null,
                     render: function(data){
-                        return fechaNow(data.Fecha,'/',0);
+                        return data.length === 0 ? '' : fechaNow(data.Fecha,'/',0); 
                     }
-                },
-                {
-                    data: 'Especialidad',
-                    name: 'Especialidad',
                 },
                 {
                     data: null,
                     render: function(data) {
-                        return `<div class="text-center"><a href="${linkPrestaciones}/${data.IdPrestacion}/edit" target="_blank">${data.IdPrestacion}</a></div>`;
+                        return data.length === 0 ? '' : data.Especialidad;
+                    }
+                },
+                {
+                    data: null,
+                    render: function(data) {
+                        return data.length === 0 ? '' : `<div class="text-center"><a href="${linkPrestaciones}/${data.IdPrestacion}/edit" target="_blank">${data.IdPrestacion}</a></div>`;
                     } 
                 },
                 {
                     data: null,
                     render: function(data) {
 
-                        let recorte = (data.Empresa).substring(0,20) + "...";
+                        let recorte = data.Empresa === undefined ? '' : (data.Empresa).substring(0,20) + "...";
                         return recorte.length >= 20 ? `<span title="${data.Empresa}">${recorte}</span>` : data.Empresa;
                     }
                 },
@@ -117,7 +119,7 @@ $(document).ready(()=>{
                     data: null,
                     render: function(data){
                         let NombreCompleto = data.pacNombre + ' ' + data.pacApellido;
-                        let recorte = (NombreCompleto).substring(0,15) + "...";
+                        let recorte = NombreCompleto === undefined ? '' : (NombreCompleto).substring(0,15) + "...";
                         return recorte.length >= 15 ? `<span title="${NombreCompleto}">${recorte}</span>` : NombreCompleto;
                     }
                 },
@@ -128,7 +130,7 @@ $(document).ready(()=>{
                 {
                     data: null,
                     render: function(data) {
-                        let recorte = (data.Examen).substring(0,20) + "...";
+                        let recorte = data.Examen === undefined ? '' : (data.Examen).substring(0,20) + "...";
                         return recorte.length >= 20 ? `<span title="${data.Examen}">${recorte}</span>` : data.Examen;
                     }
                 },
@@ -204,7 +206,7 @@ $(document).ready(()=>{
                 mes = (fechaHoy.getMonth() + 1).toString().padStart(2, '0');
                 anio = fechaHoy.getFullYear();
             } else {
-                let nuevaFecha = fechaAformatear.split("-"); 
+                let nuevaFecha = fechaAformatear === undefined ? '' : fechaAformatear.split("-"); 
                 dia = nuevaFecha[0]; 
                 mes = nuevaFecha[1]; 
                 anio = nuevaFecha[2];

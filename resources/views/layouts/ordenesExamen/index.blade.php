@@ -50,6 +50,7 @@
                 <div class="col-sm-12">
                     <span class="small">
                         <span class="required">(*)</span> El campo es obligatorio
+                        <span class="required">(**)</span> Debe definir la especialidad para listar
                     </span>
                 </div>
             </div>
@@ -114,14 +115,14 @@
                                                 </div>
 
                                                 <div class="col-sm-2 mb-3">
-                                                    <label for="profEfePres" class="form-label font-weight-bold"><strong>Profesional Efector: </strong></label>
+                                                    <label for="profEfePres" class="form-label font-weight-bold"><strong>Prof. Efector: <span class="required">(**)</span></strong></label>
                                                     <select name="profEfePres" id="profEfePres" class="form-control">
                                                         <option value="" selected>Elija una opción...</option>
                                                     </select>
                                                 </div>
 
                                                 <div class="col-sm-2 mb-3">
-                                                    <label for="profInfPres" class="form-label font-weight-bold"><strong>Profesional Informador: </strong></label>
+                                                    <label for="profInfPres" class="form-label font-weight-bold"><strong>Prof. Informador: <span class="required">(**)</span></strong></label>
                                                     <select name="profInfPres" id="profInfPres" class="form-control">
                                                         <option value="" selected>Elija una opción...</option>
                                                     </select>
@@ -272,7 +273,7 @@
                                                         </div>
         
                                                         <div class="col-sm-2 mb-3">
-                                                            <label for="especialidad" class="form-label font-weight-bold"><strong>Especialidad: <span class="required"></span></strong></label>
+                                                            <label for="especialidad" class="form-label font-weight-bold"><strong>Especialidad: <span class="required">(*)</span></strong></label>
                                                             <select class="form-control especialidad" name="especialidad" id="especialidad"></select>
                                                         </div>
 
@@ -642,7 +643,7 @@
                                                         </div>
         
                                                         <div class="col-sm-2 mb-3">
-                                                            <label for="especialidad" class="form-label font-weight-bold"><strong>Especialidad: <span class="required"></span></strong></label>
+                                                            <label for="especialidad" class="form-label font-weight-bold"><strong>Especialidad: <span class="required">(*)</span></strong></label>
                                                             <select class="form-control especialidadInf" name="especialidadInf" id="especialidadInf"></select>
                                                         </div>
     

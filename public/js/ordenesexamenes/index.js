@@ -226,8 +226,7 @@ $(document).ready(function(){
 
                 let data = response.message;
                 toastr.info(data, "Información");
-                let table = $(obj[seleccion][2]).DataTable();
-                table.draw(false);
+                $(obj[seleccion][2]).DataTable().draw(false)
 
             })
             .fail(function(xhr) {

@@ -24,6 +24,11 @@ $(document).ready(()=>{
             }
         });
 
+        if (especialidad === '') {
+            toastr.warning("Debe seleccionar una especialidad");
+            return;
+        }
+
         $('#listaOrdenesEfectores').DataTable().clear().destroy();
         let currentDraw = 1;
 

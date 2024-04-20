@@ -139,7 +139,7 @@
                 <div class="col-md-2">
                     <div class="input-group input-group-sm mb-2">
                         <span class="input-group-text">Estado</span>
-                        <input type="text" class="form-control" style="color: {{ ($itemsprestacione->CInfo === 0 || $itemsprestacione->CInfo === 1 || $itemsprestacione->CInfo === 2 ? 'red' : ($itemsprestacione->CInfo === 3 ? 'green' : '')) ?? ''}}" id="EstadoI" name="EstadoI" value="{{ ($itemsprestacione->CInfo === 1 || $itemsprestacione->CInfo === 0 ? 'Pediente' : ($itemsprestacione->CInfo === 2 ? 'Borrador' : ($itemsprestacione->CInfo === 3 ? 'Cerrado' : ''))) ?? ''}}" @readonly(true)>
+                        <input type="text" class="form-control" style="color: {{ ($itemsprestacione->CInfo === 0 || $itemsprestacione->CInfo === 1 || $itemsprestacione->CInfo === 2 ? 'red' : ($itemsprestacione->CInfo === 3 ? 'green' : '')) ?? ''}}" id="EstadoI" name="EstadoI" value="{{ (in_array($itemsprestacione->CInfo, [0,1]) ? 'Pediente' : ($itemsprestacione->CInfo === 2 ? 'Borrador' : ($itemsprestacione->CInfo === 3 ? 'Cerrado' : ''))) ?? ''}}" @readonly(true)>
                     </div>
                 </div>
 

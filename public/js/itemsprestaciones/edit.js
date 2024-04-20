@@ -152,7 +152,7 @@ $(document).ready(function(){
         
         let who = $(this).hasClass('cerrar') ? 'cerrar' : 'cerrarI',
             listaE = {0: 3, 2: 5, 1: 4},
-            listaI = ['0', '1', '2'];
+            listaI = ['0', '1', '2', '3'];
 
         if(who === 'cerrar' && cadj in listaE){
             mostrarPreloader('#preloader');
@@ -173,7 +173,7 @@ $(document).ready(function(){
 
         }else if(who === 'cerrarI' && listaI.includes(CInfo)){
             mostrarPreloader('#preloader');
-            $.post(updateItem, {Id : ID, _token: TOKEN, CInfo: 2, Para: who })
+            $.post(updateItem, {Id : ID, _token: TOKEN, CInfo: 3, Para: who })
                 .done(function(){
                     ocultarPreloader('#preloader');
                     toastr.success('Se ha cerrado al informador correctamente', 'Actualizacion realizada');
@@ -341,7 +341,7 @@ $(document).ready(function(){
             }
         } else if (tipo === 'informador') {
 
-            let resultado = await (efector !== '0' && informador !== '0') && (CInfo !== '2'),
+            let resultado = await (efector !== '0' && informador !== '0') && (CInfo !== '3'),
                 final = await (efector !== '0' && informador !== '0') && (Estado === 'Cerrado' && EstadoI === 'Cerrado');
 
             if(resultado){

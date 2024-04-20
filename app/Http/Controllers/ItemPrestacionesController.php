@@ -504,7 +504,7 @@ class ItemPrestacionesController extends Controller
                     $resultado = ["message" => "No hay archivo con coincidencias para el exámen {$examen}", "estado" => "fail"];
                 }
 
-            } elseif($item && $item->proveedores->MultiE === 1 && $item->proveedores->Id <> 3) {
+            } elseif($item && $item->proveedores->MultiE === 1 && !in_array($item->proveedores->Id, [3,38,23,36,39])) {
 
                 $prestaciones = ItemPrestacion::where('IdPrestacion', $item->IdPrestacion)->get();
 
@@ -543,7 +543,7 @@ class ItemPrestacionesController extends Controller
                         }
 
                     }
-                }elseif($item && $item->proveedores->MultiE === 1 && $item->proveedores->Id === 3) { // Esquema para laboratorios
+                }elseif($item && $item->proveedores->MultiE === 1 && in_array($item->proveedores->Id, [3,38,23,36,39])) { // Esquema para laboratorios
 
                     $archivoEncontrar = $item->Fecha.'_'.$item->prestaciones->paciente->Documento;
                     $ruta = self::RUTA.'*.pdf';
