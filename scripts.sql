@@ -650,8 +650,8 @@ CREATE INDEX itemsprestaciones_Fecha_IDX USING BTREE ON itemsprestaciones (Fecha
 CREATE INDEX examenes_Nombre_IDX USING BTREE ON examenes (Nombre);
 
 
-CREATE PROCEDURE getSearchA(IN fechaDesde DATE, IN fechaHasta DATE, IN prestacion INT, IN examen INT, IN paciente INT, 
-				IN estados VARCHAR, IN efector INT, IN especialidad INT, IN empresa INT)
+CREATE PROCEDURE getSearchA(IN fechaDesde* DATE, IN fechaHasta* DATE, IN prestacion* INT, IN examen* INT, IN paciente* INT, 
+				IN estados* VARCHAR, IN efector INT, IN especialidad INT, IN empresa INT)
 BEGIN
 	SELECT i.Id as IdItem, i.Fecha as Fecha, i.CAdj as Estado, i.CInfo as Informado, i.IdProfesional as IdProfesional, pro.Nombre as Especialidad, pro.Id as IdEspecialidad, pre.Id as IdPrestacion, cli.RazonSocial as Empresa, pa.Apellido as pacApellido, pa.Nombre as pacNombre, pa.Documento as Documento, pa.Id as IdPaciente, ex.Nombre as Examen
 	FROM itemsprestaciones i
@@ -688,7 +688,7 @@ BEGIN
     limit 10000;
 END
 
-CREATE PROCEDURE getSearchAdj(IN fechaDesde DATE, IN fechaHasta DATE, IN efector INT, IN especialidad INT, IN empresa INT, IN art INT)
+CREATE PROCEDURE getSearchAdj(IN fechaDesde* DATE, IN fechaHasta* DATE, IN efector INT, IN especialidad INT, IN empresa INT, IN art INT)
 
 BEGIN
     SELECT (CASE WHEN pro.Multi = 1 THEN "Multi Examen" ELSE exa.Nombre END) AS examen_nombre, i.Id AS IdItem, i.Fecha AS Fecha, i.CAdj AS Estado, pro.Nombre AS Especialidad, pro.Multi AS MultiEfector, pre.Id AS IdPrestacion, cli.RazonSocial AS Empresa, pa.Apellido AS pacApellido, pa.Nombre AS pacNombre, prof.Apellido AS proApellido, prof.Nombre AS proNombre, pa.Documento AS Documento, pa.Id AS IdPaciente, exa.Nombre AS Examen, exa.Id AS IdExamen
@@ -711,7 +711,6 @@ BEGIN
     GROUP BY (CASE WHEN pro.Multi = 1 THEN pre.Id ELSE i.Id END)
     order by i.Id desc
     limit 10000;
-END;
 END
 
 CREATE PROCEDURE getSearchInf(IN fechaDesde DATE, IN fechaHasta DATE, IN informador INT, IN especialidad INT, IN examen INT, IN prestacion INT, IN empresa INT, IN paciente INT)
@@ -756,14 +755,14 @@ BEGIN
     and i.CAdj = 5 
     and not i.CInfo = 3 
     and i.FechaPagado = '0000-00-00' 
-    and not exists (select 1 from itemsprestaciones_info where itemsprestaciones_info.IdIP = i.Id) d
+    and not exists (select 1 from itemsprestaciones_info where itemsprestaciones_info.IdIP = i.Id)
     order by i.Id desc 
     limit 10000;
 END
 
 CREATE PROCEDURE getSearchInfAdj(IN fechaDesde DATE, IN fechaHasta DATE, IN informador INT, IN especialidad INT, IN art INT, IN empresa INT)
 BEGIN
-    select (CASE WHEN pro.MultiE = 1 THEN "Multi Examen" ELSE exa.Nombre END) AS examen_nombre, i.Id AS IdItem, i.Fecha AS Fecha, i.CAdj AS Estado, pro.Nombre AS Especialidad, pro.Multi AS MultiEfector, pre.Id AS IdPrestacion, cli.RazonSocial AS Empresa, pa.Apellido AS pacApellido, pa.Nombre AS pacNombre, prof.Apellido AS proApellido, prof.Nombre AS proNombre, pa.Documento AS Documento, pa.Id AS IdPaciente, exa.Nombre AS Examen, exa.Id AS IdExamen, pre.Cerrado AS prestacionCerrado 
+    SELECT (CASE WHEN pro.MultiE = 1 THEN "Multi Examen" ELSE exa.Nombre END) AS examen_nombre, i.Id AS IdItem, i.Fecha AS Fecha, i.CAdj AS Estado, pro.Nombre AS Especialidad, pro.Multi AS MultiEfector, pre.Id AS IdPrestacion, cli.RazonSocial AS Empresa, pa.Apellido AS pacApellido, pa.Nombre AS pacNombre, prof.Apellido AS proApellido, prof.Nombre AS proNombre, pa.Documento AS Documento, pa.Id AS IdPaciente, exa.Nombre AS Examen, exa.Id AS IdExamen, pre.Cerrado AS prestacionCerrado 
     FROM itemsprestaciones i 
     INNER JOIN prestaciones pre ON i.IdPrestacion = pre.Id 
     INNER JOIN examenes exa ON i.IdExamen = exa.Id 
@@ -790,8 +789,6 @@ BEGIN
 END
 
 CREATE PROCEDURE getSearchPrestacion(IN fechaDesde DATE, IN fechaHasta DATE, IN estadoPres VARCHAR, IN estadoEfector VARCHAR, IN estadoInformador VARCHAR, IN efector INT, IN informador INT, IN tipoProv VARCHAR, IN adjunto VARCHAR, IN examen INT, IN pendiente INT, IN vencido INT, IN especialidad INT, IN ausente VARCHAR, IN adjuntoEfector INT)
-
-
 
 BEGIN
     SELECT i.Id AS IdItem, i.Fecha AS Fecha, i.CAdj AS Efector, i.CInfo AS Informador, i.IdProfesional AS IdProfesional, 
