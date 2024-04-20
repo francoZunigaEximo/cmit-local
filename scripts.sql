@@ -684,6 +684,8 @@ BEGIN
             AND
             ex.Adjunto = 1
     END)
+    AND i.Anulado = 0
+    AND pre.Anulado = 0
     order by i.Id desc
     limit 10000;
 END
@@ -708,6 +710,8 @@ BEGIN
     AND NOT EXISTS(SELECT 1 FROM archivosefector WHERE archivosefector.IdEntidad = i.Id)
     AND i.CAdj IN(1,4)
     AND NOT i.IdProfesional = 0
+    AND i.Anulado = 0
+    AND pre.Anulado = 0
     GROUP BY (CASE WHEN pro.Multi = 1 THEN pre.Id ELSE i.Id END)
     order by i.Id desc
     limit 10000;
@@ -731,6 +735,8 @@ BEGIN
     and not i.IdProfesional = 0 
     and i.IdProfesional2 = 0 
     and i.CAdj = 5
+    AND i.Anulado = 0
+    AND pre.Anulado = 0
     order by i.Id desc
     limit 10000;
 END
@@ -756,6 +762,8 @@ BEGIN
     and not i.CInfo = 3 
     and i.FechaPagado = '0000-00-00' 
     and not exists (select 1 from itemsprestaciones_info where itemsprestaciones_info.IdIP = i.Id)
+    AND i.Anulado = 0
+    AND pre.Anulado = 0
     order by i.Id desc 
     limit 10000;
 END
@@ -778,12 +786,13 @@ BEGIN
     AND NOT i.IdProfesional2 = 0 
     AND i.CAdj IN (3, 5) 
     AND pro.InfAdj = 1 
+    AND i.Anulado = 0
+    AND pre.Anulado = 0
     AND NOT EXISTS (SELECT 1 FROM archivosinformador ai WHERE ai.IdEntidad = i.Id) 
     GROUP BY
         CASE
             WHEN pro.MultiE = 1 THEN pre.Id ELSE i.Id
         END
-    AND i.Anulado = 1
     ORDER BY i.Id DESC 
     LIMIT 10000;
 END
@@ -858,9 +867,10 @@ BEGIN
         (CASE WHEN adjuntoEfector = 1 THEN a.IdEntidad = i.Id AND exa.adjunto = 1 END)
     )
     AND (vencido IS NULL OR
-        (CASE WHEN vencido = 1 THEN DATE_ADD(i.Fecha, INTERVAL exa.DiasVencimiento DAY) <= CURDATE() END)
+        CASE WHEN vencido = 1 THEN DATE_ADD(i.Fecha, INTERVAL exa.DiasVencimiento DAY) <= fechaHasta AND DAY(DATE_ADD(i.Fecha, INTERVAL exa.DiasVencimiento DAY)) > DAY(i.Fecha) END
     )
     AND i.Anulado = 0
+    AND pre.Anulado = 0
     ORDER BY i.Id DESC 
     LIMIT 5000;
 END
