@@ -99,13 +99,11 @@ $(document).ready(()=>{
                 {
                     data: null,
                     render: function(data) {
-                        let recorte = (data.Examen).substring(0,10) + "...";
+                        let recorte = (data.examen_nombre).substring(0,10) + "...";
                         
-                        return data.MultiInformador === 1
-                            ? `<span class="custom-badge pequeno">Multi Exámen</span>`
-                            : recorte.length >= 10 
-                                ? `<span title="${data.Examen}">${recorte}</span>` 
-                                : data.Examen;
+                        return recorte.length >= 10 
+                        ? `<span title="${data.examen_nombre}">${recorte}</span>` 
+                        : data.examen_nombre;
                     }
                 },
                 {
@@ -142,7 +140,7 @@ $(document).ready(()=>{
                     data: null,
                     render: function(data){
 
-                        let masivo = `<span title="Subir automáticamente el reporte" class="custom-badge iconGeneral"><i class="ri-file-upload-line automaticUploadI" data-id="${data.IdItem}" data-forma="individual"></i></span>`,
+                        let masivo = `<span title="Subir automáticamente el reporte" class="custom-badge iconGeneral"><i class="ri-file-upload-line automaticUploadI" data-id="${data.IdItem}" data-idprestacion="${data.IdPrestacion}" data-forma="individual"></i></span>`,
                             masivoCerrar = `<span title="Subir automáticamente el reporte y cerrar" class="custom-badge iconGeneral"><i class="ri-file-upload-line automaticUploadIC" data-id="${data.IdItem}" data-forma="individual"></i></span>`,
                             individual = `<span data-id="${data.IdItem}" data-idprestacion="${data.IdPrestacion}" data-tipo="${data.MultiInformador === 1 ? 'multiInformador' : 'informador'}" title="Subir manualmente el reporte" class="custom-badge iconGeneral uploadFile"><i class="ri-folder-line"></i></span><input type="file" class="fileManual" style="display: none;">`;
 

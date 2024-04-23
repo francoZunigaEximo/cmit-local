@@ -26,7 +26,9 @@ $(document).ready(function(){
     listadoE();
     listadoI();
 
-    $(document).on('click', '.btnAdjEfector, .btnAdjInformador', function () {
+    $(document).on('click', '.btnAdjEfector, .btnAdjInformador', function (e){
+        e.preventDefault();
+        
         let who = $(this).hasClass('btnAdjEfector') ? 'efector' : 'informador';
 
         let obj = {
@@ -58,7 +60,7 @@ $(document).ready(function(){
                     : who);
         
         if(verificarArchivo(archivo)){
-            mostrarPreloader('#preloader');
+            preloader('on');
             let formData = new FormData();
             formData.append('archivo', archivo);
             formData.append('Id', ID);
@@ -69,7 +71,7 @@ $(document).ready(function(){
             formData.append('anexoProfesional', anexoProfesional);
             formData.append('multi', multi);
             formData.append('_token', TOKEN);
-           
+   
             $.ajax({
                 type: 'POST',
                 url: fileUpload,
@@ -77,14 +79,14 @@ $(document).ready(function(){
                 processData: false,
                 contentType: false,
                 success: function() {
-                    ocultarPreloader('#preloader');
+                    preloader('off');
                     toastr.success("Se ha cargado el reporte de manera correcta.", "Perfecto");
                     setTimeout(() => {
                         location.reload();
                     }, 3000);
                 },
                 error: function (xhr) {
-                    ocultarPreloader('#preloader');
+                    preloader('off');
                     console.error(xhr);
                     toastr.error("Ha ocurrido un error. Consulte con el administrador", "Atención");
                 }
@@ -99,10 +101,10 @@ $(document).ready(function(){
         let lista = {3: 0, 4: 1, 5: 2};
 
         if(cadj in lista){
-            mostrarPreloader('#preloader');
+            preloader('on');
             $.post(updateItem, {Id : ID, _token: TOKEN, CAdj: lista[cadj], Para: 'abrir' })
                 .done(function(){
-                    ocultarPreloader('#preloader');
+                    preloader('off');
                     toastr.success('Se ha realizado la acción correctamente', 'Actualizacion realizada');
                     setTimeout(() => {
                         location.reload();
@@ -110,7 +112,7 @@ $(document).ready(function(){
                     
                 })
                 .fail(function(xhr){
-                    ocultarPreloader('#preloader');
+                    preloader('off');
                     toastr.success('Ha ocurrido un error. Consulte con el administrador', 'Error');
                     console.error(xhr);
                 });
@@ -131,10 +133,10 @@ $(document).ready(function(){
                 toastr.warning("Hay un problema porque no podemos identificar el tipo o la id a eliminar", "Atención");
                 return;
             }
-            mostrarPreloader('#preloader');
+            preloader('on');
             $.get(deleteIdAdjunto, {Id: id, Tipo: tipo, ItemP: ID})
                 .done(function(){
-                    ocultarPreloader('#preloader');
+                    preloader('off');
                     toastr.success("Se ha eliminado el adjunto de manera correcta", "Perfecto");
                     
                     setTimeout(() => {
@@ -142,6 +144,7 @@ $(document).ready(function(){
                     }, 3000);
                 })
                 .fail(function(xhr){
+                    preloader('off');
                     console.log(xhr);
                     toastr.error("Ha ocurrido un error. Consulte con el administrador", "Error");
                 })
@@ -155,10 +158,10 @@ $(document).ready(function(){
             listaI = ['0', '1', '2', '3'];
 
         if(who === 'cerrar' && cadj in listaE){
-            mostrarPreloader('#preloader');
+            preloader('on');
             $.post(updateItem, {Id : ID, _token: TOKEN, CAdj: listaE[cadj], Para: who })
                 .done(function(){
-                    ocultarPreloader('#preloader');
+                    preloader('off');
                     toastr.success('Se ha cerrado al efector correctamente', 'Actualizacion realizada');
                     setTimeout(() => {
                         location.reload();
@@ -166,16 +169,16 @@ $(document).ready(function(){
                     
                 })
                 .fail(function(xhr){
-                    ocultarPreloader('#preloader');
+                    preloader('off');
                     toastr.success('Ha ocurrido un error. Consulte con el administrador', 'Error');
                     console.error(xhr);
                 });
 
         }else if(who === 'cerrarI' && listaI.includes(CInfo)){
-            mostrarPreloader('#preloader');
+            preloader('on');
             $.post(updateItem, {Id : ID, _token: TOKEN, CInfo: 3, Para: who })
                 .done(function(){
-                    ocultarPreloader('#preloader');
+                    preloader('off');
                     toastr.success('Se ha cerrado al informador correctamente', 'Actualizacion realizada');
                     setTimeout(() => {
                         location.reload();
@@ -183,7 +186,7 @@ $(document).ready(function(){
                     
                 })
                 .fail(function(xhr){
-                    ocultarPreloader('#preloader');
+                    preloader('off');
                     toastr.success('Ha ocurrido un error. Consulte con el administrador', 'Error');
                     console.error(xhr);
                 });
@@ -199,10 +202,10 @@ $(document).ready(function(){
             toastr.warning("Debe seleccionar un Efector/Informador para poder asignar uno", "Atención");
             return;
         }
-        mostrarPreloader('#preloader');
+        preloader('on');
         $.post(updateAsignado, { Id: ID, _token: TOKEN, IdProfesional: check, fecha: 1, Para: who})
             .done(function(){
-                ocultarPreloader('#preloader');
+                preloader('off');
                 toastr.success('Se ha actualizado la información de manera correcta', 'Actualización realizada');
                 setTimeout(() => {
                     location.reload();             
@@ -569,17 +572,10 @@ $(document).ready(function(){
             });
     }
 
-    function mostrarPreloader(arg) {
-        $(arg).css({
+    function preloader(opcion) {
+        $('#preloader').css({
             opacity: '0.3',
-            visibility: 'visible'
-        });
-    }
-    
-    function ocultarPreloader(arg) {
-        $(arg).css({
-            opacity: '0',
-            visibility: 'hidden'
+            visibility: opcion === 'on' ? 'visible' : 'hidden'
         });
     }
 

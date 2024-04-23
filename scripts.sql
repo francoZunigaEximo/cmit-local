@@ -655,7 +655,7 @@ CREATE PROCEDURE getSearchA(IN fechaDesde* DATE, IN fechaHasta* DATE, IN prestac
 BEGIN
 	SELECT i.Id as IdItem, i.Fecha as Fecha, i.CAdj as Estado, i.CInfo as Informado, i.IdProfesional as IdProfesional, pro.Nombre as Especialidad, pro.Id as IdEspecialidad, pre.Id as IdPrestacion, cli.RazonSocial as Empresa, pa.Apellido as pacApellido, pa.Nombre as pacNombre, pa.Documento as Documento, pa.Id as IdPaciente, ex.Nombre as Examen
 	FROM itemsprestaciones i
-	INNER JOIN prestaciones pre ON i.IdPrestacion = pre.Id AND (prestacion IS NULL OR pre.Id = prestacion)
+	INNER JOIN prestaciones pre ON i.IdPrestacion = pre.Id AND (prestacion IS NULL OR pre.Id = prestacion) AND (pre.Anulado = 0)
 	INNER JOIN examenes ex ON i.IdExamen = ex.Id AND (examen IS NULL OR ex.Id = examen)
 	INNER JOIN proveedores pro ON ex.IdProveedor = pro.Id AND (especialidad IS NULL OR pro.Id = especialidad)
 	INNER JOIN clientes cli ON pre.IdEmpresa = cli.Id AND (empresa IS NULL OR cli.Id = empresa)
@@ -685,9 +685,8 @@ BEGIN
             ex.Adjunto = 1
     END)
     AND i.Anulado = 0
-    AND pre.Anulado = 0
     order by i.Id desc
-    limit 10000;
+    limit 5000;
 END
 
 CREATE PROCEDURE getSearchAdj(IN fechaDesde* DATE, IN fechaHasta* DATE, IN efector INT, IN especialidad INT, IN empresa INT, IN art INT)
@@ -695,8 +694,8 @@ CREATE PROCEDURE getSearchAdj(IN fechaDesde* DATE, IN fechaHasta* DATE, IN efect
 BEGIN
     SELECT (CASE WHEN pro.Multi = 1 THEN "Multi Examen" ELSE exa.Nombre END) AS examen_nombre, i.Id AS IdItem, i.Fecha AS Fecha, i.CAdj AS Estado, pro.Nombre AS Especialidad, pro.Multi AS MultiEfector, pre.Id AS IdPrestacion, cli.RazonSocial AS Empresa, pa.Apellido AS pacApellido, pa.Nombre AS pacNombre, prof.Apellido AS proApellido, prof.Nombre AS proNombre, pa.Documento AS Documento, pa.Id AS IdPaciente, exa.Nombre AS Examen, exa.Id AS IdExamen
     FROM itemsprestaciones i
-    INNER JOIN prestaciones pre ON i.IdPrestacion = pre.Id
-	INNER JOIN examenes exa ON i.IdExamen = exa.Id
+    INNER JOIN prestaciones pre ON i.IdPrestacion = pre.Id AND (pre.Anulado = 0)
+	INNER JOIN examenes exa ON i.IdExamen = exa.Id AND (exa.Adjunto = 1)
 	INNER JOIN proveedores pro ON exa.IdProveedor = pro.Id AND (especialidad IS NULL OR pro.Id = especialidad)
 	INNER JOIN clientes cli ON pre.IdEmpresa = cli.Id AND (empresa IS NULL OR cli.Id = empresa)
 	INNER JOIN clientes cli2 ON pre.IdART = cli2.Id AND (art IS NULL OR cli2.Id = art)
@@ -706,15 +705,13 @@ BEGIN
     WHERE i.Fecha BETWEEN fechaDesde AND fechaHasta
     AND NOT i.Id = 0
 	AND NOT i.IdProfesional = 0
-    AND exa.Adjunto = 1
     AND NOT EXISTS(SELECT 1 FROM archivosefector WHERE archivosefector.IdEntidad = i.Id)
     AND i.CAdj IN(1,4)
     AND NOT i.IdProfesional = 0
     AND i.Anulado = 0
-    AND pre.Anulado = 0
     GROUP BY (CASE WHEN pro.Multi = 1 THEN pre.Id ELSE i.Id END)
     order by i.Id desc
-    limit 10000;
+    limit 5000;
 END
 
 CREATE PROCEDURE getSearchInf(IN fechaDesde DATE, IN fechaHasta DATE, IN informador INT, IN especialidad INT, IN examen INT, IN prestacion INT, IN empresa INT, IN paciente INT)
@@ -722,7 +719,7 @@ CREATE PROCEDURE getSearchInf(IN fechaDesde DATE, IN fechaHasta DATE, IN informa
 BEGIN
     SELECT i.Id as IdItem, i.Fecha as Fecha, i.CAdj as Estado, i.CInfo as Informado, i.IdProfesional as IdProfesional, pro.Nombre as Especialidad, pro.Id as IdEspecialidad, pro.Multi as MultiEfector, pro.MultiE as MultiInformador, pre.Id as IdPrestacion, cli.RazonSocial as Empresa, CONCAT(pa.Apellido, ' ', pa.Nombre) as NombreCompleto, CONCAT(prof.Apellido, ' ', prof.Nombre) as NombreProfesional, pa.Documento as Documento, pa.Id as IdPaciente, exa.Nombre as Examen, exa.Id as IdExamen
     from itemsprestaciones i 
-    inner join prestaciones pre on i.IdPrestacion = pre.Id AND (prestacion IS NULL OR pre.Id = prestacion)
+    inner join prestaciones pre on i.IdPrestacion = pre.Id AND (prestacion IS NULL OR pre.Id = prestacion) AND (pre.Anulado = 0)
     inner join examenes exa on i.IdExamen = exa.Id AND (examen IS NULL OR exa.Id = examen)
     inner join proveedores pro on exa.IdProveedor2 = pro.Id AND (especialidad IS NULL OR pro.Id = especialidad)
     inner join clientes cli on pre.IdEmpresa = cli.Id AND (empresa IS NULL OR cli.Id = empresa)
@@ -734,11 +731,10 @@ BEGIN
     and not i.Id = 0
     and not i.IdProfesional = 0 
     and i.IdProfesional2 = 0 
-    and i.CAdj = 5
+    and i.CAdj IN(3,5)
     AND i.Anulado = 0
-    AND pre.Anulado = 0
     order by i.Id desc
-    limit 10000;
+    limit 5000;
 END
 
 CREATE PROCEDURE getSearchInfA(IN fechaDesde DATE, IN fechaHasta DATE, IN informador INT, IN especialidad INT, IN examen INT, IN prestacion INT, IN empresa INT, IN paciente INT)
@@ -746,7 +742,7 @@ CREATE PROCEDURE getSearchInfA(IN fechaDesde DATE, IN fechaHasta DATE, IN inform
 BEGIN
     select i.Id as IdItem, i.Fecha as Fecha, i.CAdj as Estado, i.CInfo as Informado, i.IdProfesional as IdProfesional, pro.Nombre as Especialidad, pro.Id as IdEspecialidad, pro.Multi as MultiEfector, pro.MultiE as MultiInformador, pre.Id as IdPrestacion, cli.RazonSocial as Empresa, CONCAT(pa.Apellido, ' ', pa.Nombre) as NombreCompleto, CONCAT(prof.Apellido, ' ', prof.Nombre) as NombreProfesional, pa.Documento as Documento, pa.Id as IdPaciente, exa.Nombre as Examen, exa.Id as IdExamen 
     from itemsprestaciones i
-    inner join prestaciones pre on i.IdPrestacion = pre.Id AND (prestacion IS NULL OR pre.Id = prestacion)
+    inner join prestaciones pre on i.IdPrestacion = pre.Id AND (prestacion IS NULL OR pre.Id = prestacion) AND (pre.Anulado = 0)
     inner join examenes exa on i.IdExamen = exa.Id AND (examen IS NULL OR exa.Id = examen)
     inner join proveedores pro on exa.IdProveedor2 = pro.Id AND (especialidad IS NULL OR pro.Id = especialidad)
     inner join clientes cli on pre.IdEmpresa = cli.Id AND (empresa IS NULL OR cli.Id = empresa)
@@ -758,23 +754,22 @@ BEGIN
     and not i.Id = 0 
     and not i.IdProfesional = 0 
     and not i.IdProfesional2 = 0 
-    and i.CAdj = 5 
+    and i.CAdj IN (3,5) 
     and not i.CInfo = 3 
     and i.FechaPagado = '0000-00-00' 
     and not exists (select 1 from itemsprestaciones_info where itemsprestaciones_info.IdIP = i.Id)
     AND i.Anulado = 0
-    AND pre.Anulado = 0
     order by i.Id desc 
-    limit 10000;
+    limit 5000;
 END
 
 CREATE PROCEDURE getSearchInfAdj(IN fechaDesde DATE, IN fechaHasta DATE, IN informador INT, IN especialidad INT, IN art INT, IN empresa INT)
 BEGIN
-    SELECT (CASE WHEN pro.MultiE = 1 THEN "Multi Examen" ELSE exa.Nombre END) AS examen_nombre, i.Id AS IdItem, i.Fecha AS Fecha, i.CAdj AS Estado, pro.Nombre AS Especialidad, pro.Multi AS MultiEfector, pre.Id AS IdPrestacion, cli.RazonSocial AS Empresa, pa.Apellido AS pacApellido, pa.Nombre AS pacNombre, prof.Apellido AS proApellido, prof.Nombre AS proNombre, pa.Documento AS Documento, pa.Id AS IdPaciente, exa.Nombre AS Examen, exa.Id AS IdExamen, pre.Cerrado AS prestacionCerrado 
+    SELECT (CASE WHEN pro.MultiE = 1 THEN "Multi Examen" ELSE exa.Nombre END) AS examen_nombre, i.Id AS IdItem, i.Fecha AS Fecha, i.CAdj AS Estado, pro.Nombre AS Especialidad, pro.MultiE AS MultiInformador, pre.Id AS IdPrestacion, cli.RazonSocial AS Empresa, pa.Apellido AS pacApellido, pa.Nombre AS pacNombre, prof.Apellido AS proApellido, prof.Nombre AS proNombre, pa.Documento AS Documento, pa.Id AS IdPaciente, exa.Nombre AS Examen, exa.Id AS IdExamen, pre.Cerrado AS prestacionCerrado 
     FROM itemsprestaciones i 
-    INNER JOIN prestaciones pre ON i.IdPrestacion = pre.Id 
+    INNER JOIN prestaciones pre ON i.IdPrestacion = pre.Id AND (pre.Anulado = 0)
     INNER JOIN examenes exa ON i.IdExamen = exa.Id 
-    INNER JOIN proveedores pro ON exa.IdProveedor2 = pro.Id AND (especialidad IS NULL OR pro.Id = especialidad)
+    INNER JOIN proveedores pro ON exa.IdProveedor2 = pro.Id AND (especialidad IS NULL OR pro.Id = especialidad) AND (pro.InfAdj = 1)
     INNER JOIN clientes cli ON pre.IdEmpresa = cli.Id AND (empresa IS NULL OR cli.Id = empresa)
     INNER JOIN clientes cli2 ON pre.IdART = cli2.Id AND (art IS NULL OR cli2.Id = art)
     INNER JOIN pacientes pa ON pre.IdPaciente = pa.Id 
@@ -785,16 +780,14 @@ BEGIN
     AND NOT i.IdProfesional = 0 
     AND NOT i.IdProfesional2 = 0 
     AND i.CAdj IN (3, 5) 
-    AND pro.InfAdj = 1 
     AND i.Anulado = 0
-    AND pre.Anulado = 0
     AND NOT EXISTS (SELECT 1 FROM archivosinformador ai WHERE ai.IdEntidad = i.Id) 
     GROUP BY
         CASE
             WHEN pro.MultiE = 1 THEN pre.Id ELSE i.Id
         END
     ORDER BY i.Id DESC 
-    LIMIT 10000;
+    LIMIT 5000;
 END
 
 CREATE PROCEDURE getSearchPrestacion(IN fechaDesde DATE, IN fechaHasta DATE, IN estadoPres VARCHAR, IN estadoEfector VARCHAR, IN estadoInformador VARCHAR, IN efector INT, IN informador INT, IN tipoProv VARCHAR, IN adjunto VARCHAR, IN examen INT, IN pendiente INT, IN vencido INT, IN especialidad INT, IN ausente VARCHAR, IN adjuntoEfector INT)
@@ -814,7 +807,7 @@ BEGIN
     (CASE WHEN i.CAdj IN (0,1,4) THEN 'Pendiente' WHEN i.CAdj IN (3,4,5) THEN 'Cerrado' ELSE '-' END) AS EstadoEfector,
     (CASE WHEN i.CInfo IN (0,1) THEN 'Pendiente' WHEN i.CInfo = 2 THEN 'Borrador' WHEN i.CInfo = 3 THEN 'Cerrado' ELSE '-' END) AS EstadoInformador 
     FROM itemsprestaciones i 
-    INNER JOIN prestaciones pre ON i.IdPrestacion = pre.Id AND (pre.Estado = 1)
+    INNER JOIN prestaciones pre ON i.IdPrestacion = pre.Id AND (pre.Estado = 1) AND (pre.Anulado = 0)
     INNER JOIN examenes exa ON i.IdExamen = exa.Id AND (examen IS NULL OR exa.Id = examen) AND (adjunto IS NULL OR (CASE WHEN adjunto = 'fisico' THEN exa.NoImprime = 0 WHEN adjunto = 'digital' THEN exa.NoImprime = 1 END))
     INNER JOIN proveedores pro ON exa.IdProveedor2 = pro.Id AND (especialidad IS NULL OR pro.Id = especialidad)
     INNER JOIN clientes cli ON pre.IdEmpresa = cli.Id 
@@ -870,7 +863,6 @@ BEGIN
         CASE WHEN vencido = 1 THEN DATE_ADD(i.Fecha, INTERVAL exa.DiasVencimiento DAY) <= fechaHasta AND DAY(DATE_ADD(i.Fecha, INTERVAL exa.DiasVencimiento DAY)) > DAY(i.Fecha) END
     )
     AND i.Anulado = 0
-    AND pre.Anulado = 0
     ORDER BY i.Id DESC 
     LIMIT 5000;
 END

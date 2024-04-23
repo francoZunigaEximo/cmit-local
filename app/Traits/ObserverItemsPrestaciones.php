@@ -60,7 +60,7 @@ trait ObserverItemsPrestaciones
     
     }
 
-    public function updateEstado(string $tipo, ?int $idItemPrestacion, ?int $idEfector, ?int $idInformador, ?string $multi, ?int $profesional): void
+    public function updateEstado(string $tipo, ?int $idItemPrestacion, ?int $idEfector, ?int $idInformador, ?string $multi, ?int $profesional)
     {
        
         $item = ItemPrestacion::with('examenes')->where('Id', $idItemPrestacion)->first();
@@ -69,7 +69,7 @@ trait ObserverItemsPrestaciones
 
         if($item)
         {
-            
+
             if(in_array($tipo, ['efector', 'multiefector']) && $efectores)
             {
      
@@ -80,11 +80,11 @@ trait ObserverItemsPrestaciones
                         break;
                     
                     case 1:
-                        $item->CAdj = 2;
+                        $item->CAdj = $multi === 'multi' ? 5 : 2;
                         break;
 
                     case 3:
-                        $item->CAdj = 4;
+                        $item->CAdj = $multi === 'multi' ? 5 : 4;
                         break;
                     
                     case 4:
@@ -99,15 +99,15 @@ trait ObserverItemsPrestaciones
                 switch($item->CAdj) {
                     
                     case 1:
-                        $item->CAdj= 0;
+                        $item->CAdj= $multi === 'multi' ? 5 : 0;
                         break;
                     
                     case 4:
-                        $item->CAdj = 3;
+                        $item->CAdj = $multi === 'multi' ? 5 : 3;
                         break;
                     
                     case 5:
-                        $item->CAdj = 4;
+                        $item->CAdj = $multi === 'multi' ? 5 : 4;
                         break;
                 }
             }

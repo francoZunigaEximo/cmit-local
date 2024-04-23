@@ -57,7 +57,7 @@ $(document).ready(()=>{
             toastr.warning("Debe seleccionar un paquete para poder añadirlo en su totalidad", "Atención");
             return;
         }
-        mostrarPreloader('#preloader');
+        preloader('on');
        $.ajax({
             url: paqueteId,
             type: 'POST',
@@ -73,7 +73,7 @@ $(document).ready(()=>{
                     return item.Id;
                   });
                 saveExamen(ids);  
-                ocultarPreloader('#preloader');
+                preloader('off');
                 $('.addPaquete').val([]).trigger('change.select2');
             }
        });
@@ -123,7 +123,7 @@ $(document).ready(()=>{
         }  
     
         if(confirm("Confirme la eliminación de los examenes")){
-            mostrarPreloader('#preloader');
+            preloader('on');
             $.ajax({
                 url: deleteItemExamen,
                 type: 'POST',
@@ -140,7 +140,7 @@ $(document).ready(()=>{
                             success: 'success',
                             fail: 'info'
                         }
-                        ocultarPreloader('#preloader');
+                        preloader('off');
                         toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 });
                         estados.push(msg.estado);
       
@@ -186,7 +186,7 @@ $(document).ready(()=>{
     
         if(confirm("Confirme el bloqueo de los examenes")){
             
-            mostrarPreloader('#preloader');
+            preloader('on');
             $.ajax({    
                 url: bloquearItemExamen,
                 type: 'POST',
@@ -204,7 +204,7 @@ $(document).ready(()=>{
                             success: 'success',
                             fail: 'info'
                         }
-                        ocultarPreloader('#preloader');
+                        preloader('off')
                         toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 })
                         
                         estados.push(msg.estado)
@@ -240,7 +240,7 @@ $(document).ready(()=>{
         }
         if(confirm("Confirme la apertura de los examenes")){
 
-            mostrarPreloader('#preloader');
+            preloader('on');
             $.ajax({
                 url: updateEstadoItem,
                 type: 'POST',
@@ -257,7 +257,7 @@ $(document).ready(()=>{
                             success: 'success',
                             fail: 'info'
                         }
-                        ocultarPreloader('#preloader');
+                        preloader('off');
                         toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 });
                         estados.push(msg.estado);
       
@@ -294,7 +294,7 @@ $(document).ready(()=>{
 
         if(confirm("Confirme la marca de adjunto de los examenes")){
 
-            mostrarPreloader('#preloader');
+            preloader('on');
             $.ajax({
                 url: marcarExamenAdjunto,
                 type: 'POST',
@@ -311,7 +311,7 @@ $(document).ready(()=>{
                             success: 'success',
                             fail: 'info'
                         }
-                        ocultarPreloader('#preloader');
+                        preloader('off');
                         toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 });
                         estados.push(msg.estado);
       
@@ -350,7 +350,7 @@ $(document).ready(()=>{
 
         if(confirm("Confirme la marca de adjunto de los examenes")){
         
-            mostrarPreloader('#preloader');
+            preloader('on');
 
             $.ajax({
                 url: liberarExamen,
@@ -368,7 +368,7 @@ $(document).ready(()=>{
                             success: 'success',
                             fail: 'info'
                         }
-                        ocultarPreloader('#preloader');
+                        preloader('off');
                         toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 });
                         estados.push(msg.estado);
       
@@ -422,7 +422,7 @@ $(document).ready(()=>{
             toastr.warning("No existe el exámen o el paquete no contiene examenes", "Atención");
             return;
         }
-
+        preloader('on');
         $.ajax({
 
             url: saveItemExamenes,
@@ -433,13 +433,14 @@ $(document).ready(()=>{
                 idExamen: idExamen
             },
             success: function(){
-
+                preloader('off');
                 $('#listaExamenes').empty();
                 $('#exam').val([]).trigger('change.select2');
                 $('#addPaquete').val([]).trigger('change.select2');
                 cargarExamen();
         },
             error: function(xhr){
+                preloader('off');
                 toastr.error("Ha ocurrido un error. Consulte con el administrador", "Error");
                 console.error(xhr);
             }
@@ -449,8 +450,9 @@ $(document).ready(()=>{
     
     $(document).on('click', '.incompleto, .ausente, .forma, .sinesc, .devol', function() {
         let classes = $(this).attr('class').split(' '),
-            item = $(this).closest('tr').find('td:first').attr('id');
-
+            //item = $(this).closest('tr').find('td:first').attr('id');
+            item = $(this).closest('tr').find('td:eq(1)').attr('id');
+            console.log(item);
             const opcionesClasses = {
                 'incompleto': 'Incompleto',
                 'ausente': 'Ausente',
@@ -566,7 +568,7 @@ $(document).ready(()=>{
                                             </td>
                                             <td class="date text-center" title="${examen.ApellidoI} ${examen.NombreI}">${examen.ApellidoI}
                                                 <span class="badge badge-soft-${(examen.CInfo === 3 ? 'success' : ([0,1,2].includes(examen.CInfo)) ? 'danger' : '')}">${(examen.CInfo === 3 ? 'Cerrado' : (examen.CInfo == 2 ? 'Borrador' : ([0,1].includes(examen.CInfo) ? 'Pendiente': '')))}</span>
-                                                ${examen.InfAdj === 1 ? `<i class="ri-attachment-line ${[2,3].includes(examen.CInfo) ? 'verde' : [1].includes(examen.CInfo) ? 'gris' : ''}"></i>`: ``}   
+                                                ${examen.InfAdj === 1 ? `<i class="ri-attachment-line ${[2,3].includes(examen.CInfo) ? 'verde' : [0,1].includes(examen.CInfo) ? 'gris' : ''}"></i>`: ``}   
                                             </td>
                                     <!-- muestra el apellido + nombre del informador y debajo el estado (campo CInfo - Cerrado = 3, Borrador = 2 o pendiente = 0 y 1)   -->
                                     <td class="phone"><span class="${examen.Facturado === 1 ? 'badge badge-soft-success' : 'custom-badge gris'}"><i class="ri-check-line"></i></span></td> <!-- > campo Facturado gris si el campo tiene valor 0 verde si el campo tiene valor 1</!-->
@@ -615,17 +617,10 @@ $(document).ready(()=>{
         });
     }
 
-    function mostrarPreloader(arg) {
-        $(arg).css({
+    function preloader(opcion) {
+        $('#preloader').css({
             opacity: '0.3',
-            visibility: 'visible'
-        });
-    }
-    
-    function ocultarPreloader(arg) {
-        $(arg).css({
-            opacity: '0',
-            visibility: 'hidden'
+            visibility: opcion === 'on' ? 'visible' : 'hidden'
         });
     }
 });

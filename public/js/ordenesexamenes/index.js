@@ -524,8 +524,9 @@ $(document).ready(function(){
     $(document).on('change', '.fileManual', function(){
         let id = $(this).data('id'), idprestacion = $(this).data('idprestacion'), archivo = $('.fileManual')[0].files[0], who = $(this).data('tipo');
        
+
         if (verificarArchivo(archivo)) {
-            
+
             let tabla = ['efector','multiefector'].includes(who) ? "#listaOrdenesEfectoresAdj" : "#listaOrdenesInformadoresAdj";
 
             let formData = new FormData();
@@ -535,7 +536,7 @@ $(document).ready(function(){
             formData.append('_token', TOKEN);
             formData.append('who', who);
 
-            $('#preloader-overlay').show();
+            preloader('on');
 
             $.ajax({
                 type: 'POST',
@@ -544,17 +545,17 @@ $(document).ready(function(){
                 processData: false,
                 contentType: false,
                 success: function() {
+                    preloader('off');
                     toastr.success("Se ha cargado el reporte de manera correcta.", "Perfecto");
                     let table = $(tabla).DataTable();
                     table.clear().draw(false);
 
                 },
                 error: function (xhr) {
+                    preloader('off');
                     console.error(xhr);
                     toastr.error("Ha ocurrido un error. Consulte con el administrador", "Atención");
                 }
-            }).always(function() {
-                $('#preloader-overlay').hide();
             });
            
         }
@@ -570,9 +571,7 @@ $(document).ready(function(){
             automaticUploadIC: ['Id_adjuntoInf', '#checkAllAdjInf', 'archivosAutomaticoI', '#listaOrdenesInformadoresAdj']
         }
 
-
-        
-        let ids = [], tipo = $(this).data('forma'), opcion = $(this).hasClass('automaticUpload') === 'automaticUpload' ? 'automaticUpload' : 'automaticUploadI';
+        let ids = [], tipo = $(this).data('forma'), opcion = $(this).hasClass('automaticUpload') ? 'automaticUpload' : 'automaticUploadI', who = $(this).hasClass('automaticUploadI') ? 'multiInformador' : 'multiefector';
 
         if(tipo === 'individual') {
 
@@ -591,10 +590,9 @@ $(document).ready(function(){
             toastr.warning('No hay examenes seleccionados', 'Atención');
             return;
         }
-
         preloader('on');
 
-        $.post(obj[opcion][2], { _token: TOKEN, Ids: ids, AutoCerrar: $(this).hasClass('automaticUploadIC') ? true : null })
+        $.post(obj[opcion][2], { _token: TOKEN, Ids: ids, AutoCerrar: $(this).hasClass('automaticUploadIC') ? true : null, who: who, IdEntidad: $(this).data('id'), IdPrestacion: $(this).data('idprestacion') })
             .done(function(response){
                 var estados = [];
                 response.forEach(function(msg) {

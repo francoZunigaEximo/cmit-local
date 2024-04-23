@@ -14,7 +14,7 @@ $(document).ready(()=>{
 
         var especialidad = $('#especialidadInf').val();
 
-        if (especialidad === '') {
+        if (especialidad === '' && nroPrestacion === '') {
             toastr.warning('Debe seleccionar una especialidad para continuar', 'Atención');
             return;
         }
