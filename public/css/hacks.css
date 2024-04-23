@@ -205,29 +205,42 @@ label {
 	--vz-pagination-padding-x: 1.3rem !important;
 }
 
-.fondo-verde {
-	background-color: green;
-	color: black;
-}
-
 .fondo-amarillo {
 	background-color: yellow;
-	color: black;
-}
-
-.fondo-naranja {
-	background-color: orangered;
-	color: black;
 }
 
 .fondo-blanco {
-	color: black;
 	background-color: white;
 }
 
 .fondo-rojo {
 	background-color: red;
+}
+
+.fondo-naranja {
+	background-color: orangered;
+}
+
+.fondo-verde {
+	background-color: green;
+}
+
+.fondo-rojo, 
+.fondo-verde, 
+.fondo-naranja,
+.fondo-blanco,
+.fondo-amarillo,
+.negrita {
+	font-weight:bold;
+}
+.fondo-blanco,
+.fondo-amarillo {
 	color: black;
+}
+.fondo-rojo, 
+.fondo-verde, 
+.fondo-naranja {
+	color:white;
 }
 
 .fondo-grisClaro {
