@@ -27,6 +27,7 @@ $(document).ready(()=>{
             pageLength: 150,
             responsive: true,
             serverSide: true,
+            deferRender: true,
             dataType: 'json',
             type: 'POST',
             columnDefs: [
@@ -137,21 +138,15 @@ $(document).ready(()=>{
                     targets: 9,
                     render: function(data){
 
-                        let situacion;
-
-                        if(data.Cerrado === 1){
-                            situacion = "Cerrado";
-                        }else if(data.Finalizado === 1){
-                            situacion = "Finalizado";
-                        }else if(data.Entregado === 1){
-                            situacion = "Entregado";
-                        }else if(data.Cerrado === 0 && data.Finalizado === 0){
-                            situacion = "Abierto";
-                        }else{
-                            situacion = "Abierto";
-                        }
-
-                        return '<span class="iconGeneralNegro">' + situacion + '</span>';
+                        return (data.Cerrado === 1 && data.Finalizado === 0)
+                                ? "Cerrado"
+                                : (data.Cerrado === 1 && data.Finalizado === 1)
+                                    ? "Finalizado"
+                                    : (data.Entregado === 1)
+                                        ? "Entregado"
+                                        : (data.Cerrado === 0 && data.Finalizado === 0)
+                                            ? "Abierto"
+                                            : "-";
                     }
                 },
                 {
@@ -207,16 +202,8 @@ $(document).ready(()=>{
                     targets: 15,
                     render: function(data){
 
-                        let pagos = {
-                            'B': 'Ctdo',
-                            'P': 'ExCta',
-                            'C': 'CC'
-                        };
-                        return pagos[data.Pago] === undefined || 
-                               pagos[data.Pago] === null || 
-                               pagos[data.Pago] === '' 
-                               ? '-' 
-                               : pagos[data.Pago];
+                        let pagos = { 'B': 'Ctdo', 'P': 'ExCta', 'C': 'CC'};
+                        return [undefined, null, ''].includes(pagos[data.Pago]) ? '-' : pagos[data.Pago];      
                     }
                 },
                 {
@@ -247,7 +234,7 @@ $(document).ready(()=>{
                 }
             ],
             language: {
-                processing: "Cargando listado de prestaciones de CMIT",
+                processing: "<div style='text-align: center; margin-top: 20px;'><img src='./images/spinner.gif' /><p>Cargando...</p></div>",
                 emptyTable: "No hay prestaciones con los datos buscados",
                 paginate: {
                     first: "Primera",
@@ -269,26 +256,21 @@ $(document).ready(()=>{
 
                 let cerradoAdjunto = data.CerradoAdjunto || 0,
                     total = data.Total || 1,
-                    calculo = parseFloat(((cerradoAdjunto / total) * 100).toFixed(2)),
-                    resultado;
+                    calculo = parseFloat(((cerradoAdjunto / total) * 100).toFixed(2));
 
-                if (calculo === 100) {
-                    resultado = $(row).addClass('fondo-blanco');
-                } else if (data.Anulado === 0 && calculo >= 86 && calculo <= 99) {
-                    resultado = $(row).addClass('fondo-verde');
-                } else if (data.Anulado === 0 && calculo >= 51 && calculo <= 85) {
-                    resultado = $(row).addClass('fondo-amarillo');
-                } else if (data.Anulado === 0 && calculo >= 1 && calculo <= 50) {
-                    resultado = $(row).addClass('fondo-naranja');
-                } else if(data.Anulado === 0) {
-                    resultado = $(row).addClass('fondo-rojo');
-                } else if(data.Anulado === 1) {
-                    resultado = $(row).addClass('rojo');
-                }
-                console.log("Total: " + total);
-                console.log("Cerrados y con adjuntos: " + cerradoAdjunto);
-                console.log("Porcentaje total: " + calculo + "%");
-                return resultado;
+                return (calculo === 100) 
+                        ? $(row).addClass('fondo-blanco')
+                        : (data.Anulado === 0 && calculo >= 86 && calculo <= 99)
+                            ? $(row).addClass('fondo-verde')
+                            : (data.Anulado === 0 && calculo >= 51 && calculo <= 85)
+                                ? $(row).addClass('fondo-amarillo')
+                                : (data.Anulado === 0 && calculo >= 1 && calculo <= 50)
+                                    ? $(row).addClass('fondo-naranja')
+                                    : (data.Anulado === 0)
+                                        ? $(row).addClass('fondo-rojo')
+                                        : (data.Anulado === 1)
+                                            ? $(row).addClass('rojo negrita')
+                                            : '';
             }
         };
 
