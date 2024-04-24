@@ -20,7 +20,8 @@ class ExamenCuentaIt extends Model
         'IdPrestacion',
         'Obs',
         'Obs2',
-        'Obs'
+        'Obs',
+        'Precarga'
     ];
 
     public $timestamps = false;

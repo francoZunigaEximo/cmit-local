@@ -648,3 +648,5 @@ CREATE INDEX itemsprestaciones_CAdj_IDX USING BTREE ON itemsprestaciones (CAdj);
 CREATE INDEX itemsprestaciones_CInfo_IDX USING BTREE ON itemsprestaciones (CInfo);
 CREATE INDEX itemsprestaciones_Fecha_IDX USING BTREE ON itemsprestaciones (Fecha);
 CREATE INDEX examenes_Nombre_IDX USING BTREE ON examenes (Nombre);
+
+ALTER TABLE pagosacuenta_it ADD Precarga INT(9) DEFAULT 0 NULL;

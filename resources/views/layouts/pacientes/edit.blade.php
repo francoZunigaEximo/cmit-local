@@ -769,7 +769,7 @@ const saldoNoDatatable = "{{ route('saldoNoDatatable') }}";
 const cantTotalDisponibles = "{{ route('cantTotalDisponibles') }}";
 const lstClientes = "{{ route('lstClientes') }}";
 const listadoPrecarga = "{{ route('listadoPrecarga') }}";
-const listadoEx = "{{ route('listadoEx') }}";
+const listadoExCta = "{{ route('listadoExCta') }}";
 const lstExClientes = "{{ route('lstExClientes') }}";
 
 const getMapas = "{{ route('getMapas') }}";
