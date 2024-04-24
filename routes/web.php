@@ -257,6 +257,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('listadoDni', [ExamenesCuentaController::class, 'listadoDni'])->name('listadoDni');
     Route::get('listadoPrecarga', [ExamenesCuentaController::class, 'listadoPrecarga'])->name('listadoPrecarga');
     Route::get('listadoEx', [ExamenesCuentaController::class, 'listadoEx'])->name('listadoEx');
+    //Route::get('listadoExCta', [ExamenesCuentaController::class, 'listadoExCta'])->name('listadoExCta');
     Route::get('exportExcel', [ExamenesCuentaController::class, 'excel'])->name('exportExcel');
     Route::get('exportPDF', [ExamenesCuentaController::class, 'pdf'])->name('exportPDF');
     Route::get('exportGeneral', [ExamenesCuentaController::class, 'reporteGeneral'])->name('exportGeneral');

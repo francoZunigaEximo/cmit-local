@@ -291,7 +291,7 @@ class ExamenesCuentaController extends Controller
             $item = ExamenCuentaIt::find($examen);
             if($item) 
             {
-                $item->Obs = '-';
+                $item->Precarga = 0;
                 $item->save();
             }
         }
@@ -311,7 +311,7 @@ class ExamenesCuentaController extends Controller
             $item = ExamenCuentaIt::find($examen);
             if($item) 
             {
-                $item->Obs = $request->Obs;
+                $item->Precarga = $request->Precarga;
                 $item->save();
             }
         }
@@ -324,7 +324,7 @@ class ExamenesCuentaController extends Controller
             ->join('prestaciones', 'pagosacuenta_it.IdPrestacion', '=', 'prestaciones.Id')
             ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
             ->select(
-                'pagosacuenta_it.Obs as Precarga',
+                'pagosacuenta_it.Precarga as Precarga',
                 'examenes.Nombre as Examen',
                 'prestaciones.Id as Prestacion',
                 'pacientes.Nombre as NombrePaciente',
@@ -333,7 +333,7 @@ class ExamenesCuentaController extends Controller
             )
             ->where('pagosacuenta_it.IdPago', $request->Id)
             ->whereNot('pagosacuenta_it.Obs', 'provisorio')
-            ->orderBy('pagosacuenta_it.Obs', 'Desc')
+            ->orderBy('pagosacuenta_it.Precarga', 'Desc')
             ->get();
 
         return response()->json($query);
@@ -348,28 +348,29 @@ class ExamenesCuentaController extends Controller
 
             case 'examen':
 
-                $obs = $request->Obs ?? '-';
-                $obsAgregar = false;
+                $precarga = $request->precarga ?? 0;
+                $preAgregar = false;
                 for ($i=0; $i < $request->cantidad; $i++) { 
                     ExamenCuentaIt::create([
                         'Id' => ExamenCuentaIt::max('Id') + 1,
                         'IdPago' => $request->Id,
                         'IdExamen' => $request->examen,
                         'IdPrestacion' => 0,
-                        'Obs' => !$obsAgregar ? $obs : '',
-                        'Obs2' => ''
+                        'Obs' => '',
+                        'Obs2' => '',
+                        'Precarga' => !$preAgregar ? $precarga : 0
                     ]);
 
-                    if(!$obsAgregar) {
-                        $obsAgregar = true;
+                    if(!$preAgregar) {
+                        $preAgregar = true;
                     }
                 }
                 break;
 
             case 'paquete':
                 
-                $obs = $request->Obs ?? '-';
-                $obsAgregar = false;
+                $precarga = $request->Precarga ?? 0;
+                $preAgregar = false;
 
                 for ($i=0; $i < $request->cantidad; $i++) {
                     
@@ -382,21 +383,22 @@ class ExamenesCuentaController extends Controller
                             'IdPago' => $request->Id,
                             'IdExamen' => $e->IdExamen,
                             'IdPrestacion' => 0,
-                            'Obs' => !$obsAgregar ? $obs : '',
-                            'Obs2' => ''
+                            'Obs' => '',
+                            'Obs2' => '',
+                            'Precarga' => !$preAgregar ? $precarga : 0
                         ]);  
                     }
 
-                    if(!$obsAgregar) {
-                        $obsAgregar = true;
+                    if(!$preAgregar) {
+                        $preAgregar = true;
                     }
                 }
                 break;
             
             case 'facturacion':
                
-                $obs = $request->Obs ?? '-';
-                $obsAgregar = false;
+                $precarga = $request->Precarga ?? 0;
+                $preAgregar = false;
 
                 for ($i=0; $i < $request->cantidad; $i++) {
                     
@@ -409,13 +411,14 @@ class ExamenesCuentaController extends Controller
                             'IdPago' => $request->Id,
                             'IdExamen' => $e->IdExamen,
                             'IdPrestacion' => 0,
-                            'Obs' => !$obsAgregar ? $obs : '',
-                            'Obs2' => ''
+                            'Obs' => '',
+                            'Obs2' => '',
+                            'Precarga' => !$preAgregar ? $precarga : 0,
                         ]);  
                     }
 
-                    if(!$obsAgregar) {
-                        $obsAgregar = true;
+                    if(!$preAgregar) {
+                        $preAgregar = true;
                     }
                 }
                 break;
@@ -464,12 +467,11 @@ class ExamenesCuentaController extends Controller
         return response()->json($clientes);
     }
 
+    //Listado dentro de Pacientes en Alta de Prestación
     public function lstExClientes(Request $request)
     {
         $clientes = ExamenCuenta::join('pagosacuenta_it', 'pagosacuenta.Id', '=', 'pagosacuenta_it.IdPago')
-            ->join('clientes', 'pagosacuenta.IdEmpresa', '=', 'clientes.Id')
             ->join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
-            ->join('prestaciones', 'pagosacuenta_it.IdPrestacion', '=', 'prestaciones.Id')
             ->select(
                 'clientes.RazonSocial as Empresa',
                 'examenes.Nombre as Examen',
@@ -477,6 +479,7 @@ class ExamenesCuentaController extends Controller
             )
             ->selectRaw('COUNT(CASE WHEN pagosacuenta_it.IdPrestacion = 0 THEN 1 END) AS contadorSaldos')
             ->where('pagosacuenta.IdEmpresa', $request->Id)
+            ->whereNot('pagosacuenta_it.IdExamen', 0)
             ->where('pagosacuenta_it.IdPrestacion', 0)
             ->groupBy('clientes.Id')
             ->groupBy('clientes.RazonSocial')
@@ -491,27 +494,6 @@ class ExamenesCuentaController extends Controller
 
         return response()->json($clientes);
     }
-
-    public function listadoPrecarga(Request $request)
-    {
-        $clientes = ExamenCuentaIt::join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
-            ->join('prestaciones', 'pagosacuenta_it.IdPrestacion', '=', 'prestaciones.Id')
-            ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-            ->select(
-                'pagosacuenta_it.Obs as Documento',
-                'pagosacuenta_it.IdPrestacion as IdPrestacion',
-                'pagosacuenta_it.IdPago as IdPago'
-            )
-            ->where('pagosacuenta_it.IdPago', $request->Id)
-            ->where('pagosacuenta_it.IdPrestacion', 0)
-            ->whereNot('pagosacuenta_it.Obs', 'provisorio')
-            ->orderBy('pagosacuenta_it.Id', 'Desc')
-            ->groupBy('pagosacuenta_it.IdPrestacion')
-            ->get();
-
-        return response()->json($clientes);
-    }
-    
     public function listadoEx(Request $request)
     {
         $clientes = ExamenCuentaIt::join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
@@ -524,8 +506,53 @@ class ExamenesCuentaController extends Controller
                 'pagosacuenta.Pagado as Pagado',
                 DB::raw('(SELECT COUNT(*) FROM pagosacuenta_it WHERE IdPago = pagosacuenta.Id AND IdExamen = examenes.Id AND pagosacuenta_it.IdPrestacion = '.$request->Id.') as Cantidad')
             )
-            ->where('pagosacuenta_it.IdPrestacion', $request->Id)
+            ->where('pagosacuenta_it.IdPrestacion', $request->Id ?? '')
             ->where('pagosacuenta_it.IdPago', $request->IdPago)
+            ->whereNot('pagosacuenta_it.IdExamen', 0)
+            ->groupBy('pagosacuenta_it.IdExamen')
+            ->orderBy('pagosacuenta_it.IdPrestacion', 'ASC')
+            ->get();
+        
+        return response()->json($clientes);
+        
+    }
+    
+     //Listado dentro de Pacientes en Alta de Prestación
+     public function listadoPrecarga(Request $request)
+     {
+         $clientes = ExamenCuentaIt::join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
+             ->join('prestaciones', 'pagosacuenta_it.IdPrestacion', '=', 'prestaciones.Id')
+             ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+             ->select(
+                 'pagosacuenta_it.Precarga as Documento',
+                 'pagosacuenta_it.IdPrestacion as IdPrestacion',
+                 'pagosacuenta_it.IdPago as IdPago'
+             )
+             ->where('pagosacuenta_it.IdPago', $request->Id)
+             ->where('pagosacuenta_it.IdPrestacion', 0)
+             ->whereNot('pagosacuenta_it.Obs', 'provisorio')
+             ->orderBy('pagosacuenta_it.Id', 'Desc')
+             ->groupBy('pagosacuenta_it.Obs')
+             ->get();
+ 
+         return response()->json($clientes);
+     }
+     
+    //Listado dentro de Pacientes en Alta de Prestación
+    public function listadoExCta(Request $request)
+    {
+        $clientes = ExamenCuentaIt::join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
+            ->join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
+            ->select(
+                'examenes.Nombre as NombreExamen',
+                'pagosacuenta_it.Id as IdEx',
+                'pagosacuenta.Pagado as Pagado',
+                DB::raw('(SELECT COUNT(*) FROM pagosacuenta_it WHERE IdPago = pagosacuenta.Id AND IdExamen = examenes.Id AND pagosacuenta_it.Obs = '.$request->Id.') as Cantidad')
+            )
+            ->where(function ($query) use ($request) {
+                $query->where('pagosacuenta_it.Obs', $request->Id)
+                      ->orWhereNull('pagosacuenta_it.Obs');
+            })
             ->whereNot('pagosacuenta_it.IdExamen', 0)
             ->groupBy('pagosacuenta_it.IdExamen')
             ->orderBy('pagosacuenta_it.IdPrestacion', 'ASC')

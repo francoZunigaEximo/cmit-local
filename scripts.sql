@@ -649,6 +649,8 @@ CREATE INDEX itemsprestaciones_CInfo_IDX USING BTREE ON itemsprestaciones (CInfo
 CREATE INDEX itemsprestaciones_Fecha_IDX USING BTREE ON itemsprestaciones (Fecha);
 CREATE INDEX examenes_Nombre_IDX USING BTREE ON examenes (Nombre);
 
+ALTER TABLE pagosacuenta_it ADD Precarga INT(9) DEFAULT 0 NULL;
+
 
 CREATE PROCEDURE getSearchA(IN fechaDesde* DATE, IN fechaHasta* DATE, IN prestacion* INT, IN examen* INT, IN paciente* INT, 
 				IN estados* VARCHAR, IN efector INT, IN especialidad INT, IN empresa INT)

@@ -522,11 +522,10 @@ $(document).ready(()=>{
                 preloader('off');
                 let promises = response.map(async function(r) {
                     if(response && response.length) {
-                        let suc = (r.Suc).toString().padStart(4, '0'), numero = (r.Nro).toString().padStart(8, '0');
-                        let moduloResult = await modulo(r.Id);
+                        let suc = r.Suc ? r.Suc.toString().padStart(4, '0') : '-', numero = r.Nro ? r.Nro.toString().padStart(8, '0') : '-', moduloResult = await modulo(r.Id);
                         let contenido = `
                         <tr class="fondo-gris mb-2">
-                            <td colspan="3"><span class="fw-bolder text-capitalize">fact </span> ${r.Tipo}${suc}${numero}</td>
+                            <td colspan="3"><span class="fw-bolder text-capitalize">fact </span> ${r.Tipo ?? '-'}${suc}-${numero}</td>
                             <td>
                                 <tr>
                                     <td colspan="4">
@@ -577,7 +576,7 @@ $(document).ready(()=>{
     async function detalles(id, idpago) {
         return new Promise((resolve, reject) => {
             preloader('on');
-            $.get(listadoEx, {Id: id, IdPago: idpago})
+            $.get(listadoExCta, {Id: id})
                 .done(async function(response){
                     preloader('off');
                     if (response && response.length) {

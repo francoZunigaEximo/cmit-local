@@ -166,13 +166,18 @@ $(document).ready(function(){
 
         preloader('on');
 
-        $.post(savePaquete, {_token: TOKEN, Id: ID, Tipo: tipo, examen: valor, Obs: dni, cantidad: cantidad})
+        $.post(savePaquete, {_token: TOKEN, Id: ID, Tipo: tipo, examen: valor, precarga: dni, cantidad: cantidad})
             .done(function(){
                 preloader('off');
                 toastr.success('Se ha realizado ha cargado el o los examenes.')
                 setTimeout(()=> {
                     listado();
                 }, 3000);
+                $('#dni').val("");
+                $('#cantidad').val(1);
+                $("#examen option").remove();
+                $("#paquete option").remove();
+                $("#facturacion option").remove();
             })
     });
 
@@ -250,6 +255,8 @@ $(document).ready(function(){
         e.preventDefault();
 
         var id, ids = [];
+        $(".saveCambiosEdit").show();
+        $("#dniNuevo").attr("disabled", false);
 
         if($(this).hasClass('editarDNI') === true) {
 
@@ -265,7 +272,8 @@ $(document).ready(function(){
             let checkAll =$('#checkAll').prop('checked');
     
             if(ids.length === 0 && checkAll === false){
-                $('#editarDNI').modal('hide');
+                $(".saveCambiosEdit").hide();
+                $("#dniNuevo").attr("disabled", true);
                 toastr.warning('No hay items seleccionados', 'Atención');
                 return;
             }
@@ -285,7 +293,7 @@ $(document).ready(function(){
         }
 
         preloader('on');
-        $.post(savePrecarga, {_token: TOKEN, Id: id.includes(',') ? id = id.split(",") : id, Obs: dniNuevo})
+        $.post(savePrecarga, {_token: TOKEN, Id: id.includes(',') ? id = id.split(",") : id, Precarga: dniNuevo})
             .done(function(){
                 preloader('off');
                 toastr.success('Se ha cambiado el dni de la precarga');
