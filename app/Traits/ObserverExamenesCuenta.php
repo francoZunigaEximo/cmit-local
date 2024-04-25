@@ -14,7 +14,8 @@ trait ObserverExamenesCuenta
             'IdExamen' => 0,
             'IdPrestacion' => 0,
             'Obs' => 'provisorio',
-            'Obs2' => 'provisorio'
+            'Obs2' => 'provisorio',
+            'Precarga' => 0
         ]);
     }
 }

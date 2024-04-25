@@ -427,7 +427,10 @@ class ExamenesCuentaController extends Controller
 
     public function lstClientes(Request $request)
     {
-        $clientes = ExamenCuenta::join('pagosacuenta_it', 'pagosacuenta.Id', '=', 'pagosacuenta_it.IdPago')
+        $clientes = ExamenCuenta::join('pagosacuenta_it', function ($join) {
+            $join->on('pagosacuenta.Id', '=', 'pagosacuenta_it.IdPago')
+                ->whereNot('pagosacuenta_it.IdExamen', 0);
+            })
             ->join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
             ->select(
                 'pagosacuenta.Id as Id',
@@ -438,9 +441,7 @@ class ExamenesCuentaController extends Controller
                 'pagosacuenta.Obs as Obs',
                 DB::raw('(SELECT COUNT(*) FROM pagosacuenta_it WHERE IdPago = pagosacuenta.Id AND IdExamen = examenes.Id AND pagosacuenta_it.IdPrestacion <> 0) as Cantidad')
             )
-            ->where('IdEmpresa', $request->Id)
-            ->whereNot('pagosacuenta_it.IdExamen', 0)
-            //->whereNot('pagosacuenta_it.IdPrestacion', 0)
+            ->where('pagosacuenta.IdEmpresa', $request->Id)
             ->orderBy('pagosacuenta.Id', 'Desc')
             ->orderBy('pagosacuenta.Fecha', 'Desc')
             ->groupBy('pagosacuenta.Id')
@@ -470,7 +471,12 @@ class ExamenesCuentaController extends Controller
     //Listado dentro de Pacientes en Alta de Prestación
     public function lstExClientes(Request $request)
     {
-        $clientes = ExamenCuenta::join('pagosacuenta_it', 'pagosacuenta.Id', '=', 'pagosacuenta_it.IdPago')
+        $clientes = ExamenCuenta::join('pagosacuenta_it', function($join) {
+            $join->on('pagosacuenta.Id', '=', 'pagosacuenta_it.IdPago')
+                ->whereNot('pagosacuenta_it.IdExamen', 0)
+                ->where('pagosacuenta_it.IdPrestacion', 0)
+                ->whereNot('pagosacuenta_it.Obs', 'provisorio');
+            })
             ->join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
             ->select(
                 'clientes.RazonSocial as Empresa',
@@ -479,15 +485,12 @@ class ExamenesCuentaController extends Controller
             )
             ->selectRaw('COUNT(CASE WHEN pagosacuenta_it.IdPrestacion = 0 THEN 1 END) AS contadorSaldos')
             ->where('pagosacuenta.IdEmpresa', $request->Id)
-            ->whereNot('pagosacuenta_it.IdExamen', 0)
-            ->where('pagosacuenta_it.IdPrestacion', 0)
             ->groupBy('clientes.Id')
             ->groupBy('clientes.RazonSocial')
             ->groupBy('clientes.ParaEmpresa')
             ->groupBy('clientes.Identificacion')
             ->groupBy('examenes.Nombre')
             ->havingRaw('contadorSaldos > 0')
-            ->whereNot('pagosacuenta_it.Obs', 'provisorio')
             ->orderBy('clientes.RazonSocial')
             ->orderBy('examenes.Nombre')
             ->get();
@@ -1019,7 +1022,10 @@ class ExamenesCuentaController extends Controller
 
     private function querySalDet(?int $id): mixed
     {
-        return ExamenCuenta::join('pagosacuenta_it', 'pagosacuenta.Id', '=', 'pagosacuenta_it.IdPago')
+        return ExamenCuenta::join('pagosacuenta_it', function($join) {
+            $join->on('pagosacuenta.Id', '=', 'pagosacuenta_it.IdPago')
+                    ->where('pagosacuenta_it.IdPrestacion', 0);
+            })
             ->join('clientes', 'pagosacuenta.IdEmpresa', '=', 'clientes.Id')
             ->join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
             ->select(
@@ -1034,7 +1040,6 @@ class ExamenesCuentaController extends Controller
                 DB::raw('COUNT(pagosacuenta_it.IdExamen) as Cantidad')
             )
             ->where('pagosacuenta.IdEmpresa', $id)
-            ->where('pagosacuenta_it.IdPrestacion', 0)
             ->groupBy('examenes.Nombre')
             ->orderBy('clientes.RazonSocial', 'DESC')
             ->orderBy('clientes.ParaEmpresa', 'DESC')
