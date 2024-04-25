@@ -70,25 +70,28 @@ $(document).ready(()=>{
 
     $(document).on('click','.deleteMapa', function(){
         let id = $(this).data('id');
-        
-        $.ajax({
-            url: deleteMapa,
-            type: 'POST',
-            data: {
-                _token: TOKEN, 
-                Id: id
-            },
-            success: function(){
+        if(confirm('¿Desea eliminar el registro del mapa')) {
 
-                toastr.success(`Se ha elimnado correctamente el mapa`, `Eliminar mapa`);
-                $('#listaMapas').DataTable();
-                $('#listaMapas').DataTable().draw(false);
-            },
-            error: function(xhr){
-                console.error(xhr);
-                toastr.error('Error', 'Se ha producido un error. Actualice la página y si el problema persiste, consulte con el administrador');
-            }
-        });
+            $.ajax({
+                url: deleteMapa,
+                type: 'POST',
+                data: {
+                    _token: TOKEN, 
+                    Id: id
+                },
+                success: function(){
+    
+                    toastr.success(`Se ha elimnado correctamente el mapa`, `Eliminar mapa`);
+                    $('#listaMapas').DataTable();
+                    $('#listaMapas').DataTable().draw(false);
+                },
+                error: function(xhr){
+                    console.error(xhr);
+                    toastr.error('Error', 'Se ha producido un error. Actualice la página y si el problema persiste, consulte con el administrador');
+                }
+            });
+        }
+        
     });
 
     $('#Empresa').select2({
