@@ -253,9 +253,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('lstClientes', [ExamenesCuentaController::class, 'lstClientes'])->name('lstClientes');
     Route::get('lstExClientes', [ExamenesCuentaController::class, 'lstExClientes'])->name('lstExClientes');
     Route::get('listadoDni', [ExamenesCuentaController::class, 'listadoDni'])->name('listadoDni');
-    Route::get('listadoPrecarga', [ExamenesCuentaController::class, 'listadoPrecarga'])->name('listadoPrecarga');
+    Route::get('listPrecarga', [ExamenesCuentaController::class, 'listadoPrecarga'])->name('listPrecarga');
     Route::get('listadoEx', [ExamenesCuentaController::class, 'listadoEx'])->name('listadoEx');
-    //Route::get('listadoExCta', [ExamenesCuentaController::class, 'listadoExCta'])->name('listadoExCta');
+    Route::get('listExCta', [ExamenesCuentaController::class, 'listadoExCta'])->name('listExCta');
     Route::get('exportExcel', [ExamenesCuentaController::class, 'excel'])->name('exportExcel');
     Route::get('exportPDF', [ExamenesCuentaController::class, 'pdf'])->name('exportPDF');
     Route::get('exportGeneral', [ExamenesCuentaController::class, 'reporteGeneral'])->name('exportGeneral');
