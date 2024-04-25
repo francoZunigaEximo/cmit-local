@@ -11,7 +11,7 @@ $(document).ready(()=>{
     getListado(null);
     listadoConSaldos(empresaInput);
     cantidadDisponibles(empresaInput);
-    examenes(empresaInput);
+    listadoFacturas(empresaInput);
     
     toastr.options = {
         closeButton: true,   
@@ -32,7 +32,7 @@ $(document).ready(()=>{
         getUltimasFacturadas(empresaCap);
         listadoConSaldos(empresaCap);
         cantidadDisponibles(empresaCap);
-        examenes(empresaCap);
+        listadoFacturas(empresaCap);
     });
 
     $(document).on('change', '#financiador', function(){
@@ -40,7 +40,7 @@ $(document).ready(()=>{
         getUltimasFacturadas(updateFinanciador);
         listadoConSaldos(updateFinanciador);
         cantidadDisponibles(updateFinanciador);
-        examenes(updateFinanciador);
+        listadoFacturas(updateFinanciador);
     });
     
     //Guardamos la prestación
@@ -328,26 +328,14 @@ $(document).ready(()=>{
                         prestacionRz = papre.Empresa,
                         prestacionPe = papre.ParaEmpresa;
 
-                    let recorteArt = prestacionArt.substring(0, 7) + "...",
-                        recorteRz = prestacionRz.substring(0,7) + "...",
-                        recortePe = prestacionPe.substring(0,7) + "...";
+                    let recorteArt = prestacionArt.substring(0, 10),
+                        recorteRz = prestacionRz.substring(0,10),
+                        recortePe = prestacionPe.substring(0,10);
 
                     let cerradoAdjunto = papre.CerradoAdjunto || 0,
                         total = papre.Total || 1,
                         calculo = parseFloat(((cerradoAdjunto / total) * 100).toFixed(2)),
-                        resultado = 0;
-                
-                    if (calculo === 100) {
-                        resultado = 'fondo-blanco';
-                    } else if (calculo >= 86 && calculo <= 99) {
-                        resultado ='fondo-verde';
-                    } else if (calculo >= 51 && calculo <= 85) {
-                        resultado = 'fondo-amarillo';
-                    } else if (calculo >= 1 && calculo <= 50) {
-                        resultado = 'fondo-naranja';
-                    } else {
-                        resultado = 'fondo-rojo';
-                    }
+                        resultado = (calculo === 100) ? 'fondo-blanco' : (calculo >= 86 && calculo <= 99) ? 'fondo-verde' : (calculo >= 51 && calculo <= 85) ? 'fondo-amarillo' : (calculo >= 1 && calculo <= 50) ? 'fondo-naranja' : 'fondo-rojo';
 
                     let row = `<tr class="${resultado}">
                                 <td>
@@ -375,7 +363,7 @@ $(document).ready(()=>{
                                     ${recorteArt}
                                 </td>
                                 <td>
-                                    <span class="iconGeneralNegro text-uppercase">${ (papre.Anulado == 0 ? "Habilitado" : "Bloqueado")}</span>
+                                    <span class="text-uppercase">${ (papre.Anulado == 0 ? "Habilitado" : "Bloqueado")}</span>
                                 </td>
                                 <td>
                                     ${(`<div class="text-center"><i class="${papre.eEnviado === 1 ? `ri-checkbox-circle-fill negro` : `ri-close-circle-line negro`}"></i></div>`)}
@@ -454,8 +442,10 @@ $(document).ready(()=>{
     async function lstFacturados(id)
     {
         return new Promise((resolve, reject) => {
+            preloader('on');
             $.get(lstExamenes, {Id: id})
                 .done(async function(response){
+                    preloader('off');
                     let result = '';
                     if(response && response.length) {
 
@@ -514,7 +504,7 @@ $(document).ready(()=>{
             })
     }
 
-    async function examenes(id){
+    async function listadoFacturas(id){
         $('#lstEx').empty();
         preloader('on');
         $.get(lstExClientes, {Id: id})
@@ -522,7 +512,7 @@ $(document).ready(()=>{
                 preloader('off');
                 let promises = response.map(async function(r) {
                     if(response && response.length) {
-                        let suc = r.Suc ? r.Suc.toString().padStart(4, '0') : '-', numero = r.Nro ? r.Nro.toString().padStart(8, '0') : '-', moduloResult = await modulo(r.Id);
+                        let suc = r.Suc ? r.Suc.toString().padStart(4, '0') : '-', numero = r.Nro ? r.Nro.toString().padStart(8, '0') : '-', moduloResult = await vistaDni(r.Id);
                         let contenido = `
                         <tr class="fondo-gris mb-2">
                             <td colspan="3"><span class="fw-bolder text-capitalize">fact </span> ${r.Tipo ?? '-'}${suc}-${numero}</td>
@@ -545,20 +535,21 @@ $(document).ready(()=>{
             });
     }
 
-    async function modulo(id) {
+    async function vistaDni(id) {
         return new Promise((resolve, reject) => {
             preloader('on');
-            $.get(listadoPrecarga, {Id: id})
+
+            $.get(listPrecarga, {Id: id})
                 .done(async function(response){
                     preloader('off');
+                    
                     if (response && response.length) {
                         let result = '';
                         for (let r of response) {
-                            let detallesResult = await detalles(r.IdPrestacion, r.IdPago); 
+                            //detallesResult = await detalles(r.IdPrestacion, r.IdPago); 
                             result += `
                                 <tr class="fondo-grisClaro">
-                                    <td colspan="4" class="fw-bolder"><span class="fw-bolder">${r.IdPrestacion === 0 ? 'Generales' : 'DNI'}</span> ${r.IdPrestacion === 0 ? '' : r.Documento}</td>
-                                    ${detallesResult}
+                                    <td colspan="4" class="fw-bolder"><span class="fw-bolder">${[0,''].includes(r.Documento) ? '' : 'DNI: '}</span> ${[0,''].includes(r.Documento) ? 'Sin precarga' : r.Documento}</td>          
                                 </tr>
                             `;
                         }
@@ -571,12 +562,11 @@ $(document).ready(()=>{
         });
     }
 
-    function detalles(id){}
-
-    async function detalles(id, idpago) {
+    function detalles(id, idpago) { return id + idpago }
+    /*sync function detalles(id, idpago) {
         return new Promise((resolve, reject) => {
             preloader('on');
-            $.get(listadoExCta, {Id: id})
+            $.get(listExCta, {Id: id})
                 .done(async function(response){
                     preloader('off');
                     if (response && response.length) {
@@ -598,7 +588,7 @@ $(document).ready(()=>{
                 });
         });
         
-    }
+    }*/
 
     function preloader(opcion) {
         $('#preloader').css({

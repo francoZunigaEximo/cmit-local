@@ -468,35 +468,7 @@ class ExamenesCuentaController extends Controller
         return response()->json($clientes);
     }
 
-    //Listado dentro de Pacientes en Alta de Prestación
-    public function lstExClientes(Request $request)
-    {
-        $clientes = ExamenCuenta::join('pagosacuenta_it', function($join) {
-            $join->on('pagosacuenta.Id', '=', 'pagosacuenta_it.IdPago')
-                ->whereNot('pagosacuenta_it.IdExamen', 0)
-                ->where('pagosacuenta_it.IdPrestacion', 0)
-                ->whereNot('pagosacuenta_it.Obs', 'provisorio');
-            })
-            ->join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
-            ->select(
-                'clientes.RazonSocial as Empresa',
-                'examenes.Nombre as Examen',
-                'pagosacuenta.IdEmpresa as IdEmpresa'
-            )
-            ->selectRaw('COUNT(CASE WHEN pagosacuenta_it.IdPrestacion = 0 THEN 1 END) AS contadorSaldos')
-            ->where('pagosacuenta.IdEmpresa', $request->Id)
-            ->groupBy('clientes.Id')
-            ->groupBy('clientes.RazonSocial')
-            ->groupBy('clientes.ParaEmpresa')
-            ->groupBy('clientes.Identificacion')
-            ->groupBy('examenes.Nombre')
-            ->havingRaw('contadorSaldos > 0')
-            ->orderBy('clientes.RazonSocial')
-            ->orderBy('examenes.Nombre')
-            ->get();
-
-        return response()->json($clientes);
-    }
+   
     public function listadoEx(Request $request)
     {
         $clientes = ExamenCuentaIt::join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
@@ -519,28 +491,7 @@ class ExamenesCuentaController extends Controller
         return response()->json($clientes);
         
     }
-    
-     //Listado dentro de Pacientes en Alta de Prestación
-     public function listadoPrecarga(Request $request)
-     {
-         $clientes = ExamenCuentaIt::join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
-             ->join('prestaciones', 'pagosacuenta_it.IdPrestacion', '=', 'prestaciones.Id')
-             ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-             ->select(
-                 'pagosacuenta_it.Precarga as Documento',
-                 'pagosacuenta_it.IdPrestacion as IdPrestacion',
-                 'pagosacuenta_it.IdPago as IdPago'
-             )
-             ->where('pagosacuenta_it.IdPago', $request->Id)
-             ->where('pagosacuenta_it.IdPrestacion', 0)
-             ->whereNot('pagosacuenta_it.Obs', 'provisorio')
-             ->orderBy('pagosacuenta_it.Id', 'Desc')
-             ->groupBy('pagosacuenta_it.Obs')
-             ->get();
- 
-         return response()->json($clientes);
-     }
-     
+      
     //Listado dentro de Pacientes en Alta de Prestación
     public function listadoExCta(Request $request)
     {
@@ -955,6 +906,48 @@ class ExamenesCuentaController extends Controller
             ->count();
 
         return response()->json($query);
+    }
+
+     //Listado dentro de Pacientes en Alta de Prestación - Muestra las facturas en la grilla
+     public function lstExClientes(Request $request)
+     {
+         $clientes = ExamenCuentaIt::join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
+             ->join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
+             ->select(
+                 'examenes.Nombre as NombreExamen',
+                 'pagosacuenta.Tipo as Tipo',
+                 'pagosacuenta.Suc as Suc',
+                 'pagosacuenta.Nro as Nro',
+                 'pagosacuenta.Obs as Obs',
+                 'pagosacuenta.Id as Id'
+             )
+             ->where('pagosacuenta.IdEmpresa', $request->Id)
+             ->groupBy('pagosacuenta.Tipo')
+             ->groupBy('pagosacuenta.Suc')
+             ->groupBy('pagosacuenta.Nro')
+             ->get();
+ 
+         return response()->json($clientes);
+     }
+
+
+    //Listado dentro de Pacientes en Alta de Prestación con todos los DNI precargados
+    public function listadoPrecarga(Request $request)
+    {
+
+        $clientes = ExamenCuentaIt::join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
+            ->join('prestaciones', 'pagosacuenta_it.IdPrestacion', '=', 'prestaciones.Id')
+            ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+            ->select(
+                'pagosacuenta_it.Precarga as Documento',
+                'pagosacuenta_it.IdPrestacion as IdPrestacion',
+                'pagosacuenta_it.IdPago as IdPago'
+            )
+            ->where('pagosacuenta_it.IdPago', $request->Id)      
+            ->orderBy('pagosacuenta_it.Precarga', 'Desc')
+            ->get();
+
+        return response()->json($clientes);
     }
 
     private function tituloReporte(?int $id): mixed
