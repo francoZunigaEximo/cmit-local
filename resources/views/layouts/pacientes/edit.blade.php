@@ -727,33 +727,20 @@
                                 </div>
                             </div>
 
-                            <div class="row mx-auto">
-                                <div class="mt-3 mt-lg-0">
-                                    <form action="javascript:void(0);">
-                                        <div class="row g-3 mb-0 align-items-center">
-                                            <div class="col-sm-auto">
-                                                <div class="input-group">
-                                                    <input type="text" class="form-control border dash-filter-picker" data-provider="flatpickr" data-range-date="true" data-date-format="d M, Y" data-deafult-date="01 Jan 2022 to 31 Jan 2022">
-                                                    <div class="input-group-text bg-primary border-primary text-white">
-                                                        <i class="ri-calendar-2-line"></i>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <!--end col-->
-                                            <div class="col-auto">
-                                                <button type="button" class="btn btn-soft-primary"><i class="ri-add-circle-line align-middle me-1"></i>
-                                                    Add Product</button>
-                                            </div>
-                                            <!--end col-->
-                                            <div class="col-auto">
-                                                <button type="button" class="btn btn-soft-secondary btn-icon waves-effect waves-light layout-rightside-btn"><i class="ri-pulse-line"></i></button>
-                                            </div>
-                                            <!--end col-->
+                            <div class="d-flex justify-content-center align-items-center">
+                                <div class="col-sm-6 mt-5 mt-lg-0">
+                                    <div class="row g-3 mb-0 justify-content-center">
+                                        <div class="col-sm-6">
+                                            <select name="examen" id="examen" class="form-control"></select>
                                         </div>
-                                        <!--end row-->
-                                    </form>
+                                        <div class="col-auto">
+                                            <button type="button" class="btn btn-sm botonGeneral buscarExamen"><i class="ri-search-line"></i> Buscar</button>
+                                            <button type="button" class="btn btn-sm botonGeneral reiniciarExamen"><i class="ri-arrow-go-forward-fill"></i> Reiniciar</button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+                            
 
                             <div class="row mx-auto">
                                 <div class="table-responsive table-card mt-3 mb-1 mx-auto col-sm-8">
@@ -762,6 +749,32 @@
                                             
                                         </tbody>
                                     </table>
+                                </div>
+                            </div>
+
+                            <div class="row mb-2">
+                                <div class="col-sm-12 text-center">
+                                    <button type="button" class="btn btn-sm botonGeneral">Cargar</button>
+                                </div>
+                            </div>
+
+                            <div class="row auto-mx mb-3">
+                                <div class="table-responsive table-card mt-3 mb-1 mx-auto col-sm-7">
+                                    <table id="listadoSaldos" class="display table table-bordered">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th class="sort">Examen</th>
+                                                <th>Especialidad</th>
+                                                <th>Dias a Vencer</th>
+                                                <th>Acciones</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="list form-check-all" id="lstSaldos">
+                            
+                                        </tbody>
+                                    </table>
+                            
                                 </div>
                             </div>
 
@@ -800,6 +813,7 @@ const lstClientes = "{{ route('lstClientes') }}";
 const listPrecarga = "{{ route('listPrecarga') }}";
 const listExCta = "{{ route('listExCta') }}";
 const lstExClientes = "{{ route('lstExClientes') }}";
+const searchExamen = "{{ route('searchExamen') }}";
 
 const getMapas = "{{ route('getMapas') }}";
 

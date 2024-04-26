@@ -11,7 +11,7 @@ $(document).ready(()=>{
     getListado(null);
     listadoConSaldos(empresaInput);
     cantidadDisponibles(empresaInput);
-    listadoFacturas(empresaInput);
+    listadoFacturas(empresaInput, null);
     
     toastr.options = {
         closeButton: true,   
@@ -32,7 +32,7 @@ $(document).ready(()=>{
         getUltimasFacturadas(empresaCap);
         listadoConSaldos(empresaCap);
         cantidadDisponibles(empresaCap);
-        listadoFacturas(empresaCap);
+        listadoFacturas(empresaCap, null);
     });
 
     $(document).on('change', '#financiador', function(){
@@ -40,7 +40,7 @@ $(document).ready(()=>{
         getUltimasFacturadas(updateFinanciador);
         listadoConSaldos(updateFinanciador);
         cantidadDisponibles(updateFinanciador);
-        listadoFacturas(updateFinanciador);
+        listadoFacturas(updateFinanciador, null);
     });
     
     //Guardamos la prestación
@@ -240,6 +240,70 @@ $(document).ready(()=>{
         $('.seleccionExCta').hide();
         $('.nuevaPrestacion').show();
     });
+
+    $('#examen').select2({
+        placeholder: 'Seleccionar exámen...',
+        dropdownParent: $('#altaPrestacionModal'),
+        language: {
+            noResults: function() {
+
+            return "No hay examenes con esos datos";        
+            },
+            searching: function() {
+
+            return "Buscando..";
+            },
+            inputTooShort: function () {
+                return "Por favor, ingrese 2 o más caracteres";
+            }
+        },
+        allowClear: true,
+        ajax: {
+           url: searchExamen,
+           dataType: 'json',
+           delay: 250,
+           data: function(params) {
+                return {
+                    buscar: params.term,
+                };
+           },
+           processResults: function(data) {
+                return {
+                    results: data.examen
+                };
+           },
+           cache: true,
+        },
+        minimumInputLength: 2
+    });
+
+    $(document).on("select2:open", () => {
+        document.querySelector(".select2-container--open .select2-search__field").focus()
+    });
+
+    $(document).on('click', '.buscarExamen', function(e){
+        e.preventDefault();
+
+        let examen = $('#examen').val(), empIn = $('#selectClientes').val();
+
+        if([null,''].includes(examen)) {
+            
+            toastr.warning('Debe seleccionar un exámen');
+            return;
+        }
+
+        listadoFacturas(empIn, examen);
+        examen.remove();
+    });
+
+    $(document).on('click', '.reiniciarExamen', function(e){
+        e.preventDefault();
+
+        let empIn = $('#selectClientes').val();
+
+        listadoFacturas(empIn, null);
+
+    });1
   
     //Obtener fechas
     function fechaNow(fechaAformatear, divider, format) {
@@ -504,17 +568,18 @@ $(document).ready(()=>{
             })
     }
 
-    async function listadoFacturas(id){
+    async function listadoFacturas(id, idexamen){
         $('#lstEx').empty();
         preloader('on');
+
         $.get(lstExClientes, {Id: id})
             .done(async function(response){
                 preloader('off');
                 let promises = response.map(async function(r) {
                     if(response && response.length) {
-                        let suc = r.Suc ? r.Suc.toString().padStart(4, '0') : '-', numero = r.Nro ? r.Nro.toString().padStart(8, '0') : '-', moduloResult = await vistaDni(r.Id);
+                        let suc = r.Suc ? r.Suc.toString().padStart(4, '0') : '-', numero = r.Nro ? r.Nro.toString().padStart(8, '0') : '-', moduloResult = await vistaDni(r.Id,idexamen);
                         let contenido = `
-                        <tr class="fondo-gris mb-2">
+                        <tr class="fondo-gris">
                             <td colspan="3"><span class="fw-bolder text-capitalize">fact </span> ${r.Tipo ?? '-'}${suc}-${numero}</td>
                             <td>
                                 <tr>
@@ -522,9 +587,11 @@ $(document).ready(()=>{
                                         <span class="fw-bolder text-capitalize">Observación: </span><span>${r.Obs}</span>
                                     </td>
                                 </tr>
-                            </td>  
-                            ${moduloResult}
-                        </tr>`;
+                            </td> 
+                        </tr>
+                        ${moduloResult}
+                        `;
+                        
                         return contenido;
                     }else{
                         return '<tr class="mb-2"><td>No hay historial de facturas disponible</td></tr>';
@@ -535,22 +602,25 @@ $(document).ready(()=>{
             });
     }
 
-    async function vistaDni(id) {
+    async function vistaDni(id,idexamen) {
         return new Promise((resolve, reject) => {
             preloader('on');
 
-            $.get(listPrecarga, {Id: id})
+            $.get(listPrecarga, {Id: id, IdExamen: idexamen})
                 .done(async function(response){
                     preloader('off');
                     
                     if (response && response.length) {
                         let result = '';
                         for (let r of response) {
-                            //detallesResult = await detalles(r.IdPrestacion, r.IdPago); 
+                            detallesResult = await detalles(r.Documento, r.IdPago); 
                             result += `
-                                <tr class="fondo-grisClaro">
-                                    <td colspan="4" class="fw-bolder"><span class="fw-bolder">${[0,''].includes(r.Documento) ? '' : 'DNI: '}</span> ${[0,''].includes(r.Documento) ? 'Sin precarga' : r.Documento}</td>          
+                            <tr class="mb-1">   
+                                <tr class="fondo-grisClaro mb-2">
+                                    <td colspan="4" class="fw-bolder"><span class="fw-bolder">${[0,''].includes(r.Documento) ? '' : 'DNI Precargado: '}</span> ${[0,''].includes(r.Documento) ? 'Sin precarga' : r.Documento}</td>          
+                                    ${detallesResult}
                                 </tr>
+                            </tr>
                             `;
                         }
                         resolve(result);
@@ -562,21 +632,20 @@ $(document).ready(()=>{
         });
     }
 
-    function detalles(id, idpago) { return id + idpago }
-    /*sync function detalles(id, idpago) {
+    async function detalles(documento, idpago) {
         return new Promise((resolve, reject) => {
             preloader('on');
-            $.get(listExCta, {Id: id})
+            $.get(listExCta, {Id: documento, IdPago: idpago})
                 .done(async function(response){
                     preloader('off');
                     if (response && response.length) {
                         let result =  ``;
                         for (let r of response) {
                             result += `
-                            <tr>    
+                            <tr>  
                                 <td>${r.Cantidad}</td>
                                 <td>${r.NombreExamen}</td>
-                                <td><input type="checkbox" class="form-control"></td>
+                                <td><input type="checkbox" class="form-check-input" value="${r.IdEx}"></td>
                             </tr>
                             `;
                         }
@@ -588,7 +657,7 @@ $(document).ready(()=>{
                 });
         });
         
-    }*/
+    }
 
     function preloader(opcion) {
         $('#preloader').css({
@@ -596,6 +665,7 @@ $(document).ready(()=>{
             visibility: opcion === 'on' ? 'visible' : 'hidden'
         });
     }
+    
 
 
 });
