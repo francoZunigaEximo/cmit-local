@@ -491,30 +491,6 @@ class ExamenesCuentaController extends Controller
         return response()->json($clientes);
         
     }
-      
-    //Listado dentro de Pacientes en Alta de Prestación
-    public function listadoExCta(Request $request)
-    {
-        $clientes = ExamenCuentaIt::join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
-            ->join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
-            ->select(
-                'examenes.Nombre as NombreExamen',
-                'pagosacuenta_it.Id as IdEx',
-                'pagosacuenta.Pagado as Pagado',
-                DB::raw('(SELECT COUNT(*) FROM pagosacuenta_it WHERE IdPago = pagosacuenta.Id AND IdExamen = examenes.Id AND pagosacuenta_it.Obs = '.$request->Id.') as Cantidad')
-            )
-            ->where(function ($query) use ($request) {
-                $query->where('pagosacuenta_it.Obs', $request->Id)
-                      ->orWhereNull('pagosacuenta_it.Obs');
-            })
-            ->whereNot('pagosacuenta_it.IdExamen', 0)
-            ->groupBy('pagosacuenta_it.IdExamen')
-            ->orderBy('pagosacuenta_it.IdPrestacion', 'ASC')
-            ->get();
-        
-        return response()->json($clientes);
-        
-    }
 
     public function excel(Request $request)
     {
@@ -912,7 +888,10 @@ class ExamenesCuentaController extends Controller
      public function lstExClientes(Request $request)
      {
          $clientes = ExamenCuentaIt::join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
-             ->join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
+             ->join('pagosacuenta', function($join) use ($request) {
+                $join->on('pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id');
+                    $join->where('pagosacuenta.IdEmpresa', $request->Id);
+             })
              ->select(
                  'examenes.Nombre as NombreExamen',
                  'pagosacuenta.Tipo as Tipo',
@@ -921,7 +900,7 @@ class ExamenesCuentaController extends Controller
                  'pagosacuenta.Obs as Obs',
                  'pagosacuenta.Id as Id'
              )
-             ->where('pagosacuenta.IdEmpresa', $request->Id)
+             ->where('pagosacuenta_it.IdPrestacion', 0)
              ->groupBy('pagosacuenta.Tipo')
              ->groupBy('pagosacuenta.Suc')
              ->groupBy('pagosacuenta.Nro')
@@ -930,26 +909,59 @@ class ExamenesCuentaController extends Controller
          return response()->json($clientes);
      }
 
-
     //Listado dentro de Pacientes en Alta de Prestación con todos los DNI precargados
     public function listadoPrecarga(Request $request)
     {
 
         $clientes = ExamenCuentaIt::join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
-            ->join('prestaciones', 'pagosacuenta_it.IdPrestacion', '=', 'prestaciones.Id')
-            ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
             ->select(
                 'pagosacuenta_it.Precarga as Documento',
                 'pagosacuenta_it.IdPrestacion as IdPrestacion',
                 'pagosacuenta_it.IdPago as IdPago'
             )
-            ->where('pagosacuenta_it.IdPago', $request->Id)      
+            ->where('pagosacuenta_it.IdPago', $request->Id);
+
+            $clientes->when(!empty($request->IdExamen), function ($query) use ($request) {
+                $query->where('pagosacuenta_it.IdExamen', $request->IdExamen)
+                        ->whereNot('pagosacuenta_it.IdExamen', '<>', $request->IdExamen);
+            });
+            $clientes = $clientes->groupBy('pagosacuenta_it.Precarga')  
             ->orderBy('pagosacuenta_it.Precarga', 'Desc')
             ->get();
 
         return response()->json($clientes);
     }
 
+    //Listado dentro de Pacientes en Alta de Prestación
+    public function listadoExCta(Request $request)
+    {
+        $clientes = ExamenCuentaIt::join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
+            ->join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
+            ->select(
+                'examenes.Nombre as NombreExamen',
+                'examenes.Id as IdTest',
+                'pagosacuenta_it.Id as IdEx',
+                'pagosacuenta.Pagado as Pagado',
+                DB::raw('(SELECT COUNT(*) FROM pagosacuenta_it WHERE IdPago = pagosacuenta.Id AND IdExamen = examenes.Id) as Cantidad')
+            )
+            ->where(function ($query) use ($request) {
+                $query->where('pagosacuenta_it.Precarga', $request->Id)
+                        ->orWhereNull('pagosacuenta_it.Precarga');
+            })
+            ->where('pagosacuenta.Id', $request->IdPago)
+            ->whereNot('pagosacuenta_it.IdExamen', 0);
+
+            /*$clientes->when(!empty($request->IdExamen), function ($query) use ($request) {
+                $query->where('pagosacuenta_it.IdExamen', $request->IdExamen);
+            });*/
+
+            $clientes = $clientes->groupBy('examenes.Nombre')->orderBy('pagosacuenta_it.IdPrestacion', 'ASC')
+            ->get();
+        
+        return response()->json($clientes);
+        
+    }
+    
     private function tituloReporte(?int $id): mixed
     {
         return ExamenCuenta::join('clientes', 'pagosacuenta.IdEmpresa', '=', 'clientes.Id')
