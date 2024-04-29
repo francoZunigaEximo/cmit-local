@@ -37,7 +37,6 @@ $(document).ready(()=>{
 
 
     $('#verPrestacionModa').on('hide.bs.modal', function () {
-        console.log("Modal ocultado");
         $(".ComObsEstado").val("");
         $('.comentarioObsEstado').hide();
     });
@@ -231,13 +230,11 @@ $(document).ready(()=>{
                 $('#prestaMapa').empty();
 
                 $.each(data, function(index, dat) {
-                
-                   let nuevaFecha = fecha(dat.Fecha);
 
                     let contenido = `
                         <tr>
                             <td>${dat.IdPrestacion}</td>
-                            <td>${nuevaFecha}</td>
+                            <td>${fecha(dat.Fecha)}</td>
                             <td>${dat.Apellido} ${dat.Nombre}</td>
                             <td>${dat.NroCEE}</td>
                             <td class="text-center">
@@ -310,25 +307,23 @@ $(document).ready(()=>{
 
                 $.each(examen, function(index, e) {
                     
-                    let arrCompleto = [3,4,5,6], efectuadoOk = arrCompleto.includes(e.CAdj);
-
-                    let arrCerrado = [3,4,5], cerradoOk = arrCerrado.includes(e.CAdj);
+                    let arrCompleto = [3,4,5,6], efectuadoOk = arrCompleto.includes(e.CAdj), arrCerrado = [3,4,5], cerradoOk = arrCerrado.includes(e.CAdj);
                     
                     let efectorCompleto = e.ApellidoEfector + ' ' + e.NombreEfector,
                         informadorCompleto = e.ApellidoInformador + ' ' + e.NombreInformador;
 
                     let contenido = `
                         <tr>
-                            <td>${e.NombreExamen}</td>
-                            <td>${e.NombreProveedor}</td>
+                            <td title="${e.NombreExamen}">${acortadorTexto(e.NombreExamen, 15)}</td>
+                            <td title="${e.NombreProveedor}">${acortadorTexto(e.NombreProveedor,15)}</td>
                             <td>
-                                <span>${(e.NombreEfector === null || e.ApellidoEfector == null ? '-' : efectorCompleto )}</span>
+                                <span>${(e.NombreEfector === null || e.ApellidoEfector == null ? '-' : acortadorTexto(efectorCompleto) )}</span>
                                 <span>${(cerradoOk ? '<span style="display:block" class="custom-badge verde">Completo</span>' : '')}</span>
                             </td>
                             <td><span class="custom-badge pequeno">${arrCerrado.includes(e.CAdj) ? `cerrado`:`abierto`}</span></td>
                             <td><span class="custom-badge pequeno">${e.ExamenAdjunto === 0 ? `No lleva adjuntos` : e.ExamenAdjunto === 1 && e.adjuntados === 'sadjunto' ? `pendiente` : e.ExamenAdjunto === 1 && e.adjuntados === 'adjunto' ? `Adjuntado` : `-`}</span></td>
                             <td>
-                                <span>${e.NombreInformador === null || e.ApellidoInformador == null ? '-' : informadorCompleto }</span>
+                                <span>${e.NombreInformador === null || e.ApellidoInformador == null ? '-' : acortadorTexto(informadorCompleto) }</span>
                                 <span>${(e.CInfo === 3 ? '<span style="display:block" class="custom-badge verde">Completo</span>' : '')}</span>
                             </td>
                             <td><span class="custom-badge pequeno">${e.CInfo === 3 ? `cerrado`: `abierto`}</span></td>
@@ -565,12 +560,10 @@ $(document).ready(()=>{
 
                     $.each(data, function(index, en){
                         
-                        let nuevaFecha = fecha(en.Fecha);;
-
                         let contenido = `
                             <tr>
                                 <td>${en.NroRemito}</td>
-                                <td>${nuevaFecha}</td>
+                                <td>${echa(en.Fecha)}</td>
                                 <td>${en.IdPrestacion} ${en.EmpresaSinEnvio === 1 ? `<i title="La empresa no tiene habilitado los envios de Emails" class="ri-mail-forbid-line rojo"></i>` : ``} ${en.ArtSinEnvio === 1 ? `<i title="La ART no tiene habilitado los envios de Emails" class="ri-mail-forbid-line rojo"></i>` : ``}</td>
                                 <td>${en.ApellidoPaciente} ${en.NombrePaciente}</td>
                                 <td>${en.Documento}</td>
@@ -668,16 +661,15 @@ $(document).ready(()=>{
         window.open(lnkItemsprestaciones.replace('__item__', id), '_blank');
     });
 
-    $(document).on('click', '.cambiarEstado', function(){
+    $(document).on('click', '.cambiarEstado', function(e){
 
+        e.preventDefault();
+        preloader('on');
         let id = $(this).data('id');
         let status = $(this).data('estado');
-        checkEstado(id, status, function(){
 
-            $('#prestaMapa').empty();
-            getPrestaMapas();
-        });
-        
+        checkEstado(id, status);
+        preloader('off');
     });
 
     $(document).on('click', '.comentarioPrivado', function(){
@@ -761,6 +753,13 @@ $(document).ready(()=>{
         $('input[type="checkbox"][name="Id_enviar"]:not(#checkAllEnviar)').prop('checked', this.checked);
     });
 
+    $(document).on('click', '.reiniciarPresMapa', function(e){
+        e.preventDefault();
+        preloader('on');
+        getPrestaMapas();
+        preloader('off');
+    })
+
     function quitarDuplicados(selector) {
         let seleccion = $(selector).val();
         let countSeleccion = $(selector + " option[value='" + seleccion + "']").length;
@@ -793,30 +792,18 @@ $(document).ready(()=>{
 
                 $.each(presta, function(index, d) {
 
-                    let estado;
-                    
-                   if(d.Cerrado === 1 && d.Finalizado === 1){
-                        estado = '<span style="text-align=center" class="custom-badge pequeno">Finalizado</span>';
-                  
-                   } else if(d.Cerrado === 1 && d.Finalizado === 0){
-                        estado = '<span style="text-align=center" class="custom-badge pequeno">Cerrado</span>';
-                   
-                   } else if(d.Cerrado === 0 && d.Finalizado === 0) {
-                        estado = '<span style="text-align=center" class="custom-badge pequeno">Abierto</span>';
-                   }
-                
-                   let nuevaFecha = fecha(d.Fecha);
+                   let estado = (d.Cerrado === 1 && d.Finalizado === 1) ? 'Finalizado' : (d.Cerrado === 1 && d.Finalizado === 0) ? 'Cerrado' : (d.Cerrado === 0 && d.Finalizado === 0) ? 'Abierto' : '-';
 
                     let contenido = `
                         <tr>
                             <td>${d.IdPrestacion}</td>
-                            <td>${nuevaFecha}</td>
+                            <td>${fecha(d.Fecha)}</td>
                             <td>${d.Apellido} ${d.Nombre}</td>
                             <td>${d.NroCEE}</td>
                             <td class="text-center">
                                 <span class="custom-badge ${d.Etapa === 'Completo' ? 'verde': 'rojo'}">${d.Etapa}</span>
                             </td>
-                            <td class="text-center">${estado}</td>
+                            <td class="text-center"><span style="text-align=center" class="custom-badge pequeno">${estado}</span></td>
                             <td class="text-center">
                                 ${d.eEnviado === 1 ? `<span style="text-align=center" class="btn btn-sm iconGeneral"><i class="ri-check-line"></i></span>`: ``}
                             </td>
@@ -964,12 +951,10 @@ $(document).ready(()=>{
 
                 $.each(data, function(index, en){
 
-                    let nuevaFecha = fecha(en.Fecha);
-
                     let contenido = `
                         <tr>
                             <td> ${en.NroRemito}</td>
-                            <td>${nuevaFecha}</td>
+                            <td>${fecha(en.Fecha)}</td>
                             <td>${en.IdPrestacion} ${en.EmpresaSinEnvio === 1 ? `<i title="La empresa no tiene habilitado los envios de Emails" class="ri-mail-forbid-line rojo"></i>` : ``} ${en.ArtSinEnvio === 1 ? `<i title="La ART no tiene habilitado los envios de Emails" class="ri-mail-forbid-line rojo"></i>` : ``}</td>
                             <td>${en.ApellidoPaciente} ${en.NombrePaciente}</td>
                             <td>${en.Documento}</td>
@@ -997,15 +982,15 @@ $(document).ready(()=>{
             })
     }
 
-    function checkEstado(id, who, callback) {
+    function checkEstado(id, who) {
         let btn = $('.cambiarEstado[data-id="' + id + '"]');
         btn.prop('disabled', true);
     
         let arr = { _token: TOKEN, Id: id, estado: who };
 
         $.post(changeEstado, arr)
-            .done(async function(response) {
-                let data = await response.result;
+            .done(function(response) {
+                let data = response.result;
 
                 btn.prop('title', data.Incompleto === 1 ? 'Incompleto' : 'Completo')
                    .removeClass()
@@ -1015,9 +1000,6 @@ $(document).ready(()=>{
                 btn.prop('disabled', false);
             });
 
-        setTimeout(() => {
-            callback();
-        }, 1000);
     }
 
     function listaComentariosPrivados(idmapa, opcionFase, tipo){
@@ -1158,6 +1140,10 @@ $(document).ready(()=>{
             opacity: '0.3',
             visibility: opcion === 'on' ? 'visible' : 'hidden'
         });
+    }
+
+    function acortadorTexto(cadena, nroCaracteres = 10) {
+        return cadena.length <= nroCaracteres ? cadena : cadena.substring(0,nroCaracteres);
     }
 
 });

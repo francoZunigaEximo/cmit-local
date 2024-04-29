@@ -212,7 +212,8 @@
                     <p style="font-size: small"><span class="custom-badge rojo">Incompletas</span> Son todas las prestaciones con algún exámen sin efectuar o informar.</p>
                 </div>
                 <div class="col-sm-3" style="text-align: right;">
-                    <button type="button" class="btn botonGeneral buscarPresMapa">Buscar</button>
+                    <button type="button" class="btn btn-sm botonGeneral reiniciarPresMapa"><i class="ri-refresh-line"></i>&nbsp;Recargar Grilla</button>
+                    <button type="button" class="btn btn-sm botonGeneral buscarPresMapa"><i class=" ri-search-line"></i>&nbsp;Buscar</button>
                 </div>
             </div>
 
