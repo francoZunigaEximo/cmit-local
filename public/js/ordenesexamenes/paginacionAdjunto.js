@@ -30,7 +30,6 @@ $(document).ready(()=>{
         });
 
         $('#listaOrdenesEfectoresAdj').DataTable().clear().destroy();
-        let currentDraw = 1;
 
         new DataTable("#listaOrdenesEfectoresAdj", {
 
@@ -51,20 +50,7 @@ $(document).ready(()=>{
                     d.empresa = $('#empresaAdjunto').val();
                     d.efectores = $('#efectorAdjunto').val();
                     d.art = $('#artAdjunto').val();
-                    d.page = d.start / d.length + 1;
-                },
-                dataSrc: function (response) {
-                    let data = {
-                        draw: currentDraw,
-                        recordsTotal: response.total,
-                        recordsFiltered: response.total,
-                        data: response.data,
-                    };
-    
-                    currentDraw++;
-    
-                    return data.data;
-                },
+                }
             },
             dataType: 'json',
             type: 'POST',
@@ -78,8 +64,7 @@ $(document).ready(()=>{
                 {
                     data: null,
                     render: function(data){
-                        let recorte = (data.Especialidad).substring(0,10) + "...";
-                        return recorte.length >= 10 ? `<span title="${data.Especialidad}">${recorte}</span>` : data.Especialidad;
+                        return `<span title="${data.Especialidad}">${acortadorTexto(data.Especialidad, 15)}</span>`;
                     }
                 },
                 {
@@ -91,18 +76,14 @@ $(document).ready(()=>{
                 {
                     data: null,
                     render: function(data) {
-
-                        let recorte = (data.Empresa).substring(0,10) + "...";
-                        return recorte.length >= 10 ? `<span title="${data.Empresa}">${recorte}</span>` : data.Empresa;
+                        return `<span title="${data.Empresa}">${acortadorTexto(data.Empresa, 7)}</span>`;
                     }
                 },
                 {
                     data: null,
                     render: function(data){
-
-
-                        let NombreCompleto = data.pacNombre + ' ' + data.pacApellido, recorte = (NombreCompleto).substring(0,10) + "...";
-                        return recorte.length >= 10 ? `<span title="${NombreCompleto}">${recorte}</span>` : NombreCompleto;
+                        let NombreCompleto = data.pacNombre + ' ' + data.pacApellido;
+                        return `<span title="${NombreCompleto}">${acortadorTexto(NombreCompleto, 7)}</span>`;
                     }
                 },
                 {
@@ -112,19 +93,14 @@ $(document).ready(()=>{
                 {
                     data: null,
                     render: function(data) {
-                        let recorte = (data.examen_nombre).substring(0,10) + "...";
-                        
-                        return recorte.length >= 10 
-                        ? `<span title="${data.examen_nombre}">${recorte}</span>` 
-                        : data.examen_nombre;
+                        return `<span title="${data.examen_nombre}">${acortadorTexto(data.examen_nombre,)}</span>`;
                     }
                 },
                 {
                     data: null,
                     render: function(data){
                         let NombreProfesional = data.proApellido + " " + data.proNombre; 
-                        let recorte = (NombreProfesional).substring(0, 10) + "...";
-                        return recorte.length >= 10 ? `<span title="${NombreProfesional}">${recorte}</span>` : NombreProfesional;
+                        return `<span title="${NombreProfesional}">${acortadorTexto(NombreProfesional,7)}</span>`;
                     }
                 },
                 {
@@ -139,7 +115,7 @@ $(document).ready(()=>{
                                             ? 'Cerrado'
                                             : 'sin datos';
 
-                        return `<span title="Indicador: ${generarCodigo(data.IdPrestacion, data.IdExamen, data.IdPaciente)}" class="custom-badge pequeno">${mostrar}</span>`;
+                        return `<span class="custom-badge ${mostrar === 'Abierto' ? 'rojo' : mostrar === 'Cerrado' ? 'verde' : 'gris'}">${mostrar}</span>`;
                     }
                 },
                 {
@@ -155,7 +131,7 @@ $(document).ready(()=>{
 
                         let masivo = `<span title="Subir automáticamente el reporte" class="custom-badge iconGeneral"><i class="ri-file-upload-line automaticUpload" data-id="${data.IdItem}" data-forma="${data.examen_nombre === 'Multi Examen' ? 'multi' : 'individual'}"></i></span>`,
                             individual = `<span data-id="${data.IdItem}" data-idprestacion="${data.IdPrestacion}" data-tipo="${data.MultiEfector === 1 ? 'multiefector' : 'efector'}" title="Subir manualmente el reporte" class="custom-badge iconGeneral uploadFile"><i class="ri-folder-line"></i></span><input type="file" class="fileManual" style="display: none;">`,
-                            qr = `<span title="Generar un QR" class="custom-badge iconGeneral mostrarQr" data-prestacion="${data.IdPrestacion}" data-paciente="${data.IdPaciente}" data-examen="${data.Examen}" data-examenid="${data.IdExamen}">
+                            qr = `<span title="Copiar QR del examen" class="custom-badge iconGeneral copiarQr" data-prestacion="${data.IdPrestacion}" data-paciente="${data.IdPaciente}" data-examen="${data.Examen}" data-examenid="${data.IdExamen}">
                                 <i class="ri-qr-code-line"></i>
                             </span>`;
 
@@ -203,8 +179,8 @@ $(document).ready(()=>{
             return (format === '0') ? `${dia}${divider}${mes}${divider}${anio}` : `${anio}${divider}${mes}${divider}${dia}`;
         }
 
-        function generarCodigo(idprest, idex, idpac) {
-            return 'A' + ('000000000' + idprest).slice(-9) + ('00000' + idex).slice(-5) + ('0000000' + idpac).slice(-7) + '.pdf';
+        function acortadorTexto(cadena, nroCaracteres = 10) {
+            return cadena.length <= nroCaracteres ? cadena : cadena.substring(0,nroCaracteres);
         }
 
     });

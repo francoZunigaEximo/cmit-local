@@ -7,7 +7,6 @@ use App\Models\Auditor;
 use App\Models\ItemPrestacion;
 use App\Models\ItemPrestacionInfo;
 use App\Models\Examen;
-use App\Models\ExamenCuentaIt;
 use Illuminate\Http\Request;
 use App\Traits\ObserverItemsPrestaciones;
 use Illuminate\Support\Facades\Storage;
@@ -70,7 +69,7 @@ class ItemPrestacionesController extends Controller
         }
 
         foreach ($examenes as $examen) {
-            $item = ItemPrestacion::find($examen);
+            $item = ItemPrestacion::with('examenes')->find($examen);
 
             if ($item) 
             {   
@@ -81,6 +80,7 @@ class ItemPrestacionesController extends Controller
                 } elseif ($request->Para === 'cerrar' ) {
 
                     $item->CAdj = $lstCerrar[$item->CAdj] ?? $request->CAdj;
+                    $item->examenes->Informe === 1 ? $item->CInfo = 3 : null;
 
                 } elseif ($request->Para === 'cerrarI'){
 
@@ -779,6 +779,7 @@ class ItemPrestacionesController extends Controller
                     'examenes.Nombre as Nombre',
                     'examenes.Id as IdExamen',
                     'examenes.Adjunto as ExaAdj',
+                    'examenes.Informe',
                     'proveedor2.InfAdj as InfAdj',
                     'examenes.NoImprime as ExaNI',
                     'efector.Nombre as NombreE',

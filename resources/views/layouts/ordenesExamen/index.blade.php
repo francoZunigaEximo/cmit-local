@@ -163,20 +163,23 @@
                                                 </div>
                                             </div>
                                             <div class="row mt-2 mb-2 fondo-base">
-                                                <div class="col-sm-12 p-2 text-end">
+                                                <div class="col-sm-3 p-2 text-start">
                                                     <button type="button" class="btn btn-sm botonGeneral Exportar"><i class="ri-file-excel-line"></i>&nbsp;Exportar</button>
-                                                    <button type="button" class="btn btn-sm botonGeneral hoyDias">Hoy</button>
-                                                    <button type="button" class="btn btn-sm botonGeneral treintaDias">30 días</button>
-                                                    <button type="button" class="btn btn-sm botonGeneral sesentaDias">60 días</button>
-                                                    <button type="button" class="btn btn-sm botonGeneral noventaDias">90 días</button>
-                                                    <button type="button" class="btn btn-sm botonGeneral totalDias">Total</button>
-                                                    <button type="button" class="btn btn-sm botonGeneral ausenteDias">Ausente</button>
+                                                </div>
+                                                <div class="col-sm-9 p-2 text-end">
+                                                    Filtros:
+                                                    <button type="button" title="Filtros: efector pendiente - tipo interno - no ausentes" class="btn btn-sm botonGeneral hoyDias"><i class="ri-calendar-2-fill"></i>&nbsp;Hoy</button>
+                                                    <button type="button" title="Filtros: tipo todos - no ausentes - con pendientes" class="btn btn-sm botonGeneral treintaDias"><i class="ri-calendar-2-fill"></i>&nbsp;30 días</button>
+                                                    <button type="button" title="Filtros: tipo todos - no ausentes - con pendientes" class="btn btn-sm botonGeneral sesentaDias"><i class="ri-calendar-2-fill"></i>&nbsp;60 días</button>
+                                                    <button type="button" title="Filtros: no ausentes - con pendientes" class="btn btn-sm botonGeneral noventaDias"><i class="ri-calendar-2-fill"></i>&nbsp;90 días</button>
+                                                    <button type="button" title="Filtros: tipo todos - ausentes todos - con pendientes" class="btn btn-sm botonGeneral totalDias"><i class="ri-calendar-2-fill"></i>&nbsp;Total</button>
+                                                    <button type="button" title="Filtros: tipo todos - con ausentes - con pendientes" class="btn btn-sm botonGeneral ausenteDias"><i class="ri-calendar-2-fill"></i>&nbspAusente</button>
                                                 </div>
                                             </div>
 
                                             <div class="row">
                                                 <div class="col-sm-12" style="text-align: right;">
-                                                    <button type="button" id="resetPres" class="btn botonGeneral">Reiniciar</button>
+                                                    <button type="button" id="resetPres" class="btn botonGeneral"><i class="ri-refresh-line"></i>&nbsp;Reiniciar</button>
                                                     <button type="button" id="buscarPres" class="btn botonGeneral"><i class="ri-zoom-in-line"></i>&nbsp;Buscar</button>
                                                 </div>
                                             </div>
@@ -198,11 +201,10 @@
                                                 <th class="sort">Estado</th>
                                                 <th class="sort">Examen</th>
                                                 <th class="sort">Efector</th>
-                                                <th class="sort">Est Efector</th>
-                                                <th class="sort">TipoAdjunto</th>
+                                                <th class="sort">E_F</th>
+                                                <th class="sort">Tipo Adj</th>
                                                 <th class="sort">Informador</th>
-                                                <th class="sort">Est Inf</th>
-                                                <th class="sort">Fecha Vta</th>
+                                                <th class="sort">E_I</th>
                                                 <th class="sort">Acción</th>
                                             </tr>
                                         </thead>

@@ -563,12 +563,14 @@ $(document).ready(()=>{
                                             </td><!-- este botón marca o desmarca el campo devolucion - debe ser rojo si es que el valor del campo es 1 -->
         
                                             <td class="date text-center" title="${examen.ApellidoE} ${examen.NombreE}">${examen.ApellidoE}
-                                                <span class="badge badge-soft-${([0,1,2].includes(examen.CAdj) ? 'danger': ([3,4,5].includes(examen.CAdj) ? 'success' : ''))}">${([0,1,2].includes(examen.CAdj) ? 'Abierto': ([3,4,5].includes(examen.CAdj) ? 'Cerrado' : ''))}</span>
+                                                <span class="badge badge-soft-${([0,1,2].includes(examen.CAdj) ? 'danger': ([3,4,5].includes(examen.CAdj) ? 'success' : ''))}">
+                                                    ${([0,1,2].includes(examen.CAdj) ? 'Abierto': ([3,4,5].includes(examen.CAdj) ? 'Cerrado' : ''))}
+                                                </span>
                                                 ${examen.ExaAdj === 1 ? `<i class="ri-attachment-line ${[2,5].includes(examen.CAdj) ? 'verde' : [1,4].includes(examen.CAdj) ? 'gris' : ''}"></i>`: ``}    
                                             </td>
                                             <td class="date text-center" title="${examen.ApellidoI} ${examen.NombreI}">${examen.ApellidoI}
-                                                <span class="badge badge-soft-${(examen.CInfo === 3 ? 'success' : ([0,1,2].includes(examen.CInfo)) ? 'danger' : '')}">${(examen.CInfo === 3 ? 'Cerrado' : (examen.CInfo == 2 ? 'Borrador' : ([0,1].includes(examen.CInfo) ? 'Pendiente': '')))}</span>
-                                                ${examen.InfAdj === 1 ? `<i class="ri-attachment-line ${[2,3].includes(examen.CInfo) ? 'verde' : [0,1].includes(examen.CInfo) ? 'gris' : ''}"></i>`: ``}   
+                                                <span class="badge badge-soft-${(examen.CInfo === 3 ? 'success' : ([0,1,2].includes(examen.CInfo)) ? 'danger' : '')}">${(examen.CInfo === 3 ? 'Cerrado' : (examen.CInfo == 2 ? 'Borrador' : ([0,1].includes(examen.CInfo) && examen.Informe === 0 ? 'Pendiente': '')))}</span>
+                                                ${examen.Informe === 0 ? `<i class="ri-attachment-line ${[2,3].includes(examen.CInfo) ? 'verde' : [0,1].includes(examen.CInfo) ? 'gris' : ''}"></i>`: ``}   
                                             </td>
                                     <!-- muestra el apellido + nombre del informador y debajo el estado (campo CInfo - Cerrado = 3, Borrador = 2 o pendiente = 0 y 1)   -->
                                     <td class="phone"><span class="${examen.Facturado === 1 ? 'badge badge-soft-success' : 'custom-badge gris'}"><i class="ri-check-line"></i></span></td> <!-- > campo Facturado gris si el campo tiene valor 0 verde si el campo tiene valor 1</!-->

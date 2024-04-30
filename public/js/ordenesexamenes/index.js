@@ -485,31 +485,13 @@ $(document).ready(function(){
     $(document).on('click', '.copiarQr', function(e) {
 
         e.preventDefault();
-        let copiarQr = $("#qr").text();
+        let prestacion = $(this).data('prestacion'), paciente = $(this).data('paciente'), examen = $(this).data('examen'), idexamen = $(this).data('examenid');
+        let copiarQr = crearQR("A", prestacion, idexamen, paciente);
         navigator.clipboard.writeText(copiarQr)
           .then(() => alert("Se ha copiado el siguiente QR: " + copiarQr))
           .catch(err => console.error("Error al copiar al portapapeles: ", err));
     });
 
-    let temporizador;
-    $(document).on('click', '.mostrarQr', function(e){
-
-        $('#qrExamen').hide();
-
-        let prestacion = $(this).data('prestacion'), paciente = $(this).data('paciente'), examen = $(this).data('examen'), idexamen = $(this).data('examenid');
-        let codigoqr = crearQR("A", prestacion, idexamen, paciente);
-
-        infoQr(prestacion, codigoqr, examen);
-
-        if (temporizador) {
-            clearTimeout(temporizador);
-        }
-    
-        temporizador = setTimeout(() => {
-            $('#qrExamen').hide();
-        }, 10000);
-        
-    });
 
     $(document).on('click', '.uploadFile', function(){
         let id = $(this).data('id'), idprestacion = $(this).data('idprestacion'), tipo = $(this).data('tipo');
