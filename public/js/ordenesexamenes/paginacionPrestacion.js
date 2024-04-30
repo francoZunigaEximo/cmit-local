@@ -5,11 +5,14 @@ function obtenerFormato(date) {
 $(document).ready(()=>{
 
     //Botón de busqueda de Mapas
-    $(document).on('click', '#buscarPres, .sesentaDias, .noventaDias, .totalDias, .ausenteDias, .hoyDias, .treintaDias', function() {
+    $(document).on('click', '#buscarPres, .sesentaDias, .noventaDias, .totalDias, .ausenteDias, .hoyDias, .treintaDias', function() { 
 
-        let fechaHasta = $(this).hasClass('sesentaDias') || $(this).hasClass('noventaDias') || $(this).hasClass('totalDias') || $(this).hasClass('ausenteDias') || $(this).hasClass('hoyDias') || $(this).hasClass('treintaDias')
+        let hoy = new Date();
+        let fechaHasta = $(this).hasClass('hoyDias')
             ? new Date() 
-            : $('#fechaHastaPres').val(); 
+            : $(this).hasClass('sesentaDias') || $(this).hasClass('noventaDias') || $(this).hasClass('totalDias') || $(this).hasClass('ausenteDias') || $(this).hasClass('treintaDias')
+                ? new Date(hoy.getTime() - 2 * 24 * 60 * 60 * 1000) 
+                : $('#fechaHastaPres').val(); 
         
         let fechaDesde = $(this).hasClass('sesentaDias') || $(this).hasClass('noventaDias') || $(this).hasClass('totalDias') || $(this).hasClass('ausenteDias') || $(this).hasClass('hoyDias') || $(this).hasClass('treintaDias')
             ? new Date(fechaHasta) 
@@ -63,7 +66,7 @@ $(document).ready(()=>{
             ordering: false,
             processing: true,
             lengthChange: false,
-            pageLength: 100,
+            pageLength: 500,
             deferRender: true,
             responsive: true,
             serverSide: true,
@@ -95,14 +98,13 @@ $(document).ready(()=>{
                     data: null,
                     render: function(data) {
 
-                        let recorte = (data.Especialidad).substring(0,5) + "...";
-                        return recorte.length >= 5 ? `<div id="listado" data-id="${data.IdItem}"><span title="${data.Especialidad}">${recorte}</span></div>` : `<div id="listado" data-id="${data.IdItem}">${data.Especialidad}</div>`;
+                        return `<div id="listado" data-id="${data.IdItem}"><span title="${data.Especialidad}">${acortadorTexto(data.Especialidad, 11)}</span></div>`;
                     }
                 },
                 {//2
                     data: null,
                     render: function(data) {
-                        return `<div class="text-center"><span class="custom-badge generalNegro">${fechaNow(data.Fecha,'/',0)}</span></div>`;
+                        return `<div class="text-center">${fechaNow(data.Fecha,'/',0)}</div>`;
                     }
                 },
                 {//3
@@ -115,99 +117,92 @@ $(document).ready(()=>{
                     data: null,
                     render: function(data) {
 
-                        let recorte = (data.Empresa).substring(0,5) + "...";
-                        return recorte.length >= 5 ? `<span title="${data.Empresa}">${recorte}</span>` : data.Empresa;
+                        return `<span title="${data.Empresa}">${acortadorTexto(data.Empresa, 7)}</span>`;
                     }
                 },
                 {//5
                     data: null,
                     render: function(data){
                         let NombreCompleto = data.NombrePaciente + ' ' + data.ApellidoPaciente;
-                        let recorte = (NombreCompleto).substring(0,5) + "...";
-                        return recorte.length >= 5 ? `<span title="${NombreCompleto}">${recorte}</span>` : NombreCompleto;
+                        return `<span title="${NombreCompleto}">${acortadorTexto(NombreCompleto, 9)}</span>`;
                     }
                 },
                 {//6
                     data: null,
                     render: function(data){
-                        return data.estado === undefined 
-                            ? (data.PresCerrado === 0 && data.PresFinalizado === 0 && data.PresEntregado === 0 && data.PresEnviado === 0
-                                ? '<div class="text-center"><span class="custom-badge generalNegro">Abierto</span></div>'
-                                : (data.PresCerrado === 1 && data.PresFinalizado === 0 && data.PresEntregado === 0 && data.PresEnviado === 0
-                                    ? '<div class="text-center"><span class="custom-badge generalNegro">Cerrado</span></div>'
-                                    : (data.PresCerrado === 1 && data.PresFinalizado === 1 && data.PresEntregado === 0 && data.PresEnviado === 0
-                                        ? '<div class="text-center"><span class="custom-badge generalNegro">Finalizado</span></div>'
-                                        : (data.PresCerrado === 1 && data.PresFinalizado === 1 && data.PresEntregado === 1 && data.PresEnviado === 0
-                                            ? '<div class="text-center"><span class="custom-badge generalNegro">Entregado</span></div>'
-                                            : (data.PresCerrado === 1 && data.PresEnviado === 1
-                                                ? '<div class="text-center"><span class="custom-badge generalNegro">eEnviado</span></div>'
-                                                : '-'))))) 
-                            : `<div class="text-center"><span class="custom-badge generalNegro ">${data.estado}</span></div>`;    
+                        return data.estado !== undefined 
+                            ? data.estado === 'Abierto'
+                                ? '<div class="text-center"><span class="custom-badge rojo">Abierto</span></div>'
+                                : data.estado === 'Cerrado'
+                                    ? '<div class="text-center"><span class="custom-badge verde">Cerrado</span></div>'
+                                    : data.estado === 'Finalizado'
+                                        ? '<div class="text-center"><span class="custom-badge verde">Finalizado</span></div>'
+                                        : data.estado === 'Entregado'
+                                            ? '<div class="text-center"><span class="custom-badge verde">Entregado</span></div>'
+                                            : data.estado === 'eEnviado'
+                                                ? '<div class="text-center"><span class="custom-badge verde">eEnviado</span></div>'
+                                                : '-'
+                            : `<div class="text-center"><span class="custom-badge gris">${data.estado}</span></div>`;    
                     }
                 },
                 {//7
                     data: null,
                     render: function(data) {
-                        let recorte = (data.Examen).substring(0,5) + "...";
-                        return recorte.length >= 5 ? `<span title="${data.Examen}">${recorte}</span>` : data.Examen;
+                        return `<span title="${data.Examen}">${acortadorTexto(data.Examen, 7)}</span>`;
                     }
                 },
                 {//8
                     data: null,
                     render: function(data){
                         let NombreCompleto = data.NombreProfesional + ' ' + data.ApellidoProfesional;
-                        let recorte = (NombreCompleto).substring(0,5) + "...";
-                        return recorte.length >= 5 ? `<span title="${NombreCompleto}">${recorte}</span>` : NombreCompleto;
+                        return `<span title="${NombreCompleto}">${acortadorTexto(NombreCompleto, 6)}</span>`
                     }
                 },
                 {//9
                     data: null,
                     render: function(data){
-                        return `<div class="text-center"><span class="custom-badge generalNegro">
-                        ${data.EstadoEfector === undefined 
-                            ? ([1,4].includes(data.Efector) 
-                                ? 'pendiente'
-                                : ([3,4,5].includes(data.Efector) 
-                                    ? 'cerrado'
-                                    : ' - ')) 
-                            : data.EstadoEfector}
-                        </span></div>`;
+                        return `<div class="text-center">
+                        ${data.EstadoEfector !== undefined 
+                            ? data.EstadoEfector === 'Pendiente'
+                                ? '<span class="custom-badge rojo">Pendiente</span>'
+                                : data.EstadoEfector === 'Cerrado'
+                                    ? '<span class="custom-badge verde">Cerrado</span>'
+                                    : ' - '
+                            : '<span class="custom-badge gris">' + data.EstadoEfector + '</span>'}
+                        </div>`;
                     }
                 },
                 {//10
                     data: null,
                     render: function(data){
-                        return `<div class="text-center"><span class="custom-badge generalNegro">${data.NoImprime === 1 ? 'ADJ_D' : 'ADJ_F'}</span></div>`;
+                        return `<div class="text-center">${data.NoImprime === 1 ? 'ADJ_D' : 'ADJ_F'}</div>`;
                     }
                 },
                 {//11
                     data: null,
                     render: function(data){
                         let NombreCompleto = data.NombreProfesional2 + ' ' + data.ApellidoProfesional2;
-                        let recorte = (NombreCompleto).substring(0,10) + "...";
-                        return recorte.length >= 10 ? `<span title="${NombreCompleto}">${recorte}</span>` : NombreCompleto;
+                        return `<span title="${NombreCompleto}">${acortadorTexto(NombreCompleto)}</span>`;
                     }
                 },
                 {//12
                     data: null,
                     render: function(data) {
 
-                        return `<div class="text-center"><span class="custom-badge generalNegro">
-                        ${data.EstadoInformador === undefined 
-                            ? ([0,1].includes(data.Informador) 
-                                ? 'Pendiente'
-                                : (data.Informador === 2 
-                                    ? 'borrador'
-                                    : ([0,1].includes(data.Informador)
-                                        ? 'pend y borrador'
-                                        : (data.Informador === 3
-                                            ? 'Cerrado'
-                                            : '-')))) 
+                        return `<div class="text-center">
+                        ${data.EstadoInformador !== undefined 
+                            ? data.Informador === 'Pendiente' 
+                                ? '<span class="custom-badge rojo">Pendiente</span>'
+                                : data.Informador === 'Borrador' 
+                                    ? '<span class="custom-badge rojo">Borrador</span>'
+                                    : data.Informador === "Cerrado"
+                                        ? '<span class="custom-badge verde">Cerrado</span>'
+                                        : '<span class="custom-badge gris">-</span>'
                             : data.EstadoInformador}
-                        </span></div>`;
+                        </div>`;
                     }
                 },
-                {//13
+                /*{//13
                     data: null,
                     render: function(data) {
                         let fecha = new Date(data.Fecha + 'T00:00'); 
@@ -219,7 +214,7 @@ $(document).ready(()=>{
                 
                         return `<span class="custom-badge generalNegro">${dia}/${mes}/${ano}</span>`;
                     }
-                },          
+                },  */        
                 {//13
                     data: null,
                     render: function(data) {
@@ -271,6 +266,10 @@ $(document).ready(()=>{
             }
         
             return (format === '0') ? `${dia}${divider}${mes}${divider}${anio}` : `${anio}${divider}${mes}${divider}${dia}`;
+        }
+
+        function acortadorTexto(cadena, nroCaracteres = 10) {
+            return cadena.length <= nroCaracteres ? cadena : cadena.substring(0,nroCaracteres);
         }
 
     });

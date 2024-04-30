@@ -111,16 +111,14 @@ $(document).ready(()=>{
                     data: null,
                     render: function(data) {
 
-                        let recorte = data.Empresa === undefined ? '' : (data.Empresa).substring(0,20) + "...";
-                        return recorte.length >= 20 ? `<span title="${data.Empresa}">${recorte}</span>` : data.Empresa;
+                        return `<span title="${data.Empresa}">${acortadorTexto(data.Empresa, 7)}</span>`;
                     }
                 },
                 {
                     data: null,
                     render: function(data){
                         let NombreCompleto = data.pacNombre + ' ' + data.pacApellido;
-                        let recorte = NombreCompleto === undefined ? '' : (NombreCompleto).substring(0,15) + "...";
-                        return recorte.length >= 15 ? `<span title="${NombreCompleto}">${recorte}</span>` : NombreCompleto;
+                        return `<span title="${NombreCompleto}">${acortadorTexto(NombreCompleto)}</span>`;
                     }
                 },
                 {
@@ -130,8 +128,7 @@ $(document).ready(()=>{
                 {
                     data: null,
                     render: function(data) {
-                        let recorte = data.Examen === undefined ? '' : (data.Examen).substring(0,20) + "...";
-                        return recorte.length >= 20 ? `<span title="${data.Examen}">${recorte}</span>` : data.Examen;
+                        return `<span title="${data.Examen}">${acortadorTexto(data.Examen, 20)}</span>`;
                     }
                 },
                 {
@@ -151,10 +148,10 @@ $(document).ready(()=>{
                                     ? 'Cerrado'
                                     : data.IdProfesional != 0
                                         ? 'Asignado'
-                                        : ''
+                                        : '-'
                             : estados[estado];
                         
-                        return `<span class="custom-badge pequeno">${estadoCheck}</span>`;
+                        return `<span class="custom-badge ${estadoCheck === 'Abierto' ? 'rojo' : estadoCheck === 'Cerrado' ? 'verde' : estadoCheck === 'Asignado' ? 'verde' : 'gris'}">${estadoCheck}</span>`;
                     }
                 },
                 {
@@ -213,6 +210,10 @@ $(document).ready(()=>{
             }
         
             return (format === '0') ? `${dia}${divider}${mes}${divider}${anio}` : `${anio}${divider}${mes}${divider}${dia}`;
+        }
+
+        function acortadorTexto(cadena, nroCaracteres = 10) {
+            return cadena.length <= nroCaracteres ? cadena : cadena.substring(0,nroCaracteres);
         }
 
     });
