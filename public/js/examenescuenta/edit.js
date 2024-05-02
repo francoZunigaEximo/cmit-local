@@ -209,13 +209,15 @@ $(document).ready(function(){
                 preloader('off');                
                 let dniAnterior = '';
                 $.each(response, function(index, r){
+                    
+                    let nombreCompleto = r.ApellidoPaciente + ' ' + r.NombrePaciente;
                     let contenido = `
                         <tr>
                             <td><span class="text-center"><input type="checkbox" name="Id" value="${r.IdEx}"></span></td>
                             <td>${r.Precarga === '' ? '-' : r.Precarga}</td>
-                            <td>${r.Examen}</td>
+                            <td title="${r.Examen}">${acortadorTexto(r.Examen, 10)}</td>
                             <td>${r.Prestacion}</td>
-                            <td>${r.ApellidoPaciente} ${r.NombrePaciente}</td>
+                            <td title="${nombreCompleto}">${acortadorTexto(nombreCompleto)}</td>
                             <td>
                                 <button data-id="${r.IdEx}" type="button" class="btn iconGeneral editarDNI" title="Agregar/Editar DNI" data-bs-toggle="modal" data-bs-target="#editarDNI">
                                     <i class="ri-edit-line"></i>
@@ -432,6 +434,9 @@ $(document).ready(function(){
         }, 100);
     }
 
+    function acortadorTexto(cadena, nroCaracteres = 10) {
+        return cadena.length <= nroCaracteres ? cadena : cadena.substring(0,nroCaracteres);
+    }
 
 
 });

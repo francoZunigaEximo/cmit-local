@@ -925,7 +925,8 @@ class ExamenesCuentaController extends Controller
                 $query->where('pagosacuenta_it.IdExamen', $request->IdExamen)
                         ->whereNot('pagosacuenta_it.IdExamen', '<>', $request->IdExamen);
             });
-            $clientes = $clientes->groupBy('pagosacuenta_it.Precarga')  
+            $clientes = $clientes->where('pagosacuenta_it.IdPrestacion', 0)
+            ->groupBy('pagosacuenta_it.Precarga')  
             ->orderBy('pagosacuenta_it.Precarga', 'Desc')
             ->get();
 
@@ -948,6 +949,7 @@ class ExamenesCuentaController extends Controller
                 $query->where('pagosacuenta_it.Precarga', $request->Id)
                         ->orWhereNull('pagosacuenta_it.Precarga');
             })
+            ->where('pagosacuenta_it.IdPrestacion', 0)
             ->where('pagosacuenta.Id', $request->IdPago)
             ->whereNot('pagosacuenta_it.IdExamen', 0);
 

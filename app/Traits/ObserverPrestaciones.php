@@ -2,7 +2,9 @@
 
 namespace App\Traits;
 
+use App\Models\ExamenCuentaIt;
 use App\Models\Fichalaboral;
+use App\Models\ItemPrestacion;
 use App\Models\PrestacionAtributo;
 use App\Models\PrestacionComentario;
 use App\Models\Mapa;
@@ -71,6 +73,35 @@ trait ObserverPrestaciones
         }
     }
 
-    
+    public function registrarExamenCta($array, $id)
+    {
+        $examenesId = [];
+
+        foreach($array as $examen){
+            $item = ExamenCuentaIt::find($examen);
+
+            if($item)
+            {
+                $item->IdPrestacion = $id;
+                array_push($examenesId, $item->IdExamen);
+                $item->save();    
+            }
+        }
+        
+        return $examenesId;
+    }
+
+    public function registrarExamenes($array, $id)
+    {
+        foreach($array as $examen){
+           
+            ItemPrestacion::create([
+                'Id' => ItemPrestacion::max('Id') + 1,
+                'IdPrestacion' => $id,
+                'IdExamen' => intval($examen),
+                'Fecha' => now()->format('Y-m-d'),       
+            ]);
+        }
+    }
 
 }

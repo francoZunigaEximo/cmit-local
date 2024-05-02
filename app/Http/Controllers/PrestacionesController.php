@@ -394,7 +394,14 @@ class PrestacionesController extends Controller
         $empresa = ($request->tipoPrestacion === 'ART' ? $request->IdART : $request->IdEmpresa);
 
         $request->mapas && $this->updateMapeados($request->mapas);
-        
+
+        if (!in_array($request->examenCuenta, [0, null, ''])) {
+            $examenes = $this->registrarExamenCta($request->examenCuenta, $nuevoId);
+        } 
+    
+        if (is_array($examenes) && !in_array($examenes, [0, null, ''])) {
+            $this->registrarExamenes($examenes, $nuevoId);
+        }
 
         if($request->tipo && $request->sucursal && $request->nroFactura && $nuevoId)
         {

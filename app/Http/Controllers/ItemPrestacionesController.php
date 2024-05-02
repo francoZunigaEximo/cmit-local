@@ -891,6 +891,31 @@ class ItemPrestacionesController extends Controller
         return response()->json($items);
     }
 
+    public function preExamenes(Request $request): mixed
+    {
+        $examenes = $request->Id;
+
+        if (!is_array($examenes)) {
+            $examenes = [$examenes];
+        }
+
+        $listado = [];
+
+        foreach ($examenes as $examen) {
+            $item = ExamenCuentaIt::join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')->join('proveedores', 'examenes.IdProveedor', '=', 'proveedores.Id')
+                ->select(
+                    'examenes.Nombre as NombreExamen',
+                    'proveedores.Nombre as Especialidad',
+                    'examenes.DiasVencimiento as diasVencer',
+                    'pagosacuenta_it.Id as IdEx'
+                )
+                ->where('pagosacuenta_it.Id', $examen)->first();
+                array_push($listado, $item);
+        }
+
+        return response()->json($listado);
+    }
+
     private function generarCodigo(int $idprest, int $idex, int $idpac)
     {
         return 'A'.str_pad($idprest, 9, "0", STR_PAD_LEFT).str_pad($idex, 5, "0", STR_PAD_LEFT).str_pad($idpac, 7, "0", STR_PAD_LEFT).".pdf";
