@@ -6,13 +6,14 @@ use App\Models\ArchivoInformador;
 use App\Models\Auditor;
 use App\Models\ItemPrestacion;
 use App\Models\ItemPrestacionInfo;
-use App\Models\Examen;
 use Illuminate\Http\Request;
 use App\Traits\ObserverItemsPrestaciones;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Examen;
+use App\Models\ExamenCuentaIt;
 
 class ItemPrestacionesController extends Controller
 {
