@@ -754,11 +754,19 @@
 
                             <div class="row mb-2">
                                 <div class="col-sm-12 text-center">
-                                    <button type="button" class="btn btn-sm botonGeneral">Cargar</button>
+                                    <button type="button" class="btn btn-sm botonGeneral precargaExamenes"><i class="ri-arrow-up-circle-line"></i>&nbsp;Cargar</button>
                                 </div>
                             </div>
 
-                            <div class="row auto-mx mb-3">
+                            <hr class="mt-1 mb-1">
+
+                            <div class="row mx-auto">
+                                <div class="col-sm-7 text-end mt-2 p-2 mx-auto">
+                                    <button type="button" class="btn btn-sm botonGeneral deleteMasivo"><i class="ri-delete-bin-6-line"></i>&nbsp;Eliminar</button>
+                                </div>
+                            </div>
+
+                            <div class="row mx-auto mb-3">
                                 <div class="table-responsive table-card mt-3 mb-1 mx-auto col-sm-7">
                                     <table id="listadoSaldos" class="display table table-bordered">
                                         <thead class="table-light">
@@ -766,15 +774,21 @@
                                                 <th class="sort">Examen</th>
                                                 <th>Especialidad</th>
                                                 <th>Dias a Vencer</th>
+                                                <th><input type="checkbox" id="checkAllEx" name="Id_exa"></th>
                                                 <th>Acciones</th>
-                                                <th></th>
                                             </tr>
                                         </thead>
-                                        <tbody class="list form-check-all" id="lstSaldos">
+                                        <tbody class="list form-check-all" id="listEdicion">
                             
                                         </tbody>
                                     </table>
                             
+                                </div>
+                            </div>
+
+                            <div class="row mb-2">
+                                <div class="col-sm-12 text-center">
+                                    <button type="button" class="btn btn-sm botonGeneral cargarExPrestacion"><i class="ri-save-line"></i>&nbsp;Guardar</button>
                                 </div>
                             </div>
 
@@ -814,6 +828,7 @@ const listPrecarga = "{{ route('listPrecarga') }}";
 const listExCta = "{{ route('listExCta') }}";
 const lstExClientes = "{{ route('lstExClientes') }}";
 const searchExamen = "{{ route('searchExamen') }}";
+const preExamenes = "{{ route('preExamenes') }}";
 
 const getMapas = "{{ route('getMapas') }}";
 

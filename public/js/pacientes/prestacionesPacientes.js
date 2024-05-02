@@ -44,8 +44,27 @@ $(document).ready(()=>{
     });
     
     //Guardamos la prestación
-    $('#guardarPrestacion').click(function(){
-    
+    $(document).on('click', '.cargarExPrestacion, #guardarPrestacion', function(e){
+        e.preventDefault();
+
+        // Agregamos los eamenes a cuenta
+        if ($(this).hasClass('cargarExPrestacion')) {
+
+            var ids = [];
+
+            $('#listEdicion input[type="checkbox"]').each(function(){
+                var id = $(this).data('id'); 
+                ids.push(id);
+            });
+
+            if(ids.length === 0) {
+                toastr.warning("Debe seleccionar un examen para registrar la prestación");
+                return;
+            }
+
+        }
+
+        
         let paciente = ID,
             fecha = $('#Fecha').val(),
             tipoPrestacion = $('#tipoPrestacionPres').val(),
@@ -125,10 +144,11 @@ $(document).ready(()=>{
                         financiador: financiador,
                         IdART: clienteArt.Id ?? 0,
                         IdEmpresa: cliente.Id ?? 0,
+                        examenCuenta: ids,
                         _token: TOKEN
                     },
                     success: function(response){
-
+                        
                         let nuevoId = response.nuevoId;
                         toastr.success('Se ha generado la prestación del paciente. Se redireccionará en 3 segundos a edición de prestaciones.', '¡Alta exitosa!');
                         $('#Pago, #SPago, #Observaciones, #NumeroFacturaVta, #Autorizado').val("");
@@ -303,8 +323,92 @@ $(document).ready(()=>{
 
         listadoFacturas(empIn, null);
 
-    });1
+    });
+
+    $(document).on('click', '.precargaExamenes', function(e){
+        e.preventDefault();
+
+        let ids = [], checkAll =$('#checkAllEx').prop('checked');
+
+        $('#lstEx input[type="checkbox"]:checked').each(function(){
+            ids.push($(this).val());
+        });
+
+        if(ids.length === 0 && checkAll === false) {
+            toastr.warning("Debe seleccionar un examen para añadirlo a la prestación");
+            return;
+        }
+
+        cargaPreExamenes(ids);
+        $('#lstEx input[type="checkbox"]:checked').prop('checked', false);
+    });
+
+    $(document).on('click', '.deleteEx', function(e){
+        e.preventDefault();
+        $(this).closest('tr').remove();
+        
+    });
+
+    $(document).on('click', '.deleteMasivo', function(e){
+        e.preventDefault();
+    
+        let ids = $('#listEdicion input[name="Id_exa"]:checked'), checkAll = $('#checkAllEx').prop('checked');
+    
+        if(ids.length === 0 && checkAll === false) {
+            toastr.warning("Debe seleccionar un exámen para sacarlo del listado");
+            return;
+        }
+    
+        ids.each(function() {
+            $(this).closest('tr').remove();
+        });
+
+        toastr.success("Se elimino todo correctamente");
+    });
+    
+
+    $('#checkAllEx').on('click', function() {
+        $('input[type="checkbox"][name="Id_exa"]:not(#checkAllEx)').prop('checked', this.checked);
+    });
   
+
+    function cargaPreExamenes(valor) {
+        preloader('on');
+        $.get(preExamenes, {Id: valor})
+            .done(function(response){
+                $.each(response, function(index, r){
+
+                    var existe = false;
+                    $('#listEdicion tr').each(function() {
+                        var nombreExamen = $(this).find('td:first').text();
+                        if (nombreExamen === r.NombreExamen) {
+                            preloader('off');
+                            existe = true;
+                            toastr.warning("No pueden haber dos examenes iguales en una prestación")
+                            return false; 
+                        }
+
+                    });
+    
+                    if (!existe) {
+                        let contenido = `
+                            <tr>
+                                <td>${r.NombreExamen}</td>
+                                <td>${r.Especialidad}</td>
+                                <td>${r.diasVencer}</td>
+                                <td><input type="checkbox" name="Id_exa" data-id="${r.IdEx}"></td>
+                                <td>
+                                    <button type="button" class="btn iconGeneral deleteEx"><i class="ri-delete-bin-2-line"></i></button>
+                                </td>
+                            </tr>
+                        `;
+                        $('#listEdicion').append(contenido);
+                        preloader('off');
+                    }
+                });
+            })
+    }
+
     //Obtener fechas
     function fechaNow(fechaAformatear, divider, format) {
         let dia, mes, anio; 
