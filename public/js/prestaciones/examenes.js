@@ -568,9 +568,9 @@ $(document).ready(()=>{
                                                 </span>
                                                 ${examen.ExaAdj === 1 ? `<i class="ri-attachment-line ${[2,5].includes(examen.CAdj) ? 'verde' : [1,4].includes(examen.CAdj) ? 'gris' : ''}"></i>`: ``}    
                                             </td>
-                                            <td class="date text-center" title="${examen.ApellidoI} ${examen.NombreI}">${examen.ApellidoI}
-                                                <span class="badge badge-soft-${(examen.CInfo === 3 ? 'success' : ([0,1,2].includes(examen.CInfo)) ? 'danger' : '')}">${(examen.CInfo === 3 ? 'Cerrado' : (examen.CInfo == 2 ? 'Borrador' : ([0,1].includes(examen.CInfo) && examen.Informe === 0 ? 'Pendiente': '')))}</span>
-                                                ${examen.Informe === 0 ? `<i class="ri-attachment-line ${[2,3].includes(examen.CInfo) ? 'verde' : [0,1].includes(examen.CInfo) ? 'gris' : ''}"></i>`: ``}   
+                                            <td class="date text-center" title="${examen.Informe === 0 && examen.ApellidoI} ${examen.Informe === 0 ? examen.NombreI : ''}">${examen.Informe === 0 ? examen.ApellidoI : ''}
+                                                <span class="badge badge-soft-${(examen.Informe === 1 ? 'dark' :(examen.Informe === 0 && examen.CInfo === 3 ? 'success' : ([0,1,2].includes(examen.CInfo)) ? 'danger' : ''))}">${(examen.Informe === 1 ? 'Sin informador' : (examen.Informe === 0 && examen.CInfo === 3 ? 'Cerrado' : (examen.CInfo == 2 ? 'Borrador' : ([0,1].includes(examen.CInfo) ? 'Pendiente': ''))))}</span>
+                                                ${examen.Informe === 0 && examen.InfAdj === 1 ? `<i class="ri-attachment-line ${[2,3].includes(examen.CInfo) ? 'verde' : [1].includes(examen.CInfo) ? 'gris' : ''}"></i>`: ``}   
                                             </td>
                                     <!-- muestra el apellido + nombre del informador y debajo el estado (campo CInfo - Cerrado = 3, Borrador = 2 o pendiente = 0 y 1)   -->
                                     <td class="phone"><span class="${examen.Facturado === 1 ? 'badge badge-soft-success' : 'custom-badge gris'}"><i class="ri-check-line"></i></span></td> <!-- > campo Facturado gris si el campo tiene valor 0 verde si el campo tiene valor 1</!-->

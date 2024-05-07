@@ -130,46 +130,64 @@
                 <div class="col-md-4">
                     <div class="input-group input-group-sm mb-2">
                         <span class="input-group-text">Informador</span>
-                        <select name="informadores" id="informadores" class="form-control">
-                            <option value="{{ $itemsprestacione->profesionales2->Id ?? '' }}" selected>{{ $itemsprestacione->profesionales2->Apellido ?? '' }} {{ $itemsprestacione->profesionales2->Nombre ?? '' }}</option>
-                        </select>
+                            @if($itemsprestacione->examenes->Informe === 1)
+
+                                <input type="text" class="form-control" value="Sin informador requerido" @disabled(true)>
+
+                            @else
+                                <select name="informadores" id="informadores" class="form-control">
+                                    <option value="{{ $itemsprestacione->profesionales2->Id ?? '' }}" selected>{{ $itemsprestacione->profesionales2->Apellido ?? '' }} {{ $itemsprestacione->profesionales2->Nombre ?? '' }}</option>
+                                </select>
+                            @endif
+                        
                     </div>
                 </div>
 
                 <div class="col-md-2">
-                    <div class="input-group input-group-sm mb-2">
-                        <span class="input-group-text">Estado</span>
-                        <input type="text" class="form-control" style="color: {{ ($itemsprestacione->CInfo === 0 || $itemsprestacione->CInfo === 1 || $itemsprestacione->CInfo === 2 ? 'red' : ($itemsprestacione->CInfo === 3 ? 'green' : '')) ?? ''}}" id="EstadoI" name="EstadoI" value="{{ (in_array($itemsprestacione->CInfo, [0,1]) ? 'Pediente' : ($itemsprestacione->CInfo === 2 ? 'Borrador' : ($itemsprestacione->CInfo === 3 ? 'Cerrado' : ''))) ?? ''}}" @readonly(true)>
+                    <div class="input-group input-group-sm mb-2">     
+
+                        @if($itemsprestacione->examenes->Informe === 0)
+                            <span class="input-group-text">Estado</span>
+                            <input type="text" class="form-control" style="color: {{ ($itemsprestacione->CInfo === 0 || $itemsprestacione->CInfo === 1 || $itemsprestacione->CInfo === 2 ? 'red' : ($itemsprestacione->CInfo === 3 ? 'green' : '')) ?? ''}}" id="EstadoI" name="EstadoI" value="{{ (in_array($itemsprestacione->CInfo, [0,1]) ? 'Pediente' : ($itemsprestacione->CInfo === 2 ? 'Borrador' : ($itemsprestacione->CInfo === 3 ? 'Cerrado' : ''))) ?? ''}}" @readonly(true)>
+
+                        @endif
                     </div>
                 </div>
 
                 <div class="col-md-2">
-                    <div class="input-group input-group-sm mb-2">
-                        <span class="input-group-text">Fecha Pago</span>
-                        <input type="date" id="FechaPagado2" name="FechaPagado2" class="form-control" value="{{ $itemsprestacione->FechaPagado2}}" @readonly(true)>
-                    </div>
+                    @if($itemsprestacione->examenes->Informe === 0)
+                        <div class="input-group input-group-sm mb-2">
+                            <span class="input-group-text">Fecha Pago</span>
+                            <input type="date" id="FechaPagado2" name="FechaPagado2" class="form-control" value="{{ $itemsprestacione->FechaPagado2}}" @readonly(true)>
+                        </div>
+                    @endif
                 </div>
 
                 <div class="col-md-2">
-                    <button type="button" id="asignarI" class="btn botonGeneral btn-sm asignarI">Asignar</button>
-                    <button type="button" id="cerrarI" class="btn botonGeneral btn-sm cerrarI">Cerrar</button>
-                    <input type="hidden" value="{{ $itemsprestacione->CInfo }}" id="CInfo">
+
+                    @if($itemsprestacione->examenes->Informe === 0)
+                        <button type="button" id="asignarI" class="btn botonGeneral btn-sm asignarI">Asignar</button>
+                        <button type="button" id="cerrarI" class="btn botonGeneral btn-sm cerrarI">Cerrar</button>
+                        <input type="hidden" value="{{ $itemsprestacione->CInfo }}" id="CInfo">
+                    @endif
                 </div>
 
             </div>
-
+            @if($itemsprestacione->examenes->Informe === 0)
             <div class="row">
                 <div class="col-md-2">
                     <div class="input-group input-group-sm mb-2">
+
                         <span class="input-group-text">Adjunto</span>
                         <input type="text" style="{{ ($itemsprestacione->examenes->proveedor2->InfAdj === 1 && $adjuntoInformador === 0 ? 'color: red' : ($itemsprestacione->examenes->proveedor2->InfAdj === 1 && $adjuntoInformador === 1 ? 'color: green' : '')) }}" class="form-control" id="EstadoInf" name="EstadoInf" value="{{ ($itemsprestacione->examenes->proveedor2->InfAdj === 0 ? 'No lleva Adjuntos' : ($itemsprestacione->examenes->proveedor2->InfAdj === 1 && $adjuntoInformador === 0 ? 'Pendiente' : ($itemsprestacione->examenes->proveedor2->InfAdj === 1 && $adjuntoInformador === 1 ? 'Adjuntado' : '-'))) }}" @readonly(true)>
                     </div>
                 </div>
             </div>
-
+            @endif
         </div>
     </div>
 
+    @if($itemsprestacione->examenes->Informe === 0)
     <div class="row mb-3">
         <div class="col-12 mx-auto box-information">
             <div class="input-group input-group-sm mb-2">
@@ -178,6 +196,7 @@
             </div>
         </div>
     </div>
+    @endif
 
     <div class="row mb-3">
         <div class="col-12 mx-auto box-information">
@@ -227,18 +246,18 @@
             
                     </tbody>
                 </table>
-            
-                <table class="display table table-bordered mt-4" style="width:100%"  id="listadoInformador">
-                    <thead class="table-light">
-                        <th class="sort" title="Adjunto Informador">Adjunto Informador</th>
-                        <th>Descripción</th>
-                        <th>Acciones <button type="button" class="btn botonGeneral adjuntarInformador" data-bs-toggle="modal" data-bs-target="#modalInformador">Adjuntar archivo</button></th>
-                    </thead>
-                    <tbody id="listainformadores" class="list form-check-all">
-            
-                    </tbody>
-                </table>
-            
+                @if($itemsprestacione->examenes->Informe === 0)
+                    <table class="display table table-bordered mt-4" style="width:100%"  id="listadoInformador">
+                        <thead class="table-light">
+                            <th class="sort" title="Adjunto Informador">Adjunto Informador</th>
+                            <th>Descripción</th>
+                            <th>Acciones <button type="button" class="btn botonGeneral adjuntarInformador" data-bs-toggle="modal" data-bs-target="#modalInformador">Adjuntar archivo</button></th>
+                        </thead>
+                        <tbody id="listainformadores" class="list form-check-all">
+                
+                        </tbody>
+                    </table>
+                @endif
             </div>
 
         </div>
