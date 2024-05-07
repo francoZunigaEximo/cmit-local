@@ -154,7 +154,7 @@
                             <div class="input-group input-group-sm">
                                 <span class="input-group-text">Forma de Pago</span>
                                 <select class="form-select" id="pago">
-                                    <option value="{{ $prestacione->Pago ?? '' }}" selected>{{ ($prestacione->Pago === "B")? 'Contado' : (($prestacione->Pago === 'C')? 'Cuenta Corriente' : (($prestacione->Pago === 'P')? 'Pago a cuenta' : 'Elija una opción...')) }}</option>
+                                    <option value="{{ $prestacione->Pago ?? '' }}" selected>{{ ($prestacione->Pago === "B")? 'Contado' : (($prestacione->Pago === 'C')? 'Cuenta Corriente' : (($prestacione->Pago === 'P')? 'Examenes a cuenta' : 'Elija una opción...')) }}</option>
                                     <option value="B">Contado</option>
                                     <option value="C">Cuenta Corriente</option>
                                     <option value="P">Examen a cuenta</option>
@@ -375,6 +375,18 @@
 
                     </div>
 
+                    <div class="row mb-3">
+                        <div class="col-sm-12 text-end ">
+                            <button type="button" class="btn btn-sm botonGeneral" data-bs-toggle="modal" data-bs-target="#imprimir" ><i class="bx bxs-file-pdf"></i>&nbsp;Imprimir</button>
+                            <button type="button" class="btn btn-sm botonGeneral"><i class="ri-send-plane-line"></i>&nbsp;Opciones</button>
+                            <button type="button" class="btn btn-sm botonGeneral"><i class="ri-send-plane-line"></i>&nbsp;Enviar</button>
+                            <button type="button" class="btn btn-sm botonGeneral"><i class="ri-stack-fill"></i>&nbsp;Todo</button>
+                            <button type="button" class="btn btn-sm botonGeneral"><i class="ri-file-excel-line"></i>&nbsp;Resumen</button>
+                            <button type="button" class="btn btn-sm botonGeneral"><i class="bx bxs-file-pdf"></i>&nbsp;e-Estudio</button>
+                            <button type="button" class="btn btn-sm botonGeneral"><i class="bx bxs-file-pdf"></i>&nbsp;e-Anexos</button>
+                        </div>
+                    </div>
+                    
                     <div class="row">
                         <div class="col-lg-12">
                             <div class="card titulo-tabla">
@@ -517,6 +529,141 @@
         </div>
     </div>
 </div>
+
+<div id="imprimir" class="modal fadeInUp" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            
+            <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel">Reportes</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>   
+            </div>
+            <div class="modal-body">
+                <form>
+
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="evaluacion">
+                        <label class="form-check-label" for="evaluacion">
+                            Evaluación resumen
+                        </label>
+                    </div>
+
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="adjDigitales">
+                        <label class="form-check-label" for="adjDigitales">
+                            Adjuntos digitales
+                        </label>
+                    </div>
+
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="adjFisicosDigitales">
+                        <label class="form-check-label" for="adjFisicosDigitales">
+                            Adjuntos fisicos y digitales
+                        </label>
+                    </div>
+
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="adjGenerales">
+                        <label class="form-check-label" for="adjGenerales">
+                            Adjuntos generales
+                        </label>
+                    </div>
+
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="adjAnexos">
+                        <label class="form-check-label" for="adjAnexos">
+                            Adjuntos anexos
+                        </label>
+                    </div>
+
+                    <hr class="mt-2 mb-2">
+
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="infInternos">
+                        <label class="form-check-label" for="infInternos">
+                            Informes internos
+                        </label>
+                    </div>
+
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="pedProveedores">
+                        <label class="form-check-label" for="pedProveedores">
+                            Pedido a proveedores
+                        </label>
+                    </div>
+
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="conPaciente">
+                        <label class="form-check-label" for="conPaciente">
+                            Control paciente
+                        </label>
+                    </div>
+
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="resAdmin">
+                        <label class="form-check-label" for="resAdmin">
+                            Resumen administrativo
+                        </label>
+                    </div>
+
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="consEstDetallado">
+                        <label class="form-check-label" for="consEstDetallado">
+                            Constancia de estudio completo (Detallado)
+                        </label>
+                    </div>
+
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="consEstSimple">
+                        <label class="form-check-label" for="consEstSimple">
+                            Constancia de estudio completo (Simple)
+                        </label>
+                    </div>
+
+                    <hr class="mt-2 mb-2">
+
+                    <p class="fw-bold">Estudios:</p>
+
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="audioCmit">
+                        <label class="form-check-label" for="audioCmit">
+                            Audiometria CMIT
+                        </label>
+                    </div>
+
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="certYpf">
+                        <label class="form-check-label" for="certYpf">
+                            Certificado y visado YPF
+                        </label>
+                    </div>
+
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="periodCmit">
+                        <label class="form-check-label" for="periodCmit">
+                            CMIT clinico periodico
+                        </label>
+                    </div>
+
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="testRapido">
+                        <label class="form-check-label" for="testRapido">
+                            Test rapido de screening en orina 2 drogas (cm)
+                        </label>
+                    </div>
+
+                    <div class="mb-3 text-end">
+                        <button type="button" class="btn btn-sm botonGeneral" id="reset" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-sm botonGeneral">Imprimir</button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+            </div>
+
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
 <script>
 //Rutas

@@ -70,7 +70,7 @@ class ItemPrestacionesController extends Controller
         }
 
         foreach ($examenes as $examen) {
-            $item = ItemPrestacion::find($examen);
+            $item = ItemPrestacion::with('examenes')->find($examen);
 
             if ($item) 
             {   
@@ -81,6 +81,7 @@ class ItemPrestacionesController extends Controller
                 } elseif ($request->Para === 'cerrar' ) {
 
                     $item->CAdj = $lstCerrar[$item->CAdj] ?? $request->CAdj;
+                    $item->examenes->Informe === 1 ? $item->CInfo = 3 : null;
 
                 } elseif ($request->Para === 'cerrarI'){
 
@@ -723,6 +724,7 @@ class ItemPrestacionesController extends Controller
                     'examenes.Nombre as Nombre',
                     'examenes.Id as IdExamen',
                     'examenes.Adjunto as ExaAdj',
+                    'examenes.Informe as Informe',
                     'proveedor2.InfAdj as InfAdj',
                     'examenes.NoImprime as ExaNI',
                     'efector.Nombre as NombreE',

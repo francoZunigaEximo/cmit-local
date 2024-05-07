@@ -475,6 +475,7 @@ class MapasController extends Controller
                 ->select(
                     'examenes.Id AS IdExamen',
                     'examenes.Nombre AS NombreExamen',
+                    'examenes.Informe AS Informe',
                     'itemsprestaciones.CAdj AS CAdj',
                     'itemsprestaciones.CInfo AS CInfo',
                     'itemsprestaciones.Id AS IdItemPrestacion',
