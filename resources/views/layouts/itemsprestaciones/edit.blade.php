@@ -185,15 +185,15 @@
             <div class="row">
                 <div class="col-md-4">
                     <div class="input-group input-group-sm mb-2">
-                        <span class="input-group-text">Fecha facturación</span>
+                        <span class="input-group-text">Fecha Factura</span>
                         <input type="date" class="form-control" id="FechaFacturaVta" name="FechaFacturaVta" value="{{ $itemsprestacione->facturadeventa->Fecha ?? ''}}" @readonly(true)>
                     </div>
                 </div>
 
                 <div class="col-md-4">
                     <div class="input-group input-group-sm mb-2">
-                        <span class="input-group-text">Nota crédito</span>
-                        <input type="text" class="form-control" id="FechaNC" name="FechaNC" value="{{ $itemsprestacione->notaCreditoIt->notaCredito->Tipo ?? ''}}{{ $itemsprestacione->notaCreditoIt->notaCredito->Sucursal ?? ''}}{{ $itemsprestacione->notaCreditoIt->notaCredito->Nro ?? ''}}" @readonly(true)>
+                        <span class="input-group-text">Fecha NC</span>
+                        <input type="text" class="form-control" id="FechaNC" name="FechaNC" value="{{ $itemsprestacione->notaCreditoIt->notaCredito->Fecha ?? ''}}" @readonly(true)>
                     </div>
                 </div>
 
