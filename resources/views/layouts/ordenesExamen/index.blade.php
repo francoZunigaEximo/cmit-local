@@ -955,6 +955,103 @@
 
         <div class="tab-pane" id="eenviar" role="tabpanel">
             
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="listjs-table" id="customerList">
+                                <div class="row g-4 mb-3">
+
+                                    <form id="form-index">
+
+                                        <div class="col-12 p-4 border border-1 border-color" style="border-color: #666666;">
+                                            
+                                            <div class="row">
+
+                                                <div class="col-sm-2 mb-3">
+                                                    <label for="fechaDesdeEEnviar" class="form-label font-weight-bold"><strong>Fecha desde: <span class="required">(*)</span></strong></label>
+                                                    <input type="date" class="form-control" id="fechaDesdeEEnviar" name="fechaDesdeEEnviar" max="9999-12-31">
+                                                </div>
+            
+                                                <div class="col-sm-2 mb-3">
+                                                    <label for="fechaHastaEEnviar" class="form-label font-weight-bold"><strong>Fecha hasta: <span class="required">(*)</span></strong></label>
+                                                    <input type="date" class="form-control" id="fechaHastaEEnviar" name="fechaHastaEEnviar" max="9999-12-31">
+                                                </div>
+
+                                                <div class="col-sm-2 mb-3">
+                                                    <label for="eEnviarEEnviar" class="form-label font-weight-bold"><strong>eEnviado:</strong></label>
+                                                    <select class="form-control" name="eEnviarEEnviar" id="eEnviarEEnviar">
+                                                        <option value="" selected>Elija una opción...</option>
+                                                        <option value="eenviado">eEnviado</option>
+                                                        <option value="noeenviado">No eEnviado</option>
+                                                        <option value="todos">Todos</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="col-sm-2 mb-3">
+                                                    <label for="empresaEEnviar" class="form-label font-weight-bold"><strong>Empresa:</strong></label>
+                                                    <select class="form-control" name="empresaEEnviar" id="empresaEEnviar"></select>
+                                                </div>
+
+                                                <div class="col-sm-2 mb-3">
+                                                    <label for="pacienteEEnviar" class="form-label font-weight-bold"><strong>Paciente / DNI:</strong></label>
+                                                    <select class="form-control" name="pacienteEEnviar" id="pacienteEEnviar"></select>
+                                                </div>
+
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-sm-12" style="text-align: right;">
+                                                    <button type="button" id="buscarEEnviar" class="btn botonGeneral"><i class="ri-zoom-in-line"></i>&nbsp;Buscar</button>
+                                                </div>
+                                            </div>
+
+                                            <div class="row mb-2 mt-2">
+                                                <div class="col-sm-6 text-start">
+                                                    <button type="button" class="btn btn-sm botonGeneral completo">Completo</button>
+                                                    <button type="button" class="btn btn-sm botonGeneral abierto">Abiertos</button>
+                                                    <button type="button" class="btn btn-sm botonGeneral cerrado">Cerrados</button>
+                                                </div>
+                                                <div class="col-sm-6 text-end">
+                                                    <button type="button" class="btn btn-sm botonGeneral"><i class="ri-article-line"></i>&nbsp;Vista previa</button>
+                                                    <button type="button" class="btn btn-sm botonGeneral"><i class="ri-file-info-line"></i>&nbsp;Aviso</button>
+                                                    <button type="button" class="btn btn-sm botonGeneral"><i class="ri-send-plane-line"></i>&nbsp;eEnviar</button>
+                                                </div>
+                                            </div>
+
+                                            <div class="table-responsive table-card mt-3 mb-1 mx-auto">
+                                                <table id="listaOrdenesEEnviar" class="display table table-bordered" style="width:100%">
+                                                    <thead class="table-light">
+                                                        <tr>
+                                                            <th class="sort">Fecha</th>
+                                                            <th class="sort">Prestación</th>
+                                                            <th class="sort">Empresa</th>
+                                                            <th class="sort">Paciente</th>
+                                                            <th class="sort">DNI</th>
+                                                            <th class="sort">Examen</th>
+                                                            <th>F eEnviado</th>
+                                                            <th>Email</th>
+                                                            <th>ExCta Imp</th>
+                                                            <th><input type="checkbox" id="checkAllEEnviar" name="Id_EEnviar"></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody class="list form-check-all">
+                        
+                                                    </tbody>
+                                                </table>
+                                            </div> 
+
+                                        </div>
+
+                                    </form>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
@@ -978,6 +1075,7 @@
     const SEARCHASIGINF = "{{ route('seachOrExAsigInf')}}";
     const SEARCHADJINF = "{{ route('searchOrExaAdjInf') }}";
     const SEARCHPRESTACION = "{{ route('searchPrestacion') }}";
+    const SEARCHEENVIAR = "{{ route('searchEenviar') }}";
     const asignarProfesional = "{{ route('asignarProfesional') }}";
     const updateItem = "{{ route('updateItem') }}";
     const fileUpload = "{{ route('uploadAdjunto') }}";
@@ -1010,6 +1108,7 @@
 <script src="{{ asset('js/ordenesexamenes/paginacionAsignadosInf.js')}}?=v{{ time() }}"></script>
 <script src="{{ asset('js/ordenesexamenes/paginacionAdjunto.js')}}?=v{{ time() }}"></script>
 <script src="{{ asset('js/ordenesexamenes/paginacionAdjuntoInf.js')}}?=v{{ time() }}"></script>
+<script src="{{ asset('js/ordenesexamenes/paginacionEnviar.js')}}?=v{{ time() }}"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/i18n/es.js"></script>

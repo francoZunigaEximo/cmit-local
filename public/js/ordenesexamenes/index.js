@@ -6,7 +6,7 @@ $(document).ready(function(){
         timeOut: 3000,        
     };
 
-    $('#fechaHasta, #fechaHastaAsignados, #fechaHastaAdjunto, #fechaHastaInf, #fechaHastaAsignadosInf, #fechaHastaAdjuntoInf, #fechaHastaPres').val(fechaNow(null, "-", 0)), $('#efectorPres').val('pendientes'),$('#tipoPres').val('todos');
+    $('#fechaHasta, #fechaHastaAsignados, #fechaHastaAdjunto, #fechaHastaInf, #fechaHastaAsignadosInf, #fechaHastaAdjuntoInf, #fechaHastaPres, #fechaHastaEEnviar').val(fechaNow(null, "-", 0)), $('#efectorPres').val('pendientes'),$('#tipoPres').val('todos');
     
     let especialidadVal = $('#especialidad').val(),
         especialidadAsigVal = $('#especialidadAsignados').val(),
@@ -50,7 +50,7 @@ $(document).ready(function(){
         optionsGeneral(newEspecialidadInfPres, "informadorPres", "informador");
     });
     
-    $('#empresa, #empresaInf, #empresaAsignados, #empresaAdjunto, #empresaAsignadosInf, #empresaAdjuntoInf').each(function() {
+    $('#empresa, #empresaInf, #empresaAsignados, #empresaAdjunto, #empresaAsignadosInf, #empresaAdjuntoInf, #empresaEEnviar').each(function() {
         $(this).select2({
             language: {
                 noResults: function() {
@@ -158,7 +158,7 @@ $(document).ready(function(){
         });
     });
 
-    $('#paciente, #pacienteInf, #pacienteAsignados, #pacienteAsignadosInf').each(function(){
+    $('#paciente, #pacienteInf, #pacienteAsignados, #pacienteAsignadosInf, #pacienteEEnviar').each(function(){
         $(this).select2({
             language: {
                 noResults: function() {
@@ -463,6 +463,11 @@ $(document).ready(function(){
         $('input[type="checkbox"][name="Id_adjuntoInf"]:not(#checkAllAdjInf)').prop('checked', this.checked);
     });
 
+    $('#checkAllEEnviar').on('click', function() {
+
+        $('input[type="checkbox"][name="Id_EEnviar"]:not(#checkAllEEnviar)').prop('checked', this.checked);
+    });
+
     $(document).on('change', '#efectores, #informadores', function() {
 
         const obj = {
@@ -629,7 +634,7 @@ $(document).ready(function(){
                 })
         }
     });
-    
+ 
     function createFile(array){
         let fecha = new Date(),
             dia = fecha.getDay(),

@@ -217,6 +217,24 @@ public function searchPrestacion(Request $request)
         return view('layouts.ordenesExamen.index');
     }
 
+    public function searchEenviar(Request $request)
+    {
+        if($request->ajax()) {
+
+            $query = $query = DB::select("CALL getSearchEEnviar(".
+            ($request->fechaDesde ? "'".$request->fechaDesde."'" : "NULL").", ".
+            ($request->fechaHasta ? "'".$request->fechaHasta."'" : "NULL").", ".
+            ($request->empresa ? $request->empresa : "NULL").", ".
+            ($request->paciente ? $request->paciente : "NULL").", ".
+            ($request->completo ? "'".$request->completo."'" : "NULL").", ".
+            ($request->eenviar ? "'".$request->eenviar."'" : "NULL").")");
+
+            return Datatables::of($query)->make(true);   
+        }
+
+        return view('layouts.ordenesExamen.index');
+    }
+
     public function exportar(Request $request)
     {
         $examenes = $request->Id;

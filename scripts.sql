@@ -868,3 +868,33 @@ BEGIN
     ORDER BY i.Id DESC 
     LIMIT 5000;
 END
+
+
+CREATE PROCEDURE getSearchEEnviar(IN fechaDesde DATE, IN fechaHasta DATE, IN empresa INT, IN paciente INT, IN completo VARCHAR, IN eenviar VARCHAR)
+
+BEGIN
+     select i.Fecha as Fecha, pre.Id as IdPrestacion, pre.FechaEnviado as FechaEnviado, cli.EMailInformes as Correo, cli.RazonSocial as Empresa, CONCAT(pa.Apellido, ' ', pa.Nombre) as NombreCompleto, pa.Documento as Documento, pa.Id as IdPaciente, exa.Nombre as Examen, pc.Pagado as Pagado, i.Id as IdExa
+    from itemsprestaciones i
+    inner join prestaciones pre on i.IdPrestacion = pre.Id AND (pre.Anulado = 0) AND (eenviar IS NULL OR
+        (CASE 
+            WHEN eenviar = 'eenviado' THEN pre.eEnviado = 1
+            WHEN eenviar = 'noeenviado' THEN pre.eEnviado = 0
+            WHEN eenviar = 'todos' THEN pre.eEnviado IN (0,1)
+        END)
+    )
+    inner join examenes exa on i.IdExamen = exa.Id AND (exa.Informe = 1)
+    inner join clientes cli on pre.IdEmpresa = cli.Id AND (empresa IS NULL OR cli.Id = empresa)
+    inner join pacientes pa on pre.IdPaciente = pa.Id AND (paciente IS NULL OR pa.Id = paciente)
+    inner join pagosacuenta pc on cli.Id = pc.IdEmpresa
+    inner join pagosacuenta_it pc2 on pre.Id = pc2.IdPrestacion
+    WHERE ((completo != "activo" AND i.Fecha BETWEEN fechaDesde AND fechaHasta) OR completo = "activo")
+        AND (CASE
+            WHEN completo = "activo" THEN i.CAdj in (3,5) AND i.CInfo = 3 AND pc.Pagado = 1 
+        END)
+    AND NOT i.Id = 0
+    AND i.Anulado = 0
+    AND NOT (i.Fecha is null or i.Fecha = '0000-00-00')
+    GROUP BY pre.Id
+    ORDER BY i.Id DESC 
+    LIMIT 5000;
+END
