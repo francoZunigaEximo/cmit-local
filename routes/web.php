@@ -237,6 +237,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('searchOrExaAdjInf', [OrdenesExamenController::class, 'searchInfAdj'])->name('searchOrExaAdjInf');
     Route::get('searchPrestacion', [OrdenesExamenController::class, 'searchPrestacion'])->name('searchPrestacion');
     Route::get('exportarOrdExa', [OrdenesExamenController::class, 'exportar'])->name('exportarOrdExa');
+    Route::get('searchEenviar', [OrdenesExamenController::class, 'searchEenviar'])->name('searchEenviar');
 
     //Rutas de Examenes a Cuenta
     Route::resource('examenesCuenta', ExamenesCuentaController::class);

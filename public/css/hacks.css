@@ -421,6 +421,7 @@ body .selectArt2 .select2.select2-container {
 #disponblesExamenes th, td,
 #lstDisponibles th, td,
 #lstExCta th, td,
+#listaOrdenesEEnviar th, td,
 #listaOrdenesPrestaciones th, td,
 #listaPrestaciones th, td { white-space: nowrap !important; }
 
@@ -446,6 +447,7 @@ body .selectArt2 .select2.select2-container {
 #lstDisponibles tr,
 #lstExCta tr,
 #listaOrdenesPrestaciones tr,
+#listaOrdenesEEnviar tr,
 #listaPrestaciones tr { height: 25px !important;}
 
 #listaClientes tbody tr td,
@@ -470,6 +472,7 @@ body .selectArt2 .select2.select2-container {
 #lstDisponibles tbody tr td,
 #lstExCta tbody tr td,
 #listaOrdenesPrestaciones tbody tr td,
+#listaOrdenesEEnviar tbody tr td,
 #listaPrestaciones tbody tr td { padding: 5px 8px 2px 8px };
 
 table.dataTable tr.dtrg-level-0 td {
