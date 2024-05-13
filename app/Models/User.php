@@ -22,10 +22,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'IdProfesinal',
-        'IdPersonal',
-        'IdPerfil',
-        'SR',
+        'profesional_id',
+        'datos_id',
+        'inactivo',
     ];
 
     protected $hidden = [

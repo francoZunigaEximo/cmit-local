@@ -23,8 +23,6 @@ class AuthController extends Controller
 
             if(!empty(Auth::user()->IdProfesional) && Auth::user()->IdProfesional !== 0){
 
-                session()->put('mProf', '0');
-                session()->put('choiseT', '0');
                 return redirect()->route('profesionales.index');
             }
 

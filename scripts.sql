@@ -898,3 +898,115 @@ BEGIN
     ORDER BY i.Id DESC 
     LIMIT 5000;
 END
+
+ALTER TABLE users DROP FOREIGN KEY users_ibfk_2;
+ALTER TABLE users DROP FOREIGN KEY users_ibfk_4;
+ALTER TABLE users DROP COLUMN IdPerfil;
+ALTER TABLE users DROP COLUMN SR;
+ALTER TABLE users DROP COLUMN Rol;
+ALTER TABLE dusers CHANGE IdProfesional profesional_id int(11) DEFAULT 0 NULL;
+ALTER TABLE users CHANGE idPersonal datos_id int(11) DEFAULT NULL NULL;
+ALTER TABLE users ADD inactivo INT DEFAULT 0 NULL;
+
+
+CREATE TABLE `roles` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(50) NOT NULL,
+  `descripcion` blob DEFAULT NULL,
+  PRIMARY KEY (`Id`),
+  UNIQUE KEY `Id` (`Id`),
+  KEY `idx_roles_id` (`Id`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+
+INSERT INTO roles(nombre, descripcion) VALUES 
+("Admin JR",""),
+("Admin STD",""),
+("Admin SR",""),
+("Recepción JR",""),
+("Recepción STD",""),
+("Recepción SR",""),
+("Evaluador ART",""),
+("Efector",""),
+("Informador","");
+
+CREATE TABLE permisos(
+    Id INT NOT NULL AUTO_INCREMENT,
+    slug VARCHAR(50) NOT NULL,
+    descripcion BLOB,
+    PRIMARY KEY (Id),
+    UNIQUE(Id)
+);
+
+
+INSERT INTO permisos(slug, descripcion) VALUES
+("clientes_add","Agregar clientes nuevos"),
+("clientes_edit","editar clientes"),
+("clientes_show","visualizar datos del cliente"),
+("clientes_send","Enviar emails a clientes"),
+("clientes_export","Exportar reportes en general"),
+("clientes_delete","Eliminar un cliente"),
+("prestaciones_add","Agregar una nueva prestación"),
+("prestaciones_edit","Editar una prestación"),
+("prestaciones_show","Visualizar prestación"),
+("prestaciones_delete","Eliminar prestaciones"),
+("prestaciones_block","Anular prestaciones"),
+("prestaciones_todo","Utilización del botón todo"),
+("prestaciones_eEnviar","Utilización del botón eEnviar"),
+("etapas_show","Visualizar etapas"),
+("etapas_apply","Etapas aplicar, cerrar, adjuntar"),
+("etapas_informador","Sección informador"),
+("etapas_efector","Sección efector"),
+("etapas_eenviar","Sección eEnviar"),
+("mapas_add","Agregar un mapa"),
+("mapas_edit","Editar un mapa"),
+("mapas_finalizar","Finalizar un mapa"),
+("mapas_eenviar","eEnviar un mapa"),
+("pacientes_add","Agregar paciente"),
+("pacientes_edit","Editar pacientes"),
+("pacientes_delete","Eliminar pacientes"),
+("examenCta_add","Agregar examen a cuenta"),
+("examenCta_edit","Editar examen a cuenta"),
+("examenCta_delete","Eliminar examen a cuenta");
+
+CREATE TABLE `user_rol` (
+  `user_id` bigint(20) unsigned NOT NULL,
+  `rol_id` int(11) NOT NULL,
+  PRIMARY KEY (`user_id`,`rol_id`),
+  KEY `rol_id` (`rol_id`),
+  CONSTRAINT `user_rol_ibfk_1` FOREIGN KEY (`rol_id`) REFERENCES `roles` (`Id`) ON UPDATE CASCADE,
+  CONSTRAINT `user_rol_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+INSERT INTO user_rol(user_id, rol_id) VALUES
+(1,3),
+(2,3);
+
+CREATE TABLE rol_permisos(
+    rol_id INT,
+    permiso_id INT,
+    PRIMARY KEY (`rol_id`,`permiso_id`),
+    KEY `rol_id` (`rol_id`),
+    CONSTRAINT FOREIGN KEY (rol_id) REFERENCES roles(Id),
+    CONSTRAINT FOREIGN KEY (permiso_id) REFERENCES permisos(Id)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO rol_permisos(rol_id, permiso_id) VALUES
+(1,1),(2,1),(3,1),(6,1),(1,2),(2,2),(3,2),(4,2),(5,2),(6,2),(1,3),(2,3),(3,3),(6,3),(3,4),(3,5),(3,6),(1,7),(2,7),(3,7),(4,7),(5,7),(6,7),(1,8),(2,8),(3,8),(4,8),(5,8),(6,8),(1,9),(2,9),(3,9),(4,9),(5,9),(6,9),(2,10),(3,10),(5,10),(6,10),(1,11),(2,11),(3,11),(4,11),(5,11),(6,11),(3,12),(6,12),(2,13),(3,13),(4,13),(5,13),(6,13),(2,14),(3,14),(5,14),(6,14)
+
+
+SELECT TABLE_NAME 
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE COLUMN_NAME = 'IdProfesional'
+
+facturascompra
+hc_consultas
+hist_facturascompra
+hist_itemsprestaciones
+itemsprestaciones
+telefonos
+usuarios
+
+
+
