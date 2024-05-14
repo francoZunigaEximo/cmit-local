@@ -188,12 +188,20 @@
                         <span class="input-group-text">Fecha Factura</span>
                         <input type="date" class="form-control" id="FechaFacturaVta" name="FechaFacturaVta" value="{{ $itemsprestacione->facturadeventa->Fecha ?? ''}}" @readonly(true)>
                     </div>
+                    <div class="input-group input-group-sm mb-2">
+                        <span class="input-group-text">Nro Factura</span>
+                        <input type="date" class="form-control" id="NroFacturaVta" name=" NroFacturaVta" value="{{ $itemsprestacione->facturadeventa->Tipo ?? ''}}{{ $itemsprestacione->facturadeventa->Sucursal ?? ''}}{{ $itemsprestacione->facturadeventa->NroFactura ?? ''}}" @readonly(true)>
+                    </div>
                 </div>
 
                 <div class="col-md-4">
                     <div class="input-group input-group-sm mb-2">
                         <span class="input-group-text">Fecha NC</span>
                         <input type="text" class="form-control" id="FechaNC" name="FechaNC" value="{{ $itemsprestacione->notaCreditoIt->notaCredito->Fecha ?? ''}}" @readonly(true)>
+                    </div>
+                    <div class="input-group input-group-sm mb-2">
+                        <span class="input-group-text">Número NC</span>
+                        <input type="text" class="form-control" id="NumeroNC" name="NumeroNC" value="{{ $itemsprestacione->notaCreditoIt->notaCredito->Tipo ?? ''}}{{ $itemsprestacione->notaCreditoIt->notaCredito->Sucursal ?? ''}}{{ $itemsprestacione->notaCreditoIt->notaCredito->Nro ?? ''}}" @readonly(true)>
                     </div>
                 </div>
 
