@@ -77,12 +77,7 @@
                     <button type="button" class="btn" id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="d-flex align-items-center">
                             <span class="text-start ms-xl-2">
-                                <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text">{{ ucfirst(Auth::user()->name) }} <h6><span class="badge text-bg-info">{{ (session('choiseT') === '0' ? strtoupper(Auth::user()->Rol) : session('choiseT')) }}</span></h6>
-                                
-                                @if(Auth::user()->Rol === 'Prestador' && Auth::user()->profesional->TLP === 1)
-                                    
-                                <button type="button" data-bs-toggle="modal" data-bs-target="#choisePModal" class="btn btn-primary btn-label rounded-pill"><i class=" ri-anticlockwise-line label-icon align-middle rounded-pill fs-16 me-2"></i> Cambiar perfil</button>
-                                @endif
+                                <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text">{{ ucfirst(Auth::user()->name) }} <h6><span class="badge text-bg-info"></span></h6>
                                 </span>
                             </span>
                         </span>
@@ -91,7 +86,6 @@
                         <!-- item-->
                         <h6 class="dropdown-header">Bienvenido {{ Auth::user()->name }}!</h6>
                         <a class="dropdown-item" href="{{ route('changePassword')}}"><i class="mdi mdi-settings-circle text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Cambiar Constraseña</span></a>
-                        <a class="dropdown-item" href="#"><i class="mdi mdi-email text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Email Config</span></a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="{{ route('logout') }}"><i class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-key="t-logout">Salir</span></a>
                     </div>
@@ -180,6 +174,10 @@
                                     
                                     <li class="nav-item">
                                         <a href="{{ route('clientes.index') }}" class="nav-link enlace-blanco" data-key="t-cliente"> Clientes </a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <a href="{{ route('usuarios.index') }}" class="nav-link enlace-blanco" data-key="t-usuarios"> Usuarios </a>
                                     </li>
                                 </ul>
                             </div>
@@ -270,42 +268,6 @@
 
     @stack('modal')
 
-    <div id="choisePModal" class="modal fadeInUp" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                
-                <div class="modal-header">
-                    <h5 class="modal-title" id="myModalLabel">Seleccione el perfil del profesional</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>   
-                </div>
-                <div class="modal-body">
-                    <div class="message-sesion"></div>
-                    <form>
-                        <div class="mb-3">
-                            <label for="choisePerfil" class="col-form-label">Perfil</label>
-                            <select class="form-control" name="choisePerfil" id="choisePerfil">
-                                <option value="" selected>Elija una opción...</option>
-                               
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="choiseEspecialidad" class="col-form-label">Especialidad</label>
-                            <select class="form-control" name="choiseEspecialidad" id="choiseEspecialidad">
-                                <option value="" selected>Elija una opción...</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <button type="button" class="btn btn-primary cargarPrestador">Seleccionar</button>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                </div>
-    
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
-
     <div class="offcanvas offcanvas-top" tabindex="-1" id="prestacionFast" aria-labelledby="prestacionFastLabel">
         <div class="offcanvas-header">
             <h5 class="offcanvas-title" id="prestacionFastLabel">Prestación rápida:</h5>
@@ -327,11 +289,6 @@
     </div>
 
     <script>
-        let mprof = "{{ session('mProf') }}";
-        let choiseT = "{{ session('choiseT') }}";
-
-        const IDSESSION = "{{ Auth::user()->IdProfesional }}";
-        let tlp = "{{ Auth::user()->profesional->TLP }}";
 
         const choisePerfil = "{{ route('choisePerfil')}}";
         const choiseEspecialidad = "{{ route('choiseEspecialidad') }}";

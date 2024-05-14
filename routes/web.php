@@ -22,6 +22,8 @@ use App\Http\Controllers\OrdenesExamenController;
 use App\Http\Controllers\ExamenesCuentaController;
 use App\Http\Controllers\PaqueteEstudioController;
 use App\Http\Controllers\PaqueteFacturacionController;
+use App\Http\Controllers\RolesController;
+use App\Http\Controllers\UsuariosController;
 use App\Models\ExamenCuenta;
 //use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Route;
@@ -274,5 +276,14 @@ Route::group(['middleware' => 'auth'], function () {
 
     //RUtas de Paquete de Facturación
     Route::get('getPaqueteFact', [PaqueteFacturacionController::class, 'paquetes'])->name('getPaqueteFact');
-    
+
+    //Rutas de Paquete usuarios
+    Route::resource('usuarios', UsuariosController::class);
+    Route::get('searchNombreUsuario', [UsuariosController::class, 'NombreUsuario'])->name('searchNombreUsuario');
+    Route::get('searchUsuario', [UsuariosController::class, 'Usuario'])->name('searchUsuario');
+    Route::get('buscarUsuario', [UsuariosController::class, 'buscar'])->name('buscarUsuario');
+
+    //Rutas de Roles
+    Route::get('searchRol', [RolesController::class, 'listado'])->name('searchRol');
 });
+
