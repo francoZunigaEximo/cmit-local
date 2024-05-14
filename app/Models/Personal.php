@@ -9,7 +9,7 @@ class Personal extends Model
 {
     use HasFactory;
 
-    protected $table = 'personal';
+    protected $table = 'datos';
 
     protected $primaryKey = 'Id';
 
@@ -19,6 +19,6 @@ class Personal extends Model
 
     public function user()
     {
-        return $this->hasOne(User::class, 'IdPersonal', 'Id');
+        return $this->hasOne(User::class, 'datos_id', 'Id');
     }
 }
