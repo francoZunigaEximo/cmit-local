@@ -155,16 +155,25 @@
     </div>
 
      <div class="card row tab-pane" id="roles" role="tabpanel">
-        <div class="p-2 d-flex justify-content-end">
-            <button class="btn botonGeneral" type="button" data-bs-toggle="modal" data-bs-target="#agregarRoles"> Agregar</button>
+        <div class="row">
+            <div class="col-sm-9"></div>
+            <div class="col-sm-3 p-2 d-flex justify-content-end">
+                <select class="form-control" name="listaRoles" id="listaRoles">
+                    <option value="" selected>Elija un rol para aplicar...</option>
+                    @foreach($roles as $rol)
+                        <option value="{{ $rol->Id ?? 0}}">{{ $rol->nombre ?? ''}}</option>
+                    @endforeach
+                </select>
+                <button class="btn btn-sm botonGeneral agregarRol" type="button" data-id="{{ $query->UserId ?? 0 }}"> Agregar</button>
+            </div>
         </div>
         <div class="table-card table-responsive mt-3 mb-1 mx-auto">
-            <table id="" class="display table table-bordered ">
+            <table id="listadoRolesAsignados" class="display table table-bordered ">
                 <thead class="table-light">
                     <tr>
-                        <th class="">Rol</th>
-                        <th class="">Descripción</th>
-                        <th class="">Acciones</th>
+                        <th class="sort">Rol</th>
+                        <th>Descripción</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody class="list form-check-all" id="lstRolesAsignados">
@@ -187,6 +196,8 @@
     const lstRolAsignados = "{{ route('lstRolAsignados') }}";
     const checkEmailUpdate = "{{ route('checkEmailUpdate') }}";
     const verificarCorreo = "{{ $query->EMail ?? '' }}";
+    const addRol = "{{ route('addRol') }}";
+    const deleteRol = "{{ route('deleteRol') }}";
 </script>
 
 @push('styles')

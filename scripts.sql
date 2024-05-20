@@ -1007,8 +1007,9 @@ ALTER TABLE hist_clientes DROP FOREIGN KEY hist_clientes_ibfk_3; /* IdAsignado e
 ALTER TABLE iso_minutas_as DROP FOREIGN KEY iso_minutas_as_ibfk_6; /* IdPersonal relacionado con personal/datos */
 ALTER TABLE iso_minutas_pd DROP FOREIGN KEY iso_minutas_pd_ibfk_2; /* IdPersonal relacionado con personal/datos */
 ALTER TABLE stockmov DROP FOREIGN KEY stockmov_ibfk_6;
+ALTER TABLE users ADD Anulado INT DEFAULT 0 NULL;
 
-
+composer remove spatie/laravel-permission
 
 
 SELECT TABLE_NAME 

@@ -3,16 +3,39 @@
 namespace App\Http\Controllers;
 
 use App\Models\Provincia;
+use App\Models\Rol;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class UsuariosController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        if ($request->ajax()) {
+
+            $query = User::leftJoin('user_rol', 'users.id', '=', 'user_rol.user_id')
+                ->leftJoin('roles', 'user_rol.rol_id', '=', 'roles.Id')
+                ->leftJoin('datos', 'users.datos_id', '=', 'datos.Id')
+                ->select(
+                    'users.id as IdUser',
+                    'users.name as usuario',
+                    'datos.Nombre as Nombre',
+                    'datos.Apellido as Apellido',
+                    DB::raw("GROUP_CONCAT(roles.nombre SEPARATOR ', ') as RolUsuario"),
+                    'users.inactivo as Inactivo',
+                )
+                ->where('users.Anulado', 0)
+                ->groupBy('users.id');
+        
+            $result = $query->get();
+        
+            return Datatables::of($result)->make(true);
+        } 
+
         return view('layouts.usuarios.index');
     }
 
@@ -24,6 +47,8 @@ class UsuariosController extends Controller
     public function edit(User $usuario)
     {
         $provincias = Provincia::all();
+
+        $roles = Rol::orderBy('nombre', 'asc')->get();
 
         $query = User::join('datos', 'users.datos_id', '=', 'datos.Id')
             ->join('localidades', 'datos.IdLocalidad', '=', 'localidades.Id')
@@ -49,7 +74,7 @@ class UsuariosController extends Controller
                 "localidades.Nombre as NombreLocalidad"
             )->find($usuario->id);
 
-        return view('layouts.usuarios.edit', compact(['query', 'provincias']));
+        return view('layouts.usuarios.edit', compact(['query', 'provincias', 'roles']));
     }
 
     public function buscar(Request $request) 
@@ -166,6 +191,47 @@ class UsuariosController extends Controller
         }
 
         return response()->json($response);
+    }
+
+    public function baja(Request $request)
+    {
+        $query = User::find($request->Id);
+
+        if($query) 
+        {
+            $query->Anulado = $query->Anulado === 1 ? 0 : 1;
+            $query->inactivo = 0;
+            $query->save();
+
+        }
+    }
+
+    public function bloquear(Request $request)
+    {
+        $query = User::find($request->Id);
+
+        if($query) 
+        {
+            $query->inactivo = $query->inactivo === 1 ? 0 : 1;
+            $query->save();
+        }
+
+        $nQuery = User::find($request->Id, ['inactivo']);
+        $result = $nQuery->inactivo === 1 ? ['msg' => 'Se ha desactivado correctamente al usuario'] : ['msg' => 'Se ha activado al usuario'];
+
+        return response()->json($result);
+
+    }
+
+    public function cambiarPassword(Request $request)
+    {
+        $query = User::find($request->Id);
+
+        if($query) 
+        {
+            $query->password = Hash::make('cmit1234');
+            $query->save();
+        }
     }
 
 }

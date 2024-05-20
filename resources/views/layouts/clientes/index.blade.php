@@ -24,9 +24,11 @@
                 <div class="col-3">
                         
                     <div>
+                        @can('clientes_add')
                         <a href="{{ route('clientes.create') }}">
                             <button type="button" class="btn botonGeneral add-btn"  id="create-btn" data-bs-target="#showModal"><i class="ri-add-line align-bottom me-1"></i> Nuevo</button>
                         </a>
+                        @endcan
                         <button type="button" id="excel" class="btn botonGeneral" title="Generar reporte en Excel">
                             <i class="ri-file-excel-line"></i>
                         </button>

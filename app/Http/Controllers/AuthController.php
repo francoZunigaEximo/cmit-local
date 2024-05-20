@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -19,11 +20,31 @@ class AuthController extends Controller
             'password' => $request->password,
 
         ])) {
+            if(Auth::user()->inactivo === 1) {
+                Session::flush();
+                Auth::logout();
+                return redirect()->route('login')->withFail('El usuario se encuentra bloqueado. Consulte con el administrador');
+            }
+
+            if(Auth::user()->Anulado === 1) {
+                $fecha = Auth::user()->updated_at;
+                $nuevaFecha= Carbon::parse($fecha)->format('d/m/Y \a \l\a\s H:i');
+                Session::flush();
+                Auth::logout();
+                return redirect()->route('login')->withFail('El usuario fue eliminado el '. $nuevaFecha);
+            }
+
             $request->session()->regenerate();
 
-            if(!empty(Auth::user()->IdProfesional) && Auth::user()->IdProfesional !== 0){
+            if(Auth::check()){
 
-                return redirect()->route('profesionales.index');
+                $roles = Auth::user()->role;
+
+                foreach ($roles as $rol) {
+                    if ($rol->nombre == 'Efector' || $rol->nombre == 'Informador') {
+                        return redirect()->route('profesionales.index');
+                    }
+                }
             }
 
             //return redirect('/home');

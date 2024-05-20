@@ -22,11 +22,11 @@ class DatosController extends Controller
                 'Documento' => $request->Documento,
                 'Identificacion' => $request->Identificacion,
                 'Telefono' => $request->Telefono,
-                'FechaNacimiento' => $request->FechaNacimiento,
-                'Provincia' => $request->Provincia,
-                'IdLocalidad' => $request->IdLocalidad, 
-                'Direccion' => $request->Direccion,
-                'CP' => $request->CP
+                'FechaNacimiento' => $request->FechaNacimiento ?? '0000-00-00',
+                'Provincia' => $request->Provincia ?? '',
+                'IdLocalidad' => $request->IdLocalidad ?? '', 
+                'Direccion' => $request->Direccion ?? '',
+                'CP' => $request->CP ?? ''
                 ]);
         }else{
             $query = Personal::where('Id', $request->Id)->first();

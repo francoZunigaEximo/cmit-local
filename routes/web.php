@@ -286,11 +286,16 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('checkUsuario', [UsuariosController::class, 'checkUsuario'])->name('checkUsuario');
     Route::get('checkCorreo', [UsuariosController::class, 'checkCorreo'])->name('checkCorreo');
     Route::get('checkEmailUpdate', [UsuariosController::class, 'checkEmailUpdate'])->name('checkEmailUpdate');
+    Route::get('bajaUsuario', [UsuariosController::class, 'baja'])->name('bajaUsuario');
+    Route::get('bloquearUsuario', [UsuariosController::class, 'bloquear'])->name('bloquearUsuario');
+    Route::get('cambiarPassUsuario', [UsuariosController::class, 'cambiarPassword'])->name('cambiarPassUsuario');
 
     //Rutas de Roles
     Route::get('searchRol', [RolesController::class, 'listado'])->name('searchRol');
     Route::get('listadoRoles', [RolesController::class, 'paginacion'])->name('listadoRoles');
     Route::get('lstRolAsignados', [RolesController::class, 'asignados'])->name('lstRolAsignados');
+    Route::post('addRol', [RolesController::class, 'add'])->name('addRol');
+    Route::get('deleteRol', [RolesController::class, 'delete'])->name('deleteRol');
 
     //Rutas de Personal
     Route::post('actualizarDatos', [DatosController::class, 'save'])->name('actualizarDatos');

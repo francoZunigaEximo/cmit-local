@@ -5,13 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Cliente;
 use App\Models\Provincia;
 use App\Models\Localidad;
-use App\Models\Telefono;
-use App\Traits\OberverClientes;
 use App\Traits\ObserverClientes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Yajra\DataTables\DataTables;
+use Illuminate\Support\Facades\Auth;
 
 class ClientesController extends Controller
 {
@@ -159,6 +158,10 @@ class ClientesController extends Controller
 
     public function create()
     {
+        if (!Auth::user()->role->permiso->can('clientes_add')){
+            abort(403);
+        }
+
         return view('layouts.clientes.create')->with('provincias', Provincia::all());
     }
 
@@ -193,6 +196,19 @@ class ClientesController extends Controller
 
     public function edit(Cliente $cliente)
     {
+        $hasPermission = false;
+
+        foreach (Auth::user()->role as $rol) {
+            if ($rol->permiso->contains('slug', 'clientes_edit')) {
+                $hasPermission = true;
+                break;
+            }
+        }
+
+        if (!$hasPermission) {
+            abort(403);
+        }
+        
         $provincias = Provincia::all();            
         $detailsLocalidad = Localidad::where('Id', $cliente->IdLocalidad)->first(['Nombre', 'CP', 'Id']);
         $paraEmpresas = Cliente::where('Identificacion', $cliente->Identificacion)->get();

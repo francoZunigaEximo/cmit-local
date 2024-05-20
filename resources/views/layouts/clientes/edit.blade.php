@@ -225,9 +225,10 @@
 
                     <div class="col-lg-12 pt-4">
                         <div class="hstack gap-2 justify-content-end">
-                            
                             <button type="button" id="btnVolverCliente" class="btn botonGeneral">Volver</button>
+                            @can('clientes_edit')
                             <button type="submit" class="btn botonGeneral">Actualizar</button>
+                            @endcan
                         </div>
                     </div>
                     <!--end col-->
