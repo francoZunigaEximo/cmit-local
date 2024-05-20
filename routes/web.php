@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AutorizadoController;
 use App\Http\Controllers\ClientesController;
 use App\Http\Controllers\ComentariosPrestacionesController;
+use App\Http\Controllers\DatosController;
 use App\Http\Controllers\ExamenesController;
 use App\Http\Controllers\FichaAltaController;
 use App\Http\Controllers\LocalidadController;
@@ -24,7 +25,6 @@ use App\Http\Controllers\PaqueteEstudioController;
 use App\Http\Controllers\PaqueteFacturacionController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\UsuariosController;
-use App\Models\ExamenCuenta;
 //use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Route;
 
@@ -40,6 +40,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/changePassword', [AuthController::class, 'cambiarPass'])->name('changePassword');
     Route::post('/changePassword', [AuthController::class, 'cambiarPostPass'])->name('changePass');
+    Route::post('register', [AuthController::class, 'register'])->name('register');
 
     /*Route::get('/test-redis', function () {
         Redis::set('prueba', 'Test de Redis!');
@@ -282,8 +283,16 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('searchNombreUsuario', [UsuariosController::class, 'NombreUsuario'])->name('searchNombreUsuario');
     Route::get('searchUsuario', [UsuariosController::class, 'Usuario'])->name('searchUsuario');
     Route::get('buscarUsuario', [UsuariosController::class, 'buscar'])->name('buscarUsuario');
+    Route::get('checkUsuario', [UsuariosController::class, 'checkUsuario'])->name('checkUsuario');
+    Route::get('checkCorreo', [UsuariosController::class, 'checkCorreo'])->name('checkCorreo');
+    Route::get('checkEmailUpdate', [UsuariosController::class, 'checkEmailUpdate'])->name('checkEmailUpdate');
 
     //Rutas de Roles
     Route::get('searchRol', [RolesController::class, 'listado'])->name('searchRol');
+    Route::get('listadoRoles', [RolesController::class, 'paginacion'])->name('listadoRoles');
+    Route::get('lstRolAsignados', [RolesController::class, 'asignados'])->name('lstRolAsignados');
+
+    //Rutas de Personal
+    Route::post('actualizarDatos', [DatosController::class, 'save'])->name('actualizarDatos');
 });
 

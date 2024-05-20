@@ -46,7 +46,7 @@ $(document).ready(()=>{
                 {
                     data: null,
                     render: function(data){
-                        let arr = (data.RolUsuario).split(',');
+                        let arr = [null, undefined].includes(data.RolUsuario) ? [] : (data.RolUsuario).split(',');
                         let result = '';
                         arr.forEach(element => {
                             result += `<span class="custom-badge nuevoAzul m-1">${element}</span>`;

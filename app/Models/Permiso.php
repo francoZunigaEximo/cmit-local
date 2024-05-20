@@ -19,4 +19,9 @@ class Permiso extends Model
     ];
 
     public $timestamps = false;
+
+    public function role()
+    {
+        return $this->belongsToMany(Rol::class, 'rol_permisos', 'permiso_id', 'rol_id');
+    }
 }

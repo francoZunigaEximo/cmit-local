@@ -41,7 +41,7 @@
     
             <div class="p-3 d-flex justify-content-end">
                 <a href="./pages-starter - AltaUser.html">
-                    <button type="button" class="btn botonGeneral"><i class="ri-add-line"></i> Nuevo</button>
+                    <a href="{{ route('usuarios.create') }}" class="btn botonGeneral"><i class="ri-add-line"></i> Nuevo</a>
                 </a>
             </div>
     

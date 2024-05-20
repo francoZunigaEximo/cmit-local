@@ -31,4 +31,19 @@ class RolesController extends Controller
 
         return response()->json(['result' => $resultados]);
     }
+
+    public function asignados(Request $request)
+    {
+        return Rol::join('user_rol', 'roles.Id', '=', 'user_rol.rol_id')
+            ->join('users', 'user_rol.user_id', '=', 'users.Id')
+            ->select(
+                'roles.nombre as Nombre',
+                'roles.descripcion as Descripcion',
+                'roles.Id as IdRol'
+            )
+            ->where('users.id', $request->Id)
+            ->get();
+
+        
+    }
 }

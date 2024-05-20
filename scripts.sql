@@ -967,7 +967,8 @@ INSERT INTO permisos(slug, descripcion) VALUES
 ("pacientes_delete","Eliminar pacientes"),
 ("examenCta_add","Agregar examen a cuenta"),
 ("examenCta_edit","Editar examen a cuenta"),
-("examenCta_delete","Eliminar examen a cuenta");
+("examenCta_delete","Eliminar examen a cuenta"),
+("boton_usuarios", "Boton slider de usuarios");
 
 CREATE TABLE `user_rol` (
   `user_id` bigint(20) unsigned NOT NULL,
@@ -996,6 +997,18 @@ INSERT INTO rol_permisos(rol_id, permiso_id) VALUES
 (1,1),(2,1),(3,1),(6,1),(1,2),(2,2),(3,2),(4,2),(5,2),(6,2),(1,3),(2,3),(3,3),(6,3),(3,4),(3,5),(3,6),(1,7),(2,7),(3,7),(4,7),(5,7),(6,7),(1,8),(2,8),(3,8),(4,8),(5,8),(6,8),(1,9),(2,9),(3,9),(4,9),(5,9),(6,9),(2,10),(3,10),(5,10),(6,10),(1,11),(2,11),(3,11),(4,11),(5,11),(6,11),(3,12),(6,12),(2,13),(3,13),(4,13),(5,13),(6,13),(2,14),(3,14),(5,14),(6,14)
 
 RENAME TABLE personal TO datos;
+
+ALTER TABLE datos DROP COLUMN Inactivo;
+ALTER TABLE datos DROP COLUMN EMail;
+ALTER TABLE datos ADD Telefono VARCHAR(12) NULL;
+ALTER TABLE clientes DROP FOREIGN KEY clientes_ibfk_3;
+ALTER TABLE clientes DROP COLUMN IdAsignado;
+ALTER TABLE hist_clientes DROP FOREIGN KEY hist_clientes_ibfk_3; /* IdAsignado en historial relacionado con personal */
+ALTER TABLE iso_minutas_as DROP FOREIGN KEY iso_minutas_as_ibfk_6; /* IdPersonal relacionado con personal/datos */
+ALTER TABLE iso_minutas_pd DROP FOREIGN KEY iso_minutas_pd_ibfk_2; /* IdPersonal relacionado con personal/datos */
+ALTER TABLE stockmov DROP FOREIGN KEY stockmov_ibfk_6;
+
+
 
 
 SELECT TABLE_NAME 
