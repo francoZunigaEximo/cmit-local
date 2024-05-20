@@ -13,7 +13,21 @@ class Personal extends Model
 
     protected $primaryKey = 'Id';
 
-    protected $fillable = [];
+    protected $fillable = [
+        'Id',
+        'TipoIdentificacion',
+        'Apellido',
+        'Nombre',
+        'TipoDocumento',
+        'Documento',
+        'Identificacion',
+        'Telefono',
+        'FechaNacimiento',
+        'Provincia',
+        'IdLocalidad', 
+        'CP',
+        'Direccion'
+    ];
 
     public $timestamps = false;
 

@@ -7,11 +7,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, HasRoles, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -25,6 +24,7 @@ class User extends Authenticatable
         'profesional_id',
         'datos_id',
         'inactivo',
+        'Anulado'
     ];
 
     protected $hidden = [
@@ -49,5 +49,10 @@ class User extends Authenticatable
     public function auditor()
     {
         return $this->hasOne(Auditor::class, 'IdUsuario', 'name');
+    }
+
+    public function role()
+    {
+        return $this->belongsToMany(Rol::class, 'user_rol', 'user_id', 'rol_id');
     }
 }

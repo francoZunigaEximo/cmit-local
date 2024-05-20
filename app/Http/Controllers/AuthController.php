@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -19,11 +20,31 @@ class AuthController extends Controller
             'password' => $request->password,
 
         ])) {
+            if(Auth::user()->inactivo === 1) {
+                Session::flush();
+                Auth::logout();
+                return redirect()->route('login')->withFail('El usuario se encuentra bloqueado. Consulte con el administrador');
+            }
+
+            if(Auth::user()->Anulado === 1) {
+                $fecha = Auth::user()->updated_at;
+                $nuevaFecha= Carbon::parse($fecha)->format('d/m/Y \a \l\a\s H:i');
+                Session::flush();
+                Auth::logout();
+                return redirect()->route('login')->withFail('El usuario fue eliminado el '. $nuevaFecha);
+            }
+
             $request->session()->regenerate();
 
-            if(!empty(Auth::user()->IdProfesional) && Auth::user()->IdProfesional !== 0){
+            if(Auth::check()){
 
-                return redirect()->route('profesionales.index');
+                $roles = Auth::user()->role;
+
+                foreach ($roles as $rol) {
+                    if ($rol->nombre == 'Efector' || $rol->nombre == 'Informador') {
+                        return redirect()->route('profesionales.index');
+                    }
+                }
             }
 
             //return redirect('/home');
@@ -36,26 +57,15 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-
-        $rules = [
-            'name' => 'required|string|max:100',
-            'email' => 'required|email|max:255|unique:users,email,'.Auth::id(),
-            'password' => 'required|min:8|same:repassword',
-        ];
-
-        $validated = Validator::make($request->all(), $rules);
-
-        if ($validated->fails()) {
-            return redirect()->route('register')->withErrors($validated->errors())->withInput();
-        }
-
-        $user = User::create([
+        User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'password' => Hash::make('cmit1234'),
+            'datos_id' => 0,
+            'inactivo' => 1,
         ]);
 
-        return redirect()->route('login')->withSuccess('Se ha registrado con éxito. Inicie sesión para continuar.');
+        return response()->json(User::max('id'));
     }
 
     public function logout()

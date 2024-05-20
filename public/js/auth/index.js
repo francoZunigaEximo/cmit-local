@@ -110,13 +110,71 @@ $(document).ready(()=>{
     });
 
 
-    $(document).on('click', '.buscarUsuario', function(e){
-        e.preventDefault();
+    $(document).on('click', '.baja', function(e){
+        let id = $(this).data('id');
 
+        if([null, undefined, 0].includes(id)) return;
+
+        if(confirm("¿Esta seguro que desea eliminar al usuario?")) {
+
+            preloader('on');
+            $.get(bajaUsuario, {Id: id})
+                .done(function(){
+                    preloader('off');
+                    toastr.success("Se ha dado de baja al usuario correctamente");
+                    setTimeout(()=> {
+                        $('#listaUsuarios').DataTable();
+                        $('#listaUsuarios').DataTable().draw(false);
+                    }, 2000);
+                });
+
+        }
+    });
+
+    $(document).on('click', '.bloquear', function(e){
+        let id = $(this).data('id');
+
+        if([null, undefined, 0].includes(id)) return;
+
+        if(confirm("¿Esta seguro que desea bloquear al usuario")){
+
+            preloader('on');
+            $.get(bloquearUsuario, {Id: id})
+                .done(function(response){
+                    preloader('off');
+                    toastr.success(response.msg);
+                    setTimeout(()=> {
+                        $('#listaUsuarios').DataTable();
+                        $('#listaUsuarios').DataTable().draw(false);
+                    }, 2000);
+                });
+
+        }
         
+    });
 
+    $(document).on('click', '.cambiarPass', function(e){
+        let id = $(this).data('id');
 
-        
-    })
+        if([null, undefined, 0].includes(id)) return;
+
+        if(confirm("¿Esta seguro que desea resetear la contraseña?")) {
+
+            preloader('on');
+            $.get(cambiarPassUsuario, {Id: id})
+                .done(function(){
+                    preloader('off');
+                    toastr.success("Se ha dado de cambiado la contraseña a 'cmit1234' correctamente");
+                });
+
+        }    
+    });
+
+    function preloader(opcion) {
+        $('#preloader').css({
+            opacity: '0.3',
+            visibility: opcion === 'on' ? 'visible' : 'hidden'
+        });
+    }
 
 });

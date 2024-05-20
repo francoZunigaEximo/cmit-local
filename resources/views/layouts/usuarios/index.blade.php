@@ -8,7 +8,6 @@
     <h4 class="mb-sm-0">Usuarios</h4>
 </div>
 
-
 <div class="row">
     <div class="p-12">
         <div class="d-flex justify-content-center align-items-center">
@@ -32,18 +31,23 @@
 
                     <div class="col-auto d-flex justify-content-end align-items-end">
                         <button type="button" class="btn btn-sm botonGeneral buscarUsuario"><i class="ri-search-line"></i> Buscar</button>&nbsp;
-                        <button type="button" class="btn btn-sm botonGeneral reiniciarUsuario"><i class="ri-arrow-go-forward-fill"></i> Reiniciar</button>
                     </div>
                 </div>
             </div>
         </div>
             <!-- End Filter -->
-    
-            <div class="p-3 d-flex justify-content-end">
-                <a href="./pages-starter - AltaUser.html">
-                    <button type="button" class="btn botonGeneral"><i class="ri-add-line"></i> Nuevo</button>
-                </a>
+            <div class="row mt-4">
+                <div class="col-sm-9">
+                    <span class="small"><i class="ri-edit-line"></i>&nbsp;Editar correo electronico, datos personales y roles.</span> | 
+                    <span class="small"><i class="ri-delete-bin-2-line"></i>&nbsp;Dar de baja/eliminar el usuario.</span> | 
+                    <span class="small"><i class="ri-lock-2-line"></i>&nbsp;Desactivar o activar usuario.</span> |
+                    <span class="small"><i class="ri-lock-password-line"></i>&nbsp;Reset de password a 'cmit1234'.</span>
+                </div>
+                <div class="col-sm-3 d-flex justify-content-end">
+                    <a href="{{ route('usuarios.create') }}" class="btn botonGeneral"><i class="ri-add-line"></i> Nuevo</a>
+                </div>
             </div>
+            
     
     
             <!-- Start Table -->
@@ -59,7 +63,7 @@
                                 <th>Acciones</th>
                             </tr>
                         </thead>
-                        <tbody class="list form-check-all">
+                        <tbody class="list form-check-all" id="lstUsuarios">
                             
                         </tbody>
                     </table>
@@ -77,6 +81,10 @@
     const searchUsuario = "{{route('searchUsuario') }}";
     const searchRol = "{{ route('searchRol') }}";
     const SEARCHUSUARIO = "{{ route('buscarUsuario') }}";
+    const INDEX = "{{ route('usuarios.index') }}";
+    const bajaUsuario = "{{ route('bajaUsuario')}}";
+    const bloquearUsuario = "{{ route('bloquearUsuario') }}";
+    const cambiarPassUsuario = "{{ route('cambiarPassUsuario') }}";
 </script>
 
 @push('styles')
