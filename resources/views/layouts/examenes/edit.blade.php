@@ -9,7 +9,7 @@
 
     <div class="page-title-right">
         <button type="button" id="clonar" class="btn botonGeneral"><i class="ri-file-copy-2-line"></i> Clonar</button>
-        <button type="button" style="margin-bottom: 10px" {!! $examene->Inactivo === 3 ? 'disabled' : 'id="eliminar"' !!} class="btn botonGeneral"><i class="ri-delete-bin-line"></i> Eliminar</button>
+        <button type="button" {!! $examene->Inactivo === 3 ? 'disabled' : 'id="eliminar"' !!} class="btn botonGeneral"><i class="ri-delete-bin-line"></i> Eliminar</button>
     </div>
 </div>
 
