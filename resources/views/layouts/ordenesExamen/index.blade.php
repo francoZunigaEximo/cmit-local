@@ -4,6 +4,8 @@
 
 @section('content')
 
+@can('etapas_show')
+
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
     <h4 class="mb-sm-0">Etapas </h4>
 
@@ -1114,5 +1116,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/i18n/es.js"></script>
 <script src="{{ asset('js/pages/select2.init.js') }}"></script>
 @endpush
+
+@endcan
 
 @endsection

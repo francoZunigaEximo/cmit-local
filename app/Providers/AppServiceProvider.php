@@ -35,10 +35,32 @@ class AppServiceProvider extends ServiceProvider
             return false;
         });
 
-        Gate::define('boton_usuarios', function(User $user) {
+        Gate::define('prestaciones_add', function(User $user) {
         
             foreach ($user->role as $rol) {
-                if ($rol->permiso->contains('slug', 'boton_usuarios')) {
+                if ($rol->permiso->contains('slug', 'prestaciones_add')) {
+                    return true;
+                }
+            }
+        
+            return false;
+        });
+
+        Gate::define('etapas_show', function(User $user) {
+        
+            foreach ($user->role as $rol) {
+                if ($rol->permiso->contains('slug', 'etapas_show')) {
+                    return true;
+                }
+            }
+        
+            return false;
+        });
+
+        Gate::define('clientes_add', function(User $user) {
+        
+            foreach ($user->role as $rol) {
+                if ($rol->permiso->contains('slug', 'clientes_add')) {
                     return true;
                 }
             }

@@ -261,6 +261,17 @@ class PrestacionesController extends Controller
     
     public function create()
     {
+        $hasPermission = false;
+        foreach(Auth::user()->role as $rol) {
+            if($rol->permiso->contains('slug', 'prestaciones_add')){
+                $hasPermission = true;
+                break;
+            }
+        }
+        if(!$hasPermission){
+            abort(403);
+        }
+
         $tipoPrestacion = PrestacionesTipo::all();
         $paquetes = PaqueteEstudio::all();
 
@@ -269,6 +280,17 @@ class PrestacionesController extends Controller
 
     public function edit(Prestacion $prestacione)
     {
+
+        $hasPermission = false;
+        foreach(Auth::user()->role as $rol) {
+            if($rol->permiso->contains('slug', 'prestaciones_show')){
+                $hasPermission = true;
+                break;
+            }
+        }
+        if(!$hasPermission){
+            abort(403);
+        }
 
         $tipoPrestacion = PrestacionesTipo::all();
         $financiador = Cliente::find($prestacione->Financiador, ['RazonSocial', 'Id', 'Identificacion']);
@@ -336,6 +358,17 @@ class PrestacionesController extends Controller
     public function down(Request $request): void
     {
 
+        $hasPermission = false;
+        foreach(Auth::user()->role as $rol) {
+            if($rol->permiso->contains('slug', 'prestaciones_delete')){
+                $hasPermission = true;
+                break;
+            }
+        }
+        if(!$hasPermission){
+            abort(403);
+        }
+
         $prestaciones = Prestacion::find($request->Id);
 
         if($prestaciones)
@@ -348,6 +381,17 @@ class PrestacionesController extends Controller
 
     public function blockPrestacion(Request $request)
     {
+        $hasPermission = false;
+        foreach(Auth::user()->role as $rol) {
+            if($rol->permiso->contains('slug', 'prestaciones_block')){
+                $hasPermission = true;
+                break;
+            }
+        }
+        if(!$hasPermission){
+            abort(403);
+        }
+
         $prestaciones = Prestacion::find($request->Id);
 
         if($prestaciones)
@@ -412,6 +456,17 @@ class PrestacionesController extends Controller
 
     public function updatePrestacion(Request $request)
     {
+
+        $hasPermission = false;
+        foreach(Auth::user()->role as $rol) {
+            if($rol->permiso->contains('slug', 'prestaciones_edit')){
+                $hasPermission = true;
+                break;
+            }
+        }
+        if(!$hasPermission){
+            abort(403);
+        }
 
         $prestacion = Prestacion::find($request->Id);
         $prestacion->IdEmpresa = $request->Empresa ?? 0;

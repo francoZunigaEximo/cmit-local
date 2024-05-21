@@ -141,11 +141,11 @@
                                     <li class="nav-item">
                                         <a href="{{ route('prestaciones.index') }}" class="nav-link enlace-blanco" data-key="t-prestaciones"> Prestaciones </a>
                                     </li>
-
+                                    @can('etapas_show')
                                     <li class="nav-item">
                                         <a href="{{ route('ordenesExamen.index') }}" class="nav-link enlace-blanco" data-key="t-etapas"> Etapas </a>
                                     </li>
-
+                                    @endcan
                                     <li class="nav-item">
                                         <a href="{{ route('mapas.index') }}" class="nav-link enlace-blanco" data-key="t-mapas"> Mapas </a>
                                     </li>
