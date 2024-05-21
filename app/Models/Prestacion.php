@@ -46,9 +46,8 @@ class Prestacion extends Model
         'Incompleto',
         'FechaAnul',
         'FechaFact',
-        'Evaluacion'
-        
-
+        'Evaluacion',
+        'Anulado'
     ];
 
     public $timestamps = false;

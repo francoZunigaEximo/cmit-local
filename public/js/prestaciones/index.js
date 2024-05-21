@@ -181,16 +181,28 @@ $(document).ready(()=>{
         if(prestacion === '') return;
 
         if(confirm("¿Está seguro que desea dar de baja esta prestación?")){
-
+            preloader('on');
             $.get(downPrestaActiva, {Id: prestacion})
-                .done(function(){
-                    toastr.success("Se ha dado de baja la prestación", "Perfecto");
-                    $('#listaPrestaciones').DataTable();
-                    $('#listaPrestaciones').DataTable().draw(false);
+                .done(function(response){
+                    preloader('off');
+                    if(response.estado === 'true') {
+
+                        toastr.success(response.msg);
+                        $('#listaPrestaciones').DataTable();
+                        $('#listaPrestaciones').DataTable().draw(false);
+                    } else {
+                        toastr.info(response.msg);
+                    }
                 })
-                .fail(function(xhr){
-                    toastr.error("Ha ocurrido un error. Consulte con el administrador", "Error");
-                    console.error(xhr);
+                .fail(function(jqXHR, xhr) {
+                    preloader('off');
+                    if (jqXHR.status === 403) {
+                        toastr.warning("No tiene permisos para realizar la acción");
+                        return;
+                    }else{
+                        console.error(xhr);
+                        toastr.error("Ha ocurrido un error. Consulte con el administrador");
+                    }
                 });
         }
     });
@@ -201,7 +213,7 @@ $(document).ready(()=>{
         let IdComentario = $(this).data('id');
         $('#IdComentarioEs').text(IdComentario);
         $('.guardarComentario').data('id', IdComentario);
-
+        
         $.ajax({
             url: getComentarioPres,
             type: 'GET',
@@ -227,9 +239,9 @@ $(document).ready(()=>{
     });
 
 
-    $('.guardarComentario').off('click').on('click', function() {
+    $('.guardarComentario').off('click').on('click', function(e) {
 
-        event.stopPropagation();
+        e.preventDefault();
         let IdComentario = $(this).data('id');
 
         if (IdComentario) {
@@ -261,16 +273,30 @@ $(document).ready(()=>{
 
         let id = $(this).data('id');
         
-        $.get(blockPrestacion, {Id: id})
+        if(confirm("¿Esta seguro que desea bloquear la prestación?")) {
+            preloader('on');
+            $.get(blockPrestacion, {Id: id})
             .done(function(){
+                preloader('off');
                 toastr.success("Se ha bloqueado correctamente", "Perfecto");
                 $('#listaPrestaciones').DataTable();
                 $('#listaPrestaciones').DataTable().draw(false);
             })
-            .fail(function(xhr){
-                toastr.error("Se ha producido un error. Consulte con el administrador", "Error");
-                console.error(xhr);
+            .fail(function(jqXHR, xhr) {
+                if (jqXHR.status === 403) {
+                    preloader('off');
+                    toastr.warning("No tiene permisos para realizar la acción");
+                    return;
+                }else{
+                    preloader('off');
+                    console.error(xhr);
+                    toastr.error("Ha ocurrido un error. Consulte con el administrador");
+                }
             });
+
+        }
+
+        
     });
     
 
@@ -302,5 +328,13 @@ $(document).ready(()=>{
     $('#checkAll').on('click', function() {
         $('input[type="checkbox"][name="Id"]:not(#checkAll)').prop('checked', this.checked);
     });
+
+    function preloader(opcion) {
+        $('#preloader').css({
+            opacity: '0.3',
+            visibility: opcion === 'on' ? 'visible' : 'hidden'
+        });
+    }
+
 
 });

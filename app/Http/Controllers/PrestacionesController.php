@@ -20,6 +20,8 @@ use Maatwebsite\Excel\Facades\Excel;
 use stdClass;
 use Illuminate\Support\Facades\Auth;
 
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+
 class PrestacionesController extends Controller
 {
 
@@ -355,29 +357,31 @@ class PrestacionesController extends Controller
 
     }
 
-    public function down(Request $request): void
+    public function down(Request $request): mixed
     {
-
         $hasPermission = false;
-        foreach(Auth::user()->role as $rol) {
-            if($rol->permiso->contains('slug', 'prestaciones_delete')){
+        foreach (Auth::user()->role as $rol) {
+            if ($rol->permiso->contains('slug', 'prestaciones_delete')) {
                 $hasPermission = true;
                 break;
             }
         }
-        if(!$hasPermission){
-            abort(403);
+
+        if (!$hasPermission) {
+            return response()->json(['msg' => 'No tienes permisos para realizar esta acción'], 403);
         }
 
         $prestaciones = Prestacion::find($request->Id);
 
-        if($prestaciones)
-        {
+        if ($prestaciones) {
             $prestaciones->update(['Estado' => '0']);
             Auditor::setAuditoria($request->Id, 1, 14, Auth::user()->name);
+            return response()->json(['msg' => 'Se ha dado de baja la prestación', 'estado' => 'true'], 200);
         }
-        
+
+        return response()->json(['msg' => 'No se encontró la prestación', 'estado' => 'false'], 404);
     }
+
 
     public function blockPrestacion(Request $request)
     {
@@ -389,7 +393,7 @@ class PrestacionesController extends Controller
             }
         }
         if(!$hasPermission){
-            abort(403);
+            return response()->json(['msg' => 'No tienes permisos para realizar esta acción'], 403);
         }
 
         $prestaciones = Prestacion::find($request->Id);
@@ -398,7 +402,10 @@ class PrestacionesController extends Controller
         {
             $prestaciones->update(['Anulado' => '1']); // 0 => Habilitado, 1 => Anulado
             Auditor::setAuditoria($request->Id, 1, 3, Auth::user()->name);
+            return response()->json(['msg' => 'Se ha bloqueado la prestación', 'estado' => 'true'], 200);
         }
+
+        return response()->json(['msg' => 'No se encontró la prestación', 'estado' => 'false'], 404);
         
     }
 
