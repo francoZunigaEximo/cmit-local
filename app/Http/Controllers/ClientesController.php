@@ -158,7 +158,16 @@ class ClientesController extends Controller
 
     public function create()
     {
-        if (!Auth::user()->role->permiso->can('clientes_add')){
+        $hasPermission = false;
+
+        foreach (Auth::user()->role as $rol) {
+            if ($rol->permiso->contains('slug', 'clientes_add')) {
+                $hasPermission = true;
+                break;
+            }
+        }
+
+        if (!$hasPermission) {
             abort(403);
         }
 

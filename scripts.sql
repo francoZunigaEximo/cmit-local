@@ -1025,4 +1025,17 @@ telefonos
 usuarios
 
 
+INSERT INTO permisos(slug, descripcion) VALUES
+("mapas_add","Agregar mapas nuevos"),
+("mapas_cerrar","Cerrar un mapa"),
+("mapas_finalizar","Finalizar un mapa"),
+("mapas_eenviar","eEnviar un mapa"),
+("facturacion","Modulo de facturacion general"),
+("notaDeCredito","Modulo de nota de credito general"),
+("examenesACuenta", "Modulo de Examenes a Cuenta general"),
+("stock_show","Visualizar stock"),
+("stock_baja", "dar de baja stock"),
+("stock_add", "Agregar stock"),
+("stock_parametros", "Parametros de stock"),
+("manual", "Modulo de stock completo");
 

@@ -198,6 +198,7 @@
     const verificarCorreo = "{{ $query->EMail ?? '' }}";
     const addRol = "{{ route('addRol') }}";
     const deleteRol = "{{ route('deleteRol') }}";
+    const INDEX = "{{ route('usuarios.index') }}";
 </script>
 
 @push('styles')

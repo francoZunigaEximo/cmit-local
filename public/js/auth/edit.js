@@ -58,7 +58,7 @@ $(document).ready(()=>{
 
     $(document).on('click', '#volver', function(e){
         e.preventDefault();
-        window.history.back();
+        window.location.href = INDEX;
     });
 
     let timer = null;
