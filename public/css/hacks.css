@@ -606,3 +606,10 @@ tr.shown td.details-control {
 .border-grueso {
 	border-bottom: #0e0d0d solid 2px;
 }
+
+.select2-container--default .select2-search--inline .select2-search__field {
+    position: relative;
+    top: -10px;
+	margin-top: 0px !important;
+}
+
