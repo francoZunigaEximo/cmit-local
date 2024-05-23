@@ -70,27 +70,30 @@ $(document).ready(()=>{
             EvalExclusivo = $('#EvalExclusivo').prop('checked'),
             ExpAnexo = $('#ExpAnexo').prop('checked');
 
-        localStorage.setItem('clon_Examen', Examen);
-        localStorage.setItem('clon_Estudio', Estudio);
-        localStorage.setItem('clon_Descripcion', Descripcion);
-        localStorage.setItem('clon_Reporte', Reporte);
-        localStorage.setItem('clon_Formulario', Formulario);
-        localStorage.setItem('clon_CodigoE', CodigoE);
-        localStorage.setItem('clon_Diasvencimiento', DiasVencimiento);
-        localStorage.setItem('clon_Inactivo', Inactivo);
-        localStorage.setItem('clon_priImpresion', priImpresion);
-        localStorage.setItem('clon_ProvEfector', ProvEfector);
-        localStorage.setItem('clon_ProvInformador', ProvInformador)
-        localStorage.setItem('clon_Informe', Informe)
-        localStorage.setItem('clon_Fisico', Fisico)
-        localStorage.setItem('clon_Adjunto', Adjunto)
-        localStorage.setItem('clon_Ausente', Ausente)
-        localStorage.setItem('clon:Devolucion', Devolucion)
-        localStorage.setItem('clon_EvalExclusivo', EvalExclusivo)
-        localStorage.setItem('clon_ExpAnexo', ExpAnexo)
+        if(confirm("¿Esta seguro que desea clonar la infomación?")) {
 
-        window.location.href = GOCREATE;
+            localStorage.setItem('clon_Examen', Examen);
+            localStorage.setItem('clon_Estudio', Estudio);
+            localStorage.setItem('clon_Descripcion', Descripcion);
+            localStorage.setItem('clon_Reporte', Reporte);
+            localStorage.setItem('clon_Formulario', Formulario);
+            localStorage.setItem('clon_CodigoE', CodigoE);
+            localStorage.setItem('clon_Diasvencimiento', DiasVencimiento);
+            localStorage.setItem('clon_Inactivo', Inactivo);
+            localStorage.setItem('clon_priImpresion', priImpresion);
+            localStorage.setItem('clon_ProvEfector', ProvEfector);
+            localStorage.setItem('clon_ProvInformador', ProvInformador)
+            localStorage.setItem('clon_Informe', Informe)
+            localStorage.setItem('clon_Fisico', Fisico)
+            localStorage.setItem('clon_Adjunto', Adjunto)
+            localStorage.setItem('clon_Ausente', Ausente)
+            localStorage.setItem('clon:Devolucion', Devolucion)
+            localStorage.setItem('clon_EvalExclusivo', EvalExclusivo)
+            localStorage.setItem('clon_ExpAnexo', ExpAnexo)
 
+            window.location.href = GOCREATE;
+
+        }
     });
 
     $(document).on('click', '#eliminar', function(e){

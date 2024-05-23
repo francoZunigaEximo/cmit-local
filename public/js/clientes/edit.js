@@ -272,21 +272,23 @@ $(document).ready(()=> {
             Provincia = $('#Provincia').val(),
             IdLocalidad = $('#IdLocalidad').val(),
             CP = $('#CP').val();
+            
+        if(confirm("¿Esta seguro que desea clonar la información?")) {
 
-        localStorage.setItem('clon_TipoCliente', TipoCliente);
-        localStorage.setItem('clon_Identificacion', Identificacion);
-        localStorage.setItem('clon_RazonSocial', RazonSocial);
-        localStorage.setItem('clon_CondicionIva', CondicionIva);
-        localStorage.setItem('clon_Telefono', Telefono);
-        localStorage.setItem('clon_EMail', EMail);
-        localStorage.setItem('clon_ObsEMail', ObsEMail);
-        localStorage.setItem('clon_Direccion', Direccion);
-        localStorage.setItem('clon_Provincia', Provincia);
-        localStorage.setItem('clon_Localidad', IdLocalidad);
-        localStorage.setItem('clon_CodigoPostal', CP);
+            localStorage.setItem('clon_TipoCliente', TipoCliente);
+            localStorage.setItem('clon_Identificacion', Identificacion);
+            localStorage.setItem('clon_RazonSocial', RazonSocial);
+            localStorage.setItem('clon_CondicionIva', CondicionIva);
+            localStorage.setItem('clon_Telefono', Telefono);
+            localStorage.setItem('clon_EMail', EMail);
+            localStorage.setItem('clon_ObsEMail', ObsEMail);
+            localStorage.setItem('clon_Direccion', Direccion);
+            localStorage.setItem('clon_Provincia', Provincia);
+            localStorage.setItem('clon_Localidad', IdLocalidad);
+            localStorage.setItem('clon_CodigoPostal', CP);
 
-        window.location.href = GOCREATE;
-
+            window.location.href = GOCREATE;
+        }
     });
 
        //get de los Autorizados
