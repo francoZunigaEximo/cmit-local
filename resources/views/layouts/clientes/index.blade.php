@@ -20,7 +20,7 @@
 
     <div class="card-body">
         <div class="listjs-table" id="customerList">
-            <div class="row">
+            <div class="row mb-2">
                 <div class="col-3">
                         
                     <div>

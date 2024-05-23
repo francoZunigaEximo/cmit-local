@@ -27,6 +27,7 @@ use App\Http\Controllers\RolesController;
 use App\Http\Controllers\UsuariosController;
 //use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Hash;
 
 //Route::get('/password', [AuthController::class, 'testCreate'])->name('password');
 
@@ -38,9 +39,13 @@ Route::group(['middleware' => 'guest'], function () {
 Route::group(['middleware' => 'auth'], function () {
 
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
-    Route::get('/changePassword', [AuthController::class, 'cambiarPass'])->name('changePassword');
-    Route::post('/changePassword', [AuthController::class, 'cambiarPostPass'])->name('changePass');
+    Route::get('/perfil', [AuthController::class, 'profile'])->name('perfil');
+    Route::post('actualizarPass', [AuthController::class, 'updatePass'])->name('actualizarPass');
     Route::post('register', [AuthController::class, 'register'])->name('register');
+    Route::get('checkPassword', [AuthController::class, 'checkPassword'])->name('checkPassword');
+    Route::get('/passw', function (){
+        return Hash::make('cmit1234');
+    });
 
     /*Route::get('/test-redis', function () {
         Redis::set('prueba', 'Test de Redis!');
@@ -299,5 +304,6 @@ Route::group(['middleware' => 'auth'], function () {
 
     //Rutas de Personal
     Route::post('actualizarDatos', [DatosController::class, 'save'])->name('actualizarDatos');
+    
 });
 

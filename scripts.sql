@@ -1039,3 +1039,16 @@ INSERT INTO permisos(slug, descripcion) VALUES
 ("stock_parametros", "Parametros de stock"),
 ("manual", "Modulo de stock completo");
 
+INSERT INTO permisos(slug, descripcion) VALUES
+("boton_prestaciones","Boton slider prestaciones");
+
+INSERT INTO rol_permisos(rol_id, permiso_id) VALUES
+(1,42),(2,42),(3,42),(4,42),(5,42),(6,42),(8,42),(9,42);
+
+INSERT INTO permisos(slug, descripcion) VALUES
+("noticias","Botón y modulo de noticias");
+
+INSERT INTO roles(nombre, descripcion) VALUES 
+("Stock",""),
+("Combinado",""),
+("Evaluador","");
