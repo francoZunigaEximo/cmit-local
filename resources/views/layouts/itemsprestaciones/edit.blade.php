@@ -130,7 +130,7 @@
                 <div class="col-md-4">
                     <div class="input-group input-group-sm mb-2">
                         <span class="input-group-text">Informador</span>
-                            @if($itemsprestacione->examenes->Informe === 1)
+                            @if($itemsprestacione->examenes->Informe === 0)
 
                                 <input type="text" class="form-control" value="Sin informador requerido" @disabled(true)>
 
@@ -146,7 +146,7 @@
                 <div class="col-md-2">
                     <div class="input-group input-group-sm mb-2">     
 
-                        @if($itemsprestacione->examenes->Informe === 0)
+                        @if($itemsprestacione->examenes->Informe === 1)
                             <span class="input-group-text">Estado</span>
                             <input type="text" class="form-control" style="color: {{ ($itemsprestacione->CInfo === 0 || $itemsprestacione->CInfo === 1 || $itemsprestacione->CInfo === 2 ? 'red' : ($itemsprestacione->CInfo === 3 ? 'green' : '')) ?? ''}}" id="EstadoI" name="EstadoI" value="{{ (in_array($itemsprestacione->CInfo, [0,1]) ? 'Pediente' : ($itemsprestacione->CInfo === 2 ? 'Borrador' : ($itemsprestacione->CInfo === 3 ? 'Cerrado' : ''))) ?? ''}}" @readonly(true)>
 
@@ -155,7 +155,7 @@
                 </div>
 
                 <div class="col-md-2">
-                    @if($itemsprestacione->examenes->Informe === 0)
+                    @if($itemsprestacione->examenes->Informe === 1)
                         <div class="input-group input-group-sm mb-2">
                             <span class="input-group-text">Fecha Pago</span>
                             <input type="date" id="FechaPagado2" name="FechaPagado2" class="form-control" value="{{ $itemsprestacione->FechaPagado2}}" @readonly(true)>
@@ -165,7 +165,7 @@
 
                 <div class="col-md-2">
 
-                    @if($itemsprestacione->examenes->Informe === 0)
+                    @if($itemsprestacione->examenes->Informe === 1)
                         <button type="button" id="asignarI" class="btn botonGeneral btn-sm asignarI">Asignar</button>
                         <button type="button" id="cerrarI" class="btn botonGeneral btn-sm cerrarI">Cerrar</button>
                         <input type="hidden" value="{{ $itemsprestacione->CInfo }}" id="CInfo">
@@ -173,7 +173,7 @@
                 </div>
 
             </div>
-            @if($itemsprestacione->examenes->Informe === 0)
+            @if($itemsprestacione->examenes->Informe === 1)
             <div class="row">
                 <div class="col-md-2">
                     <div class="input-group input-group-sm mb-2">
@@ -187,7 +187,7 @@
         </div>
     </div>
 
-    @if($itemsprestacione->examenes->Informe === 0)
+    @if($itemsprestacione->examenes->Informe === 1)
     <div class="row mb-3">
         <div class="col-12 mx-auto box-information">
             <div class="input-group input-group-sm mb-2">
@@ -246,7 +246,7 @@
             
                     </tbody>
                 </table>
-                @if($itemsprestacione->examenes->Informe === 0)
+                @if($itemsprestacione->examenes->Informe === 1)
                     <table class="display table table-bordered mt-4" style="width:100%"  id="listadoInformador">
                         <thead class="table-light">
                             <th class="sort" title="Adjunto Informador">Adjunto Informador</th>

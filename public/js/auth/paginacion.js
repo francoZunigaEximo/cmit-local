@@ -54,7 +54,7 @@ $(document).ready(()=>{
                     let editar = `<a title="Editar" href="${location.href}/${data.IdUser}/edit"><button type="button" class="btn btn-sm iconGeneralNegro"><i class="ri-edit-line"></i></button></a>`,
                         eliminar = `<button data-id="${data.IdUser}" title="Dar de baja al usuario" type="button" class="btn btn-sm iconGeneralNegro baja"><i class="ri-delete-bin-2-line"></i></button>`,
                         bloquear = `<button title="${data.Inactivo === 1 ? 'Activar usuario' : 'Desactivar usuario'}" data-id="${data.IdUser}" class="btn btn-sm iconGeneralNegro bloquear"><i class="ri-lock-2-line"></i></button>`,
-                        cambiar = `<button title="Cambiar password" data-id="${data.IdUser}" class="btn btn-sm iconGeneralNegro cambiarPass"><i class="ri-lock-password-line"></i></button>`;
+                        cambiar = `<button title="Cambiar password" data-id="${data.IdUser}" class="btn btn-sm iconGeneralNegro cambiarPass"><i class="ri-key-2-line"></i></button>`;
 
                     return `${editar}${bloquear}${cambiar}${eliminar}`;
                 }
