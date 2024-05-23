@@ -7,8 +7,8 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Session;
+use App\Models\Provincia;
 
 class AuthController extends Controller
 {
@@ -57,10 +57,12 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
+        $pass = "cmit1234";
+
         User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make('cmit1234'),
+            'password' => Hash::make($pass),
             'datos_id' => 0,
             'inactivo' => 1,
         ]);
@@ -77,47 +79,46 @@ class AuthController extends Controller
     }
 
     //Vista para cambiar password
-    public function cambiarPass()
+    public function profile()
     {
-        return view('layouts.change');
+        $usuario = Auth::user();
+        $query = User::join('datos', 'users.datos_id', '=', 'datos.Id')
+            ->join('localidades', 'datos.IdLocalidad', '=', 'localidades.Id')
+            ->select(
+                "users.name as Name",
+                "users.email as EMail",
+                "users.inactivo as Inactivo",
+                "datos.Id as IdDatos",
+                "datos.Telefono as Telefono",
+                "datos.TipoIdentificacion as TipoIdentificacion",
+                "datos.Identificacion as Identificacion",
+                "datos.TipoDocumento as TipoDocumento",
+                "datos.Documento as Documento",
+                "datos.Nombre as Nombre",
+                "datos.Apellido as Apellido",
+                "datos.FechaNacimiento as FechaNacimiento",
+                "datos.Direccion as Direccion",
+                "datos.IdLocalidad as ILocalidad",
+                "datos.Provincia as Provincia",
+                "datos.CP as CP",
+                "datos.Id as Id",
+                "localidades.Nombre as NombreLocalidad"
+            )->find($usuario->id);
+        $provincias = Provincia::all();
+
+        return view('layouts.change', compact(['query', 'provincias']));
     }
 
-    public function cambiarPostPass(Request $request)
+    public function updatePass(Request $request)
     {
-        $rules = [
-            'passactual' => [
-                'required',
-                'string',
-                function ($attribute, $value, $fail) use ($request) {
-                    if (! Hash::check($value, $request->user()->password)) {
-                        $fail('La contraseña es incorrecta');
-                    }
-                },
-            ],
-            'newpass' => 'required|min:8|max:20|string',
-            'newpass_confirmation' => 'required|same:newpass',
-        ];
-
-        $msg = [
-            'passactual.required' => 'Debe ingresar su contraseña actual para poder realizar el cambio',
-            'newpass.min' => 'La contraseña debe tener un minimo de 8 caracteres y un maximo de 20', 'newpass.max' => 'La contraseña debe tener un minimo de 8 caracteres y un maximo de 20',
-            'newpass.required' => 'La nueva contraseña es un campo requerido',
-            'newpass_confirmation.required' => 'Debe volver a escribir la contraseña para confirmar su cambio',
-            'newpass_confirmation.same' => 'Las nuevas contraseñas deben coincidir. Las mismas no son iguales',
-        ];
-
-        $validated = Validator::make($request->all(), $rules, $msg);
-
-        if ($validated->fails()) {
-            return back()->withInput()->withErrors($validated->messages());
-        } else {
-
             $user = $request->user();
-            $user->password = Hash::make($request->newpass);
+            $user->password = Hash::make($request->password);
             $user->save();
-
-            return redirect()->back()->withSuccess('¡La contraseña se ha actualizado correctamente!');
-
-        }
     }
+
+    public function checkPassword(Request $request)
+    {
+        return response()->json(Hash::check($request->password, Auth::user()->password));
+    }
+
 }

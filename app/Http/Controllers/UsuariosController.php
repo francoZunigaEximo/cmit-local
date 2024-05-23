@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Hash;
 
 class UsuariosController extends Controller
 {
+    const password = "cmit1234";
+
     public function index(Request $request)
     {
         if ($request->ajax()) {
@@ -168,13 +170,13 @@ class UsuariosController extends Controller
 
     public function checkUsuario(Request $request): mixed
     {
-        $query = User::where('name', $request->usuario)->doesntExist();;
+        $query = User::where('name', $request->usuario)->doesntExist();
         return response()->json($query);       
     }
 
     public function checkCorreo(Request $request): mixed
     {
-        $query = User::where('email', $request->email)->doesntExist();;
+        $query = User::where('email', $request->email)->doesntExist();
         return response()->json($query);         
     }
 
@@ -229,7 +231,7 @@ class UsuariosController extends Controller
 
         if($query) 
         {
-            $query->password = Hash::make('cmit1234');
+            $query->password = Hash::make(SELF::password);
             $query->save();
         }
     }

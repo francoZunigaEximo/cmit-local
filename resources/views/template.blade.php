@@ -89,7 +89,7 @@
                         @foreach (Auth::user()->role as $rol)
                             <h6><span class="dropdown-item badge text-bg-info small fw-bolder">{{ $rol->nombre }}</span></h6>
                         @endforeach
-                        <a class="dropdown-item" href="{{ route('changePassword')}}"><i class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Perfil</span></a>
+                        <a class="dropdown-item" href="{{ route('perfil')}}"><i class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Perfil</span></a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="{{ route('logout') }}"><i class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-key="t-logout">Salir</span></a>
                     </div>
@@ -138,9 +138,11 @@
                             </a>
                             <div class="menu-dropdown mega-dropdown-menu collapse" id="sidebarOperaciones">
                                 <ul class="nav nav-sm flex-column">
+                                    @can('boton_prestaciones')
                                     <li class="nav-item">
                                         <a href="{{ route('prestaciones.index') }}" class="nav-link enlace-blanco" data-key="t-prestaciones"> Prestaciones </a>
                                     </li>
+                                    @endcan
                                     @can('etapas_show')
                                     <li class="nav-item">
                                         <a href="{{ route('ordenesExamen.index') }}" class="nav-link enlace-blanco" data-key="t-etapas"> Etapas </a>
@@ -210,11 +212,13 @@
                             </div>
                         </li>
 
+                        @can('noticias')
                         <li class="nav-item">
                             <a class="nav-link menu-link" href="{{ route('noticias.edit', 1) }}" aria-expanded="false">
                                 <i data-feather="message-circle" class="icon-dual"></i> <span data-key="t-layers" title="(ALT + N)">Noticias</span>
                             </a>
                         </li>
+                        @endcan
                         
                     </ul>
                 </div>
