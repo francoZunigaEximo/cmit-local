@@ -44,19 +44,19 @@ $(document).ready(()=>{
             {
                 data: null,
                 render: function(data){
-                    return `<p class="text-${data.Inactivo === 0 ? 'success' : 'danget' }">${data.Inactivo === 0 ? 'Activo' : 'Inactivo'}</p>`;
+                    return `<p class="text-${data.Inactivo === 0 ? 'success' : 'danger' }">${data.Inactivo === 0 ? 'Activo' : 'Inactivo'}</p>`;
                 },
             },
             {
                 data: null,
                 render: function(data){            
                     
-                    let editar = `<a title="Editar" href="${location.href}/${data.IdUser}/edit"><button type="button" class="btn btn-sm iconGeneralNegro"><i class="ri-edit-line"></i></button></a>`,
-                        eliminar = `<button data-id="${data.IdUser}" title="Dar de baja al usuario" type="button" class="btn btn-sm iconGeneralNegro baja"><i class="ri-delete-bin-2-line"></i></button>`,
-                        bloquear = `<button title="${data.Inactivo === 1 ? 'Activar usuario' : 'Desactivar usuario'}" data-id="${data.IdUser}" class="btn btn-sm iconGeneralNegro bloquear"><i class="ri-lock-2-line"></i></button>`,
-                        cambiar = `<button title="Cambiar password" data-id="${data.IdUser}" class="btn btn-sm iconGeneralNegro cambiarPass"><i class="ri-key-2-line"></i></button>`;
+                    let editar = `<a class="btn btn-sm botonGeneral small p-1" title="Editar" href="${location.href}/${data.IdUser}/edit"><i class="ri-edit-line p-1"></i>Editar</a>`,
+                        eliminar = `<button data-id="${data.IdUser}" title="Dar de baja al usuario" type="button" class="btn btn-sm botonGeneral baja small p-1"><i class="ri-delete-bin-2-line p-1"></i>Eliminar</button>`,
+                        bloquear = `<button title="${data.Inactivo === 1 ? 'Activar usuario' : 'Desactivar usuario'}" data-id="${data.IdUser}" class="btn btn-sm p-1 botonGeneral bloquear small"><i class="ri-lock-unlock-line p-1"></i>${data.Inactivo === 1 ? 'Activar' : 'Desactivar'}</button>`,
+                        cambiar = `<button title="Restablecer password" data-id="${data.IdUser}" class="btn btn-sm botonGeneral p-1 cambiarPass"><i class="ri-key-2-line p-1"></i>Reset</button>`;
 
-                    return `${editar}${bloquear}${cambiar}${eliminar}`;
+                    return `${editar} ${bloquear} ${cambiar} ${eliminar}`;
                 }
             }
         ],
