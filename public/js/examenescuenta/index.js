@@ -9,6 +9,7 @@ $(document).ready(()=> {
     };
 
     $('#fechaHasta, #FechaCreate').val(fechaNow(null, "-", 0));
+    $('#estado').val("todos");
 
     $('#empresa, #empresaSaldo, #empresaPago, #empresaCreate').each(function() {
         $(this).select2({

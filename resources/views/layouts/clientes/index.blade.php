@@ -144,7 +144,7 @@ const GOINDEX = "{{ route('clientes.index') }}";
 
 <script src="{{ asset('js/scripts.js') }}?v={{ time() }}"></script>
 <script src="{{ asset('js/select2.min.js') }}"></script>
-<script src="{{ asset('js/pages/select2.init.js') }}"></script>
+<script src="{{ asset('js/init.select2.js') }}"></script>
 @endpush
 
 @endsection
