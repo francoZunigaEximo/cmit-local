@@ -943,7 +943,7 @@ class ExamenesCuentaController extends Controller
                 'examenes.Id as IdTest',
                 'pagosacuenta_it.Id as IdEx',
                 'pagosacuenta.Pagado as Pagado',
-                DB::raw('(SELECT COUNT(*) FROM pagosacuenta_it WHERE IdPago = pagosacuenta.Id AND IdExamen = examenes.Id) as Cantidad')
+                DB::raw('(SELECT COUNT(*) FROM pagosacuenta_it WHERE IdPago = pagosacuenta.Id AND IdExamen = examenes.Id AND IdPrestacion = 0) as Cantidad')
             )
             ->where(function ($query) use ($request) {
                 $query->where('pagosacuenta_it.Precarga', $request->Id)

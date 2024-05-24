@@ -675,7 +675,7 @@ $(document).ready(()=> {
             });
     }
 
-    async function examenes(){
+    function examenes(){
     $('#lstFact').empty();
     preloader('on');
     $.get(lstClientes, {Id: ID})
