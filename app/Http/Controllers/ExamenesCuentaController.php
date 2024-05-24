@@ -484,6 +484,7 @@ class ExamenesCuentaController extends Controller
             ->where('pagosacuenta_it.IdPrestacion', $request->Id ?? '')
             ->where('pagosacuenta_it.IdPago', $request->IdPago)
             ->whereNot('pagosacuenta_it.IdExamen', 0)
+            ->whereNot('pagosacuenta_it.IdPrestacion', 0)
             ->groupBy('pagosacuenta_it.IdExamen')
             ->orderBy('pagosacuenta_it.IdPrestacion', 'ASC')
             ->get();
