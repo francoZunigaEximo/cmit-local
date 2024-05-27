@@ -10,15 +10,17 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Yajra\DataTables\DataTables;
-use Illuminate\Support\Facades\Auth;
+use App\Traits\CheckPermission;
 
 class ClientesController extends Controller
 {
 
-    use ObserverClientes;
+    use ObserverClientes, CheckPermission;
 
     public function index(Request $request)
     {
+        if (!$this->hasPermission("clientes_show")) {abort(403);}
+
         if ($request->ajax()) {
 
             $query = Cliente::select(
@@ -41,6 +43,7 @@ class ClientesController extends Controller
 
     public function search(Request $request)
     {
+        if (!$this->hasPermission("clientes_show")) {abort(403);}
 
         if ($request->ajax()) {
 
@@ -158,25 +161,15 @@ class ClientesController extends Controller
 
     public function create()
     {
-        $hasPermission = false;
-
-        foreach (Auth::user()->role as $rol) {
-            if ($rol->permiso->contains('slug', 'clientes_add')) {
-                $hasPermission = true;
-                break;
-            }
-        }
-
-        if (!$hasPermission) {
-            abort(403);
-        }
-
+        if (!$this->hasPermission("clientes_add")) {abort(403);}
         return view('layouts.clientes.create')->with('provincias', Provincia::all());
     }
 
 
     public function store(Request $request)
     {
+        if (!$this->hasPermission("clientes_add")) {abort(403);}
+
         $nuevoId = Cliente::max('Id') + 1;
 
         Cliente::create([
@@ -205,18 +198,7 @@ class ClientesController extends Controller
 
     public function edit(Cliente $cliente)
     {
-        $hasPermission = false;
-
-        foreach (Auth::user()->role as $rol) {
-            if ($rol->permiso->contains('slug', 'clientes_edit')) {
-                $hasPermission = true;
-                break;
-            }
-        }
-
-        if (!$hasPermission) {
-            abort(403);
-        }
+        if (!$this->hasPermission("clientes_edit")) {abort(403);}
         
         $provincias = Provincia::all();            
         $detailsLocalidad = Localidad::where('Id', $cliente->IdLocalidad)->first(['Nombre', 'CP', 'Id']);
@@ -227,6 +209,8 @@ class ClientesController extends Controller
 
     public function update(Request $request, Cliente $cliente)
     {
+        if (!$this->hasPermission("clientes_edit")) {abort(403);}
+
         $cliente = Cliente::find($request->Id);
         if($cliente)
         {
@@ -238,47 +222,71 @@ class ClientesController extends Controller
 
     }
 
-    public function multipleDown(Request $request): void
+    public function multipleDown(Request $request): mixed
     {
+
+        if (!$this->hasPermission("clientes_edit")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
+
         $ids = $request->input('ids');
         if (! is_array($ids)) {
             $ids = [$ids];
         }
 
         Cliente::whereIn('id', $ids)->update(['Estado' => 0]);
+        return response()->json(['msg' => 'Se ha dado de baja correctamente'], 200);
     }
 
-    public function baja(Request $request): void
+    public function baja(Request $request): mixed
     {
+        if (!$this->hasPermission("clientes_edit")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
+
         $cliente = Cliente::find($request->Id);
         
         if($cliente)
         {
             $cliente->update(['Estado' => 0]);
+            return response()->json(['msg' => 'Se ha dado de baja correctamente'], 200);
         }
 
     }
 
-    public function block(Request $request): void
+    public function block(Request $request): mixed
     {
+        if (!$this->hasPermission("clientes_edit")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
+
         $cliente = Cliente::find($request->cliente);
         if($cliente)
         {
             $cliente->update(['Motivo' => $request->motivo, 'Bloqueado' => '1']);
+            return response()->json(['msg' => 'El bloqueo se ha realizado de manera correcta'], 200);
         }
 
     }
 
-    public function verifyIdentificacion(Request $request)
+    public function verifyIdentificacion(Request $request): mixed
     {
+        if (!$this->hasPermission("clientes_edit")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
+
         $cliente = Cliente::where('Identificacion', $request->Identificacion)->first();
         $existe = $cliente !== null;
 
         return response()->json(['existe' => $existe, 'cliente' => $cliente]);
     }
 
-    public function verifyCuitEmpresa(Request $request)
+    public function verifyCuitEmpresa(Request $request): mixed
     {
+        if (!$this->hasPermission("clientes_edit")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
+
         $cliente = Cliente::where('Identificacion', $request->Identificacion)
             ->where('ParaEmpresa', $request->ParaEmpresa)
             ->first();
@@ -298,8 +306,12 @@ class ClientesController extends Controller
         }
     }
 
-    public function checkEmail(Request $request):void
-    {
+    public function checkEmail(Request $request):mixed
+    {   
+        if (!$this->hasPermission("clientes_edit")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
+
         $cliente = Cliente::find($request->Id);
         if($cliente)
         {
@@ -316,6 +328,9 @@ class ClientesController extends Controller
 
     public function checkOpciones(Request $request)
     {
+        if (!$this->hasPermission("clientes_edit")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
         
         $cliente = Cliente::find($request->Id);
 
@@ -336,6 +351,10 @@ class ClientesController extends Controller
     //Exportar clientes
     public function excel(Request $request)
     {
+        if (!$this->hasPermission("clientes_export")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
+
         $ids = $request->input('Id');
         if (! is_array($ids)) {
             $ids = [$ids];
@@ -385,6 +404,9 @@ class ClientesController extends Controller
 
     public function checkParaEmpresa(Request $request)
     {
+        if (!$this->hasPermission("clientes_edit")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
 
         $cliente = Cliente::find($request->empresa);
 
@@ -395,7 +417,11 @@ class ClientesController extends Controller
     }
 
     public function getBloqueo(Request $request)
-    {
+    {   
+        if (!$this->hasPermission("clientes_edit")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
+
         $cliente = Cliente::where('Id', $request->Id)->first(['Bloqueado', 'Motivo']);
         
         if($cliente->Bloqueado === 1)
