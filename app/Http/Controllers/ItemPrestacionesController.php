@@ -780,6 +780,7 @@ class ItemPrestacionesController extends Controller
                     'examenes.Nombre as Nombre',
                     'examenes.Id as IdExamen',
                     'examenes.Adjunto as ExaAdj',
+                    'examenes.Informe as Informe',
                     'proveedor2.InfAdj as InfAdj',
                     'examenes.NoImprime as ExaNI',
                     'efector.Nombre as NombreE',
