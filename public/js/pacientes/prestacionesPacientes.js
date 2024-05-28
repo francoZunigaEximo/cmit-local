@@ -677,16 +677,19 @@ $(document).ready(()=>{
             })
     }
 
-    async function listadoFacturas(id, idexamen){
+    function listadoFacturas(id, idexamen){
         $('#lstEx').empty();
         preloader('on');
 
         $.get(lstExClientes, {Id: id})
             .done(async function(response){
+                console.log("Aqui es: " + id)
                 preloader('off');
                 let promises = response.map(async function(r) {
                     if(response && response.length) {
-                        let suc = r.Suc ? r.Suc.toString().padStart(4, '0') : '-', numero = r.Nro ? r.Nro.toString().padStart(8, '0') : '-', moduloResult = await vistaDni(r.Id,idexamen);
+                        let suc = [null,0,undefined,''].includes(r.Suc) ? '' : (r.Suc ? r.Suc.toString().padStart(4, '0') : '-'), 
+                            numero = [null,0,undefined,''].includes(r.Nro) ? '' : (r.Nro ? r.Nro.toString().padStart(8, '0') : '-'), 
+                            moduloResult = await vistaDni(r.Id,idexamen);
                         let contenido = `
                         <tr class="fondo-gris">
                             <td colspan="3"><span class="fw-bolder text-capitalize">fact </span> ${r.Tipo ?? '-'}${suc}-${numero}</td>

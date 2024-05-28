@@ -427,11 +427,10 @@ class ExamenesCuentaController extends Controller
 
     public function lstClientes(Request $request)
     {
-        $clientes = ExamenCuenta::join('pagosacuenta_it', function ($join) {
-            $join->on('pagosacuenta.Id', '=', 'pagosacuenta_it.IdPago')
-                ->whereNot('pagosacuenta_it.IdExamen', 0);
-            })
+        $clientes = ExamenCuenta::join('pagosacuenta_it', 'pagosacuenta.Id', '=', 'pagosacuenta_it.IdPago')
             ->join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
+            ->join('prestaciones', 'pagosacuenta_it.IdPrestacion', '=', 'prestaciones.Id')
+            ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
             ->select(
                 'pagosacuenta.Id as Id',
                 'pagosacuenta.Fecha as Fecha',
@@ -439,7 +438,7 @@ class ExamenesCuentaController extends Controller
                 'pagosacuenta.Suc as Suc',
                 'pagosacuenta.Nro as Nro',
                 'pagosacuenta.Obs as Obs',
-                DB::raw('(SELECT COUNT(*) FROM pagosacuenta_it WHERE IdPago = pagosacuenta.Id AND IdExamen = examenes.Id AND pagosacuenta_it.IdPrestacion <> 0) as Cantidad')
+                DB::raw('COUNT(DISTINCT CASE WHEN pagosacuenta_it.IdPrestacion <> 0 THEN pagosacuenta_it.IdPrestacion END) as Cantidad')
             )
             ->where('pagosacuenta.IdEmpresa', $request->Id)
             ->orderBy('pagosacuenta.Id', 'Desc')
@@ -485,7 +484,7 @@ class ExamenesCuentaController extends Controller
             ->where('pagosacuenta_it.IdPrestacion', $request->Id ?? '')
             ->where('pagosacuenta_it.IdPago', $request->IdPago)
             ->whereNot('pagosacuenta_it.IdExamen', 0)
-            ->whereNot('pagosacuenta_it.IdPrestacion', 0)
+            //->whereNot('pagosacuenta_it.IdPrestacion', 0)
             ->groupBy('pagosacuenta_it.IdExamen')
             ->orderBy('pagosacuenta_it.IdPrestacion', 'ASC')
             ->get();
@@ -903,6 +902,7 @@ class ExamenesCuentaController extends Controller
                  'pagosacuenta.Id as Id'
              )
              ->where('pagosacuenta_it.IdPrestacion', 0)
+             ->whereNot('pagosacuenta_it.Obs', 'provisorio')
              ->groupBy('pagosacuenta.Tipo')
              ->groupBy('pagosacuenta.Suc')
              ->groupBy('pagosacuenta.Nro')
@@ -955,11 +955,7 @@ class ExamenesCuentaController extends Controller
             ->where('pagosacuenta.Id', $request->IdPago)
             ->whereNot('pagosacuenta_it.IdExamen', 0);
 
-            /*$clientes->when(!empty($request->IdExamen), function ($query) use ($request) {
-                $query->where('pagosacuenta_it.IdExamen', $request->IdExamen);
-            });*/
-
-            $clientes = $clientes->groupBy('examenes.Nombre')->orderBy('pagosacuenta_it.IdPrestacion', 'ASC')
+            $clientes = $clientes->groupBy('examenes.Id')->orderBy('pagosacuenta_it.IdPrestacion', 'ASC')
             ->get();
         
         return response()->json($clientes);

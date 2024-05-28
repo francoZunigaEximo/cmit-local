@@ -745,8 +745,8 @@ $(document).ready(()=> {
                     if (response && response.length) {
                         let result =  '';
                         for (let r of response) {
-                            let suc = [null, undefined, 0, ''].includes(suc) ? '' : (r.Suc).toString().padStart(4, '0'), 
-                                numero = [null, undefined, 0, ''].includes(numero) ? '' : (r.Nro).toString().padStart(8, '0');
+                            let suc = [null, undefined, 0, ''].includes(r.Suc) ? '' : (r.Suc).toString().padStart(4, '0'), 
+                                numero = [null, undefined, 0, ''].includes(r.Nro) ? '' : (r.Nro).toString().padStart(8, '0');
                             result += `
                             <tr>
                                 <td>${r.Cantidad}</td>
