@@ -27,16 +27,24 @@ $(document).ready(function(){
                     _token: TOKEN,
                     ids: ids
                 },
-                success: function() {
-                    toastr.success('¡Se ha dado de baja a los clientes correctamente!', 'Acción realizada');
+                success: function(response) {
+                    toastr.success(response.msg);
                     setTimeout(()=>{
                         $('#listaClientes').DataTable().draw(false);
                     }, 3000);
                    
                 },
-                error: function(xhr) {
-                    toastr.error('¡Ha ocurrido un inconveniente y la solicitud no podrá llevarse a cabo. Consulte con el administrador!', 'Error');
+                error: function(jqXHR, xhr) {
+                    
+                    if(jqXHR.status === 403) {
+                        toastr.warning("No tiene permisos para realizar la actividad");
+                        return
+                    }else{
+
+                        toastr.error('¡Ha ocurrido un inconveniente y la solicitud no podrá llevarse a cabo. Consulte con el administrador!', 'Error');
                     console.error(xhr);
+
+                    } 
                 }
             });
         }
@@ -81,8 +89,16 @@ $(document).ready(function(){
                             document.body.removeChild(link);
                         }, 100);
                     },
-                    error: function(xhr, status, error) {
-                        console.log(xhr.responseText);
+                    error: function(xhr,jqXHR) {
+
+                        if(jqXHR.status === 403) {
+                            toastr("No tiene permisos para realizar esta acción");
+                            return
+                        }else{
+        
+                            toastr('Ha ocurrido un error. Consulte con el administrador', 'Error');
+                            console.error(xhr);
+                        }
                     }
                 });
             }
@@ -110,16 +126,25 @@ $(document).ready(function(){
         if(confirm("¿Está seguro que desea dar de baja al cliente?")){
 
             $.post(baja, {_token: TOKEN, Id: cliente})
-            .done(function(){
-                toastr.success('Se ha dado de baja al cliente de manera correcta', 'Perfecto');
+            .done(function(response){
+                toastr.success(response.msg);
                 setTimeout(()=>{
                     $('#listaClientes').DataTable();
                     $('#listaClientes').DataTable().draw(false);
                 },3000);
             })
-            .fail(function(xhr){
-                toastr('Ha ocurrido un error. Consulte con el administrador', 'Error');
-                console.error(xhr);
+            .fail(function(jqXHR, xhr){
+
+                if(jqXHR.status === 403) {
+                    toastr("No tiene permisos para realizar esta acción");
+                    return
+                }else{
+
+                    toastr('Ha ocurrido un error. Consulte con el administrador', 'Error');
+                    console.error(xhr);
+                }
+
+                
             });
         }
        

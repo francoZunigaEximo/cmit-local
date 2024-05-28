@@ -29,9 +29,11 @@
                             <button type="button" class="btn botonGeneral add-btn"  id="create-btn" data-bs-target="#showModal"><i class="ri-add-line align-bottom me-1"></i> Nuevo</button>
                         </a>
                         @endcan
+                        @can('clientes_export')
                         <button type="button" id="excel" class="btn botonGeneral" title="Generar reporte en Excel">
                             <i class="ri-file-excel-line"></i>
                         </button>
+                        @endcan
                         <button type="button" class="btn botonGeneral" title="Mensajería a clientes">
                             <i class="ri-send-plane-line" title="Mensajería"></i>
                         </button> 

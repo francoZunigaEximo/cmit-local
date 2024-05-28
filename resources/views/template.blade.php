@@ -177,10 +177,11 @@
                                     <li class="nav-item">
                                         <a href="{{ route('examenes.index') }}" class="nav-link enlace-blanco" data-key="t-examenes"> Examenes </a>
                                     </li>
-                                    
+                                    @can('clientes_show')
                                     <li class="nav-item">
                                         <a href="{{ route('clientes.index') }}" class="nav-link enlace-blanco" data-key="t-cliente"> Clientes </a>
                                     </li>
+                                    @endcan
                                     @can('boton_usuarios')
                                     <li class="nav-item">
                                         <a href="{{ route('usuarios.index') }}" class="nav-link enlace-blanco" data-key="t-usuarios"> Usuarios </a>

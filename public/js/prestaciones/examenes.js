@@ -568,7 +568,7 @@ $(document).ready(()=>{
                                                 </span>
                                                 ${examen.ExaAdj === 1 ? `<i class="ri-attachment-line ${[2,5].includes(examen.CAdj) ? 'verde' : [1,4].includes(examen.CAdj) ? 'gris' : ''}"></i>`: ``}    
                                             </td>
-                                            <td class="date text-center" title="${examen.Informe === 1 && examen.ApellidoI} ${examen.Informe === 1 ? examen.NombreI : ''}">${examen.Informe === 1 ? examen.ApellidoI : ''}
+                                            <td class="date text-center" title="${examen.Informe === 1 ? examen.ApellidoI : ''} ${examen.Informe === 1 ? examen.NombreI : ''}">${examen.Informe === 1 ? examen.ApellidoI : ''}
                                                 <span class="badge badge-soft-${(examen.Informe === 0 ? 'dark' :(examen.Informe === 1 && examen.CInfo === 3 ? 'success' : ([0,1,2].includes(examen.CInfo)) ? 'danger' : ''))}">${(examen.Informe === 0 ? 'Sin informador' : (examen.Informe === 0 && examen.CInfo === 3 ? 'Cerrado' : (examen.CInfo == 2 ? 'Borrador' : ([0,1].includes(examen.CInfo) ? 'Pendiente': ''))))}</span>
                                                 ${examen.Informe === 1 && examen.InfAdj === 1 ? `<i class="ri-attachment-line ${[2,3].includes(examen.CInfo) ? 'verde' : [1].includes(examen.CInfo) ? 'gris' : ''}"></i>`: ``}   
                                             </td>
