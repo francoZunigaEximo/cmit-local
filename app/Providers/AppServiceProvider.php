@@ -3,11 +3,12 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use App\Models\User;
-use Illuminate\Support\Facades\Gate;
+use App\Traits\AccessPolicy;
 
 class AppServiceProvider extends ServiceProvider
 {
+    use AccessPolicy;
+
     /**
      * Register any application services.
      */
@@ -24,50 +25,21 @@ class AppServiceProvider extends ServiceProvider
         ini_set('max_execution_time', 300);
         ini_set('memory_limit', '256M');
 
-        Gate::define('boton_usuarios', function(User $user) {
-            foreach ($user->role as $rol) {
-                if ($rol->permiso->contains('slug', 'boton_usuarios')) {
-                    return true;
-                }
-            }
-            return false;
-        });
-
-        Gate::define('prestaciones_add', function(User $user) {
-            foreach ($user->role as $rol) {
-                if ($rol->permiso->contains('slug', 'prestaciones_add')) {
-                    return true;
-                }
-            }
-            return false;
-        });
-
-        Gate::define('etapas_show', function(User $user) {
-            foreach ($user->role as $rol) {
-                if ($rol->permiso->contains('slug', 'etapas_show')) {
-                    return true;
-                }
-            }
-            return false;
-        });
-
-        Gate::define('clientes_add', function(User $user) {
-            foreach ($user->role as $rol) {
-                if ($rol->permiso->contains('slug', 'clientes_add')) {
-                    return true;
-                }
-            }
-            return false;
-        });
-
-        Gate::define('boton_prestaciones', function(User $user) {
-            foreach ($user->role as $rol) {
-                if ($rol->permiso->contains('slug', 'boton_prestaciones')) {
-                    return true;
-                }
-            }
-            return false;
-        });
+        $this->gateAccess("prestaciones_show");
+        $this->gateAccess("etapas_show");
+        $this->gateAccess("mapas_show");
+        $this->gateAccess("clientes_show");
+        $this->gateAccess("noticias_show");
+        $this->gateAccess("examenCuenta_show");
+        $this->gateAccess("pacientes_show");
+        $this->gateAccess("facturacion_show");
         
+
+        $this->gateAccess("prestaciones_add");
+        $this->gateAccess("clientes_add");
+        $this->gateAccess("pacientes_add");
+
+        $this->gateAccess('boton_usuarios');
+
     }
 }

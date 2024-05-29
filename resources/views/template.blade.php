@@ -138,7 +138,7 @@
                             </a>
                             <div class="menu-dropdown mega-dropdown-menu collapse" id="sidebarOperaciones">
                                 <ul class="nav nav-sm flex-column">
-                                    @can('boton_prestaciones')
+                                    @can('prestaciones_show')
                                     <li class="nav-item">
                                         <a href="{{ route('prestaciones.index') }}" class="nav-link enlace-blanco" data-key="t-prestaciones"> Prestaciones </a>
                                     </li>
@@ -148,10 +148,11 @@
                                         <a href="{{ route('ordenesExamen.index') }}" class="nav-link enlace-blanco" data-key="t-etapas"> Etapas </a>
                                     </li>
                                     @endcan
+                                    @can("mapas_show")
                                     <li class="nav-item">
                                         <a href="{{ route('mapas.index') }}" class="nav-link enlace-blanco" data-key="t-mapas"> Mapas </a>
                                     </li>
-                                    
+                                    @endcan
                                 </ul>
                             </div>
                         </li>
@@ -162,21 +163,26 @@
                             </a>
                             <div class="menu-dropdown mega-dropdown-menu collapse" id="sidebarTablas">
                                 <ul class="nav nav-sm flex-column">
+                                    @can('pacientes_show')
                                     <li class="nav-item">
                                         <a href="{{ route('pacientes.index') }}" class="nav-link enlace-blanco" data-key="t-pacientes"> Pacientes </a>
                                     </li>
-
+                                    @endcan
+                                    @can("especialidades_show")
                                     <li class="nav-item">
                                         <a href="{{ route('especialidades.index') }}" class="nav-link enlace-blanco" data-key="t-especialidades"> Especialidades </a>
                                     </li>
-
+                                    @endcan
+                                    @can("profesionales_show")
                                     <li class="nav-item">
                                         <a href="{{ route('profesionales.index') }}" class="nav-link enlace-blanco" data-key="t-profesionales"> Profesionales </a>
                                     </li>
-
+                                    @endcan
+                                    @can("examenes_show")
                                     <li class="nav-item">
                                         <a href="{{ route('examenes.index') }}" class="nav-link enlace-blanco" data-key="t-examenes"> Examenes </a>
                                     </li>
+                                    @endcan
                                     @can('clientes_show')
                                     <li class="nav-item">
                                         <a href="{{ route('clientes.index') }}" class="nav-link enlace-blanco" data-key="t-cliente"> Clientes </a>
@@ -197,23 +203,26 @@
                             </a>
                             <div class="menu-dropdown mega-dropdown-menu collapse" id="sidebarVentas">
                                 <ul class="nav nav-sm flex-column">
+                                    @can("examenesCuenta_show")
                                     <li class="nav-item">
                                         <a href="{{ route('examenesCuenta.index')}}" class="nav-link enlace-blanco" data-key="t-ExCuenta"> Ex. a Cta </a>
                                     </li>
-
+                                    @endcan
+                                    @can("facturas_show")
                                     <li class="nav-item">
                                         <a href="#" class="nav-link enlace-blanco" data-key="t-factura"> Factura </a>
                                     </li>
-
+                                    @endcan
+                                    @can("notaCredito_show")
                                     <li class="nav-item">
                                         <a href="#" class="nav-link enlace-blanco" data-key="t-notaCredito"> Nota de crédito </a>
                                     </li>
-                                    
+                                    @endcan
                                 </ul>
                             </div>
                         </li>
 
-                        @can('noticias')
+                        @can('noticias_edit')
                         <li class="nav-item">
                             <a class="nav-link menu-link" href="{{ route('noticias.edit', 1) }}" aria-expanded="false">
                                 <i data-feather="message-circle" class="icon-dual"></i> <span data-key="t-layers" title="(ALT + N)">Noticias</span>

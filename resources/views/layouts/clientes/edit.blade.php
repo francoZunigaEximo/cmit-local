@@ -58,7 +58,9 @@
     </ul>
     <div class="row">
         <div class="col-sm-12 text-end">
+            @can('clientes_edit')
             <button type="button" class="btn botonGeneral" id="clonar"><i class="ri-file-copy-2-line"></i> Clonar</button>
+            @endcan
         </div>
     </div>
     
@@ -327,7 +329,9 @@
                     <!--end col-->
                     <div class="col-lg-12">
                         <div class="text-end">
+                            @can('clientes_edit')
                             <button type="button" id="btnAutorizado" class="btn botonGeneral">Autorizar</button>
+                            @endcan
                         </div>
                         
                     </div>
@@ -427,7 +431,9 @@
 
                             <!--end col-->
                             <div class="hstack gap-2 justify-content-end">
+                                @can('clientes_edit')
                                 <button type="button" class="btn botonGeneral" id="btnOpciones">Guardar</button>
+                                @endcan
                             </div>
                         </div>
                         <!--end row-->
@@ -470,7 +476,9 @@
                     </label>
                 </div>
                 <div class="hstack gap-2 justify-content-end">
+                    @can('clientes_edit')
                     <button type="button" class="btn botonGeneral" id="guardarEmail">Guardar</button>
+                    @endcan
                 </div>
             </div>
         </div>
@@ -501,14 +509,18 @@
                 </div>
             </div>
             <div class="hstack gap-2 justify-content-end">
+                @can('clientes_edit')
                 <button type="button" class="btn botonGeneral" id="btnObservaciones" >Guardar</button>
+                @endcan
             </div>
         </div>
 
         <div class="tab-pane" id="examenCuenta" role="tabpanel">
             <div class="row">
                 <div class="col-sm-12 text-end">
+                    @can('examenCta_add')
                     <button data-id="{{ $cliente->Id }}" data-name="{{ $cliente->RazonSocial }}" class="btn btn-sm botonGeneral nuevoExamen"><i class="ri-add-line"></i> Alta Ex. a Cta</button>
+                    @endcan
                 </div>
             </div>
 
