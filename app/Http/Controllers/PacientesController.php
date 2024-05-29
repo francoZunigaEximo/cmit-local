@@ -13,23 +13,21 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Yajra\DataTables\DataTables;
+use App\Traits\CheckPermission;
 
 class PacientesController extends Controller
 {
-    use Components, ObserverPacientes;
+    use Components, ObserverPacientes, CheckPermission;
 
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): mixed
     {
-
+        if(!$this->hasPermission("pacientes_show")){abort(403);}
         return view('layouts.pacientes.index');
     }
 
-    /**
-     * Search
-     */
     public function search(Request $request)
     {
 
@@ -110,12 +108,15 @@ class PacientesController extends Controller
 
     public function create():mixed
     {
-
+        if(!$this->hasPermission("pacientes_add")){abort(403);}
         return view('layouts.pacientes.create', with(['provincias' =>  Provincia::all()]));
     }
 
     public function store(Request $request): mixed
     {
+        if(!$this->hasPermission("pacientes_add")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
 
         $nuevoIdPaciente = Paciente::max('Id') + 1;
 
@@ -155,12 +156,14 @@ class PacientesController extends Controller
 
     public function show(Paciente $paciente): mixed
     {
+        if(!$this->hasPermission("pacientes_show")){ abort(403);}
         return view('layouts.pacientes.show', compact(['paciente']));
     }
 
     public function edit(Paciente $paciente): mixed
     {
-        
+        if(!$this->hasPermission("pacientes_edit")){abort(403);}
+
         $tiposPrestacionPrincipales = ['ART', 'INGRESO', 'PERIODICO', 'OCUPACIONAL', 'EGRESO', 'OTRO'];
 
         return view('layouts.pacientes.edit', with([
@@ -180,7 +183,7 @@ class PacientesController extends Controller
 
     public function update(Request $request, Paciente $paciente)
     {
-
+        if(!$this->hasPermission("paciente_edit")){abort(403);}
         $paciente = Paciente::find($paciente->Id);
 
         $data = $request->only([

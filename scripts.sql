@@ -1052,3 +1052,40 @@ INSERT INTO roles(nombre, descripcion) VALUES
 ("Stock",""),
 ("Combinado",""),
 ("Evaluador","");
+
+INSERT INTO permisos(slug, descripcion) VALUES
+("pacientes_show","Visualizar pacientes"),
+("pacientes_add", "Agregar paciente"),
+("pacientes_edit", "Editar paciente"),
+("paciente_delete", "Eliminar paciente"),
+("paciente_report", "Reportes paciente");
+
+INSERT INTO rol_permisos(rol_id, permiso_id) VALUES
+(2,43),(3,43),(4,43),(5,43),(6,43),(2,44),(3,44),(4,44),(5,44),(6,44),(2,45),(3,45),(4,45),(5,45),(6,45);
+
+INSERT INTO rol_permisos(rol_id, permiso_id) VALUES
+(2,46),(3,46),(4,46),(5,46),(6,46),(2,47),(3,47),(4,47),(5,47),(6,47);
+
+INSERT INTO rol_permisos(rol_id, permiso_id) VALUES
+(4,3),(5,3);
+
+INSERT INTO permisos(slug, descripcion) VALUES
+("mapas_show","Visualizar mapas");
+
+INSERT INTO permisos(slug, descripcion) VALUES
+("especialidades_show","Visualizar especialidades"),
+("especialidades_add", "Agregar especialidad"),
+("especialidades_edit", "Modificar especialidad"),
+("especialidades_delete", "Eliminar especialidad");
+
+INSERT INTO permisos(slug, descripcion) VALUES
+("noticias_show", "Visualizar noticias"),
+("noticias_add", "Crear noticia"),
+("noticias_edit", "Editar noticia"),
+("noticias_delete", "Eliminar noticias");
+
+INSERT INTO rol_permisos(rol_id, permiso_id) VALUES
+(1,54),(2,54),(3,54),(4,54),(5,54),(6,54);
+
+INSERT INTO permisos(slug, descripcion) VALUES
+("examenCuenta_show","Visualizar examenes a cuenta");

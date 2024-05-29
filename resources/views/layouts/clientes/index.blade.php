@@ -34,9 +34,11 @@
                             <i class="ri-file-excel-line"></i>
                         </button>
                         @endcan
+                        @can('clientes_send')
                         <button type="button" class="btn botonGeneral" title="Mensajería a clientes">
                             <i class="ri-send-plane-line" title="Mensajería"></i>
                         </button> 
+                        @endcan
                     </div>
                 </div>
                 <div class="col-2">

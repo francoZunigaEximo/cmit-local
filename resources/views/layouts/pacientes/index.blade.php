@@ -26,17 +26,23 @@
                     <div class="row g-4 mb-3">
                         <div class="col-sm-8">
                             <div>
+                                @can("pacientes_add")
                                 <a href="{{ route('pacientes.create') }}">
                                     <button type="button" class="btn botonGeneral">
                                         <i class="ri-add-line align-bottom me-1"></i> Nuevo
                                     </button>
-                                </a>   
+                                </a>  
+                                @endcan 
+                                @can("paciente_delete")
                                 <button type="button" id="btnBajaMultiple" class="btn iconGeneral" title="Baja multiple de pacientes">
                                     <i class="ri-delete-bin-2-line"></i>
                                 </button>
+                                @endcan
+                                @can("paciente_report")
                                 <button type="button" id="excel" class="btn iconGeneral" title="Generar reporte en Excel">
                                     <i class="ri-file-excel-line"></i>
                                 </button>
+                                @endcan
                             </div>
                         </div>
                         <div class="col-sm-4">
