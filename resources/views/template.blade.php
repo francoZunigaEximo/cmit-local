@@ -203,7 +203,7 @@
                             </a>
                             <div class="menu-dropdown mega-dropdown-menu collapse" id="sidebarVentas">
                                 <ul class="nav nav-sm flex-column">
-                                    @can("examenesCuenta_show")
+                                    @can("examenCuenta_show")
                                     <li class="nav-item">
                                         <a href="{{ route('examenesCuenta.index')}}" class="nav-link enlace-blanco" data-key="t-ExCuenta"> Ex. a Cta </a>
                                     </li>
