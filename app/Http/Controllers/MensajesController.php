@@ -303,6 +303,10 @@ class MensajesController extends Controller
                 $correos = array_merge($facturas, $informes, $resultados);
                 $correos = array_unique($correos);
 
+                if(empty($correos)){
+                    return response()->json([], 500);
+                }
+
                 foreach ($correos as $correo) {
 
                     SendEmailJob::dispatch($correo, $request->Asunto, $request->Cuerpo);

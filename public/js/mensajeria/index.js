@@ -217,9 +217,15 @@ $(document).ready(function() {
                 })
                 .fail(function(jqXHR){
                     preloader('off');
+                    let errorResponse = JSON.parse(jqXHR.responseText);
+
+                    if(jqXHR.status === 500){
+                        toastr.warning(errorResponse);
+                        return;
+                    }
 
                     if(jqXHR.status === 403){       
-                        toastr.warning(jqXHR.responseJSON.msg);
+                        toastr.warning(errorResponse);
                         return;
                     }else{
                         toastr.error("Ha ocurrido un error al enviar los emails");
@@ -285,9 +291,15 @@ $(document).ready(function() {
                 })
                 .fail(function(jqXHR){
                     preloader('off');
+                    let errorResponse = JSON.parse(jqXHR.responseText);
 
+                    if(jqXHR.status === 500){
+                        toastr.warning(errorResponse);
+                        return;
+                    }
+                    
                     if(jqXHR.status === 403){       
-                        toastr.warning(jqXHR.responseJSON.msg);
+                        toastr.warning(errorResponse);
                         return;
                     }else{
                         toastr.error("Ha ocurrido un error al enviar los emails");
