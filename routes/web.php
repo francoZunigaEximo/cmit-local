@@ -21,6 +21,7 @@ use App\Http\Controllers\NoticiasController;
 use App\Http\Controllers\PrestacionesObsFasesController;
 use App\Http\Controllers\OrdenesExamenController;
 use App\Http\Controllers\ExamenesCuentaController;
+use App\Http\Controllers\MensajesController;
 use App\Http\Controllers\PaqueteEstudioController;
 use App\Http\Controllers\PaqueteFacturacionController;
 use App\Http\Controllers\RolesController;
@@ -304,6 +305,22 @@ Route::group(['middleware' => 'auth'], function () {
 
     //Rutas de Personal
     Route::post('actualizarDatos', [DatosController::class, 'save'])->name('actualizarDatos');
-    
+   
+    //Rutas de Mensajes
+    Route::get('mensajes/auditoria', [MensajesController::class, 'auditoria'])->name('mensajes.auditoria');
+    Route::get('mensajes/modelos', [MensajesController::class, 'modelos'])->name('mensajes.modelos');
+    Route::get('mensajes/modelos/create', [MensajesController::class, 'createModelo'])->name('mensajes.modelos.create');
+    Route::get('mensajes/modelos/edit', [MensajesController::class, 'editModelo'])->name('mensajes.modelos.edit');
+    Route::get('mensajes/modelos/delete', [MensajesController::class, 'deleteModelo'])->name('mensajes.modelos.delete');
+    Route::post('mensajes/modelos/save', [MensajesController::class, 'saveModelo'])->name('mensajes.modelos.save');
+    Route::post('mensajes/modelos/update', [MensajesController::class, 'actualizarModelo'])->name('mensajes.modelos.update');
+    Route::resource('mensajes', MensajesController::class);
+    Route::get('searchMensaje', [MensajesController::class, 'search'])->name('searchMensaje');
+    Route::post('updateEmail', [MensajesController::class, 'updateEmail'])->name('updateEmail');
+    Route::get('loadModelos', [MensajesController::class, 'loadModelos'])->name('loadModelos');
+    Route::get('loadMensaje', [MensajesController::class, 'loadMensaje'])->name('loadMensaje');
+    Route::get('verAuditoria', [MensajesController::class, 'verAuditoria'])->name('verAuditoria');
+    Route::get('mensajes/search', [MensajesController::class, 'search'])->name('mensajes.search');
+    Route::get('sendEmails', [MensajesController::class, 'sendEmails'])->name('sendEmails');
 });
 

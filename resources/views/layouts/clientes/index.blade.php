@@ -35,9 +35,9 @@
                         </button>
                         @endcan
                         @can('clientes_send')
-                        <button type="button" class="btn botonGeneral" title="Mensajería a clientes">
+                        <a class="btn botonGeneral" title="Mensajería a clientes" href="{{ route('mensajes.index') }}">
                             <i class="ri-send-plane-line" title="Mensajería"></i>
-                        </button> 
+                        </a> 
                         @endcan
                     </div>
                 </div>

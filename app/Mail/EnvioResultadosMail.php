@@ -13,12 +13,14 @@ class EnvioResultadosMail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public array $data;
+
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    public function __construct(array $data)
     {
-        //
+        $this->data = $data;
     }
 
     /**
@@ -27,7 +29,7 @@ class EnvioResultadosMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Envio Resultados Mail',
+            subject: $this->data['subject'],
         );
     }
 
@@ -37,7 +39,8 @@ class EnvioResultadosMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'view.name',
+            view: 'emails.modelo',
+            with: ['content' => $this->data['content']],
         );
     }
 

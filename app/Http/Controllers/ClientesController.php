@@ -306,7 +306,7 @@ class ClientesController extends Controller
         }
     }
 
-    public function checkEmail(Request $request):mixed
+    public function checkEmail(Request $request): mixed
     {   
         if (!$this->hasPermission("clientes_edit")) {
             return response()->json(['msg' => 'No tiene permisos'], 403);
@@ -324,6 +324,8 @@ class ClientesController extends Controller
             $cliente->SEMail = ($request->sinEnvio === 'true') ? 1 : 0;
             $cliente->save();
         }
+
+        return response()->json(['msg' => '¡Se han registrado los cambios correctamente!'], 200);
     }
 
     public function checkOpciones(Request $request)

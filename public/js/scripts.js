@@ -97,21 +97,6 @@ $(document).ready(function() {
         $('input[type="checkbox"][name="Id"]:not(#checkAll)').prop('checked', this.checked);
     });
 
-
-    function mostrarPreloader(arg) {
-        $(arg).css({
-            opacity: '0.3',
-            visibility: 'visible'
-        });
-    }
-    
-    function ocultarPreloader(arg) {
-        $(arg).css({
-            opacity: '0',
-            visibility: 'hidden'
-        });
-    }
-
     $('#btnVolver').click(function() {
         history.back();
     }); 

@@ -1089,3 +1089,6 @@ INSERT INTO rol_permisos(rol_id, permiso_id) VALUES
 
 INSERT INTO permisos(slug, descripcion) VALUES
 ("examenCuenta_show","Visualizar examenes a cuenta");
+
+INSERT INTO permisos(slug, descripcion) VALUES
+("mensajeria_edit","Editar y actualizar correos");

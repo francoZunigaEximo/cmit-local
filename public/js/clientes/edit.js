@@ -211,14 +211,18 @@ $(document).ready(()=> {
                 anexo: emailsAnexo,
                 Id: ID
             },
-            success: function(){
+            success: function(response){
 
-                toastr.success('¡Se han registrado los cambios correctamente!', 'Excelente');
+                toastr.success(response.msg);
             },
-            error: function(xhr){
+            error: function(jqXHR, xhr){
 
-                toastr.error('Hubo un error al obtener los autorizados. Consulte con el administrador', 'Error');
-                console.error(xhr);
+                if(jqXHR.status === 403) {
+                    toastr.warning("No tiene permisos para realizar esta acción");
+                }else{
+                    toastr.error('Hubo un error al obtener los autorizados. Consulte con el administrador', 'Error');
+                    console.error(xhr);
+                }
             }
             });
         }
