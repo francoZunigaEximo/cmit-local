@@ -1,23 +1,3 @@
-function acortadorTexto(cadena, nroCaracteres = 10) {
-    return cadena.length <= nroCaracteres ? cadena : cadena.substring(0,nroCaracteres);
-}
-
-function saltoLinea(cadena) {
-    let textoConSaltos = '';
-    for (var i = 0; i < cadena.length; i++) {
-        textoConSaltos += cadena[i];
-        if ((i + 1) % 130 === 0) {
-            textoConSaltos += '<br>';
-        }
-    }
-    return textoConSaltos;
-}
-
-function ajustarFecha(fecha) {
-    let fechaArray = fecha.split(' '), cortar = fechaArray[0].split('-'), nuevaFecha = `${cortar[2]}/${cortar[1]}/${cortar[0]}`;
-    return `${nuevaFecha} ${fechaArray[1]} `;
-}
-
 $(document).ready(function(){
 
     let paginacion = {
@@ -95,12 +75,6 @@ $(document).ready(function(){
 
     const selector = '#listaAuditorias';
 
-    toastr.options = {
-        closeButton: true,   
-        progressBar: true,    
-        timeOut: 3000,        
-    };
-
     $(selector).DataTable().clear().destroy();
     new DataTable(selector, paginacion);
 
@@ -117,5 +91,6 @@ $(document).ready(function(){
         new DataTable(selector, paginacion);
     
     });
+
 
 });

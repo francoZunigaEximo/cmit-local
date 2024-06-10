@@ -1,13 +1,6 @@
 $(document).ready(function(){
 
-    toastr.options = {
-        "closeButton": true,
-        "positionClass": "toast-top-right",
-        "progressBar": true,
-        "timeOut": "5000"
-    };
-
-    $('.Cuerpo').richText({
+    let atributos = {
                 
         bold: true,
         italic: true,
@@ -160,7 +153,9 @@ $(document).ready(function(){
         saveCallback: undefined,
         saveOnBlur: 0,
         undoRedo: true
-    });
+    };
+
+    $('.Cuerpo').richText(atributos);
 
     $(document).on('click', '.crear', function(e){
         e.preventDefault();
@@ -202,11 +197,5 @@ $(document).ready(function(){
         }
     });
 
-    function preloader(opcion) {
-        $('#preloader').css({
-            opacity: '0.3',
-            visibility: opcion === 'on' ? 'visible' : 'hidden'
-        });
-    }
 
 });

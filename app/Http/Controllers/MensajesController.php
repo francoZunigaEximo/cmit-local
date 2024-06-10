@@ -11,6 +11,7 @@ use App\Traits\CheckPermission;
 use App\Mail\EnvioResultadosMail;
 use Illuminate\Support\Facades\Mail;
 use App\Jobs\SendEmailJob;
+use App\Enum\HttpStatus;
 
 class MensajesController extends Controller
 {
@@ -28,7 +29,7 @@ class MensajesController extends Controller
     public function search(Request $request)
     {
         if (!$this->hasPermission("mensajeria_edit")) {
-            return response()->json(['msg' => 'No tiene permisos'], 403);
+            return response()->json([], 403);
         }
 
         if($request->ajax()){
@@ -110,7 +111,7 @@ class MensajesController extends Controller
     public function updateEmail(Request $request): mixed
     {   
         if (!$this->hasPermission("mensajeria_edit")) {
-            return response()->json(['msg' => 'No tiene permisos'], 403);
+            return response()->json([], 403);
         }
 
         $cliente = Cliente::find($request->Id);
@@ -128,7 +129,7 @@ class MensajesController extends Controller
     public function loadModelos()
     {
         if (!$this->hasPermission("mensajeria_edit")) {
-            return response()->json(['msg' => 'No tiene permisos'], 403);
+            return response()->json([], 403);
         }
 
         $modelos = EnviarModelo::whereNot('Id', 0)->get();
@@ -139,7 +140,7 @@ class MensajesController extends Controller
     public function loadMensaje(Request $request)
     {
         if (!$this->hasPermission("mensajeria_edit")) {
-            return response()->json(['msg' => 'No tiene permisos'], 403);
+            return response()->json([], 403);
         }
 
         $modelo = EnviarModelo::find($request->Id);
@@ -189,17 +190,17 @@ class MensajesController extends Controller
     public function deleteModelo(Request $request)
     {
         if (!$this->hasPermission("mensajeria_edit")) {
-            return response()->json(['msg' => 'No tiene permisos'], 403);
+            return response()->json([], 403);
         }
 
         $modelo = EnviarModelo::find($request->Id);
         
         if($modelo){
             $modelo->delete();
-            return response()->json(['msg' => 'Se ha eliminado el modelo correctamente'], 200);
+            return response()->json([], 200);
         }
 
-        return response()->json(['msg' => 'No se ha podido eliminar el modelo'], 500);
+        return response()->json([], 400);
     }
 
     public function createModelo()
@@ -214,7 +215,7 @@ class MensajesController extends Controller
     public function saveModelo(Request $request)
     {
         if (!$this->hasPermission("mensajeria_edit")) {
-            return response()->json(['msg' => 'No tiene permisos'], 403);
+            return response()->json([], 403);
         }
 
         $guardar = EnviarModelo::create([
@@ -228,7 +229,7 @@ class MensajesController extends Controller
             return response()->json(['msg' => 'Se ha creado el modelo correctamente'], 200);
         }
    
-        return response()->json(['msg' => 'No se ha podido crear el modelo'], 500); 
+        return response()->json([], 500); 
     }
 
     public function editModelo(Request $request)
@@ -245,7 +246,7 @@ class MensajesController extends Controller
     public function actualizarModelo(Request $request)
     {
         if (!$this->hasPermission("mensajeria_edit")) {
-            return response()->json(['msg' => 'No tiene permisos'], 403);
+            return response()->json([], 403);
         }
 
         $modelo = EnviarModelo::find($request->Id);
@@ -256,16 +257,16 @@ class MensajesController extends Controller
             $modelo->Cuerpo = $request->Cuerpo;
             $modelo->save();
 
-            return response()->json(['msg' => 'Se ha actualizado el modelo correctamente'], 200);
+            return response()->json([], 200);
         }
 
-        return response()->json(['msg' => 'No se ha podido actualizar el modelo'], 500);
+        return response()->json(['msg' => 'No se ha podido actualizar el modelo'], 400);
     }
 
     public function verAuditoria(Request $request)
     {
         if (!$this->hasPermission("mensajeria_edit")) {
-            return response()->json(['msg' => 'No tiene permisos'], 403);
+            return response()->json([], 403);
         }
 
         $auditoria = AuditoriaMail::find($request->Id);
@@ -275,13 +276,13 @@ class MensajesController extends Controller
             return response()->json($data, 200);
         }
         
-        return response()->json(['msg' => 'No se ha podido actualizar el modelo'], 500);
+        return response()->json([], 500);
     }
 
     public function sendEmails(Request $request)
     {
         if (!$this->hasPermission("mensajeria_edit")) {
-            return response()->json(['msg' => 'No tiene permisos'], 403);
+            return response()->json([], 403);
         }
 
         $Ids = $request->Id;
@@ -303,8 +304,8 @@ class MensajesController extends Controller
                 $correos = array_merge($facturas, $informes, $resultados);
                 $correos = array_unique($correos);
 
-                if(empty($correos)){
-                    return response()->json([], 500);
+                if($correos[0] === '' && count($correos) === 1){
+                    return response()->json(['msg' => 'No hay correos activos para realizar el envio'], 400);
                 }
 
                 foreach ($correos as $correo) {
@@ -324,9 +325,11 @@ class MensajesController extends Controller
                     Mail::to($correo)->queue($email);*/
                 } 
             }
+
+            return response()->json(['msg' => 'Se han enviado los mensajes correctamente'], 200);
         }
 
-        return response()->json(['msg' => 'Se han enviado los correos correctamente'], 200);
+        return response()->json([], 500);
     }
 
 }

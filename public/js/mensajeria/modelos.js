@@ -3,7 +3,7 @@ $(document).ready(function(){
     $(document).on('click', '.editar', function(){
 
         let id = $(this).data('id');
-        console.log(id);
+   
         if([null, undefined, ''].includes(id)) {
             toastr.warning("No hay ningún modelo para editar");
             return;
@@ -31,27 +31,13 @@ $(document).ready(function(){
                     
                 })
                 .fail(function(jqXHR){
-                    preloader('off');
-                    if(jqXHR.status === 403){
-                        toastr.warning("No tiene permisos para realizar esta acción");
-                        return;
-                    
-                    }else if(jqXHR.status === 500){
-                        toastr.warning(jqXHR.responseJSON.msg);
-                        return;
-                    }else{
-                        toastr.error("Error: Consulte con el administrador");
-                        console.error(jqXHR);
-                    }   
+                    preloader('off');            
+                    let errorData = JSON.parse(jqXHR.responseText);            
+                    checkError(jqXHR.status, errorData.msg);
+                    return;
                 });
         }
     });
 
-    function preloader(opcion) {
-        $('#preloader').css({
-            opacity: '0.3',
-            visibility: opcion === 'on' ? 'visible' : 'hidden'
-        });
-    }
-
+    
 });

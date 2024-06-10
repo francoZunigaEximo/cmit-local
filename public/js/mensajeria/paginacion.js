@@ -1,16 +1,5 @@
-function acortadorTexto(cadena, nroCaracteres = 10) {
-    return cadena.length <= nroCaracteres ? cadena : cadena.substring(0,nroCaracteres);
-}
-
 $(document).ready(function(){
-
-    toastr.options = {
-        closeButton: true,   
-        progressBar: true,    
-        timeOut: 3000,        
-    };
-    
-
+ 
     $(document).on('click', '.buscar', function(e){
 
         e.preventDefault();

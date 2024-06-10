@@ -216,23 +216,10 @@ $(document).ready(function() {
                     toastr.success(response.msg);
                 })
                 .fail(function(jqXHR){
-                    preloader('off');
-                    let errorResponse = JSON.parse(jqXHR.responseText);
-
-                    if(jqXHR.status === 500){
-                        toastr.warning(errorResponse);
-                        return;
-                    }
-
-                    if(jqXHR.status === 403){       
-                        toastr.warning(errorResponse);
-                        return;
-                    }else{
-                        toastr.error("Ha ocurrido un error al enviar los emails");
-                        console.error(jqXHR);
-                    }
-
-                
+                    preloader('off');            
+                    let errorData = JSON.parse(jqXHR.responseText);            
+                    checkError(jqXHR.status, errorData.msg);
+                    return;
                 });
         }
     });
@@ -291,22 +278,9 @@ $(document).ready(function() {
                 })
                 .fail(function(jqXHR){
                     preloader('off');
-                    let errorResponse = JSON.parse(jqXHR.responseText);
-
-                    if(jqXHR.status === 500){
-                        toastr.warning(errorResponse);
-                        return;
-                    }
-                    
-                    if(jqXHR.status === 403){       
-                        toastr.warning(errorResponse);
-                        return;
-                    }else{
-                        toastr.error("Ha ocurrido un error al enviar los emails");
-                        console.error(jqXHR);
-                    }
-
-                
+                    let errorData = JSON.parse(jqXHR.responseText);            
+                    checkError(jqXHR.status, errorData.msg);
+                    return;
                 });
         }
 
@@ -345,14 +319,5 @@ $(document).ready(function() {
             $('.richText-editor').trigger('setContent', response.Cuerpo);
         })
     }
-
-    function preloader(opcion) {
-        $('#preloader').css({
-            opacity: '0.3',
-            visibility: opcion === 'on' ? 'visible' : 'hidden'
-        });
-    }
-
-
 
 });

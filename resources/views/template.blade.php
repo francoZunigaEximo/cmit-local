@@ -35,6 +35,7 @@
 
 
     <script src="{{ asset('js/jquery.min.js') }}"></script>
+    <script src="{{ asset('js/basicos.js') }}?v={{ time() }}"></script>
 </head>
 
 <body>
@@ -347,8 +348,8 @@
         $(document).ready(function () {
             resetIdleTimeout();
         });
-    </script>
 
+    </script>
 
     <script src="{{ asset('libs/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('libs/simplebar/simplebar.min.js') }}"></script>
@@ -373,6 +374,8 @@
     <script src="{{ asset('js/auth/template.js') }}?v={{ time() }}"></script>
     <script src="{{ asset('js/atajos.js') }}?v={{ time() }}"></script>
     <script src="{{ asset('js/wizardPrestaciones.js') }}?v={{ time() }}"></script>
+
+    <script src="{{ asset('js/errores.js') }}?v={{ time() }}"></script>
     @stack('scripts')
 </body>
 

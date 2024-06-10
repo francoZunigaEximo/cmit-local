@@ -249,6 +249,8 @@
 <script src="{{ asset('js/mensajeria/index.js') }}?v={{ time() }}"></script>
 <script src="{{ asset('js/mensajeria/paginacion.js') }}?v={{ time() }}"></script>
 <script src="{{ asset('js/richText/jquery.richtext.js') }}?v={{ time() }}"></script>
+
+
 @endpush
 
 @endsection

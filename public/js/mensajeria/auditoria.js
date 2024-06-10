@@ -23,10 +23,5 @@ $(document).ready(function(){
             });
     });
 
-    function preloader(opcion) {
-        $('#preloader').css({
-            opacity: '0.3',
-            visibility: opcion === 'on' ? 'visible' : 'hidden'
-        });
-    }
+
 });
