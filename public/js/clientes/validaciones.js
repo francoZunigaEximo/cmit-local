@@ -1,11 +1,5 @@
 $(document).ready(function() {
 
-    toastr.options = {
-        closeButton: true,   
-        progressBar: true,    
-        timeOut: 3000,        
-    };
-
     $("#form-update, #form-create").off();
     $("#form-update, #form-create").validate({
         rules: {

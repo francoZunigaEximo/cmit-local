@@ -2,12 +2,6 @@ $(document).ready(()=> {
 
     let messageClientes = $('#messageClientes');
 
-    toastr.options = {
-        closeButton: true,   
-        progressBar: true,    
-        timeOut: 3000,        
-    };
-
     tabActivo();
     cargarAutorizados();
     checkProvincia();
@@ -617,42 +611,11 @@ $(document).ready(()=> {
             }
         });
     }
-
-    function verificarCorreos(emails) {
-        
-        let emailRegex = /^[\w.-]+(\.[\w.-]+)*@[\w.-]+\.[A-Za-z]{2,}$/;
-        let correosInvalidos = [];
-        let emailsArray = emails.split(',');
-
-        for (let i = 0; i < emailsArray.length; i++) {
-            let email = emailsArray[i].trim();
-
-            if (email !== "" && !emailRegex.test(email)) {
-                correosInvalidos.push(email);
-            }
-        }
-
-        if (correosInvalidos.length > 0) {
-            swal("Atención", "Estos correos tienen formato inválido. Verifique por favor: " + correosInvalidos.join(", "), "warning");
-            return false; 
-        }
-
-        return true; 
-    }
     
     function tabActivo(){
         $('.tab-pane').removeClass('active show');
         $('#datosBasicos').addClass('active show');
         $('.nav-link[href="datosBasicos"]').tab('show');
-    }
-
-    function quitarDuplicados(selector) {
-        let seleccion = $(selector).val();
-        let countSeleccion = $(selector + " option[value='" + seleccion + "']").length;
-    
-        if (countSeleccion > 1) {
-            $(selector + " option[value='" + seleccion + "']:gt(0)").hide();
-        }
     }
 
     function checkBloq(){
@@ -767,33 +730,6 @@ $(document).ready(()=> {
                 });
         });
         
-    }
-
-    function preloader(opcion) {
-        $('#preloader').css({
-            opacity: '0.3',
-            visibility: opcion === 'on' ? 'visible' : 'hidden'
-        });
-    }
-
-    function fechaNow(fechaAformatear, divider, format) {
-        let dia, mes, anio; 
-    
-        if (fechaAformatear === null) {
-            let fechaHoy = new Date();
-    
-            dia = fechaHoy.getDate().toString().padStart(2, '0');
-            mes = (fechaHoy.getMonth() + 1).toString().padStart(2, '0');
-            anio = fechaHoy.getFullYear();
-        } else {
-            let nuevaFecha = fechaAformatear.split("-"); 
-            dia = nuevaFecha[0]; 
-            mes = nuevaFecha[1]; 
-            anio = nuevaFecha[2];
-        }
-    
-        return (format === 1) ? `${dia}${divider}${mes}${divider}${anio}` : `${anio}${divider}${mes}${divider}${dia}`;
-    }
-    
+    }    
 
 });

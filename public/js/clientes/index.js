@@ -1,11 +1,5 @@
 $(document).ready(function(){
 
-    toastr.options = {
-        closeButton: true,   
-        progressBar: true,    
-        timeOut: 3000,        
-    };
-
     $('#btnBajaMultiple').click(function(e) {
         e.preventDefault();
 
@@ -20,6 +14,7 @@ $(document).ready(function(){
         }
 
         if (confirm("¿Estás seguro de que deseas realizar la baja múltiple de los clientes seleccionados?")) {
+            preloader('on');
             $.ajax({
                 url: multipleDown,
                 type: 'POST',
@@ -28,6 +23,7 @@ $(document).ready(function(){
                     ids: ids
                 },
                 success: function(response) {
+                    preloader('off');
                     toastr.success(response.msg);
                     setTimeout(()=>{
                         $('#listaClientes').DataTable().draw(false);
@@ -35,16 +31,10 @@ $(document).ready(function(){
                    
                 },
                 error: function(jqXHR, xhr) {
-                    
-                    if(jqXHR.status === 403) {
-                        toastr.warning("No tiene permisos para realizar la actividad");
-                        return
-                    }else{
-
-                        toastr.error('¡Ha ocurrido un inconveniente y la solicitud no podrá llevarse a cabo. Consulte con el administrador!', 'Error');
-                    console.error(xhr);
-
-                    } 
+                    preloader('off');            
+                    let errorData = JSON.parse(jqXHR.responseText);            
+                    checkError(jqXHR.status, errorData.msg);
+                    return;    
                 }
             });
         }
@@ -62,6 +52,7 @@ $(document).ready(function(){
 
         if (ids.length > 0) {
             if (confirm("¿Estás seguro de que deseas generar el reporte de Excel con todos los items seleccionados?")) {
+                preloader('on');
                 $.ajax({
                     url: exportExcelClientes,
                     type: "GET",
@@ -69,6 +60,7 @@ $(document).ready(function(){
                         Id: ids
                     },
                     success: function(response) {
+                        preloader('off');
                         let filePath = response.filePath,
                             pattern = /storage(.*)/,
                             match = filePath.match(pattern),
@@ -90,15 +82,10 @@ $(document).ready(function(){
                         }, 100);
                     },
                     error: function(xhr,jqXHR) {
-
-                        if(jqXHR.status === 403) {
-                            toastr("No tiene permisos para realizar esta acción");
-                            return
-                        }else{
-        
-                            toastr('Ha ocurrido un error. Consulte con el administrador', 'Error');
-                            console.error(xhr);
-                        }
+                        preloader('off');            
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return; 
                     }
                 });
             }
@@ -108,11 +95,9 @@ $(document).ready(function(){
 
     });
 
-
     //Reset de busquedas
     $(document).on('keydown', function(event) {
         if (event.keyCode === 27) {
-
             window.location.href = GOINDEX;
         }
     });
@@ -124,9 +109,10 @@ $(document).ready(function(){
         if(cliente === '') return;
 
         if(confirm("¿Está seguro que desea dar de baja al cliente?")){
-
+            preloader('on');
             $.post(baja, {_token: TOKEN, Id: cliente})
             .done(function(response){
+                preloader('off');
                 toastr.success(response.msg);
                 setTimeout(()=>{
                     $('#listaClientes').DataTable();
@@ -134,17 +120,10 @@ $(document).ready(function(){
                 },3000);
             })
             .fail(function(jqXHR, xhr){
-
-                if(jqXHR.status === 403) {
-                    toastr("No tiene permisos para realizar esta acción");
-                    return
-                }else{
-
-                    toastr('Ha ocurrido un error. Consulte con el administrador', 'Error');
-                    console.error(xhr);
-                }
-
-                
+                preloader('off');            
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;                
             });
         }
        

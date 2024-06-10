@@ -1,11 +1,5 @@
 $(document).ready(()=>{
 
-    toastr.options = {
-        closeButton: true,   
-        progressBar: true,    
-        timeOut: 3000,        
-    };
-
     //Verifica si ya existe ese ParaEmpresa con ese Cuit
     $('#Identificacion, #ParaEmpresa').blur(function () {
         let cuit = $('#Identificacion').val(),
@@ -114,8 +108,6 @@ $(document).ready(()=>{
     buscarLocalidad(clonLocalidad);
     $('#CP').val(clonCodigoPostal);
 
-    
-
     //Borramos los item clonados
     localStorage.clear();
 
@@ -128,8 +120,6 @@ $(document).ready(()=>{
         $('#messageClientes').html(exito);
         return
     }   
-
-
     //Añadimos nuevos números para guardar
     $(document).on('click', '#addNumero', function() {
         let prefijo = $('#prefijoExtra').val(),

@@ -153,9 +153,7 @@ class ClientesController extends Controller
             });
 
             return Datatables::of($query)->make(true);
-
         }
-
         return view('layouts.clientes.index');
     }
 
@@ -168,7 +166,9 @@ class ClientesController extends Controller
 
     public function store(Request $request)
     {
-        if (!$this->hasPermission("clientes_add")) {abort(403);}
+        if (!$this->hasPermission("clientes_edit")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
 
         $nuevoId = Cliente::max('Id') + 1;
 
@@ -209,7 +209,9 @@ class ClientesController extends Controller
 
     public function update(Request $request, Cliente $cliente)
     {
-        if (!$this->hasPermission("clientes_edit")) {abort(403);}
+        if (!$this->hasPermission("clientes_edit")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
 
         $cliente = Cliente::find($request->Id);
         if($cliente)
@@ -295,8 +297,12 @@ class ClientesController extends Controller
         return response()->json(['existe' => $existe, 'cliente' => $cliente]);
     }
 
-    public function setObservaciones(Request $request): void
+    public function setObservaciones(Request $request)
     {
+        if (!$this->hasPermission("clientes_edit")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
+
         $cliente = Cliente::find($request->Id);
        
         if($cliente)
