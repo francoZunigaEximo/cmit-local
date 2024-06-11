@@ -33,14 +33,14 @@
                                     </button>
                                 </a>  
                                 @endcan 
-                                @can("paciente_delete")
-                                <button type="button" id="btnBajaMultiple" class="btn iconGeneral" title="Baja multiple de pacientes">
-                                    <i class="ri-delete-bin-2-line"></i>
+                                @can("pacientes_delete")
+                                <button type="button" id="btnBajaMultiple" class="btn botonGeneral" title="Baja multiple de pacientes">
+                                    <i class="ri-delete-bin-2-line"></i> Baja Multiple
                                 </button>
                                 @endcan
                                 @can("paciente_report")
-                                <button type="button" id="excel" class="btn iconGeneral" title="Generar reporte en Excel">
-                                    <i class="ri-file-excel-line"></i>
+                                <button type="button" id="excel" class="btn botonGeneral" title="Generar reporte en Excel">
+                                    <i class="ri-file-excel-line"></i> Reporte
                                 </button>
                                 @endcan
                             </div>
@@ -82,10 +82,8 @@
 <script>
 
 //Rutas
-const multipleDown = "{{ route('pacientes.multipleDown') }}";
 const exportExcel = "{{ route('excelPacientes') }}";
-const bajaPaciente = "{{ route('baja', ['pacientes' => '']) }}";
-const down = "{{ route('down') }}";
+const down = "{{ route('pacientes.down') }}";
 const getNombre = "{{ route('getNombre') }}";
 
 //Extras

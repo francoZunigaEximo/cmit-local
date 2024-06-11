@@ -1,11 +1,5 @@
 $(document).ready(function(){
     
-    toastr.options = {
-        closeButton: true,   
-        progressBar: true,    
-        timeOut: 3000,        
-    };
-
     $(document).on('keydown', function(event) {
         if (event.keyCode === 27) {
 
@@ -26,28 +20,37 @@ $(document).ready(function(){
             return; 
         }
 
-        if (confirm("¿Estás seguro de que deseas realizar la baja múltiple de los pacientes seleccionados?")) {
-            $.ajax({
-                url: multipleDown,
-                type: "POST",
-                data: {
-                    _token: TOKEN,
-                    ids: ids
-                },
-                success: function() {
+        swal({
+            title: "¿Estás seguro de que deseas realizar la baja múltiple de los pacientes seleccionados?",
+            icon: "warning",
+            buttons: ["No", "Sí"],
+        }).then((confirmar) => {
+            if(confirmar) {
+                preloader('on');
+                $.post(down, {_token: TOKEN, ids: ids})
+                .done(function(response) {
+                    preloader('off');
+                    let tipo = {
+                        200: 'success',
+                        409: 'warning'
+                    };
 
-                    toastr.success('¡Se ha dado de baja a los pacientes correctamente!', 'Éxito');
+                    response.forEach(function(data) {
+                        toastr[tipo[data.status]](data.msg);
+                    });
+                    
                     setTimeout(() => {
                         $('#listaPac').DataTable();
                         $('#listaPac').DataTable().draw(false); 
                     }, 3000);
-                },
-                error: function(xhr) {
-                    toastr.error("¡Ha ocurrido un inconveniente. Consulte con el administrador!", "Error");
-                    console.error(xhr);
-                }
-            });
-        }
+                })
+                .fail(function(jqXHR) {
+                    preloader('off');
+                    checkError(jqXHR.status, errorData.msg);
+                    return;
+                });
+            } 
+        });
     });
 
 
@@ -110,29 +113,31 @@ $(document).ready(function(){
         }).then((confirmar) => {
             if(confirmar) {
                 preloader('on');
-                $.post(down, {_token: TOKEN, Id: paciente})
-                .done(function(){
+                $.post(down, {_token: TOKEN, ids: paciente})
+                .done(function(response){
                     preloader('off');
-                    toastr.success('Se ha realizado de manera correcta la baja', 'Perfecto');
+                    let tipo = {
+                        200: 'success',
+                        409: 'warning'
+                    };
+
+                    response.forEach(function(data) {
+                        toastr[tipo[data.status]](data.msg);
+                    });
 
                     $('#listaPac').DataTable();
                     $('#listaPac').DataTable().draw(false);
                 })
-                .fail(function(xhr){
+                .fail(function(jqXHR){
                     preloader('off');
-                    toastr.error('Ha ocurrido un error, consulte con el administrador', 'Error');
-                    console.error(xhr);
+                    let errorData = JSON.parse(jqXHR.responseText);            
+                    checkError(jqXHR.status, errorData.msg);
+                    return;
+                    
                 })
             } 
         });
   
     });
-
-    function preloader(opcion) {
-        $('#preloader').css({
-            opacity: '0.3',
-            visibility: opcion === 'on' ? 'visible' : 'hidden'
-        });
-    }
 
 });

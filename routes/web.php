@@ -66,16 +66,15 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('checkProvincia', [UtilityController::class, 'checkProvincia'])->name('checkProvincia');
 
     //Rutas de Pacientes
-    Route::resource('pacientes', PacientesController::class);
     Route::get('searchPacientes', [PacientesController::class, 'search'])->name('search');
-    Route::post('paciente/down', [PacientesController::class, 'down'])->name('down');
+    Route::post('/paciente/down', [PacientesController::class, 'down'])->name('pacientes.down');
     Route::get('verifydocument', [PacientesController::class, 'verifyDocument'])->name('verify');
-    Route::post('pacientes/multipleDown', [PacientesController::class, 'multipleDown'])->name('pacientes.multipleDown');
     Route::get('excelPacientes', [PacientesController::class, 'exportExcel'])->name('excelPacientes');
     Route::get('getPacientes', [PacientesController::class, 'getPacientes'])->name('getPacientes');
     Route::get('searchPrestPacientes', [PacientesController::class, 'searchPrestPacientes'])->name('searchPrestPacientes');
     Route::get('getNombre', [PacientesController::class, 'getNombre'])->name('getNombre');
     Route::post('deletePicture', [PacientesController::class, 'deletePicture'])->name('deletePicture');
+    Route::resource('pacientes', PacientesController::class);
 
     //Rutas de Clientes
     Route::resource('clientes', ClientesController::class);

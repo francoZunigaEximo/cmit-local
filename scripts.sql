@@ -1092,3 +1092,6 @@ INSERT INTO permisos(slug, descripcion) VALUES
 
 INSERT INTO permisos(slug, descripcion) VALUES
 ("mensajeria_edit","Editar y actualizar correos");
+
+INSERT INTO rol_permisos(rol_id, permiso_id) VALUES
+(2,41),(4,41),(5,41),(6,55),(3,43),(3,44),(3,45),(3,46);

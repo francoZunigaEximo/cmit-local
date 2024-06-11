@@ -33,20 +33,21 @@ class AppServiceProvider extends ServiceProvider
         $this->gateAccess("examenCuenta_show");
         $this->gateAccess("pacientes_show");
         $this->gateAccess("facturacion_show");
-        
+        $this->gateAccess("especialidades_show");
 
         $this->gateAccess("prestaciones_add");
         $this->gateAccess("clientes_add");
         $this->gateAccess("pacientes_add");
 
-
         $this->gateAccess("noticias_edit");
         $this->gateAccess("mensajeria_edit");
         $this->gateAccess("clientes_edit");
 
+        $this->gateAccess("pacientes_delete");
         
         $this->gateAccess("clientes_send");
 
+        $this->gateAccess("paciente_report");
 
         $this->gateAccess('boton_usuarios');
 

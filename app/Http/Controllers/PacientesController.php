@@ -31,6 +31,10 @@ class PacientesController extends Controller
     public function search(Request $request)
     {
 
+        if(!$this->hasPermission("pacientes_show")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
+
         $buscar = trim($request->buscar);
 
         if ($request->ajax()) {
@@ -70,6 +74,10 @@ class PacientesController extends Controller
 
     public function searchPrestPacientes(Request $request): mixed
     {
+
+        if(!$this->hasPermission("pacientes_show")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
 
         $prestacion = Cache::remember('prestacion_pac', 1, function () use ($request) {
 
@@ -221,35 +229,47 @@ class PacientesController extends Controller
 
     }
 
-    public function down(Request $request): void
-    {
-        $paciente = Paciente::find($request->Id);
-
-        if($paciente){
-            
-            $paciente->Estado = 0;
-            $paciente->save();
-        } 
-    }
-
     public function verifyDocument(Request $request)
     {
+        if(!$this->hasPermission("pacientes_add")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
+
         $paciente = Paciente::where('Documento', $request->documento)->first();
         $existe = $paciente !== null;
 
         return response()->json(['existe' => $existe, 'paciente' => $paciente]);
     }
 
-    public function multipleDown(Request $request)
+    public function down(Request $request): mixed
     {
-        $ids = $request->input('ids');
-        if (! is_array($ids)) {
-            $ids = [$ids];
+        if(!$this->hasPermission("pacientes_delete")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
         }
 
-        Paciente::whereIn('id', $ids)->update(['Estado' => 0]);
+        $ids = $request->ids;
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+        
+        foreach($ids as $id)
+        {
+            $paciente = Paciente::with('prestaciones')->where('Id', $id)->first();
 
-        return back();
+
+            if($paciente && count($paciente->prestaciones) === 0) {
+                $paciente->Estado = 0;
+                $paciente->save();
+ 
+                $resultado = ['msg' => 'Paciente dado de baja correctamente: '. $paciente->Nombre.' '.$paciente->Apellido, 'status' => 200];
+            }else{
+
+                $resultado = ['msg' => 'Error al dar de baja el paciente '.$paciente->Nombre.' '.$paciente->Apellido.'. Hay prestaciones activas', 'status' => 409]; 
+            }
+
+            $resultados[] = $resultado;
+        }
+        return response()->json($resultados);
     }
 
     public function exportExcel(Request $request)
