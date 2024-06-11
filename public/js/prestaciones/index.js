@@ -1,14 +1,5 @@
 $(document).ready(()=>{
 
-    toastr.options = {
-        closeButton: true,   
-        progressBar: true,     
-        timeOut: 3000,        
-    };
-
-    //scrollListado();
-
-    //Limpiamos el ID para evitar bug
     let IdComentario = null;
 
     //Fechas en filtros
@@ -180,31 +171,37 @@ $(document).ready(()=>{
         
         if(prestacion === '') return;
 
-        if(confirm("¿Está seguro que desea dar de baja esta prestación?")){
-            preloader('on');
-            $.get(downPrestaActiva, {Id: prestacion})
-                .done(function(response){
-                    preloader('off');
-                    if(response.estado === 'true') {
+        swal({
+            title: "¿Está seguro que desea dar de baja esta prestación?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"],
+        }).then((aceptar) => {
+            if(aceptar){
 
-                        toastr.success(response.msg);
-                        $('#listaPrestaciones').DataTable();
-                        $('#listaPrestaciones').DataTable().draw(false);
-                    } else {
-                        toastr.info(response.msg);
-                    }
-                })
-                .fail(function(jqXHR, xhr) {
-                    preloader('off');
-                    if (jqXHR.status === 403) {
-                        toastr.warning("No tiene permisos para realizar la acción");
-                        return;
-                    }else{
-                        console.error(xhr);
-                        toastr.error("Ha ocurrido un error. Consulte con el administrador");
-                    }
-                });
-        }
+                preloader('on');
+                $.get(downPrestaActiva, {Id: prestacion})
+                    .done(function(response){
+                        preloader('off');
+                        if(response.estado === 'true') {
+
+                            toastr.success(response.msg);
+                            $('#listaPrestaciones').DataTable();
+                            $('#listaPrestaciones').DataTable().draw(false);
+                        } else {
+                            toastr.info(response.msg);
+                        }
+                    })
+                    .fail(function(jqXHR) {
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return; 
+                    });
+            }
+        });
+
+            
+        
     });
 
     //Arrastramos eventos
@@ -213,7 +210,7 @@ $(document).ready(()=>{
         let IdComentario = $(this).data('id');
         $('#IdComentarioEs').text(IdComentario);
         $('.guardarComentario').data('id', IdComentario);
-        
+        preloader('on');
         $.ajax({
             url: getComentarioPres,
             type: 'GET',
@@ -221,26 +218,22 @@ $(document).ready(()=>{
                 Id: IdComentario
             },
             success: function(response){
+                preloader('off');
                 let getComentario = response.comentario;
-
-                if(getComentario){
-                    $('#comentario').val(getComentario);
-                }else{
-                    $('#comentario').val("...");
-                }
+                getComentario ? $('#comentario').val(getComentario) : $('#comentario').val("...");
 
             },
-            error:function(xhr){
-
-                toasrt.error("¡Ha ocurrido un inconveniente y la solicitud no podrá llevarse a cabo. Consulte con el administrador!", "Error");
-                console.error(xhr);
+            error:function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return; 
             }
         });
     });
 
 
     $('.guardarComentario').off('click').on('click', function(e) {
-
         e.preventDefault();
         let IdComentario = $(this).data('id');
 
@@ -260,81 +253,48 @@ $(document).ready(()=>{
                     toasrt.success("El comentario de la prestación se ha guardado correctamente", "Perfecto");
                 },
 
-                error: function(xhr){
+                error: function(jqXHR){
 
-                    toasrt.error("¡Ha ocurrido un inconveniente y la solicitud no podrá llevarse a cabo. Consulte con el administrador!", "Error");
-                    console.error(xhr);
+                    preloader('off');
+                    let errorData = JSON.parse(jqXHR.responseText);            
+                    checkError(jqXHR.status, errorData.msg);
+                    return; 
                 }
             });
         }
     });
 
-    $(document).on('click', '.bloquearPrestacion', function(){
-
+    $(document).on('click', '.bloquearPrestacion', function(e){
+        e.preventDefault();
         let id = $(this).data('id');
         
-        if(confirm("¿Esta seguro que desea bloquear la prestación?")) {
-            preloader('on');
-            $.get(blockPrestacion, {Id: id})
-            .done(function(){
-                preloader('off');
-                toastr.success("Se ha bloqueado correctamente", "Perfecto");
-                $('#listaPrestaciones').DataTable();
-                $('#listaPrestaciones').DataTable().draw(false);
-            })
-            .fail(function(jqXHR, xhr) {
-                if (jqXHR.status === 403) {
-                    preloader('off');
-                    toastr.warning("No tiene permisos para realizar la acción");
-                    return;
-                }else{
-                    preloader('off');
-                    console.error(xhr);
-                    toastr.error("Ha ocurrido un error. Consulte con el administrador");
-                }
-            });
+        swal({
+            title: "¿Está seguro que desea bloquear esta prestación?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"],
+        }).then((aceptar) => {
+            if(aceptar){
 
-        }
-
-        
+                preloader('on');
+                $.get(blockPrestacion, {Id: id})
+                    .done(function(){
+                        preloader('off');
+                        toastr.success("Se ha bloqueado correctamente", "Perfecto");
+                        $('#listaPrestaciones').DataTable();
+                        $('#listaPrestaciones').DataTable().draw(false);
+                    })
+                    .fail(function(jqXHR) {
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return; 
+                    }); 
+            }
+        });       
     });
     
-
-    /*function scrollListado(){
-        $('html, body').animate({
-            scrollTop: $('#listaPrestaciones').offset().top
-        }, 800);
-    }*/
-
-    function fechaNow(fechaAformatear, divider, format) {
-        let dia, mes, anio; 
-    
-        if (fechaAformatear === null) {
-            let fechaHoy = new Date();
-    
-            dia = fechaHoy.getDate().toString().padStart(2, '0');
-            mes = (fechaHoy.getMonth() + 1).toString().padStart(2, '0');
-            anio = fechaHoy.getFullYear();
-        } else {
-            let nuevaFecha = fechaAformatear.split("-"); 
-            dia = nuevaFecha[0]; 
-            mes = nuevaFecha[1]; 
-            anio = nuevaFecha[2];
-        }
-    
-        return (format === 1) ? `${dia}${divider}${mes}${divider}${anio}` : `${anio}${divider}${mes}${divider}${dia}`;
-    }
-
     $('#checkAll').on('click', function() {
         $('input[type="checkbox"][name="Id"]:not(#checkAll)').prop('checked', this.checked);
     });
-
-    function preloader(opcion) {
-        $('#preloader').css({
-            opacity: '0.3',
-            visibility: opcion === 'on' ? 'visible' : 'hidden'
-        });
-    }
-
 
 });

@@ -14,10 +14,11 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Examen;
 use App\Models\ExamenCuentaIt;
+use App\Traits\CheckPermission;
 
 class ItemPrestacionesController extends Controller
 {
-    use ObserverItemsPrestaciones;
+    use ObserverItemsPrestaciones, CheckPermission;
 
     const RUTA = '/var/IMPORTARPDF/SALIDA/';
     const RUTAINF = '/var/IMPORTARPDF/SALIDAINFORMADOR/';
@@ -768,6 +769,10 @@ class ItemPrestacionesController extends Controller
         
     public function getExamenes(Request $request): mixed
     {
+        if (!$this->hasPermission("prestaciones_edit")) {
+            return response()->json(['msg' => 'No tienes permisos'], 403);
+        }
+
         $resultados = Cache::remember('itemsprestaciones', 5, function () use ($request) {
 
             $query = ItemPrestacion::join('profesionales as efector', 'itemsprestaciones.IdProfesional', '=','efector.Id')
@@ -845,6 +850,9 @@ class ItemPrestacionesController extends Controller
 
     public function check(Request $request): mixed
     {
+        if (!$this->hasPermission("prestaciones_edit")) {
+            return response()->json(['msg' => 'No tienes permisos'], 403);
+        }
 
         $examenes = ItemPrestacion::where('IdPrestacion', $request->Id)->get() ?? '';
 
@@ -857,8 +865,12 @@ class ItemPrestacionesController extends Controller
         return response()->json(['respuesta' => ! $examenes->isEmpty(), 'examenes' => $idExamenes]);
     }
 
-    public function itemExamen(Request $request)
+    public function itemExamen(Request $request): mixed
     {
+        if (!$this->hasPermission("prestaciones_edit")) {
+            return response()->json(['msg' => 'No tienes permisos'], 403);
+        }
+
         $item = ItemPrestacion::find($request->Id);
         
         if($item){
@@ -896,7 +908,10 @@ class ItemPrestacionesController extends Controller
             }
 
             $item->save();
+
+            return response()->json(['msg' => 'Se ha actualizado el estado del exámen de manera correcta'], 200);
         }
+
     }
 
     

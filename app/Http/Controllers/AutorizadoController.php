@@ -27,7 +27,11 @@ class AutorizadoController extends Controller
     {
         $autorizados = Autorizado::where('IdEntidad', $request->Id)->orderBy('Id', 'DESC')->get();
 
-        return response()->json($autorizados);
+        if($autorizados){
+            return response()->json($autorizados, 200);
+            
+        }
+        return response()->json(['msg' => 'Hubo un error al obtener los autorizados.'], 500);
     }
 
     public function delete(Request $request)

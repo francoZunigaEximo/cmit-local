@@ -42,10 +42,15 @@ class PaqueteEstudioController extends Controller
     {
 
         $query = $this->paqueteEstudio($request->IdPaquete);
-        $idExamenes = $query->pluck('IdExamen')->toArray();
-        $examenes = Examen::whereIn('Id', $idExamenes)->get();
 
-        return response()->json(['examenes' => $examenes]);
-        
+        if($query){
+
+            $idExamenes = $query->pluck('IdExamen')->toArray();
+            $examenes = Examen::whereIn('Id', $idExamenes)->get();
+            
+            return response()->json(['examenes' => $examenes], 200);
+        }   
+        return response()->json(['msg' => 'No se pudo obtener el paquete'], 500); 
     }
+    
 }

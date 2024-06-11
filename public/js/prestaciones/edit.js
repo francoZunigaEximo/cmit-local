@@ -3,12 +3,6 @@ $(document).ready(()=> {
     let fecha = $('#FechaVto').val(), opcion = $('#pago').val(), opcionPago = $('#SPago').val();
     var empresa = $('#empresa').val(), art = $('#art').val();
 
-    toastr.options = {
-        closeButton: true,   
-        progressBar: true,     
-        timeOut: 3000,        
-    };
-
     precargaMapa();
     
     $(document).on('change', '#empresa, #art, #TipoPrestacion', function(){
@@ -26,7 +20,6 @@ $(document).ready(()=> {
     quitarDuplicados("#Financiador");
     quitarDuplicados("#mapas");
 
-    
     cargarFinanciador($("#tipoPrestacion").val());
     cambiosVencimiento(fecha);
     selectMedioPago(opcion);
@@ -47,18 +40,16 @@ $(document).ready(()=> {
     $('.alert').hide();
 
     $(document).on('change', '#pago', function(){
-        
         selectMedioPago();
     });
 
     $(document).on('change', '#SPago', function(){
-
         let data = $(this).val();
         getAutoriza(data);
     });
 
-    $('#actualizarPrestacion').on('click', function(event) {
-        event.preventDefault();
+    $('#actualizarPrestacion').on('click', function(e) {
+        e.preventDefault();
 
         let tipoPrestacion = $('#TipoPrestacion').val(),
             pago = $('#pago').val(),
@@ -80,31 +71,30 @@ $(document).ready(()=> {
             RxPreliminar = $('#RxPreliminar').prop('checked'),
             ObsExamenes = $('#ObsExamenes').val(),
             Obs = $('#Obs').val();
-
-            
+ 
          //Validamos la factura
-        if (spago === 'G' && autorizado === ''){
-            toastr.warning('Si el medio de pago es gratuito, debe seleccionar quien autoriza.', 'Alerta');
+        if (spago === 'G' && autorizado === ''){ 
+            toastr.warning('Si el medio de pago es gratuito, debe seleccionar quien autoriza.');
             return;
         }
 
         if (pago === 'B' && spago === '') {
-            toastr.warning('Debe seleccionar un "medio de pago" cuando la "forma de pago" es "contado"', 'Alerta');
+            toastr.warning('Debe seleccionar un "medio de pago" cuando la "forma de pago" es "contado"');
             return;
         }
 
         if (pago === '' || spago === null || pago === undefined) {
-            toastr.warning('Debe seleccionar una "forma de pago"', 'Alerta');
+            toastr.warning('Debe seleccionar una "forma de pago"');
             return;
         }
 
         if (pago === 'B' && (tipo == '' || sucursal === '' || nroFactura === '')){
-            toastr.warning('El pago es contado, asi que debe agregar el número de factura para continuar.', 'Alerta');
+            toastr.warning('El pago es contado, asi que debe agregar el número de factura para continuar.');
             return;
         }
 
         if (tipoPrestacion === ''){
-            swal("Atención", "El tipo de prestación no puede ser un campo vacío", "warning");
+            toa("Atención", "El tipo de prestación no puede ser un campo vacío", "warning");
             return;
         }
 
@@ -150,29 +140,27 @@ $(document).ready(()=> {
                 Obs: Obs,
                 _token: TOKEN
             },
-            success: function(){
+            success: function(response){
                 preloader('off');
-                toastr.success("La prestación se ha actualizado correctamente. Se recargaran los datos.", "Actualización realizada");
+                toastr.success(response.msg);
                 setTimeout(function(){
                     location.reload();
                 }, 3000);  
             },
-            error: function(xhr){
+            error: function(jqXHR){
                 preloader('off');
-                console.error(xhr);
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;  
             }
         });
 
     });
 
     $("#btnVolver").on("click", function() {
-        let location = UBICACION;
         
-        if(location === 'prestaciones'){
-            window.location.replace(GOPRESTACIONES);
-        }else{
-            window.location.replace(GOPACIENTES);
-        }
+        let location = UBICACION;
+        return location === 'prestaciones' ? window.location.replace(GOPRESTACIONES) : window.location.replace(GOPACIENTES);
     });
 
     $(document).on('change', '#empresa', function(){
@@ -188,10 +176,11 @@ $(document).ready(()=> {
 
                 $('#paraEmpresa').val(data.ParaEmpresa);
             })
-            .fail(function(xhr){
+            .fail(function(jqXHR){
 
-                console.log(xhr);
-                toastr.error('Ha ocurrido un error. Consulte con el administrador', 'Error');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;  
             });
     });
 
@@ -208,7 +197,7 @@ $(document).ready(()=> {
 
         let tipo = 
             $(this).hasClass('cerrar') ? 'cerrar' : ($(this).hasClass('finalizar') ? 'finalizar' : ($(this).hasClass('entregar') ? 'entregar' : ($(this).hasClass('eEnviar') ? 'eEnviar' : '')));
-
+        preloader('on')
         $.ajax({    
             url: actualizarEstados, 
             type: 'POST',
@@ -218,22 +207,19 @@ $(document).ready(()=> {
                 Tipo: tipo
             },
             success: function(response){
-
-                let t = response.tipo,
-                    e = response.estado;
-    
+                preloader('off');
                 switch (tipo) {
                     
                     case 'cerrar':
-                        if(e.Cerrado === 1 && e.Finalizado === 0 && e.Entregado === 0) {
+                        if(response.Cerrado === 1 && response.Finalizado === 0 && response.Entregado === 0) {
                             
                             $('.cerrar').html('<i class="ri-lock-line"></i>&nbsp;Cerrado');
                             $('.FechaFinalizado').find('span').removeAttr('title').removeClass().addClass('input-group-text finalizar');
-                            $('#cerrar').val(fechaNow(new Date, '/', 1)).prop('readonly', true);
+                            $('#cerrar').val(fechaNow(response.FechaCierre, '/', 0)).prop('readonly', true);
                             
                         } else {
                             
-                            if(e.Cerrado === 0 && e.Finalizado === 0 && e.Entregado === 0){
+                            if(response.Cerrado === 0 && response.Finalizado === 0 && response.Entregado === 0){
                                 $('.cerrar').html('<i class="ri-lock-unlock-line"></i>&nbsp;Cerrar');
                                 $('.FechaFinalizado').find('span').removeAttr('title').removeClass().addClass('input-group-text');
                                 $('#cerrar').val('').prop('readonly', false);
@@ -243,14 +229,14 @@ $(document).ready(()=> {
                         break;
 
                     case 'finalizar':
-                        if(e.Cerrado === 1 && e.Finalizado === 1 && e.Entregado === 0 ){
+                        if(response.Cerrado === 1 && response.Finalizado === 1 && response.Entregado === 0 ){
                             $('.finalizar').html('<i class="ri-lock-line"></i>&nbsp;Finalizado');
-                            $('#finalizar').val(fechaNow(new Date, '/', 1)).prop('readonly', true);
+                            $('#finalizar').val(fechaNow(response.FechaFinalizado, '/', 0)).prop('readonly', true);
                             $('.FechaEntrega').find('span').removeAttr('title').removeClass().addClass('input-group-text entregar');
                             
 
                         }else{
-                            if(e.Entregado !== 1){
+                            if(response.Entregado !== 1){
                                 $('.finalizar').html('<i class="ri-lock-unlock-line"></i>&nbsp;Finalizar');
                                 $('#finalizar').val('').prop('readonly', false);
                                 $('.FechaEntrega').find('span').removeAttr('title').removeClass().addClass('input-group-text');
@@ -260,12 +246,12 @@ $(document).ready(()=> {
                         break;
 
                     case 'entregar':
-                        if(e.Cerrado === 1 && e.Finalizado === 1 && e.Entregado === 1){
+                        if(response.Cerrado === 1 && response.Finalizado === 1 && response.Entregado === 1){
                             $('.entregar').html('<i class="ri-lock-line"></i>&nbsp;Entregado');
-                            $('#entregar').val(fechaNow(new Date, '/', 1)).prop('readonly', true);
+                            $('#entregar').val(fechaNow(response.FechaFinalizado, '/', 0)).prop('readonly', true);
                         
                         }else{
-                            if(e.eEnviado !== 1){
+                            if(response.eEnviado !== 1){
                                 $('.entregar').html('<i class="ri-lock-unlock-line"></i>&nbsp;Entregar');
                                 $('#entregar').val('').prop('readonly', false);
                             }  
@@ -273,23 +259,25 @@ $(document).ready(()=> {
                         break;
                     
                     case 'eEnviar':
-                        if(e.Cerrado === 1 && e.eEnviado === 1){
+                        if(response.Cerrado === 1 && response.eEnviado === 1){
                             $('.eEnviar').html('<i class="ri-lock-line"></i>&nbsp;eEnviado');
-                            $('#eEnviar').val(fechaNow(new Date, '/', 1)).prop('readonly', true);
+                            $('#eEnviar').val(fechaNow(response.FechaEnviado, '/', 0)).prop('readonly', true);
                         }else{
-                            if(e.Cerrado !== 0){
+                            if(response.Cerrado !== 0){
                                 $('.eEnviar').html('<i class="ri-lock-unlock-line"></i>&nbsp;eEnviar');
                                 $('#eEnviar').val('').prop('readonly', false);
                             }
                             
-                        }
-                            
+                        }    
                         break;
                 }
               
             },
-            error: function(xhr){
-                console.error(xhr);
+            error: function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;  
             }
         });
 
@@ -443,14 +431,8 @@ $(document).ready(()=> {
     });
 
     $(document).on('change', '#Pago', function(){
-
         let pago = $(this).val();
-        
-        if (pago === 'C'){
-            $('.SPago').hide();
-            }else{
-            $('.SPago').show();
-            } 
+        return pago === 'C' ? $('.SPago').hide() : $('.SPago').show();
     });
 
     $(document).on('change', '#pago', function(){
@@ -491,45 +473,12 @@ $(document).ready(()=> {
 
     });
 
- 
     function precargaMapa(){
         
         let val = $('#TipoPrestacion').val(), val2 = $('#art').val();
-        if(val === 'ART' && (val2 !== '' && val2 != '0' && val2 !== null)){
-
-            $('.mapas').show();
-        }else{
-            $('.mapas').hide();
-        }
-    }
-
-    function fechaNow(fechaAformatear, divider, format) {
-        let dia, mes, anio;
-    
-        if (fechaAformatear === null || !(fechaAformatear instanceof Date)) {
-            let fechaHoy = new Date();
-    
-            dia = fechaHoy.getDate().toString().padStart(2, '0');
-            mes = (fechaHoy.getMonth() + 1).toString().padStart(2, '0');
-            anio = fechaHoy.getFullYear();
-        } else {
-            dia = fechaAformatear.getDate().toString().padStart(2, '0');
-            mes = (fechaAformatear.getMonth() + 1).toString().padStart(2, '0');
-            anio = fechaAformatear.getFullYear();
-        }
-    
-        let fechaCadena = `${anio}${divider}${mes}${divider}${dia}`;
-    
-        return (format === 1) ? `${dia}${divider}${mes}${divider}${anio}` : fechaCadena;
-    }
-    
-    function quitarDuplicados(selector) {
-        let seleccion = $(selector).val();
-        let countSeleccion = $(selector + " option[value='" + seleccion + "']").length;
-    
-        if (countSeleccion > 1) {
-            $(selector + " option[value='" + seleccion + "']:gt(0)").hide();
-        }
+        return (val === 'ART' && (!['','0', null].includes(val2)))
+            ? $('.mapas').show()
+            : $('.mapas').hide();
     }
     
     function cargarFinanciador(estado) {
@@ -566,13 +515,10 @@ $(document).ready(()=> {
     function selectMedioPago(opcion)
     {
         if(opcion === 'B'){
-
             $('.SPago').show();
             $('.Factura').show();
             $('.Autoriza').hide();
-       
         }else {
-
             $('.SPago').hide();
             $('.ObsPres').hide();
             $('.Factura').hide();
@@ -618,12 +564,7 @@ $(document).ready(()=> {
     }
 
     function getAutoriza(pago){
-
-        if(pago === 'G'){
-            $('.Autoriza').show();
-        }else{
-            $('.Autoriza').hide();
-        }
+        return pago === 'G' ? $('.Autoriza').show() : $('.Autoriza').hide();
     }
 
     function checkBloq(){
@@ -639,19 +580,20 @@ $(document).ready(()=> {
                     $('i.ri-play-list-add-line').removeClass('addPaquete');
                     }
             })
-            .fail(function(xhr){
-                console.error(xhr);
-                toastr.error("Ha ocurrido un error. Consulte con el administrador");
+            .fail(function(jqXHR){
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;  
             });
     }
 
     function comentariosPrivados(){
 
         $('#privadoPrestaciones').empty();
-
+        preloader('on');
         $.get(privateComment, {Id: ID,  tipo: 'prestacion'})
             .done(async function(response){
-
+                preloader('off');
                 let data = await response.result;
 
                 $.each(data, function(index, d){
@@ -708,18 +650,11 @@ $(document).ready(()=> {
                     });
                 }
             },
-            error: function(xhr){
-
-                toastr.error('Hubo un error al obtener los autorizados. Consulte con el administrador', 'Error');
-                console.error(xhr);
+            error: function(jqXHR){
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return; 
             }
-        });
-    }
-
-    function preloader(opcion) {
-        $('#preloader').css({
-            opacity: '0.3',
-            visibility: opcion === 'on' ? 'visible' : 'hidden'
         });
     }
     

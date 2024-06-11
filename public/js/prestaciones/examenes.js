@@ -2,12 +2,6 @@ $(document).ready(()=>{
 
     let idExamen = []; 
  
-    toastr.options = {
-        closeButton: true,   
-        progressBar: true,     
-        timeOut: 3000,        
-    };
-
     cargarExamen();
 
     $('#exam').select2({
@@ -75,6 +69,12 @@ $(document).ready(()=>{
                 saveExamen(ids);  
                 preloader('off');
                 $('.addPaquete').val([]).trigger('change.select2');
+            },
+            error: function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return; 
             }
        });
        
@@ -90,14 +90,8 @@ $(document).ready(()=>{
         if ($(this).hasClass('deleteExamenes')) {
 
             $('input[name="Id_examenes"]:checked').each(function() {
-        
                 adjunto = $(this).data('adjunto'), archivos = $(this).data('archivo');
-
-                if (adjunto == 1 && archivos > 0) {
-                    tieneAdjunto = true;
-                } else {
-                    ids.push($(this).val());
-                }
+                adjunto == 1 && archivos > 0 ? tieneAdjunto = true : ids.push($(this).val());
             });
     
             checkAll = $('#checkAllExamenes').prop('checked');
@@ -105,13 +99,9 @@ $(document).ready(()=>{
         } else if($(this).hasClass('deleteExamen')) {
 
             adjunto = $(this).data('adjunto'), archivos = $(this).data('archivo');
-
-            if (adjunto == 1 && archivos > 0) {
-                tieneAdjunto = true;
-            } else {
-                ids.push(id);
-            }
+            adjunto == 1 && archivos > 0 ? tieneAdjunto = true : ids.push(id);
         }
+
         if (tieneAdjunto) {
             toastr.warning('El o los examenes seleccionados tienen un reporte adjuntado. El mismo no se podrá eliminar.', 'Atención');
             return;
@@ -122,40 +112,48 @@ $(document).ready(()=>{
             return;
         }  
     
-        if(confirm("Confirme la eliminación de los examenes")){
-            preloader('on');
-            $.ajax({
-                url: deleteItemExamen,
-                type: 'POST',
-                data: {
-                    Id: ids,
-                    _token: TOKEN
-                },
-                success: function(response){
-                    var estados = [];
+        swal({
+            title: "Confirme la eliminación de los examenes",
+            icon: "warning",
+            buttons: ["Cancelar", "Eliminar"],
+        }).then((confirmar) => {
+            if (confirmar){
 
-                    response.forEach(function(msg) {
-                        
-                        let tipoRespuesta = {
-                            success: 'success',
-                            fail: 'info'
+                preloader('on');
+                $.ajax({
+                    url: deleteItemExamen,
+                    type: 'POST',
+                    data: {
+                        Id: ids,
+                        _token: TOKEN
+                    },
+                    success: function(response){
+                        var estados = [];
+
+                        response.forEach(function(msg) {
+                            
+                            let tipoRespuesta = {
+                                success: 'success',
+                                fail: 'info'
+                            }
+                            preloader('off');
+                            toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 });
+                            estados.push(msg.estado);
+        
+                        });
+
+                        if(estados.includes('success')) {
+                            $('#listaExamenes').empty();
+                            $('#exam').val([]).trigger('change.select2');
+                            $('#addPaquete').val([]).trigger('change.select2');
+                            cargarExamen();
                         }
-                        preloader('off');
-                        toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 });
-                        estados.push(msg.estado);
-      
-                    });
 
-                    if(estados.includes('success')) {
-                        $('#listaExamenes').empty();
-                        $('#exam').val([]).trigger('change.select2');
-                        $('#addPaquete').val([]).trigger('change.select2');
-                        cargarExamen();
                     }
-
-                }
-            });
-        }
+                });
+            }
+            
+        });
     });
 
     $(document).on('click', '.bloquearExamenes, .bloquearExamen', function(e){
@@ -184,43 +182,48 @@ $(document).ready(()=>{
             return;
         }
     
-        if(confirm("Confirme el bloqueo de los examenes")){
-            
-            preloader('on');
-            $.ajax({    
-                url: bloquearItemExamen,
-                type: 'POST',
-                data: {
-                    Id: ids,
-                    _token: TOKEN
-                },
-                success: function(response){
-                    var estados = [];
-                    
-                    
-                    response.forEach(function(msg) {
+        swal({
+            title: "Confirme el bloqueo de los examenes",
+            icon: "warning",
+            buttons: ["Cancelar", "Bloquear"],
+        }).then((confirmar) => {
+            if(confirmar){
 
-                        let tipoRespuesta = {
-                            success: 'success',
-                            fail: 'info'
+                preloader('on');
+                $.ajax({    
+                    url: bloquearItemExamen,
+                    type: 'POST',
+                    data: {
+                        Id: ids,
+                        _token: TOKEN
+                    },
+                    success: function(response){
+                        var estados = [];
+                        
+                        
+                        response.forEach(function(msg) {
+
+                            let tipoRespuesta = {
+                                success: 'success',
+                                fail: 'info'
+                            }
+                            preloader('off')
+                            toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 })
+                            
+                            estados.push(msg.estado)
+                            
+                        });
+                        
+                        if(estados.includes('success')) {
+                            $('#listaExamenes').empty();
+                            $('#exam').val([]).trigger('change.select2');
+                            $('#addPaquete').val([]).trigger('change.select2');
+                            cargarExamen();
                         }
-                        preloader('off')
-                        toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 })
-                        
-                        estados.push(msg.estado)
-                        
-                    });
-                    
-                    if(estados.includes('success')) {
-                        $('#listaExamenes').empty();
-                        $('#exam').val([]).trigger('change.select2');
-                        $('#addPaquete').val([]).trigger('change.select2');
-                        cargarExamen();
                     }
-                }
-            });
-        }
-
+                });
+            }
+        });     
     });
 
     $(document).on('click', '.abrirExamenes', function(e) {
@@ -238,41 +241,50 @@ $(document).ready(()=>{
             toastr.warning('No hay examenes seleccionados', 'Atención');
             return;
         }
-        if(confirm("Confirme la apertura de los examenes")){
 
-            preloader('on');
-            $.ajax({
-                url: updateEstadoItem,
-                type: 'POST',
-                data: {
-                    Ids: ids,
-                    _token: TOKEN
-                },
-                success: function(response){
-                    var estados = [];
+        swal({
+            title: "Confirme la apertura de los examenes",
+            icon: "warning",
+            buttons: ["Cancelar", "Abrir"],
+        }).then((confirmar) => {
+            if(confirmar){
 
-                    response.forEach(function(msg) {
-                        
-                        let tipoRespuesta = {
-                            success: 'success',
-                            fail: 'info'
+                preloader('on');
+                $.ajax({
+                    url: updateEstadoItem,
+                    type: 'POST',
+                    data: {
+                        Ids: ids,
+                        _token: TOKEN
+                    },
+                    success: function(response){
+                        var estados = [];
+
+                        response.forEach(function(msg) {
+                            
+                            let tipoRespuesta = {
+                                success: 'success',
+                                fail: 'info'
+                            }
+                            preloader('off');
+                            toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 });
+                            estados.push(msg.estado);
+        
+                        });
+
+                        if(estados.includes('success')) {
+                            $('#listaExamenes').empty();
+                            $('#exam').val([]).trigger('change.select2');
+                            $('#addPaquete').val([]).trigger('change.select2');
+                            cargarExamen();
                         }
-                        preloader('off');
-                        toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 });
-                        estados.push(msg.estado);
-      
-                    });
 
-                    if(estados.includes('success')) {
-                        $('#listaExamenes').empty();
-                        $('#exam').val([]).trigger('change.select2');
-                        $('#addPaquete').val([]).trigger('change.select2');
-                        cargarExamen();
                     }
+                });
+            }
+        });
 
-                }
-            });
-        }
+            
 
     });
 
@@ -292,43 +304,47 @@ $(document).ready(()=>{
             return;
         }
 
-        if(confirm("Confirme la marca de adjunto de los examenes")){
+        swal({
+            title: "Confirme la marca de adjunto de los examenes",
+            icon: "warning",
+            buttons: ["Cancelar", "Adjuntar"],
+        }).then((confirmar) => {
+            if(confirmar){
 
-            preloader('on');
-            $.ajax({
-                url: marcarExamenAdjunto,
-                type: 'POST',
-                data: {
-                    Ids: ids,
-                    _token: TOKEN
-                },
-                success: function(response){
-                    var estados = [];
+                preloader('on');
+                $.ajax({
+                    url: marcarExamenAdjunto,
+                    type: 'POST',
+                    data: {
+                        Ids: ids,
+                        _token: TOKEN
+                    },
+                    success: function(response){
+                        var estados = [];
 
-                    response.forEach(function(msg) {
-                        
-                        let tipoRespuesta = {
-                            success: 'success',
-                            fail: 'info'
+                        response.forEach(function(msg) {
+                            
+                            let tipoRespuesta = {
+                                success: 'success',
+                                fail: 'info'
+                            }
+                            preloader('off');
+                            toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 });
+                            estados.push(msg.estado);
+        
+                        });
+
+                        if(estados.includes('success')) {
+                            $('#listaExamenes').empty();
+                            $('#exam').val([]).trigger('change.select2');
+                            $('#addPaquete').val([]).trigger('change.select2');
+                            cargarExamen();
                         }
-                        preloader('off');
-                        toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 });
-                        estados.push(msg.estado);
-      
-                    });
 
-                    if(estados.includes('success')) {
-                        $('#listaExamenes').empty();
-                        $('#exam').val([]).trigger('change.select2');
-                        $('#addPaquete').val([]).trigger('change.select2');
-                        cargarExamen();
                     }
-
-                }
-            });
-        }
-    
-
+                });
+            }
+        });    
     });
 
     $(document).on('click', '.liberarExamenes', function(e){
@@ -348,49 +364,54 @@ $(document).ready(()=>{
             return;
         }
 
-        if(confirm("Confirme la marca de adjunto de los examenes")){
+        swal({
+            title: "Confirme la liberación de los examenes",
+            icon: "warning",
+            buttons: ["Cancelar", "Liberar"],
+        }).then((confirmar) => {
+            if(confirmar) {
+
+                preloader('on');
+                $.ajax({
+                    url: liberarExamen,
+                    type: 'POST',
+                    data: {
+                        Ids: ids,
+                        _token: TOKEN
+                    },
+                    success: function(response){
+                        var estados = [];
+
+                        response.forEach(function(msg) {
+                            
+                            let tipoRespuesta = {
+                                success: 'success',
+                                fail: 'info'
+                            }
+                            preloader('off');
+                            toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 });
+                            estados.push(msg.estado);
         
-            preloader('on');
+                        });
 
-            $.ajax({
-                url: liberarExamen,
-                type: 'POST',
-                data: {
-                    Ids: ids,
-                    _token: TOKEN
-                },
-                success: function(response){
-                    var estados = [];
-
-                    response.forEach(function(msg) {
-                        
-                        let tipoRespuesta = {
-                            success: 'success',
-                            fail: 'info'
+                        if(estados.includes('success')) {
+                            $('#listaExamenes').empty();
+                            $('#exam').val([]).trigger('change.select2');
+                            $('#addPaquete').val([]).trigger('change.select2');
+                            cargarExamen();
                         }
-                        preloader('off');
-                        toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 });
-                        estados.push(msg.estado);
-      
-                    });
 
-                    if(estados.includes('success')) {
-                        $('#listaExamenes').empty();
-                        $('#exam').val([]).trigger('change.select2');
-                        $('#addPaquete').val([]).trigger('change.select2');
-                        cargarExamen();
                     }
-
-                }
-            });
-        }
+                });
+            }
+        });     
     });
 
     $(document).on('click', '.addExamen', function(){
 
         let id = $("#exam").val();
         
-        if(id === '' || id === null) {
+        if(['', null, undefined].includes(id)) {
             toastr.warning("Debe seleccionar un examen para poder añadirlo a la lista", "Atención");
             return;
         }
@@ -439,10 +460,11 @@ $(document).ready(()=>{
                 $('#addPaquete').val([]).trigger('change.select2');
                 cargarExamen();
         },
-            error: function(xhr){
+            error: function(jqXHR){
                 preloader('off');
-                toastr.error("Ha ocurrido un error. Consulte con el administrador", "Error");
-                console.error(xhr);
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;  
             }
         });
 
@@ -470,7 +492,7 @@ $(document).ready(()=>{
     });
 
     function opcionesExamenes(item, opcion){
-
+        preloader('on');
         $.ajax({
             url: itemExamen,
             type: 'Post',
@@ -479,9 +501,9 @@ $(document).ready(()=>{
                 Id: item,
                 opcion: opcion
             },
-            success: function(){
-
-                toastr.success('Cambio realizado correctamente', 'Perfecto');
+            success: function(response){
+                preloader('off');
+                toastr.success(response.msg);
 
                 let fila = $('td#' + item).closest('tr'), 
                     span= fila.find('span#' + opcion.toLowerCase()),
@@ -490,16 +512,18 @@ $(document).ready(()=>{
             
                 span.removeClass().addClass(contenido);
             },
-            error: function(xhr){
-                console.error(xhr);
-                toastr.error("Ha ocurrido un error. Consulte con el administrador", "Error");
+            error: function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;  
             }
         });
 
     }
 
     function cargarExamen(){
-        
+        preloader('on');
         $.ajax({
 
             url: checkItemExamen, 
@@ -508,6 +532,7 @@ $(document).ready(()=>{
                 Id: ID,
             },
             success: function(result) {
+                preloader('off');
                 let estado = result.respuesta;
                 let examenes = result.examenes;
             
@@ -612,17 +637,14 @@ $(document).ready(()=>{
                     });
                 }
             },
-            error: function(xhr){
-                console.error(xhr);
-                toastr.error("Ha ocurrido un error. Consulte con el administrador", "Error");
+            error: function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;  
             }
         });
     }
 
-    function preloader(opcion) {
-        $('#preloader').css({
-            opacity: '0.3',
-            visibility: opcion === 'on' ? 'visible' : 'hidden'
-        });
-    }
+
 });

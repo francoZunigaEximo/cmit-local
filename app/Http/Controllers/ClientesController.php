@@ -422,6 +422,8 @@ class ClientesController extends Controller
         {
             return response()->json(['cliente' => $cliente]);
         }
+
+        return response()->json(['msg' => 'No se ha encontrado la Para Empresa'], 404);
     }
 
     public function getBloqueo(Request $request)

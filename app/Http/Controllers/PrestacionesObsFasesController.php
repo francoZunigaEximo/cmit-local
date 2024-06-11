@@ -38,7 +38,7 @@ class PrestacionesObsFasesController extends Controller
             'Comentario' => $request->Comentario,
             'IdUsuario' => Auth::user()->name,
             'Fecha' => now()->format('Y-m-d'),
-            'Rol' => Auth::user()->IdPerfil,
+            'Rol' => Auth::user()->role->first()->nombre,
             'obsfases_id' => $request->obsfasesid
         ]);
     }
@@ -48,8 +48,7 @@ class PrestacionesObsFasesController extends Controller
         $query = PrestacionObsFase::join('prestaciones', 'prestaciones_obsfases.IdEntidad', '=', 'prestaciones.Id')
         ->join('mapas', 'prestaciones.IdMapa', '=', 'mapas.Id')
         ->join('users', 'prestaciones_obsfases.IdUsuario', '=', 'users.name')
-        ->leftJoin('perfiles', 'prestaciones_obsfases.Rol', '=', 'perfiles.Id') 
-        ->select('prestaciones_obsfases.*', 'users.Rol as nombre_perfil')
+        ->select('prestaciones_obsfases.*', 'prestaciones_obsfases.Rol as nombre_perfil')
         ->orderBy('prestaciones_obsfases.Id', 'DESC');
 
         return $query;

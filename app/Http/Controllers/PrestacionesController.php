@@ -19,16 +19,18 @@ use App\Exports\PrestacionesExport;
 use Maatwebsite\Excel\Facades\Excel;
 use stdClass;
 use Illuminate\Support\Facades\Auth;
-
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use App\Traits\CheckPermission;
 
 class PrestacionesController extends Controller
 {
 
-    use ObserverPrestaciones, ObserverFacturasVenta;
+    use ObserverPrestaciones, ObserverFacturasVenta, CheckPermission;
 
     public function index(Request $request): mixed
     {
+        if (!$this->hasPermission("prestaciones_show")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
 
         if ($request->ajax()) {
 
@@ -263,14 +265,7 @@ class PrestacionesController extends Controller
     
     public function create()
     {
-        $hasPermission = false;
-        foreach(Auth::user()->role as $rol) {
-            if($rol->permiso->contains('slug', 'prestaciones_add')){
-                $hasPermission = true;
-                break;
-            }
-        }
-        if(!$hasPermission){
+        if (!$this->hasPermission("prestaciones_add")) {
             abort(403);
         }
 
@@ -282,15 +277,7 @@ class PrestacionesController extends Controller
 
     public function edit(Prestacion $prestacione)
     {
-
-        $hasPermission = false;
-        foreach(Auth::user()->role as $rol) {
-            if($rol->permiso->contains('slug', 'prestaciones_show')){
-                $hasPermission = true;
-                break;
-            }
-        }
-        if(!$hasPermission){
+        if (!$this->hasPermission("prestaciones_edit")) {
             abort(403);
         }
 
@@ -302,73 +289,74 @@ class PrestacionesController extends Controller
 
     }
 
-    public function estados(Request $request): mixed
+    public function estados(Request $request)
     {
+        if (!$this->hasPermission("prestaciones_edit")) {
+            return response()->json(['msg' => 'No tienes permisos'], 403);
+        }
 
         $estado = Prestacion::find($request->Id);
 
-        switch ($request->Tipo) {
-            case 'cerrar':
+        if($estado){
 
-                if ($estado->Cerrado === 0 && $estado->Finalizado === 0 && $estado->Entregado === 0) {
-                    $estado->Cerrado = 1;
-                    $estado->FechaCierre = now()->format('Y-m-d');
-                }elseif($estado->Cerrado === 1 && $estado->Finalizado === 0 && $estado->Entregado === 0){
-                    $estado->Cerrado = 0;
-                    $estado->FechaCierre = null;
-                } 
-                break;
-
-            case 'finalizar':
-                if($estado->Cerrado === 1 && $estado->Finalizado === 0 && $estado->Entregado === 0){
-                    $estado->Finalizado = 1;
-                    $estado->FechaFinalizado = now()->format('Y-m-d');
-                }elseif($estado->Cerrado === 1 && $estado->Finalizado === 1 && $estado->Entregado === 0){
-                    $estado->Finalizado = 0;
-                    $estado->FechaFinalizado = null; 
-                }
-                break;
-
-            case 'entregar':
-                if($estado->Cerrado === 1 && $estado->Finalizado === 1 && $estado->Entregado === 0){
-                    $estado->Entregado = 1;
-                    $estado->FechaEntrega = now()->format('Y-m-d');
-                }elseif($estado->Cerrado === 1 && $estado->Finalizado === 1 && $estado->Entregado === 1){
-                    $estado->Entregado = 0;
-                    $estado->FechaEntrega = null; 
-                }
-                break;
-
-            case 'eEnviar':
-                if($estado->Cerrado === 1 && $estado->eEnviado === 0) {
-                    $estado->eEnviado = 1;
-                    $estado->FechaEnviado= now()->format('Y-m-d');
-                    
-                }elseif($estado->Cerrado === 1 && $estado->eEnviado === 1){
-                    $estado->eEnviado = 0;
-                    $estado->FechaEnviado = null; 
-                }
-                break;
+            switch ($request->Tipo) {
+                case 'cerrar':
+    
+                    if ($estado->Cerrado === 0 && $estado->Finalizado === 0 && $estado->Entregado === 0) {
+                        $estado->Cerrado = 1;
+                        $estado->FechaCierre = now()->format('Y-m-d');
+                    }elseif($estado->Cerrado === 1 && $estado->Finalizado === 0 && $estado->Entregado === 0){
+                        $estado->Cerrado = 0;
+                        $estado->FechaCierre = null;
+                    } 
+                    break;
+    
+                case 'finalizar':
+                    if($estado->Cerrado === 1 && $estado->Finalizado === 0 && $estado->Entregado === 0){
+                        $estado->Finalizado = 1;
+                        $estado->FechaFinalizado = now()->format('Y-m-d');
+                    }elseif($estado->Cerrado === 1 && $estado->Finalizado === 1 && $estado->Entregado === 0){
+                        $estado->Finalizado = 0;
+                        $estado->FechaFinalizado = null; 
+                    }
+                    break;
+    
+                case 'entregar':
+                    if($estado->Cerrado === 1 && $estado->Finalizado === 1 && $estado->Entregado === 0){
+                        $estado->Entregado = 1;
+                        $estado->FechaEntrega = now()->format('Y-m-d');
+                    }elseif($estado->Cerrado === 1 && $estado->Finalizado === 1 && $estado->Entregado === 1){
+                        $estado->Entregado = 0;
+                        $estado->FechaEntrega = null; 
+                    }
+                    break;
+    
+                case 'eEnviar':
+                    if($estado->Cerrado === 1 && $estado->eEnviado === 0) {
+                        $estado->eEnviado = 1;
+                        $estado->FechaEnviado= now()->format('Y-m-d');
+                        
+                    }elseif($estado->Cerrado === 1 && $estado->eEnviado === 1){
+                        $estado->eEnviado = 0;
+                        $estado->FechaEnviado = null; 
+                    }
+                    break;
+            }
+    
+            $estado->save();
+    
+            return response()->json($estado, 200);
         }
 
-        $estado->save();
-
-        return response()->json(['tipo' => $request->Tipo, 'estado' => $estado]);
+        return response()->json(['msg' => 'No se encontró la prestación'], 404);
 
     }
 
     public function down(Request $request): mixed
     {
-        $hasPermission = false;
-        foreach (Auth::user()->role as $rol) {
-            if ($rol->permiso->contains('slug', 'prestaciones_delete')) {
-                $hasPermission = true;
-                break;
-            }
-        }
 
-        if (!$hasPermission) {
-            return response()->json(['msg' => 'No tienes permisos para realizar esta acción'], 403);
+        if (!$this->hasPermission("prestaciones_delete")) {
+            return response()->json(['msg' => 'No tienes permisos'], 403);
         }
 
         $prestaciones = Prestacion::find($request->Id);
@@ -385,15 +373,8 @@ class PrestacionesController extends Controller
 
     public function blockPrestacion(Request $request)
     {
-        $hasPermission = false;
-        foreach(Auth::user()->role as $rol) {
-            if($rol->permiso->contains('slug', 'prestaciones_block')){
-                $hasPermission = true;
-                break;
-            }
-        }
-        if(!$hasPermission){
-            return response()->json(['msg' => 'No tienes permisos para realizar esta acción'], 403);
+        if (!$this->hasPermission("prestaciones_block")) {
+            return response()->json(['msg' => 'No tienes permisos'], 403);
         }
 
         $prestaciones = Prestacion::find($request->Id);
@@ -411,17 +392,26 @@ class PrestacionesController extends Controller
 
     public function verifyBlock(Request $request)
     {
+        if (!$this->hasPermission("prestaciones_edit")) {
+            return response()->json(['msg' => 'No tienes permisos'], 403);
+        }
 
         $cliente = Cliente::find($request->cliente);
 
         if ($cliente) {
 
-            return response()->json(['cliente' => $cliente]);
+            return response()->json(['cliente' => $cliente], 200);
         } 
+
+        return response()->json(['msg' => 'No se puedo llevar adelante la acción'], 409);
     }
 
     public function savePrestacion(Request $request)
     {
+        if (!$this->hasPermission("prestaciones_add")) {
+            return response()->json(['msg' => 'No tienes permisos'], 403);
+        }
+
         $nuevoId = Prestacion::max('Id') + 1;
 
         Prestacion::create([
@@ -458,60 +448,68 @@ class PrestacionesController extends Controller
             $this->addFactura($request->tipo, $request->sucursal, $request->nroFactura, $empresa, $request->tipoPrestacion, $nuevoId);
         }
     
-        return response()->json(['nuevoId' => $nuevoId]);
+        return response()->json(['nuevoId' => $nuevoId], 200);
     }
 
     public function updatePrestacion(Request $request)
     {
-
-        $hasPermission = false;
-        foreach(Auth::user()->role as $rol) {
-            if($rol->permiso->contains('slug', 'prestaciones_edit')){
-                $hasPermission = true;
-                break;
-            }
-        }
-        if(!$hasPermission){
+        if (!$this->hasPermission("prestaciones_edit")) {
             abort(403);
         }
 
         $prestacion = Prestacion::find($request->Id);
-        $prestacion->IdEmpresa = $request->Empresa ?? 0;
-        $prestacion->IdART = $request->Art ?? 0;
-        $prestacion->Fecha = $request->Fecha ?? '';
-        $prestacion->TipoPrestacion = $request->TipoPrestacion ?? '';
-        $prestacion->IdMapa = ($request->Art === null || $request->Art === 0 ? 0 : ($request->TipoPrestacion <> 'ART' ? 0 : $request->Mapas));
-        $prestacion->Pago = $request->Pago ?? '';
-        $prestacion->SPago = $request->SPago ?? '';
-        $prestacion->Financiador = ($request->TipoPrestacion == 'ART' ? $request->Art : $request->Empresa) ?? 0;
-        $prestacion->Observaciones = $request->Observaciones ?? '';
-        $prestacion->NumeroFacturaVta = $request->NumeroFacturaVta ?? 0;
-        $prestacion->IdEvaluador = $request->IdEvaluador ?? 0;
-        $prestacion->Evaluacion = $request->Evaluacion ?? 0;
-        $prestacion->Calificacion = $request->Calificacion ?? 0;
-        $prestacion->RxPreliminar = $request->RxPreliminar === 'true' ? 1 : 0;
-        $prestacion->ObsExamenes = $request->ObsExamenes ?? '';
-        $prestacion->save();
-        
-        $request->SinEval && $this->setPrestacionAtributo($request->Id, $request->SinEval);
-        $request->Obs && $this->setPrestacionComentario($request->Id, $request->Obs);
-        $empresa = ($request->tipoPrestacion === 'ART' ? $request->ART : $request->Empresa);
-        
-        $this->updateFichaLaboral($request->IdPaciente, $request->Art, $request->Empresa);
-        $this->addFactura($request->tipo, $request->sucursal, $request->nroFactura, $empresa, $request->tipoPrestacion, $request->Id);
-        Auditor::setAuditoria($request->Id, 1, 2, Auth::user()->name);
+
+        if($prestacion) {
+
+            $prestacion->IdEmpresa = $request->Empresa ?? 0;
+            $prestacion->IdART = $request->Art ?? 0;
+            $prestacion->Fecha = $request->Fecha ?? '';
+            $prestacion->TipoPrestacion = $request->TipoPrestacion ?? '';
+            $prestacion->IdMapa = ($request->Art === null || $request->Art === 0 ? 0 : ($request->TipoPrestacion <> 'ART' ? 0 : $request->Mapas));
+            $prestacion->Pago = $request->Pago ?? '';
+            $prestacion->SPago = $request->SPago ?? '';
+            $prestacion->Financiador = ($request->TipoPrestacion == 'ART' ? $request->Art : $request->Empresa) ?? 0;
+            $prestacion->Observaciones = $request->Observaciones ?? '';
+            $prestacion->NumeroFacturaVta = $request->NumeroFacturaVta ?? 0;
+            $prestacion->IdEvaluador = $request->IdEvaluador ?? 0;
+            $prestacion->Evaluacion = $request->Evaluacion ?? 0;
+            $prestacion->Calificacion = $request->Calificacion ?? 0;
+            $prestacion->RxPreliminar = $request->RxPreliminar === 'true' ? 1 : 0;
+            $prestacion->ObsExamenes = $request->ObsExamenes ?? '';
+            $prestacion->save();
+            
+            $request->SinEval && $this->setPrestacionAtributo($request->Id, $request->SinEval);
+            $request->Obs && $this->setPrestacionComentario($request->Id, $request->Obs);
+            $empresa = ($request->tipoPrestacion === 'ART' ? $request->ART : $request->Empresa);
+            
+            $this->updateFichaLaboral($request->IdPaciente, $request->Art, $request->Empresa);
+            $this->addFactura($request->tipo, $request->sucursal, $request->nroFactura, $empresa, $request->tipoPrestacion, $request->Id);
+            Auditor::setAuditoria($request->Id, 1, 2, Auth::user()->name);
+
+            return response()->json(['msg' => 'Se ha actualizado la prestación'], 200);
+        }
+
+        return response()->json(['msg' => 'No se ha actualizado la prestación'], 500);
     }
 
-    public function vencimiento(Request $request): void
+    public function vencimiento(Request $request): mixed
     {
+        if (!$this->hasPermission("prestaciones_edit")) {
+            return response()->json(['msg' => 'No tienes permisos'], 403);
+        }
+
         $prestacion = Prestacion::find($request->Id);
         if($prestacion){
             $prestacion->update(['Vto' => 1]);
         }  
+
     }
 
     public function getParaEmpresas(Request $request): mixed
     {
+        if (!$this->hasPermission("prestaciones_edit")) {
+            return response()->json(['msg' => 'No tienes permisos'], 403);
+        }
 
         $buscar = $request->buscar;
         $tipo = $request->tipo;
@@ -545,6 +543,9 @@ class PrestacionesController extends Controller
 
     public function getPresPaciente(Request $request): mixed
     {
+        if (!$this->hasPermission("prestaciones_show") || !$this->hasPermission("prestaciones_edit")) {
+            return response()->json(['msg' => 'No tienes permisos'], 403);
+        }
 
         $prestacion = Prestacion::find($request->Id);
         $mapa = Mapa::join('clientes', 'mapas.IdART', '=', 'clientes.Id')
@@ -562,13 +563,17 @@ class PrestacionesController extends Controller
                 'text' => $mapa->RazonSocial.' - '.$mapa->Identificacion,
             ];
 
-            return response()->json(['resultado' => $prestacion, 'mapa' => $resultados ?? '']);
+            return response()->json(['resultado' => $prestacion, 'mapa' => $resultados ?? ''], 200);
 
         } 
     }
 
     public function verifyWizard(Request $request)
     {
+        if (!$this->hasPermission("prestaciones_show") || !$this->hasPermission("prestaciones_edit")) {
+            return response()->json(['msg' => 'No tienes permisos'], 403);
+        }
+
         $query = Paciente::where('Documento', $request->Documento)->first();
         $existe = $query !== null;
 
@@ -595,12 +600,17 @@ class PrestacionesController extends Controller
 
     public function getBloqueo(Request $request)
     {
+        if (!$this->hasPermission("prestaciones_edit")) {
+            return response()->json(['msg' => 'No tienes permisos'], 403);
+        }
+
         $prestacion = Prestacion::where('Id', $request->Id)->first(['Anulado']);
         
         if($prestacion->Anulado === 1)
         {
             return response()->json(['prestacion' => true]);
         }
+
     }
 
 
