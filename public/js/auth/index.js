@@ -1,11 +1,5 @@
 $(document).ready(()=>{
 
-    toastr.options = {
-        closeButton: true,   
-        progressBar: true,    
-        timeOut: 3000,        
-    };
-
     $('#nombre').select2({
         language: {
             noResults: function() {
@@ -115,20 +109,24 @@ $(document).ready(()=>{
 
         if([null, undefined, 0].includes(id)) return;
 
-        if(confirm("¿Esta seguro que desea eliminar al usuario?")) {
-
-            preloader('on');
-            $.get(bajaUsuario, {Id: id})
-                .done(function(){
-                    preloader('off');
-                    toastr.success("Se ha dado de baja al usuario correctamente");
-                    setTimeout(()=> {
-                        $('#listaUsuarios').DataTable();
-                        $('#listaUsuarios').DataTable().draw(false);
-                    }, 2000);
-                });
-
-        }
+        swal({
+            title: "¿Estas seguro que deseas eliminar al usuario?",
+            icon: "warning",
+            buttons: ["Cancelar", "Eliminar"],
+        }).then((result) => {
+            if(result){
+                preloader('on');
+                $.get(bajaUsuario, {Id: id})
+                    .done(function(){
+                        preloader('off');
+                        toastr.success("Se ha dado de baja al usuario correctamente");
+                        setTimeout(()=> {
+                            $('#listaUsuarios').DataTable();
+                            $('#listaUsuarios').DataTable().draw(false);
+                        }, 2000);
+                    });
+            }
+        });            
     });
 
     $(document).on('click', '.bloquear', function(e){
@@ -136,21 +134,24 @@ $(document).ready(()=>{
 
         if([null, undefined, 0].includes(id)) return;
 
-        if(confirm("¿Esta seguro que desea bloquear al usuario")){
-
-            preloader('on');
-            $.get(bloquearUsuario, {Id: id})
-                .done(function(response){
-                    preloader('off');
-                    toastr.success(response.msg);
-                    setTimeout(()=> {
-                        $('#listaUsuarios').DataTable();
-                        $('#listaUsuarios').DataTable().draw(false);
-                    }, 2000);
-                });
-
-        }
-        
+        swal({
+            title: "¿Estas seguro que deseas bloquear al usuario?",
+            icon: "warning",
+            button: ["Cancelar", "Bloquear"]
+        }).then((result) => {
+            if(result){
+                preloader('on');
+                $.get(bloquearUsuario, {Id: id})
+                    .done(function(response){
+                        preloader('off');
+                        toastr.success(response.msg);
+                        setTimeout(()=> {
+                            $('#listaUsuarios').DataTable();
+                            $('#listaUsuarios').DataTable().draw(false);
+                        }, 2000);
+                    });
+            }
+        });      
     });
 
     $(document).on('click', '.cambiarPass', function(e){
@@ -158,23 +159,20 @@ $(document).ready(()=>{
 
         if([null, undefined, 0].includes(id)) return;
 
-        if(confirm("¿Esta seguro que desea resetear la contraseña?")) {
-
-            preloader('on');
-            $.get(cambiarPassUsuario, {Id: id})
-                .done(function(){
-                    preloader('off');
-                    toastr.success("Se ha dado de cambiado la contraseña a 'cmit1234' correctamente");
-                });
-
-        }    
+        swal({
+            title: "¿Estas seguro que deseas resetear la contraseña?",
+            icon: "warning",
+            button: ["Cancelar", "Resetear"]
+        }).then((result) => {
+            if(result){
+                preloader('on');
+                $.get(cambiarPassUsuario, {Id: id})
+                    .done(function(response){
+                        preloader('off');
+                        toastr.success(response.msg);
+                    }); 
+            }
+        });      
     });
-
-    function preloader(opcion) {
-        $('#preloader').css({
-            opacity: '0.3',
-            visibility: opcion === 'on' ? 'visible' : 'hidden'
-        });
-    }
 
 });

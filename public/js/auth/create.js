@@ -28,12 +28,6 @@ $(document).ready(()=>{
 
     });
 
-    toastr.options = {
-        closeButton: true,   
-        progressBar: true,    
-        timeOut: 3000,        
-    };
-
     $(document).on('click', '#crear', function(e){
         e.preventDefault();
         let usuario = $('#usuario').val(), email = $('#email').val();
@@ -60,11 +54,5 @@ $(document).ready(()=>{
         history.back();
     });
 
-    function preloader(opcion) {
-        $('#preloader').css({
-            opacity: '0.3',
-            visibility: opcion === 'on' ? 'visible' : 'hidden'
-        });
-    }
 
 });

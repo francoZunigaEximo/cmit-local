@@ -233,6 +233,8 @@ class UsuariosController extends Controller
         {
             $query->password = Hash::make(SELF::password);
             $query->save();
+
+            return response()->json(['msg' => 'Se ha cambiado la contraseña correctamente'], 200);
         }
     }
 

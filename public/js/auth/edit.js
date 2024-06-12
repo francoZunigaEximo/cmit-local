@@ -1,10 +1,5 @@
 $(document).ready(()=>{
 
-    toastr.options = {
-        closeButton: true,   
-        progressBar: true,    
-        timeOut: 3000,        
-    };
     quitarDuplicados("#provincia");
     quitarDuplicados("#cuil");
     quitarDuplicados("#tipoDoc");
@@ -37,9 +32,10 @@ $(document).ready(()=>{
                         location.reload();
                     },2000);
                 })
-                .fail(function(xhr){
-                    console.error(xhr);
-                    toastr.error("Ha ocurrido un error. Consulte con el administrador");
+                .fail(function(jqXHR){
+                    let errorData = JSON.parse(jqXHR.responseText);            
+                    checkError(jqXHR.status, errorData.msg);
+                    return;
                 })
         }
 
@@ -96,22 +92,31 @@ $(document).ready(()=>{
         let rol = $('#listaRoles').val(), usuario = $(this).data('id'),  errores = [null, undefined, ''];
         if(errores.includes(rol) || errores.includes(usuario)) return;
 
-        if(confirm("¿Estas seguro que deseas agregar el rol?")){
+        swal({
+            title: "¿Estas seguro que deseas agregar el rol?",
+            icon: "warning",
+            buttons: ["Cancelar", "Agregar"],
+        }).then((result) => {
+            if(result){
 
-            preloader('on');
-            $.post(addRol, {_token: TOKEN, user: usuario, role: rol})
-                .done(function(response){
-                    preloader('off');
-                    if(response.estado === 'false'){
-                        toastr.warning(response.msg);
-                    }else if(response.estado === 'true'){
-                        toastr.success(response.msg);
-                        setTimeout(() => {
-                            listadoRoles();
-                        }, 2000);
-                    }
-                })
-        }
+                preloader('on');
+                $.post(addRol, {_token: TOKEN, user: usuario, role: rol})
+                    .done(function(response){
+                        preloader('off');
+                        if(response.estado === 'false'){
+                            toastr.warning(response.msg);
+                        }else if(response.estado === 'true'){
+                            toastr.success(response.msg);
+                            setTimeout(() => {
+                                listadoRoles();
+                            }, 2000);
+                        }
+                    })
+            }
+        });
+
+           
+        
     });
 
     $(document).on('click', '.eliminar', function(e){
@@ -119,20 +124,24 @@ $(document).ready(()=>{
         let usuario = $(this).data('user'), rol = $(this).data('rol'), errores = [null, undefined, '', 0];
         if(errores.includes(rol) || errores.includes(usuario)) return;
 
-        if(confirm("¿Estas seguro que deseas eliminar el rol?")){
+        swal({
+            title: "¿Estas seguro que deseas eliminar el rol?",
+            icon: "warning",
+            buttons: ["Cancelar", "Eliminar"],
+        }).then((result) => {
+            if(result){
 
-            preloader('on');
-            $.get(deleteRol, {user: usuario, role: rol})
-                .done(function(){
-                    preloader('off');
-                    toastr.success("Se ha eliminado el rol correctamente.");
-                    setTimeout(() => {
-                        listadoRoles();
-                    }, 2000);
-                })
-
-        }
-        
+                preloader('on');
+                $.get(deleteRol, {user: usuario, role: rol})
+                    .done(function(response){
+                        preloader('off');
+                        toastr.success(response.msg);
+                        setTimeout(() => {
+                            listadoRoles();
+                        }, 2000);
+                    })
+            }
+        });  
     });
     
     function listadoRoles() {
@@ -190,22 +199,6 @@ $(document).ready(()=>{
                 // Actualizar el valor del input de Código Postal
                 $('#codPostal').val(response.codigoPostal);
             }
-        });
-    }
-
-    function quitarDuplicados(selector) {
-        let seleccion = $(selector).val();
-        let countSeleccion = $(selector + " option[value='" + seleccion + "']").length;
-    
-        if (countSeleccion > 1) {
-            $(selector + " option[value='" + seleccion + "']:gt(0)").hide();
-        }
-    }
-
-    function preloader(opcion) {
-        $('#preloader').css({
-            opacity: '0.3',
-            visibility: opcion === 'on' ? 'visible' : 'hidden'
         });
     }
 

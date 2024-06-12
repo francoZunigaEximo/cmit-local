@@ -70,7 +70,14 @@ class RolesController extends Controller
     {
         $user = User::find($request->user); 
         $role = Rol::find($request->role); 
-        $user->role()->detach($role);
+
+        if($user && $role){
+            $user->role()->detach($role);
+            return response()->json(['msg' => 'Se ha eliminado el rol del usuario correctamente'], 200);
+
+        }
+
+        
 
     }
 
