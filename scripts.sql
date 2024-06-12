@@ -1095,3 +1095,9 @@ INSERT INTO permisos(slug, descripcion) VALUES
 
 INSERT INTO rol_permisos(rol_id, permiso_id) VALUES
 (2,41),(4,41),(5,41),(6,55),(3,43),(3,44),(3,45),(3,46);
+
+INSERT INTO permisos(slug, descripcion) VALUES
+("prestaciones_report","Impresión de reportes de prestaciones");
+
+INSERT INTO rol_permisos(rol_id, permiso_id) VALUES
+(3,59),(6,59);

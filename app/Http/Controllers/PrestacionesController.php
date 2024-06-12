@@ -582,6 +582,10 @@ class PrestacionesController extends Controller
 
     public function exportExcel(Request $request)
     {
+        if (!$this->hasPermission("prestaciones_report")) {
+            return response()->json(['msg' => 'No tienes permisos'], 403);
+        }
+
         $ids        = $request->ids ? explode(",", $request->ids) : []; 
         $filters    = $request->filters ? explode(",", $request->filters) : [];
         $tipo       = $request->tipo;
