@@ -96,11 +96,6 @@ $(document).ready(function(){
             $.post(delPerfil, {_token: TOKEN, IdProf: IdProf, IdProv: IdProv})
             .done(function(){
 
-                toastr.options = {
-                    closeButton: true,   
-                    progressBar: true,    
-                    timeOut: 3000,        
-                };
                 toastr.success(`Se ha añadido el perfil de manera correcta`);
                 cargarPerfiles();
             })
