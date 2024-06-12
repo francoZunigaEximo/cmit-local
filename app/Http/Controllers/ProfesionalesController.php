@@ -210,16 +210,18 @@ class ProfesionalesController extends Controller
 
         $consulta = ProfesionalProv::where('IdProf', $request->Id)
             ->where('IdProv', $request->especialidad)
-            ->where('Tipo', $request->perfil)
+            ->where('IdRol', $request->perfil)
             ->first();
 
         if(!$consulta){
+
+            $id = in_array(Auth()->role->first()->Id, [8, 9, 11, 12]) ? Auth()->role->first()->Id : 0;
 
             ProfesionalProv::create([
                 'Id' => ProfesionalProv::max('Id') + 1,
                 'IdProf' => $request->Id,
                 'IdProv' => $request->especialidad,
-                'Tipo' => $request->perfil
+                'IdRol' => $id,
             ]);
         }else{
 

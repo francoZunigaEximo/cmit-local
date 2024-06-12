@@ -1101,3 +1101,6 @@ INSERT INTO permisos(slug, descripcion) VALUES
 
 INSERT INTO rol_permisos(rol_id, permiso_id) VALUES
 (3,59),(6,59);
+
+ALTER TABLE profesionales_prov DROP COLUMN Tipo;
+ALTER TABLE profesionales_prov ADD IdRol INT(11) DEFAULT 0 NULL;

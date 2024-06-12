@@ -7,12 +7,6 @@ $(document).ready(function(){
     quitarDuplicados("#estado");
     perfiles(ID);
 
-    toastr.options = {
-        closeButton: true,   
-        progressBar: true,    
-        timeOut: 3000,        
-    };
-
     $("#Apellido, #Nombre").on("input", function() {
         $(this).val($(this).val().toUpperCase());
     });
@@ -66,8 +60,7 @@ $(document).ready(function(){
 
     $(document).on('click', '.addPerfilProf', function(){
 
-        let perfil = $('#perfiles').val(),
-            especialidad = $('#listaEspecialidad').val();
+        let perfil = $('#perfiles').val(), especialidad = $('#listaEspecialidad').val();
 
         if(perfil === '' || especialidad === '') {
             toastr.warning("Debe seleccionar una especialidad y un perfil para poder añadirlo a la lista", "Atención");
@@ -196,15 +189,6 @@ $(document).ready(function(){
                     $('#listaEspecialidad').val('');
                 });
             });    
-    }
-
-    function quitarDuplicados(selector) {
-        let seleccion = $(selector).val();
-        let countSeleccion = $(selector + " option[value='" + seleccion + "']").length;
-    
-        if (countSeleccion > 1) {
-            $(selector + " option[value='" + seleccion + "']:gt(0)").hide();
-        }
     }
 
     function perfiles(id)
