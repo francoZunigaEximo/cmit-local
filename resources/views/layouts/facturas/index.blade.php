@@ -1,0 +1,125 @@
+@extends('template')
+
+@section('title', 'Facturas')
+
+@section('content')
+
+<div class="page-title-box d-sm-flex align-items-center justify-content-between">
+    <h4 class="mb-sm-0">Facturación</h4>
+</div>
+
+<div class="card">
+
+    <div class="card-body">
+        <div class="row">
+
+                <div class="col-sm-3 mt-3">
+                    <label for="fechaDesde" class="form-label fw-bolder">Fecha Desde</label>
+                    <input type="date" class="form-control" id="fechaDesde" name="fechaDesde">
+                </div>
+
+                <div class="col-sm-3 mt-3">
+                    <label for="fechaHasta" class="form-label fw-bolder">Fecha Hasta</label>
+                    <input type="date" class="form-control" id="fechaHasta" name="fechaHasta">
+                </div>
+                
+                <div class="col-sm-3 mt-3">
+                    <label for="facturaDesde" class="form-label fw-bolder">Factura Desde</label>
+                    <input type="text" class="form-control" id="facturaDesde" name="facturaDesde">
+                </div>
+
+                <div class="col-sm-3 mt-3">
+                    <label for="facturaHasta" class="form-label fw-bolder">Factura Hasta</label>
+                    <input type="text" class="form-control" id="facturaHasta" name="facturaHasta">
+                </div>
+
+                <div class="col-sm-2 mt-3">
+                    <label for="empresa" class="form-label fw-bolder">Empresa</label>
+                    <select class="form-control" name="empresa" id="empresa"></select>
+                </div>
+
+                <div class="col-sm-2 mt-3">
+                    <label for="art" class="form-label fw-bolder">ART</label>
+                    <select class="form-control" name="art" id="art"></select>
+                </div>
+
+                <div class="col-sm-2 mt-3">
+                    <label for="tabla" class="form-label fw-bolder">Ver Tabla</label>
+                    <select name="tabla" id="tabla" class="form-control"></select>
+                </div>
+
+                <div class="col-sm-12 mt-3 text-end">
+                    <button type="button" class="btn btn-sm botonGeneral buscar"><i class="ri-search-line"></i>Buscar</button>
+                    <button type="button" class="btn btn-sm botonGeneral reiniciar"><i class="ri-refresh-line"></i>Reiniciar</button>
+                </div>
+        </div>
+    </div>
+</div>
+
+<div class="row fondo-grisClaro mt-2 p-2">
+    <div class="col-sm-6">
+        <button type="button" class="btn btn-sm botonGeneral"><i class="ri-file-excel-line"></i>Finneg</button>
+        <button type="button" class="btn btn-sm botonGeneral"><i class="ri-file-excel-line"></i>FinnegART</button>
+    </div>
+    <div class="col-sm-6 text-end">
+        Filtros:  <button type="button" class="btn btn-sm botonGeneral">Hoy</button>
+        <button type="button" class="btn btn-sm botonGeneral">Factura S/N</button>
+    </div>
+</div>
+      
+<div class="row mt-2">
+    <div class="col-sm-12 text-end">
+        <button type="button" class="btn btn-sm botonGeneral"><i class="ri-send-plane-line"></i>Enviar</button>
+        <button type="button" class="btn btn-sm botonGeneral"><i class="ri-delete-bin-6-line"></i>Eliminar</button>
+        <button type="button" class="btn btn-sm botonGeneral"><i class="ri-money-dollar-circle-line"></i>Precio</button>
+        <a class="btn btn-sm botonGeneral" href="{{ route('facturas.create') }}"><i class="ri-add-line"></i>Nuevo</a>
+    </div>
+</div>
+
+<div class="table-responsive table-card mb-1 mt-3">
+    <table id="listaFacturas" class="display table table-bordered" style="width:100%">
+        <thead class="table-light">
+            <tr>
+                <th><input type="checkbox" id="checkAllFactura" name="Id_factura"></th>
+                <th>Numero</th>
+                <th>Factura</th>
+                <th>Fecha Fac</th>
+                <th class="sort">Empresa</th>
+                <th>Cuit</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody class="list form-check-all" id="lstFacturas">
+            
+        </tbody>
+    </table>
+</div>
+
+<script>
+    const TOKEN = "{{ csrf_token() }}";
+</script>
+
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/hacks.css')}}?v=?v={{ time() }}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
+@endpush
+
+@push('scripts')
+<!--datatable js-->
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+
+<script src="{{ asset('js/facturacion/index.js')}}?=v{{ time() }}"></script>
+<script src="{{ asset('js/facturacion/paginacion.js')}}?=v{{ time() }}"></script>
+
+<script src="{{ asset('js/select2.min.js') }}"></script>
+<script src="{{ asset('js/init.select2.js') }}"></script>
+@endpush
+@endsection

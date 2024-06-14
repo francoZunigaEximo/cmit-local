@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\Mail;
 use App\Jobs\SendEmailJob;
 use App\Enum\HttpStatus;
 use Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport;
-use Illuminate\Support\Facades\Config;
 
 class MensajesController extends Controller
 {
@@ -310,6 +309,10 @@ class MensajesController extends Controller
                     return response()->json(['msg' => 'No hay correos activos para realizar el envio'], 400);
                 }
 
+                if(!$this->testing()){
+                    return response()->json(['msg' => 'No se ha podido conectar con el servidor SMTP'], 500);
+                }
+
                 foreach ($correos as $correo) {
 
                     SendEmailJob::dispatch($correo, $request->Asunto, $request->Cuerpo);
@@ -334,8 +337,8 @@ class MensajesController extends Controller
         return response()->json([], 500);
     }
 
-    public function testEmail()
-    {
+    public function testEmail(){
+
         if (!$this->hasPermission("mensajeria_edit")) {
             return response()->json([], 403);
         }
@@ -355,6 +358,25 @@ class MensajesController extends Controller
         }catch (\Exception $e) {
             return response()->json(['msg' => 'No se ha podido conectar con el servidor: ' . $e->getMessage()]);
         }
+    }
+
+    private function testing()
+    {
+        $transport = new EsmtpTransport(
+            config('app.mailhost'), 
+            config('app.mailport'), 
+            config('app.mailencryption')
+            );
+            $transport->setUsername(config('app.mailusername'));
+            $transport->setPassword(config('app.mailpassword'));
+
+            try { 
+                $transport->start();
+                return true;
+            
+            }catch (\Exception $e) {
+                return false;
+            }
     }
 
 }
