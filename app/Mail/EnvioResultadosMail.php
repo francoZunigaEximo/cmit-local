@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use DebugBar\Bridge\SwiftMailer\SwiftMailCollector;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -21,6 +22,8 @@ class EnvioResultadosMail extends Mailable
     public function __construct(array $data)
     {
         $this->data = $data;
+
+        new SwiftMailCollector()
     }
 
     /**

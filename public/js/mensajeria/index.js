@@ -295,6 +295,23 @@ $(document).ready(function() {
         window.location.href = window.location.href + '/modelos';
     });
 
+    $(document).on('click', '.Testear', function(e){
+        e.preventDefault();
+        preloader('on');
+        $.get(testEmail)
+        .done(function(response){
+            preloader('off');
+            alert(response.msg);
+        })
+        .fail(function(jqXHR){
+            preloader('off');
+            let errorData = JSON.parse(jqXHR.responseText);            
+            //checkError(jqXHR.status, errorData.msg);
+            alert(errorData.msg);
+            return;
+        });
+    });
+
     function cargaModelos() { 
         $("#modelo, #modelo2").empty();
 

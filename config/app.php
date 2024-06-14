@@ -191,4 +191,9 @@ return [
         'PDFMerger' => Webklex\PDFMerger\Facades\PDFMergerFacade::class
     ])->toArray(),
 
+    'mailhost' => env('MAIL_HOST'),
+    'mailport' => env('MAIL_PORT'),
+    'mailencryption' => env('MAIL_ENCRYPTION'),
+    'mailusername' => env('MAIL_USERNAME'),
+    'mailpassword' => env('MAIL_PASSWORD'),
 ];

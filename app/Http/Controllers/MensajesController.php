@@ -12,6 +12,8 @@ use App\Mail\EnvioResultadosMail;
 use Illuminate\Support\Facades\Mail;
 use App\Jobs\SendEmailJob;
 use App\Enum\HttpStatus;
+use Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport;
+use Illuminate\Support\Facades\Config;
 
 class MensajesController extends Controller
 {
@@ -330,6 +332,29 @@ class MensajesController extends Controller
         }
 
         return response()->json([], 500);
+    }
+
+    public function testEmail()
+    {
+        if (!$this->hasPermission("mensajeria_edit")) {
+            return response()->json([], 403);
+        }
+
+        $transport = new EsmtpTransport(
+        config('app.mailhost'), 
+        config('app.mailport'), 
+        config('app.mailencryption')
+        );
+        $transport->setUsername(config('app.mailusername'));
+        $transport->setPassword(config('app.mailpassword'));
+
+        try { 
+            $transport->start();
+            return response()->json(['msg' => 'Ping al servidor SMTP realizado. Servidor activo'], 200);
+        
+        }catch (\Exception $e) {
+            return response()->json(['msg' => 'No se ha podido conectar con el servidor: ' . $e->getMessage()]);
+        }
     }
 
 }

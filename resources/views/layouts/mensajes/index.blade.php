@@ -72,6 +72,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-sm-12 text-end">
+                                    <button type="button" class="btn botonGeneral Testear"><i class="ri-settings-3-line"></i>Testear Conexión</button>
                                     <button type="type" class="btn btn-sm botonGeneral buscar"><i class="ri-search-line"></i>Buscar</button>
                                 </div>
                             </div>
@@ -165,6 +166,7 @@
             
             <div class="modal-footer">
                 <button type="button" class="btn botonGeneral" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn botonGeneral Testear"><i class="ri-settings-3-line"></i>Testear Conexión</button>
                 <button type="button" class="btn botonGeneral enviarMensaje">Enviar</button>
             </div>
 
@@ -220,6 +222,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn botonGeneral" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn botonGeneral Testear"><i class="ri-settings-3-line"></i>Testear Conexión</button>
                 <button type="button" class="btn botonGeneral enviarMensajeInd">Enviar</button>
             </div>
 
@@ -233,6 +236,7 @@
     const loadModelos = "{{ route('loadModelos') }}";
     const loadMensaje = "{{ route('loadMensaje') }}";
     const sendEmails = "{{ route('sendEmails') }}";
+    const testEmail = "{{ route('testEmail') }}";
     
 </script>
 

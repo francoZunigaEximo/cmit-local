@@ -227,6 +227,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     //Rutas de FacturasdeVenta
     Route::get('getFactura', [FacturasVentaController::class, 'getFactura'])->name('getFactura');
+    Route::resource('facturas', FacturasVentaController::class);
 
     // Rutas de Noticias
     Route::resource('noticias', NoticiasController::class);
@@ -321,5 +322,6 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('verAuditoria', [MensajesController::class, 'verAuditoria'])->name('verAuditoria');
     Route::get('mensajes/search', [MensajesController::class, 'search'])->name('mensajes.search');
     Route::get('sendEmails', [MensajesController::class, 'sendEmails'])->name('sendEmails');
+    Route::get('testEmail', [MensajesController::class, 'testEmail'])->name('testEmail');
 });
 
