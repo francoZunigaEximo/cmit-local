@@ -302,7 +302,11 @@ class MensajesController extends Controller
                 $informes = $request->Informes == 'true' ? explode(",", $cliente->EMailInformes) : [];
                 $resultados = $request->Masivo == 'true' ? explode(",", $cliente->EMailResultados) : [];
 
-                $correos = array_merge($facturas, $informes, $resultados);
+                $correos = [];
+                $correos = $this->addCorreos($correos, $facturas);
+                $correos = $this->ddCorreos($correos, $informes);
+                $correos = $this->addCorreos($correos, $resultados);
+                
                 $correos = array_unique($correos);
 
                 if($correos[0] === '' && count($correos) === 1){
@@ -377,6 +381,17 @@ class MensajesController extends Controller
             }catch (\Exception $e) {
                 return false;
             }
+    }
+
+    private function addCorreos($correos, $nuevosCorreos) {
+
+        if (is_array($nuevosCorreos)) {
+            $correos = array_merge($correos, $nuevosCorreos);
+        } else {
+            $correos[] = $nuevosCorreos;
+        }
+
+        return $correos;
     }
 
 }
