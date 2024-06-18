@@ -383,7 +383,7 @@ class MensajesController extends Controller
             }
     }
 
-    private function addCorreos($correos, $nuevosCorreos) {
+    private function addCorreos(&$correos, $nuevosCorreos) {
 
         if (is_array($nuevosCorreos)) {
             $correos = array_merge($correos, $nuevosCorreos);
