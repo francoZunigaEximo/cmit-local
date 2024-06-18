@@ -304,7 +304,7 @@ class MensajesController extends Controller
 
                 $correos = [];
                 $correos = $this->addCorreos($correos, $facturas);
-                $correos = $this->ddCorreos($correos, $informes);
+                $correos = $this->addCorreos($correos, $informes);
                 $correos = $this->addCorreos($correos, $resultados);
                 
                 $correos = array_unique($correos);
