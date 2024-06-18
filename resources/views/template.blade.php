@@ -209,9 +209,9 @@
                                         <a href="{{ route('examenesCuenta.index')}}" class="nav-link enlace-blanco" data-key="t-ExCuenta"> Ex. a Cta </a>
                                     </li>
                                     @endcan
-                                    @can("facturas_show")
+                                    @can("facturacion_show")
                                     <li class="nav-item">
-                                        <a href="#" class="nav-link enlace-blanco" data-key="t-factura"> Factura </a>
+                                        <a href="{{ route('facturas.index') }}" class="nav-link enlace-blanco" data-key="t-factura"> Facturación </a>
                                     </li>
                                     @endcan
                                     @can("notaCredito_show")

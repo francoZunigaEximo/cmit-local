@@ -1104,3 +1104,13 @@ INSERT INTO rol_permisos(rol_id, permiso_id) VALUES
 
 ALTER TABLE profesionales_prov DROP COLUMN Tipo;
 ALTER TABLE profesionales_prov ADD IdRol INT(11) DEFAULT 0 NULL;
+
+INSERT INTO permisos(slug, descripcion) VALUES
+("facturacion_show","Visualización de facturación"),
+("facturacion_add","Agregar facturación"),
+("facturacion_edit","Editar facturación"),
+("facturacion_delete","Eliminar facturación");
+
+INSERT INTO rol_permisos(rol_id, permiso_id) VALUES
+(3,60),(3,61),(3,62),(3,63);
+
