@@ -300,16 +300,16 @@ class MensajesController extends Controller
 
                 $facturas = $request->Facturas == 'true' ? explode(",", $cliente->EMailFactura) : [];
                 $informes = $request->Informes == 'true' ? explode(",", $cliente->EMailInformes) : [];
-                $resultados = $request->Masivo == 'true' ? explode(",", $cliente->EMailResultados) : [];
+                $resultados = $request->Masivos == 'true' ? explode(",", $cliente->EMailResultados) : [];
 
                 $correos = [];
                 $correos = $this->addCorreos($correos, $facturas);
                 $correos = $this->addCorreos($correos, $informes);
                 $correos = $this->addCorreos($correos, $resultados);
-                
-                $correos = array_unique($correos);
 
-                if($correos[0] === '' && count($correos) === 1){
+                $correos = array_unique($correos);
+                
+                if(count($correos) === 0){
                     return response()->json(['msg' => 'No hay correos activos para realizar el envio'], 400);
                 }
 
@@ -321,13 +321,13 @@ class MensajesController extends Controller
 
                     SendEmailJob::dispatch($correo, $request->Asunto, $request->Cuerpo);
 
-                    AuditoriaMail::create([
+                   /* AuditoriaMail::create([
                         'Id' => AuditoriaMail::max('Id') + 1,
                         'Fecha' => date('Y-m-d H:i:s'),
                         'Destinatarios' => $correo,
                         'Asunto' => $request->Asunto,
                         'Detalle' => $request->Cuerpo
-                    ]);
+                    ]);*/
                     //var_dump($correo, $request->Asunto, $request->Cuerpo);
             
                     /*$email = new EnvioResultadosMail(['subject' => $request->Asunto, 'content' => $request->Cuerpo]);
@@ -385,11 +385,13 @@ class MensajesController extends Controller
 
     private function addCorreos(&$correos, $nuevosCorreos) {
 
-        if (is_array($nuevosCorreos)) {
-            $correos = array_merge($correos, $nuevosCorreos);
-        } else {
-            $correos[] = $nuevosCorreos;
-        }
+        if (is_array($nuevosCorreos) && count($nuevosCorreos) > 0) {
+            foreach ($nuevosCorreos as $correo) {
+               if (!in_array($correo, $correos)) {
+                   $correos[] = $correo;
+               }
+           }
+       }
 
         return $correos;
     }
