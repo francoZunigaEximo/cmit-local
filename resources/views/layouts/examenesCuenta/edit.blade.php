@@ -116,7 +116,7 @@
         <table id="listadoSaldos" class="display table table-bordered">
             <thead class="table-light">
                 <tr>
-                    <th><input type="checkbox" id="checkAll" name="Id"></th>
+                    <th class="text-center"><input type="checkbox" id="checkAll" name="Id"></th>
                     <th class="sort">Precarga</th>
                     <th class="sort">Examen</th>
                     <th class="sort">Prestación</th>

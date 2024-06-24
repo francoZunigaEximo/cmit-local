@@ -44,13 +44,18 @@
                 </div>
 
                 <div class="col-sm-2 mt-3">
-                    <label for="tabla" class="form-label fw-bolder">Ver Tabla</label>
-                    <select name="tabla" id="tabla" class="form-control"></select>
+                    <label for="tabla" class="form-label fw-bolder">Ver Tabla <span class="required">(*)</span></label>
+                    <select name="tabla" id="tabla" class="form-control">
+                        <option value="" selected>Elija una opción...</option>
+                        <option value="facturas">Facturas</option>
+                        <option value="exacuenta">Facturas Exa. a Cuenta</option>
+                        <option value="todo">Todo</option>
+                    </select>
                 </div>
 
                 <div class="col-sm-12 mt-3 text-end">
                     <button type="button" class="btn btn-sm botonGeneral buscar"><i class="ri-search-line"></i>Buscar</button>
-                    <button type="button" class="btn btn-sm botonGeneral reiniciar"><i class="ri-refresh-line"></i>Reiniciar</button>
+                    <a class="btn btn-sm botonGeneral" href="{{ route('facturas.index') }}"><i class="ri-refresh-line"></i>Reiniciar</a>
                 </div>
         </div>
     </div>
@@ -70,7 +75,7 @@
 <div class="row mt-2">
     <div class="col-sm-12 text-end">
         <button type="button" class="btn btn-sm botonGeneral"><i class="ri-send-plane-line"></i>Enviar</button>
-        <button type="button" class="btn btn-sm botonGeneral"><i class="ri-delete-bin-6-line"></i>Eliminar</button>
+        <button type="button" class="btn btn-sm botonGeneral eliminarMultiple"><i class="ri-delete-bin-6-line"></i>Eliminar</button>
         <button type="button" class="btn btn-sm botonGeneral"><i class="ri-money-dollar-circle-line"></i>Precio</button>
         <a class="btn btn-sm botonGeneral" href="{{ route('facturas.create') }}"><i class="ri-add-line"></i>Nuevo</a>
     </div>
@@ -80,7 +85,7 @@
     <table id="listaFacturas" class="display table table-bordered" style="width:100%">
         <thead class="table-light">
             <tr>
-                <th><input type="checkbox" id="checkAllFactura" name="Id_factura"></th>
+                <th class="text-center"><input type="checkbox" id="checkAllFactura" name="Id_factura"></th>
                 <th>Numero</th>
                 <th>Factura</th>
                 <th>Fecha Fac</th>
@@ -97,14 +102,25 @@
 
 <script>
     const TOKEN = "{{ csrf_token() }}";
+    const SEARCH = "{{ route('facturas.search') }}";
+    const getClientes = "{{ route('getClientes') }}";
+    const checkNotaCredito = "{{ route('nota-de-credito.check') }}";
+
+    const lnkFactura = "{{ route('facturas.edit', '__id__') }}";
+    const lnkExamenCuenta = "{{ route('examenesCuenta.edit', '__id__') }}";
+
+    const eliminarFactura = "{{ route('facturas.delete')}}";
 </script>
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/hacks.css')}}?v=?v={{ time() }}">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
+
+<link rel="stylesheet" href="{{ asset('css/fixSelect2.css') }}">
 @endpush
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/inputmask/dist/jquery.inputmask.min.js"></script>
 <!--datatable js-->
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
@@ -120,6 +136,5 @@
 <script src="{{ asset('js/facturacion/paginacion.js')}}?=v{{ time() }}"></script>
 
 <script src="{{ asset('js/select2.min.js') }}"></script>
-<script src="{{ asset('js/init.select2.js') }}"></script>
 @endpush
 @endsection

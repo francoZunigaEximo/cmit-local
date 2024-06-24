@@ -23,5 +23,10 @@ $(document).ready(function(){
             });
     });
 
+    $(document).on('click', '.reiniciarAuditoria', function(e){
+        e.preventDefault();
+        $('#listaAuditorias').DataTable();
+        $('#listaAuditorias').DataTable().draw(false);
+    });
 
 });

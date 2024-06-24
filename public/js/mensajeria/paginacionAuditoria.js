@@ -11,10 +11,10 @@ $(document).ready(function(){
         serverSide: true,
         deferRender: true,
         ajax: {
-            url: SEARCH,
+            url: SEARCHAUDITORIA,
             data: function(d){
-                d.FechaDesde = $('#fechaDesde').val();
-                d.FechaHasta = $('#fechaHasta').val();
+                d.FechaDesde = $('#fechaDesdeAu').val();
+                d.FechaHasta = $('#fechaHastaAu').val();
             }
         },
         dataType: 'json',
@@ -53,7 +53,7 @@ $(document).ready(function(){
             }
         ],
         language: {
-            processing: "<div style='text-align: center; margin-top: 20px;'><img src='../images/spinner.gif' /><p>Cargando...</p></div>",
+            processing: "<div style='text-align: center; margin-top: 20px;'><img src='images/spinner.gif' /><p>Cargando...</p></div>",
             emptyTable: "No hay auditorias con los datos buscados",
             paginate: {
                 first: "Primera",
@@ -79,9 +79,9 @@ $(document).ready(function(){
     new DataTable(selector, paginacion);
 
 
-    $(document).on('click', '.buscar', function(e){
+    $(document).on('click', '.buscarAuditoria', function(e){
         e.preventDefault();
-        let fechaDesde = $('#fechaDesde').val(), fechaHasta = $('#fechaHasta').val();
+        let fechaDesde = $('#fechaDesdeAu').val(), fechaHasta = $('#fechaHastaAu').val();
 
         if([null, undefined, ''].includes(fechaDesde) || [null, undefined, ''].includes(fechaHasta)) {
             toastr.warning("Debe seleccionar un rango de fechas");

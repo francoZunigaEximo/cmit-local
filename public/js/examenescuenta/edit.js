@@ -213,7 +213,7 @@ $(document).ready(function(){
                     let nombreCompleto = r.ApellidoPaciente + ' ' + r.NombrePaciente;
                     let contenido = `
                         <tr>
-                            <td><span class="text-center"><input type="checkbox" name="Id" value="${r.IdEx}"></span></td>
+                            <td><div class="text-center"><input type="checkbox" name="Id" value="${r.IdEx}"></div></td>
                             <td>${r.Precarga === '' ? '-' : r.Precarga}</td>
                             <td title="${r.Examen}">${acortadorTexto(r.Examen, 10)}</td>
                             <td>${r.Prestacion}</td>

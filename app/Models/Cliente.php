@@ -87,5 +87,10 @@ class Cliente extends Model
     {
         return $this->hasOne(ExamenCuenta::class, 'IdEmpresa', 'Id');
     }
+
+    public function facturadeventa()
+    {
+        return $this->hasMany(FacturaDeVenta::class, 'IdEmpresa', 'Id');
+    }
 }
 

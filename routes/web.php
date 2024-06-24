@@ -22,6 +22,7 @@ use App\Http\Controllers\PrestacionesObsFasesController;
 use App\Http\Controllers\OrdenesExamenController;
 use App\Http\Controllers\ExamenesCuentaController;
 use App\Http\Controllers\MensajesController;
+use App\Http\Controllers\NotasCreditoController;
 use App\Http\Controllers\PaqueteEstudioController;
 use App\Http\Controllers\PaqueteFacturacionController;
 use App\Http\Controllers\RolesController;
@@ -227,6 +228,8 @@ Route::group(['middleware' => 'auth'], function () {
 
     //Rutas de FacturasdeVenta
     Route::get('getFactura', [FacturasVentaController::class, 'getFactura'])->name('getFactura');
+    Route::get('facturas/search', [FacturasVentaController::class, 'search'])->name('facturas.search');
+    Route::get('facturas/delete', [FacturasVentaController::class, 'delete'])->name('facturas.delete');
     Route::resource('facturas', FacturasVentaController::class);
 
     // Rutas de Noticias
@@ -323,5 +326,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('mensajes/search', [MensajesController::class, 'search'])->name('mensajes.search');
     Route::get('sendEmails', [MensajesController::class, 'sendEmails'])->name('sendEmails');
     Route::get('testEmail', [MensajesController::class, 'testEmail'])->name('testEmail');
+
+    //Rutas de Notas de Crédito
+    Route::get('nota-de-credito/check', [NotasCreditoController::class, 'checkNotaCredito'])->name('nota-de-credito.check');
 });
 

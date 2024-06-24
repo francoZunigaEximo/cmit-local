@@ -223,6 +223,21 @@
                             </div>
                         </li>
 
+                        <li class="nav-item">
+                            <a class="nav-link menu-link collapsed" href="#sidebarGeneral" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarGeneral">
+                                <i data-feather="folder" class="icon-dual"></i> <span data-key="t-general">General</span>
+                            </a>
+                            <div class="menu-dropdown mega-dropdown-menu collapse" id="sidebarGeneral">
+                                <ul class="nav nav-sm flex-column">
+                                    @can("clientes_send")
+                                    <li class="nav-item">
+                                        <a href="{{ route('mensajes.index') }}" class="nav-link enlace-blanco" data-key="t-Mensajeria"> Mensajeria </a>
+                                    </li>
+                                    @endcan
+                                </ul>
+                            </div>
+                        </li>
+
                         @can('noticias_edit')
                         <li class="nav-item">
                             <a class="nav-link menu-link" href="{{ route('noticias.edit', 1) }}" aria-expanded="false">

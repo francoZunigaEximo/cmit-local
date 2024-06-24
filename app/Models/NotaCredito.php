@@ -19,4 +19,9 @@ class NotaCredito extends Model
     {
         return $this->hasOne(NotaCreditoIt::class, 'IdNC', 'Id');
     }
+
+    public function FacturaDeVenta()
+    {
+        return $this->hasOne(FacturaDeVenta::class, 'Id', 'IdFactura');
+    }
 }

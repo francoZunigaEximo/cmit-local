@@ -1,11 +1,5 @@
 $(document).ready(()=>{
 
-    toastr.options = {
-        closeButton: true,   
-        progressBar: true,     
-        timeOut: 3000,        
-    };
-
     //Botón reset en el buscador
     $('#reset').click(function(){ 
         $('#form-index :input, #form-index select').val('');

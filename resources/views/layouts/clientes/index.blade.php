@@ -15,6 +15,8 @@
     </div>
 </div>
 
+
+
 <div class="card">
     <div id="mensajeria"></div>
 
@@ -33,11 +35,6 @@
                         <button type="button" id="excel" class="btn botonGeneral" title="Generar reporte en Excel">
                             <i class="ri-file-excel-line"></i>
                         </button>
-                        @endcan
-                        @can('clientes_send')
-                        <a class="btn botonGeneral" title="Mensajería a clientes" href="{{ route('mensajes.index') }}">
-                            <i class="ri-send-plane-line" title="Mensajería"></i>
-                        </a> 
                         @endcan
                     </div>
                 </div>

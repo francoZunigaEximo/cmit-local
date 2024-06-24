@@ -43,7 +43,7 @@ function saltoLinea(cadena) {
     let textoConSaltos = '';
     for (var i = 0; i < cadena.length; i++) {
         textoConSaltos += cadena[i];
-        if ((i + 1) % 130 === 0) {
+        if ((i + 1) % 110 === 0) {
             textoConSaltos += '<br>';
         }
     }
