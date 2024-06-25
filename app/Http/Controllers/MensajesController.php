@@ -11,8 +11,8 @@ use App\Traits\CheckPermission;
 use App\Mail\EnvioResultadosMail;
 use Illuminate\Support\Facades\Mail;
 use App\Jobs\SendEmailJob;
-use App\Enum\HttpStatus;
 use Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport;
+use Carbon\Carbon;
 
 class MensajesController extends Controller
 {
@@ -87,6 +87,13 @@ class MensajesController extends Controller
             $query->when(!empty($request->FechaDesde) && !empty($request->FechaHasta), function($query) use ($request) {
                 $query->whereBetween('prestaciones.Fecha', [$request->FechaDesde, $request->FechaHasta]);
             });
+
+            $query->when(empty($request->FechaDesde) && !empty($request->FechaHasta), function($query) use ($request) {
+
+                $nuevaFecha = Carbon::parse($request->NroDesde)->subDays(30)->format('Y-m-d');
+                $query->whereBetween('prestaciones.Fecha', [$nuevaFecha, $request->FechaHasta]);
+            });
+
 
             $result = $query->where('clientes.Id', '<>', 0)
                             ->groupBy('clientes.Id')
