@@ -67,14 +67,14 @@
         <button type="button" class="btn btn-sm botonGeneral"><i class="ri-file-excel-line"></i>FinnegART</button>
     </div>
     <div class="col-sm-6 text-end">
-        Filtros:  <button type="button" class="btn btn-sm botonGeneral">Hoy</button>
-        <button type="button" class="btn btn-sm botonGeneral">Factura S/N</button>
+        Filtros:  <button type="button" class="btn btn-sm botonGeneral Hoy">Hoy</button>
+        <button type="button" class="btn btn-sm botonGeneral FacturasSN">Factura S/N</button>
     </div>
 </div>
       
 <div class="row mt-2">
     <div class="col-sm-12 text-end">
-        <button type="button" class="btn btn-sm botonGeneral"><i class="ri-send-plane-line"></i>Enviar</button>
+        <button type="button" class="btn btn-sm botonGeneral" data-bs-toggle="modal" data-bs-target="#opcionesEnvio"><i class="ri-send-plane-line"></i>Enviar</button>
         <button type="button" class="btn btn-sm botonGeneral eliminarMultiple"><i class="ri-delete-bin-6-line"></i>Eliminar</button>
         <button type="button" class="btn btn-sm botonGeneral"><i class="ri-money-dollar-circle-line"></i>Precio</button>
         <a class="btn btn-sm botonGeneral" href="{{ route('facturas.create') }}"><i class="ri-add-line"></i>Nuevo</a>
@@ -99,6 +99,37 @@
         </tbody>
     </table>
 </div>
+
+<div id="opcionesEnvio" class="modal fadeInUp" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel">Seleccione una opción</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>
+            </div>
+            <div class="modal-body">
+                <div class="row fondo-grisClaro p-2">
+                    <div class="col-sm-6 text-center">
+                        <div class="mb-1">
+                            <button class="btn btn-sm botonGeneral"><i class="ri-send-plane-line"></i>Enviar</button>
+                        </div>
+                        <small class="text-muted">Envio de email de la factura fiscal.</small>
+                    </div>
+                    <div class="col-sm-6 text-center">
+                        <div class="mb-1">
+                            <button class="btn btn-sm botonGeneral"><i class="ri-printer-line"></i>Imprimir</button>
+                        </div>
+                        <small class="text-muted">Descargar en PDF los detalles de las facturas.</small>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn botonGeneral" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
 <script>
     const TOKEN = "{{ csrf_token() }}";

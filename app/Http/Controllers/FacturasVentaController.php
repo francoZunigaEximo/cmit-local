@@ -120,6 +120,15 @@ class FacturasVentaController extends Controller
 
                 $result = $query1->union($query2)->get();
                 
+            } elseif($request->Cero == 'true')
+            {
+                $query = $this->facturas();
+                $this->filtroFacturaCero($query, $request, 'facturasventa');
+                $result = $query->orderBy('Tipo', 'DESC')
+                           ->orderBy('Sucursal', 'DESC')
+                           ->orderBy('NroFactura', 'DESC')
+                           ->groupBy('Id')
+                           ->get();
             }
               
             return DataTables::of($result)->make(true);
@@ -292,6 +301,16 @@ class FacturasVentaController extends Controller
                 $query->where('pagosacuenta.Tipo', $data[0]);
                 $query->where('pagosacuenta.Suc', intval($data[1]));
                 $query->where('pagosacuenta.Nro', intval($data[2]));
+            });
+        });
+    }
+
+    private function filtroFacturaCero($query, $request, string $tabla)
+    {
+        return $query->when(!empty($request->Cero) && $request->Cero == true, function($query) use ($tabla) {
+            $query->when($tabla === 'facturasventa', function($query) {
+                $query->where('facturasventa.Sucursal', 0);
+                $query->where('facturasventa.NroFactura', 0);
             });
         });
     }
