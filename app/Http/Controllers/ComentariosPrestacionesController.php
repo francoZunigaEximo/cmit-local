@@ -28,5 +28,7 @@ class ComentariosPrestacionesController extends Controller
             'Id' => PrestacionComentario::max('Id') + 1,
             'Obs' => $request->observacion
         ]);
+
+        return response()->json(['msg' => 'Se ha actualizado la observacion correctamente'], 200);
     }
 }

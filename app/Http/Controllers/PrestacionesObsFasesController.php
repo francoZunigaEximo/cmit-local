@@ -29,10 +29,10 @@ class PrestacionesObsFasesController extends Controller
         return response()->json(['result' => $result]);
     }
 
-    public function addComentario(Request $request): void
+    public function addComentario(Request $request): mixed
     {
 
-        PrestacionObsFase::create([
+        $save = PrestacionObsFase::create([
             'Id' => PrestacionObsFase::max('Id') + 1,
             'IdEntidad' => $request->IdEntidad,
             'Comentario' => $request->Comentario,
@@ -41,6 +41,13 @@ class PrestacionesObsFasesController extends Controller
             'Rol' => Auth::user()->role->first()->nombre,
             'obsfases_id' => $request->obsfasesid
         ]);
+
+        if($save)
+        {
+            return response()->json(['msg' => 'Se ha generado la observación correctamente'], 200);
+        }
+
+        return response()->json(['msg' => 'No se ha podido guardar el comentario'], 500);
     }
 
     private function queryBasic()

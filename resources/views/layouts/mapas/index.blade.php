@@ -107,13 +107,13 @@
 
                     <div class="col-sm-9">
                         <div>
-                            <a href="{{ route('mapas.create') }}">
-                                <button type="button" class="btn botonGeneral add-btn">
-                                    <i class="ri-add-line align-bottom me-1"></i> Nuevo
-                                </button>
+                            <a class="btn btn-sm botonGeneral" href="{{ route('mapas.create') }}">
+                                <i class="ri-add-line align-bottom me-1"></i> 
+                                Nuevo
                             </a>   
-                            <button type="button" id="excel" class="btn iconGeneral" title="Generar reporte en Excel">
+                            <button type="button" id="excel" class="btn btn-sm botonGeneral" title="Generar reporte en Excel">
                                 <i class="ri-file-excel-line"></i>
+                                Excel
                             </button>
                         </div>
                     </div>

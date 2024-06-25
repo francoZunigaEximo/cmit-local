@@ -17,21 +17,29 @@ use Yajra\DataTables\DataTables;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Traits\ObserverMapas;
 use Illuminate\Support\Facades\Auth;
+use App\Traits\CheckPermission;
 
 class MapasController extends Controller
 {
 
     const TBLMAPA = 5; // cod de Mapas en la tabla auditariatablas
 
-    use ObserverMapas;
+    use ObserverMapas, CheckPermission;
 
     public function index()
     {
+        if(!$this->hasPermission('mapas_show')) {
+            abort(403);
+        }
+
         return view('layouts.mapas.index');
     }
 
     public function search(Request $request): mixed
     {
+        if(!$this->hasPermission('mapas_show')) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
 
         $Nro = $request->Nro;
         $Art = $request->Art;
@@ -257,13 +265,20 @@ class MapasController extends Controller
 
     public function delete(Request $request)
     {
+        if(!$this->hasPermission('mapas_delete')) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
+
         $mapa = Mapa::find($request->Id);
         if($mapa)
         {
             $mapa->Inactivo = 1;
             $mapa->save();
+
+            return response()->json(['msg' => 'Mapa eliminado'], 200);
         }
-        
+
+        return response()->json(['msg' => 'Mapa no encontrado'], 404);
     }
 
     public function prestaciones(Request $request)
@@ -345,27 +360,30 @@ class MapasController extends Controller
 
     public function export(Request $request)
     {
-        $ids = $request->input('Id');
+        $ids = $request->Id;
         if (! is_array($ids)) {
             $ids = [$ids];
         }
-
         $mapas = $this->queryBase();
 
         if($request->archivo === 'csv')
         {
-            
+
             $mapas->when($request->modulo === 'remito', function ($mapas) use ($ids, $request) {
                 $mapas->whereIn('prestaciones.NroCEE', $ids)
                         ->where('mapas.Nro', $request->mapa);
             });
 
-            $mapas->when($request->tipo === null, function ($mapas) use ($ids) {
+            $mapas->when(empty($request->Tipo), function ($mapas) use ($ids) {
                 $mapas->whereIn('mapas.Id', $ids);
             });
 
-            $result = $mapas->orderBy('prestaciones.Id', 'DESC')->get(); 
+            $result = $mapas->groupBy('mapas.Id')->orderBy('prestaciones.Id', 'DESC')->get();
 
+            if ($result->isEmpty()) {
+                return response()->json(['msg' => 'No se encontraron datos para exportar. Hay un conflicto'], 409);
+            }
+            
             $csv = "Id,Nro,Art,Empresa,Fecha Corte,Fecha Entrega,Inactivo,Nro de Remito, eEnviado,Cerrado,Entregado,Finalizado,Apellido y Nombre, Observación\n";
 
             foreach ($result as $row) {
@@ -816,8 +834,8 @@ class MapasController extends Controller
 
     private function queryBase()
     {
-        $query = Mapa::join('prestaciones', 'mapas.Id', '=', 'prestaciones.IdMapa')
-        ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+        return Mapa::leftJoin('prestaciones', 'mapas.Id', '=', 'prestaciones.IdMapa')
+        ->leftJoin('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
         ->select(
             'mapas.Id as Id',
             'mapas.Nro as Nro',
@@ -838,8 +856,6 @@ class MapasController extends Controller
             DB::raw('COALESCE((SELECT COUNT(*) FROM prestaciones WHERE IdMapa = mapas.Id), 0) as contadorPrestaciones'),
             DB::raw('COALESCE((SELECT COUNT(*) FROM pacientes WHERE pacientes.Id = prestaciones.IdPaciente), 0) as contadorPacientes'),
             DB::raw('COALESCE((SELECT COUNT(*) FROM pacientes WHERE pacientes.Id = prestaciones.IdPaciente AND prestaciones.Anulado = 0), 0) as cdorPacientesAnulados'));
-
-        return $query;
     }
 
     private function queryPrestaciones($idmapa)

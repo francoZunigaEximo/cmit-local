@@ -695,11 +695,11 @@ $(document).ready(()=>{
             toastr.warning('La observación no puede estar vacía', 'Atención');
             return;
         }
-
+        preloader('on');
         $.post(savePrivComent, {_token: TOKEN, Comentario: comentario, IdEntidad: idprest, obsfasesid: lstFases[fase]})
-            .done(function(){
-
-                toastr.success('Perfecto', 'Se ha generado la observación correctamente');
+            .done(function(response){
+                preloader('off');
+                toastr.success(response.msg);
 
                 setTimeout(() => {
                     $('#privadoPrestaciones, #privadoCerrar').empty();
@@ -709,6 +709,12 @@ $(document).ready(()=>{
                     listaComentariosPrivados(IDMAPA, 'cerrado','mapa');
                 }, 3000);
             })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            });
 
     });
 
@@ -724,17 +730,23 @@ $(document).ready(()=>{
         let prestacion = $('#IdPrestacion').text(), observacion = $('.ComObsEstado').val();
 
         if(observacion === ''){
-            toastr.warning('Debe escribir un observación de la prestación', 'Atención');
+            toastr.warning('Debe escribir un observación de la prestación');
             return;
         }
         preloader('on');
         $.post(setComentarioPres, {_token: TOKEN, Id: prestacion, observacion: observacion})
-            .done(function(){
+            .done(function(response){
                 preloader('off');
-                toastr.success('Perfecto', 'Se ha actualizado la observacion correctamente');
+                toastr.success(response.msg);
                 setTimeout(()=>{
                     $('.comentarioObsEstado').hide();
                 }, 2000);
+            })
+            fail(function(jqXHR) {
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return; 
             });
     });
 
@@ -760,15 +772,6 @@ $(document).ready(()=>{
         preloader('off');
     })
 
-    function quitarDuplicados(selector) {
-        let seleccion = $(selector).val();
-        let countSeleccion = $(selector + " option[value='" + seleccion + "']").length;
-    
-        if (countSeleccion > 1) {
-            $(selector + " option[value='" + seleccion + "']:gt(0)").hide();
-        }
-    }
-
     function updateContador() {
         let longitud = $('#remitoObs').val();
         let caracteres = longitud.length;
@@ -786,10 +789,11 @@ $(document).ready(()=>{
     function getPrestaMapas(){
 
         $('#prestaMapa').empty();
+        preloader('on');
 
         $.get(getPrestaciones, {mapa: MAPA })
             .done(function(presta){
-
+                preloader('off');
                 $.each(presta, function(index, d) {
 
                    let estado = (d.Cerrado === 1 && d.Finalizado === 1) ? 'Finalizado' : (d.Cerrado === 1 && d.Finalizado === 0) ? 'Cerrado' : (d.Cerrado === 0 && d.Finalizado === 0) ? 'Abierto' : '-';
@@ -833,19 +837,21 @@ $(document).ready(()=>{
                         sortable: false, 
                     });
             })
-            .fail(function(xhr){
-                toastr.error('Ha ocurrido un error. Actualice la página y si el problema persiste, consulte con el administrador', 'Error');
-                console.error(xhr)
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return; 
             })
     }
 
     function getCerrarMapas(){
 
         $('#cerrarMapa').empty();
-
+        preloader('on');
         $.get(getCerrar, {mapa: MAPA})
             .done(function(response){
-
+                preloader('off');
                 let data = response.result;
 
                 $.each(data, function(index, c) {
@@ -880,19 +886,22 @@ $(document).ready(()=>{
                 });
                 
             })
-            .fail(function(xhr){
-                console.error(xhr);
-                toastr.error('Ha ocurrido un error. Actualice la página y si el problema persiste, consulte al administrador', 'Error');
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return; 
             });
     }
 
     function getFinalMapa(){
 
         $('#cerrarMapa').empty();
+        preloader('on');
 
         $.get(getFMapa, {mapa: MAPA})
         .done(function(response){
-
+            preloader('off');
             $('#finalizarMapa').empty();
             let data = response.result;
 
@@ -925,9 +934,11 @@ $(document).ready(()=>{
             });
 
         })
-        .fail(function(xhr){
-            console.error(xhr);
-            toastr.error('Ha ocurrido un error. Actualice la página y si el problema persiste, consulte con el administrador', 'Error');
+        .fail(function(jqXHR){
+            preloader('off');
+            let errorData = JSON.parse(jqXHR.responseText);            
+            checkError(jqXHR.status, errorData.msg);
+            return; 
         })
     }
 
@@ -943,10 +954,11 @@ $(document).ready(()=>{
     function getEnMapa(){
 
         $('#eenviarMapa').empty();
+        preloader('on');
 
         $.get(enviarMapa, { mapa: MAPA})
             .done(function(response){
-
+                preloader('off');
                 let data = response.result;
 
                 $.each(data, function(index, en){
@@ -976,9 +988,11 @@ $(document).ready(()=>{
                 });
 
             })
-            .fail(function(xhr){
-                console.error(xhr);
-                toastr.error('Ha ocurrido un error. Actualice la página y el caso de que el problema persista, consulte con el administrador.', 'Error');
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return; 
             })
     }
 
@@ -1060,10 +1074,11 @@ $(document).ready(()=>{
     function listarRemitos(idmapa){
 
         $('#remitoMapa').empty();
+        preloader('on');
 
         $.get(getRemito, {Id: idmapa})
             .done(function(response){
-
+                preloader('off');
                 let data = response.result;
 
                 $.each(data, function(index, r){
@@ -1133,17 +1148,6 @@ $(document).ready(()=>{
                 $('.ComObsEstado').val(rs);
 
             })
-    }
-
-    function preloader(opcion) {
-        $('#preloader').css({
-            opacity: '0.3',
-            visibility: opcion === 'on' ? 'visible' : 'hidden'
-        });
-    }
-
-    function acortadorTexto(cadena, nroCaracteres = 10) {
-        return cadena.length <= nroCaracteres ? cadena : cadena.substring(0,nroCaracteres);
     }
 
 });

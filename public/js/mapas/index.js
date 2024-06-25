@@ -21,8 +21,18 @@ $(document).ready(()=>{
             ids.push($(this).val());
         });
 
-        if (ids.length > 0) {
-            if (confirm("¿Estás seguro de que deseas generar el reporte de Excel con todos los items seleccionados?")) {
+        if (ids.length === 0) {
+            toastr.warning('Debes seleccionar al menos un mapa para exportar.');
+            return;
+        }
+
+        swal({
+            title: "¿Estás seguro de que deseas generar el reporte de Excel con todos los items seleccionados?",
+            icon: "warning",
+            buttons: ["Cancelar", "Exportar"]
+        }).then((confirmar) => {
+            if(confirmar){
+                preloader('on');
                 $.ajax({
                     url: fileExport,
                     type: "GET",
@@ -31,61 +41,72 @@ $(document).ready(()=>{
                         archivo: 'csv'
                     },
                     success: function(response) {
+                        preloader('off');
                         let filePath = response.filePath;
                         let pattern = /storage(.*)/;
                         let match = filePath.match(pattern);
                         let path = match ? match[1] : '';
-
+    
                         let url = new URL(location.href);
                         let baseUrl = url.origin; // Obtener la URL base (por ejemplo, http://localhost)
-
+    
                         let fullPath = baseUrl + '/cmit/storage' + path;
-
+    
                         let link = document.createElement('a');
                         link.href = fullPath;
                         link.download = "mapas.csv";
                         link.style.display = 'none';
-
+    
                         document.body.appendChild(link);
                         link.click();
                         setTimeout(function() {
                             document.body.removeChild(link);
                         }, 100);
                     },
-                    error: function(xhr, status, error) {
-                        console.log(xhr.responseText);
+                    error: function(jqXHR) {
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return;  
                     }
                 });
             }
-        } else {
-            toastr.warning('Debes seleccionar al menos un mapa para exportar.', 'Alerta');
-        }
+        })
     });
 
-    $(document).on('click','.deleteMapa', function(){
-        let id = $(this).data('id');
-        if(confirm('¿Desea eliminar el registro del mapa')) {
-
-            $.ajax({
-                url: deleteMapa,
-                type: 'POST',
-                data: {
-                    _token: TOKEN, 
-                    Id: id
-                },
-                success: function(){
-    
-                    toastr.success(`Se ha elimnado correctamente el mapa`, `Eliminar mapa`);
-                    $('#listaMapas').DataTable();
-                    $('#listaMapas').DataTable().draw(false);
-                },
-                error: function(xhr){
-                    console.error(xhr);
-                    toastr.error('Error', 'Se ha producido un error. Actualice la página y si el problema persiste, consulte con el administrador');
-                }
-            });
-        }
+    $(document).on('click','.deleteMapa', function(e){
+        e.preventDefault();
         
+        let id = $(this).data('id');
+        swal({
+            title: "¿Desea eliminar el registro del mapa?",
+            icon: "warning",
+            buttons: ["Cancelar", "Eliminar"]
+        }).then((confirmar) => {
+            if(confirmar){
+                preloader("on");
+                $.ajax({
+                    url: deleteMapa,
+                    type: 'POST',
+                    data: {
+                        _token: TOKEN, 
+                        Id: id
+                    },
+                    success: function(response){
+                        preloader("off");
+                        toastr.success(response.msg);
+                        $('#listaMapas').DataTable();
+                        $('#listaMapas').DataTable().draw(false);
+                    },
+                    error: function(jqXHR){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return;  
+                    }
+                });
+            }
+        });  
     });
 
     $('#Empresa').select2({
