@@ -20,7 +20,7 @@ $(document).ready(()=>{
                 return "Por favor, ingrese 2 o más caracteres";
             }
         },
-        placeholder: 'Nombre y apellido del paciente',
+        placeholder: 'Apellido y nombre del paciente',
         allowClear: true,
         ajax: {
             url: getPacientes, 
