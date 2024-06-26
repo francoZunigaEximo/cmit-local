@@ -27,11 +27,8 @@ $(document).ready(()=>{
         $('.comentarioObsEstado').hide();
         $(document).off('click', '.mostrarObsEstado, .cerrarObsEstado').on('click', '.mostrarObsEstado, .cerrarObsEstado', function(){
 
-            if ($(this).hasClass('mostrarObsEstado')) {
-                $('.comentarioObsEstado').show();
-            } else {
-                $('.comentarioObsEstado').hide();
-            }
+        $(this).hasClass('mostrarObsEstado') ? $('.comentarioObsEstado').show() : $('.comentarioObsEstado').hide();
+
         });
     });
 
@@ -62,25 +59,34 @@ $(document).ready(()=>{
         
         tipo = $(this).hasClass('pdf') ? 'pdf' : 'excel';
 
-        if (ids.length > 0) {
-            if (confirm("¿Estás seguro de que deseas generar el reporte?")) {
+        if (ids.length === 0) {
+            toastr.warning('Debes seleccionar al menos un mapa para exportar.');
+            return;
+        }
+            
+        swal({
+            title: '¿Estás seguro de que deseas generar el reporte?',
+            icon: 'warning',
+            buttons: ['Cancelar', 'Generar']
+        }).then((confirmar) => {
+            if(confirmar){
                 $.ajax({
                     url: fileExport,
                     type: "GET",
                     data: arr[tipo].datos,
                     success: function(response) {
                         createFile(arr[tipo].archivo, response.filePath);
-                        toastr.success('Se esta generando el reporte. Aguarde', 'Generando reporte');
+                        toastr.success(response.msg);
                     },
-                    error: function(xhr) {
-                        console.log(xhr.responseText);
+                    error: function(jqXHR) {
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
                     }
                 });
             }
-        } else {
-            toastr.error('Debes seleccionar al menos un mapa para exportar.', 'Error');
-        }
-
+        });
     });
 
     $('#updateMapa').click(function(){
@@ -98,15 +104,18 @@ $(document).ready(()=>{
             if($('#form-update').valid()) {
                 
                 $.post(updateMapa, {_token: TOKEN, Nro:Nro, IdART: IdART, IdEmpresa: IdEmpresa, FechaEdicion: FechaEdicion, FechaEEdicion: FechaEEdicion, Estado: Estado, Cpacientes: Cpacientes, Obs: Obs, Id: IdMap})
-                .done(function(){
-                    toastr.success('Se ha actualizado el mapa correctamente', 'Perfecto');
+                .done(function(response){
+                    toastr.success(response.msg);
                     setTimeout(() => {
                         location.reload();
                     }, 3000);
                     
                 })
-                .fail(function(xhr){
-                    toastr.error('No se ha podido guardar la actualización. Recargue la página y si el problema persiste, consulte con el administrador', 'Error');
+                .fail(function(jqXHR){
+                    preloader('off');
+                    let errorData = JSON.parse(jqXHR.responseText);            
+                    checkError(jqXHR.status, errorData.msg);
+                    return;
                 });
             }
              
@@ -173,9 +182,11 @@ $(document).ready(()=>{
                     $('.confirmarEntrega').prop('disabled', false);
                 }, 3000);
             })
-            .fail(function(xhr){
-                console.error(xhr);
-                toastr.error('Ha ocurrido un error. Consulte con el administrador', 'Error');
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
             });
     });
     
@@ -208,6 +219,7 @@ $(document).ready(()=>{
             return;
         }
 
+        preloader('on');
         $.ajax({
             url: searchMapaPres,
             type: 'POST',
@@ -220,7 +232,7 @@ $(document).ready(()=>{
                 mapa: mapa
             },
             success: function(response){
-
+                preloader('off');
                 let data = response.result;
 
                 if(data === ''){
@@ -295,16 +307,19 @@ $(document).ready(()=>{
                 $('.mostrarObsEstado').attr('data-id', prestacion);
                 getObsEstado(prestacion);
             })
-            .fail(function(xhr) {
-                console.error(xhr);
+            .fail(function(jqXHR) {
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
             });
-        
+        preloader('on');
         $.get(getExamenMapa, { prestacion: prestacion})
             .done(function(response) {
-
+                preloader('off');
                 let examen = response;
                 $('#examenMapa').empty();
-
+                
                 $.each(examen, function(index, e) {
                     
                     let arrCompleto = [3,4,5,6], efectuadoOk = arrCompleto.includes(e.CAdj), arrCerrado = [3,4,5], cerradoOk = arrCerrado.includes(e.CAdj);
@@ -347,9 +362,11 @@ $(document).ready(()=>{
                 });
 
             })
-            .fail(function(xhr){
-                console.error(xhr);
-                toastr.error('Ha ocurrido un error, consulte con el administrador', 'Error');
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
             })
     });
     
@@ -358,10 +375,11 @@ $(document).ready(()=>{
         let prestacion = $('#NroPresCerrar').val(),
             estado = $('#EstadoCerrar').val(),
             remito = $('#NroRemitoCerrar').val();
-            
+        preloader('on');
+
         $.get(serchInCerrar, { prestacion: prestacion, remito: remito, estado: estado, mapa: MAPA})
         .done(function(response) {
-
+            preloader('off');
             $('#cerrarMapa').empty();
 
             let data = response.result;
@@ -398,9 +416,11 @@ $(document).ready(()=>{
                 sortable: false, 
             });
         })
-        .fail(function(xhr) {
-            console.error(xhr);
-            toastr.error('Ha ocurrido un error, por favor, consulte con un administrador', 'Error');
+        .fail(function(jqXHR) {
+            preloader('off');
+            let errorData = JSON.parse(jqXHR.responseText);            
+            checkError(jqXHR.status, errorData.msg);
+            return;
         });
     });
 
@@ -450,18 +470,25 @@ $(document).ready(()=>{
             toastr.warning('No hay ninguna prestación seleccionada para cerrar', 'Atención');
             return;
         }
-
+        preloader('on');
         $.post(saveEstado, { ids: ids, estado: 'Cerrado', _token: TOKEN })
-            .done(function(){
-                toastr.success('Se han cerrado todos los mapas seleccionados','Perfecto');
+            .done(function(response){
+                preloader('off');
+                response.forEach(function(data){
+                    tipoToastr = data.estado === 'success' ? 'success' : 'warning';
+                    toastr[tipoToastr](data.msg, {timeOut: 10000});
+                });
+
                 $('#cerrarMapa').empty();
                 getEnMapa();
                 getFinalMapa();
                 getCerrarMapas();
             })
-            .fail(function(xhr){
-                console.error(xhr);
-                toastr.error('Ha ocurrido un error. Consulte con el administrador','Error');
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
             })
     });
 
@@ -470,10 +497,10 @@ $(document).ready(()=>{
         let prestacionf = $('#NroPresFinal').val(),
             remitof = $('#NroRemitoFinal').val(),
             estadoFinalizar = $('#estadosFinalizar').val();
-
+        preloader('on');
         $.get(searchInFinalizar, { prestacion: prestacionf, remito: remitof, estadoFinalizar: estadoFinalizar, mapa: MAPA })
             .done(function(response){
-
+                preloader('off');
                 $('#finalizarMapa').empty();
                 let data = response.result;
 
@@ -506,13 +533,16 @@ $(document).ready(()=>{
                 });
 
             })
-            .fail(function(xhr){
-                console.error(xhr);
-                toastr.error('Ha ocurrido un error. Consulte con el administrador', 'Error');
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
             });
     });
 
-    $(document).on('click', '.finalizarMap', function(){
+    $(document).on('click', '.finalizarMap', function(e){
+        e.preventDefault();
 
         let ids = [];
         $('input[name="Id_finalizar"]:checked').each(function() {
@@ -525,10 +555,16 @@ $(document).ready(()=>{
             toastr.warning('No hay ninguna prestación seleccionada para finalizar', 'Atención');
             return;
         }
-
+        preloader('on');
         $.post(saveFinalizar, { ids: ids, _token: TOKEN })
-            .done(function(){
-                toastr.success('Se han finalizado todos los mapas seleccionados','Perfecto');
+            .done(function(response){
+                preloader('off');
+                response.forEach(function(data){
+
+                    let tipoToastr = data.estado === 'success' ? 'success' : 'warning';
+                    toastr[tipoToastr](data.msg, {timeOut: 10000});
+                });
+
                 $('#finalizarMapa').empty();
                 getPrestaMapas();
                 getEnMapa();
@@ -537,9 +573,11 @@ $(document).ready(()=>{
                 listarRemitos(IDMAPA);
 
             })
-            .fail(function(xhr){
-                console.error(xhr);
-                toastr.error('Ha ocurrido un error. Consulte con el administrador','Error');
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
             })
     });
 
@@ -587,10 +625,11 @@ $(document).ready(()=>{
                     $('#fDesde, #fHasta, #NroPresEnviar, #NroPresRemito').val('');
                     $('#eEnviadoEnviar option[value=""]').prop('selected', true);
                 })
-                .fail(function(xhr){
-
-                    console.error(xhr);
-                    toastr.error('Ha ocurrido un error. Consulte con el administrador', 'Error');
+                .fail(function(jqXHR){
+                    preloader('off');
+                    let errorData = JSON.parse(jqXHR.responseText);            
+                    checkError(jqXHR.status, errorData.msg);
+                    return;
                 });
     });
 
@@ -649,9 +688,11 @@ $(document).ready(()=>{
                 }, 3000);
                 
             })
-            .fail(function(xhr){
-                console.error(xhr);
-                toastr.error('Ha ocurrido un error. Consulte con el administrador','Error');
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
             });
     });
 

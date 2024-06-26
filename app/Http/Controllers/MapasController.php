@@ -19,6 +19,7 @@ use App\Traits\ObserverMapas;
 use Illuminate\Support\Facades\Auth;
 use App\Traits\CheckPermission;
 
+
 class MapasController extends Controller
 {
 
@@ -204,11 +205,19 @@ class MapasController extends Controller
 
     public function create(): mixed
     {
+        if(!$this->hasPermission('mapas_add')) {
+            abort(403);
+        }
+
         return view('layouts.mapas.create');
     }
 
     public function edit(Mapa $mapa)
     {
+        if ($this->hasPermission("mapas_edit")) {
+            abort(403);
+        }
+
         $cerradas = $this->contadorCerrado($mapa->Id);
         $finalizados = $this->contadorFinalizado($mapa->Id);
         $entregados = $this->contadorEntregado($mapa->Id);
@@ -225,6 +234,10 @@ class MapasController extends Controller
 
     public function store(Request $request)
     {
+        if(!$this->hasPermission('mapas_add')) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
+
         $nuevoId = Mapa::max('Id') + 1;
 
         Mapa::create([
@@ -245,8 +258,12 @@ class MapasController extends Controller
         return redirect()->route('mapas.edit', ['mapa' => $nuevoId]);
     }
 
-    public function updateMapa(Request $request): void
+    public function updateMapa(Request $request): mixed
     {
+        if(!$this->hasPermission('mapas_edit')) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
+
         $mapa = Mapa::where('Id', $request->Id)->first();
 
         if($mapa){
@@ -260,6 +277,10 @@ class MapasController extends Controller
             $mapa->Cmapeados = $request->Cmapeados;
             $mapa->Cpacientes = $request->Cpacientes;
             $mapa->save();
+        
+            return response()->json(['msg' => 'Mapa actualizado'], 200);
+        }else{
+            return response()->json(['msg' => 'Mapa no encontrado'], 404);
         }
     }
 
@@ -418,6 +439,10 @@ class MapasController extends Controller
             $result = $mapas->whereIn('prestaciones.NroCEE', $ids)
             ->where('mapas.Nro', $request->mapa)
             ->orderBy('prestaciones.Id', 'DESC')->get(); 
+
+            if ($result->isEmpty()) {
+                return response()->json(['msg' => 'No se encontraron datos para generar el PDF. Hay un conflicto'], 409);
+            }
             
             $pdf = PDF::loadView('layouts.mapas.pdf', ['result' => $result]);
             $path = storage_path('app/public/');
@@ -429,7 +454,7 @@ class MapasController extends Controller
         }
 
         // Devolver la ruta del archivo generado
-        return response()->json(['filePath' => $filePath]);
+        return response()->json(['filePath' => $filePath, 'msg' => 'Reporte generado']);
     }
 
     //Obtenemos listado mapas
@@ -590,7 +615,9 @@ class MapasController extends Controller
             $fecha = $estados[$estado];
     
             $ids = $request->ids;
-    
+            
+            $respuestas = [];
+
             foreach ($ids as $id) {
                 $prestacion = Prestacion::where('Id', $id)->first();
                 
@@ -598,8 +625,17 @@ class MapasController extends Controller
                     $prestacion->$estado = 1;
                     $prestacion->$fecha = now()->format('Y-m-d');
                     $prestacion->save();
-                } 
-            }            
+
+                    $respuesta = ['msg' => 'Se ha cerrado la prestación '.$id.' del mapa', 'estado' => 'success'];
+
+                }else{
+                    $respuesta = ['msg' => 'No se ha podido cerrar la prestación '.$id.' del mapa', 'estado' => 'warning'];
+                }
+
+                $respuestas[] = $respuesta;
+            }
+            
+            return response()->json($respuestas);
         }   
     }
 
@@ -672,26 +708,36 @@ class MapasController extends Controller
         return response()->json(['result' => $result]);
     }
 
-    public function saveFinalizar(Request $request): void
+    public function saveFinalizar(Request $request): mixed
     {
         
         $ids = $request->ids;
         $nuevoNroRemito = Constanciase::max('NroC') + 1;
         Constanciase::addRemito($nuevoNroRemito);
 
+        $respuestas = [];
+
         foreach ($ids as $id) {
             $prestacion = Prestacion::where('Id', $id)->where('Cerrado', 1)->first();
-            
-            if($prestacion){
+
+            if ($prestacion) {
                 $prestacion->Finalizado = 1;
                 $prestacion->FechaFinalizado = now()->format('Y-m-d');
                 $prestacion->save();
+
+                ConstanciaseIt::addConstPrestacion($id, Constanciase::max('Id'));
+                $this->actualizarRemitoPrestacion($id, $nuevoNroRemito);
+
+                $respuesta = ['msg' => 'Se ha finalizado la prestación '.$id.' del mapa', 'estado' => 'success'];
+            }else{
+
+                $respuesta = ['msg' => 'No se ha podido finalizar la prestación '.$id.' del mapa', 'estado' => 'warning'];
             }
             
-            ConstanciaseIt::addConstPrestacion($id, Constanciase::max('Id'));
-            $this->actualizarRemitoPrestacion($id, $nuevoNroRemito);
+            $respuestas[] = $respuesta;      
         }
-      
+
+        return response()->json($respuestas);
     }
 
     public function searchInEnviar(Request $request): mixed
