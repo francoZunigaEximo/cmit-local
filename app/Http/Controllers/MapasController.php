@@ -214,7 +214,7 @@ class MapasController extends Controller
 
     public function edit(Mapa $mapa)
     {
-        if ($this->hasPermission("mapas_edit")) {
+        if (!$this->hasPermission("mapas_edit")) {
             abort(403);
         }
 
