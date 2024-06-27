@@ -162,7 +162,7 @@ $(document).ready(()=>{
         swal({
             title: "¿Estas seguro que deseas resetear la contraseña?",
             icon: "warning",
-            button: ["Cancelar", "Resetear"]
+            buttons: ["Cancelar", "Resetear"]
         }).then((result) => {
             if(result){
                 preloader('on');
