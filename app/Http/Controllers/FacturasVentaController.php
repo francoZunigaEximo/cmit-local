@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\FacturaEmailJob as JobsFacturaEmailJob;
 use App\Models\ExamenCuenta;
 use App\Models\ExamenCuentaIt;
 use Illuminate\Http\Request;
@@ -10,13 +11,17 @@ use App\Models\NotaCredito;
 use App\Traits\CheckPermission;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\DB;
+use App\Jobs\FacturaEmailJob;
 
 use App\Traits\Reportes;
+use Carbon\Carbon;
 
 class FacturasVentaController extends Controller
 {
 
     use CheckPermission, Reportes;
+
+    const TITULOEMAIL = "";
 
     public function index()
     {
@@ -251,6 +256,78 @@ class FacturasVentaController extends Controller
         return response()->json($respuestas);
     }
 
+    public function enviar(Request $request)
+    {
+        $Ids = $request->Ids;
+        $Opcion = $request->Opcion;
+
+        if (!is_array($Ids)) {
+            $Ids = [$Ids];
+        }
+
+        if(count($Ids) !== count($Opcion)) {
+            return response()->json(['message' => 'Hay un error en la petición. No coinciden los rangos en el proceso de envio.'], 409);
+        }
+
+        $mergeArr = [];
+        $count = count($Opcion);
+
+        for ($i = 0; $i < $count; $i++) {
+            $mergeArr[] = [
+                'tipo' => $Opcion[$i],
+                'id' => $Ids[$i],
+            ];
+        }
+
+        $respuestas = [];
+
+        foreach ($mergeArr as $dato) {
+
+            if($dato['tipo'] == 1) {
+
+                $file = $this->generarDetalleFactura($dato['id'], null);
+                $correo = $this->getCorreo($dato['id'], $dato['tipo']);
+                $asunto = $this->AsuntoEmail($dato['id'], $dato['tipo']);
+
+                $cuerpo = [
+                    'factura' => $this->nroFactura($dato['id'], $dato['tipo']),
+                    'fecha' => now()->format('d/m/Y'),
+                    'cliente' => FacturaDeVenta::find($dato['id'])->empresa->RazonSocial ?? '-',
+                    'paraEmpresa' => FacturaDeVenta::find($dato['id'])->empresa->ParaEmpresa ?? '-',
+                ];
+
+                if($correo !==null) {
+                    FacturaEmailJob::dispatch($correo, $asunto, $cuerpo, $file);
+                    $respuesta = ['msg' => 'Eldetalle de la factura enviada con éxito.', 'icon' => 'success'];
+                }
+
+                $respuesta = ['msg' => 'El detalle de la factura no se ha enviado porque no existe correo informativo.', 'icon' => 'warning'];
+
+            } elseif($dato['tipo'] == 2) {
+                
+                $file = $this->generarDetalleExaCuenta($dato['id'], null);
+                $correo = $this->getCorreo($dato['id'], $dato['tipo']);
+                $asunto = $this->AsuntoEmail($dato['id'], $dato['tipo']);
+
+                $cuerpo = [
+                    'factura' => $this->nroFactura($dato['id'], $dato['tipo']),
+                    'fecha' => now()->format('d/m/Y'),
+                    'cliente' => FacturaDeVenta::find($dato['id'])->empresa->RazonSocial ?? '-',
+                    'paraEmpresa' => FacturaDeVenta::find($dato['id'])->empresa->ParaEmpresa ?? '-',
+                ];
+                
+                if($correo !==null) {
+                    FacturaEmailJob::dispatch($correo, $asunto, $cuerpo, $file);
+                    $respuesta = ['msg' => 'El detalle del examen a cuenta enviado con éxito.', 'icon' => 'success'];
+                }
+
+                $respuesta = ['msg' => 'El detalle del examen a cuenta no se ha enviado porque no existe correo informativo.', 'icon' => 'warning'];
+            }
+            $respuestas[] = $respuesta;
+        }
+        return response()->json($respuestas);
+    }
+
     private function facturas()
     {
         return FacturaDeVenta::join('clientes', 'facturasventa.IdEmpresa', '=', 'clientes.Id')
@@ -269,7 +346,6 @@ class FacturasVentaController extends Controller
                 DB::raw('1 as Opcion')
             );
     }
-
 
     private function examenesCuenta()
     {
@@ -412,5 +488,28 @@ class FacturasVentaController extends Controller
         return ExamenCuentaIt::where('IdPago', $Id)->whereNot('IdExamen', 0)->whereNot('IdPrestacion', 0)->whereNot('Obs', 'provisorio')->count();
     }
 
+    private function getCorreo(int $id, int $who)
+    {
+        $result = $who === 1 ? FacturaDeVenta::with('empresa')->find($id) : ExamenCuenta::with('empresa')->find($id);
+        return $result->empresa->EMailInformes ?? null;        
+    }
+
+    private function AsuntoEmail(int $id, int $who)
+    {
+        $attr = [1 => ['Sucursal', 'NroFactura'], 2 => ['Suc', 'Nro']];
+
+        $datos = $who === 1 ? FacturaDeVenta::find($id) : ExamenCuenta::find($id);
+        $factura = $datos->Tipo . '-' . sprintf('%04d', $datos->{$attr[$who][0]}) . '-' . sprintf('%08d', $datos->{$attr[$who][1]});
+
+        return "DETALLE DE FACTURA NRO: ".$factura." ".Carbon::parse($datos->Fecha)->format('d/m/Y')." ".$datos->empresa->ParaEmpresa;
+    }
+
+    private function nroFactura(int $id, int $who)
+    {
+        $attr = [1 => ['Sucursal', 'NroFactura'], 2 => ['Suc', 'Nro']];
+
+        $datos = $who === 1 ? FacturaDeVenta::find($id) : ExamenCuenta::find($id);
+        return $datos->Tipo . '-' . sprintf('%04d', $datos->{$attr[$who][0]}) . '-' . sprintf('%08d', $datos->{$attr[$who][1]});
+    }
 
 }

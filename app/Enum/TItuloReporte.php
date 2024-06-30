@@ -2,17 +2,17 @@
 
 namespace App\Enum;
 
-enum TituloReporte 
+class TituloReporte 
 {
-    const FACTURAS = 'factura';
-    const EXAMENESACUENTA = 'examenacuenta';
+    public static $FACTURAS = 'factura';
+    public static $EXAMENESACUENTA = 'examenacuenta';
 
     public static function getTitulo($titulo)
     {
         switch ($titulo) {
-            case self::FACTURAS:
+            case self::$FACTURAS:
                 return 'DETALLE DE FACTURA';
-            case self::EXAMENESACUENTA:
+            case self::$EXAMENESACUENTA:
                 return 'DETALLE DE EXAMEN DE CUENTA';
             default:
                 return 'DETALLE';

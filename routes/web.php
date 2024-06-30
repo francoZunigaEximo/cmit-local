@@ -232,6 +232,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('facturas/search', [FacturasVentaController::class, 'search'])->name('facturas.search');
     Route::get('facturas/delete', [FacturasVentaController::class, 'delete'])->name('facturas.delete');
     Route::get('facturas/export', [FacturasVentaController::class, 'export'])->name('facturas.export');
+    Route::get('facturas/enviar',[FacturasVentaController::class, 'enviar'])->name('facturas.enviar');
     Route::resource('facturas', FacturasVentaController::class);
 
     // Rutas de Noticias

@@ -10,6 +10,8 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
+use App\Enum\RutasArchivos;
+
 class FacturasMailable extends Mailable
 {
     use Queueable, SerializesModels;
@@ -40,7 +42,7 @@ class FacturasMailable extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.modelo',
+            view: 'emails.avisofactura',
             with: ['content' => $this->data['content']],
         );
     }
@@ -52,11 +54,9 @@ class FacturasMailable extends Mailable
      */
     public function attachments(): array
     {
-
         if(!empty($this->data['attachment'])) {
-
             return [
-                Attachment::fromPath(storage_path('app/facturas/'.$this->data['attachment']))
+                Attachment::fromPath(storage_path($this->data['attachment']))
             ];
         }
 

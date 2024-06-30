@@ -111,7 +111,7 @@
                 <div class="row fondo-grisClaro p-2">
                     <div class="col-sm-6 text-center">
                         <div class="mb-1">
-                            <button class="btn btn-sm botonGeneral"><i class="ri-send-plane-line"></i>Enviar</button>
+                            <button class="btn btn-sm botonGeneral enviar"><i class="ri-send-plane-line"></i>Enviar</button>
                         </div>
                         <small class="text-muted">Envio de email con el detalle de la futura factura.</small>
                     </div>
@@ -142,6 +142,7 @@
 
     const eliminarFactura = "{{ route('facturas.delete')}}";
     const exportar = "{{ route('facturas.export')}}";
+    const enviarDetalle = "{{ route('facturas.enviar')}}";
 </script>
 
 @push('styles')

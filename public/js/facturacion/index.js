@@ -211,4 +211,48 @@ $(document).ready(function(){
     });
 
 
+    $(document).on('click', '.enviar', function(e){
+        e.preventDefault();
+
+        let ids = [], arrOpciones = [];
+
+        $('input[name="Id_factura"]:checked').each(function() {
+            var opcion = $(this).attr('data-opcion');
+            arrOpciones.push(opcion);
+            ids.push($(this).val());
+        });
+
+        if(ids.length === 0){
+            toastr.warning('Debe seleccionar al menos una factura para poder enviar el detalle');
+            return;
+        }
+
+        swal({
+            title: "¿Estas seguro que desea enviar el detalle?",
+            icon: "warning",
+            buttons: ['Cancelar', 'Aceptar'],    
+        }).then((confirmar)=>{
+            if(confirmar){
+
+                preloader('on');
+                $.get(enviarDetalle, {Ids: ids, Tipo: 'enviar', Opcion: arrOpciones})
+                    .done(function(response){
+                        preloader('off');
+                        response.forEach(function(item){
+                            let tipoToastr = item.original.icon === 'success' ? 'success' : 'warning';
+                            toastr[tipoToastr](item.original.msg, {timeOut: 1000});
+                        });
+                    })
+                    .fail(function(jqXHR){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
+                    });
+            }
+        });
+    });
+
+
+    
 });

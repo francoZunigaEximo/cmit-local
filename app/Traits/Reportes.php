@@ -125,6 +125,8 @@ trait Reportes
                         'msg' => 'Factura F'.$id.'_'.now()->format('d-m-Y').' generada correctamente', 
                         'icon' => 'success'
                     ]);
+            }else{
+                return $filePath;
             }
         }
     }
@@ -192,6 +194,8 @@ trait Reportes
                         'msg' => 'Examen a Cuenta X'.$id.'_'.now()->format('d-m-Y').' generada correctamente', 
                         'icon' => 'success'
                     ]);
+            }else{
+                return $filePath;
             }
         }
     }
