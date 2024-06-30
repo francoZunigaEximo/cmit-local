@@ -5,26 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ExamenCuentaIt extends Model
+class PrecioPorCodigo extends Model
 {
     use HasFactory;
 
-    protected $table = 'pagosacuenta_it';
+    protected $table = 'preciosxcod';
 
     protected $primaryKey = 'Id';
 
     protected $fillable = [
         'Id',
-        'IdPago',
-        'IdExamen',
-        'IdPrestacion',
-        'Obs',
-        'Obs2',
-        'Obs',
-        'Precarga'
+        'Cod',
+        'Precio',
     ];
 
     public $timestamps = false;
-
-    
 }

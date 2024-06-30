@@ -29,7 +29,7 @@ class ExamenCuenta extends Model
 
     public function empresa()
     {
-        return $this->hasMany(Cliente::class, 'Id', 'IdEmpresa');
+        return $this->hasOne(Cliente::class, 'Id', 'IdEmpresa');
     }
 
     public function prestacion()

@@ -5,26 +5,25 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ExamenCuentaIt extends Model
+class ItemsFacturaVenta extends Model
 {
     use HasFactory;
 
-    protected $table = 'pagosacuenta_it';
-
+    protected $table = 'itemsfacturaventa';
     protected $primaryKey = 'Id';
 
     protected $fillable = [
         'Id',
-        'IdPago',
-        'IdExamen',
+        'IdFactura',
         'IdPrestacion',
-        'Obs',
-        'Obs2',
-        'Obs',
-        'Precarga'
+        'Detalle',
+        'Anulado'
     ];
 
     public $timestamps = false;
-
     
+    public function prestacion()
+    {
+        return $this->hasOne(Prestacion::class, 'Id', 'IdPrestacion');
+    }
 }

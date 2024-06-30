@@ -11,10 +11,12 @@ use App\Traits\CheckPermission;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\DB;
 
+use App\Traits\Reportes;
+
 class FacturasVentaController extends Controller
 {
 
-    use CheckPermission;
+    use CheckPermission, Reportes;
 
     public function index()
     {
@@ -205,6 +207,48 @@ class FacturasVentaController extends Controller
         {
             return response()->json(['factura' => $factura]);
         }
+    }
+
+    public function export(Request $request)
+    {
+        $Ids = $request->Ids;
+        $Opcion = $request->Opcion;
+
+        if (!is_array($Ids)) {
+            $Ids = [$Ids];
+        }
+
+        if(count($Ids) !== count($Opcion)) {
+            return response()->json(['message' => 'Hay un error en la petición. No coinciden los rangos en el proceso de eliminación.'], 409);
+        }
+
+        $mergeArr = [];
+        $count = count($Opcion);
+
+        for ($i = 0; $i < $count; $i++) {
+            $mergeArr[] = [
+                'tipo' => $Opcion[$i],
+                'id' => $Ids[$i],
+            ];
+        }
+
+        $respuestas = [];
+
+        foreach ($mergeArr as $dato) {
+
+            if($dato['tipo'] == 1) {
+
+                $respuesta = $this->generarDetalleFactura($dato['id'], "imprimir");
+
+            } elseif($dato['tipo'] == 2) {
+                
+                $respuesta = $this->generarDetalleExaCuenta($dato['id'], "imprimir");
+            }
+
+            $respuestas[] = $respuesta;
+        }
+
+        return response()->json($respuestas);
     }
 
     private function facturas()

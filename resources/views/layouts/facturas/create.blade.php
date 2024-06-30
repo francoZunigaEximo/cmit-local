@@ -41,13 +41,13 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-sm-2 mt-3">
-                            <label for="fechaDesde" class="form-label fw-bolder">Fecha Desde</label>
-                            <input type="date" class="form-control" id="fechaDesde" name="fechaDesde">
+                            <label for="fechaDesdeA" class="form-label fw-bolder">Fecha Desde</label>
+                            <input type="date" class="form-control" id="fechaDesdeA" name="fechaDesdeA">
                         </div>
 
                         <div class="col-sm-2 mt-3">
-                            <label for="fechaHasta" class="form-label fw-bolder">Fecha Hasta</label>
-                            <input type="date" class="form-control" id="fechaHasta" name="fechaHasta">
+                            <label for="fechaHastaA" class="form-label fw-bolder">Fecha Hasta</label>
+                            <input type="date" class="form-control" id="fechaHastaA" name="fechaHastaA">
                         </div>
 
                         <div class="col-sm-2 mt-3">
@@ -57,12 +57,20 @@
 
                         <div class="col-sm-2 mt-3">
                             <label for="pago" class="form-label fw-bolder">Pago</label>
-                            <select name="pago" id="pago" class="form-control"></select>
+                            <select name="pago" id="pago" class="form-control">
+                                <option value="" selected>Elija una opción...</option>
+                                <option value="todo">Todas</option>
+                                <option value="sincargo">Sin cargo</option>
+                                <option value="transferencia">Transferencia</option>
+                                <option value="otro">Otras</option>
+                            </select>
                         </div>
 
                         <div class="col-sm-2 mt-3">
                             <label for="tipo" class="form-label fw-bolder">Tipo</label>
-                            <select name="tipo" id="tipo" class="form-control"></select>
+                            <select name="tipo" id="tipo" class="form-control">
+
+                            </select>
                         </div>
                     </div>
 
@@ -86,8 +94,8 @@
                     
                     <div class="row">
                         <div class="col-sm-12 mt-2 text-end">
-                            <button type="button" class="btn btn-sm botonGeneral">Contado</button>
-                            <button type="button" class="btn btn-sm botonGeneral buscar"><i class="ri-search-line"></i>Buscar</button>
+                            <button type="button" class="btn btn-sm botonGeneral Contado">Contado</button>
+                            <button type="button" class="btn btn-sm botonGeneral buscarAlta"><i class="ri-search-line"></i>Buscar</button>
                         </div>
                     </div>
                     
@@ -303,6 +311,8 @@
 
 <script>
     const TOKEN = "{{ csrf_token() }}";
+    const getClientes = "{{ route('getClientes') }}";
+    const lstTipoPrestacion = "{{ route('lstTipoPrestacion') }}";
 </script>
 
 @push('styles')
@@ -311,6 +321,7 @@
 @endpush
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/inputmask/dist/jquery.inputmask.min.js"></script>
 <!--datatable js-->
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>

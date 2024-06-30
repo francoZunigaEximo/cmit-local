@@ -617,6 +617,14 @@ class PrestacionesController extends Controller
 
     }
 
+    public function lstTipoPrestacion()
+    {
+        /*if (!$this->hasPermission("prestaciones_show")) {
+            return response()->json(['msg' => 'No tienes permisos'], 403);
+        }*/
+
+        return response()->json(PrestacionesTipo::all());
+    }
 
 
 }

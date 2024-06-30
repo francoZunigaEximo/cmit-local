@@ -165,6 +165,50 @@ $(document).ready(function(){
         });
     });
 
+    $(document).on('click', '.imprimir', function(e){
+        e.preventDefault();
+
+        let ids = [], arrOpciones = [];
+
+        $('input[name="Id_factura"]:checked').each(function() {
+            var opcion = $(this).attr('data-opcion');
+            arrOpciones.push(opcion);
+            ids.push($(this).val());
+        });
+
+        if(ids.length === 0){
+            toastr.warning('Debe seleccionar al menos una factura para imprimir');
+            return;
+        }
+
+        swal({
+            title: "¿Estas seguro que desea imprimir?",
+            icon: "warning",
+            buttons: ['Cancelar', 'Aceptar'],
+        }).then((confirmar)=>{
+            if(confirmar){
+                preloader('on');
+                $.get(exportar, {Ids: ids, Tipo: 'imprimir', Opcion: arrOpciones})
+
+                    .done(function(response){
+
+                        preloader('off');
+                        //console.log(response); return;
+                        response.forEach(function(item){
+                            let tipoToastr = item.original.icon === 'success' ? 'success' : 'warning';
+                            createFile("pdf", item.original.filePath, item.original.name);
+                            toastr[tipoToastr](item.original.msg, {timeOut: 1000});
+                        });
+                    })
+                    .fail(function(jqXHR){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
+                    });
+            }
+        });
+    });
 
 
 });

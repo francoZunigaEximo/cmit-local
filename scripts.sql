@@ -1114,3 +1114,8 @@ INSERT INTO permisos(slug, descripcion) VALUES
 INSERT INTO rol_permisos(rol_id, permiso_id) VALUES
 (3,60),(3,61),(3,62),(3,63);
 
+sudo mkdir /opt/lampp/htdocs/cmit/storage/app/public/facturas
+sudo chmod 777 -R /opt/lampp/htdocs/cmit/storage/app/public/facturas
+
+sudo mkdir /opt/lampp/htdocs/cmit/storage/app/public/examenescuenta
+sudo chmod 777 -R /opt/lampp/htdocs/cmit/storage/app/public/examenescuenta

@@ -388,55 +388,29 @@ $(document).ready(function(){
             return;
         }
 
-        if (confirm("¿Estás seguro de que deseas generar el reporte de " + tipo.charAt(0).toUpperCase() + tipo.slice(1) + "?")) {
-            $.ajax({
-                url: tipo === 'excel' ? exportExcel : exportPDF,
-                type: "GET",
-                data: {
-                    Id: id
-                },
-                success: function(response) {
-                    
-                    createFile(tipo, response.filePath);
-                    toastr.success('Se ha generado el reporte ' + tipo);
-                }
-            });
-        }
+        swal({
+            title: "¿Estás seguro de que deseas generar el reporte de " + tipo.charAt(0).toUpperCase() + tipo.slice(1) + "?",
+            icon: "warning",
+            buttons: ['Cancelar', 'Aceptar'],
+        }).then((confirmar)=>{
+            if(confirmar){
 
-    });
-
-    function preloader(opcion) {
-        $('#preloader').css({
-            opacity: '0.3',
-            visibility: opcion === 'on' ? 'visible' : 'hidden'
+                $.ajax({
+                    url: tipo === 'excel' ? exportExcel : exportPDF,
+                    type: "GET",
+                    data: {
+                        Id: id
+                    },
+                    success: function(response) {
+                        createFile(tipo, response.filePath);
+                        toastr.success('Se ha generado el reporte ' + tipo);
+                    }
+                });
+    
+            }
         });
-    }
-
-    function createFile(tipo, array){
-        let filePath = array,
-            pattern = /storage(.*)/,
-            match = filePath.match(pattern),
-            path = match ? match[1] : '';
-
-        let url = new URL(location.href),
-            baseUrl = url.origin,
-            fullPath = baseUrl + '/cmit/storage' + path;
-
-        let link = document.createElement('a');
-        link.href = fullPath;
-        link.download = tipo === 'pdf' ? "reporte.pdf" : "reporte.xlsx";
-        link.style.display = 'none';
-
-        document.body.appendChild(link);
-        link.click();
-        setTimeout(function() {
-            document.body.removeChild(link);
-        }, 100);
-    }
-
-    function acortadorTexto(cadena, nroCaracteres = 10) {
-        return cadena.length <= nroCaracteres ? cadena : cadena.substring(0,nroCaracteres);
-    }
+            
+    });
 
 
 });

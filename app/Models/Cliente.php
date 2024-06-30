@@ -85,7 +85,7 @@ class Cliente extends Model
 
     public function examenCuenta()
     {
-        return $this->hasOne(ExamenCuenta::class, 'IdEmpresa', 'Id');
+        return $this->hasMany(ExamenCuenta::class, 'IdEmpresa', 'Id');
     }
 
     public function facturadeventa()

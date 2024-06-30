@@ -113,11 +113,11 @@
                         <div class="mb-1">
                             <button class="btn btn-sm botonGeneral"><i class="ri-send-plane-line"></i>Enviar</button>
                         </div>
-                        <small class="text-muted">Envio de email de la factura fiscal.</small>
+                        <small class="text-muted">Envio de email con el detalle de la futura factura.</small>
                     </div>
                     <div class="col-sm-6 text-center">
                         <div class="mb-1">
-                            <button class="btn btn-sm botonGeneral"><i class="ri-printer-line"></i>Imprimir</button>
+                            <button class="btn btn-sm botonGeneral imprimir"><i class="ri-printer-line"></i>Imprimir</button>
                         </div>
                         <small class="text-muted">Descargar en PDF los detalles de las facturas.</small>
                     </div>
@@ -141,6 +141,7 @@
     const lnkExamenCuenta = "{{ route('examenesCuenta.edit', '__id__') }}";
 
     const eliminarFactura = "{{ route('facturas.delete')}}";
+    const exportar = "{{ route('facturas.export')}}";
 </script>
 
 @push('styles')

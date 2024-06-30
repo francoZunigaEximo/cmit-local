@@ -82,3 +82,25 @@ function quitarDuplicados(selector) {
         $(selector + " option[value='" + seleccion + "']:gt(0)").hide();
     }
 }
+
+function createFile(tipo, array, name){
+    let filePath = array,
+        pattern = /storage(.*)/,
+        match = filePath.match(pattern),
+        path = match ? match[1] : '';
+
+    let url = new URL(location.href),
+        baseUrl = url.origin,
+        fullPath = baseUrl + '/cmit/storage' + path;
+
+    let link = document.createElement('a');
+    link.href = fullPath;
+    link.download = tipo === 'pdf' ? name+".pdf" : name+".xlsx";
+    link.style.display = 'none';
+
+    document.body.appendChild(link);
+    link.click();
+    setTimeout(function() {
+        document.body.removeChild(link);
+    }, 100);
+}

@@ -109,6 +109,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/prestaciones/wizard', [PrestacionesController::class, 'verifyWizard'])->name('verifyWizard');
     Route::get('/prestaciones/excel', [PrestacionesController::class, 'exportExcel'])->name('excelPrestaciones');
     Route::get('/prestaciones/obtener-bloqueo', [PrestacionesController::class, 'getBloqueo'])->name('getBloqueoPrestacion');
+    Route::get('lstTipoPrestacion', [PrestacionesController::class, 'lstTipoPrestacion'])->name('lstTipoPrestacion');
     Route::resource('prestaciones', PrestacionesController::class);
 
     //Ruta Ficha Laboral
@@ -230,6 +231,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('getFactura', [FacturasVentaController::class, 'getFactura'])->name('getFactura');
     Route::get('facturas/search', [FacturasVentaController::class, 'search'])->name('facturas.search');
     Route::get('facturas/delete', [FacturasVentaController::class, 'delete'])->name('facturas.delete');
+    Route::get('facturas/export', [FacturasVentaController::class, 'export'])->name('facturas.export');
     Route::resource('facturas', FacturasVentaController::class);
 
     // Rutas de Noticias

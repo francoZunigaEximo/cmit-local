@@ -101,4 +101,9 @@ class Prestacion extends Model
     {
         return $this->belongToMany(ExamenCuenta::class, 'pagoacuenta_it', 'IdPrestacion', 'IdPago');
     }
+
+    public function itemFacturaVenta()
+    {
+        return $this->hasOne(ItemsFacturaVenta::class, 'IdPrestacion', 'Id');
+    }
 }
