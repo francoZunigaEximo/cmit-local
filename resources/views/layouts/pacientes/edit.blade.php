@@ -277,7 +277,7 @@
     
                                     <div class="input-group input-group-sm mb-2 selectClientes2">
                                         <span class="input-group-text">Empresa</span>
-                                        <select class="form-control-sm" id="selectClientes" s>
+                                        <select class="form-control-sm" id="selectClientes">
                                         </select>
                                     </div>
     

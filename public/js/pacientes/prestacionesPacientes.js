@@ -12,12 +12,7 @@ $(document).ready(()=>{
     listadoConSaldos(empresaInput);
     cantidadDisponibles(empresaInput);
     listadoFacturas(empresaInput, null);
-    
-    toastr.options = {
-        closeButton: true,   
-        progressBar: true,    
-        timeOut: 3000,        
-    };
+
 
     $(document).on('change', '#tipoPrestacionPres', function(){
         let actPrecarga = $('#tipoPrestacionPres').val();
@@ -771,13 +766,6 @@ $(document).ready(()=>{
         
     }
 
-    function preloader(opcion) {
-        $('#preloader').css({
-            opacity: '0.3',
-            visibility: opcion === 'on' ? 'visible' : 'hidden'
-        });
-    }
-    
 
 
 });

@@ -11,11 +11,6 @@ $(document).ready(function () {
     mostrarFinanciador();
     checkExamenesCuenta($('selectClientes').val());
     
-    toastr.options = {
-        closeButton: true,   
-        progressBar: true,    
-        timeOut: 3000,        
-    };
  
     const listOpciones = {
         '.TareaRealizar': ['OCUPACIONAL', 'OTRO', 'INGRESO', 'ART'],
@@ -635,11 +630,5 @@ $(document).ready(function () {
             })
     }
 
-    function preloader(opcion) {
-        $('#preloader').css({
-            opacity: '0.3',
-            visibility: opcion === 'on' ? 'visible' : 'hidden'
-        });
-    }
     
 });

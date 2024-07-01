@@ -439,7 +439,7 @@ class PrestacionesController extends Controller
             $examenes = $this->registrarExamenCta($request->examenCuenta, $nuevoId);
         } 
     
-        if (is_array($examenes) && !in_array($examenes, [0, null, ''])) {
+        if (isset($examenes) && is_array($examenes) && !in_array($examenes, [0, null, ''])) {
             $this->registrarExamenes($examenes, $nuevoId);
         }
 
