@@ -1,11 +1,5 @@
 $(document).ready(function(){
 
-    toastr.options = {
-        closeButton: true,   
-        progressBar: true,    
-        timeOut: 3000,        
-    };
-
     quitarDuplicados("#tipoDocumento");
     quitarDuplicados("#provincia");
     quitarDuplicados("#tipoIdentificacion");
@@ -81,19 +75,12 @@ $(document).ready(function(){
                     $('#provincia').append(nuevoOption);
                 },
                 error: function(xhr){
-                    toastr.error('No se pudo autocompletar la provincia. Debe cargarlo manualmente.', 'Error');
-                    console.error(xhr);
+                    preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
                 }
             });
-        }
-    }
-
-    function quitarDuplicados(selector) {
-        let seleccion = $(selector).val();
-        let countSeleccion = $(selector + " option[value='" + seleccion + "']").length;
-    
-        if (countSeleccion > 1) {
-            $(selector + " option[value='" + seleccion + "']:gt(0)").hide();
         }
     }
 

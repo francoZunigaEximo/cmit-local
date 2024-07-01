@@ -28,7 +28,7 @@ $(document).ready(()=>{
                         data: null,
                         render: function(data){
                             let id = data.Id;
-                            return `<input type="checkbox" name="Id" value="${id}" checked>`;
+                            return `<div class="text-center"><input type="checkbox" name="Id" value="${id}" checked></div>`;
                         }
                     },
                     {

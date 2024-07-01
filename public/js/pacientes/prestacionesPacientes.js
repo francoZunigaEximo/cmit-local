@@ -247,6 +247,26 @@ $(document).ready(()=>{
         if (pago != 'B') {
             $('#SPago, #Tipo, #Sucursal, #NroFactura').val(" ");
         }
+
+        if(['B','C'].includes(pago)) {
+            
+            $('.ultimasFacturadas, .examenesDisponibles').hide();
+            $('#siguienteExCta').hide();
+            $('#guardarPrestacion').show();
+        }else{
+            preloader('on');
+            $.get(cantTotalDisponibles, {Id: $('#selectClientes').val()})
+            .done(function(response){
+                preloader('off');
+                if(response > 0) {
+                    $('.ultimasFacturadas, .examenesDisponibles').show();
+                    $('#siguienteExCta').show();
+                    $('#guardarPrestacion').hide();
+                }
+            });
+        }
+
+        
     });
 
     $(document).on('click', '#siguienteExCta', function(e){

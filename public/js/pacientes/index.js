@@ -16,7 +16,7 @@ $(document).ready(function(){
         });
 
         if (ids.length === 0) {
-            toastr.warning("Debe seleccionar al menos un paciente para la baja múltiple", "Atención");
+            toastr.warning("Debe seleccionar al menos un paciente para la baja múltiple");
             return; 
         }
 
@@ -62,8 +62,18 @@ $(document).ready(function(){
             ids.push($(this).val());
         });
 
-        if (ids.length > 0) {
-            if (confirm("¿Estás seguro de que deseas generar el reporte de Excel con todos los items seleccionados?")) {
+        if (ids.length === 0) {
+            toastr.error('Debes seleccionar al menos un paciente para exportar.');
+            return;
+        }
+
+        swal({
+            title: "¿Estás seguro de que deseas generar el reporte de Excel con todos los items seleccionados?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"],
+        }).then((confirmar) => {
+            if(confirmar){
+                preloader('on');
                 $.ajax({
                     url: exportExcel,
                     type: "GET",
@@ -71,34 +81,19 @@ $(document).ready(function(){
                         Id: ids
                     },
                     success: function(response) {
-                        let filePath = response.filePath,
-                            pattern = /storage(.*)/,
-                            match = filePath.match(pattern),
-                            path = match ? match[1] : '';
-
-                        let url = new URL(location.href), baseUrl = url.origin;
-
-                        let fullPath = baseUrl + '/cmit/storage' + path, link = document.createElement('a');
-                        
-                        link.href = fullPath;
-                        link.download = "pacientes.xlsx";
-                        link.style.display = 'none';
-
-                        document.body.appendChild(link);
-                        link.click();
-                        setTimeout(function() {
-                            document.body.removeChild(link);
-                        }, 100);
-                    
+                        preloader('off');
+                        createFile("excel", response.filePath, generarCodigoAleatorio() + "_reporte");
+                        return;
                     },                    
                     error: function(xhr) {
-                        console.error(xhr);
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
                     }
                 });
             }
-        } else {
-            toastr.error('Debes seleccionar al menos un paciente para exportar.', 'Error');
-        }
+        });
 
     });
 

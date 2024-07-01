@@ -104,3 +104,9 @@ function createFile(tipo, array, name){
         document.body.removeChild(link);
     }, 100);
 }
+
+function generarCodigoAleatorio() {
+
+    let codigo = Math.floor(Math.random() * 9000000) + 1000000;
+    return codigo.toString(); 
+}

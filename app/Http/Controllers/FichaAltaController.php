@@ -9,30 +9,38 @@ use Illuminate\Http\Request;
 
 class FichaAltaController extends Controller
 {
-    public function save(Request $request): void
+    public function save(Request $request)
     {
-            Fichalaboral::create([
-                'Id' => Fichalaboral::max('Id') + 1,
-                'IdPaciente' => $request->paciente,
-                'IdEmpresa' => $request->cliente ?? 0,
-                'IdART' => $request->art ?? 0,
-                'TipoPrestacion' => $request->tipoPrestacion ?? '',
-                'Tareas' => $request->tareaRealizar ?? '',
-                'Jornada' => $request->horario ?? '',
-                'Pago' => $request->pago ?? '',
-                'TipoJornada' => $request->tipo ?? '',
-                'Observaciones' => $request->observaciones ?? '',
-                'TareasEmpAnterior' => $request->ultimoPuesto,
-                'Puesto' => $request->puestoActual ?? '',
-                'Sector' => $request->sectorActual ?? '',
-                'CCosto' => $request->ccosto ?? '',
-                'AntigPuesto' => $request->antiguedadPuesto ?? '',
-                'FechaIngreso' => $request->fechaIngreso ?? '',
-                'FechaEgreso' => $request->fechaEgreso ?? '',
-                'FechaPreocupacional' => $request->fechaPreocupacional ?? '',
-                'FechaUltPeriod' => $request->fechaUltPeriod ?? '',
-                'FechaExArt' => $request->fechaExArt ?? ''
-            ]);
+
+        $fichaLaboral = Fichalaboral::create([
+            'Id' => Fichalaboral::max('Id') + 1,
+            'IdPaciente' => $request->paciente,
+            'IdEmpresa' => $request->cliente ?? 0,
+            'IdART' => $request->art ?? 0,
+            'TipoPrestacion' => $request->tipoPrestacion ?? '',
+            'Tareas' => $request->tareaRealizar ?? '',
+            'Jornada' => $request->horario ?? '',
+            'Pago' => $request->pago ?? '',
+            'TipoJornada' => $request->tipo ?? '',
+            'Observaciones' => $request->observaciones ?? '',
+            'TareasEmpAnterior' => $request->ultimoPuesto,
+            'Puesto' => $request->puestoActual ?? '',
+            'Sector' => $request->sectorActual ?? '',
+            'CCosto' => $request->ccosto ?? '',
+            'AntigPuesto' => $request->antiguedadPuesto ?? '',
+            'FechaIngreso' => $request->fechaIngreso ?? '',
+            'FechaEgreso' => $request->fechaEgreso ?? '',
+            'FechaPreocupacional' => $request->fechaPreocupacional ?? '',
+            'FechaUltPeriod' => $request->fechaUltPeriod ?? '',
+            'FechaExArt' => $request->fechaExArt ?? ''
+        ]);
+
+        if ($fichaLaboral) {
+            return response()->json(['msg' => '¡Los datos se han actualizado. Nos redirigimos a la nueva prestación.!'], 200);
+        }else{
+            return response()->json(['msg' => '¡Ha ocurrido un error al intentar guardar los datos!'], 500);
+        }
+            
 
     }
 

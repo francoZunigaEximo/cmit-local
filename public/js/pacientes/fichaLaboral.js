@@ -175,14 +175,8 @@ $(document).ready(function () {
                 _token: TOKEN
             },
             success: function (response) {
-
                 let data = response.cliente;
-
-                if (data.Bloqueado === 0) {
-                    deshabilitarBloqueo();
-                } else {
-                    cargarBloqueo(data);
-                }
+                data.Bloqueado === 0 ? deshabilitarBloqueo() : cargarBloqueo(data);
             }
         });
     });
@@ -230,22 +224,28 @@ $(document).ready(function () {
             $('#tipoPrestacionHidden').val(tipoPrestacion);
         }
 
-        if(tipoPrestacion === '' || tipoPrestacion === undefined){
-            toastr.warning('¡El campo tipo de prestación es obligatorio!', 'Alerta');
+        if([0, null, undefined, ''].includes(tipoPrestacion)){
+            toastr.warning('¡El campo tipo de prestación es obligatorio!');
             return;
         }
-        if(cliente == '0' && art == '0' || cliente === '' && art === '' || cliente === null && art === null){
-            toastr.warning('¡Debe seleccionar una empresa o una art!', 'Alerta');
-            return;
-        }
-        
-        if(tipoPrestacion === 'ART' && (art === '0' || art === '')){
-            toastr.warning('¡Debe seleccionar una ART para el tipo de prestación ART!', 'Alerta');
+
+        if([0, null, undefined, ''].includes(cliente) && [0, null, undefined, ''].includes(art)){
+            toastr.warning('¡Debe seleccionar una empresa o una art!');
             return;
         }
         
-        if(tipoPrestacion != 'ART' && (cliente === '0' || cliente === '')){
-            toastr.warning('¡Debe seleccionar una empresa para el tipo de prestación seleccionado!', 'Alerta');
+        if(tipoPrestacion === 'ART' && ([0, null, undefined, ''].includes(art))){
+            toastr.warning('¡Debe seleccionar una ART para el tipo de prestación ART!');
+            return;
+        }
+
+        if(tipoPrestacion === 'ART' && (![0, null, undefined, ''].includes(art)) && ([0, null, undefined, ''].includes(cliente))){
+            toastr.warning('¡Debe seleccionar una Empresa para el tipo de prestación ART y la ART seleccionada!');
+            return;
+        }
+        
+        if(tipoPrestacion !== 'ART' && ([0, null, undefined, ''].includes(cliente))){
+            toastr.warning('¡Debe seleccionar una empresa para el tipo de prestación seleccionado!');
             return;
         }
 
@@ -272,9 +272,9 @@ $(document).ready(function () {
             fechaExArt: fechaExArt,
             _token: TOKEN,
             }) 
-            .done(function() {
+            .done(function(response) {
                 preloader('off');
-                toastr.success('¡Los datos se han actualizado. Nos redirigimos a la nueva prestación.!', 'Perfecto');
+                toastr.success(response.msg);
                 mostrarFinanciador();
                 selectMedioPago();
                 setTimeout(() => {
@@ -282,10 +282,12 @@ $(document).ready(function () {
                 }, 2000);
 
             })
-            .fail(function(xhr) {
+            .fail(function(jqXHR) {
                 preloader('off');
-                toastr.error('Hubo un problema para procesar la información. Consulte con el administrador del sistema.', 'Error');
-                console.error(xhr);
+                let errorData = JSON.parse(jqXHR.responseText);
+                checkError(jqXHR.status, errorData.msg);
+                return;
+                
             });
     });
 
@@ -453,22 +455,9 @@ $(document).ready(function () {
         $('#AntiguedadEmpresa').val(diff);
     }
 
-    function quitarDuplicados(selector) {
-        let seleccion = $(selector).val();
-        let countSeleccion = $(selector + " option[value='" + seleccion + "']").length;
-    
-        if (countSeleccion > 1) {
-            $(selector + " option[value='" + seleccion + "']:gt(0)").hide();
-        }
-    }
-
     function opcionesFicha(option) {
         Object.entries(listOpciones).forEach(([campo, opciones]) => {
-            if (opciones.includes(option)) {
-                $(campo).show();
-            } else {
-                $(campo).hide();
-            }
+            opciones.includes(option) ? $(campo).show() : $(campo).hide();
         });
     }
 
@@ -494,22 +483,14 @@ $(document).ready(function () {
             $('#SPago').empty().append(contenido);
        
         }else{
-
             $('.SPago').hide();
             $('.ObsPres').hide();
             $('.Factura').hide();
             $('.Autoriza').hide();
-
         }
     }
 
     async function checkObservaciones() {
-
-        toastr.options = {
-            closeButton: true,   
-            progressBar: true,     
-            timeOut: 3000,        
-        };
      
         if (ID === '') return;
         $('.ObBloqueoEmpresa, .ObBloqueoArt, .ObArt, .ObEmpresa, .ObPaciente').hide();
@@ -544,36 +525,37 @@ $(document).ready(function () {
                 $('.fichaLaboralModal').hide();
                 $('.observacionesModal').show();
 
-                if(obsArt.Motivo !== '' && obsArt.Motivo !== null) {
+                if(![null, undefined, ''].includes(obsArt.Motivo)) {
                     $('.ObBloqueoArt').show();
                     $('.ObBloqueoArt p').text(obsArt.Motivo);
                     $('.seguirAl').prop('disabled', true).attr('title', 'Boton bloqueado');
                 }
 
-                if(obsArt.Observaciones !== '' && obsArt.Observaciones !== null) {
+                if(![null, undefined, ''].includes(obsArt.Observaciones)) {
                     $('.ObArt').show();
                     $('.ObArt p').text(obsArt.Observaciones);
                 }
                 
-                if(obsEmpresa.Observaciones !== '' && obsEmpresa.Observaciones !== null) {
+                if(![null, undefined, ''].includes(obsEmpresa.Observaciones)) {
                     $('.ObEmpresa').show();
                     $('.ObEmpresa p').text(obsEmpresa.Observaciones);
                 }
 
-                if(obsEmpresa.Motivo !== '' && obsEmpresa.Motivo !== null) {
+                if(![null,undefined, ''].includes(obsEmpresa.Motivo)) {
                     $('.ObBloqueoEmpresa').show();
                     $('.ObBloqueoEmpresa p').text(obsEmpresa.Motivo);
                     $('.seguirAl').prop('disabled', true).attr('title', 'Boton bloqueado');
                 }
                 
-                if(obsPaciente.Observaciones !== '' && obsPaciente.Observaciones !== null) {
+                if(![null, undefined, ''].includes(obsPaciente.Observaciones)) {
                     $('.ObPaciente').show();
                     $('.ObPaciente p').text(obsPaciente.Observaciones);
                 }
             } 
-        } catch (error) {
-            console.error(error);
-            toastr.warning('Se ha producido un error. Consulte con el administrador', 'Error');
+        } catch (jqXHR) {
+            let errorData = JSON.parse(jqXHR.responseText);
+            checkError(jqXHR.status, errorData.msg);
+            return;
         }
     }
 
@@ -591,13 +573,12 @@ $(document).ready(function () {
 
                     $.each(response, function(index, r) {
                     
-                        contenido = `
+                        contenido += `
                         <tr>
                             <td>${r.Precarga === '' ? '-' : r.Precarga}</td>
                             <td>${r.NombreExamen}</td>
                         </tr>
                         `;
-                        $('#lstSaldos').append(contenido);  
                     });
                 }else{
                     contenido = `
@@ -607,8 +588,8 @@ $(document).ready(function () {
                             <td></td>
                         </tr>
                         `;
-                        $('#lstSaldos').append(contenido); 
-                }  
+                }
+                $('#lstSaldos').append(contenido); 
             });    
     }
 
