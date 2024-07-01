@@ -1119,3 +1119,7 @@ sudo chmod 777 -R /opt/lampp/htdocs/cmit/storage/app/public/facturas
 
 sudo mkdir /opt/lampp/htdocs/cmit/storage/app/public/examenescuenta
 sudo chmod 777 -R /opt/lampp/htdocs/cmit/storage/app/public/examenescuenta
+
+sudo chmod 777 -R /opt/lampp/htdocs/cmit/storage/logs/
+
+sudo chmod 777 -R /opt/lampp/htdocs/cmit/storage/framework/views/

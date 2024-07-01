@@ -163,7 +163,7 @@ trait Reportes
                 $pdf->Cell(60,3,substr($reporte->Apellido . " " . $reporte->Nombre,0,30),0,0,'L');$pdf->Ln();
             }
 
-            $listado = $this->detalladoExamenesCuenta($reporte->Id);
+            $listado = $this->detalladoExamenesCuenta($id);
 
             $pdf->Ln(6);$pdf->SetFont('Arial','BU',10);	
             $pdf->Cell(0,5,'TOTAL EXAMENES DEL PAGO:',0,0,'L');

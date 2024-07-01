@@ -20,17 +20,15 @@ class FacturaEmailJob implements ShouldQueue
     protected $subject;
     protected $content;
     protected $attachment;
-    protected $tipo;
     /**
      * Create a new job instance.
      */
-    public function __construct($correo, $subject, $content, $attachment, $tipo)
+    public function __construct($correo, $subject, $content, $attachment)
     {
         $this->correo = $correo;
         $this->subject = $subject;
         $this->content = $content;
         $this->attachment = $attachment;
-        $this->tipo = $tipo;
     }
 
     /**
@@ -42,7 +40,6 @@ class FacturaEmailJob implements ShouldQueue
             'subject' => $this->subject,
             'content' => $this->content,
             'attachment' => $this->attachment,
-            'tipo' => $this->tipo,
         ];
 
         $email = new FacturasMailable($data);

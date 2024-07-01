@@ -237,6 +237,7 @@ $(document).ready(function(){
                 preloader('on');
                 $.get(enviarDetalle, {Ids: ids, Tipo: 'enviar', Opcion: arrOpciones})
                     .done(function(response){
+                        console.log(response);
                         preloader('off');
                         response.forEach(function(item){
                             let tipoToastr = item.original.icon === 'success' ? 'success' : 'warning';
@@ -254,5 +255,5 @@ $(document).ready(function(){
     });
 
 
-    
+
 });

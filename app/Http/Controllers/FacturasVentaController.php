@@ -13,8 +13,14 @@ use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\DB;
 use App\Jobs\FacturaEmailJob;
 
+use Illuminate\Support\Facades\Mail;
+use App\Mail\FacturasMailable;
+use App\Models\Auditor;
+use App\Models\AuditoriaMailFacturacion;
+use App\Models\Cliente;
 use App\Traits\Reportes;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class FacturasVentaController extends Controller
 {
@@ -280,51 +286,63 @@ class FacturasVentaController extends Controller
         }
 
         $respuestas = [];
+        $destinatarios = [];
 
         foreach ($mergeArr as $dato) {
 
             if($dato['tipo'] == 1) {
 
-                $file = $this->generarDetalleFactura($dato['id'], null);
                 $correo = $this->getCorreo($dato['id'], $dato['tipo']);
                 $asunto = $this->AsuntoEmail($dato['id'], $dato['tipo']);
-
                 $cuerpo = [
                     'factura' => $this->nroFactura($dato['id'], $dato['tipo']),
-                    'fecha' => now()->format('d/m/Y'),
+                    'fecha' => FacturaDeVenta::find($dato['id'])->Fecha->format('d/m/Y'),
                     'cliente' => FacturaDeVenta::find($dato['id'])->empresa->RazonSocial ?? '-',
                     'paraEmpresa' => FacturaDeVenta::find($dato['id'])->empresa->ParaEmpresa ?? '-',
                 ];
+                $file = $this->generarDetalleFactura($dato['id'], null);
 
-                if($correo !==null) {
+                if(!empty($correo)) {
                     FacturaEmailJob::dispatch($correo, $asunto, $cuerpo, $file);
-                    $respuesta = ['msg' => 'Eldetalle de la factura enviada con éxito.', 'icon' => 'success'];
+                    $respuesta = ['original' => ['msg' => 'El detalle de la factura enviada con éxito.', 'icon' => 'success']];
+                    
+                    $this->registroEnvioCliente(FacturaDeVenta::find($dato['id'])->IdEmpresa);
+                    FacturaDeVenta::find($dato['id'])->update(['EnvioFacturaF' => now()->format('Y-m-d H:i:s')]);
+                
+                    Auditor::setAuditoria($dato['id'], 4, 9, Auth::user()->name);
+                    array_push($destinatarios, $correo);
+                }else{
+                    
+                    $respuesta = ['original' => ['msg' => 'El detalle de la factura no se ha enviado porque no existe correo informativo.', 'icon' => 'warning']];
                 }
-
-                $respuesta = ['msg' => 'El detalle de la factura no se ha enviado porque no existe correo informativo.', 'icon' => 'warning'];
 
             } elseif($dato['tipo'] == 2) {
                 
-                $file = $this->generarDetalleExaCuenta($dato['id'], null);
                 $correo = $this->getCorreo($dato['id'], $dato['tipo']);
                 $asunto = $this->AsuntoEmail($dato['id'], $dato['tipo']);
+                $fecha = ExamenCuenta::find($dato['id']);    
 
                 $cuerpo = [
                     'factura' => $this->nroFactura($dato['id'], $dato['tipo']),
-                    'fecha' => now()->format('d/m/Y'),
-                    'cliente' => FacturaDeVenta::find($dato['id'])->empresa->RazonSocial ?? '-',
-                    'paraEmpresa' => FacturaDeVenta::find($dato['id'])->empresa->ParaEmpresa ?? '-',
+                    'fecha' => Carbon::parse($fecha->Fecha)->format('d/m/Y'),
+                    'cliente' => ExamenCuenta::find($dato['id'])->empresa->RazonSocial ?? '-',
+                    'paraEmpresa' => ExamenCuenta::find($dato['id'])->empresa->ParaEmpresa ?? '-',
                 ];
+                $file = $this->generarDetalleExaCuenta($dato['id'], null);
                 
-                if($correo !==null) {
-                    FacturaEmailJob::dispatch($correo, $asunto, $cuerpo, $file);
-                    $respuesta = ['msg' => 'El detalle del examen a cuenta enviado con éxito.', 'icon' => 'success'];
-                }
+                if(!empty($correo)) {
 
-                $respuesta = ['msg' => 'El detalle del examen a cuenta no se ha enviado porque no existe correo informativo.', 'icon' => 'warning'];
+                    FacturaEmailJob::dispatch($correo, $asunto, $cuerpo, $file);
+                    $respuesta = ['original' => ['msg' => 'El detalle del examen a cuenta enviado con éxito.', 'icon' => 'success']];
+                }else{
+
+                    $respuesta = ['original' => ['msg' => 'El detalle del examen a cuenta no se ha enviado porque no existe correo informativo.', 'icon' => 'warning']];
+                }
             }
             $respuestas[] = $respuesta;
         }
+
+        $this->registroAuditoriaEnvioFactura($destinatarios);
         return response()->json($respuestas);
     }
 
@@ -491,7 +509,7 @@ class FacturasVentaController extends Controller
     private function getCorreo(int $id, int $who)
     {
         $result = $who === 1 ? FacturaDeVenta::with('empresa')->find($id) : ExamenCuenta::with('empresa')->find($id);
-        return $result->empresa->EMailInformes ?? null;        
+        return $result->empresa->EMailInformes ?? '';        
     }
 
     private function AsuntoEmail(int $id, int $who)
@@ -501,7 +519,9 @@ class FacturasVentaController extends Controller
         $datos = $who === 1 ? FacturaDeVenta::find($id) : ExamenCuenta::find($id);
         $factura = $datos->Tipo . '-' . sprintf('%04d', $datos->{$attr[$who][0]}) . '-' . sprintf('%08d', $datos->{$attr[$who][1]});
 
-        return "DETALLE DE FACTURA NRO: ".$factura." ".Carbon::parse($datos->Fecha)->format('d/m/Y')." ".$datos->empresa->ParaEmpresa;
+        $diferenciar = $who === 1 ? "FACTURA" : "EXAMEN A CUENTA";
+
+        return "DETALLE DE ".$diferenciar." NRO: ".$factura." ".Carbon::parse($datos->Fecha)->format('d/m/Y')." ".$datos->empresa->ParaEmpresa;
     }
 
     private function nroFactura(int $id, int $who)
@@ -512,4 +532,18 @@ class FacturasVentaController extends Controller
         return $datos->Tipo . '-' . sprintf('%04d', $datos->{$attr[$who][0]}) . '-' . sprintf('%08d', $datos->{$attr[$who][1]});
     }
 
+    public function registroEnvioCliente(int $idEmpresa)
+    {
+        return Cliente::find($idEmpresa)->update(['EnvioFactura' => now()->format('Y-m-d H:i:s')]);
+    }
+
+    private function registroAuditoriaEnvioFactura(array $destinatarios)
+    {
+        $destinatarios = implode(', ', $destinatarios);
+        return AuditoriaMailFacturacion::create([
+            'Id' => AuditoriaMailFacturacion::max('Id') + 1,
+            'Fecha' => now()->format('d-m-Y H:i:s'),
+            'Destinatarios' => $destinatarios
+        ]);
+    }
 }

@@ -56,7 +56,7 @@ class FacturasMailable extends Mailable
     {
         if(!empty($this->data['attachment'])) {
             return [
-                Attachment::fromPath(storage_path($this->data['attachment']))
+                Attachment::fromPath($this->data['attachment'])
             ];
         }
 
