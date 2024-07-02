@@ -248,7 +248,7 @@ $(document).ready(()=>{
             $('#SPago, #Tipo, #Sucursal, #NroFactura').val(" ");
         }
 
-        if(['B','C'].includes(pago)) {
+        if(['B','C', ''].includes(pago)) {
             
             $('.ultimasFacturadas, .examenesDisponibles').hide();
             $('#siguienteExCta').hide();
@@ -465,7 +465,7 @@ $(document).ready(()=>{
 
         $.get(getMapas, {empresa: empresa, art: art})
             .done(function(response){
-
+                console.log(response)
                 let mapas = response.mapas;
                 $('#mapas').empty().append('<option value="" selected>Elija un mapa...</option>');
                 
