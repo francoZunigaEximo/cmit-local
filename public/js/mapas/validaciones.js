@@ -11,7 +11,7 @@ $(document).ready(()=>{
         rules: {
             Nro: {
                 required: true,
-                maxlength: 12,
+                maxlength: 8,
                 noNegative: true,
             },
             IdART: {
@@ -35,7 +35,7 @@ $(document).ready(()=>{
         messages: {
             Nro: {
                 required: "Este campo es obligatorio",
-                maxlength: "El máximo de caracteres es de 12",
+                maxlength: "El máximo de caracteres es de 8",
             },
             IdART: {
                 required: "El ART es obligatorio",

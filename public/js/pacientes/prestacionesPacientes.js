@@ -462,10 +462,10 @@ $(document).ready(()=>{
     function getMap(x, y){
 
         let empresa = x, art = y;
-        console.table(empresa, art);
+ 
         $.get(getMapas, {empresa: empresa, art: art})
             .done(function(response){
-                console.log(response)
+   
                 let mapas = response.mapas;
                 $('#mapas').empty().append('<option value="" selected>Elija un mapa...</option>');
                 
@@ -698,7 +698,7 @@ $(document).ready(()=>{
 
         $.get(lstExClientes, {Id: id})
             .done(async function(response){
-                console.log("Aqui es: " + id)
+           
                 preloader('off');
                 let promises = response.map(async function(r) {
                     if(response && response.length) {
