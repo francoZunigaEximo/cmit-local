@@ -62,8 +62,8 @@ $(document).ready(()=>{
     }, "La fecha debe ser posterior a la fecha de hoy");
 
     $.validator.addMethod("noNegative", function(value, element) {
-        return this.optional(element) || (/^[a-zA-Z0-9]+$/.test(value) || parseFloat(value) >= 0);
-    }, "Solo se permiten letras o números no negativos");
+        return this.optional(element) || /^[a-zA-Z0-9]+$/.test(value);
+    }, "Solo se permiten letras o números sin caracteres especiales");
 
 
     $("#form-create").on("submit", function(event) {
