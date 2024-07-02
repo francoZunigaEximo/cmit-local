@@ -462,7 +462,7 @@ $(document).ready(()=>{
     function getMap(x, y){
 
         let empresa = x, art = y;
-
+        console.table(empresa, art);
         $.get(getMapas, {empresa: empresa, art: art})
             .done(function(response){
                 console.log(response)
