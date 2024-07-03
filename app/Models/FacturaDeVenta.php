@@ -46,4 +46,14 @@ class FacturaDeVenta extends Model
         return $this->hasMany(NotaCredito::class, 'IdFactura', 'Id');
     }
 
+    public function facturaresumen()
+    {
+        return $this->hasOne(FacturaResumen::class, 'IdFactura', 'Id');
+    }
+
+    public function prestacion()
+    {
+        return $this->hasOne(Prestacion::class, 'Id', 'IdPrestacion');
+    }
+
 }

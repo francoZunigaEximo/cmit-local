@@ -13,7 +13,7 @@ class Reporte extends Model
 
     protected $primaryKey = "Id";
 
-    public $fillable = [
+    protected $fillable = [
         'Id',
         'Nombre',
         'IdReporte',

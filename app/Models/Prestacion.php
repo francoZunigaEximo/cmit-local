@@ -106,4 +106,9 @@ class Prestacion extends Model
     {
         return $this->hasOne(ItemsFacturaVenta::class, 'IdPrestacion', 'Id');
     }
+
+    public function facturadeventa()
+    {
+        return $this->hasMany(FacturaDeVenta::class, 'IdPrestacion', 'Id');
+    }
 }

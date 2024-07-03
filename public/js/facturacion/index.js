@@ -255,5 +255,48 @@ $(document).ready(function(){
     });
 
 
+    $(document).on('click', '.finneg, .finnegART', function(e){
+        e.preventDefault();
+
+        let ids = [], arrOpciones = [], tipo = $(this).hasClass('finneg') ? 'E' : 'A';
+
+        $('input[name="Id_factura"]:checked').each(function() {
+            var opcion = $(this).attr('data-opcion');
+            arrOpciones.push(opcion);
+            ids.push($(this).val());
+        });
+
+        if(ids.length === 0){
+            toastr.warning('Debe seleccionar al menos una factura para poder generar el reporte de Finnegans');
+            return;
+        }
+
+        swal({
+            title: "¿Estas seguro que deseas generar el reporte de Finnegans?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar){
+
+                preloader('on');
+                $.get(reporteFing, {Ids: ids, Opcion: arrOpciones, Tipo: tipo})
+                    .done(function(response){
+                        preloader('off');
+
+                        let tipoToastr = response.estado === 'success' ? 'success' : 'warning';
+
+                        createFile('xlsx', response.filePath, 'FINNEG');
+                        toastr[tipoToastr](response.msg);
+                    })
+                    .fail(function(jqXHR){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
+                    })
+            }
+        });
+
+    });
 
 });

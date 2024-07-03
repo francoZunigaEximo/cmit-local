@@ -19,13 +19,14 @@ use App\Models\Auditor;
 use App\Models\AuditoriaMailFacturacion;
 use App\Models\Cliente;
 use App\Traits\Reportes;
+use App\Traits\ReporteExcel;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class FacturasVentaController extends Controller
 {
 
-    use CheckPermission, Reportes;
+    use CheckPermission, Reportes, ReporteExcel;
 
     const TITULOEMAIL = "";
 
@@ -344,6 +345,43 @@ class FacturasVentaController extends Controller
 
         $this->registroAuditoriaEnvioFactura($destinatarios);
         return response()->json($respuestas);
+    }
+
+    public function excel(Request $request)
+    {
+        $Ids = $request->Ids;
+        $Opcion = $request->Opcion;
+
+        if (!is_array($Ids)) {
+            $Ids = [$Ids];
+        }
+
+        if(count($Ids) !== count($Opcion)) {
+            return response()->json(['message' => 'Hay un error en la petición. No coinciden los rangos en el proceso de envio.'], 409);
+        }
+
+        $mergeArr = [];
+        $count = count($Opcion);
+
+        for ($i = 0; $i < $count; $i++) {
+            $mergeArr[] = [
+                'tipo' => $Opcion[$i],
+                'id' => $Ids[$i],
+            ];
+        }
+
+        $filtroIdFactura = [];
+        foreach ($mergeArr as $fila) {
+            if ($fila['tipo'] == 1) {
+                $filtroIdFactura[] = $fila['id'];
+            }
+        }
+
+        if(empty($filtroIdFactura)) {
+            return response()->json(['msg' => 'Se han filtrado, todos las facturas que no corresponden y ha quedado vacía la solicitud'], 409);
+        }
+
+        return $this->finnegans($filtroIdFactura, $request->Tipo);
     }
 
     private function facturas()

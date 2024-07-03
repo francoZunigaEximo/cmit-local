@@ -63,8 +63,8 @@
 
 <div class="row fondo-grisClaro mt-2 p-2">
     <div class="col-sm-6">
-        <button type="button" class="btn btn-sm botonGeneral"><i class="ri-file-excel-line"></i>Finneg</button>
-        <button type="button" class="btn btn-sm botonGeneral"><i class="ri-file-excel-line"></i>FinnegART</button>
+        <button type="button" class="btn btn-sm botonGeneral finneg"><i class="ri-file-excel-line"></i>Finneg</button>
+        <button type="button" class="btn btn-sm botonGeneral finnegART"><i class="ri-file-excel-line"></i>FinnegART</button>
     </div>
     <div class="col-sm-6 text-end">
         Filtros:  <button type="button" class="btn btn-sm botonGeneral Hoy">Hoy</button>
@@ -140,9 +140,10 @@
     const lnkFactura = "{{ route('facturas.edit', '__id__') }}";
     const lnkExamenCuenta = "{{ route('examenesCuenta.edit', '__id__') }}";
 
-    const eliminarFactura = "{{ route('facturas.delete')}}";
-    const exportar = "{{ route('facturas.export')}}";
-    const enviarDetalle = "{{ route('facturas.enviar')}}";
+    const eliminarFactura = "{{ route('facturas.delete') }}";
+    const exportar = "{{ route('facturas.export') }}";
+    const enviarDetalle = "{{ route('facturas.enviar') }}";
+    const reporteFing = "{{ route('facturas.excel') }}";
 </script>
 
 @push('styles')

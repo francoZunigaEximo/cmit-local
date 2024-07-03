@@ -22,4 +22,9 @@ class FacturaResumen extends Model
 
     public $timestamps = false;
 
+    public function facturadeventa()
+    {
+        return $this->hasOne(FacturaDeVenta::class, 'Id', 'IdFactura');
+    }
+
 }

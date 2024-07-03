@@ -1123,3 +1123,13 @@ sudo chmod 777 -R /opt/lampp/htdocs/cmit/storage/app/public/examenescuenta
 sudo chmod 777 -R /opt/lampp/htdocs/cmit/storage/logs/
 
 sudo chmod 777 -R /opt/lampp/htdocs/cmit/storage/framework/views/
+
+CREATE TABLE reportes_finneg (
+    Id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+    IdFinneg INT(11) NOT NULL,
+    IdFactura INT(11) NOT NULL,
+    cuit_cliente varchar(50) NOT NULL,
+    created_at timestamp NULL DEFAULT NULL,
+    updated_at timestamp NULL DEFAULT NULL,
+    PRIMARY KEY (Id)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8mb4_unicode_ci AUTO_INCREMENT=1000;
