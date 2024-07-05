@@ -153,7 +153,7 @@
                             <!--end col-->
                             <div class="col-lg-12">
                                 <div class="hstack gap-2 justify-content-end">
-                                    <button type="button" id="volverProfesionales" class="btn botonGeneral">Volver</button>
+                                    <a href="{{ route('profesionales.index') }}" class="btn botonGeneral">Volver</a>
                                     <button type="submit" class="saveProfesional btn botonGeneral">Guardar</button>
                                 </div>
                             </div>
@@ -416,7 +416,6 @@
     const TOKEN = "{{ csrf_token() }}";
     const checkDocumento = "{{ route('checkDocumento') }}";
     let editUrl = "{{ route('profesionales.edit', ['profesionale' => '__profesionale__']) }}";
-    const GOINDEX = "{{ route('profesionales.index') }}";
 </script>
 
 @push('styles')

@@ -1,13 +1,6 @@
 $(document).ready(function(){
 
-
     let resizing = false, startWidth, startHeight, startX, startY; //variables de ancho de imagen
-
-    toastr.options = {
-        closeButton: true,   
-        progressBar: true,    
-        timeOut: 3000,        
-    };
 
     $("#Apellido, #Nombre").on("input", function() {
         $(this).val($(this).val().toUpperCase());
@@ -39,15 +32,12 @@ $(document).ready(function(){
                 }
                 
             })
-            .fail(function(xhr){
-                console.error(xhr);
-                toastr.error("Ha ocurrido un error. Actualice la página y si el problema persiste, consulte con el administrador", "Error");
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;  
             });
-    });
-
-    $(document).on('click', '#volverProfesionales', function(){
-
-        window.location.href = GOINDEX;
     });
 
     $('#imagenModal').mousedown(function (e) {

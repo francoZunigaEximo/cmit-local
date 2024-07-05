@@ -15,17 +15,25 @@ use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Storage;
 
+use App\Traits\CheckPermission;
 class ProfesionalesController extends Controller
 {
-    use ObserverProfesionales, ObserverPacientes;
+    use ObserverProfesionales, ObserverPacientes, CheckPermission;
 
     public function index()
     {
+        if(!$this->hasPermission("profesionales_show")) {
+            abort(403);
+        }
+
         return view('layouts.profesionales.index');
     }
 
     public function search(Request $request): mixed
     {
+        if(!$this->hasPermission("profesionales_show")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
 
         $tipo = $request->tipo;
         $opciones = $request->opciones;
@@ -188,6 +196,9 @@ class ProfesionalesController extends Controller
         
     public function edit(Profesional $profesionale): mixed
     {
+        if(!$this->hasPermission("profesionales_edit")) {
+            return response()->json(['msg' => 'No tiene los permisos adecuados'], 403);
+        }
 
         return view('layouts.profesionales.edit', with([
             'profesionale' => $profesionale, 
@@ -343,39 +354,51 @@ class ProfesionalesController extends Controller
         return response()->json(['check' => $check]);
     }
 
-    public function opciones(Request $request):void
+    public function opciones(Request $request):mixed
     {
+        if(!$this->hasPermission("profesionales_edit")) {
+            return response()->json(['msg' => 'No tiene los permisos adecuados'], 200);
+        }
 
         $prof = Profesional::find($request->Id);
 
         if($prof)
         {
-
             $prof->T1 = $request->T1 === 'true' ? 1 : 0;
             $prof->T2 = $request->T2 === 'true' ? 1 : 0;
             $prof->T3 = $request->T3 === 'true' ? 1 : 0;
             $prof->T4 = $request->T4 === 'true' ? 1 : 0;
             $prof->Pago = $request->Pago === 'true' ? 1 : '';
-            $prof->proveedor->InfAdj = $request->InfAdj === 'true' ? 1 : 0;
+            $prof->InfAdj = $request->InfAdj === 'true' ? 1 : 0;
             $prof->TMP = $request->TMP;
             $prof->TLP = $request->TLP;
 
-            $prof->push();
+            $prof->save();
+
+            return response()->json(['msg' => 'Se han guardado los cambios de manera correcta'], 200);
+        }else{
+            return response()->json(['msg' => 'No se ha encontrado el identificador para guardar'], 409);
         }
     }
 
-    public function seguro(Request $request): void
+    public function seguro(Request $request): mixed
     {
+        if(!$this->hasPermission("profesionales_edit")) {
+            return response()->json(['msg' => 'No tiene los permisos adecuados para acceder'], 200);
+        }
 
         $prof = Profesional::find($request->Id);
 
         if($prof)
         {
-
             $prof->MN = $request->MN;
             $prof->MP = $request->MP;
             $prof->SeguroMP = $request->SeguroMP;
             $prof->save();
+        
+            return response()->json(['msg' => 'Se han guardado los datos'], 200);
+        }else{
+            return response()->json(['msg' => 'No se encontro el identificador'], 409);
         }
     }
 

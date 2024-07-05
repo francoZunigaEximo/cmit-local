@@ -1,11 +1,5 @@
 $(document).ready(()=> {
 
-    toastr.options = {
-        closeButton: true,   
-        progressBar: true,    
-        timeOut: 3000,        
-    };
-
     $('#especialidad').select2({
         placeholder: 'Seleccionar especialidad...',
         language: {
@@ -39,7 +33,6 @@ $(document).ready(()=> {
         minimumInputLength: 2
     });
 
-
     $(document).on("select2:open", () => {
         document.querySelector(".select2-container--open .select2-search__field").focus()
     });
@@ -47,20 +40,29 @@ $(document).ready(()=> {
     $(document).on('click', '.blockProfesional', function(e) {
         e.preventDefault();
 
-        if (confirm("¿Esta seguro que desea bloquear a este profesional?")){
-            
-            accion("bloquear", $(this).data('id'));
-        }
-        
+        swal({
+            title: "¿Esta seguro que desea bloquear a este profesional?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptat"]
+        }).then((confirmar) => {
+            if(confirmar){
+                accion("bloquear", $(this).data('id'));
+            }
+        });  
     });
 
     $(document).on('click', '.deleteProfesional', function(e) {
         e.preventDefault();
 
-        if (confirm("¿Esta seguro que desea eliminar a este profesional?")){
-
-            accion("eliminar", $(this).data('id'));
-        }
+        swal({
+            title: "¿Esta seguro que desea eliminar a este profesional?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) =>{
+            if(confirmar){
+                accion("eliminar", $(this).data('id'));
+            }
+        }); 
     });
 
     $(document).on('click', '.multipleBProf, .multipleDProf', function(e) {
@@ -77,9 +79,15 @@ $(document).ready(()=> {
             toastr.warning("Debe seleccionar al menos un profesional para la baja múltiple", "warning");
             return; 
         }
-        if (confirm("¿Esta seguro que desea realizar esta acción?")){
-            accion(capturado, ids);
-        }
+        swal({
+            title: "¿Esta seguro que desea realizar esta acción?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar){
+                accion(capturado, ids);
+            }
+        })
     });
 
    

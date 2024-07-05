@@ -156,7 +156,7 @@
                             <div class="col-lg-12">
                                 <div class="hstack gap-2 justify-content-end">
 
-                                    <button type="button" class="volverProfesionales btn botonGeneral">Volver</button>
+                                    <a href="{{ route('profesionales.index') }}" type="button" class="btn botonGeneral">Volver</a>
                                     <button type="submit" class="btn botonGeneral">Guardar</button>
                                 </div>
                             </div>
@@ -226,7 +226,7 @@
                                     </div>
                                     <div class="col-lg-3">
                                         <div class="form-check form-check-success mb-6">
-                                            <input class="form-check-input" type="checkbox" id="InfAdj" {{($profesionale->proveedor->InfAdj == 1 ? 'checked' : '') ?? ''}}>
+                                            <input class="form-check-input" type="checkbox" id="InfAdj" {{($profesionale->InfAdj == 1 ? 'checked' : '') ?? ''}}>
                                             <label class="form-check-label" for="InfAdj">
                                                 Informe Adjunto
                                             </label>
@@ -389,8 +389,8 @@
     const setPerfiles = "{{ route('setPerfiles') }}";
     const getPerfiles = "{{ route('getPerfiles') }}";
     const delPerfil = "{{ route('delPerfil') }}";
-    const opcionesProf = "{{ route('opcionesProf') }}";
-    const seguroProf = "{{ route('seguroProf') }}";
+    const opcionesProf = "{{ route('profesionales.opciones') }}";
+    const seguroProf = "{{ route('profesionales.seguro') }}";
     const GOINDEX = "{{ route('profesionales.index') }}";
     
 </script>

@@ -11,7 +11,8 @@ $(document).ready(function(){
         $(this).val($(this).val().toUpperCase());
     });
 
-    $(document).on('click', '.saveOpciones', function(){
+    $(document).on('click', '.saveOpciones', function(e){
+        e.preventDefault();
 
         let efector = $('#T1').prop('checked'),
             informador = $('#T2').prop('checked'),
@@ -23,37 +24,45 @@ $(document).ready(function(){
         let total = (efector ? 1 : 0) + (informador ? 1 : 0) + (evaluador ? 1 : 0) + (combinado ? 1 : 0),
             tlp = (total > 1) ? 1 : 0,
             tmp = (total > 1) ? 1 : 0;
-       
+        preloader('on');
         $.post(opcionesProf, {_token: TOKEN, T1: efector, T2: informador, T3: evaluador, T4: combinado, Pago: pago, InfAdj: informeAdj, TMP: tmp, TLP: tlp, Id: ID})
-            .done(function(){
-                toastr.success("Se han guardado los cambios de manera correcta", "Perfecto");
+            .done(function(response){
+                preloader('off');
+                toastr.success(response.msg);
                 $('#perfiles').empty().append('<option value="" selected>Elija una opción</option>');
                 perfiles(ID);
             })
-            .fail(function(xhr){
-                console.error(xhr);
-                toastr.error("Ha ocurrido un error. Actualice la página y si el problema persiste, consulte con el administrador", "Error");
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;  
             })
     });
 
-    $(document).on('click', '.saveSeguro', function(){
+    $(document).on('click', '.saveSeguro', function(e){
+        e.preventDefault();
 
         let mn = $('#MN').val(),
             mp = $('#MP').val(),
             seguroMP = $('#SeguroMP').val();
 
         if(mn < 0) {
-            toastr.warning("Matricula no acepta números negativos", "Atención");
+            toastr.warning("Matricula no acepta números negativos");
             return;
         }
-
+        preloader('on');
         $.post(seguroProf, {_token: TOKEN, MN: mn, MP: mp, SeguroMP: seguroMP, Id: ID})
-            .done(function(){
-                swal('Perfecto', 'Se han guardado los cambios de manera correcta', 'success');
+            
+            .done(function(response){
+                preloader('off');
+                toastr.success(response.msg);
             })
-            .fail(function(xhr){
-                console.error(xhr);
-                toastr.error("Ha ocurrido un error. Actualice la página y si el problema persiste, consulte con el administrador", "Error");
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
             })
 
     });
@@ -108,10 +117,6 @@ $(document).ready(function(){
         
     });
 
-    $(document).on('click', '.volverProfesionales', function(){
-
-        window.location.href = GOINDEX;
-    });
 
     $('#imagenModal').mousedown(function (e) {
         resizing = true;

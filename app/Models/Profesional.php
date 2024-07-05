@@ -38,7 +38,8 @@ class Profesional extends Model
         'TMP',
         'Pago',
         'wImage',
-        'hImage'
+        'hImage',
+        'InfAdj'
     ];
 
     public $timestamps = false;
