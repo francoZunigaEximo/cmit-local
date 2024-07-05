@@ -771,11 +771,11 @@ BEGIN
     FROM itemsprestaciones i 
     INNER JOIN prestaciones pre ON i.IdPrestacion = pre.Id AND (pre.Anulado = 0)
     INNER JOIN examenes exa ON i.IdExamen = exa.Id AND (exa.Informe = 1) 
-    INNER JOIN proveedores pro ON exa.IdProveedor2 = pro.Id AND (especialidad IS NULL OR pro.Id = especialidad) AND (pro.InfAdj = 1)
+    INNER JOIN proveedores pro ON exa.IdProveedor2 = pro.Id AND (especialidad IS NULL OR pro.Id = especialidad)
     INNER JOIN clientes cli ON pre.IdEmpresa = cli.Id AND (empresa IS NULL OR cli.Id = empresa)
     INNER JOIN clientes cli2 ON pre.IdART = cli2.Id AND (art IS NULL OR cli2.Id = art)
     INNER JOIN pacientes pa ON pre.IdPaciente = pa.Id 
-    INNER JOIN profesionales prof ON i.IdProfesional2 = prof.Id AND (informador IS NULL OR prof.Id = informador)
+    INNER JOIN profesionales prof ON i.IdProfesional2 = prof.Id AND (informador IS NULL OR prof.Id = informador) AND (prof.InfAdj = 1)
     WHERE i.Fecha BETWEEN fechaDesde AND fechaHasta
     AND NOT i.Id = 0 
     AND i.CInfo IN (0, 1) 
@@ -1133,3 +1133,17 @@ CREATE TABLE reportes_finneg (
     updated_at timestamp NULL DEFAULT NULL,
     PRIMARY KEY (Id)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8mb4_unicode_ci AUTO_INCREMENT=1000;
+
+
+INSERT INTO permisos(slug, descripcion) VALUES
+("profesionales_show","Visualización de profesional"),
+("profesionales_add","Agregar profesional"),
+("profesionales_edit","Editar profesional"),
+("profesionales_delete","Eliminar profesional");
+
+INSERT INTO rol_permisos(rol_id, permiso_id) VALUES
+(3,65),(3,66),(3,67),(3,68);
+
+ALTER TABLE profesionales ADD InfAdj INT DEFAULT 0 NOT NULL;
+
+UPDATE proveedores SET InfAdj = 1;

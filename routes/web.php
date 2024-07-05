@@ -182,8 +182,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('getPerfiles', [ProfesionalesController::class, 'getPerfil'])->name('getPerfiles');
     Route::post('delPerfil', [ProfesionalesController::class, 'delPerfil'])->name('delPerfil');
     Route::post('checkDocumento', [ProfesionalesController::class, 'checkDocumento'])->name('checkDocumento');
-    Route::post('opcionesProf', [ProfesionalesController::class, 'opciones'])->name('opcionesProf');
-    Route::post('seguroProf', [ProfesionalesController::class, 'seguro'])->name('seguroProf');
+    Route::post('profesionales/opcion/save', [ProfesionalesController::class, 'opciones'])->name('profesionales.opciones');
+    Route::post('profesionales/seguro/save', [ProfesionalesController::class, 'seguro'])->name('profesionales.seguro');
     Route::get('choisePerfil', [ProfesionalesController::class, 'choisePerfil'])->name('choisePerfil');
     Route::get('choiseEspecialidad', [ProfesionalesController::class, 'choiseEspecialidad'])->name('choiseEspecialidad');
     Route::post('savePrestador', [ProfesionalesController::class, 'savePrestador'])->name('savePrestador');
