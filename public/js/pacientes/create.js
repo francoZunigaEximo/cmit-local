@@ -74,9 +74,4 @@ $(document).ready(function(){
         });
     });
 
-    $('#volverIndex').click(function(){
-
-        window.location.href = GOINDEX;
-    });
-
 });

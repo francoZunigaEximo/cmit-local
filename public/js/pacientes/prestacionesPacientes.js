@@ -155,16 +155,19 @@ $(document).ready(()=>{
                         },3000);
                         
                     },
-                    error: function(xhr){
-                        
-                        toastr.error('No se puedieron almacenar los datos. Consulte con el administrador', 'Error');
-                        console.error(xhr);
+                    error: function(jqXHR){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return; 
                     }
                 });
             },
-            error: function(xhr){
-                toastr.error('Ha habido un error el la validación del cliente para generar la prestación. Consulte con su administrador', 'Error');
-                console.error(xhr);
+            error: function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return; 
             }   
         });
     });
@@ -182,53 +185,75 @@ $(document).ready(()=>{
     });
 
     //Bloqueo de prestación
-    $(document).on('click', '#blockPrestPaciente', function() {
+    $(document).on('click', '#blockPrestPaciente', function(e) {
+        e.preventDefault();
         let Id = $(this).data('idprest');
 
-        $.ajax({
-            url: blockPrestacion,
-            type: 'GET',
-            data: {
-                Id: Id,
-            },
-            success: function() {
-                toastr.success('Se ha bloqueado la prestación del paciente de manera correcta. Puede que tarde unos minutos en cargar el cambio.', 'Bloqueo procesado');
-                cambioEstadoBlock();
-            },
-            error: function(xhr) {
-                toastr.error('No se ha podido bloquear la prestación. Consulte con el administrador');
-                console.error(xhr);
+        swal({
+            title: "¿Esta seguro que desea bloquear la prestación?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar) {
+                preloader('on');
+                $.ajax({
+                    url: blockPrestacion,
+                    type: 'GET',
+                    data: {
+                        Id: Id,
+                    },
+                    success: function(response) {
+                        preloader('off');
+                        toastr.success(response.msg);
+                        cambioEstadoBlock();
+                    },
+                    error: function(jqXHR) {
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return; 
+                    }
+                });
+
             }
         });
-        
-        cambioEstadoBlock();      
+
+           
     });
 
     //Baja logica de prestación
     $(document).on('click', '#downPrestPaciente', function(e) {
         e.preventDefault();
         let Id = $(this).data('idprest');
-        if(confirm("¿Esta seguro que desea eliminar la prestación?")) {
-
-            $.ajax({
-                url: downPrestaActiva,
-                type: 'GET',
-                data: {
-                    Id: Id,
-                },
-                success: function() {
-                    toastr.success('Se ha dado de baja la prestación del paciente de manera correcta. Puede que tarde unos minutos en cargar el cambio.');
-                    cambioEstadoDown();
-                    getListado(null);
-                },
-                error: function(xhr){
-                    toastr.error('No se ha podido dar de baja la prestación. Consulte con el administrador');
-                    console.error(xhr);
-                }
-            });
-
-        }
         
+        swal({
+            title: "¿Esta seguro que desea eliminar la prestación?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar) {
+                preloader('on');
+                $.ajax({
+                    url: downPrestaActiva,
+                    type: 'GET',
+                    data: {
+                        Id: Id,
+                    },
+                    success: function(response) {
+                        preloader('off');
+                        toastr.success(response.msg);
+                        cambioEstadoDown();
+                        getListado(null);
+                    },
+                    error: function(xhr){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return; 
+                    }
+                });
+            }
+        }); 
     });
 
     $(document).on('keydown', function(event) {

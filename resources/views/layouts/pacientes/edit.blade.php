@@ -152,8 +152,8 @@
                     <div class="row listjs-table" id="customerList">
 
                         <div class="col-sm-6 small">
-                            Imprimir&nbsp;<button type="button" id="excel" class="btn iconGeneral" title="Generar reporte en Excel">
-                            <i class="ri-file-excel-line"></i>
+                            <button type="button" id="excel" class="btn btn-sm botonGeneral" title="Generar reporte XLSX">
+                            <i class="ri-file-excel-line"></i>&nbsp;Excel
                             </button>
                         </div>
                         <div class="col-sm-6">
@@ -845,38 +845,44 @@ const getTipoPrestacion = "{{ route('getTipoPrestacion') }}";
 const TOKEN = "{{ csrf_token() }}";
 
 const checkObs = "{{ route('checkObs') }}";
+const excelPrestaciones = "{{ route('excelPrestaciones') }}";
+
 $('#excel').click(function(e) {
     e.preventDefault();
 
-    ids     = "";
-    filters = "";
-    length  = $('input[name="Id"]:checked').length;
+    var ids = [];
+    var filters = "";
+    var length = $('input[name="Id"]:checked').length;
 
-    $('input[name="Id"]:checked').each(function(index,element) {
-        
-        if($(this).val() == "on"){
-            return;
-        }
-
-        if(index == (length - 1)){
-            ids += $(this).val();    
-        }
-        else {
-            ids += $(this).val() + ",";    
-        }
+    $('input[name="Id"]:checked').each(function() {
+        ids.push($(this).val());  
     });
 
-    if (!ids){
+    if (ids.length === 0) { 
         toastr.info('No existen registros para exportar', 'Atención');
         return;
     }
 
-    var exportExcel = "{{ route('excelPrestaciones', ['ids' =>  'idsContent', 'filters' => 'filtersContent']) }}";
-    exportExcel     = exportExcel.replace('idsContent', ids);
-    exportExcel     = exportExcel.replace('filtersContent', filters);
-    exportExcel     = exportExcel.replaceAll('amp;', '');
-    window.location = exportExcel;
+    swal({
+        title: "¿Estas seguro que deseas exportar las prestaciones seleccionadas?",
+        icon: "warning",
+        buttons: ["Cancelar", "Aceptar"]
+    }).then((confirmar) => {
+        if(confirmar) {
+
+            var exportExcel = "{{ route('excelPrestaciones', ['ids' =>  'idsContent', 'filters' => 'filtersContent', 'tipo' => 'tipoContent']) }}";
+            exportExcel     = exportExcel.replace('idsContent', ids);
+            exportExcel     = exportExcel.replace('filtersContent', filters);
+            exportExcel     = exportExcel.replace('tipoContent', "basico");
+            exportExcel     = exportExcel.replaceAll('amp;', '');
+            window.location = exportExcel;
+
+        }
+    });
+
+    
 });
+
 
 </script>
 

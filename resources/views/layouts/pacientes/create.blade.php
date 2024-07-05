@@ -125,7 +125,7 @@
                 </div>
 
                 <div class="col-12 box-information mt-2 text-center">
-                    <button type="button" id="volverIndex" class="btn botonGeneral">Volver</button>
+                    <a href="{{ route('pacientes.index') }}" class="btn botonGeneral">Volver</a>
                     <button type="submit" id="btnRegistrar" class="btn botonGeneral">Registrar</button>
                 </div>
             </div> 
@@ -163,7 +163,6 @@
 const verify = "{{ route('verify') }}";
 const getLocalidades = "{{ route('getLocalidades') }}";
 const getCodigoPostal = "{{ route('getCodigoPostal') }}";
-const GOINDEX = "{{ route('pacientes.index') }}";
 
 //Extras
 const TOKEN = "{{ csrf_token() }}";

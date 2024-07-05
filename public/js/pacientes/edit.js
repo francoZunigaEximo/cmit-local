@@ -28,9 +28,7 @@ $(document).ready(function(){
         });
     });
 
-    $(document).on('click', '#btnVolverPacientes', function(){
-        window.location.href = GOINDEX;
-    });
+ 
 
     $('#localidad').change(function() {
         let localidadId = $(this).val();
