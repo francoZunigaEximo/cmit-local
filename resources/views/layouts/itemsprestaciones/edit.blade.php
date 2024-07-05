@@ -179,7 +179,7 @@
                     <div class="input-group input-group-sm mb-2">
 
                         <span class="input-group-text">Adjunto</span>
-                        <input type="text" style="{{ ($itemsprestacione->examenes->proveedor2->InfAdj === 1 && $adjuntoInformador === 0 ? 'color: red' : ($itemsprestacione->examenes->proveedor2->InfAdj === 1 && $adjuntoInformador === 1 ? 'color: green' : '')) }}" class="form-control" id="EstadoInf" name="EstadoInf" value="{{ ($itemsprestacione->examenes->proveedor2->InfAdj === 0 ? 'No lleva Adjuntos' : ($itemsprestacione->examenes->proveedor2->InfAdj === 1 && $adjuntoInformador === 0 ? 'Pendiente' : ($itemsprestacione->examenes->proveedor2->InfAdj === 1 && $adjuntoInformador === 1 ? 'Adjuntado' : '-'))) }}" @readonly(true)>
+                        <input type="text" style="{{ ($itemsprestacione->profesionales2->InfAdj === 1 && $adjuntoInformador === 0 ? 'color: red' : ($itemsprestacione->profesionales2->InfAdj === 1 && $adjuntoInformador === 1 ? 'color: green' : '')) }}" class="form-control" id="EstadoInf" name="EstadoInf" value="{{ ($itemsprestacione->profesionales2->InfAdj === 0 ? 'No lleva Adjuntos' : ($itemsprestacione->profesionales2->InfAdj === 1 && $adjuntoInformador === 0 ? 'Pendiente' : ($itemsprestacione->profesionales2->InfAdj === 1 && $adjuntoInformador === 1 ? 'Adjuntado' : '-'))) }}" @readonly(true)>
                     </div>
                 </div>
             </div>
@@ -368,7 +368,7 @@
                     <div class="mt-3">
                         <label for="Descripcion" class="form-label">Descripción</label>
                         <textarea class="form-control" name="DescripcionI" id="DescripcionI" rows="5"></textarea>
-                        <input type="hidden" id="multiE" value="{{ $itemsprestacione->examenes->proveedor2->MultiE == 1 && $itemsprestacione->examenes->proveedor2->InfAdj == 1 ? 'success' : 'fail'}}">
+                        <input type="hidden" id="multiE" value="{{ $itemsprestacione->examenes->proveedor2->MultiE == 1 && $itemsprestacione->profesionales2->InfAdj == 1 ? 'success' : 'fail'}}">
                     </div>
                 </form> 
             </div>
