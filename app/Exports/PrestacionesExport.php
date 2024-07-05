@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use App\Models\Prestacion;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -126,6 +127,24 @@ class PrestacionesExport implements FromCollection,WithHeadings
                     'Obs. Privadas',
                 ];
                 break;
+                case 'basico':
+                    return [
+                        'Fecha',
+                        'Nro',
+                        'Tipo',
+                        'Empresa',
+                        'ParaEmpresa',
+                        'ART',
+                        'Estado',
+                        'eEnv',
+                        'INC',
+                        'AUS',
+                        'FOR',
+                        'DEV',
+                        'FP',
+                        'FC'
+                    ];
+                    break;
         }
     }
     
@@ -143,6 +162,54 @@ class PrestacionesExport implements FromCollection,WithHeadings
             case 'completo':
                 $prestacionesExcel = $this->getInformeCompleto();
                 break;
+            case 'basico':
+                $prestacionesExcel = $this->getInformeBasico();
+                break;
+        }
+
+        return $prestacionesExcel;
+    }
+
+    public function getInformeBasico()
+    {
+        $prestacionesExcel = collect();
+        $prestaciones = $this->getBasico();
+
+        foreach ($prestaciones as $prestacion) {
+
+            $prestacionExcel = new stdClass();
+
+            $prestacionExcel->fecha             = Carbon::parse($prestacion->Fecha)->format('d-m-Y') ?? '-';
+            $prestacionExcel->prestacion        = $prestacion->Id ?? '-';
+            $prestacionExcel->tipoPrestacion    = $prestacion->TipoPrestacion ?? '-';
+            $prestacionExcel->empresa           = $prestacion->empresa->RazonSocial ?? '-';
+            $prestacionExcel->paraEmpresa       = $prestacion->empresa->ParaEmpresa ?? '-';
+            $prestacionExcel->art               = $prestacion->art->RazonSocial ?? '-';
+            $prestacionExcel->estado            = $prestacion->Estado === 1 ? 'Habilitado' : 'Inhabilitado';
+            $prestacionExcel->eEnviado          = $prestacion->eEnviado === 1 ? "Si" : "No";
+            $prestacionExcel->incompleto        = $prestacion->Incompleto === 1 ? "Si" : "No";
+            $prestacionExcel->ausente           = $prestacion->Ausente === 1 ? "Si" : "No";
+            $prestacionExcel->forma             = $prestacion->Forma === 1 ? "Si" : "No";
+            $prestacionExcel->devolucion        = $prestacion->Devol === 1 ? "Si" : "No";
+            
+            switch ($prestacion->Pago) {
+                case "B":
+                    $prestacionExcel->formaPago = 'Ctdo.';
+                    break;
+                case "C":
+                    $prestacionExcel->formaPago = 'CCorriente';
+                    break;
+                case "P":
+                    $prestacionExcel->formaPago = 'ExCuenta';
+                    break;
+                default:
+                    $prestacionExcel->formaPago = '-';
+                    break;
+            }
+
+            $prestacionExcel->facturacion       = $prestacion->Facturado === 1 ? "Si" : "No";
+
+            $prestacionesExcel->push($prestacionExcel);
         }
 
         return $prestacionesExcel;
@@ -540,5 +607,10 @@ class PrestacionesExport implements FromCollection,WithHeadings
         }
 
         return $query->get();
+    }
+
+    private function getBasico()
+    {
+        return Prestacion::with(['empresa','art'])->whereIn('Id', $this->ids)->orderBy('Id', 'DESC')->get();
     }
 }
