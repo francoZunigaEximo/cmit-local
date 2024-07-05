@@ -43,11 +43,12 @@ $(document).ready(()=>{
         document.querySelector(".select2-container--open .select2-search__field").focus()
     });
 
-    $(document).on('click', '.addPaquete', function(){
+    $(document).on('click', '.addPaquete', function(e){
+        e.preventDefault();
         
         let paquete = $('#paquetes').val();
         
-        if(paquete === '' || paquete === null){
+        if([null, undefined, ''].includes(paquete)){
             toastr.warning("Debe seleccionar un paquete para poder añadirlo en su totalidad", "Atención");
             return;
         }
@@ -415,7 +416,7 @@ $(document).ready(()=>{
             toastr.warning("Debe seleccionar un examen para poder añadirlo a la lista", "Atención");
             return;
         }
-
+        
         saveExamen(id);
     });
 

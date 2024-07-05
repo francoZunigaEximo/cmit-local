@@ -13,13 +13,18 @@ use Carbon\Carbon;
 use Illuminate\Support\Str;
 use DateTime;
 use DateInterval;
+use App\Traits\CheckPermission;
 
 class OrdenesExamenController extends Controller
 {
-    use ObserverItemsPrestaciones;
+    use ObserverItemsPrestaciones, CheckPermission;
 
     public function index()
     {
+        if(!$this->hasPermission("etapas_show")) {
+            abort(403);
+        }
+
         return view('layouts.ordenesExamen.index');
     }
 

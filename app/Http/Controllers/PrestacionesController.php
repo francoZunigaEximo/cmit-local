@@ -21,6 +21,7 @@ use stdClass;
 use Illuminate\Support\Facades\Auth;
 use App\Traits\CheckPermission;
 
+
 class PrestacionesController extends Controller
 {
 
@@ -582,9 +583,9 @@ class PrestacionesController extends Controller
 
     public function exportExcel(Request $request)
     {
-        if (!$this->hasPermission("prestaciones_report")) {
+        /*if (!$this->hasPermission("prestaciones_report")) {
             return response()->json(['msg' => 'No tienes permisos'], 403);
-        }
+        }*/
 
         $ids        = $request->ids ? explode(",", $request->ids) : []; 
         $filters    = $request->filters ? explode(",", $request->filters) : [];

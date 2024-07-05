@@ -1,11 +1,5 @@
 $(document).ready(function(){
 
-    toastr.options = {
-        closeButton: true,   
-        progressBar: true,    
-        timeOut: 3000,        
-    };
-
     $('#fechaHasta, #fechaHastaAsignados, #fechaHastaAdjunto, #fechaHastaInf, #fechaHastaAsignadosInf, #fechaHastaAdjuntoInf, #fechaHastaPres, #fechaHastaEEnviar').val(fechaNow(null, "-", 0)), $('#efectorPres').val('pendientes'),$('#tipoPres').val('todos');
     
     let especialidadVal = $('#especialidad').val(),
@@ -351,9 +345,6 @@ $(document).ready(function(){
             });
 
         }
-        
-
-
     });
 
     $(document).on("select2:open", () => {
@@ -623,16 +614,26 @@ $(document).ready(function(){
             toastr.warning('No hay examenes para exportar');
             return;
         }
+
+        swal({
+            title: "¿Estas seguro que deseas generar el reporte de  examenes/prestaciones?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar){
+                preloader('on');
+                $.get(exportarOrdExa, {Id: ids})
+                    .done(function(response){
+                        preloader('off');
+                        createFile(response.filePath);
+                        toastr.success("Se esta generando el reporte");
+                    })
+            }
+        });
         
-        if(confirm("¿Estas seguro que deseas generar el reporte de  examenes/prestaciones?")) {
-            preloader('on');
-            $.get(exportarOrdExa, {Id: ids})
-                .done(function(response){
-                    preloader('off');
-                    createFile(response.filePath);
-                    toastr.success("Se esta generando el reporte");
-                })
-        }
+
+            
+        
     });
  
     function createFile(array){
