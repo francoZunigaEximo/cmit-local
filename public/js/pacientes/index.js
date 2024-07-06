@@ -82,7 +82,9 @@ $(document).ready(function(){
                     },
                     success: function(response) {
                         preloader('off');
+                        let tipoToastr = response.estado === 'success' ? 'success' : 'warning';
                         createFile("excel", response.filePath, generarCodigoAleatorio() + "_reporte");
+                        toastr[tipoToastr](response.msg);
                         return;
                     },                    
                     error: function(jqXHR) {

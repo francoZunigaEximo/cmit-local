@@ -11,6 +11,8 @@ use illuminate\Support\Str;
 
 trait ReporteExcel 
 {
+    private static $RUTATEMPORAL = "app/public/";
+
     public function finnegans(array $ids, string $tipo)
     {
         $spreadsheet = new Spreadsheet();
@@ -100,17 +102,70 @@ trait ReporteExcel
         }
 
         // Generar un nombre aleatorio para el archivo
-        $name = Str::random(10).'.xlsx';
-
-        // Guardar el archivo en la carpeta de almacenamiento
-        $filePath = storage_path('app/public/'.$name);
-
-        $writer = new Xlsx($spreadsheet);
-        $writer->save($filePath);
-        chmod($filePath, 0777);
-
-        // Devolver la ruta del archivo generado
-        return response()->json(['filePath' => $filePath, 'msg' => 'Se ha generado correctamente el reporte de Finnegans', 'estado' => 'success']);   
+        $name = "finnegans_".Str::random(10).'.xlsx';
+        return $this->generarArchivo($spreadsheet, $name); 
     }
+
+    public function listadoPaciente($ids)
+    {
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+
+        $columnas = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'M', 'N'];
+
+        foreach($columnas as $columna){
+            $sheet->getColumnDimension($columna)->setAutoSize(true);
+        }
+
+        $sheet->setCellValue('A1', 'Numero');
+        $sheet->setCellValue('B1', 'Apellido');
+        $sheet->setCellValue('C1', 'Nombre');
+        $sheet->setCellValue('D1', 'CUIL/CUIT');
+        $sheet->setCellValue('E1', 'Documento');
+        $sheet->setCellValue('F1', 'Nacionalidad');
+        $sheet->setCellValue('G1', 'Fecha de Nacimiento');
+        $sheet->setCellValue('H1', 'Direccion');
+        $sheet->setCellValue('I1', 'Localidad');
+        $sheet->setCellValue('J1', 'Provincia');
+        $sheet->setCellValue('K1', 'Email');
+        $sheet->setCellValue('M1', 'Antecedentes');
+        $sheet->setCellValue('N1', 'Observaciones');
+
+        $fila = 2;
+        foreach($ids as $paciente){
+            $sheet->setCellValue('A'.$fila, $paciente->Id);
+            $sheet->setCellValue('B'.$fila, $paciente->Apellido);
+            $sheet->setCellValue('C'.$fila, $paciente->Nombre);
+            $sheet->setCellValue('D'.$fila, $paciente->Identificacion);
+            $sheet->setCellValue('E'.$fila, $paciente->Documento);
+            $sheet->setCellValue('F'.$fila, $paciente->Nacionalidad);
+            $sheet->setCellValue('G'.$fila, $paciente->FechaNacimiento);
+            $sheet->setCellValue('H'.$fila, $paciente->Direccion);
+            $sheet->setCellValue('I'.$fila, $paciente->localidad->Nombre);
+            $sheet->setCellValue('J'.$fila, $paciente->Provincia);
+            $sheet->setCellValue('K'.$fila, $paciente->EMail);
+            $sheet->setCellValue('H'.$fila, $paciente->Antecedentes);
+            $sheet->setCellValue('H'.$fila, $paciente->Observaciones);
+            $fila++;
+        }
+
+        // Generar un nombre aleatorio para el archivo
+        $name = 'pacientes_'.Str::random(6).'.xlsx';
+        return $this->generarArchivo($spreadsheet, $name);
+    }
+
+    private function generarArchivo($excel, $nombre)
+    {
+          // Guardar el archivo en la carpeta de almacenamiento
+          $filePath = storage_path(self::$RUTATEMPORAL.$nombre);
+ 
+          $writer = new Xlsx($excel);
+          $writer->save($filePath);
+          chmod($filePath, 0777);
+ 
+          return response()->json(['filePath' => $filePath, 'msg' => 'Se ha generado correctamente el reporte ', 'estado' => 'success']);
+    }
+    
 
 }

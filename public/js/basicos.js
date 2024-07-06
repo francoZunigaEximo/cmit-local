@@ -105,7 +105,7 @@ function createFile(tipo, array, name){
         fetch(fullPath, {
             method: 'DELETE'
         }).then(response => {
-            // Verificar si la eliminación fue exitosa
+
             if (response.ok) {
                 console.log('Archivo eliminado correctamente.');
             } else {

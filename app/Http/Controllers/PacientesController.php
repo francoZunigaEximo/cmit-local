@@ -11,16 +11,13 @@ use App\Traits\ObserverPacientes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Yajra\DataTables\DataTables;
 use App\Traits\CheckPermission;
-use Illuminate\Support\Facades\Storage;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use App\Traits\ReporteExcel;
 
 class PacientesController extends Controller
 {
-    use Components, ObserverPacientes, CheckPermission;
+    use Components, ObserverPacientes, CheckPermission, ReporteExcel;
 
     /**
      * Display a listing of the resource.
@@ -33,7 +30,6 @@ class PacientesController extends Controller
 
     public function search(Request $request)
     {
-
         if(!$this->hasPermission("pacientes_show")) {
             return response()->json(['msg' => 'No tiene permisos'], 403);
         }
@@ -67,17 +63,13 @@ class PacientesController extends Controller
             ->where('pacientes.Estado', 1)
             ->orderBy('pacientes.Id', 'DESC');
                 
-
             return Datatables::of($query)->make(true);
-
         }
-
         return view('layouts.pacientes.index');
     }
 
     public function searchPrestPacientes(Request $request): mixed
     {
-
         if(!$this->hasPermission("pacientes_show")) {
             return response()->json(['msg' => 'No tiene permisos'], 403);
         }
@@ -113,7 +105,6 @@ class PacientesController extends Controller
 
             return $this->condicionesBasicas($query, $paciente);
         });
-
         return response()->json(['pacientes' => $prestacion]);
     }
 
@@ -229,7 +220,6 @@ class PacientesController extends Controller
         }
 
         return back();
-
     }
 
     public function verifyDocument(Request $request)
@@ -284,59 +274,11 @@ class PacientesController extends Controller
 
         $pacientes = Paciente::with('localidad')->where('Estado', 1)->whereIn('Id', $ids)->get();
 
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-        $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
-
-        $columnas = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'M', 'N'];
-
-        foreach($columnas as $columna){
-            $sheet->getColumnDimension($columna)->setAutoSize(true);
+        if($pacientes) {
+            return $this->listadoPaciente($pacientes);
+        }else{
+            return response()->json(['msg' => 'No se ha podido generar el archivo'], 409);
         }
-
-        $sheet->setCellValue('A1', 'Numero');
-        $sheet->setCellValue('B1', 'Apellido');
-        $sheet->setCellValue('C1', 'Nombre');
-        $sheet->setCellValue('D1', 'CUIL/CUIT');
-        $sheet->setCellValue('E1', 'Documento');
-        $sheet->setCellValue('F1', 'Nacionalidad');
-        $sheet->setCellValue('G1', 'Fecha de Nacimiento');
-        $sheet->setCellValue('H1', 'Direccion');
-        $sheet->setCellValue('I1', 'Localidad');
-        $sheet->setCellValue('J1', 'Provincia');
-        $sheet->setCellValue('K1', 'Email');
-        $sheet->setCellValue('M1', 'Antecedentes');
-        $sheet->setCellValue('N1', 'Observaciones');
-
-        $fila = 2;
-        foreach($pacientes as $paciente){
-            $sheet->setCellValue('A'.$fila, $paciente->Id);
-            $sheet->setCellValue('B'.$fila, $paciente->Apellido);
-            $sheet->setCellValue('C'.$fila, $paciente->Nombre);
-            $sheet->setCellValue('D'.$fila, $paciente->Identificacion);
-            $sheet->setCellValue('E'.$fila, $paciente->Documento);
-            $sheet->setCellValue('F'.$fila, $paciente->Nacionalidad);
-            $sheet->setCellValue('G'.$fila, $paciente->FechaNacimiento);
-            $sheet->setCellValue('H'.$fila, $paciente->Direccion);
-            $sheet->setCellValue('I'.$fila, $paciente->localidad->Nombre);
-            $sheet->setCellValue('J'.$fila, $paciente->Provincia);
-            $sheet->setCellValue('K'.$fila, $paciente->EMail);
-            $sheet->setCellValue('H'.$fila, $paciente->Antecedentes);
-            $sheet->setCellValue('H'.$fila, $paciente->Observaciones);
-            $fila++;
-        }
-
-         // Generar un nombre aleatorio para el archivo
-         $name = 'pacientes_'.Str::random(6).'.xlsx';
-
-         // Guardar el archivo en la carpeta de almacenamiento
-         $filePath = storage_path('app/public/temp/'.$name);
- 
-         $writer = new Xlsx($spreadsheet);
-         $writer->save($filePath);
-         chmod($filePath, 0777);
-
-         return response()->json(['filePath' => $filePath]);
     }
 
     //Obtenemos listado pacientes
@@ -360,11 +302,8 @@ class PacientesController extends Controller
                     'text' => $paciente->Apellido.' '.$paciente->Nombre.' | '.$paciente->Documento,
                 ];
             }
-
             return $resultados;
-
         });
-
         return response()->json(['pacientes' => $resultados]);
     }
 
@@ -373,7 +312,6 @@ class PacientesController extends Controller
         $paciente = Paciente::find($request->Id);
         $paciente->Foto = 'foto-default.png';
         $paciente->save();
-        
     }
 
     private function queryBasico()
@@ -410,7 +348,6 @@ class PacientesController extends Controller
                         ->where('prestaciones.IdPaciente', '=', $paciente)
                         ->orderBy('prestaciones.Id', 'DESC')
                         ->paginate(500);
-
         return $resultado;
     }
 }
