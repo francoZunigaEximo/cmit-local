@@ -101,6 +101,20 @@ function createFile(tipo, array, name){
     document.body.appendChild(link);
     link.click();
     setTimeout(function() {
+
+        fetch(fullPath, {
+            method: 'DELETE'
+        }).then(response => {
+            // Verificar si la eliminación fue exitosa
+            if (response.ok) {
+                console.log('Archivo eliminado correctamente.');
+            } else {
+                console.error('Error al intentar eliminar el archivo.');
+            }
+        }).catch(error => {
+            console.error('Error en la solicitud de eliminación:', error);
+        });
+
         document.body.removeChild(link);
     }, 100);
 }

@@ -14,6 +14,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Yajra\DataTables\DataTables;
 use App\Traits\CheckPermission;
+use Illuminate\Support\Facades\Storage;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class PacientesController extends Controller
 {
@@ -279,65 +282,61 @@ class PacientesController extends Controller
             $ids = [$ids];
         }
 
-        $pacientes = DB::table('pacientes')
-            ->join('localidades', 'pacientes.IdLocalidad', '=', 'localidades.Id')
-            ->where('pacientes.Estado', 1)
-            ->whereIn('pacientes.Id', $ids)
-            ->select(
-                'pacientes.Id', 
-                'pacientes.Apellido', 
-                'pacientes.Nombre', 
-                'pacientes.Identificacion', 
-                'pacientes.Documento', 
-                'pacientes.Nacionalidad', 
-                'pacientes.FechaNacimiento', 
-                'pacientes.LugarNacimiento', 
-                'pacientes.EstadoCivil', 
-                'pacientes.ObsEstadoCivil', 
-                'pacientes.Hijos', 
-                'pacientes.Direccion', 
-                'localidades.Nombre as Localidad', 
-                'pacientes.Provincia', 
-                'pacientes.EMail', 
-                'pacientes.ObsEMail', 
-                'pacientes.Antecedentes', 
-                'pacientes.Observaciones')
-            ->get();
+        $pacientes = Paciente::with('localidad')->where('Estado', 1)->whereIn('Id', $ids)->get();
 
-        $excel = "Numero,Apellido,Nombre,CUIL/CUIT,Documento,Nacionalidad,Fecha de Nacimiento, Lugar de Nacimiento, Estado Civil, Observacion de Estado Civil, Hijos, Direccion, Localidad, Provincia, Email, Observacion Email, Antecedentes, Observaciones\n";
-        foreach ($pacientes as $row) {
-            $numero = $row->Id ?? '-';
-            $apellido = $row->Apellido ?? '-';
-            $nombre = $row->Nombre ?? '-';
-            $identificacion = $row->Identificacion ?? '-';
-            $documento = $row->Documento ?? '-';
-            $nacionalidad = $row->Nacionalidad ?? '-';
-            $fechaNacimiento = $row->FechaNacimiento ?? '-';
-            $lugarNacimiento = $row->LugarNacimiento ?? '-';
-            $estadoCivil = $row->EstadoCivil ?? '-';
-            $obsEstadoCivil = $row->ObsEstadoCivil ?? '-';
-            $hijos = $row->Hijos ?? '-';
-            $direccion = $row->Direccion ?? '-';
-            $localidad = $row->Localidad ?? '-';
-            $provincia = $row->Provincia ?? '-';
-            $email = $row->EMail ?? '-';
-            $obsEmail = $row->ObsEMail ?? '-';
-            $antecedentes = $row->Antecedentes ?? '-';
-            $observaciones = $row->Observaciones ?? '-';
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
 
-            $excel .= "$numero,$apellido,$nombre,$identificacion,$documento,$nacionalidad,$fechaNacimiento,$lugarNacimiento,$estadoCivil,$obsEstadoCivil,$hijos,$direccion,$localidad,$provincia,$email,$obsEmail,$antecedentes,$observaciones\n";
+        $columnas = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'M', 'N'];
+
+        foreach($columnas as $columna){
+            $sheet->getColumnDimension($columna)->setAutoSize(true);
         }
 
-        // Generar un nombre aleatorio para el archivo
-        $name = Str::random(10).'.xlsx';
+        $sheet->setCellValue('A1', 'Numero');
+        $sheet->setCellValue('B1', 'Apellido');
+        $sheet->setCellValue('C1', 'Nombre');
+        $sheet->setCellValue('D1', 'CUIL/CUIT');
+        $sheet->setCellValue('E1', 'Documento');
+        $sheet->setCellValue('F1', 'Nacionalidad');
+        $sheet->setCellValue('G1', 'Fecha de Nacimiento');
+        $sheet->setCellValue('H1', 'Direccion');
+        $sheet->setCellValue('I1', 'Localidad');
+        $sheet->setCellValue('J1', 'Provincia');
+        $sheet->setCellValue('K1', 'Email');
+        $sheet->setCellValue('M1', 'Antecedentes');
+        $sheet->setCellValue('N1', 'Observaciones');
 
-        // Guardar el archivo en la carpeta de almacenamiento
-        $filePath = storage_path('app/public/'.$name);
-        file_put_contents($filePath, $excel);
-        chmod($filePath, 0777);
+        $fila = 2;
+        foreach($pacientes as $paciente){
+            $sheet->setCellValue('A'.$fila, $paciente->Id);
+            $sheet->setCellValue('B'.$fila, $paciente->Apellido);
+            $sheet->setCellValue('C'.$fila, $paciente->Nombre);
+            $sheet->setCellValue('D'.$fila, $paciente->Identificacion);
+            $sheet->setCellValue('E'.$fila, $paciente->Documento);
+            $sheet->setCellValue('F'.$fila, $paciente->Nacionalidad);
+            $sheet->setCellValue('G'.$fila, $paciente->FechaNacimiento);
+            $sheet->setCellValue('H'.$fila, $paciente->Direccion);
+            $sheet->setCellValue('I'.$fila, $paciente->localidad->Nombre);
+            $sheet->setCellValue('J'.$fila, $paciente->Provincia);
+            $sheet->setCellValue('K'.$fila, $paciente->EMail);
+            $sheet->setCellValue('H'.$fila, $paciente->Antecedentes);
+            $sheet->setCellValue('H'.$fila, $paciente->Observaciones);
+            $fila++;
+        }
 
-        // Devolver la ruta del archivo generado
-        return response()->json(['filePath' => $filePath]);
+         // Generar un nombre aleatorio para el archivo
+         $name = 'pacientes_'.Str::random(6).'.xlsx';
+
+         // Guardar el archivo en la carpeta de almacenamiento
+         $filePath = storage_path('app/public/temp/'.$name);
+ 
+         $writer = new Xlsx($spreadsheet);
+         $writer->save($filePath);
+         chmod($filePath, 0777);
+
+         return response()->json(['filePath' => $filePath]);
     }
 
     //Obtenemos listado pacientes

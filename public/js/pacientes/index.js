@@ -63,7 +63,7 @@ $(document).ready(function(){
         });
 
         if (ids.length === 0) {
-            toastr.error('Debes seleccionar al menos un paciente para exportar.');
+            toastr.warning('Debes seleccionar al menos un paciente para exportar.');
             return;
         }
 
@@ -85,7 +85,7 @@ $(document).ready(function(){
                         createFile("excel", response.filePath, generarCodigoAleatorio() + "_reporte");
                         return;
                     },                    
-                    error: function(xhr) {
+                    error: function(jqXHR) {
                         preloader('off');
                         let errorData = JSON.parse(jqXHR.responseText);
                         checkError(jqXHR.status, errorData.msg);
