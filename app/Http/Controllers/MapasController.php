@@ -488,13 +488,22 @@ class MapasController extends Controller
     {
         $remitos = Prestacion::where('NroCEE', $request->Id)->get();
 
-        foreach ($remitos as $remito) {
-            $remito->Entregado = 1;
-            $remito->FechaEntrega = $request->FechaE;
-            $remito->save();
+        if($remitos) {
+
+            foreach ($remitos as $remito) {
+                $remito->Entregado = 1;
+                $remito->FechaEntrega = $request->FechaE;
+                $remito->save();
+            }
+    
+            constanciase::obsRemito($request->Id, $request->Obs);
+            return response()->json(['msg' => 'Se han registrado las fechas de entrega en los remitos correspondientes'], 200);
+
+        }else{
+            return response()->json(['msg' => 'Ha ocurrido un error y no se ha registrado la fecha'], 500);
         }
 
-        constanciase::obsRemito($request->Id, $request->Obs);
+        
     }
 
     public function getPacienteMapa(Request $request)
@@ -875,6 +884,9 @@ class MapasController extends Controller
             }
 
             Constanciase::obsRemito($request->Id, '');
+            return response()->json(['msg' => 'Se ha revertido la entrega correctamente'], 200);
+        }else{
+            return response()->json(['msg' => 'Ha ocurrido un error y no se ha podido revertir la entrega'], 500);
         }
     }
 

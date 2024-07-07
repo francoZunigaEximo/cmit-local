@@ -142,8 +142,8 @@ $(document).ready(()=>{
         $("#remitoObs").val("");
     });
 
-    $(document).on('click', '.confirmarEntrega', function(event){
-        event.preventDefault();
+    $(document).on('click', '.confirmarEntrega', function(e){
+        e.preventDefault();
     
         $(this).prop('disabled', true);
     
@@ -151,29 +151,27 @@ $(document).ready(()=>{
             remitoObs = $('#remitoObs').val(),
             remitoFechaE = $('#remitoFechaE').val();
 
-        if (nroRemito == 0 || nroRemito == '') {
-            toastr.warning('No se puede realizar la entrega porque no posee numero de remito. Debe Finalizar la Prestación.', 'Atención');
+        if(['', null, 0].includes(nroRemito)) {
+            toastr.warning('No se puede realizar la entrega porque no posee numero de remito. Debe Finalizar la Prestación.');
             $(this).prop('disabled', false);
             return;
         }
     
-        if(remitoFechaE === '' || remitoFechaE === null){
-            toastr.warning('Debe especificar una fecha de entrega', 'Atención');
-    
+        if(['', null].includes(remitoFechaE)) {
+            toastr.warning('Debe especificar una fecha de entrega');
             $(this).prop('disabled', false);
             return;
         }
 
-        if(remitoObs === '' || remitoObs === null){
-            toastr.warning('Debe escribir una observación', 'Atención');
-    
+        if(['', null].includes(remitoObs)){
+            toastr.warning('Debe escribir una observación');
             $(this).prop('disabled', false);
             return;
         }
 
         $.post(saveRemitos, {_token: TOKEN, Obs: remitoObs, FechaE: remitoFechaE, Id: nroRemito})
-            .done(function(){
-                toastr.success('Se han registrado las fechas de entrega en los remitos correspondientes', 'Perfecto');
+            .done(function(response){
+                toastr.success(response.msg);
                 setTimeout(()=>{
                     $('#remitoObs').val('');
                     $('#entregarModal').modal('hide');
@@ -191,18 +189,28 @@ $(document).ready(()=>{
     });
     
     
-    $(document).on('click', '.revertirEntrega', function(){
+    $(document).on('click', '.revertirEntrega', function(e){
+        e.preventDefault();
+
         let remito = $(this).data('remito');
         $(this).prop('disabled', true);
 
+        preloader('on');
         $.post(reverseRemito, {_token: TOKEN, Id: remito})
-            .done(function(){   
-                toastr.success('Se revertirá la entrega en unos segundos...', 'Perfecto');
+            .done(function(response){
+                preloader('off');   
+                toastr.success(response.msg);
                 setTimeout(()=>{
                     listarRemitos(IDMAPA);
                     $('.revertirEntrega').prop('disabled', false);
                 }, 3000);  
             })
+            .fail(function(jqXHR){
+                preloader('off');            
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;  
+            });
     });
 
     $(document).on('click', '.buscarPresMapa', function() {
