@@ -12,12 +12,12 @@ use App\Models\ConstanciaseIt;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Yajra\DataTables\DataTables;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Traits\ObserverMapas;
 use Illuminate\Support\Facades\Auth;
 use App\Traits\CheckPermission;
+use App\Traits\ReporteExcel;
 
 
 class MapasController extends Controller
@@ -25,7 +25,7 @@ class MapasController extends Controller
 
     const TBLMAPA = 5; // cod de Mapas en la tabla auditariatablas
 
-    use ObserverMapas, CheckPermission;
+    use ObserverMapas, CheckPermission, ReporteExcel;
 
     public function index()
     {
@@ -399,40 +399,13 @@ class MapasController extends Controller
                 $mapas->whereIn('mapas.Id', $ids);
             });
 
-            $result = $mapas->groupBy('mapas.Id')->orderBy('prestaciones.Id', 'DESC')->get();
+            $result = $mapas->orderBy('prestaciones.Id', 'DESC')->get();
 
             if ($result->isEmpty()) {
                 return response()->json(['msg' => 'No se encontraron datos para exportar. Hay un conflicto'], 409);
             }
-            
-            $csv = "Id,Nro,Art,Empresa,Fecha Corte,Fecha Entrega,Inactivo,Nro de Remito, eEnviado,Cerrado,Entregado,Finalizado,Apellido y Nombre, Observación\n";
 
-            foreach ($result as $row) {
-                $Id = $row->Id ?? '-';
-                $Nro = $row->Nro ?? '-';
-                $Art = $row->Art ?? '-';
-                $Empresa = $row->Empresa ?? '-';
-                $Fecha = $row->Fecha ?? '-';
-                $FechaE = $row->FechaE ?? '-';
-                $Inactivo = ($row->Inactivo === 0 ? 'No' : ($row->Inactivo === 1 ? 'Sí' : '-')) ?? '-';
-                $nroRemito = ($row->NroCEE === '' || $row->NroCEE === null ? '-' : $row->NroCEE);
-                $eEnviado = ($row->eEnviado === 0 ? 'No' : ($row->eEnviado === 1 ? 'Sí' : '-')) ?? '-';
-                $Cerrado = ($row->Cerrado === 0 ? 'No' : ($row->Cerrado === 1 ? 'Sí' : '-')) ?? '-';
-                $Entregado = ($row->Entregado === 0 ? 'No' : ($row->Entregado === 1 ? 'Sí' : '-')) ?? '-';
-                $Finalizado = ($row->Finalizado === 0 ? 'No' : ($row->Finalizado === 1 ? 'Sí' : '-')) ?? '-';
-                $NombreCompleto = $row->Apellido.' '.$row->Nombre;
-                $Obs = str_replace(["\r", "\n", ','], ' ', $row->Obs);
-
-                $csv .= "$Id,$Nro,$Art,$Empresa,$Fecha,$FechaE,$Inactivo,$nroRemito,$eEnviado,$Cerrado,$Entregado,$Finalizado,$NombreCompleto,$Obs\n";
-            }
-
-            // Generar un nombre aleatorio para el archivo
-            $name = Str::random(10).'.csv';
-
-            // Guardar el archivo en la carpeta de almacenamiento
-            $filePath = storage_path('app/public/'.$name);
-            file_put_contents($filePath, $csv);
-            chmod($filePath, 0777);
+            return $this->listadoMapa($result);
 
         } elseif($request->archivo === 'pdf'){
 
@@ -451,10 +424,12 @@ class MapasController extends Controller
             
             $filePath = $path . $fileName;
             chmod($filePath, 0777);
+
+            return response()->json(['filePath' => $filePath, 'msg' => 'Reporte generado']);
         }
 
-        // Devolver la ruta del archivo generado
-        return response()->json(['filePath' => $filePath, 'msg' => 'Reporte generado']);
+
+        
     }
 
     //Obtenemos listado mapas

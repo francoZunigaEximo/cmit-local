@@ -42,26 +42,9 @@ $(document).ready(()=>{
                     },
                     success: function(response) {
                         preloader('off');
-                        let filePath = response.filePath;
-                        let pattern = /storage(.*)/;
-                        let match = filePath.match(pattern);
-                        let path = match ? match[1] : '';
-    
-                        let url = new URL(location.href);
-                        let baseUrl = url.origin; // Obtener la URL base (por ejemplo, http://localhost)
-    
-                        let fullPath = baseUrl + '/cmit/storage' + path;
-    
-                        let link = document.createElement('a');
-                        link.href = fullPath;
-                        link.download = "mapas.csv";
-                        link.style.display = 'none';
-    
-                        document.body.appendChild(link);
-                        link.click();
-                        setTimeout(function() {
-                            document.body.removeChild(link);
-                        }, 100);
+                        createFile("excel", response.filePath, generarCodigoAleatorio() + "_reporte");
+                        toastr.success(response.msg);
+                        return;
                     },
                     error: function(jqXHR) {
                         preloader('off');

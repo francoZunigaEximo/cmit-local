@@ -39,8 +39,9 @@ $(document).ready(()=>{
     });
     
     //Exportar
-    $(document).on('click', '.excel, .pdf', function(){
-        
+    $(document).on('click', '.excel, .pdf', function(e){
+        e.preventDefault();
+
         let ids = [];
         ids.push($(this).data('remito'));
 
@@ -75,7 +76,7 @@ $(document).ready(()=>{
                     type: "GET",
                     data: arr[tipo].datos,
                     success: function(response) {
-                        createFile(arr[tipo].archivo, response.filePath);
+                        createFile(arr[tipo].archivo, response.filePath, generarCodigoAleatorio + "_reporte");
                         toastr.success(response.msg);
                     },
                     error: function(jqXHR) {
@@ -89,7 +90,8 @@ $(document).ready(()=>{
         });
     });
 
-    $('#updateMapa').click(function(){
+    $('#updateMapa').click(function(e){
+        e.preventDefault();
 
         let Nro = $('#Nro').val(),
             IdART =$('#IdART').val(),
@@ -130,8 +132,8 @@ $(document).ready(()=>{
         blockExcedente(e);
     });
 
-    $(document).on('click', '.entregarRemito', function(event){
-        event.preventDefault();
+    $(document).on('click', '.entregarRemito', function(e){
+        e.preventDefault();
 
         let remito = $(this).data('remito');
         $('#IdRemito').text(remito);

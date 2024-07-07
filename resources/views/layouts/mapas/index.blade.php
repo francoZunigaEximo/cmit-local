@@ -149,7 +149,7 @@
     //Rutas
     const SEARCH = "{{ route('searchMapas') }}"
     const routeMapas = "{{ route('deleteMapa', ['mapa' => '']) }}";
-    const fileExport = "{{ route('fileExport') }}";
+    const fileExport = "{{ route('mapas.exportar') }}";
     const deleteMapa = "{{ route('deleteMapa') }}";
     const getClientes = "{{ route('getClientes') }}";
     //Extras

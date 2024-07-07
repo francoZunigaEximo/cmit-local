@@ -146,6 +146,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('searchLocalidad', [LocalidadController::class, 'searchLocalidad'])->name('searchLocalidad');
 
     //Rutas de Mapas
+    Route::get('/mapas/excel', [MapasController::class, 'export'])->name('mapas.exportar');
     Route::resource('mapas', MapasController::class);
     Route::post('updateMapa', [MapasController::class, 'updateMapa'])->name('updateMapa');
     Route::post('deleteMapa', [MapasController::class, 'delete'])->name('deleteMapa');
@@ -170,7 +171,6 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('checkMapa', [MapasController::class, 'checker'])->name('checkMapa');
     Route::post('changeEstado', [MapasController::class, 'changeEstado'])->name('changeEstado');
     Route::get('enviarMapa', [MapasController::class, 'geteEnviar'])->name('enviarMapa');
-    Route::get('fileExport', [MapasController::class, 'export'])->name('fileExport');
     Route::post('reverseRemito', [MapasController::class, 'reverseRemito'])->name('reverseRemito');
     
     //Rutas de Profesionales

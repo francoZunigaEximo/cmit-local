@@ -653,7 +653,7 @@
 <script>
 //Rutas
 const getClientes = "{{ route('getClientes') }}";
-const fileExport = "{{ route('fileExport') }}";
+const fileExport = "{{ route('mapas.exportar') }}";
 const saveRemitos = "{{ route('saveRemitos') }}";
 const updateMapa = "{{ route('updateMapa') }}";
 const searchMapaPres = "{{ route('searchMapaPres') }}";

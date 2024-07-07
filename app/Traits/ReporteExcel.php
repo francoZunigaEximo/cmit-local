@@ -195,6 +195,57 @@ trait ReporteExcel
 
     }
 
+    public function listadoMapa($mapas)
+    {
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+
+        $columnas = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N'];
+
+        foreach($columnas as $columna){
+            $sheet->getColumnDimension($columna)->setAutoSize(true);
+        }
+
+        $sheet->setCellValue('A1', 'Id');
+        $sheet->setCellValue('B1', 'Nro');
+        $sheet->setCellValue('C1', 'Art');
+        $sheet->setCellValue('D1', 'Empresa');
+        $sheet->setCellValue('E1', 'Fecha Corte');
+        $sheet->setCellValue('F1', 'Fecha Entrega');
+        $sheet->setCellValue('G1', 'Inactivo');
+        $sheet->setCellValue('H1', 'Nro de Remito');
+        $sheet->setCellValue('I1', 'eEnviado');
+        $sheet->setCellValue('J1', 'Cerrado');
+        $sheet->setCellValue('K1', 'Entregado');
+        $sheet->setCellValue('L1', 'Finalizado');
+        $sheet->setCellValue('M1', 'Apellido y Nombre');
+        $sheet->setCellValue('N1', 'Observación');
+
+        $fila = 2;
+        foreach($mapas as $mapa){
+            $sheet->setCellValue('A'.$fila, $mapa->Id);
+            $sheet->setCellValue('B'.$fila, $mapa->Nro);
+            $sheet->setCellValue('C'.$fila, $mapa->Art);
+            $sheet->setCellValue('D'.$fila, $mapa->Empresa);
+            $sheet->setCellValue('E'.$fila, $mapa->Fecha);
+            $sheet->setCellValue('F'.$fila, $mapa->FechaE);
+            $sheet->setCellValue('G'.$fila, $mapa->Inactivo === 0 ? "No" : "Si");
+            $sheet->setCellValue('H'.$fila, $mapa->NroCEE);
+            $sheet->setCellValue('I'.$fila, $mapa->eEnviado);
+            $sheet->setCellValue('J'.$fila, $mapa->Cerrado);
+            $sheet->setCellValue('K'.$fila, $mapa->Entregado);
+            $sheet->setCellValue('L'.$fila, $mapa->Finalizado);
+            $sheet->setCellValue('M'.$fila, $mapa->Apellido.' '.$mapa->Nombre);
+            $sheet->setCellValue('N'.$fila, $mapa->Obs);
+            $fila++;
+        }
+
+        $name = 'mapas'.Str::random(6).'.xlsx';
+        return $this->generarArchivo($spreadsheet, $name);
+
+    }
+
     private function generarArchivo($excel, $nombre)
     {
           // Guardar el archivo en la carpeta de almacenamiento
