@@ -8,14 +8,14 @@ use App\Models\Localidad;
 use App\Traits\ObserverClientes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Str;
 use Yajra\DataTables\DataTables;
 use App\Traits\CheckPermission;
+use App\Traits\ReporteExcel;
 
 class ClientesController extends Controller
 {
 
-    use ObserverClientes, CheckPermission;
+    use ObserverClientes, CheckPermission, ReporteExcel;
 
     public function index(Request $request)
     {
@@ -368,46 +368,13 @@ class ClientesController extends Controller
             $ids = [$ids];
         }
 
-        $clientes = Cliente::join('provincias', 'provincias.Id', '=', 'clientes.Provincia')
-            ->join('localidades', 'localidades.Id', '=', 'clientes.IdLocalidad')
-            ->whereIn('clientes.Id', $ids)
-            ->select(
-                'clientes.Id as Id',
-                'clientes.RazonSocial as RazonSocial',
-                'clientes.Identificacion as Identificacion',
-                'clientes.CondicionIva as CondicionIva',
-                'clientes.ParaEmpresa as ParaEmpresa',
-                'clientes.Direccion as Direccion',
-                'provincias.Nombre as NomProvincia',
-                'localidades.Nombre as NomLocalidad',
-                'clientes.CP as CodigoPostal')
-            ->get();
+        $clientes = Cliente::with(['localidad'])->whereIn('Id', $ids)->get();
 
-        $csv = "Numero,Razon Social,Identificacion,Condicion Iva,Para Empresa,Dirección,Provincia,Localidad,Código Postal\n";
-        foreach ($clientes as $row) {
-            $numero = $row->Id ?? '-';
-            $razonSocial = $row->RazonSocial ?? '-';
-            $identificacion = $row->Identificacion ?? '-';
-            $condicionIva = $row->CondicionIva ?? '-';
-            $paraEmpresa = $row->ParaEmpresa ?? '-';
-            $direccion = $row->Direccion ?? '-';
-            $provincia = Provincia::where('Id', $row->NomProvincia)->first()->nombre ?? $row->NomProvincia ?? '-';
-            $localidad = $row->NomLocalidad ?? '-';
-            $codigoPostal = $row->CodigoPostal ?? '-';
-
-            $csv .= "$numero,$razonSocial,$identificacion,$condicionIva,$paraEmpresa,$direccion,$provincia,$localidad,$codigoPostal\n";
+        if($clientes) {
+            return $this->listadoCliente($clientes);
+        }else{
+            return response()->json(['msg' => 'Error al generar el reporte'], 409);
         }
-
-        // Generar un nombre aleatorio para el archivo
-        $name = Str::random(10).'.csv';
-
-        // Guardar el archivo en la carpeta de almacenamiento
-        $filePath = storage_path('app/public/'.$name);
-        file_put_contents($filePath, $csv);
-        chmod($filePath, 0777);
-
-        // Devolver la ruta del archivo generado
-        return response()->json(['filePath' => $filePath]);
     }
 
     public function checkParaEmpresa(Request $request)

@@ -52,6 +52,7 @@ class AppServiceProvider extends ServiceProvider
 
         $this->gateAccess("paciente_report");
         $this->gateAccess("prestaciones_report");
+        $this->gateAccess("clientes_export");
 
         $this->gateAccess('boton_usuarios');
 

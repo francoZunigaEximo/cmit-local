@@ -106,7 +106,7 @@ trait ReporteExcel
         return $this->generarArchivo($spreadsheet, $name); 
     }
 
-    public function listadoPaciente($ids)
+    public function listadoPaciente($pacientes)
     {
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -133,7 +133,7 @@ trait ReporteExcel
         $sheet->setCellValue('N1', 'Observaciones');
 
         $fila = 2;
-        foreach($ids as $paciente){
+        foreach($pacientes as $paciente){
             $sheet->setCellValue('A'.$fila, $paciente->Id);
             $sheet->setCellValue('B'.$fila, $paciente->Apellido);
             $sheet->setCellValue('C'.$fila, $paciente->Nombre);
@@ -150,9 +150,49 @@ trait ReporteExcel
             $fila++;
         }
 
-        // Generar un nombre aleatorio para el archivo
         $name = 'pacientes_'.Str::random(6).'.xlsx';
         return $this->generarArchivo($spreadsheet, $name);
+    }
+
+    public function listadoCliente($clientes)
+    {
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+
+        $columnas = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
+
+        foreach($columnas as $columna){
+            $sheet->getColumnDimension($columna)->setAutoSize(true);
+        }
+
+        $sheet->setCellValue('A1', 'Numero');
+        $sheet->setCellValue('B1', 'Razón Social');
+        $sheet->setCellValue('C1', 'Identificación');
+        $sheet->setCellValue('D1', 'Condición IVA');
+        $sheet->setCellValue('E1', 'Para Empresa');
+        $sheet->setCellValue('F1', 'Dirección');
+        $sheet->setCellValue('G1', 'Provincia');
+        $sheet->setCellValue('H1', 'Localidad');
+        $sheet->setCellValue('I1', 'CódigoPostal');
+
+        $fila = 2;
+        foreach($clientes as $cliente){
+            $sheet->setCellValue('A'.$fila, $cliente->Id);
+            $sheet->setCellValue('B'.$fila, $cliente->RazonSocial);
+            $sheet->setCellValue('C'.$fila, $cliente->Identificacion);
+            $sheet->setCellValue('D'.$fila, $cliente->CondicionIva);
+            $sheet->setCellValue('E'.$fila, $cliente->ParaEmpresa);
+            $sheet->setCellValue('F'.$fila, $cliente->Direccion);
+            $sheet->setCellValue('G'.$fila, $cliente->Provincia);
+            $sheet->setCellValue('H'.$fila, $cliente->localidad->Nombre);
+            $sheet->setCellValue('I'.$fila, $cliente->localidad->CP);
+            $fila++;
+        }
+
+        $name = 'clientes'.Str::random(6).'.xlsx';
+        return $this->generarArchivo($spreadsheet, $name);
+
     }
 
     private function generarArchivo($excel, $nombre)
