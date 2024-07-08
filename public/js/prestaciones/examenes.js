@@ -533,7 +533,7 @@ $(document).ready(()=>{
                 Id: ID,
             },
             success: function(result) {
-                preloader('off');
+                
                 let estado = result.respuesta;
                 let examenes = result.examenes;
             
@@ -550,7 +550,7 @@ $(document).ready(()=>{
                             tipo: 'listado'
                         },
                         success: function(response){
-                            
+                            preloader('off');
                             let registros = response.examenes;
 
                             registros.forEach(function(examen) {

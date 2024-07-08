@@ -202,6 +202,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('lstProveedores', [ProveedoresController::class, 'lstProveedores'])->name('lstProveedores');
 
     //Rutas de ItemsPrestaciones
+    Route::post('itemsprestaciones/lista-examenes', [ItemPrestacionesController::class, 'getExamenes'])->name('itemsprestaciones.listadoexamenes');
     Route::resource('itemsprestaciones', ItemPrestacionesController::class);
     Route::post('updateItem', [ItemPrestacionesController::class, 'updateItem'])->name('updateItem');
     Route::post('updateAsignado', [ItemPrestacionesController::class, 'updateAsignado'])->name('updateAsignado');
@@ -212,7 +213,6 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('deleteIdAdjunto', [ItemPrestacionesController::class, 'deleteIdAdjunto'])->name('deleteIdAdjunto');
     Route::post('replaceIdAdjunto', [ItemPrestacionesController::class, 'replaceIdAdjunto'])->name('replaceIdAdjunto');
     Route::post('deleteItemExamen', [ItemPrestacionesController::class, 'deleteEx'])->name('deleteItemExamen');
-    Route::post('getItemExamenes', [ItemPrestacionesController::class, 'getExamenes'])->name('getItemExamenes');
     Route::post('saveItemExamenes', [ItemPrestacionesController::class, 'save'])->name('saveItemExamenes');
     Route::get('checkItemExamen', [ItemPrestacionesController::class, 'check'])->name('checkItemExamen');
     Route::post('itemExamen', [ItemPrestacionesController::class, 'itemExamen'])->name('itemExamen');
