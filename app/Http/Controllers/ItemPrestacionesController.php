@@ -211,7 +211,7 @@ class ItemPrestacionesController extends Controller
     public function updateAsignado(Request $request)
     {
 
-        $item = ItemPrestacion::find($request->Id);
+        $item = ItemPrestacion::with('profesionales2')->find($request->Id);
 
         if($item)
         {
@@ -224,10 +224,18 @@ class ItemPrestacionesController extends Controller
             
             $item->FechaAsignado = (($request->fecha == '0000-00-00' ||  $request->fecha == '0') ? '' : now()->format('Y-m-d'));
             $item->save();
+
+            $item->refresh();
+            $item->CInf = ($item->profesional2->InfAdj === 1 || ArchivoInformador::where('IdEntidad', $item->Id)->exists()) ? 3 : 1;
+            $item->save();
+            
+            return response()->json(['msg' => 'Se ha actualizado el efector de manera correcta'], 200);
+        }else{
+            return response()->json(['msg' => 'No se ha podido actualizar el efector'], 500);
         }
     }
 
-    public function updateAdjunto(Request $request):void 
+    public function updateAdjunto(Request $request):mixed 
     {
 
         $adjunto = ItemPrestacion::find($request->Id);
@@ -236,6 +244,10 @@ class ItemPrestacionesController extends Controller
         {   
             $adjunto->CAdj = $request->CAdj ?? '';
             $adjunto->save();
+            
+            return response()->json(['msg' => 'Se ha actualizado el efector de manera correcta'], 200);
+        }else{
+            return response()->json(['msg' => 'No se ha podido actualizar el efector'], 500);
         }
     }
 
@@ -280,7 +292,7 @@ class ItemPrestacionesController extends Controller
         return response()->json(['resultado' => $query]);
     }
 
-    public function updateExamen(Request $request):void
+    public function updateExamen(Request $request):mixed
     {
         $query = ItemPrestacion::find($request->Id);
 
@@ -299,6 +311,10 @@ class ItemPrestacionesController extends Controller
             }
 
             $query->save();
+            return response()->json(['msg' => 'Se han actualizado los datos correctamente'], 200);
+
+        }else{
+            return response()->json(['msg' => 'No se han actualizado los datos. No se encuentra el identificador'], 500);
         }
     }
 
@@ -675,18 +691,22 @@ class ItemPrestacionesController extends Controller
         return response()->json($resultados);
     }
 
-    public function deleteIdAdjunto(Request $request)
+    public function deleteIdAdjunto(Request $request): mixed
     {
             $adjunto = $request->Tipo === 'efector' ? ArchivoEfector::find($request->Id) : ArchivoInformador::find($request->Id);
 
             if ($adjunto) {
                 $adjunto->delete();
                 $this->updateEstado($request->Tipo, $request->ItemP, $request->Tipo === 'efector' ? $request->Id : null, $request->Tipo === 'informador' ? $request->Id : null, null, null);
+            
+                return response()->json(['msg' => 'Se ha eliminado el adjunto de manera correcta'], 200);
+            }else{
+                return response()->json(['msg' => 'No se ha podido eliminar el adjunto'], 500);
             }
             
     }
 
-    public function replaceIdAdjunto(Request $request): void
+    public function replaceIdAdjunto(Request $request): mixed
     {
 
         $arr = [
@@ -708,6 +728,10 @@ class ItemPrestacionesController extends Controller
 
             $query->update(['Ruta' => $filename]);
 
+            return response()->json(['msg' => 'Se ha reemplazado el archivo de manera correcta. Se actualizará el contenido en unos segundos'], 200);
+
+        }else{
+            return response()->json(['msg' => 'No se ha encontrado el archivo para reemplazar'], 500);
         }
 
     }

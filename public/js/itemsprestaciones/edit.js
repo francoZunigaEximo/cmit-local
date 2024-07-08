@@ -1,11 +1,5 @@
 $(document).ready(function(){
 
-    toastr.options = {
-        closeButton: true,   
-        progressBar: true,    
-        timeOut: 3000,        
-    };
-
     const valAbrir = ['3','4','5'], valCerrar = ['0','1','2'], ID = $('#Id').val();
     let cadj = $('#CAdj').val(), CInfo = $('#CInfo').val(), efector = $('#efectores').val(), informador = $('#informadores').val(), provEfector = $('#IdEfector').val(), provInformador = $('#IdInformador').val(), Estado = $('#Estado').val(), EstadoI = $('#EstadoI').val();
 
@@ -80,15 +74,16 @@ $(document).ready(function(){
                 contentType: false,
                 success: function() {
                     preloader('off');
-                    toastr.success("Se ha cargado el reporte de manera correcta.", "Perfecto");
+                    toastr.success("Se ha cargado el reporte de manera correcta.");
                     setTimeout(() => {
                         location.reload();
                     }, 3000);
                 },
                 error: function (xhr) {
                     preloader('off');
-                    console.error(xhr);
-                    toastr.error("Ha ocurrido un error. Consulte con el administrador", "Atención");
+                    let errorData = JSON.parse(jqXHR.responseText);            
+                    checkError(jqXHR.status, errorData.msg);
+                    return;
                 }
             });
         }
@@ -96,8 +91,8 @@ $(document).ready(function(){
     
     
 
-    $(document).on('click', '#abrir', function(){
-
+    $(document).on('click', '#abrir', function(e){
+        e.preventDefault();
         let lista = {3: 0, 4: 1, 5: 2};
 
         if(cadj in lista){
@@ -111,10 +106,11 @@ $(document).ready(function(){
                     }, 3000);
                     
                 })
-                .fail(function(xhr){
+                .fail(function(jqXHR){
                     preloader('off');
-                    toastr.success('Ha ocurrido un error. Consulte con el administrador', 'Error');
-                    console.error(xhr);
+                    let errorData = JSON.parse(jqXHR.responseText);            
+                    checkError(jqXHR.status, errorData.msg);
+                    return;
                 });
         }
     });
@@ -123,32 +119,39 @@ $(document).ready(function(){
         location.href = volver;
     }); 
 
-    $(document).on('click', '.deleteAdjunto', function(){
-
+    $(document).on('click', '.deleteAdjunto', function(e){
+        e.preventDefault();
         let id = $(this).data('id'), tipo = $(this).data('tipo');
 
-        if(confirm("¿Está seguro que desea eliminar?")){
-           
-            if(id === '' || tipo === ''){
-                toastr.warning("Hay un problema porque no podemos identificar el tipo o la id a eliminar", "Atención");
-                return;
-            }
-            preloader('on');
-            $.get(deleteIdAdjunto, {Id: id, Tipo: tipo, ItemP: ID})
-                .done(function(){
-                    preloader('off');
-                    toastr.success("Se ha eliminado el adjunto de manera correcta", "Perfecto");
-                    
-                    setTimeout(() => {
-                        location.reload();
-                    }, 3000);
-                })
-                .fail(function(xhr){
-                    preloader('off');
-                    console.log(xhr);
-                    toastr.error("Ha ocurrido un error. Consulte con el administrador", "Error");
-                })
+        if(id === '' || tipo === ''){
+            toastr.warning("Hay un problema porque no podemos identificar el tipo o la id a eliminar");
+            return;
         }
+        
+        swal({
+            title: "¿Está seguro que desea eliminar?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) =>{
+            if(confirmar){
+                preloader('on');
+                $.get(deleteIdAdjunto, {Id: id, Tipo: tipo, ItemP: ID})
+                    .done(function(response){
+                        preloader('off');
+                        toastr.success(response.msg);
+                        
+                        setTimeout(() => {
+                            location.reload();
+                        }, 3000);
+                    })
+                    .fail(function(jqXHR){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
+                    })
+            }
+        });
     });
 
     $(document).on('click', '#cerrar, #cerrarI', function(){
@@ -168,10 +171,11 @@ $(document).ready(function(){
                     }, 3000);
                     
                 })
-                .fail(function(xhr){
+                .fail(function(jqXHR){
                     preloader('off');
-                    toastr.success('Ha ocurrido un error. Consulte con el administrador', 'Error');
-                    console.error(xhr);
+                    let errorData = JSON.parse(jqXHR.responseText);            
+                    checkError(jqXHR.status, errorData.msg);
+                    return;
                 });
 
         }else if(who === 'cerrarI' && listaI.includes(CInfo)){
@@ -185,10 +189,11 @@ $(document).ready(function(){
                     }, 3000);
                     
                 })
-                .fail(function(xhr){
+                .fail(function(jqXHR){
                     preloader('off');
-                    toastr.success('Ha ocurrido un error. Consulte con el administrador', 'Error');
-                    console.error(xhr);
+                    let errorData = JSON.parse(jqXHR.responseText);            
+                    checkError(jqXHR.status, errorData.msg);
+                    return;
                 });
         }
     });
@@ -198,10 +203,11 @@ $(document).ready(function(){
         let who = $(this).hasClass('asignar') ? 'asignar' : 'asignarI',
             check = (who === 'asignar') ? $('#efectores').val() : $('#informadores').val();
 
-        if(check === '' || check === '0'){
+        if(['', null, 0].includes(check)) {
             toastr.warning("Debe seleccionar un Efector/Informador para poder asignar uno", "Atención");
             return;
         }
+
         preloader('on');
         $.post(updateAsignado, { Id: ID, _token: TOKEN, IdProfesional: check, fecha: 1, Para: who})
             .done(function(){
@@ -220,8 +226,8 @@ $(document).ready(function(){
         if (checkEmpty !== '0') {
 
             $.post(updateAsignado, { Id: ID, _token: TOKEN, IdProfesional: 0, fecha: 0, Para: 'asignar'})
-            .done(function(){
-                toastr.success('Se ha actualizado el efector de manera correcta', 'Actualizacion realizada');
+            .done(function(response){
+                toastr.success(response.msg);
                 setTimeout(() => {
                     location.reload();
                 }, 3000);
@@ -238,11 +244,9 @@ $(document).ready(function(){
         if (cadj === '0' || cadj === null) return;
 
         if (cadj in lista) {
-            console.log(lista[cadj])
-
-            /$.post(updateAdjunto, {Id: ID, _token: TOKEN, CAdj: lista[cadj]})
-                .done(function(){
-                    toastr.success('Se ha actualizado el efector de manera correcta', 'Actualizacion realizada');
+            $.post(updateAdjunto, {Id: ID, _token: TOKEN, CAdj: lista[cadj]})
+                .done(function(response){
+                    toastr.success(response.msg);
                     setTimeout(() => {
                         location.reload();
                     }, 3000);
@@ -256,16 +260,18 @@ $(document).ready(function(){
         let ObsExamen = $('#ObsExamen').val(), Profesionales2 = $('#informadores').val(), Obs = $('#Obs').val(), Fecha = $('#Fecha').val();
         
         $.post(updateItemExamen, {Id: ID, _token: TOKEN, ObsExamen: ObsExamen, Profesionales2: Profesionales2, Obs: Obs, Fecha: Fecha})
-            .done(function() {
+            .done(function(response) {
 
-                toastr.success('Se han actualizado los datos correctamente', 'Perfecto');
+                toastr.success(response.msg);
                 setTimeout(() => {
                     location.reload();
                 }, 3000);
             })
-            .fail(function(xhr) {
-                toastr.error('Ha ocurrido un error. Consulte con el administrador', 'Error');
-                console.error(xhr);
+            .fail(function(jqXHR) {
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
             });
     });
 
@@ -292,25 +298,27 @@ $(document).ready(function(){
             formData.append('Id', replace_Id);
             formData.append('who', replace_Tipo);
             formData.append('_token', TOKEN);
-    
+            preloader('on');
             $.ajax({
                 type: 'POST',
                 url: replaceIdAdjunto,
                 data: formData,
                 processData: false,
                 contentType: false,
-                success: function() {
-    
-                    toastr.success("Se ha reemplazado el archivo de manera correcta. Se actualizará el contenido en unos segundos", "Perfecto");
+                success: function(response) {
+                    preloader('off');
+                    toastr.success(response.msg);
                     setTimeout(() => {
                         listadoE();
                         listadoI();
                         $('#replaceAdjunto').modal('hide');
                     }, 3000);
                 },
-                error: function (xhr) {
-                    console.error(xhr);
-                    toastr.error("Ha ocurrido un error. Consulte con el administrador", "Atención");
+                error: function (jqXHR) {
+                    preloader('off');
+                    let errorData = JSON.parse(jqXHR.responseText);            
+                    checkError(jqXHR.status, errorData.msg);
+                    return;
                 }
             });
         }
@@ -428,10 +436,10 @@ $(document).ready(function(){
     function listadoE(){
 
         $('#listaefectores').empty();
-
+        preloader('on');
         $.get(paginacionGeneral, {Id: ID, tipo: 'efector'})
             .done(function(response){
-                
+                preloader('off');
                 let data = response.resultado;
 
                 $.each(data, function(index, d){
@@ -482,10 +490,10 @@ $(document).ready(function(){
     function listadoI(){
 
         $('#listainformadores').empty();
-
+        preloader('on');
         $.get(paginacionGeneral, {Id: ID, tipo: 'informador'})
             .done(function(response){
-                
+                preloader('off');
                 let data = response.resultado;
 
                 $.each(data, function(index, d){
@@ -566,18 +574,12 @@ $(document).ready(function(){
                     $('i.ri-play-list-add-line').removeClass('addPaquete');
                     }
             })
-            .fail(function(xhr){
-                console.error(xhr);
-                toastr.error("Ha ocurrido un error. Consulte con el administrador");
-            });
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
+    });
     }
-
-    function preloader(opcion) {
-        $('#preloader').css({
-            opacity: '0.3',
-            visibility: opcion === 'on' ? 'visible' : 'hidden'
-        });
-    }
-
-    
+   
 });
