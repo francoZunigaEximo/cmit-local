@@ -71,7 +71,7 @@ class ItemPrestacionesController extends Controller
         }
 
         foreach ($examenes as $examen) {
-            $item = ItemPrestacion::with('examenes')->find($examen);
+            $item = ItemPrestacion::with(['examenes','profesional2'])->find($examen);
 
             if ($item) 
             {   
@@ -82,7 +82,7 @@ class ItemPrestacionesController extends Controller
                 } elseif ($request->Para === 'cerrar' ) {
 
                     $item->CAdj = $lstCerrar[$item->CAdj] ?? $request->CAdj;
-                    $item->examenes->Informe === 1 ? $item->CInfo = 3 : null;
+                    $item->examenes->Informe === 0 && $item->profesional2->InfAdj === 0 ? $item->CInfo = 0 : null;
 
                 } elseif ($request->Para === 'cerrarI'){
 
@@ -223,10 +223,6 @@ class ItemPrestacionesController extends Controller
             }
             
             $item->FechaAsignado = (($request->fecha == '0000-00-00' ||  $request->fecha == '0') ? '' : now()->format('Y-m-d'));
-            $item->save();
-
-            $item->refresh();
-            $item->CInf = ($item->profesional2->InfAdj === 1 || ArchivoInformador::where('IdEntidad', $item->Id)->exists()) ? 3 : 1;
             $item->save();
             
             return response()->json(['msg' => 'Se ha actualizado el efector de manera correcta'], 200);
@@ -859,14 +855,15 @@ class ItemPrestacionesController extends Controller
 
             if(!$itemPrestacion){
 
-                $result = Examen::where('Id', $examen)->value('Adjunto');
+                $result = Examen::select('Informe', 'Adjunto')->find($examen);
 
                 ItemPrestacion::create([
                     'Id' => ItemPrestacion::max('Id') + 1,
                     'IdPrestacion' => $request->idPrestacion,
                     'IdExamen' => $examen,
                     'Fecha' => now()->format('Y-m-d'),
-                    'CAdj' => ($result === 1) ? 1 : 0
+                    'CAdj' => $result->Adjunto === 1 ? 1 : 0,
+                    'CInfo' => $result->Informe === 0 ? 0 : 1
                 ]);
             }   
         }

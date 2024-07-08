@@ -7,7 +7,6 @@ use App\Models\ArchivoInformador;
 use App\Models\ItemPrestacion;
 use App\Models\ItemPrestacionInfo;
 use App\Models\Prestacion;
-use App\Models\Paciente;
 use App\Models\Profesional;
 
 trait ObserverItemsPrestaciones
@@ -26,7 +25,7 @@ trait ObserverItemsPrestaciones
         ]);
     }
 
-    public function updateItemPrestacionInfo($id, $observacion)
+    public function updateItemPrestacionInfo(int $id, string $observacion)
     {
 
         $query = ItemPrestacionInfo::where('IdIP', $id)->first();
@@ -148,24 +147,14 @@ trait ObserverItemsPrestaciones
         }
     }
 
-    public function adjuntoEfector(int $id): ?int 
+    public function adjuntoEfector(?int $id): ?int 
     {
-        
-        if (empty($id)) return null;
-
-        $archivo = ArchivoEfector::where('IdEntidad', $id)->first();
-        
-        return $archivo ? 1 : 0;
+        return ArchivoEfector::where('IdEntidad', $id)->exists() === true ? 1 : 0;
     }
 
-    public function adjuntoInformador(int $id): ?int 
+    public function adjuntoInformador(?int $id): ?int 
     {
-        
-        if (empty($id)) return null;
-
-        $archivo = ArchivoInformador::where('IdEntidad', $id)->first();
-        
-        return $archivo ? 1 : 0;
+        return ArchivoInformador::where('IdEntidad', $id)->exists() ===  true ? 1 : 0;
     }
 
     public function getDatosProfesional(int $id): string

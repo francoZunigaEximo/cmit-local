@@ -94,7 +94,7 @@ class PrestacionesController extends Controller
                 DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdART) AS Art'),
                 DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdEmpresa) AS Empresa'),
                 DB::raw('COALESCE(COUNT(itemsprestaciones.IdPrestacion), 0) as Total'),
-                DB::raw('COALESCE(COUNT(CASE WHEN (itemsprestaciones.CAdj = 5 OR itemsprestaciones.CAdj = 3) AND itemsprestaciones.CInfo = 3 THEN itemsprestaciones.IdPrestacion END), 0) as CerradoAdjunto'),
+                DB::raw('COALESCE(COUNT(CASE WHEN (itemsprestaciones.CAdj = 5 OR itemsprestaciones.CAdj = 3) AND (itemsprestaciones.CInfo = 3 OR itemsprestaciones.CInfo = 0) THEN itemsprestaciones.IdPrestacion END), 0) as CerradoAdjunto'),
                 'emp.ParaEmpresa as ParaEmpresa',
                 'emp.Identificacion as Identificacion',
                 'prestaciones.Fecha as FechaAlta',
@@ -620,9 +620,9 @@ class PrestacionesController extends Controller
 
     public function lstTipoPrestacion()
     {
-        /*if (!$this->hasPermission("prestaciones_show")) {
+        if (!$this->hasPermission("prestaciones_show")) {
             return response()->json(['msg' => 'No tienes permisos'], 403);
-        }*/
+        }
 
         return response()->json(PrestacionesTipo::all());
     }
