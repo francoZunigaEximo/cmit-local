@@ -124,3 +124,53 @@ function generarCodigoAleatorio() {
     let codigo = Math.floor(Math.random() * 9000000) + 1000000;
     return codigo.toString(); 
 }
+
+function tipoPagoPrestacion(tipo) {
+    switch (tipo) {
+        case "C":
+            return "Cuenta Corriente";
+            break;
+        
+        case "P":
+            return "Examen a Cuenta";
+            breack;
+
+        case "B":
+            return "Contado";
+            break;
+
+        default:
+            return "-";
+            break;
+    }
+}
+
+function tipoSPagoPrestacion(tipo) {
+    switch (tipo) {
+        case "A":
+            return "Efectivo";
+            break;
+        case "B":
+            return "Débito";
+            break;
+        case "C":
+            return "Crédito";
+            break;
+        case "D":
+            return "Cheque";
+            break;
+        case "G":
+            return "Sin cargo";
+            break;
+        case "F":
+            return "Transferencia";
+            breack;
+        case "E":
+            return "Otro";
+            break;
+        default:
+            return "-";
+            break;
+    }
+
+}

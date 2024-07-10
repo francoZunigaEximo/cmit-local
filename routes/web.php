@@ -234,6 +234,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('facturas/export', [FacturasVentaController::class, 'export'])->name('facturas.export');
     Route::get('facturas/enviar',[FacturasVentaController::class, 'enviar'])->name('facturas.enviar');
     Route::get('facturas/excel', [FacturasVentaController::class, 'excel'])->name('facturas.excel');
+    Route::get('facturas/paginacion/alta',[FacturasVentaController::class, 'paginacionAlta'])->name('facturas.paginacion');
     Route::resource('facturas', FacturasVentaController::class);
 
     // Rutas de Noticias

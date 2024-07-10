@@ -41,17 +41,17 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-sm-2 mt-3">
-                            <label for="fechaDesdeA" class="form-label fw-bolder">Fecha Desde</label>
+                            <label for="fechaDesdeA" class="form-label fw-bolder">Fecha Desde <span class="required">(*)</span></label>
                             <input type="date" class="form-control" id="fechaDesdeA" name="fechaDesdeA">
                         </div>
 
                         <div class="col-sm-2 mt-3">
-                            <label for="fechaHastaA" class="form-label fw-bolder">Fecha Hasta</label>
+                            <label for="fechaHastaA" class="form-label fw-bolder">Fecha Hasta <span class="required">(*)</span></label>
                             <input type="date" class="form-control" id="fechaHastaA" name="fechaHastaA">
                         </div>
 
                         <div class="col-sm-2 mt-3">
-                            <label for="empresa" class="form-label fw-bolder">Empresa</label>
+                            <label for="empresa" class="form-label fw-bolder">Empresa <span class="required">(*)</span></label>
                             <select name="empresa" id="empresa" class="form-control"></select>
                         </div>
 
@@ -93,7 +93,10 @@
                     </div>
                     
                     <div class="row">
-                        <div class="col-sm-12 mt-2 text-end">
+                        <div class="col-sm-6 mt-2 text-start">
+                            <button type="button" class="btn btn-sm botonGeneral generar">Generar factura</button>
+                        </div>
+                        <div class="col-sm-6 mt-2 text-end">
                             <button type="button" class="btn btn-sm botonGeneral Contado">Contado</button>
                             <button type="button" class="btn btn-sm botonGeneral buscarAlta"><i class="ri-search-line"></i>Buscar</button>
                         </div>
@@ -127,7 +130,9 @@
                             <th class="sort">Empresa</th>
                             <th class="sort">ART</th>
                             <th>Tipo</th>
+                            <th>Paciente</th>
                             <th>Pago</th>
+                            <th>C.Costo</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -313,11 +318,15 @@
     const TOKEN = "{{ csrf_token() }}";
     const getClientes = "{{ route('getClientes') }}";
     const lstTipoPrestacion = "{{ route('lstTipoPrestacion') }}";
+    const paginacionAlta = "{{ route('facturas.paginacion')}}";
+    const SEARCHALTA = "{{ route('facturas.paginacion') }}";
 </script>
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/hacks.css')}}?v=?v={{ time() }}">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
+
+<link rel="stylesheet" href="{{ asset('css/fixSelect2.css') }}">
 @endpush
 
 @push('scripts')

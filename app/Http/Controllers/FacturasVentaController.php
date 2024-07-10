@@ -18,10 +18,12 @@ use App\Mail\FacturasMailable;
 use App\Models\Auditor;
 use App\Models\AuditoriaMailFacturacion;
 use App\Models\Cliente;
+use App\Models\Prestacion;
 use App\Traits\Reportes;
 use App\Traits\ReporteExcel;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Yajra\DataTables\Contracts\DataTable;
 
 class FacturasVentaController extends Controller
 {
@@ -382,6 +384,65 @@ class FacturasVentaController extends Controller
         }
 
         return $this->finnegans($filtroIdFactura, $request->Tipo);
+    }
+
+    public function paginacionAlta(Request $request)
+    {
+        if($request->ajax()) {
+
+            $query = Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+                ->join('fichaslaborales', 'pacientes.Id', '=', 'fichaslaborales.IdPaciente')
+                
+                ->join('clientes as empresa', function($join) use($request) {
+                    $join->on('prestaciones.IdEmpresa', '=', 'empresa.Id');
+                    if(!empty($request->Empresa)) {
+                        $join->where('empresa.Id', $request->Empresa);
+                    }
+                })
+                
+                ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
+                ->select(
+                    'prestaciones.Id as Id', 
+                    'prestaciones.Fecha  as Fecha', 
+                    'prestaciones.TipoPrestacion as TipoPrestacion', 
+                    'prestaciones.SPago as SPago',
+                    'prestaciones.Pago as Pago',
+                    'pacientes.Nombre',
+                    'pacientes.Apellido',
+                    'fichaslaborales.CCosto',
+                    'empresa.RazonSocial as Empresa',
+                    'art.RazonSocial as Art'
+                );
+
+            $query->when(!empty($request->FechaDesde) and !empty($request->FechaHasta), function($query) use ($request) {
+                $query->whereBetween('Fecha', [$request->FechaDesde, $request->FechaHasta]);
+            });
+
+            $query->when(!empty($request->Tipo), function($query) use ($request) {
+                $query->where('TipoPrestacion', $request->Tipo);
+            });
+
+            $query->when(!empty($request->Pago), function($query) use ($request) {
+                $query->when($request->Pago === 'sincargo', function ($query) {
+                    $query->where('SPago', 'G');
+                });
+                $query->when($request->Pago === 'transferencia', function ($query) {
+                    $query->where('SPago', 'F');
+                });
+                $query->when($request->Pago === 'otro', function ($query) {
+                    $query->where('SPago', 'E');
+                });
+                $query->when($request->Pago === 'todo', function ($query) {
+                    $query->whereIn('SPago', ['A','B','C','D','G','F','E','']);
+                });
+
+            });
+
+            $result = $query->groupBy('prestaciones.Id')->get();
+
+            return DataTables::of($result)->make(true);
+        }
+        return view('layouts.facturas.create');
     }
 
     private function facturas()
