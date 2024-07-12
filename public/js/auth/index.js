@@ -135,9 +135,9 @@ $(document).ready(()=>{
         if([null, undefined, 0].includes(id)) return;
 
         swal({
-            title: "¿Estas seguro que deseas bloquear al usuario?",
+            title: "¿Estas seguro que deseas realizar la acción?",
             icon: "warning",
-            buttons: ["Cancelar", "Bloquear"]
+            buttons: ["No", "Si"]
         }).then((result) => {
             if(result){
                 preloader('on');
