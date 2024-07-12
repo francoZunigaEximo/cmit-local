@@ -79,7 +79,7 @@
                                             </div>
             
                                             <div class="col-sm-2 mb-3">
-                                                <label for="Corte" class="form-label font-weight-bold"><strong>Actividad:</strong> <small>(desde/hasta)</small></label>
+                                                <label for="Corte" class="form-label font-weight-bold"><strong>Actividad:</strong> <small>(desde/hasta)</small>&nbsp;<span class="bx bx-help-circle rojo" title="Ayuda: Solo busca prestaciones de los ultimos 30 días si la 'Fecha Desde' esta vacía."></span></label>
                                                 <input type="date" class="form-control" id="fechaDesde" name="fechaDesde">
                                                 <input type="date" class="form-control" id="fechaHasta" name="fechaHasta">
                                             </div>
