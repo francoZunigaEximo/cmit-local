@@ -351,7 +351,7 @@ $(document).ready(()=>{
                                 <span>${(e.Informe === 0 ? 'Sin informador' : e.NombreInformador === null || e.ApellidoInformador == null ? '-' : acortadorTexto(informadorCompleto)) }</span>
                                 <span>${(e.Informe === 0 ? '' : e.CInfo === 3 ? '<span style="display:block" class="custom-badge verde">Completo</span>' : '')}</span>
                             </td>
-                            <td><span class="custom-badge pequeno">${e.Informado === 0 ? '' : (e.CInfo === 3 ? `cerrado`: `abierto`)}</span></td>
+                            <td><span class="custom-badge pequeno">${e.Informe === 0 ? '' : (e.CInfo === 3 ? `cerrado`: `abierto`)}</span></td>
                             <td><span data-id="${e.IdItemPrestacion}" data-estado="examen" title="${e.Incompleto === 1 ? `Incompleto` : `Completo`}" class="cambiarEstado custom-badge ${e.Incompleto === 1 ? `rojo` : `verde`}"><i class="ri-lightbulb-line"></i></span></td>
                             <td>
                                 <button type="button" data-id="${e.IdItemPrestacion}" class="btn btn-sm iconGeneral verItemPrestacion" title="Ver exámen"><i class="ri-search-eye-line"></i></button>
@@ -1164,28 +1164,6 @@ $(document).ready(()=>{
                     sortable: false, 
                 });
             })
-    }
-
-    function createFile(tipo, array){
-        let filePath = array,
-            pattern = /storage(.*)/,
-            match = filePath.match(pattern),
-            path = match ? match[1] : '';
-
-        let url = new URL(location.href),
-            baseUrl = url.origin,
-            fullPath = baseUrl + '/cmit/storage' + path;
-
-        let link = document.createElement('a');
-        link.href = fullPath;
-        link.download = tipo === 'pdf' ? "reporte.pdf" : "reporte.csv";
-        link.style.display = 'none';
-
-        document.body.appendChild(link);
-        link.click();
-        setTimeout(function() {
-            document.body.removeChild(link);
-        }, 100);
     }
 
     function getObsEstado(id){
