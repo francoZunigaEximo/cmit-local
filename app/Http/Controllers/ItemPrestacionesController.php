@@ -71,7 +71,7 @@ class ItemPrestacionesController extends Controller
         }
 
         foreach ($examenes as $examen) {
-            $item = ItemPrestacion::with(['examenes','profesional2'])->find($examen);
+            $item = ItemPrestacion::with(['examenes','profesionales2'])->find($examen);
 
             if ($item) 
             {   
