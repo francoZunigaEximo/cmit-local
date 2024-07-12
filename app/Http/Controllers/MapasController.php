@@ -917,7 +917,7 @@ class MapasController extends Controller
             DB::raw('(
                 SELECT 
                     CASE 
-                    WHEN COUNT(*) = SUM(CASE WHEN (items.CAdj = 5 OR items.CAdj = 3) AND items.CInfo = 3 THEN 1 ELSE 0 END)
+                    WHEN COUNT(*) = SUM(CASE WHEN (items.CAdj = 5 OR items.CAdj = 3) AND (items.CInfo = 3 OR items.CInfo = 0) THEN 1 ELSE 0 END)
                         THEN "Completo" 
                         ELSE "Incompleto" 
                     END 

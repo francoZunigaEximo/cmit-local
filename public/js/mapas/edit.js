@@ -1116,7 +1116,7 @@ $(document).ready(()=>{
 
     function fecha(fe){
 
-        if(fe === '' || fe === undefined) return;
+        if(['', undefined, null].includes(fe)) return;
 
         let partesFecha = fe.split("-");
         return  partesFecha[2] + "/" + partesFecha[1] + "/" + partesFecha[0];
