@@ -314,12 +314,29 @@
     </div>
 </div>
 
+<div id="ver" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel">Prestación <span id="nroPrestacion"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>
+            </div>
+            <div class="modal-body text-center p-5">
+                
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 <script>
     const TOKEN = "{{ csrf_token() }}";
     const getClientes = "{{ route('getClientes') }}";
     const lstTipoPrestacion = "{{ route('lstTipoPrestacion') }}";
     const paginacionAlta = "{{ route('facturas.paginacion')}}";
     const SEARCHALTA = "{{ route('facturas.paginacion') }}";
+    const verDetalle = "{{ route('facturas.detalle') }}";
 </script>
 
 @push('styles')

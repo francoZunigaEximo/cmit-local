@@ -21,7 +21,7 @@ class PaqueteEstudio extends Model
 
     public $timestamps = false;
 
-    public function examen()
+    public function examenes()
     {
         return $this->hasOne(Examen::class, 'Id', 'IdEstudio');
     }

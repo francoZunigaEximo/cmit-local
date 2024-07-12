@@ -60,6 +60,19 @@ $(document).ready(function(){
 
     $("#nroFactura").inputmask('rango');
 
+    $(document).on('click', '.ver', function(e){
+        let id = $(this).data('id');
+        $('#nroPrestacion').text(id);
+
+        $.get(verDetalle, {Id: id})
+            .done(function(response){
+                response.forEach(e => {
+                    //console.log(e.examenes.paquete_estudio[0].Nombre);
+                    console.log(e);
+                });
+            })
+
+    });
 
     function listadoPrestaciones()
     {

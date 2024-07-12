@@ -102,7 +102,7 @@ $(document).ready(function() {
                     width: "50px",
                     render: function(data){            
                         
-                        return `<button data-id="${data.Id}" class="btn btn-sm iconoGeneral ver" title="Ver"><i class="ri-eye-line p-1"></i></button>`;
+                        return `<button data-id="${data.Id}" class="btn btn-sm iconoGeneral ver" data-bs-toggle="modal" data-bs-target="#ver" title="Ver"><i class="ri-eye-line p-1"></i></button>`;
                     }
                 },
             ],

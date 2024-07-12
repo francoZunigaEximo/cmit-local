@@ -22,4 +22,9 @@ class PaqueteFacturacion extends Model
         'IdEmpresa',
         'Cod'
     ];
+
+    public function examenes()
+    {
+        return $this->belongsToMany(Examen::class, 'relpaqest', 'IdPaquete', 'IdExamen');
+    }
 }

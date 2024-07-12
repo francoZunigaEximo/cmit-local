@@ -70,4 +70,14 @@ class Examen extends Model
     {
         return $this->belongToMany(ExamenCuenta::class, 'pagoacuenta_it', 'IdExamen', 'IdPago');
     }
+
+    public function paqueteEstudio()
+    {
+        return $this->belongsToMany(PaqueteEstudio::class, 'relpaqest', 'IdExamen', 'IdEstudio');
+    }
+
+    public function paqueteFacturacion()
+    {
+        return $this->belongsToMany(PaqueteEstudio::class, 'relpaqfact', 'IdExamen', 'IdPaquete');
+    }
 }

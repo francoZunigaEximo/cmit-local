@@ -468,143 +468,20 @@ ALTER TABLE proveedores ADD COLUMN Obs TEXT NULL;
 SET SESSION sql_mode = 'NO_ENGINE_SUBSTITUTION';
 ALTER TABLE profesionales DROP COLUMN wImage;
 ALTER TABLE profesionales DROP COLUMN hImage;
-ALTER TABLE profesionales ADD COLUMN wImage VARCHAR(10) DEFAULT 10;
-ALTER TABLE profesionales ADD COLUMN hImage hImageVARCHAR(10) DEFAULT 10;
+ALTER TABLE profesionales ADD COLUMN wImage VARCHAR(10) DEFAULT 100;
+ALTER TABLE profesionales ADD COLUMN hImage VARCHAR(10) DEFAULT 100;
 SET SESSION sql_mode = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION';
 
 /************************************************************************************************************/
-ALTER TABLE facturaventas ADD COLUMN IdPrestacion INT DEFAULT 0;
+ALTER TABLE facturasventa ADD COLUMN IdPrestacion INT DEFAULT 0;
 /************************************************************************************************************/
 ALTER TABLE prestaciones_obsfases DROP FOREIGN KEY prestaciones_obsfases_ibfk_2;
 
 /************************************************************************************************************/
---Password 123456
 
-INSERT INTO `users` (`Id`, `name`, `email`, `IdPersonal`, `SR`, `email_verified_at`, `password`, `remember_token`,`created_at`,`updated_at`,`IdPerfil`, `IdProfesional`,`Rol`) VALUES
-('3','abigailh','abigailh@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',8,212,'PRESTADOR'),
-('4','admin','admin@cmit.com.ar',1,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',1,0,'PERSONAL'),
-('5','agalvan','agalvan@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',6,139,'PRESTADOR'),
-('6','alagos','alagos@cmit.com.ar',42,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',12,0,'PERSONAL'),
-('7','arusso','arusso@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,175,'PRESTADOR'),
-('8','astridd','astridd@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,193,'PRESTADOR'),
-('9','astriddfichas','astriddfichas@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,201,'PRESTADOR'),
-('10','belgrano','belgrano@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,169,'PRESTADOR');
-INSERT INTO `users` (`Id`, `name`, `email`, `IdPersonal`, `SR`, `email_verified_at`, `password`, `remember_token`,`created_at`,`updated_at`,`IdPerfil`, `IdProfesional`,`Rol`) VALUES
-('11','bjara','bjara@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,203,'PRESTADOR'),
-('12','candelagl','candelagl@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58', '2023-05-10 07:19:53',8,199,'PRESTADOR'),
-('13','cantoninni','cantoninni@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,202,'PRESTADOR'),
-('14','caroca','caroca@cmit.com.ar',37,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',14,0,'PERSONAL'),
-('15','caroquar','caroquar@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,57,'PRESTADOR'),
-('16','cguevara','cguevara@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,185,'PRESTADOR'),
-('17','cintia','cintia@cmit.com.ar',7,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',12,0,'PERSONAL'),
-('18','cmit', 'cmit@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',11,26,'PRESTADOR'),
-('19','cmit1','cmit1@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10  07:19:53',3,214,'PRESTADOR'),
-('20','conciencia','conciencia@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,168,'PRESTADOR'),
-('21','crear','crear@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',5,182,'PRESTADOR'),
-('22','crosa','crosa@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,190,'PRESTADOR'),
-('23','crossi','crossi@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',8,178,'PRESTADOR'),
-('24','dcampos','dcampos@cmit.com.ar',23,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',12,0,'PERSONAL'),
-('25','dcamposcarnet','dcamposcarnet@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58', '2023-05-10 07:19:53',3,162,'PRESTADOR'),
-('26','dcortes','dcortes@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,138,'PRESTADOR'),
-('27','dcortescarnet','dcortescarnet@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58', '2023-05-10 07:19:53',3,176,'PRESTADOR'),
-('28','denisep','denisep@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,174,'PRESTADOR'),
-('29','dibarra','dibarra@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58', '2023-05-10 07:19:53',3,192,'PRESTADOR'),
-('30','dino','dino@cmit.com.ar',34,1,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',12,0,'PERSONAL'),
-('31','dinocarnet','dinocarnet@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,164,'PRESTADOR'),
-('32','dinoeeg','dinoeeg@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',11,160,'PRESTADOR'),
-('33','dkriger','dkriger@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,148,'PRESTADOR');
-INSERT INTO `users` (`Id`, `name`, `email`, `IdPersonal`, `SR`, `email_verified_at`, `password`, `remember_token`,`created_at`,`updated_at`,`IdPerfil`, `IdProfesional`,`Rol`) VALUES
-('34','dsasso','dsasso@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,140,'PRESTADOR'),
-('35','emilianob','emilianob@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',8,179,'PRESTADOR'),
-('36','eorejas','eorejas@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,221,'PRESTADOR'),
-('37','ergoma','ergoma@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',8,224,'PRESTADOR'),
-('38','fdelvalle','fdelvalle@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58', '2023-05-10 07:19:53',8,207,'PRESTADOR'),
-('39','fgomez', 'fgomez@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58', '2023-05-10 07:19:53',3,217,'PRESTADOR'),
-('40','fmari','fmari@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,186,'PRESTADOR'),
-('41','fmassaro','fmassaro@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,158,'PRESTADOR'),
-('42','fmassaro2','fmassaro2@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58', '2023-05-10 07:19:53',3,158,'PRESTADOR'),
-('43','fmontiveros','fmontiveros@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58', '2023-05-10 07:19:53',3,206,'PRESTADOR'),
-('44','fochoa','fochoa@cmit.com.ar',26,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',14,0,'PERSONAL'),
-('45','fochoa2','fochoa2@cmit.com.ar',26,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',12,0,'PERSONAL'),
-('46','fochoacarnet','fochoacarnet@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58', '2023-05-10 07:19:53',3,177,'PRESTADOR'),
-('47','fronda','fronda@cmit.com.ar',39,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',12,0,'PERSONAL'),
-('48','fsciammarella','fsciammarella@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,197,'PRESTADOR'),
-('49','gbante','gbante@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,171,'PRESTADOR'),
-('50','gbecerra','gbecerra@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,146,'PRESTADOR'),
-('51','gfranco','gfranco@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',6,80,'PRESTADOR'),
-('52','gfranco2','gfranco2@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',7,80,'PRESTADOR'),
-('53','ggomez','ggomez@cmit.com.ar',17,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',13,0,'PERSONAL'),
-('54','gmarini','gmarini@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,188,'PRESTADOR'),
-('55','gmontiveros','gmontiveros@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58', '2023-05-10 07:19:53',3,149,'PRESTADOR'),
-('56','gparada','gparada@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',8,218,'PRESTADOR'),
-('57','htorres','htorres@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',8,167,'PRESTADOR'),
-('58','ipaccmit','ipaccmit@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,166,'PRESTADOR'),
-('59','isegovia','isegovia@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,151,'PRESTADOR'),
-('60','jmontesino','jmontesino@cmit.com.ar',30,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',12,0,'PERSONAL');
-INSERT INTO `users` (`Id`, `name`, `email`, `IdPersonal`, `SR`, `email_verified_at`, `password`, `remember_token`,`created_at`,`updated_at`,`IdPerfil`, `IdProfesional`,`Rol`) VALUES
-('61','josiniri','josiniri@cmit.com.ar',43,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',12,0,'PERSONAL'),
-('62','josiniri2','josiniri2@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,223,'PRESTADOR'),
-('63','juan manuel','manuel@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',5,47,'PRESTADOR'),
-('64','jurdiales','jurdiales@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,204,'PRESTADOR'),
-('65','katy','katy@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,184,'PRESTADOR'),
-('66','lalvarez','lalvarez@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,191,'PRESTADOR'),
-('67','lalvarez2','lalvarez2@cmit.com.ar',35,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',12,0,'PERSONAL'),
-('68','lalvarezrx','lalvarezrx@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',8,191,'PRESTADOR'),
-('69','lantiqueo','lantiqueo@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,154,'PRESTADOR'),
-('70','liliana','liliana@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',11,48,'PRESTADOR'),
-('71','llamador','llamador@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',16,0,'PERSONAL'),
-('72','llofeudo','llofeudo@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,156,'PRESTADOR'),
-('73','llopez','llopez@cmit.com.ar',14,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',15,0,'PERSONAL'),
-('74','lmaero','lmaero@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',6,183,'PRESTADOR'),
-('75','lpinto','lpinto@cmit.com.ar',32,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',14,0,'PERSONAL'),
-('76','lquezada','lquezada@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,153,'PRESTADOR'),
-('77','lsaavedra','lsaavedra@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,216,'PRESTADOR'),
-('78','lucas4','lucas4@cmit.com.ar',1,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',2,0,'PERSONAL'),
-('79','lucas2','lucas2@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',8,161,'PRESTADOR'),
-('80','lucas3','lucas3@cmit.com.ar',33,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',15,0,'PERSONAL'),
-('81','luis','luis@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',8,24,'PRESTADOR'),
-('82','mailend','mailend@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,155,'PRESTADOR'),
-('83','malmeira','malmeira@cmit.com.ar',25,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',2,0,'PERSONAL'),
-('84','malmeira2','malmeira2@cmit.com.ar',25,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',12,0,'PERSONAL'),
-('85','marguello','marguello@cmit.com.ar',0, 0,NULL, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',8,165,'PRESTADOR'),
-('86','martin','martin@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',6,60,'PRESTADOR'),
-('87','martin22','martin22@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',11,60,'PRESTADOR'),
-('88','mbustos','mbustos@cmit.com.ar',41,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',14,0,'PERSONAL'),
-('89','mcogo','mcogo@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,200,'PRESTADOR'),
-('90','medicos','medicos@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,181,'PRESTADOR'),
-('91',' mespinoza','mespinoza@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,131,'PRESTADOR'),
-('92','mgalera','mgalera@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,225,'PRESTADOR'),
-('93','mgutierrez','mgutierrez@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',8,29,'PRESTADOR'),
-('94','miguel','miguel@cmit.com.ar',0, 0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',5,2,'PRESTADOR'),
-('95','miommi','miommi@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,157,'PRESTADOR'),
-('96','mkaty','mkaty@cmit.com.ar',36,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',9,0,'PERSONAL'),
-('97','mmacedo','mmacedo@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,219,'PRESTADOR'),
-('98','mmoreno','mmoreno@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,194,'PRESTADOR'),
-('99','mpbelli','mpbelli@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,210,'PRESTADOR'),
-('100','mporro','mporro@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,226,'PRESTADOR');
-INSERT INTO `users` (`Id`, `name`, `email`, `IdPersonal`, `SR`, `email_verified_at`, `password`, `remember_token`,`created_at`,`updated_at`,`IdPerfil`, `IdProfesional`,`Rol`) VALUES
-('101','mrosas','mrosas@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,142,'PRESTADOR'),
-('102','mteruel','mteruel@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,172,'PRESTADOR'),
-('103','nmendoza','nmendoza@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,150,'PRESTADOR'),
-('104','paola','paola@cmit.com.ar',3,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',12,0,'PERSONAL'),
-('105','pcourtade','pcourtade@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',8,19,'PRESTADOR'),
-('106','pfrancese','pfrancese@cmit.com.ar',0, 0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',5,65,'PRESTADOR'),
-('107','plopez','plopez@cmit.com.ar',0, 0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,7,'PRESTADOR'),
-('108','porejas','porejas@cmit.com.ar',40, 0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',12,0,'PERSONAL'),
-('109','psico','psico@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',8,123,'PRESTADOR'),
-('110','rfalcone','rfalcone@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,196,'PRESTADOR'),
-('111','rmorales','rmorales@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,215,'PRESTADOR'),
-('112','rvaca','rvaca@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',8,144,'PRESTADOR'),
-('113','rvaca2','rvaca2@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58', '2023-05-10 07:19:53',8,220,'PRESTADOR'),
-('114','santoniazzi','santoniazzi@cmit.com.ar',15,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58', '2023-05-10 07:19:53',12,0,'PERSONAL'),
-('115','smarini','smarini@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58', '2023-05-10 07:19:53',3,189,'PRESTADOR'),
-('116','tmaguire','tmaguire@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58', '2023-05-10 07:19:53',3,205,'PRESTADOR'),
-('117','varesco','varesco@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58', '2023-05-10 07:19:53',3,159,'PRESTADOR'),
-('118','varesco1','varesco1@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,180,'PRESTADOR'),
-('119','vperea','vperea@cmit.com.ar',38,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',12,0,'PERSONAL'),
-('120','wfigueroa','wfigueroa@cmit.com.ar',0,0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',3,112,'PRESTADOR');
 
 SET foreign_key_checks = 0;
+ALTER TABLE prestaciones_obsfases CHANGE IdUsuario IdUsuario CHAR(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;
 ALTER TABLE prestaciones_obsfases ADD FOREIGN KEY(IdUsuario) REFERENCES users(name);
 CREATE TABLE IF NOT EXISTS tipos_obsfases (
     Id INT AUTO_INCREMENT NOT NULL,
@@ -652,8 +529,8 @@ CREATE INDEX examenes_Nombre_IDX USING BTREE ON examenes (Nombre);
 ALTER TABLE pagosacuenta_it ADD Precarga INT(9) DEFAULT 0 NULL;
 
 
-CREATE PROCEDURE getSearchA(IN fechaDesde* DATE, IN fechaHasta* DATE, IN prestacion* INT, IN examen* INT, IN paciente* INT, 
-				IN estados* VARCHAR, IN efector INT, IN especialidad INT, IN empresa INT)
+CREATE PROCEDURE getSearchA(IN fechaDesde DATE, IN fechaHasta DATE, IN prestacion INT, IN examen INT, IN paciente INT, 
+				IN estados VARCHAR, IN efector INT, IN especialidad INT, IN empresa INT)
 BEGIN
 	SELECT i.Id as IdItem, i.Fecha as Fecha, i.CAdj as Estado, i.CInfo as Informado, i.IdProfesional as IdProfesional, pro.Nombre as Especialidad, pro.Id as IdEspecialidad, pre.Id as IdPrestacion, cli.RazonSocial as Empresa, pa.Apellido as pacApellido, pa.Nombre as pacNombre, pa.Documento as Documento, pa.Id as IdPaciente, ex.Nombre as Examen
 	FROM itemsprestaciones i
@@ -758,7 +635,7 @@ BEGIN
     and not i.IdProfesional2 = 0 
     and i.CAdj IN (3,5) 
     and not i.CInfo = 3 
-    and i.FechaPagado is null or (i.FechaPagado != nullif (i.FechaPagado, '0000-00-00'))
+    and NULLIF(i.FechaPagado, '0000-00-00') IS NULL
     and not exists (select 1 from itemsprestaciones_info where itemsprestaciones_info.IdIP = i.Id)
     AND i.Anulado = 0
     order by i.Id desc 
@@ -904,10 +781,159 @@ ALTER TABLE users DROP FOREIGN KEY users_ibfk_4;
 ALTER TABLE users DROP COLUMN IdPerfil;
 ALTER TABLE users DROP COLUMN SR;
 ALTER TABLE users DROP COLUMN Rol;
-ALTER TABLE dusers CHANGE IdProfesional profesional_id int(11) DEFAULT 0 NULL;
+ALTER TABLE users CHANGE IdProfesional profesional_id int(11) DEFAULT 0 NULL;
 ALTER TABLE users CHANGE idPersonal datos_id int(11) DEFAULT NULL NULL;
 ALTER TABLE users ADD inactivo INT DEFAULT 0 NULL;
+ALTER TABLE users ADD Anulado INT DEFAULT 0 NULL;
 
+--Password 123456
+INSERT INTO users (name,email,datos_id,email_verified_at,password,remember_token,created_at,updated_at,profesional_id,inactivo,Anulado) VALUES
+	 ('nicolas','nmaximowicz@eximo.com.ar',52,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2024-05-20 01:44:18',230,0,0),
+	 ('lucas','lucas@cmit.com.ar',1,NULL,'$2y$10$5xxjrbNwlDFSu/Q.wAvCMeJ/URPDh57efpgaPTfflvk2fmM74CzHK',NULL,'2023-05-08 16:27:18','2024-05-20 01:34:23',0,0,0),
+	 ('abigailh','abigailh@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',212,0,0),
+	 ('admin','admin@cmit.com.ar',1,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2024-05-20 02:55:32',0,0,0),
+	 ('agalvan','agalvan@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',139,0,0),
+	 ('alagos','alagos@cmit.com.ar',42,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2024-05-23 11:16:52',0,0,0),
+	 ('arusso','arusso@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',175,0,0),
+	 ('astridd','astridd@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',193,0,0),
+	 ('astriddfichas','astriddfichas@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',201,0,0),
+	 ('belgrano','belgrano@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',169,0,0);
+INSERT INTO users (name,email,datos_id,email_verified_at,password,remember_token,created_at,updated_at,profesional_id,inactivo,Anulado) VALUES
+	 ('bjara','bjara@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',203,0,0),
+	 ('candelagl','candelagl@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',199,0,0),
+	 ('cantoninni','cantoninni@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',202,0,0),
+	 ('caroca','caroca@cmit.com.ar',37,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2024-05-23 11:24:34',0,0,0),
+	 ('caroquar','caroquar@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',57,0,0),
+	 ('cguevara','cguevara@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',185,0,0),
+	 ('cintia','cintia@cmit.com.ar',7,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',0,0,0),
+	 ('cmit','cmit@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',26,0,0),
+	 ('cmit1','cmit1@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',214,0,0),
+	 ('conciencia','conciencia@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',168,0,0);
+INSERT INTO users (name,email,datos_id,email_verified_at,password,remember_token,created_at,updated_at,profesional_id,inactivo,Anulado) VALUES
+	 ('crear','crear@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',182,0,0),
+	 ('crosa','crosa@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',190,0,0),
+	 ('crossi','crossi@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',178,0,0),
+	 ('dcampos','dcampos@cmit.com.ar',23,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',0,0,0),
+	 ('dcamposcarnet','dcamposcarnet@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',162,0,0),
+	 ('dcortes','dcortes@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',138,0,0),
+	 ('dcortescarnet','dcortescarnet@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',176,0,0),
+	 ('denisep','denisep@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',174,0,0),
+	 ('dibarra','dibarra@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',192,0,0),
+	 ('dino','dino@cmit.com.ar',34,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',0,0,0);
+INSERT INTO users (name,email,datos_id,email_verified_at,password,remember_token,created_at,updated_at,profesional_id,inactivo,Anulado) VALUES
+	 ('dinocarnet','dinocarnet@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',164,0,0),
+	 ('dinoeeg','dinoeeg@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',160,0,0),
+	 ('dkriger','dkriger@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',148,0,0),
+	 ('dsasso','dsasso@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',140,0,0),
+	 ('emilianob','emilianob@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',179,0,0),
+	 ('eorejas','eorejas@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',221,0,0),
+	 ('ergoma','ergoma@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',224,0,0),
+	 ('fdelvalle','fdelvalle@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',207,0,0),
+	 ('fgomez','fgomez@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',217,0,0),
+	 ('fmari','fmari@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',186,0,0);
+INSERT INTO users (name,email,datos_id,email_verified_at,password,remember_token,created_at,updated_at,profesional_id,inactivo,Anulado) VALUES
+	 ('fmassaro','fmassaro@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',158,0,0),
+	 ('fmassaro2','fmassaro2@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',158,0,0),
+	 ('fmontiveros','fmontiveros@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',206,0,0),
+	 ('fochoa','fochoa@cmit.com.ar',26,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',0,0,0),
+	 ('fochoa2','fochoa2@cmit.com.ar',26,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',0,0,0),
+	 ('fochoacarnet','fochoacarnet@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',177,0,0),
+	 ('fronda','fronda@cmit.com.ar',39,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',0,0,0),
+	 ('fsciammarella','fsciammarella@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',197,0,0),
+	 ('gbante','gbante@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',171,0,0),
+	 ('gbecerra','gbecerra@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',146,0,0);
+INSERT INTO users (name,email,datos_id,email_verified_at,password,remember_token,created_at,updated_at,profesional_id,inactivo,Anulado) VALUES
+	 ('gfranco','gfranco@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',80,0,0),
+	 ('gfranco2','gfranco2@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',80,0,0),
+	 ('ggomez','ggomez@cmit.com.ar',17,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',0,0,0),
+	 ('gmarini','gmarini@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',188,0,0),
+	 ('gmontiveros','gmontiveros@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',149,0,0),
+	 ('gparada','gparada@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',218,0,0),
+	 ('htorres','htorres@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',167,0,0),
+	 ('ipaccmit','ipaccmit@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',166,0,0),
+	 ('isegovia','isegovia@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',151,0,0),
+	 ('jmontesino','jmontesino@cmit.com.ar',30,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',0,0,0);
+INSERT INTO users (name,email,datos_id,email_verified_at,password,remember_token,created_at,updated_at,profesional_id,inactivo,Anulado) VALUES
+	 ('josiniri','josiniri@cmit.com.ar',43,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',0,0,0),
+	 ('josiniri2','josiniri2@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',223,0,0),
+	 ('juan manuel','manuel@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',47,0,0),
+	 ('jurdiales','jurdiales@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',204,0,0),
+	 ('katy','katy@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',184,0,0),
+	 ('lalvarez','lalvarez@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',191,0,0),
+	 ('lalvarez2','lalvarez2@cmit.com.ar',35,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',0,0,0),
+	 ('lalvarezrx','lalvarezrx@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',191,0,0),
+	 ('lantiqueo','lantiqueo@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',154,0,0),
+	 ('liliana','liliana@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',48,0,0);
+INSERT INTO users (name,email,datos_id,email_verified_at,password,remember_token,created_at,updated_at,profesional_id,inactivo,Anulado) VALUES
+	 ('llamador','llamador@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',0,0,0),
+	 ('llofeudo','llofeudo@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',156,0,0),
+	 ('llopez','llopez@cmit.com.ar',14,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',0,0,0),
+	 ('lmaero','lmaero@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',183,0,0),
+	 ('lpinto','lpinto@cmit.com.ar',32,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',0,0,0),
+	 ('lquezada','lquezada@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',153,0,0),
+	 ('lsaavedra','lsaavedra@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',216,0,0),
+	 ('lucas4','lucas4@cmit.com.ar',1,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',0,0,0),
+	 ('lucas2','lucas2@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',161,0,0),
+	 ('lucas3','lucas3@cmit.com.ar',33,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',0,0,0);
+INSERT INTO users (name,email,datos_id,email_verified_at,password,remember_token,created_at,updated_at,profesional_id,inactivo,Anulado) VALUES
+	 ('luis','luis@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',24,0,0),
+	 ('mailend','mailend@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',155,0,0),
+	 ('malmeira','malmeira@cmit.com.ar',25,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',0,0,0),
+	 ('malmeira2','malmeira2@cmit.com.ar',25,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',0,0,0),
+	 ('marguello','marguello@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',165,0,0),
+	 ('martin','martin@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',60,0,0),
+	 ('martin22','martin22@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',60,0,0),
+	 ('mbustos','mbustos@cmit.com.ar',41,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',0,0,0),
+	 ('mcogo','mcogo@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',200,0,0),
+	 ('medicos','medicos@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',181,0,0);
+INSERT INTO users (name,email,datos_id,email_verified_at,password,remember_token,created_at,updated_at,profesional_id,inactivo,Anulado) VALUES
+	 ('mespinoza','mespinoza@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',131,0,0),
+	 ('mgalera','mgalera@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',225,0,0),
+	 ('mgutierrez','mgutierrez@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',29,0,0),
+	 ('miguel','miguel@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',2,0,0),
+	 ('miommi','miommi@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',157,0,0),
+	 ('mkaty','mkaty@cmit.com.ar',36,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',0,0,0),
+	 ('mmacedo','mmacedo@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',219,0,0),
+	 ('mmoreno','mmoreno@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',194,0,0),
+	 ('mpbelli','mpbelli@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',210,0,0),
+	 ('mporro','mporro@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',226,0,0);
+INSERT INTO users (name,email,datos_id,email_verified_at,password,remember_token,created_at,updated_at,profesional_id,inactivo,Anulado) VALUES
+	 ('mrosas','mrosas@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',142,0,0),
+	 ('mteruel','mteruel@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',172,0,0),
+	 ('nmendoza','nmendoza@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',150,0,0),
+	 ('paola','paola@cmit.com.ar',3,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',0,0,0),
+	 ('pcourtade','pcourtade@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',19,0,0),
+	 ('pfrancese','pfrancese@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',65,0,0),
+	 ('plopez','plopez@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',7,0,0),
+	 ('porejas','porejas@cmit.com.ar',40,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',0,0,0),
+	 ('psico','psico@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',123,0,0),
+	 ('rfalcone','rfalcone@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',196,0,0);
+INSERT INTO users (name,email,datos_id,email_verified_at,password,remember_token,created_at,updated_at,profesional_id,inactivo,Anulado) VALUES
+	 ('rmorales','rmorales@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',215,0,0),
+	 ('rvaca','rvaca@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',144,0,0),
+	 ('rvaca2','rvaca2@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',220,0,0),
+	 ('santoniazzi','santoniazzi@cmit.com.ar',15,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',0,0,0),
+	 ('smarini','smarini@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',189,0,0),
+	 ('tmaguire','tmaguire@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',205,0,0),
+	 ('varesco','varesco@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',159,0,0),
+	 ('varesco1','varesco1@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',180,0,0),
+	 ('vperea','vperea@cmit.com.ar',38,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',0,0,0),
+	 ('wfigueroa','wfigueroa@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',112,0,0);
+INSERT INTO users (name,email,datos_id,email_verified_at,password,remember_token,created_at,updated_at,profesional_id,inactivo,Anulado) VALUES
+	 ('nicolas2','miw@correo.com',53,NULL,'$2y$10$Ev52omlEi1XoareOoCLsGuyHjEpSZ68nHFk4mRdeDPRxexrLVxYNi',NULL,'2024-05-17 13:33:33','2024-05-22 21:52:08',0,0,0),
+	 ('tomura','info@tomura.com',55,NULL,'$2y$10$OX6VwTGH4/t/HCLKdlG4XuXPlSavwx..JaIXx7aWLjpaAXk7S8iuS',NULL,'2024-05-22 21:59:15','2024-05-22 22:14:52',0,0,0);
+
+/* Eliminar si es una version vieja */
+composer remove spatie/laravel-permission
+rm config/permission.php
+rm database/migrations/202x_xx_xx_xxxxxx_create_permission_tables.php  /*Si existe*/
+/*** Eliminar entidades ***/
+permissions
+roles
+model_has_permissions
+model_has_roles
+role_has_permissions
+/*** Fin ***/
 
 CREATE TABLE `roles` (
   `Id` int(11) NOT NULL AUTO_INCREMENT,
@@ -938,37 +964,63 @@ CREATE TABLE permisos(
     UNIQUE(Id)
 );
 
-
-INSERT INTO permisos(slug, descripcion) VALUES
-("clientes_add","Agregar clientes nuevos"),
-("clientes_edit","editar clientes"),
-("clientes_show","visualizar datos del cliente"),
-("clientes_send","Enviar emails a clientes"),
-("clientes_export","Exportar reportes en general"),
-("clientes_delete","Eliminar un cliente"),
-("prestaciones_add","Agregar una nueva prestación"),
-("prestaciones_edit","Editar una prestación"),
-("prestaciones_show","Visualizar prestación"),
-("prestaciones_delete","Eliminar prestaciones"),
-("prestaciones_block","Anular prestaciones"),
-("prestaciones_todo","Utilización del botón todo"),
-("prestaciones_eEnviar","Utilización del botón eEnviar"),
-("etapas_show","Visualizar etapas"),
-("etapas_apply","Etapas aplicar, cerrar, adjuntar"),
-("etapas_informador","Sección informador"),
-("etapas_efector","Sección efector"),
-("etapas_eenviar","Sección eEnviar"),
-("mapas_add","Agregar un mapa"),
-("mapas_edit","Editar un mapa"),
-("mapas_finalizar","Finalizar un mapa"),
-("mapas_eenviar","eEnviar un mapa"),
-("pacientes_add","Agregar paciente"),
-("pacientes_edit","Editar pacientes"),
-("pacientes_delete","Eliminar pacientes"),
-("examenCta_add","Agregar examen a cuenta"),
-("examenCta_edit","Editar examen a cuenta"),
-("examenCta_delete","Eliminar examen a cuenta"),
-("boton_usuarios", "Boton slider de usuarios");
+INSERT INTO permisos (slug,descripcion) VALUES
+	 ('clientes_add',0x4167726567617220636C69656E746573206E7565766F73),
+	 ('clientes_edit',0x65646974617220636C69656E746573),
+	 ('clientes_show',0x76697375616C697A6172206461746F732064656C20636C69656E7465),
+	 ('clientes_send',0x456E7669617220656D61696C73206120636C69656E746573),
+	 ('clientes_export',0x4578706F72746172207265706F7274657320656E2067656E6572616C),
+	 ('clientes_delete',0x456C696D696E617220756E20636C69656E7465),
+	 ('prestaciones_add',0x4167726567617220756E61206E75657661207072657374616369C3B36E),
+	 ('prestaciones_edit',0x45646974617220756E61207072657374616369C3B36E),
+	 ('prestaciones_show',0x56697375616C697A6172207072657374616369C3B36E),
+	 ('prestaciones_delete',0x456C696D696E61722070726573746163696F6E6573);
+INSERT INTO permisos (slug,descripcion) VALUES
+	 ('prestaciones_block',0x416E756C61722070726573746163696F6E6573),
+	 ('prestaciones_todo',0x5574696C697A616369C3B36E2064656C20626F74C3B36E20746F646F),
+	 ('prestaciones_eEnviar',0x5574696C697A616369C3B36E2064656C20626F74C3B36E2065456E76696172),
+	 ('etapas_show',0x56697375616C697A617220657461706173),
+	 ('etapas_apply',0x4574617061732061706C696361722C206365727261722C2061646A756E746172),
+	 ('etapas_informador',0x5365636369C3B36E20696E666F726D61646F72),
+	 ('etapas_efector',0x5365636369C3B36E2065666563746F72),
+	 ('etapas_eenviar',0x5365636369C3B36E2065456E76696172),
+	 ('mapas_add',0x4167726567617220756E206D617061),
+	 ('mapas_edit',0x45646974617220756E206D617061);
+INSERT INTO permisos (slug,descripcion) VALUES
+	 ('mapas_finalizar',0x46696E616C697A617220756E206D617061),
+	 ('mapas_eenviar',0x65456E7669617220756E206D617061),
+	 ('pacientes_add',0x416772656761722070616369656E7465),
+	 ('pacientes_edit',0x4564697461722070616369656E746573),
+	 ('pacientes_delete',0x456C696D696E61722070616369656E746573),
+	 ('examenCta_add',0x41677265676172206578616D656E2061206375656E7461),
+	 ('examenCta_edit',0x456469746172206578616D656E2061206375656E7461),
+	 ('examenCta_delete',0x456C696D696E6172206578616D656E2061206375656E7461),
+	 ('boton_usuarios',NULL),
+	 ('mapas_add',0x41677265676172206D61706173206E7565766F73);
+INSERT INTO permisos (slug,descripcion) VALUES
+	 ('mapas_cerrar',0x43657272617220756E206D617061),
+	 ('mapas_finalizar',0x46696E616C697A617220756E206D617061),
+	 ('mapas_eenviar',0x65456E7669617220756E206D617061),
+	 ('stock_show',0x56697375616C697A61722073746F636B),
+	 ('stock_baja',0x6461722064652062616A612073746F636B),
+	 ('stock_add',0x416772656761722073746F636B),
+	 ('stock_parametros',0x506172616D6574726F732064652073746F636B),
+	 ('manual',0x4D6F64756C6F2064652073746F636B20636F6D706C65746F),
+	 ('boton_prestaciones',0x426F746F6E20736C696465722070726573746163696F6E6573),
+	 ('pacientes_show',0x56697375616C697A61722070616369656E746573);
+INSERT INTO permisos (slug,descripcion) VALUES
+	 ('paciente_report',0x5265706F727465732070616369656E7465),
+	 ('mapas_show',0x56697375616C697A6172206D61706173),
+	 ('especialidades_show',0x56697375616C697A617220657370656369616C696461646573),
+	 ('especialidades_add',0x4167726567617220657370656369616C69646164),
+	 ('especialidades_edit',0x4D6F6469666963617220657370656369616C69646164),
+	 ('especialidades_delete',0x456C696D696E617220657370656369616C69646164),
+	 ('noticias_show',0x56697375616C697A6172206E6F746963696173),
+	 ('noticias_add',0x4372656172206E6F7469636961),
+	 ('noticias_edit',0x456469746172206E6F7469636961),
+	 ('noticias_delete',0x456C696D696E6172206E6F746963696173);
+INSERT INTO permisos (slug,descripcion) VALUES
+	 ('examenCuenta_show',0x56697375616C697A6172206578616D656E65732061206375656E7461);
 
 CREATE TABLE `user_rol` (
   `user_id` bigint(20) unsigned NOT NULL,
@@ -1024,24 +1076,6 @@ itemsprestaciones
 telefonos
 usuarios
 
-
-INSERT INTO permisos(slug, descripcion) VALUES
-("mapas_add","Agregar mapas nuevos"),
-("mapas_cerrar","Cerrar un mapa"),
-("mapas_finalizar","Finalizar un mapa"),
-("mapas_eenviar","eEnviar un mapa"),
-("facturacion","Modulo de facturacion general"),
-("notaDeCredito","Modulo de nota de credito general"),
-("examenesACuenta", "Modulo de Examenes a Cuenta general"),
-("stock_show","Visualizar stock"),
-("stock_baja", "dar de baja stock"),
-("stock_add", "Agregar stock"),
-("stock_parametros", "Parametros de stock"),
-("manual", "Modulo de stock completo");
-
-INSERT INTO permisos(slug, descripcion) VALUES
-("boton_prestaciones","Boton slider prestaciones");
-
 INSERT INTO rol_permisos(rol_id, permiso_id) VALUES
 (1,42),(2,42),(3,42),(4,42),(5,42),(6,42),(8,42),(9,42);
 
@@ -1052,13 +1086,6 @@ INSERT INTO roles(nombre, descripcion) VALUES
 ("Stock",""),
 ("Combinado",""),
 ("Evaluador","");
-
-INSERT INTO permisos(slug, descripcion) VALUES
-("pacientes_show","Visualizar pacientes"),
-("pacientes_add", "Agregar paciente"),
-("pacientes_edit", "Editar paciente"),
-("paciente_delete", "Eliminar paciente"),
-("paciente_report", "Reportes paciente");
 
 INSERT INTO rol_permisos(rol_id, permiso_id) VALUES
 (2,43),(3,43),(4,43),(5,43),(6,43),(2,44),(3,44),(4,44),(5,44),(6,44),(2,45),(3,45),(4,45),(5,45),(6,45);
@@ -1072,18 +1099,6 @@ INSERT INTO rol_permisos(rol_id, permiso_id) VALUES
 INSERT INTO permisos(slug, descripcion) VALUES
 ("mapas_show","Visualizar mapas");
 
-INSERT INTO permisos(slug, descripcion) VALUES
-("especialidades_show","Visualizar especialidades"),
-("especialidades_add", "Agregar especialidad"),
-("especialidades_edit", "Modificar especialidad"),
-("especialidades_delete", "Eliminar especialidad");
-
-INSERT INTO permisos(slug, descripcion) VALUES
-("noticias_show", "Visualizar noticias"),
-("noticias_add", "Crear noticia"),
-("noticias_edit", "Editar noticia"),
-("noticias_delete", "Eliminar noticias");
-
 INSERT INTO rol_permisos(rol_id, permiso_id) VALUES
 (1,54),(2,54),(3,54),(4,54),(5,54),(6,54);
 
@@ -1096,20 +1111,12 @@ INSERT INTO permisos(slug, descripcion) VALUES
 INSERT INTO rol_permisos(rol_id, permiso_id) VALUES
 (2,41),(4,41),(5,41),(6,41),(3,43),(3,44),(3,45),(3,46);
 
-INSERT INTO permisos(slug, descripcion) VALUES
-("prestaciones_report","Impresión de reportes de prestaciones");
 
 INSERT INTO rol_permisos(rol_id, permiso_id) VALUES
 (3,59),(6,59);
 
 ALTER TABLE profesionales_prov DROP COLUMN Tipo;
 ALTER TABLE profesionales_prov ADD IdRol INT(11) DEFAULT 0 NULL;
-
-INSERT INTO permisos(slug, descripcion) VALUES
-("facturacion_show","Visualización de facturación"),
-("facturacion_add","Agregar facturación"),
-("facturacion_edit","Editar facturación"),
-("facturacion_delete","Eliminar facturación");
 
 INSERT INTO rol_permisos(rol_id, permiso_id) VALUES
 (3,60),(3,61),(3,62),(3,63);
@@ -1135,15 +1142,9 @@ CREATE TABLE reportes_finneg (
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8mb4_unicode_ci AUTO_INCREMENT=1000;
 
 
-INSERT INTO permisos(slug, descripcion) VALUES
-("profesionales_show","Visualización de profesional"),
-("profesionales_add","Agregar profesional"),
-("profesionales_edit","Editar profesional"),
-("profesionales_delete","Eliminar profesional");
-
 INSERT INTO rol_permisos(rol_id, permiso_id) VALUES
 (3,65),(3,66),(3,67),(3,68);
 
-ALTER TABLE profesionales ADD InfAdj INT DEFAULT 0 NOT NULL;
+ALTER TABLE profesionales ADD InfAdj INT DEFAULT 1 NOT NULL;
 
 UPDATE proveedores SET InfAdj = 1;

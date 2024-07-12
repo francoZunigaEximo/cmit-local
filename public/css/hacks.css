@@ -440,6 +440,7 @@ body .selectArt2 .select2.select2-container {
 #listadoModeloMsj th, td,
 #lstModeloMsj th, td,
 #listaFacturas th, td,
+#listaFacturasAlta  th, td,
 #listaPrestaciones th, td { white-space: nowrap !important; }
 
 #listaClientes tr,
@@ -470,6 +471,7 @@ body .selectArt2 .select2.select2-container {
 #listadoModeloMsj tr,
 #lstModeloMsj tr,
 #listaFacturas tr,
+#listaFacturasAlta tr,
 #listaPrestaciones tr { height: 25px !important;}
 
 #listaClientes tbody tr td,
@@ -500,6 +502,7 @@ body .selectArt2 .select2.select2-container {
 #listadoModeloMsj tbody tr td,
 #lstModeloMsj tbody tr td,
 #listaFacturas tbody tr td,
+#listaFacturasAlta  tbody tr td,
 #listaPrestaciones tbody tr td { padding: 5px 8px 2px 8px };
 
 table.dataTable tr.dtrg-level-0 td {
@@ -533,6 +536,7 @@ table.dataTable tr.dtrg-level-0 td {
 #lstDisponibles :not(caption) > *,
 #lstExCta :not(caption) > *,
 #lstUsuarios :not(caption) > *,
+#listaFacturasAlta :not(caption) > *,
 #finalizarMapa > :not(caption) > * {
     padding: 0.25rem 0.6rem;
 }

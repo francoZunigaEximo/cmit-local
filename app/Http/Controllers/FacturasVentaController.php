@@ -18,6 +18,7 @@ use App\Mail\FacturasMailable;
 use App\Models\Auditor;
 use App\Models\AuditoriaMailFacturacion;
 use App\Models\Cliente;
+use App\Models\ItemPrestacion;
 use App\Models\Prestacion;
 use App\Traits\Reportes;
 use App\Traits\ReporteExcel;
@@ -443,6 +444,13 @@ class FacturasVentaController extends Controller
             return DataTables::of($result)->make(true);
         }
         return view('layouts.facturas.create');
+    }
+
+    public function verDetalle(Request $request)
+    {
+        $query = ItemPrestacion::with(['examenes.paqueteFacturacion'])->where('IdPrestacion', $request->Id)->groupBy('IdPrestacion')->get();
+
+        return response()->json($query);
     }
 
     private function facturas()

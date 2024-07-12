@@ -27,6 +27,7 @@ use App\Http\Controllers\PaqueteEstudioController;
 use App\Http\Controllers\PaqueteFacturacionController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\UsuariosController;
+use App\Models\FacturaDeVenta;
 //use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Hash;
@@ -235,6 +236,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('facturas/enviar',[FacturasVentaController::class, 'enviar'])->name('facturas.enviar');
     Route::get('facturas/excel', [FacturasVentaController::class, 'excel'])->name('facturas.excel');
     Route::get('facturas/paginacion/alta',[FacturasVentaController::class, 'paginacionAlta'])->name('facturas.paginacion');
+    Route::get('facturas/detalles', [FacturasVentaController::class, 'verDetalle'])->name('facturas.detalle');
     Route::resource('facturas', FacturasVentaController::class);
 
     // Rutas de Noticias
