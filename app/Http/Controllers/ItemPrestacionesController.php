@@ -82,7 +82,7 @@ class ItemPrestacionesController extends Controller
                 } elseif ($request->Para === 'cerrar' ) {
 
                     $item->CAdj = $lstCerrar[$item->CAdj] ?? $request->CAdj;
-                    $item->examenes->Informe === 0 && $item->profesional2->InfAdj === 0 ? $item->CInfo = 0 : null;
+                    $item->examenes->Informe === 0 && $item->profesionales2->InfAdj === 0 ? $item->CInfo = 0 : null;
 
                 } elseif ($request->Para === 'cerrarI'){
 
