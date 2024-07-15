@@ -82,7 +82,7 @@
     const searchRol = "{{ route('searchRol') }}";
     const SEARCHUSUARIO = "{{ route('buscarUsuario') }}";
     const INDEX = "{{ route('usuarios.index') }}";
-    const bajaUsuario = "{{ route('bajaUsuario')}}";
+    const bajaUsuario = "{{ route('usuarios.delete')}}";
     const bloquearUsuario = "{{ route('bloquearUsuario') }}";
     const cambiarPassUsuario = "{{ route('cambiarPassUsuario') }}";
 </script>

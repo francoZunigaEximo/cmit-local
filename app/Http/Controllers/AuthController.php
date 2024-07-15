@@ -34,6 +34,12 @@ class AuthController extends Controller
                 return redirect()->route('login')->withFail('El usuario fue eliminado el '. $nuevaFecha);
             }
 
+            if (Auth::user()->role->isEmpty()) {
+                Session::flush();
+                Auth::logout();
+                return redirect()->route('login')->withFail('El usuario no tiene ningun rol asignado. Consulte con el administrador');
+            }
+
             $request->session()->regenerate();
 
             if(Auth::check()){

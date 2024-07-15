@@ -1148,3 +1148,22 @@ INSERT INTO rol_permisos(rol_id, permiso_id) VALUES
 ALTER TABLE profesionales ADD InfAdj INT DEFAULT 1 NOT NULL;
 
 UPDATE proveedores SET InfAdj = 1;
+
+INSERT INTO roles('Id', 'nombre') values('13', 'Adminstrador');
+
+
+INSERT INTO rol_permisos(rol_id, permiso_id) VALUES
+(13,1),(13,2),(13,3),(13,4),(13,5),(13,6),(13,7),(13,8),(13,9),(13,10);
+INSERT INTO rol_permisos(rol_id, permiso_id) VALUES
+(13,11),(13,12),(13,13),(13,14),(13,15),(13,16),(13,17),(13,18),(13,20);
+INSERT INTO rol_permisos(rol_id, permiso_id) VALUES
+(13,23),(13,24),(13,25),(13,26),(13,27),(13,28),(13,29),(13,30),(13,31),(13,32);
+INSERT INTO rol_permisos(rol_id, permiso_id) VALUES
+(13,33),(13,34),(13,35),(13,36),(13,37),(13,38),(13,39),(13,40),(13,41),(13,42),(13,43),(13,44);
+INSERT INTO rol_permisos(rol_id, permiso_id) VALUES
+(13,45),(13,46),(13,47),(13,48),(13,49),(13,50),(13,51),(13,52),(13,53),(13,59),(13,60),(13,61),(13,62);
+INSERT INTO rol_permisos(rol_id, permiso_id) VALUES
+(13,63),(13,64),(13,65),(13,66),(13,67),(13,68);
+
+DELETE FROM rol_permisos 
+WHERE rol_id = 3 AND permiso_id IN (43, 44, 45, 46);

@@ -117,13 +117,21 @@ $(document).ready(()=>{
             if(result){
                 preloader('on');
                 $.get(bajaUsuario, {Id: id})
-                    .done(function(){
+                    .done(function(response){
                         preloader('off');
-                        toastr.success("Se ha dado de baja al usuario correctamente");
+                        let tipoToastr = response.estado === 'success' ? 'success' : 'warning';
+
+                        toastr[tipoToastr](response.msg);
                         setTimeout(()=> {
                             $('#listaUsuarios').DataTable();
                             $('#listaUsuarios').DataTable().draw(false);
                         }, 2000);
+                    })
+                    .fail(function(jqXHR){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
                     });
             }
         });            

@@ -6,6 +6,7 @@ use App\Models\Provincia;
 use App\Models\Rol;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
@@ -197,14 +198,25 @@ class UsuariosController extends Controller
 
     public function baja(Request $request)
     {
-        $query = User::find($request->Id);
+        $query = User::with('role')->find($request->Id);
 
         if($query) 
         {
+            if($query->role->contains('nombre', 'Administrador')) {
+                return response()->json(['msg' => 'No se puede eliminar un rol Administrador'], 409);
+            }
+
+            if(Auth::user()->name === $query->name) {
+                return response()->json(['msg' => 'No puedes hacer una autoeliminación'], 409);
+            }
+
             $query->Anulado = $query->Anulado === 1 ? 0 : 1;
             $query->inactivo = 0;
             $query->save();
 
+            return response()->json(['msg' => 'Se ha dado de baja al usuario correctamente', 'estado' => 'success'], 200);
+        }else{
+            return response()->json(['msg' => 'No se ha podido dar de baja el usuario'], 500);
         }
     }
 

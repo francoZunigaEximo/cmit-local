@@ -295,6 +295,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('getPaqueteFact', [PaqueteFacturacionController::class, 'paquetes'])->name('getPaqueteFact');
 
     //Rutas de Paquete usuarios
+    Route::get('usuarios/delete', [UsuariosController::class, 'baja'])->name('usuarios.delete');
     Route::resource('usuarios', UsuariosController::class);
     Route::get('searchNombreUsuario', [UsuariosController::class, 'NombreUsuario'])->name('searchNombreUsuario');
     Route::get('searchUsuario', [UsuariosController::class, 'Usuario'])->name('searchUsuario');
@@ -302,7 +303,6 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('checkUsuario', [UsuariosController::class, 'checkUsuario'])->name('checkUsuario');
     Route::get('checkCorreo', [UsuariosController::class, 'checkCorreo'])->name('checkCorreo');
     Route::get('checkEmailUpdate', [UsuariosController::class, 'checkEmailUpdate'])->name('checkEmailUpdate');
-    Route::get('bajaUsuario', [UsuariosController::class, 'baja'])->name('bajaUsuario');
     Route::get('bloquearUsuario', [UsuariosController::class, 'bloquear'])->name('bloquearUsuario');
     Route::get('cambiarPassUsuario', [UsuariosController::class, 'cambiarPassword'])->name('cambiarPassUsuario');
 
