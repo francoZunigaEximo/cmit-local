@@ -112,8 +112,7 @@ class ExamenesCuentaController extends Controller
 
             $query->when(!empty($request->examen) && empty($request->empresa), function ($query) use ($request) {
                 $query->where('examenes.Id', $request->examen)
-                        ->groupBy('examenes.Id')
-                        ->groupBy('clientes.Id');
+                        ->groupBy(['examenes.Id', 'clientes.Id']);
             });
 
             $query->when(!empty($request->empresa) && empty($request->examen), function ($query) use ($request) {
@@ -122,20 +121,13 @@ class ExamenesCuentaController extends Controller
             });
 
             $query->when(empty($request->empresa) && empty($request->examen), function ($query) {
-                $query->groupBy('clientes.RazonSocial')
-                        ->groupBy('clientes.ParaEmpresa')
-                        ->groupBy('clientes.Identificacion')
-                        ->groupBy('examenes.Nombre');
+                $query->groupBy(['clientes.RazonSocial', 'clientes.ParaEmpresa', 'clientes.Identificacion', 'examenes.Nombre']);
             });
 
             $query->when(!empty($request->empresa) && !empty($request->examen), function ($query) use ($request){
                 $query->where('examenes.Id', $request->examen)
                     ->where('clientes.Id', $request->empresa)
-                    ->groupBy('clientes.Id')
-                    ->groupBy('clientes.RazonSocial')
-                    ->groupBy('clientes.ParaEmpresa')
-                    ->groupBy('clientes.Identificacion')
-                    ->groupBy('examenes.Nombre');
+                    ->groupBy(['clientes.Id', 'clientes.RazonSocial', 'clientes.ParaEmpresa', 'clientes.Identificacion', 'examenes.Nombre']);
             });
 
             $result = $query->havingRaw('contadorSaldos > 0')
@@ -860,11 +852,7 @@ class ExamenesCuentaController extends Controller
         )
         ->selectRaw('COUNT(CASE WHEN pagosacuenta_it.IdPrestacion = 0 THEN 1 END) AS contadorSaldos')
         ->where('clientes.Id', $request->Id)
-        ->groupBy('clientes.Id')
-        ->groupBy('clientes.RazonSocial')
-        ->groupBy('clientes.ParaEmpresa')
-        ->groupBy('clientes.Identificacion')
-        ->groupBy('examenes.Nombre')
+        ->groupBy(['clientes.Id', 'clientes.RazonSocial','clientes.ParaEmpresa','clientes.Identificacion','examenes.Nombre'])
         ->havingRaw('contadorSaldos > 0')
         ->whereNot('pagosacuenta_it.Obs', 'provisorio')
         ->orderBy('clientes.RazonSocial')
@@ -903,9 +891,7 @@ class ExamenesCuentaController extends Controller
              )
              ->where('pagosacuenta_it.IdPrestacion', 0)
              ->whereNot('pagosacuenta_it.Obs', 'provisorio')
-             ->groupBy('pagosacuenta.Tipo')
-             ->groupBy('pagosacuenta.Suc')
-             ->groupBy('pagosacuenta.Nro')
+             ->groupBy(['pagosacuenta.Tipo', 'pagosacuenta.Suc','pagosacuenta.Nro'])
              ->get();
  
          return response()->json($clientes);
