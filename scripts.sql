@@ -1149,7 +1149,8 @@ ALTER TABLE profesionales ADD InfAdj INT DEFAULT 1 NOT NULL;
 
 UPDATE proveedores SET InfAdj = 1;
 
-INSERT INTO roles('Id', 'nombre') values('13', 'Adminstrador');
+INSERT INTO roles('Id','nombre','descripcion') values ('13','Adminstrador',NULL);
+INSERT INTO `roles` (`Id`, `nombre`, `descripcion`) VALUES ('13', 'Administrador', NULL);
 
 
 INSERT INTO rol_permisos(rol_id, permiso_id) VALUES
@@ -1161,7 +1162,7 @@ INSERT INTO rol_permisos(rol_id, permiso_id) VALUES
 INSERT INTO rol_permisos(rol_id, permiso_id) VALUES
 (13,33),(13,34),(13,35),(13,36),(13,37),(13,38),(13,39),(13,40),(13,41),(13,42),(13,43),(13,44);
 INSERT INTO rol_permisos(rol_id, permiso_id) VALUES
-(13,45),(13,46),(13,47),(13,48),(13,49),(13,50),(13,51),(13,52),(13,53),(13,59),(13,60),(13,61),(13,62);
+(13,45),(13,46),(13,47),(13,48),(13,49),(13,50),(13,51),(13,53),(13,59),(13,60),(13,61),(13,62);
 INSERT INTO rol_permisos(rol_id, permiso_id) VALUES
 (13,63),(13,64),(13,65),(13,66),(13,67),(13,68);
 
