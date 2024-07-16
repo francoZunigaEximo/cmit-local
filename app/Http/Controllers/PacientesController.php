@@ -74,37 +74,35 @@ class PacientesController extends Controller
             return response()->json(['msg' => 'No tiene permisos'], 403);
         }
 
-        $prestacion = Cache::remember('prestacion_pac', 1, function () use ($request) {
+        $buscar = trim($request->buscar);
+        $paciente = $request->paciente;
 
-            $buscar = trim($request->buscar);
-            $paciente = $request->paciente;
+        $query = $this->queryBasico();
 
-            $query = $this->queryBasico();
-
-            if (!empty($buscar)) 
-            {
-                $query->when($buscar, function ($query) use ($buscar, $paciente) {
-                    $query->where(function ($query) use ($buscar, $paciente) {
-                        $query->where('emp.RazonSocial', 'LIKE', '%'.$buscar.'%')
-                            ->orWhere('emp.ParaEmpresa', 'LIKE', '%'.$buscar.'%');
-                        $query->orWhere(function ($query) use ($buscar, $paciente) {
-                            $query->whereExists(function ($subquery) use ($buscar, $paciente) {
-                                $subquery->select(DB::raw(1))
-                                    ->from('clientes')
-                                    ->whereColumn('art.Id', 'prestaciones.IdART')
-                                    ->where('art.RazonSocial', 'LIKE', '%'.$buscar.'%');
-                            });
-                        });
-                        $query->orWhere(function ($query) use ($buscar, $paciente) {
-                            $query->where('prestaciones.Id', '=', $buscar)
-                                ->where('prestaciones.IdPaciente', '=', $paciente);
+        if (!empty($buscar)) 
+        {
+            $query->when($buscar, function ($query) use ($buscar, $paciente) {
+                $query->where(function ($query) use ($buscar, $paciente) {
+                    $query->where('emp.RazonSocial', 'LIKE', '%'.$buscar.'%')
+                        ->orWhere('emp.ParaEmpresa', 'LIKE', '%'.$buscar.'%');
+                    $query->orWhere(function ($query) use ($buscar, $paciente) {
+                        $query->whereExists(function ($subquery) use ($buscar, $paciente) {
+                            $subquery->select(DB::raw(1))
+                                ->from('clientes')
+                                ->whereColumn('art.Id', 'prestaciones.IdART')
+                                ->where('art.RazonSocial', 'LIKE', '%'.$buscar.'%');
                         });
                     });
+                    $query->orWhere(function ($query) use ($buscar, $paciente) {
+                        $query->where('prestaciones.Id', '=', $buscar)
+                            ->where('prestaciones.IdPaciente', '=', $paciente);
+                    });
                 });
-            }
+            });
+        }
 
-            return $this->condicionesBasicas($query, $paciente);
-        });
+        $prestacion = $this->condicionesBasicas($query, $paciente);
+
         return response()->json(['pacientes' => $prestacion]);
     }
 
@@ -324,7 +322,7 @@ class PacientesController extends Controller
             DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdART) AS Art'),
             DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdEmpresa) AS Empresa'),
             DB::raw('COALESCE(COUNT(itemsprestaciones.IdPrestacion), 0) as Total'),
-            DB::raw('COALESCE(COUNT(CASE WHEN (itemsprestaciones.CAdj = 5 OR itemsprestaciones.CAdj = 3) AND (itemsprestaciones.CInfo = 3 OR itemprestaciones.CInfo = 0) THEN itemsprestaciones.IdPrestacion END), 0) as CerradoAdjunto'),
+            DB::raw('COALESCE(COUNT(CASE WHEN (itemsprestaciones.CAdj = 5 OR itemsprestaciones.CAdj = 3) AND (itemsprestaciones.CInfo = 3 OR itemsprestaciones.CInfo = 0) THEN itemsprestaciones.IdPrestacion END), 0) as CerradoAdjunto'),
             'emp.ParaEmpresa as ParaEmpresa',
             'emp.Identificacion as Identificacion',
             'prestaciones.Fecha as FechaAlta',
