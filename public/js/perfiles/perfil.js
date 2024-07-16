@@ -32,16 +32,12 @@ $(document).ready(()=>{
 
     });
 
-    toastr.options = {
-        closeButton: true,   
-        progressBar: true,    
-        timeOut: 3000,        
-    };
+
     quitarDuplicados("#provincia");
     quitarDuplicados("#cuil");
     quitarDuplicados("#tipoDoc");
 
-    $(document).on('click', '.updateDatos', function(e){
+    $(document).on('click', '.updateDatos', async function(e){
         e.preventDefault();
 
         let nombre = $('#nombre').val(),
@@ -56,24 +52,59 @@ $(document).ready(()=>{
             localidad = $('#localidad').val(),
             direccion = $('#direccion').val(),
             cp = $('#codPostal').val(),
-            Id = $('#Id').val();
+            Id = $('#Id').val(),
+            email = $('#email').val(),
+            name = $('#name').val();
 
-        if($('#form-update').valid() && confirm("¿Esta seguro que desea confirmar la operación?")) {
-
-            preloader('on');
-            $.post(actualizarDatos, {_token: TOKEN, Nombre: nombre, Apellido: apellido, TipoDocumento: tipoDocumento, Documento: documento, TipoIdentificacion: tipoIdentificacion, Identificacion: identificacion, Telefono: telefono, FechaNacimiento: fechaNacimiento, Provincia: provincia, IdLocalidad: localidad, CP: cp, Id: Id, Direccion: direccion})
-                .done(function(){
-                    preloader('off');
-                    toastr.success("Se han actualizado correctamente los datos del usuario");
-                    setTimeout(()=>{
-                        location.reload();
-                    },2000);
-                })
-                .fail(function(xhr){
-                    console.error(xhr);
-                    toastr.error("Ha ocurrido un error. Consulte con el administrador");
-                })
+        if([0,null,''].includes(email)) {
+            toastr.warning('El correo electrónico no puede estar vacío');
+            return;
         }
+
+        if([0,null,''].includes(name)) {
+            toastr.warning('No identificamos al usuario. Consulte con el administrador');
+            return;
+        }
+
+        if(correoValido(email) === false) {
+            toastr.warning("El email no es válido");
+            return;
+        }
+
+        let result = await checkEmail(name,email);
+        if (result && result.estado === 'false') {
+            toastr.warning(result.msg);
+            return;
+        }
+
+        if (result && result.estado === 'true') {
+            toastr.success(result.msg);
+        }
+    
+        swal({
+            title: "¿Esta seguro que desea confirmar la operación?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar) {
+
+                preloader('on');
+                $.post(actualizarDatos, {_token: TOKEN, Nombre: nombre, Apellido: apellido, TipoDocumento: tipoDocumento, Documento: documento, TipoIdentificacion: tipoIdentificacion, Identificacion: identificacion, Telefono: telefono, FechaNacimiento: fechaNacimiento, Provincia: provincia, IdLocalidad: localidad, CP: cp, Id: Id, email: email, Direccion: direccion, name: name})
+                    .done(function(response){
+                        preloader('off');
+                        toastr.success(response.msg);
+                        setTimeout(()=>{
+                            location.reload();
+                        },2000);
+                    })
+                    .fail(function(jqXHR){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
+                    })
+            }
+        })
 
     });
 
@@ -84,7 +115,7 @@ $(document).ready(()=>{
         if($('#form-updatePass').valid() && confirm("¿Esta seguro que desea actualizar su contraseña?")){
             preloader('on');
             $.post(actualizarPass, {_token: TOKEN, password: passw})
-                .done(function() {
+                .done(function(response) {
                     preloader('off');
                     toastr.success("Se han actualizado su contraseña correctamente");
                     setTimeout(()=>{
@@ -106,37 +137,6 @@ $(document).ready(()=>{
         loadLocalidad(localidadId);
     });
 
-
-    let timer = null;
-
-    $(document).on('input', '#email', function(){
-        clearTimeout(timer);
-
-        timer = setTimeout(function() { 
-            let email = $('#email').val();
-            
-            if([null, undefined, ''].includes(email)) {
-                toastr.warning("El email no puede estar vacío");
-                $('#cambiarEmail').attr('disabled','true');
-                return;
-            }
-    
-            $.get(checkEmailUpdate, {email: email})
-                .done(function(response){
-                    response.estado == 'false' && verificarCorreo === response.correo
-                        ? toastr.success("Es su correo actual") 
-                        : response.estado == 'false' && verificarCorreo !== response.correo
-                            ? toastr.warning(response.msg) 
-                            : toastr.success(response.msg)
-    
-                    response.estado === 'false' && verificarCorreo === response.correo
-                        ? $('#cambiarEmail').removeAttr('disabled')
-                        : response.estado === 'false' && verificarCorreo !== response.correo
-                            ? $('#cambiarEmail').attr('disabled','true') 
-                            : $('#cambiarEmail').removeAttr('disabled');
-                });
-        }, 1000); 
-    });
 
     function loadProvincia(valor) {
         $.ajax({
@@ -171,20 +171,9 @@ $(document).ready(()=>{
         });
     }
 
-    function quitarDuplicados(selector) {
-        let seleccion = $(selector).val();
-        let countSeleccion = $(selector + " option[value='" + seleccion + "']").length;
-    
-        if (countSeleccion > 1) {
-            $(selector + " option[value='" + seleccion + "']:gt(0)").hide();
-        }
-    }
-
-    function preloader(opcion) {
-        $('#preloader').css({
-            opacity: '0.3',
-            visibility: opcion === 'on' ? 'visible' : 'hidden'
-        });
+    async function checkEmail(name, email) {
+        let response = await $.get(checkCorreo, { email: email, name: name });
+        return response;
     }
 
 });

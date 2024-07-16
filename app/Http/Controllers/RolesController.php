@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use App\Models\Rol;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class RolesController extends Controller
 {
@@ -37,15 +38,19 @@ class RolesController extends Controller
     {
         return Rol::join('user_rol', 'roles.Id', '=', 'user_rol.rol_id')
             ->join('users', 'user_rol.user_id', '=', 'users.Id')
+            ->join('rol_permisos', 'roles.Id', '=', 'rol_permisos.rol_id')
+            ->join('permisos', 'rol_permisos.permiso_id', '=', 'permisos.Id')
             ->select(
                 'roles.nombre as Nombre',
-                'roles.descripcion as Descripcion',
+                DB::raw('GROUP_CONCAT(permisos.Descripcion SEPARATOR ", ") as Descripcion'),
                 'user_rol.rol_id as IdRol',
                 'user_rol.user_id as IdUser'
             )
-            ->where('users.id', $request->Id)
-            ->get();  
+            ->where('users.Id', $request->Id)
+            ->groupBy(['IdRol', 'Nombre']) 
+            ->get();   
     }
+
 
     public function add(Request $request)
     {

@@ -171,28 +171,53 @@ class UsuariosController extends Controller
 
     public function checkUsuario(Request $request): mixed
     {
-        $query = User::where('name', $request->usuario)->doesntExist();
+        $query = User::where('name', $request->usuario)->exists();
         return response()->json($query);       
     }
 
-    public function checkCorreo(Request $request): mixed
+    public function checkCorreo(Request $request)
     {
-        $query = User::where('email', $request->email)->doesntExist();
-        return response()->json($query);         
+        $verificar = User::where('email', $request->email)->first();
+
+        if ($verificar && $verificar->name !== $request->name) {
+            $response = ['msg' => 'El correo ya está en uso por otro usuario.', 'estado' => 'false'];
+        
+        }elseif($verificar && $verificar->name === $request->name) {
+
+            $response = ['msg' => 'El correo es el que usa actualmente. Se procede actualizar.', 'estado' => 'true'];
+        }else{
+
+            $response = ['msg' => 'Correo habilitado para actualizar', 'estado' => 'true'];
+        }
+        return response()->json($response);         
+    }
+
+    public function checkTelefono(Request $request): mixed
+    {
+        $query = User::has('personal')->whereHas('personal', function($query) use ($request) {
+            $query->where('Telefono', $request->telefono)->doesntExist();
+        });
+        return response()->json($query);  
     }
 
     public function checkEmailUpdate(Request $request)
     {
-        $response = [];
-
         $verificar = User::where('email', $request->email)->first();
 
-        if ($verificar) {
-            $response = ['msg' => 'El correo ya está en uso por otro usuario.', 'estado' => 'false', 'correo' => $request->email];
-        }else{
-            $response = ['msg' => 'El correo se encuentra disponible.', 'estado' => 'true', 'correo' => $request->email];
-        }
+        if ($verificar && $verificar->name !== $request->name) {
+            $response = ['msg' => 'El correo ya está en uso por otro usuario.', 'estado' => 'false'];
+        
+        }elseif($verificar && $verificar->name === $request->name) {
 
+            $response = ['msg' => 'El correo es el que usa actualmente.', 'estado' => 'false'];
+        }else{
+
+            $q = User::where('name', $request->name)->first();
+            $q->email = $request->email;
+            $q->save();
+
+            $response = ['msg' => 'Se ha actualizado el email correctamente.', 'estado' => 'true'];
+        }
         return response()->json($response);
     }
 
@@ -226,6 +251,14 @@ class UsuariosController extends Controller
 
         if($query) 
         {
+            if($query->role->contains('nombre', 'Administrador')) {
+                return response()->json(['msg' => 'No se puede bloquear un rol Administrador'], 409);
+            }
+
+            if(Auth::user()->name === $query->name) {
+                return response()->json(['msg' => 'No puedes hacer una bloquear la cuenta que usas'], 409);
+            }
+
             $query->inactivo = $query->inactivo === 1 ? 0 : 1;
             $query->save();
         }

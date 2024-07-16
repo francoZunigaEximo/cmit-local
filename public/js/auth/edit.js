@@ -20,11 +20,12 @@ $(document).ready(()=>{
             localidad = $('#localidad').val(),
             direccion = $('#direccion').val(),
             cp = $('#codPostal').val(),
-            Id = $('#Id').val();
+            Id = $('#Id').val(),
+            email = $('#email').val();
 
         if($('#form-update').valid() && confirm("¿Esta seguro que desea confirmar la operación?")) {
             preloader('on');
-            $.post(actualizarDatos, {_token: TOKEN, Nombre: nombre, Apellido: apellido, TipoDocumento: tipoDocumento, Documento: documento, TipoIdentificacion: tipoIdentificacion, Identificacion: identificacion, Telefono: telefono, FechaNacimiento: fechaNacimiento, Provincia: provincia, IdLocalidad: localidad, CP: cp, Id: Id, IdU: ID, Direccion: direccion})
+            $.post(actualizarDatos, {_token: TOKEN, Nombre: nombre, Apellido: apellido, TipoDocumento: tipoDocumento, Documento: documento, TipoIdentificacion: tipoIdentificacion, Identificacion: identificacion, Telefono: telefono, FechaNacimiento: fechaNacimiento, Provincia: provincia, IdLocalidad: localidad, CP: cp, Id: Id, email: email, Direccion: direccion})
                 .done(function(){
                     preloader('off');
                     toastr.success("Se han actualizado correctamente los datos del usuario");
@@ -59,33 +60,28 @@ $(document).ready(()=>{
 
     let timer = null;
 
-    $(document).on('input', '#email', function(){
-        clearTimeout(timer);
+    $(document).on('click', '.cambiarEmail', function(){
 
-        timer = setTimeout(function() { 
-            let email = $('#email').val();
-            
-            if([null, undefined, ''].includes(email)) {
-                toastr.warning("El email no puede estar vacío");
-                $('#cambiarEmail').attr('disabled','true');
-                return;
-            }
-    
-            $.get(checkEmailUpdate, {email: email})
-                .done(function(response){
-                    response.estado == 'false' && verificarCorreo === response.correo
-                        ? toastr.success("Es su correo actual") 
-                        : response.estado == 'false' && verificarCorreo !== response.correo
-                            ? toastr.warning(response.msg) 
-                            : toastr.success(response.msg)
-    
-                    response.estado === 'false' && verificarCorreo === response.correo
-                        ? $('#cambiarEmail').removeAttr('disabled')
-                        : response.estado === 'false' && verificarCorreo !== response.correo
-                            ? $('#cambiarEmail').attr('disabled','true') 
-                            : $('#cambiarEmail').removeAttr('disabled');
-                });
-        }, 1000); 
+        let email = $('#email').val(), name = $('#usuario').val();
+        
+        if([null, undefined, ''].includes(email)) {
+            toastr.warning("El email no puede estar vacío");
+            return;
+        }
+
+        if(correoValido(email) === false) {
+            toastr.warning("El email no es válido");
+            return;
+        }
+
+        preloader('on');
+        $.get(checkEmailUpdate, {email: email, name: name})
+            .done(function(response){
+                preloader('off');
+                $tipo = response.estado === 'true' ? 'success' : 'warning';
+                toastr[$tipo](response.msg);
+            });
+
     });
 
     $(document).on('click', '.agregarRol', function(e){
@@ -145,20 +141,29 @@ $(document).ready(()=>{
     });
     
     function listadoRoles() {
-
+        preloader('on');
         $.get(lstRolAsignados, {Id: ID})
             .done(function(response){
-
+                preloader('off');
                 $('#lstRolesAsignados').empty();
-                
+
                 $.each(response, function(index, r){
-                    
+                    let arr = (r.Descripcion).split(', ');
+    
+                    let badges = '';
+                    // Crea un badge para cada descripción
+                    arr.forEach((descripcion, i) => {
+                        badges += `<span class="badge bg-primary">${descripcion}</span> `;
+                        if ((i + 1) % 7 === 0) {
+                            badges += '<br>';  // Inserta un salto de línea cada 7 badges
+                        }
+                    });
+                
                     let contenido = `
                     <tr>
                         <td>${r.Nombre}</td>
-                        <td>${r.Descripcion}</td>
+                        <td>${badges}</td>
                         <td>
-                            <button data-id="${r.IdRol}" data-user="${r.IdUser}" title="Ver detalle" type="button" class="btn btn-sm iconGeneralNegro detalle"><i class=" ri-eye-line"></i></button>
                             <button data-rol="${r.IdRol}" data-user="${r.IdUser}" title="Eliminar rol" type="button" class="btn btn-sm iconGeneralNegro eliminar"><i class="ri-delete-bin-2-line"></i></button>
                         </td>
                     </tr>

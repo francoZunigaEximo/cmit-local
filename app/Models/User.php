@@ -43,7 +43,7 @@ class User extends Authenticatable
 
     public function personal()
     {
-        return $this->hasOne(Personal::class, ' Id', 'datos_id');
+        return $this->belongsTo(Personal::class, ' Id', 'datos_id');
     }
 
     public function auditor()

@@ -74,9 +74,9 @@ $(document).ready(function(){
                 },
                 error: function(xhr){
                     preloader('off');
-                        let errorData = JSON.parse(jqXHR.responseText);
-                        checkError(jqXHR.status, errorData.msg);
-                        return;
+                    let errorData = JSON.parse(jqXHR.responseText);
+                    checkError(jqXHR.status, errorData.msg);
+                    return;
                 }
             });
         }

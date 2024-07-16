@@ -60,7 +60,7 @@
         
         <div class="p-3 col-md-12 d-flex justify-content-end ">
             <button class="btn botonGeneral m-2" type="button" id="volver">Volver</button>
-            <button class="btn botonGeneral m-2" type="button" id="cambiarEmail">Actualizar</button>
+            <button class="btn botonGeneral m-2 cambiarEmail" type="button" id="cambiarEmail">Actualizar</button>
         </div>
     </div>
 

@@ -39,11 +39,11 @@ function acortadorTexto(cadena, nroCaracteres = 10) {
     return cadena.length <= nroCaracteres ? cadena : cadena.substring(0,nroCaracteres);
 }
 
-function saltoLinea(cadena) {
+function saltoLinea(cadena, caracteres = 110) {
     let textoConSaltos = '';
     for (var i = 0; i < cadena.length; i++) {
         textoConSaltos += cadena[i];
-        if ((i + 1) % 110 === 0) {
+        if ((i + 1) % caracteres === 0) {
             textoConSaltos += '<br>';
         }
     }
@@ -164,7 +164,7 @@ function tipoSPagoPrestacion(tipo) {
             break;
         case "F":
             return "Transferencia";
-            breack;
+            break;
         case "E":
             return "Otro";
             break;
@@ -172,5 +172,9 @@ function tipoSPagoPrestacion(tipo) {
             return "-";
             break;
     }
+}
 
+function correoValido(correo) {
+    let comprobar = /^[\w.-]+(\.[\w.-]+)*@[\w.-]+\.[A-Za-z]{2,}$/;
+    return comprobar.test(correo);
 }
