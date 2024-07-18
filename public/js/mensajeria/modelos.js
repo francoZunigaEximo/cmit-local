@@ -21,22 +21,30 @@ $(document).ready(function(){
             return;
         }
 
-        if(confirm("¿Está seguro que desea eliminar el modelo?")) {
-            preloader('on');
-            $.get(eliminarModelo, {Id: id})
-                .done(function(response){
-                    preloader('off');
-                    toastr.success(response.msg);
-                    $('#listadoModeloMsj').DataTable().clear().draw(false);
-                    
-                })
-                .fail(function(jqXHR){
-                    preloader('off');            
-                    let errorData = JSON.parse(jqXHR.responseText);            
-                    checkError(jqXHR.status, errorData.msg);
-                    return;
-                });
-        }
+        swal({
+            title: "¿Está seguro que desea eliminar el modelo?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confimar) => {
+            if(confirmar) {
+
+                preloader('on');
+                $.get(eliminarModelo, {Id: id})
+                    .done(function(response){
+                        preloader('off');
+                        toastr.success(response.msg);
+                        $('#listadoModeloMsj').DataTable().clear().draw(false);
+                        
+                    })
+                    .fail(function(jqXHR){
+                        preloader('off');            
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
+                    });
+            }
+        });
+            
     });
 
     
