@@ -25,40 +25,57 @@ class AppServiceProvider extends ServiceProvider
         ini_set('max_execution_time', 300);
         ini_set('memory_limit', '256M');
 
-        $this->gateAccess("prestaciones_show");
-        $this->gateAccess("etapas_show");
-        $this->gateAccess("mapas_show");
-        $this->gateAccess("clientes_show");
-        $this->gateAccess("noticias_show");
-        $this->gateAccess("examenCuenta_show");
-        $this->gateAccess("pacientes_show");
-        $this->gateAccess("facturacion_show");
-        $this->gateAccess("especialidades_show");
-        $this->gateAccess("profesionales_show");
-        $this->gateAccess("notaCredito_show");
-        $this->gateAccess("mensajeria_show");
+        $this->gateAccess([
+            "prestaciones_show",
+            "etapas_show",
+            "mapas_show",
+            "clientes_show",
+            "noticias_show",
+            "examenCuenta_show",
+            "pacientes_show",
+            "facturacion_show",
+            "especialidades_show",
+            "profesionales_show",
+            "notaCredito_show",
+            "mensajeria_show"
+        ]);
 
-        $this->gateAccess("prestaciones_add");
-        $this->gateAccess("clientes_add");
-        $this->gateAccess("pacientes_add");
-        $this->gateAccess("especialidades_add");
-        $this->gateAccess("examenCuenta_add");
+        $this->gateAccess([
+            "prestaciones_add",
+            "clientes_add",
+            "pacientes_add",
+            "especialidades_add",
+            "examenCuenta_add"
+        ]);
 
-        $this->gateAccess("noticias_edit");
-        $this->gateAccess("mensajeria_edit");
-        $this->gateAccess("clientes_edit");
-        $this->gateAccess("mapas_edit");
-        $this->gateAccess("especialidades_edit");
-        $this->gateAccess("examenCuenta_edit");
+        $this->gateAccess([
+            "noticias_edit",
+            "mensajeria_edit",
+            "clientes_edit",
+            "mapas_edit",
+            "especialidades_edit",
+            "examenCuenta_edit"
+        ]);
 
-        $this->gateAccess("pacientes_delete");
-        $this->gateAccess("examenCuenta_delete");
+        $this->gateAccess([
+            "pacientes_delete",
+            "examenCuenta_delete",
+        ]);
 
-        $this->gateAccess("paciente_report");
-        $this->gateAccess("prestaciones_report");
-        $this->gateAccess("clientes_export");
+        $this->gateAccess([
+            "paciente_report",
+            "prestaciones_report",
+            "clientes_export",
+        ]);
 
-        $this->gateAccess('boton_usuarios');
+        $this->gateAccess([
+            'boton_usuarios',
+            'boton_todo'
+        ]);
 
+        $this->gateAccess([
+            'etapas_eenviar'
+        ]);
     }
+
 }

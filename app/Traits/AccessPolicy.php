@@ -7,16 +7,18 @@ use Illuminate\Support\Facades\Gate;
 
 trait AccessPolicy {
 
-    public function gateAccess($slug)
+    public function gateAccess(array $slugs)
     {
-        Gate::define($slug, function(User $user) use ($slug) {
-            foreach ($user->role as $rol) {
-                if ($rol->permiso->contains('slug', $slug)) {
-                    return true;
+        foreach ($slugs as $slug) {
+            Gate::define($slug, function(User $user) use ($slug) {
+                foreach ($user->role as $rol) {
+                    if ($rol->permiso->contains('slug', $slug)) {
+                        return true;
+                    }
                 }
-            }
-            return false;
-        });
+                return false;
+            });
+        }
     }
     
 }
