@@ -36,6 +36,7 @@ class AppServiceProvider extends ServiceProvider
         $this->gateAccess("especialidades_show");
         $this->gateAccess("profesionales_show");
         $this->gateAccess("notaCredito_show");
+        $this->gateAccess("mensajeria_show");
 
         $this->gateAccess("prestaciones_add");
         $this->gateAccess("clientes_add");
@@ -49,8 +50,6 @@ class AppServiceProvider extends ServiceProvider
         $this->gateAccess("especialidades_edit");
 
         $this->gateAccess("pacientes_delete");
-        
-        $this->gateAccess("clientes_send");
 
         $this->gateAccess("paciente_report");
         $this->gateAccess("prestaciones_report");

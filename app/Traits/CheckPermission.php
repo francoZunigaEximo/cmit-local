@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Auth;
 
 trait CheckPermission
 {
-    public function hasPermission($permissionSlug)
+    public function hasPermission(string $permissionSlug)
     {
         $hasPermission = false;
 

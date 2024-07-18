@@ -20,7 +20,7 @@ class MensajesController extends Controller
 
     public function index()
     {
-        if (!$this->hasPermission("mensajeria_edit")) {
+        if (!$this->hasPermission("mensajeria_show")) {
             return abort(403);
         }
 
@@ -29,7 +29,7 @@ class MensajesController extends Controller
 
     public function search(Request $request)
     {
-        if (!$this->hasPermission("mensajeria_edit")) {
+        if (!$this->hasPermission("mensajeria_show")) {
             return response()->json([], 403);
         }
 

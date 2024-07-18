@@ -229,7 +229,7 @@
                             </a>
                             <div class="menu-dropdown mega-dropdown-menu collapse" id="sidebarGeneral">
                                 <ul class="nav nav-sm flex-column">
-                                    @can("clientes_send")
+                                    @can("mensajeria_show")
                                     <li class="nav-item">
                                         <a href="{{ route('mensajes.index') }}" class="nav-link enlace-blanco" data-key="t-Mensajeria"> Mensajeria </a>
                                     </li>
