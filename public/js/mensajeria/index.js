@@ -206,22 +206,32 @@ $(document).ready(function() {
         localStorage.removeItem('informes');
         localStorage.removeItem('ids');
 
-        if(confirm("¿Está seguro que desea enviar los emails solicitados?")){
+        swal({
+            title: "¿Está seguro que desea enviar los emails solicitados?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar){
 
-            preloader('on');
-            $.get(sendEmails, data)
-                .done(function(response){
-                    preloader('off');
+                preloader('on');
+                $.get(sendEmails, data)
+                    .done(function(response){
+                        preloader('off');
 
-                    toastr.success(response.msg);
-                })
-                .fail(function(jqXHR){
-                    preloader('off');            
-                    let errorData = JSON.parse(jqXHR.responseText);            
-                    checkError(jqXHR.status, errorData.msg);
-                    return;
-                });
-        }
+                        toastr.success(response.msg);
+                    })
+                    .fail(function(jqXHR){
+                        preloader('off');            
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
+                    });
+
+            }
+        });
+
+            
+        
     });
 
     $(document).on('change', '#modelo, #modelo2', function() {
@@ -268,22 +278,28 @@ $(document).ready(function() {
             return;
         }
         
-        if(confirm("¿Está seguro que desea enviar los emails solicitados?")){
+        swal({
+            title: "¿Está seguro que desea enviar los emails solicitados?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar) {
+                preloader('on');
+                $.get(sendEmails, data)
+                    .done(function(response){
+                        preloader('off');
+                        toastr.success(response.msg);
+                    })
+                    .fail(function(jqXHR){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
+                    });
+            }
+        });
 
-            preloader('on');
-            $.get(sendEmails, data)
-                .done(function(response){
-                    preloader('off');
-                    toastr.success(response.msg);
-                })
-                .fail(function(jqXHR){
-                    preloader('off');
-                    let errorData = JSON.parse(jqXHR.responseText);            
-                    checkError(jqXHR.status, errorData.msg);
-                    return;
-                });
-        }
-
+            
     });
 
     $(document).on('click', '.auditoria', function() {
