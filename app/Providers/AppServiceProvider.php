@@ -40,11 +40,13 @@ class AppServiceProvider extends ServiceProvider
         $this->gateAccess("prestaciones_add");
         $this->gateAccess("clientes_add");
         $this->gateAccess("pacientes_add");
+        $this->gateAccess("especialidades_add");
 
         $this->gateAccess("noticias_edit");
         $this->gateAccess("mensajeria_edit");
         $this->gateAccess("clientes_edit");
         $this->gateAccess("mapas_edit");
+        $this->gateAccess("especialidades_edit");
 
         $this->gateAccess("pacientes_delete");
         

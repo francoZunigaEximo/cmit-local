@@ -10,19 +10,28 @@ use Illuminate\Support\Facades\Cache;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use App\Traits\ReporteExcel;
+use App\Traits\CheckPermission;
 
 class ProveedoresController extends Controller
 {
 
-    use ReporteExcel;
+    use ReporteExcel, CheckPermission;
 
     public function index()
     {
+        if(!$this->hasPermission('especialidades_show')) {
+            abort(403);
+        }
+
         return view('layouts.especialidades.index');
     }
 
     public function edit(Proveedor $especialidade)
     {
+        if(!$this->hasPermission('especialidades_edit')) {
+            abort(403);
+        }
+
         $detalleProv = Localidad::with('provincia')->find($especialidade->IdLocalidad);
         $provincias = Provincia::all();
 
@@ -31,6 +40,10 @@ class ProveedoresController extends Controller
 
     public function create()
     {
+        if(!$this->hasPermission('especialidades_add')) {
+            abort(403);
+        }
+
         return view('layouts.especialidades.create', with([
             'provincias' => Provincia::all(),
             'localidades' => Localidad::where('IdPcia', 1)->get(['Id', 'Nombre'])
@@ -39,6 +52,7 @@ class ProveedoresController extends Controller
 
     public function getProveedores(Request $request)
     {
+
         $buscar = $request->buscar;
 
         $resultados = Cache::remember('proveedores' . $buscar, 5, function() use ($buscar){
@@ -64,6 +78,10 @@ class ProveedoresController extends Controller
 
     public function down(Request $request): mixed
     {
+        if(!$this->hasPermission('especialidades_delete')) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
+
         $especialidad = Proveedor::find($request->Id);
 
         if($especialidad){
@@ -79,6 +97,10 @@ class ProveedoresController extends Controller
 
     public function multiDown(Request $request): mixed
     {
+        if(!$this->hasPermission('especialidades_delete')) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
+
         $ids = $request->input('ids');
         if (! is_array($ids)) {
             $ids = [$ids];
@@ -96,6 +118,10 @@ class ProveedoresController extends Controller
 
     public function check(Request $request)
     {
+        if(!$this->hasPermission('especialidades_add')) {
+            abort(403);
+        }
+
         $especialidad = Proveedor::where('Nombre', $request->Nombre)->first();
         $existe = $especialidad !== null;
 
@@ -104,6 +130,10 @@ class ProveedoresController extends Controller
 
     public function save(Request $request)
     {
+        if(!$this->hasPermission('especialidades_add')) {
+            abort(403);
+        }
+
         $Id = Proveedor::max('Id') + 1;
 
         $query = Proveedor::create([
@@ -126,6 +156,10 @@ class ProveedoresController extends Controller
 
     public function updateProveedor(Request $request)
     {
+        if(!$this->hasPermission('especialidades_add')) {
+            abort(403);
+        }
+
         $especialidad = Proveedor::find($request->Id);
         
         if($especialidad)
@@ -152,6 +186,10 @@ class ProveedoresController extends Controller
 
     public function excel(Request $request)
     {
+        if(!$this->hasPermission('especialidades_show')) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
+
         $ids = $request->input('Id');
         if (! is_array($ids)) {
             $ids = [$ids];
