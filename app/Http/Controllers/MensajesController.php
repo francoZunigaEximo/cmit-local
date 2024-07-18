@@ -329,21 +329,21 @@ class MensajesController extends Controller
                 foreach ($correos as $correo) {
 
                     SendEmailJob::dispatch($correo, $request->Asunto, $request->Cuerpo);
-                    $enviados[] = $correo;
                     //var_dump($correo, $request->Asunto, $request->Cuerpo);
             
                     /*$email = new EnvioResultadosMail(['subject' => $request->Asunto, 'content' => $request->Cuerpo]);
-                    Mail::to($correo)->queue($email);*/     
+                    Mail::to($correo)->queue($email);*/
+                    $enviados [] = $correo;
                 }
 
-                $totalEnviados = join(", ", $enviados);
+                $totalEnviados = implode(",", $enviados);
 
                 AuditoriaMail::create([
                     'Id' => AuditoriaMail::max('Id') + 1,
-                    'Fecha' => date('Y-m-d H:i:s'),
-                    'Destinatarios' => $correo,
+                    'Fecha' => now(),
+                    'Destinatarios' => $totalEnviados,
                     'Asunto' => $request->Asunto,
-                    'Detalle' => $totalEnviados
+                    'Detalle' => $request->Cuerpo
                 ]);
             }
 
