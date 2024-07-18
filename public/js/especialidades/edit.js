@@ -1,11 +1,5 @@
 $(document).ready(function(){
 
-    toastr.options = {
-        closeButton: true,   
-        progressBar: true,    
-        timeOut: 3000,        
-    };
-
     quitarDuplicados("#Externo");
     quitarDuplicados("#Inactivo");
     quitarDuplicados("#Provincia");
@@ -19,23 +13,37 @@ $(document).ready(function(){
             return;
         }
 
+        if([0,null,''].includes(Externo)) {
+            toastr.warning('Debe especificar si es externo');
+            return;
+        }
+
+        if([0,null,''].includes(Inactivo)) {
+            toastr.warning('Debe especificar si el campo es inactivo o no');
+            return;
+        }
+
         if (PR < 0 || PR > 120){
-            toastr.warning('El máximo debe estar entre 0 y 60 y no ser negativo.', 'Atención');
+            toastr.warning('El máximo debe estar entre 0 y 60 y no ser negativo.');
             return;
         }
 
         if (Min < 0 || Min > 60){
-            toastr.warning('La duración debe estar entre 0 y 60 y no ser negativo.', 'Atención');
+            toastr.warning('La duración debe estar entre 0 y 60 y no ser negativo.');
             return;
         }
 
+        preloader('on');
         $.post(updateProveedor, { _token: TOKEN, Id: Id, Nombre: Nombre, Externo: Externo, Inactivo: Inactivo, Telefono: Telefono, Direccion: Direccion, IdLocalidad: IdLocalidad, Obs: Obs, Multi: Multi, MultiE, Min: Min, PR: PR, InfAdj: InfAdj })
-            .done(function(){
-                toastr.success('Se han cargado los datos de manera correcta', 'Perfecto');
+            .done(function(response){
+                preloader('off');
+                toastr.success(response.msg, 'Perfecto');
             })
-            .fail(function(xhr){
-                toastr.error('Ha ocurrido un error. Consulte con el administrador.', 'Error');
-                console.error(xhr);
+            .fail(function(jqXHR){
+                preloader('off');            
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return; 
             });
 
     });
@@ -67,12 +75,4 @@ $(document).ready(function(){
         });
     }
 
-    function quitarDuplicados(selector) {
-        let seleccion = $(selector).val();
-        let countSeleccion = $(selector + " option[value='" + seleccion + "']").length;
-    
-        if (countSeleccion > 1) {
-            $(selector + " option[value='" + seleccion + "']:gt(0)").hide();
-        }
-    }
 });

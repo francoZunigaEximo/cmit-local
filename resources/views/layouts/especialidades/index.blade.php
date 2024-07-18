@@ -6,13 +6,6 @@
 
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
     <h4 class="mb-sm-0">Especialidades</h4>
-
-    <div class="page-title-right">
-        <ol class="breadcrumb m-0">
-            <li class="breadcrumb-item"><a href="{{ route('especialidades.index') }}">Especialidades</a></li>
-            <li class="breadcrumb-item active">Listado</li>
-        </ol>
-    </div>
 </div>
 
 <div class="card">
@@ -48,12 +41,12 @@
             </div>
             <div class="mx-1">
                 <button type="button" id="excel" class="btn botonGeneral" title="Excel">
-                    <i class="ri-file-excel-line"></i>
+                    <i class="ri-file-excel-line"></i> Excel
                 </button>
             </div>
             <div class="mx-1">
                 <button type="button" id="btnBajaMultiple" class="btn botonGeneral" title="Bloquear">
-                    <i class="ri-forbid-2-line"></i>
+                    <i class="ri-forbid-2-line"></i> Inhabilitar Mult
                 </button>
             </div>
         </div>

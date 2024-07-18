@@ -6,13 +6,6 @@
 
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
     <h4 class="mb-sm-0">Especialidad <span class="badge text-bg-primary">{{ $especialidade->Id }}</span></h4>
-
-    <div class="page-title-right">
-        <ol class="breadcrumb m-0">
-            <li class="breadcrumb-item"><a href="{{ route('especialidades.index') }}">Especialidades</a></li>
-            <li class="breadcrumb-item active">Editar</li>
-        </ol>
-    </div>
 </div>
 
 <div class="card-header">
@@ -31,7 +24,7 @@
         </li>
     </ul>
 </div>
-<div class="card-body p-4">
+<div class="card-body p-2">
     <div class="tab-content">
         <div class="tab-pane active" id="datosGenerales" role="tabpanel">
             <form id="form-create">
@@ -96,7 +89,7 @@
                 <div class="col-lg-12 pt-4">
                     <div class="hstack gap-2 justify-content-end">
                         
-                        <button type="button" id="btnVolverEspe" class="btn botonGeneral">Volver</button>
+                        <a href="{{ route('especialidades.index') }}" class="btn botonGeneral">Volver</a>
                         <button type="button" id="updateBasico" class="btn botonGeneral">Guardar</button>
                     </div>
                 </div>
@@ -108,36 +101,40 @@
         <div class="tab-pane" id="opciones" role="tabpanel">
             <div class="row">
     
-                <div class="col-12">
+                <div class="col-6">
                     <label for="MultiE" class="form-label"><br /></label> <!-- la selección se guarda en el campo Calificacion -->
                     <div class="form-check">
-                        <label class="form-check-label" for="Multi">Multi Adjunto Efector (Un Adjunto puede corresponder a varios exámenes)</label>
+                        <label class="form-check-label" for="Multi">Multi Adjunto Efector</label>
                         <input class="form-check-input" type="checkbox" id="Multi" {{ $especialidade->Multi == 'null' || $especialidade->Multi == 0 ? '' : 'checked'}}>
                     </div>
+                    <small class="text-muted">Un adjunto puede corresponder a varios exámenes</small>
                 </div>
     
-                <div class="col-12 mb-3">
+                <div class="col-6 mb-4">
                     <label for="Multi" class="form-label"><br /></label> <!-- la selección se guarda en el campo Calificacion -->
                     <div class="form-check">
-                        <label class="form-check-label" for="MultiE">Multi Examen Informador (Un informe puede corresponder a varios exámenes)</label>
+                        <label class="form-check-label" for="MultiE">Multi Examen Informador</label>
                         <input class="form-check-input" type="checkbox" id="MultiE" {{ $especialidade->MultiE == 'null' || $especialidade->MultiE == 0 ? '' : 'checked'}}>
                     </div>
+                    <small class="text-muted">Un informe puede corresponder a varios exámenes</small>
                 </div>
     
                 <div class="col-6">
-                    <label for="Min" class="form-label">Duración Turno (en minutos)</label>
+                    <label for="Min" class="form-label">Duración Turno</label>
                     <input type="number" class="form-control" name="Min" id="Min" placeholder="Mínutos" value="{{ $especialidade->Min ?? ''}}">
+                    <small class="text-muted">Tiempo en minutos</small>
                 </div>
     
                 <div class="col-6">
-                    <label for="PR" class="form-label">Máximo Pacientes (capacidad de llamar en simultáneo)</label>
+                    <label for="PR" class="form-label">Máximo Pacientes</label>
                     <input type="number" class="form-control" name="PR" id="PR" placeholder="¿Cuántos pacientes es posible llamar en simultáneo?" value="{{ $especialidade->PR ?? ''}}">
+                    <small class="text-muted">Capacidad de llamar en simultáneo</small>
                 </div>
     
                 <div class="col-lg-12 pt-4">
                     <div class="hstack gap-2 justify-content-end">
                         
-                        <button type="button" id="updateOpciones" class="btn btn-success">Guardar</button>
+                        <button type="button" id="updateOpciones" class="btn btn-sm botonGeneral">Guardar</button>
                     </div>
                 </div>
     
@@ -175,6 +172,7 @@
     const TOKEN = "{{ csrf_token() }}";
     const updateProveedor = "{{ route('updateProveedor') }}";
     const GOINDEX = "{{ route('especialidades.index') }}";
+    const getLocalidad = "{{ route('getLocalidades') }}";
 
 </script>
 

@@ -1,14 +1,10 @@
 $(document).ready(function(){
-
-    toastr.options = {
-        closeButton: true,   
-        progressBar: true,    
-        timeOut: 3000,        
-    };
     
     $('#Provincia').val('NEUQUEN');
     $('#IdLocalidad').val(3); //Elije la ciudad de Neuquen como default
     $('.Telefono, .Direccion, .Provincia, .IdLocalidad, .Obs').hide();
+
+    
     
     $(document).on('change', '#Externo', function(){
 
@@ -30,26 +26,41 @@ $(document).ready(function(){
 
         let Nombre = $('#Nombre').val(), Externo = $('#Externo').val(), Inactivo = $('#Inactivo').val(), Telefono = $('#Telefono').val(), Direccion = $('#Direccion').val(), IdLocalidad = $('#IdLocalidad').val(), Obs = $('#Obs').val();
 
-        if(Nombre === ''){
-            toastr.warning('El campo Nombre es obligatorio', 'Atención');
+        if([0,null,''].includes(Nombre)) {
+            toastr.warning('El campo Nombre es obligatorio');
             return;
         }
 
-        $.post(saveBasico, {_token: TOKEN, Nombre: Nombre, Externo: Externo, Inactivo: Inactivo, Telefono: Telefono, Direccion: Direccion, IdLocalidad: IdLocalidad, Obs: Obs})
-            .done(function(response){
+        if([0,null,''].includes(Externo)) {
+            toastr.warning('Debe especificar si es externo');
+            return;
+        }
 
+
+        if([0,null,''].includes(Inactivo)) {
+            toastr.warning('Debe especificar si el campo es inactivo o no');
+            return;
+        }
+
+        preloader('on');
+        $.post(saveBasico, {_token: TOKEN, Nombre: Nombre, Externo: Externo, Inactivo: Inactivo, Telefono: Telefono, Direccion: Direccion, IdLocalidad: IdLocalidad, Obs: Obs})
+            
+            .done(function(response){
+                preloader('off');
                 let data = response.especialidad;
 
-                toastr.success('Se ha registrado la nueva especialidad de manera correcta', 'Perfecto');
+                toastr.success(response.msg);
                 setTimeout(() => {
                     let nuevo = location.href.replace("create", "");
                     let lnk = nuevo + "" + data + "/edit";
                     window.location.href = lnk;
                 }, 3000);
             })
-            .fail(function(xhr){
-                toastr.error('Ha ocurrido un error. Consulte con el administrador', 'Error');
-                console.error(xhr);
+            .fail(function(jqXHR){
+                preloader('off');            
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return; 
             });
     });
 

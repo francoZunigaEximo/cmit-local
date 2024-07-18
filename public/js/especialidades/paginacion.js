@@ -4,12 +4,6 @@ $(document).ready(function(){
         
         let especialidad = $('#especialidad').val(), opciones = $('#opciones').val();
 
-        toastr.options = {
-            closeButton: true,   
-            progressBar: true,    
-            timeOut: 3000,        
-        };
-
         if(especialidad === '' && opciones === ''){
 
             toastr.warning("Debe escribir que desea buscar o bien seleccionar un filtro", "Atención");
@@ -26,6 +20,7 @@ $(document).ready(function(){
             ordering: false,
             processing: true,
             lengthChange: false,
+            deferRender: true,
             pageLength: 100,
             responsive: true,
             serverSide: true,
@@ -42,7 +37,7 @@ $(document).ready(function(){
                 {
                     data: null,
                     render: function(data){
-                        return `<input type="checkbox" name="Id" value="${data.IdEspecialidad}" checked>`;
+                        return `<div class="text-center"><input type="checkbox" name="Id" value="${data.IdEspecialidad}" checked></div>`;
                     }
                 },
                 {
@@ -93,11 +88,11 @@ $(document).ready(function(){
                         <div class="d-flex gap-2">
                             <div class="edit">
                                 <a title="Editar" href="${location.href}/${data.IdEspecialidad}/edit">
-                                    <button class="btn btn-sm btn-primary" title="Editar"><i class="ri-edit-line"></i></button>
+                                    <button class="btn btn-sm iconGeneral" title="Editar"><i class="ri-edit-line"></i></button>
                                 </a>
                             </div>
                             <div class="bloquear">
-                                <button data-id="${data.IdEspecialidad}" class="blockEsp btn btn-sm btn-warning remove-item-btn" title="Inhabilitar">
+                                <button data-id="${data.IdEspecialidad}" class="blockEsp btn btn-sm iconGeneral" title="Inhabilitar">
                                     <i class="ri-forbid-2-line"></i>
                                 </button>
                             </div>
@@ -108,7 +103,7 @@ $(document).ready(function(){
                 }
             ],
             language: {
-                processing: "Cargando listado de especialidades de CMIT",
+                processing: "<div style='text-align: center; margin-top: 20px;'><img src='./images/spinner.gif' /><p>Cargando...</p></div>",
                 emptyTable: "No hay especialidades con los datos buscados",
                 paginate: {
                     first: "Primera",
