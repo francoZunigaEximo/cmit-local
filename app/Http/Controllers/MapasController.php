@@ -438,25 +438,20 @@ class MapasController extends Controller
         $empresa= $request->empresa;
         $art = $request->art;
 
-        $resultados = Cache::remember('mapas_', 5, function () use ($empresa, $art) {
+        $mapas = Mapa::join('clientes as Art', 'mapas.IdART', '=', 'Art.Id')
+            ->join('clientes as Empresa', 'mapas.IdEMpresa', '=', 'Empresa.Id')
+            ->select(
+                'mapas.Id as Id',
+                'mapas.Nro as Nro',
+                'Art.RazonSocial as RSArt',
+                'Empresa.RazonSocial as RSE')
+            ->where('mapas.IdART', $art)
+            ->where('mapas.IdEMpresa', $empresa)
+            ->where('mapas.Cmapeados', '>=', 1)
+            ->whereDate('mapas.Fecha', '>', now()->toDateString())
+            ->get();
 
-            $mapas = Mapa::join('clientes as Art', 'mapas.IdART', '=', 'Art.Id')
-                ->join('clientes as Empresa', 'mapas.IdEMpresa', '=', 'Empresa.Id')
-                ->select(
-                    'mapas.Id as Id',
-                    'mapas.Nro as Nro',
-                    'Art.RazonSocial as RSArt',
-                    'Empresa.RazonSocial as RSE')
-                ->where('mapas.IdART', $art)
-                ->where('mapas.IdEMpresa', $empresa)
-                ->where('mapas.Cmapeados', '>=', 1)
-                ->whereDate('mapas.Fecha', '>', now()->toDateString())
-                ->get();
-
-            return $mapas;
-        });
-
-        return response()->json(['mapas' => $resultados]);
+        return response()->json(['mapas' => $mapas]);
     }
 
     public function saveRemitos(Request $request)
