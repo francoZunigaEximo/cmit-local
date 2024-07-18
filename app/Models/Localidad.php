@@ -32,4 +32,11 @@ class Localidad extends Model
     {
         return $this->hasOne(Proveedor::class, 'IdLocalidad', 'Id');
     }
+
+    public function provincia()
+    {
+        return $this->hasOne(Provincia::class, 'Id', 'IdProv');
+    }
+
+
 }

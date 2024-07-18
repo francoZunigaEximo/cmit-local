@@ -12,4 +12,9 @@ class Provincia extends Model
     protected $table = 'provincias';
 
     protected $primaryKey = 'Id';
+
+    public function localidad()
+    {
+        return $this->hasMany(Localidad::class, 'IdProv', 'Id');
+    }
 }
