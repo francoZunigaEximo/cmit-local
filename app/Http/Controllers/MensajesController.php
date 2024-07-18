@@ -324,22 +324,27 @@ class MensajesController extends Controller
                     return response()->json(['msg' => 'No se ha podido conectar con el servidor SMTP'], 500);
                 }
 
+                $enviados = [];
+                
                 foreach ($correos as $correo) {
 
                     SendEmailJob::dispatch($correo, $request->Asunto, $request->Cuerpo);
-
-                   AuditoriaMail::create([
-                        'Id' => AuditoriaMail::max('Id') + 1,
-                        'Fecha' => date('Y-m-d H:i:s'),
-                        'Destinatarios' => $correo,
-                        'Asunto' => $request->Asunto,
-                        'Detalle' => $request->Cuerpo
-                    ]);
+                    $enviados[] = $correo;
                     //var_dump($correo, $request->Asunto, $request->Cuerpo);
             
                     /*$email = new EnvioResultadosMail(['subject' => $request->Asunto, 'content' => $request->Cuerpo]);
-                    Mail::to($correo)->queue($email);*/
-                } 
+                    Mail::to($correo)->queue($email);*/     
+                }
+
+                $totalEnviados = join(", ", $enviados);
+
+                AuditoriaMail::create([
+                    'Id' => AuditoriaMail::max('Id') + 1,
+                    'Fecha' => date('Y-m-d H:i:s'),
+                    'Destinatarios' => $correo,
+                    'Asunto' => $request->Asunto,
+                    'Detalle' => $totalEnviados
+                ]);
             }
 
             return response()->json(['msg' => 'Se han enviado los mensajes correctamente'], 200);
