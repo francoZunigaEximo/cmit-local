@@ -328,13 +328,13 @@ class MensajesController extends Controller
 
                     SendEmailJob::dispatch($correo, $request->Asunto, $request->Cuerpo);
 
-                   /* AuditoriaMail::create([
+                   AuditoriaMail::create([
                         'Id' => AuditoriaMail::max('Id') + 1,
                         'Fecha' => date('Y-m-d H:i:s'),
                         'Destinatarios' => $correo,
                         'Asunto' => $request->Asunto,
                         'Detalle' => $request->Cuerpo
-                    ]);*/
+                    ]);
                     //var_dump($correo, $request->Asunto, $request->Cuerpo);
             
                     /*$email = new EnvioResultadosMail(['subject' => $request->Asunto, 'content' => $request->Cuerpo]);
