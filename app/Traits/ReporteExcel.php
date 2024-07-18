@@ -246,6 +246,42 @@ trait ReporteExcel
 
     }
 
+    public function listadoEspecialidad($especialidades)
+    {
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+
+        $columnas = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+
+        foreach($columnas as $columna){
+            $sheet->getColumnDimension($columna)->setAutoSize(true);
+        }
+
+        $sheet->setCellValue('A1', 'Id');
+        $sheet->setCellValue('B1', 'Proveedor');
+        $sheet->setCellValue('C1', 'Ubicacion');
+        $sheet->setCellValue('D1', 'Telefono');
+        $sheet->setCellValue('E1', 'Adjunto');
+        $sheet->setCellValue('F1', 'Examen');
+        $sheet->setCellValue('G1', 'Informe');
+
+        $fila = 2;
+        foreach($especialidades as $especialidad){
+            $sheet->setCellValue('A'.$fila, $especialidad->IdEspecialidad ?? '-');
+            $sheet->setCellValue('B'.$fila, $especialidad->Nombre ?? '-');
+            $sheet->setCellValue('C'.$fila, $especialidad->Ubicacion === 0 ? 'Interno':($especialidad->Ubicacion === 1 ? 'Externo' : '-'));
+            $sheet->setCellValue('D'.$fila, $especialidad->Telefono ?? '-');
+            $sheet->setCellValue('E'.$fila, $especialidad->Adjunto === 0 ? 'Simple' : ($especialidad->Adjunto === 1 ? 'Multiple' : '-'));
+            $sheet->setCellValue('F'.$fila, $especialidad->Examen === 0 ? 'Simple' : ($especialidad->Examen === 1 ? 'Multiple' : '-'));
+            $sheet->setCellValue('G'.$fila, $especialidad->Informe === 0 ? 'Simple' : ($especialidad->Informe === 1 ? 'Multiple' : '-'));
+            $fila++;
+        }
+
+        $name = 'especialidades'.Str::random(6).'.xlsx';
+        return $this->generarArchivo($spreadsheet, $name);
+    }
+
     private function generarArchivo($excel, $nombre)
     {
           // Guardar el archivo en la carpeta de almacenamiento

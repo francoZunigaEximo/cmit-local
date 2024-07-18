@@ -3,16 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\Localidad;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use App\Models\Proveedor;
 use App\Models\Provincia;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
+use App\Traits\ReporteExcel;
 
 class ProveedoresController extends Controller
 {
+
+    use ReporteExcel;
 
     public function index()
     {
@@ -21,8 +23,7 @@ class ProveedoresController extends Controller
 
     public function edit(Proveedor $especialidade)
     {
-        $IdProv = Localidad::find($especialidade->IdLocalidad);
-        $detalleProv = Provincia::where('Id', $IdProv->IdPcia)->first();
+        $detalleProv = Localidad::with('provincia')->find($especialidade->IdLocalidad);
         $provincias = Provincia::all();
 
         return view('layouts.especialidades.edit', compact(['especialidade', 'detalleProv', 'provincias']));
@@ -61,7 +62,7 @@ class ProveedoresController extends Controller
         return response()->json(['proveedores' => $resultados]);
     }
 
-    public function down(Request $request): void
+    public function down(Request $request): mixed
     {
         $especialidad = Proveedor::find($request->Id);
 
@@ -70,17 +71,26 @@ class ProveedoresController extends Controller
             $especialidad->Inactivo = 1;
             $especialidad->save();
 
-        } 
+            return response()->json(['msg' => 'Se ha dado de baja la especialidad de manera correcta'], 200);
+        }else{
+            return response()->json(['msg' => 'No se ha podido dar de baja la especialidad'], 500);
+        }
     }
 
-    public function multiDown(Request $request): void
+    public function multiDown(Request $request): mixed
     {
         $ids = $request->input('ids');
         if (! is_array($ids)) {
             $ids = [$ids];
         }
 
-        Proveedor::whereIn('id', $ids)->update(['Inactivo' => 1]);
+        $query = Proveedor::whereIn('id', $ids)->update(['Inactivo' => 1]);
+
+        if($query) {
+            return response()->json(['msg' => 'Se ha dado de baja correctamente'], 200);
+        }else{
+            return response()->json(['msg' => 'No se ha podido realizar la acción.'], 409);
+        }
 
     }
 
@@ -96,7 +106,7 @@ class ProveedoresController extends Controller
     {
         $Id = Proveedor::max('Id') + 1;
 
-        Proveedor::create([
+        $query = Proveedor::create([
             'Id' => $Id,
             'Nombre' => $request->Nombre,
             'Telefono' => $request->Telefono ?? '',
@@ -107,8 +117,11 @@ class ProveedoresController extends Controller
             'Obs' => $request->Obs
         ]);
 
-        return response()->json(['especialidad' => $Id]);
-        
+        if($query) {
+            return response()->json(['msg' => 'Se ha registrado la nueva especialidad de manera correcta', 'especialidad' => $Id], 200);
+        }else{
+            return response()->json(['msg' => 'No se ha podido registrar'], 500);
+        }
     }
 
     public function updateProveedor(Request $request)
@@ -130,6 +143,10 @@ class ProveedoresController extends Controller
             $especialidad->PR = $request->PR ?? '';
             $especialidad->Obs = $request->Obs ?? '';
             $especialidad->save();
+
+            return response()->json(['msg' => 'Se han cargado los datos de manera correcta'], 200);
+        }else{
+            return response()->json(['msg' => 'No se ha podido actualizar'], 500);
         }
     }
 
@@ -140,43 +157,24 @@ class ProveedoresController extends Controller
             $ids = [$ids];
         }
 
-        $especialidades = DB::table('proveedores')
-            ->where('Inactivo', 0)
-            ->whereIn('Id', $ids)
-            ->select(
+        $especialidades = Proveedor::select(
                 'Id as IdEspecialidad',
                 'Nombre',
                 'Telefono',
                 'Multi as Adjunto',
                 'MultiE as Examen',
                 'InfAdj as Informe',
-                'Externo as Ubicacion'
-                )
+                'Externo as Ubicacion')
+            ->where('Inactivo', 0)
+            ->whereIn('Id', $ids)
             ->get();
 
-        $excel = "Id,Proveedor,Ubicación,Teléfono,Adjunto,Examen, Informe\n";
-        foreach ($especialidades as $row) {
-            $IdEspecialidad = $row->IdEspecialidad ?? '-';
-            $Nombre = $row->Nombre ?? '-';
-            $Telefono = $row->Telefono ?? '-';
-            $Adjunto = ($row->Adjunto === 0 ? 'Simple' : ($row->Adjunto === 1 ? 'Multiple' : '-'));
-            $Examen = ($row->Examen === 0 ? 'Simple' : ($row->Examen === 1 ? 'Multiple' : '-'));
-            $Informe = ($row->Informe === 0 ? 'Simple' : ($row->Informe === 1 ? 'Multiple' : '-'));
-            $Ubicacion = ($row->Ubicacion === 0 ? 'Interno':($row->Ubicacion === 1 ? 'Externo' : '-'));
-
-            $excel .= "$IdEspecialidad,$Nombre,$Ubicacion,$Telefono,$Adjunto,$Examen,$Informe\n";
+        if($especialidades) {
+            return $this->listadoEspecialidad($especialidades);
+        }else{
+            return response()->json(['msg' => 'No se ha podido generar el archivo'], 409);
         }
 
-        // Generar un nombre aleatorio para el archivo
-        $name = Str::random(10).'.xlsx';
-
-        // Guardar el archivo en la carpeta de almacenamiento
-        $filePath = storage_path('app/public/'.$name);
-        file_put_contents($filePath, $excel);
-        chmod($filePath, 0777);
-
-        // Devolver la ruta del archivo generado
-        return response()->json(['filePath' => $filePath]);
     }
 
     public function search(Request $request)
