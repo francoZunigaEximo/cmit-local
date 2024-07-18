@@ -1184,3 +1184,5 @@ INSERT INTO permisos(Id, slug, descripcion) VALUES
 INSERT INTO rol_permisos(rol_id, permiso_id) VALUES (13,69),(13,70);
 
 INSERT INTO rol_permisos(rol_id, permiso_id) VALUES (3,47),(3,48),(3,49),(3,50),(6,47),(6,48),(6,49),(6,50),(13,47),(13,48),(13,49),(13,50);
+
+DELETE FROM rol_permisos WHERE permiso_id = 29 AND rol_id = 3;
