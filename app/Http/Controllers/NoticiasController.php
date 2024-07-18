@@ -4,14 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Models\Noticia;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
+use App\Traits\CheckPermission;
+
 
 class NoticiasController extends Controller 
 {
-	public function index()
+    use CheckPermission;
+
+	public function index(): mixed
     {
+        if(!$this->hasPermission("noticias_show")) {
+            abort(403);
+        }
+
     	$noticia = Noticia::find(1);
         return view('layouts.noticias.index', with([
         	'noticia' 			=> $noticia,
@@ -21,11 +27,19 @@ class NoticiasController extends Controller
 
     public function edit(Noticia $noticia): mixed
     {
+        if(!$this->hasPermission("noticias_edit")) {
+            abort(403);
+        }
+
         return view('layouts.noticias.edit', with(['noticia' => $noticia]));
     }
 
     public function update(Request $request, Noticia $noticia)
     {
+        if(!$this->hasPermission("noticias_edit")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
+
         $noticia 			= Noticia::find(1);
         $noticia->Titulo 	= $request->Titulo;
         $noticia->Subtitulo = $request->Subtitulo;

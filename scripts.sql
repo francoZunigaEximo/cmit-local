@@ -1168,3 +1168,19 @@ INSERT INTO rol_permisos(rol_id, permiso_id) VALUES
 
 DELETE FROM rol_permisos 
 WHERE rol_id = 3 AND permiso_id IN (43, 44, 45, 46);
+
+INSERT INTO rol_permisos(rol_id, permiso_id) VALUES (13,43), (13,44),(13,45), (13,46);
+INSERT INTO rol_permisos(rol_id, permiso_id) VALUES (13,51);
+INSERT INTO rol_permisos(rol_id, permiso_id) VALUES (13,60);
+INSERT INTO rol_permisos(rol_id, permiso_id) VALUES (13,61),(13,62);
+
+DELETE FROM rol_permisos WHERE permiso_id = 4 AND rol_id IN (3, 13);
+DELETE FROM permisos WHERE Id = 4;
+
+INSERT INTO permisos(Id, slug, descripcion) VALUES 
+('69', 'mensajeria_show', 'Visualizar mensajes a enviar a clientes'),
+('70', 'mensajeria_edit', 'Edicion y realizacion de envios');
+
+INSERT INTO rol_permisos(rol_id, permiso_id) VALUES (13,69),(13,70);
+
+INSERT INTO rol_permisos(rol_id, permiso_id) VALUES (3,47),(3,48),(3,49),(3,50),(6,47),(6,48),(6,49),(6,50),(13,47),(13,48),(13,49),(13,50);
