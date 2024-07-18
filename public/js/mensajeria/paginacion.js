@@ -61,7 +61,7 @@ $(document).ready(function(){
                     width: "80px",
                     render: function(data){
                         let nombre = data.RazonSocial;
-                        return `<span class="text-uppercase" title="${nombre}">${acortadorTexto(nombre, 18)}</span>`;
+                        return `<span class="text-uppercase" title="${nombre}">${acortadorTexto(nombre, 15)}</span>`;
                     }
                 },
                 {
@@ -69,7 +69,7 @@ $(document).ready(function(){
                     width: "80px",
                     render: function(data){
                         let nombre = data.ParaEmpresa;
-                        return `<span class="text-uppercase" title="${nombre}">${acortadorTexto(nombre, 18)}</span>`;
+                        return `<span class="text-uppercase" title="${nombre}">${acortadorTexto(nombre, 15)}</span>`;
                     }
                 },
                 {
