@@ -361,7 +361,7 @@ class ExamenesCuentaController extends Controller
 
             case 'paquete':
                 
-                $precarga = $request->Precarga ?? 0;
+                $precarga = $request->precarga ?? 0;
                 $preAgregar = false;
 
                 for ($i=0; $i < $request->cantidad; $i++) {
@@ -389,7 +389,7 @@ class ExamenesCuentaController extends Controller
             
             case 'facturacion':
                
-                $precarga = $request->Precarga ?? 0;
+                $precarga = $request->precarga ?? 0;
                 $preAgregar = false;
 
                 for ($i=0; $i < $request->cantidad; $i++) {
