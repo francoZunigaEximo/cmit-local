@@ -8,7 +8,7 @@
     <h4 class="mb-sm-0">Perfil de usuario</h4>
 </div>
 
-<div class="col-xxl-9">
+<div class="col-12">
     <div class="card mt-xxl-n5">
         
         <div class="card-header">
@@ -23,12 +23,6 @@
                     <a class="nav-link" data-bs-toggle="tab" href="#changePassword" role="tab" aria-selected="false" tabindex="-1">
                         <i class="far fa-user"></i>
                         Cambiar password
-                    </a>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <a class="nav-link" data-bs-toggle="tab" href="#opciones" role="tab" aria-selected="false" tabindex="-1">
-                        <i class="las la-tools"></i>
-                        Opciones
                     </a>
                 </li>
             </ul>
@@ -178,103 +172,6 @@
                             </form>
                         </div>
                     </div>
-                </div>
-
-                <div class="tab-pane" id="opciones" role="tabpanel">
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <div class="col-lg-3">
-                                        <div class="mb-3">
-                                            <div class="form-check form-check-success mb-6">
-                                                <input class="form-check-input" type="checkbox" id="Pago">
-                                                <label class="form-check-label" for="Pago">
-                                                    Pago por hora
-                                                </label>
-                                            </div>
-        
-                                            <!--end row-->
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-3">
-                                        <div class="form-check form-check-success mb-6">
-                                            <input class="form-check-input" type="checkbox" id="InfAdj" >
-                                            <label class="form-check-label" for="InfAdj">
-                                                Informe Adjunto
-                                            </label>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="col-12">
-                                        <br>
-                                        <div class="text-end">
-                                            <button type="button" class="saveOpciones btn botonGeneral">Guardar</button>
-                                        </div>
-                                    </div>
-        
-                                    <hr class="mt-4">
-                                    <div style="margin-block: 15px; ">
-                                        
-                                            <div class="row g-2">
-                                                <div class="col-4">
-                                                    <!-- Esto debería ser un select múltiple. -->
-                                                    Especialidad
-                                                    <select class="form-select" id="listaEspecialidad" name="listaEspecialidad">
-                                                        <option selected value="">Elija una opción...</option>
-                                                    </select>
-                                                </div>
-                                                <div class="col-4">
-                                                    <!-- Esto debería ser un select múltiple. -->
-                                                    Perfiles
-                                                    <div class="d-flex align-items-center">
-                                                        <select class="form-select" id="perfiles" name="perfiles">
-                                                            <option selected value="">Elija una opción...</option>
-                                                            
-                                                        </select>
-                                                        <i class="addPerfilProf ri-add-circle-line ml-2" title="Añadir perfil"></i>
-                                                    </div>
-        
-                                            </div>
-                                            </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-lg-12">
-                                            <div class="card">
-                                                <div class="card-header">
-                                                    <h4 class="card-title mb-0">Especialidades y Perfiles | Perfil principal: </h4>
-                                                </div><!-- end card header -->
-        
-                                                <div class="card-body">
-                                                    <div class="listjs-table">
-        
-        
-                                                        <div class="table-responsive table-card mt-3 mb-1">
-                                                            <table class="table align-middle table-nowrap" id="customerTable">
-                                                                <thead class="table-light">
-                                                                    <tr class="text-center">
-        
-                                                                        <th class="sort" data-sort="action">Especialidad</th>
-                                                                        <th class="sort" data-sort="email">Perfiles</th>
-        
-                                                                        <th>Acciones</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody class="list form-check-all" id="listaProfesionales">
-                                                                    
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    </div>
-                                                </div><!-- end card -->
-                                            </div>
-                                            <!-- end col -->
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                   </div>
                 </div>
             </div>
         </div>

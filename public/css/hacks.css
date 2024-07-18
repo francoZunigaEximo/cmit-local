@@ -441,6 +441,7 @@ body .selectArt2 .select2.select2-container {
 #lstModeloMsj th, td,
 #listaFacturas th, td,
 #listaFacturasAlta  th, td,
+#listaEspecialidades th, td,
 #listaPrestaciones th, td { white-space: nowrap !important; }
 
 #listaClientes tr,
@@ -472,6 +473,7 @@ body .selectArt2 .select2.select2-container {
 #lstModeloMsj tr,
 #listaFacturas tr,
 #listaFacturasAlta tr,
+#listaEspecialidades tr,
 #listaPrestaciones tr { height: 25px !important;}
 
 #listaClientes tbody tr td,
@@ -503,6 +505,7 @@ body .selectArt2 .select2.select2-container {
 #lstModeloMsj tbody tr td,
 #listaFacturas tbody tr td,
 #listaFacturasAlta  tbody tr td,
+#listaEspecialidades tbody tr td,
 #listaPrestaciones tbody tr td { padding: 5px 8px 2px 8px };
 
 table.dataTable tr.dtrg-level-0 td {

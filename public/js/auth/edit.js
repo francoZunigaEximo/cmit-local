@@ -1,9 +1,12 @@
 $(document).ready(()=>{
 
+    let IdProfesional = $('#IdProfesional').val();
+
     quitarDuplicados("#provincia");
     quitarDuplicados("#cuil");
     quitarDuplicados("#tipoDoc");
     listadoRoles();
+    perfiles(IdProfesional);
 
     $(document).on('click', '.updateDatos', function(e){
         e.preventDefault();
@@ -205,6 +208,31 @@ $(document).ready(()=>{
                 $('#codPostal').val(response.codigoPostal);
             }
         });
+    }
+
+    function perfiles(id)
+    {
+        if([0, null, undefined, ''].includes(id)) return;
+
+        $.get(choisePerfil, {Id: id})
+            .done(function(response){
+
+                select = $("#perfiles");
+                
+                if (response.T1 === 1) {
+                    select.append(`<option value="t1">Efector</option>`);
+                }
+                if (response.T2 === 1) {
+                    select.append(`<option value="t2">Informador</option>`);
+                }
+                if (response.T3 === 1) {
+                    select.append(`<option value="t3">Evaluador</option>`);
+                }
+                if (response.T4 === 1) {
+                    select.append(`<option value="t4">Combinado</option>`);
+                }
+              
+            });
     }
 
 });

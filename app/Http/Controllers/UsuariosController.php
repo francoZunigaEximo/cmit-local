@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Proveedor;
 use App\Models\Provincia;
 use App\Models\Rol;
 use App\Models\User;
@@ -53,8 +54,11 @@ class UsuariosController extends Controller
 
         $roles = Rol::orderBy('nombre', 'asc')->get();
 
+        $lstProveedor = Proveedor::where('Inactivo', 0)->whereNot('Id', 0)->OrderBy('Nombre', 'ASC')->get(['Id', 'Nombre']);
+
         $query = User::join('datos', 'users.datos_id', '=', 'datos.Id')
             ->join('localidades', 'datos.IdLocalidad', '=', 'localidades.Id')
+            ->join('profesionales', 'users.profesional_id', '=', 'profesionales.Id')
             ->select(
                 "users.id as UserId",
                 "users.name as Name",
@@ -74,10 +78,11 @@ class UsuariosController extends Controller
                 "datos.Provincia as Provincia",
                 "datos.CP as CP",
                 "datos.Id as Id",
-                "localidades.Nombre as NombreLocalidad"
+                "localidades.Nombre as NombreLocalidad",
+                "profesionales.Id as IdProfesional"
             )->find($usuario->id);
 
-        return view('layouts.usuarios.edit', compact(['query', 'provincias', 'roles']));
+        return view('layouts.usuarios.edit', compact(['query', 'provincias', 'roles', 'lstProveedor']));
     }
 
     public function buscar(Request $request) 

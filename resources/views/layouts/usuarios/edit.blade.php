@@ -41,12 +41,19 @@
                 Roles
             </a>
         </li> 
+
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" data-bs-toggle="tab" href="#opciones" role="tab" aria-selected="false" tabindex="-1">
+                <i class="ri-window-line"></i>
+                Opciones
+            </a>
+        </li> 
         
     </ul>
 </div>
 
 <div class="p-4 tab-content">
-    <div class="card row tab-pane active" id="datosUsuarios" role="tabpanel">
+    <div class="tab-pane active" id="datosUsuarios" role="tabpanel">
         <div class="col-12 d-flex  flex-wrap">
             <div class="p-2 col-md-6">
                 <label for="usuario" class="form-label font-weight-bold"><strong>Usuario</strong></label>
@@ -64,13 +71,14 @@
         </div>
     </div>
 
-    <div class="card row tab-pane" id="datosPersonales" role="tabpanel">
+    <div class="tab-pane" id="datosPersonales" role="tabpanel">
         <form id="form-update">
         <div class="col-12 d-flex  flex-wrap">
             <div class="p-2 col-md-6">
                 <label for="nombre" class="form-label font-weight-bold"><strong>Nombre <i class="text-danger">*</i></strong></label>
                 <input id="nombre" name="nombre" class="form-control" type="text" value="{{ $query->Nombre ?? '' }}">
                 <input type="hidden" id="Id" value="{{ $query->Id ?? 0 }}">
+                <input type="hidden" id="IdProfesional" value="{{ $query->IdProfesional ?? 0 }}">
             </div>
             <div class="p-2 col-md-6">
                 <label for="apellido" class="form-label font-weight-bold"><strong>Apellido  <i class="text-danger">*</i></strong></label>
@@ -113,6 +121,7 @@
                 <label for="numTelefono" class="form-label font-weight-bold"><strong>Número de Telefono</strong></label>
                 <input id="numTelefono" name="numTelefono" class="form-control" type="text" value="{{ $query->Telefono ?? '' }}">
             </div>
+
             <div class="p-2 col-md-6">
                 <label for="fechaNac" class="form-label font-weight-bold"><strong>Fecha de Naciemiento</strong></label>
                 <input id="fechaNac" name="fechaNac" class="form-control" type="date" value="{{ $query->FechaNacimiento ?? '' }}">
@@ -154,7 +163,7 @@
     </form>
     </div>
 
-     <div class="card row tab-pane" id="roles" role="tabpanel">
+     <div class="tab-pane" id="roles" role="tabpanel">
         <div class="row">
             <div class="col-sm-9"></div>
             <div class="col-sm-3 p-2 d-flex justify-content-end">
@@ -183,6 +192,88 @@
 
           
         <!-- End Roles permisos -->
+    </div>
+
+    <div class="tab-pane" id="opciones" role="tabpanel">
+        <div class="row">
+
+            <div class="col-12 fondo-grisClaro">
+
+                <div class="row p-4">
+                    <div class="col-6">
+                            <input class="form-check-input" type="checkbox" id="Pago">
+                            <label class="form-check-label" for="Pago">Pago por hora</label>
+                               
+                            <input class="form-check-input" type="checkbox" id="InfAdj" >
+                            <label class="form-check-label" for="InfAdj"> Informe Adjunto </label>
+                               
+                            <button type="button" class="saveOpciones btn botonGeneral">Confirmar</button>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+                
+            <div class="mt-4 mb-4">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <span class="fw-bold">Especialidad</span>
+                        <select class="form-select" id="listaEspecialidad" name="listaEspecialidad">
+                            <option selected value="">Elija una opción...</option>
+                            @foreach($lstProveedor as $proveedor)
+                                <option value="{{ $proveedor->Id ?? ''}}">{{ $proveedor->Nombre ?? ''}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <span class="fw-bold">Perfiles</span>
+                        <div class="d-flex align-items-center">
+                            <select class="form-select" id="perfiles" name="perfiles">
+                                <option selected value="">Elija una opción...</option>
+                            </select>
+                            <i class="addPerfilProf ri-add-circle-line ml-2" title="Añadir perfil"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title mb-0">Especialidades y Perfiles | Perfil principal: </h4>
+                            </div><!-- end card header -->
+
+                            <div class="card-body">
+                                <div class="listjs-table">
+
+
+                                    <div class="table-responsive table-card mt-3 mb-1">
+                                        <table class="table align-middle table-nowrap" id="customerTable">
+                                            <thead class="table-light">
+                                                <tr class="text-center">
+
+                                                    <th class="sort" data-sort="action">Especialidad</th>
+                                                    <th class="sort" data-sort="email">Perfiles</th>
+
+                                                    <th>Acciones</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="list form-check-all" id="listaProfesionales">
+                                                
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div><!-- end card -->
+                        </div>
+                        <!-- end col -->
+                    </div>
+                
+            </div>
+       </div>
     </div>
 </div>
 
