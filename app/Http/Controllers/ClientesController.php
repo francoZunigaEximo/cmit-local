@@ -227,7 +227,7 @@ class ClientesController extends Controller
     public function multipleDown(Request $request): mixed
     {
 
-        if (!$this->hasPermission("clientes_edit")) {
+        if (!$this->hasPermission("clientes_delete")) {
             return response()->json(['msg' => 'No tiene permisos'], 403);
         }
 
@@ -242,7 +242,7 @@ class ClientesController extends Controller
 
     public function baja(Request $request): mixed
     {
-        if (!$this->hasPermission("clientes_edit")) {
+        if (!$this->hasPermission("clientes_delete")) {
             return response()->json(['msg' => 'No tiene permisos'], 403);
         }
 
