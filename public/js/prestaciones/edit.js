@@ -103,20 +103,22 @@ $(document).ready(()=> {
             return;
         }
         
-        if ([0, null, ''].includes(art) && tipoPrestacion === 'ART') {
+        if ([0, null, '', '0'].includes(art) && tipoPrestacion === 'ART') {
             toastr.warning("Debe seleccionar un cliente ART si el tipo de prestación es ART");
             return;
         }
         
-        if (![0, null, undefined].includes(art) && tipoPrestacion === 'ART' && (['', null, 0].includes(mapas))) {
+        if (![0, null, undefined, '0'].includes(art) && tipoPrestacion === 'ART' && (['', null, 0].includes(mapas))) {
             toastr.warning("Debe seleccionar un mapa vigente si la prestación es ART y tiene un cliente ART cargado");
             return;
         }
 
-        if(![0, null, undefined].includes(art) && tipoPrestacion !== 'ART') {
+        if(![null, undefined, '0', 0].includes(art) && tipoPrestacion !== 'ART') {
             toastr.warning("Si hay un cliente ART la prestación debe ser de tipo ART");
+            console.log(art);
             return;
         }
+        console.log("TP: " + tipoPrestacion + " | Mapas: " + mapas + " | ART: " + art);
 
         preloader('on');
         $.ajax({

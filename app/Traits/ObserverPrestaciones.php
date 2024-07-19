@@ -63,14 +63,23 @@ trait ObserverPrestaciones
         }  
     }
 
-    public function updateMapeados($mapa)
+    public function updateMapeados(int $mapa, ?string $tipo)
     {
         $mapeado = Mapa::find($mapa);
-        
+
         if($mapeado){
-            $mapeado->Cmapeados -= 1;
+            switch ($tipo) {
+                case 'agregar':
+                    $mapeado->Cmapeados -= 1;   
+                    break;
+                
+                case 'quitar':
+                    $mapeado->Cmapeados +=1;
+                    break;
+
+            }
             $mapeado->save();
-        }
+        } 
     }
 
     public function registrarExamenCta($array, $id)

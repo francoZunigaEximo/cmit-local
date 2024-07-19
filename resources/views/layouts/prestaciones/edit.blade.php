@@ -379,8 +379,12 @@
                         <div class="col-sm-12 text-end ">
                             <button type="button" class="btn btn-sm botonGeneral" data-bs-toggle="modal" data-bs-target="#imprimir" ><i class="bx bxs-file-pdf"></i>&nbsp;Imprimir</button>
                             <button type="button" class="btn btn-sm botonGeneral"><i class="ri-send-plane-line"></i>&nbsp;Opciones</button>
+                            @can('prestaciones_eEnviar')
                             <button type="button" class="btn btn-sm botonGeneral"><i class="ri-send-plane-line"></i>&nbsp;Enviar</button>
+                            @endcan
+                            @can('boton_todo')
                             <button type="button" class="btn btn-sm botonGeneral"><i class="ri-stack-fill"></i>&nbsp;Todo</button>
+                            @endcan
                             <button type="button" class="btn btn-sm botonGeneral"><i class="ri-file-excel-line"></i>&nbsp;Resumen</button>
                             <button type="button" class="btn btn-sm botonGeneral"><i class="bx bxs-file-pdf"></i>&nbsp;e-Estudio</button>
                             <button type="button" class="btn btn-sm botonGeneral"><i class="bx bxs-file-pdf"></i>&nbsp;e-Anexos</button>

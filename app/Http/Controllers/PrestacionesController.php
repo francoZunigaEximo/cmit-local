@@ -21,7 +21,6 @@ use stdClass;
 use Illuminate\Support\Facades\Auth;
 use App\Traits\CheckPermission;
 
-
 class PrestacionesController extends Controller
 {
 
@@ -434,7 +433,7 @@ class PrestacionesController extends Controller
 
         $empresa = ($request->tipoPrestacion === 'ART' ? $request->IdART : $request->IdEmpresa);
 
-        $request->mapas && $this->updateMapeados($request->mapas);
+        $request->mapas && $this->updateMapeados($request->mapas, "quitar");
 
         if (!in_array($request->examenCuenta, [0, null, ''])) {
             $examenes = $this->registrarExamenCta($request->examenCuenta, $nuevoId);
@@ -462,11 +461,21 @@ class PrestacionesController extends Controller
 
         if($prestacion) {
 
+            $mapa = (in_array($request->Art, [0, null, '', 'null', '0']) && $request->TipoPrestacion !== 'ART' ? 0 :  $request->Mapas);
+            
+            if ($prestacion->IdMapa !== 0 && $request->TipoPrestacion !== "ART" && in_array($request->Art, [0, null, '', 'null', '0'])) {
+                $this->updateMapeados($mapa, "quitar");
+            }
+
+            if (!in_array($mapa, [0, null, '', 'null', '0']) && $prestacion->IdMapa === 0 && $request->TipoPrestacion === "ART" && in_array($request->Art, [0, null, '', 'null', '0'])) {
+                $this->updateMapeados($mapa, "agregar");
+            }
+
             $prestacion->IdEmpresa = $request->Empresa ?? 0;
             $prestacion->IdART = $request->Art ?? 0;
             $prestacion->Fecha = $request->Fecha ?? '';
             $prestacion->TipoPrestacion = $request->TipoPrestacion ?? '';
-            $prestacion->IdMapa = ($request->Art === null || $request->Art === 0 ? 0 : ($request->TipoPrestacion <> 'ART' ? 0 : $request->Mapas));
+            $prestacion->IdMapa = $mapa;
             $prestacion->Pago = $request->Pago ?? '';
             $prestacion->SPago = $request->SPago ?? '';
             $prestacion->Financiador = ($request->TipoPrestacion == 'ART' ? $request->Art : $request->Empresa) ?? 0;
