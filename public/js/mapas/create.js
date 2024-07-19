@@ -4,7 +4,6 @@ $(document).ready(()=>{
  $(document).on('change', '#Nro', function(){
 
     let nro = $(this).val()
-
     $.get(checkMapa, {Nro: nro })
         .done(function(response){
 

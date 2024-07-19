@@ -224,7 +224,7 @@ class MapasController extends Controller
         $conEstado = $this->contadorConEstado($mapa->Id);
         $completas = $this->contadorCompletas($mapa->Id);
         $enProceso = $this->contadorEnProceso($mapa->Id);
-        $presentes = $enProceso + $completas + $cerradas + $finalizados + $entregados;
+        $presentes = Prestacion::where('IdMapa', $mapa->Id)->count();
         $ausentes = (intval($mapa->Cpacientes) ?? 0) - $presentes;
         $auditorias = Auditor::with('auditarAccion')->where('IdTabla', 5)->where('IdRegistro', $mapa->Id)->orderBy('Id', 'Desc')->get();
 
@@ -427,9 +427,6 @@ class MapasController extends Controller
 
             return response()->json(['filePath' => $filePath, 'msg' => 'Reporte generado']);
         }
-
-
-        
     }
 
     //Obtenemos listado mapas
@@ -448,7 +445,7 @@ class MapasController extends Controller
             ->where('mapas.IdART', $art)
             ->where('mapas.IdEMpresa', $empresa)
             ->where('mapas.Cmapeados', '>=', 1)
-            ->whereDate('mapas.Fecha', '>', now()->toDateString())
+            ->whereDate('mapas.Fecha', '>', now())
             ->get();
 
         return response()->json(['mapas' => $mapas]);

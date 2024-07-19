@@ -3,12 +3,6 @@ $(document).ready(()=>{
     let hoy = new Date().toISOString().slice(0, 10), 
         maxCaracteres = 100;
 
-    toastr.options = {
-        closeButton: true,   
-        progressBar: true,    
-        timeOut: 3000,        
-    };
-
     quitarDuplicados("#Estado");
     getPrestaMapas();
     verificacionNro();
@@ -122,7 +116,6 @@ $(document).ready(()=>{
             }
              
     });
-
 
     $('#remitoObs').on('input', function() {
         updateContador();

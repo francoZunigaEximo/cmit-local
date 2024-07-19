@@ -128,7 +128,8 @@
                     </div>
 
                     <div class="col-12 box-information mt-2 text-center">
-                        <button type="button" id="updateMapa" class="btn botonGeneral"><i class="ri-save-line"></i>Actualizar</button>
+                        <a href="{{ route('mapas.index')}}" class="btn btn-sm botonGeneral">Ir al listado</a>
+                        <button type="button" id="updateMapa" class="btn btn-sm botonGeneral"><i class="ri-save-line"></i>Actualizar</button>
                     </div>
                 </div>
             </form>

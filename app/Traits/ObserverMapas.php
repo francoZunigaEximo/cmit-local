@@ -29,8 +29,6 @@ trait ObserverMapas
         return Prestacion::join('mapas', 'prestaciones.IdMapa', 'mapas.Id')
             ->where('prestaciones.IdMapa', $id)
             ->where('prestaciones.Cerrado', 1)
-            ->where('prestaciones.Finalizado', 0)
-            ->where('prestaciones.Entregado', 0)
             ->count();
     }
 
@@ -40,7 +38,6 @@ trait ObserverMapas
             ->where('prestaciones.IdMapa', $id)
             ->where('prestaciones.Cerrado', 1)
             ->where('prestaciones.Finalizado', 1)
-            ->where('prestaciones.Entregado', 0)
             ->count();
     }
 
@@ -48,8 +45,6 @@ trait ObserverMapas
     {
         return Prestacion::join('mapas', 'prestaciones.IdMapa', 'mapas.Id')
             ->where('prestaciones.IdMapa', $id)
-            ->where('prestaciones.Cerrado', 1)
-            ->where('prestaciones.Finalizado', 1)
             ->where('prestaciones.Entregado', 1)
             ->count();
     }
@@ -71,14 +66,14 @@ trait ObserverMapas
             ->where('mapas.Id', $id) 
             ->select('prestaciones.Id as prestacionId') 
             ->where(function ($query) {
-                $query->where('itemsprestaciones.CAdj', 'IN', [3, 4, 5, 6])
-                    ->orWhere('itemsprestaciones.Cinfo', '=', 3);
+                $query->whereIn('itemsprestaciones.CAdj', [3, 5])
+                    ->orWhere('itemsprestaciones.Cinfo', 'IN', [3, 0]);
             })
             ->where('prestaciones.Cerrado', 0)
             ->where('prestaciones.Finalizado', 0)
             ->where('prestaciones.Entregado', 0)
             ->groupBy('prestacionId')
-            ->havingRaw('COUNT(*) = COUNT(CASE WHEN itemsprestaciones.CAdj IN (3, 4, 5, 6) OR itemsprestaciones.Cinfo = 3 THEN 1 END)')
+            ->havingRaw('COUNT(*) = COUNT(CASE WHEN itemsprestaciones.CAdj IN (3, 5) AND itemsprestaciones.Cinfo IN (3, 0) THEN 1 END)')
             ->count();
 
         return $totalPrestaciones;
@@ -92,15 +87,16 @@ trait ObserverMapas
             ->where('mapas.Id', $id) 
             ->select('prestaciones.Id as prestacionId') 
             ->where(function ($query) {
-                $query->whereNotIn('itemsprestaciones.CAdj', [3, 4, 5, 6])
-                    ->orWhere('itemsprestaciones.Cinfo', '<>', 3);
+                $query->whereNotIn('itemsprestaciones.CAdj', [3, 5])
+                    ->orWhere('itemsprestaciones.Cinfo', '<>', 3)
+                    ->orWhere('itemsprestaciones.Cinfo', '<>', 0);
             })
             ->where('prestaciones.Cerrado', 0)
             ->where('prestaciones.Finalizado', 0)
             ->where('prestaciones.Entregado', 0)
             ->groupBy('prestacionId')
             ->havingRaw('COUNT(*) = COUNT(CASE WHEN 
-                        (itemsprestaciones.CAdj NOT IN (3, 4, 5, 6) OR itemsprestaciones.Cinfo <> 3) 
+                        (itemsprestaciones.CAdj NOT IN (3, 5) OR itemsprestaciones.CInfo NOT IN (3,0)) 
                         AND prestaciones.Cerrado = 0 
                         AND prestaciones.Finalizado = 0 
                         AND prestaciones.Entregado = 0 
