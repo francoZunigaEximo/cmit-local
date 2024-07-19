@@ -35,7 +35,8 @@ $(document).ready(()=>{
                     {
                         data: null,
                         render: function(data){
-                            return `<strong>${data.Apellido} ${data.Nombre}</strong>`;
+                            let apellido = data.Apellido, nombre = data.Nombre;
+                            return `<strong>${apellido.toUpperCase()} ${nombre.toUpperCase()}</strong>`;
                         }
                     },
                     {

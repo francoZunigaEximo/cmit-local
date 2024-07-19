@@ -56,10 +56,7 @@ $(document).ready(()=>{
                 toastr.warning("Debe seleccionar un examen para registrar la prestación");
                 return;
             }
-
         }
-
-        
         let paciente = ID,
             fecha = $('#Fecha').val(),
             tipoPrestacion = $('#tipoPrestacionPres').val(),
@@ -484,12 +481,12 @@ $(document).ready(()=>{
         $('#estadoBadge').text('Bloqueado');
     }
 
-    function getMap(x, y){
+    async function getMap(x, y){
 
         let empresa = x, art = y;
  
         $.get(getMapas, {empresa: empresa, art: art})
-            .done(function(response){
+            .done(await function(response){
    
                 let mapas = response.mapas;
                 $('#mapas').empty().append('<option value="" selected>Elija un mapa...</option>');

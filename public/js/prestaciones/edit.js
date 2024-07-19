@@ -82,8 +82,8 @@ $(document).ready(()=> {
             toastr.warning('Debe seleccionar un "medio de pago" cuando la "forma de pago" es "contado"');
             return;
         }
-
-        if (pago === '' || spago === null || pago === undefined) {
+       
+        if (['', null, undefined].includes(pago)) {
             toastr.warning('Debe seleccionar una "forma de pago"');
             return;
         }
@@ -97,19 +97,24 @@ $(document).ready(()=> {
             toa("Atención", "El tipo de prestación no puede ser un campo vacío", "warning");
             return;
         }
-
-        if (tipoPrestacion === 'ART' && (mapas === '' || mapas == '0')) {
+        
+        if (tipoPrestacion === 'ART' && ['', 0, null].includes(mapas)) {
             toastr.warning("Debe seleccionar un mapa si la prestación es ART");
             return;
         }
-
-        if ((art === 0 || art === null) && tipoPrestacion === 'ART') {
+        
+        if ([0, null, ''].includes(art) && tipoPrestacion === 'ART') {
             toastr.warning("Debe seleccionar un cliente ART si el tipo de prestación es ART");
             return;
         }
-
-        if ((art !== 0 || art !== null) && tipoPrestacion === 'ART' && (mapas === '' || mapas == '0' || mapas === null)) {
+        
+        if (![0, null, undefined].includes(art) && tipoPrestacion === 'ART' && (['', null, 0].includes(mapas))) {
             toastr.warning("Debe seleccionar un mapa vigente si la prestación es ART y tiene un cliente ART cargado");
+            return;
+        }
+
+        if(![0, null, undefined].includes(art) && tipoPrestacion !== 'ART') {
+            toastr.warning("Si hay un cliente ART la prestación debe ser de tipo ART");
             return;
         }
 
