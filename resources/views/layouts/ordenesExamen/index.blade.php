@@ -20,24 +20,30 @@
                 Prestaciones
             </a>
         </li>
+        @can("etapas_efector")
         <li class="nav-item" role="presentation">
             <a class="nav-link" data-bs-toggle="tab" href="#efector" role="tab" aria-selected="true">
                 <i class="ri-window-line"></i>
                 Efector
             </a>
         </li>
+        @endcan
+        @can("etapas_informador")
         <li class="nav-item" role="presentation">
             <a class="nav-link" data-bs-toggle="tab" href="#informador" role="tab" aria-selected="false" tabindex="-1">
                 <i class="ri-window-line"></i>
                 Informador
             </a>
         </li>
+        @endcan
+        @can('etapas_eenviar')
         <li class="nav-item" role="presentation">
             <a class="nav-link" data-bs-toggle="tab" href="#eenviar" role="tab" aria-selected="false" tabindex="-1">
                 <i class=" ri-window-line"></i>
                 eEnviar
             </a>
         </li>
+        @endcan
         
     </ul>
 </div>
@@ -225,6 +231,7 @@
 
         </div>
 
+        @can("etapas_efector")
         <div class="tab-pane" id="efector" role="tabpanel">
             
             <div class="card-header d-flex justify-content-between">
@@ -595,7 +602,9 @@
                 </div>
             </div>
         </div>
+        @endcan
 
+        @can("etapas_informador")
         <div class="tab-pane" id="informador" role="tabpanel">
             <div class="card-header d-flex justify-content-between">
                 <ul class="nav nav-tabs-custom rounded card-header-tabs border-bottom-0" role="tablist">
@@ -954,7 +963,9 @@
             </div>
 
         </div>
+        @endcan
 
+        @can('etapas_eenviar')
         <div class="tab-pane" id="eenviar" role="tabpanel">
             
             <div class="row">
@@ -1055,6 +1066,7 @@
             </div>
 
         </div>
+        @endcan
     </div>
 </div>
 
