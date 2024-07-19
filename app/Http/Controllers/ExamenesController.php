@@ -7,18 +7,27 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Yajra\DataTables\DataTables;
 use App\Traits\ObserverExamenes;
+use App\Traits\CheckPermission;
 
 class ExamenesController extends Controller
 {
-    use ObserverExamenes;
+    use ObserverExamenes, CheckPermission;
 
     public function index()
     {
+        if(!$this->hasPermission("examenes_show")) {
+            abort(403);
+        }
+
         return view("layouts.examenes.index");
     }
 
     public function create()
     {
+        if(!$this->hasPermission("examenes_add")) {
+            abort(403);
+        }
+
         $estudios = $this->getEstudios();
         $reportes = $this->getReportes();
         $proveedores = $this->getProveedor();
@@ -28,6 +37,9 @@ class ExamenesController extends Controller
 
     public function store(Request $request)
     {
+        if(!$this->hasPermission("examenes_add")) {
+            return response()->json(["msg" => "No tiene permisos"], 403);
+        }
 
         Examen::create([
             'Id' => Examen::max('Id') + 1,
@@ -57,6 +69,10 @@ class ExamenesController extends Controller
 
     public function edit(Examen $examene)
     {
+        if(!$this->hasPermission("examenes_edit")) {
+            return response()->json(["msg" => "No tiene permisos"], 403);
+        }
+        
         $estudios = $this->getEstudios();
         $reportes = $this->getReportes();
         $proveedores = $this->getProveedor();
@@ -98,19 +114,23 @@ class ExamenesController extends Controller
     }
 
     public function deleteEx(Request $request): mixed
-{
-    $examen = Examen::find($request->Id);
+    {   
+        if(!$this->hasPermission("examenes_delete")) {
+            return response()->json(["msg" => "No tiene permisos"], 403);
+        }
 
-    if ($examen && count($this->auditarExamen($request->Id)) > 0) {
-        
-        return response()->json(['estatus' => true]);
+        $examen = Examen::find($request->Id);
 
-    } else {
-        
-        $examen->update(['Inactivo' => '2']);
-        return response()->json(['estatus' => false]);
+        if ($examen && count($this->auditarExamen($request->Id)) > 0) {
+            
+            return response()->json(['estatus' => true]);
+
+        } else {
+            
+            $examen->update(['Inactivo' => '2']);
+            return response()->json(['estatus' => false]);
+        }
     }
-}
 
     public function searchExamenes(Request $request)
     {
@@ -216,6 +236,9 @@ class ExamenesController extends Controller
 
     public function updateExamen(Request $request)
     {
+        if(!$this->hasPermission("examenes_edit")) {
+            return response()->json(["msg" => "No tiene permisos"], 403);
+        }
 
         $examen = Examen::find($request->Id);
         if($examen)
