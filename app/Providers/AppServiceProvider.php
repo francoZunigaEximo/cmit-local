@@ -37,7 +37,8 @@ class AppServiceProvider extends ServiceProvider
             "especialidades_show",
             "profesionales_show",
             "notaCredito_show",
-            "mensajeria_show"
+            "mensajeria_show",
+            "examenes_show",
         ]);
 
         $this->gateAccess([
@@ -45,7 +46,9 @@ class AppServiceProvider extends ServiceProvider
             "clientes_add",
             "pacientes_add",
             "especialidades_add",
-            "examenCuenta_add"
+            "examenCuenta_add",
+            "mapas_add",
+            "examenes_add"
         ]);
 
         $this->gateAccess([
@@ -54,7 +57,8 @@ class AppServiceProvider extends ServiceProvider
             "clientes_edit",
             "mapas_edit",
             "especialidades_edit",
-            "examenCuenta_edit"
+            "examenCuenta_edit",
+            "examenes_edit"
         ]);
 
         $this->gateAccess([
@@ -74,7 +78,8 @@ class AppServiceProvider extends ServiceProvider
         ]);
 
         $this->gateAccess([
-            'etapas_eenviar'
+            'etapas_eenviar',
+            'prestaciones_eEnviar'
         ]);
     }
 
