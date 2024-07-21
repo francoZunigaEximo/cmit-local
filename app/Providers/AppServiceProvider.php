@@ -58,7 +58,8 @@ class AppServiceProvider extends ServiceProvider
             "mapas_edit",
             "especialidades_edit",
             "examenCuenta_edit",
-            "examenes_edit"
+            "examenes_edit",
+            "pacientes_edit"
         ]);
 
         $this->gateAccess([

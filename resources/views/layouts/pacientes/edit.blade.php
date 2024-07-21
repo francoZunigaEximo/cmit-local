@@ -135,13 +135,13 @@
                 </div>
 
                 <div class="col-12 box-information mt-2 text-center">
-                    <button type="button" id="btnVolverPacientes" class="btn botonGeneral">Volver</button>
-                    <button type="submit" id="actualizarPaciente" class="btn botonGeneral">Actualizar</button>
+                    <a  href="{{ route('pacientes.index') }}" class="btn btn-sm botonGeneral">Ir listado</a>
+                    <button type="submit" class="btn btn-sm botonGeneral">Actualizar</button>
                 </div>
             </div> 
         </div>
    </div>
-    </form>
+
 
     <div class="row mt-3">
         <div class="col-lg-12">
