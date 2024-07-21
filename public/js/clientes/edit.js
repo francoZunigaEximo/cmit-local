@@ -11,9 +11,11 @@ $(document).ready(()=> {
     checkBloq();
     examenes();
 
-    $(document).on('click', '.delete-icon', function() {
+    $(document).on('click', '.delete-icon', function(e) {
+        e.preventDefault();
         let Id = $(this).data('id');
        
+        preloader('on');
         $.ajax({
             url: deleteAutorizado,
             type: 'Post',
@@ -22,19 +24,23 @@ $(document).ready(()=> {
                 _token: TOKEN,
             },
             success: function(){
-                toastr.success('El autorizado ha sido eliminado correctamente', 'Perfecto');
+                preloader('off');
+                toastr.success('El autorizado ha sido eliminado correctamente');
                 $('.body-autorizado').empty();
                 cargarAutorizados();
             },
-            error: function(xhr){
-                toastr.error('Hubo un inconveniento con el proceso. Consulto con el administrador', 'Error');
-                console.error(xhr);
+            error: function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;  
             }
         });
     });
 
     //Opciones en CLientes - carga de datos
-    $('#btnOpciones').off('click').on('click', function() {
+    $('#btnOpciones').off('click').on('click', function(e) {
+        e.preventDefault();
     
         let fisico = $('#RF').prop('checked')?1:0,
             sinEvaluacion = $('#SinEval').prop('checked')?1:0,
@@ -47,22 +53,21 @@ $(document).ready(()=> {
 
     
         if(correo == true && mensajeria == true){
-            toastr.warning('¡No puede tener la opcion Mensajeria y Correo seleccionadas. Debe escoger por una opción!', 'Atención');
+            toastr.warning('¡No puede tener la opcion Mensajeria y Correo seleccionadas. Debe escoger por una opción!');
             return;
         }
 
         if(motivo === '' && bloqueado === 1){
-        
-            toastr.warning('¡El motivo es un campo obligatorio si ha seleccionado la opción bloquear. Debe escribir un motivo!', 'Atención');
+            toastr.warning('¡El motivo es un campo obligatorio si ha seleccionado la opción bloquear. Debe escribir un motivo!');
             return;
         }
 
         if(motivo !== '' && bloqueado === 0){
-        
-            toastr.warning('¡No puede escribir un motivo si no ha bloqueado al cliente!', 'Atención');
+            toastr.warning('¡No puede escribir un motivo si no ha bloqueado al cliente!');
             return;
         }
         
+        preloader('on');
         $.ajax({
             url: checkOpciones,
             type: 'Post',
@@ -78,7 +83,7 @@ $(document).ready(()=> {
                 Id: ID,
             },
             success: function(){
-
+                preloader('off');
                 toastr.success('¡Los datos se han guardado correctamente!', 'Perfecto');
                 
                if(bloqueado === 1 && motivo !== ''){
@@ -100,9 +105,11 @@ $(document).ready(()=> {
                             
         
                         },
-                        error: function(xhr) {
-                            toastr.error('¡Ha ocurrido un inconveniente y la solicitud no podrá llevarse a cabo. Consulte con el administrador!', 'Error');
-                            console.error(xhr);
+                        error: function(jqXHR) {
+                            preloader('off');
+                            let errorData = JSON.parse(jqXHR.responseText);            
+                            checkError(jqXHR.status, errorData.msg);
+                            return;  
                             }
                         });
 
@@ -110,16 +117,19 @@ $(document).ready(()=> {
                 return;
           
             },
-            error: function(xhr){
-                toastr.error('Hubo un error al obtener los autorizados. Consulte con el administrador', 'Error');
-                console.error(xhr);
+            error: function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;  
             }
         });
 
     });
 
     //Registro de autorizado
-    $('#btnAutorizado').click(function () {
+    $('#btnAutorizado').click(function (e) {
+        e.preventDefault();
 
         let TipoEntidad = $('#TipoEntidad').val(),
             Nombre = $('#Nombre').val(),
@@ -130,25 +140,25 @@ $(document).ready(()=> {
         let camposBasicos = [Nombre, Apellido, DNI, Derecho];
 
         if (camposBasicos.every(contenido => contenido === '')) {
-            toastr.warning('Por favor, complete todos los campos obligatorios.', 'Atención');
+            toastr.warning('Por favor, complete todos los campos obligatorios.');
             return;
         }
 
         if(DNI.length > 8 || parseInt(DNI) < 0){
-            toastr.warning("El dni no puede contener más de 8 digitos o ser negativo", "Atención");
+            toastr.warning("El dni no puede contener más de 8 digitos o ser negativo");
             return;
         }
 
         if(Nombre.length > 25){
-            toastr.warning("El nombre no puede contener mas de 25 caracteres", "Atención");
+            toastr.warning("El nombre no puede contener mas de 25 caracteres");
             return;
         }
 
         if(Apellido.length > 30){
-            toastr.warning("El apellido no puede contener mas de 30 caracteres", "Atención");
+            toastr.warning("El apellido no puede contener mas de 30 caracteres");
             return;
         }
-
+        preloader('on');
         $.ajax({
             url: altaAutorizado,
             type: 'POST',
@@ -162,22 +172,23 @@ $(document).ready(()=> {
                Derecho: Derecho
             },
             success: function(){
-
-                toastr.success('El autorizado se registró correctamente', 'Felicitaciones');
+                preloader('off');
+                toastr.success('El autorizado se registró correctamente');
                 cargarAutorizados();
                 $('#Nombre, #Apellido, #DNI, #Derecho').val('');
             },
-            error: function(xhr){
-
-                toastr.error('Hubo un error en el registro. Consulte con el administrador.', 'Error');
-                console.error(xhr);
+            error: function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;  
             }
         });
     });
 
     //Chequeo de email. Carga de datos
-    $('#guardarEmail').click(function(){
-
+    $('#guardarEmail').click(function(e){
+        e.preventDefault();
         let controlEjecucion = true;
         
         // Verificación de correos
@@ -206,17 +217,14 @@ $(document).ready(()=> {
                 Id: ID
             },
             success: function(response){
-
                 toastr.success(response.msg);
+                return;
             },
-            error: function(jqXHR, xhr){
-
-                if(jqXHR.status === 403) {
-                    toastr.warning("No tiene permisos para realizar esta acción");
-                }else{
-                    toastr.error('Hubo un error al obtener los autorizados. Consulte con el administrador', 'Error');
-                    console.error(xhr);
-                }
+            error: function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;  
             }
             });
         }
@@ -224,14 +232,16 @@ $(document).ready(()=> {
 
 
     //Guardar las Observaciones en la base de datos
-    $('#btnObservaciones').off('click').on('click', function() {
-        
+    $('#btnObservaciones').off('click').on('click', function(e) {
+        e.preventDefault();
+
         let Observaciones = $('#Observaciones').val(),
             ObsCE = $('#ObsCE').val(),
             ObsCO = $('#ObsCO').val(),
             ObsEval = $('#ObsEval').val();
             Motivo = $('#Motivo').val();
         
+        preloader('on');
         $.ajax({
             url: setObservaciones,
             type: 'POST',
@@ -245,20 +255,22 @@ $(document).ready(()=> {
                 Id: ID,
             },
             success: function(){
-
-                toastr.success('Las observaciones se han cargado correctamente', 'Perfecto');
+                preloader('off');
+                toastr.success('Las observaciones se han cargado correctamente');
             },
-            error: function(xhr){
-
-                toastr.error('Hubo un error en el registro. Consulte con el administrador', 'Error')
-                console.error(xhr);
+            error: function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;  
             }
         });
     });
 
 
-    $(document).on('click', '#clonar', function(){
-        
+    $(document).on('click', '#clonar', function(e){
+        e.preventDefault();
+
         let TipoCliente = $('#TipoCliente').val();
             Identificacion = $('#Identificacion').val(),
             RazonSocial = $('#RazonSocial').val(),
@@ -271,27 +283,32 @@ $(document).ready(()=> {
             IdLocalidad = $('#IdLocalidad').val(),
             CP = $('#CP').val();
             
-        if(confirm("¿Esta seguro que desea clonar la información?")) {
+        swal({
+            title: "¿Esta seguro que desea clonar la información?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar)=>{
+            if(confirmar){
+                localStorage.setItem('clon_TipoCliente', TipoCliente);
+                localStorage.setItem('clon_Identificacion', Identificacion);
+                localStorage.setItem('clon_RazonSocial', RazonSocial);
+                localStorage.setItem('clon_CondicionIva', CondicionIva);
+                localStorage.setItem('clon_Telefono', Telefono);
+                localStorage.setItem('clon_EMail', EMail);
+                localStorage.setItem('clon_ObsEMail', ObsEMail);
+                localStorage.setItem('clon_Direccion', Direccion);
+                localStorage.setItem('clon_Provincia', Provincia);
+                localStorage.setItem('clon_Localidad', IdLocalidad);
+                localStorage.setItem('clon_CodigoPostal', CP);
 
-            localStorage.setItem('clon_TipoCliente', TipoCliente);
-            localStorage.setItem('clon_Identificacion', Identificacion);
-            localStorage.setItem('clon_RazonSocial', RazonSocial);
-            localStorage.setItem('clon_CondicionIva', CondicionIva);
-            localStorage.setItem('clon_Telefono', Telefono);
-            localStorage.setItem('clon_EMail', EMail);
-            localStorage.setItem('clon_ObsEMail', ObsEMail);
-            localStorage.setItem('clon_Direccion', Direccion);
-            localStorage.setItem('clon_Provincia', Provincia);
-            localStorage.setItem('clon_Localidad', IdLocalidad);
-            localStorage.setItem('clon_CodigoPostal', CP);
-
-            window.location.href = GOCREATE;
-        }
+                window.location.href = GOCREATE;
+            }
+        });           
     });
 
        //get de los Autorizados
        function cargarAutorizados() {
-
+        preloader('on');
         $.ajax({
             url: getAutorizados,
             type: 'GET',
@@ -300,8 +317,8 @@ $(document).ready(()=> {
                 Id: ID,
             },
             success: function(response) {
+                preloader('off');
                 let autorizados = response;
-
                 $('.body-autorizado').empty();
 
                 if (autorizados.length == 0) {
@@ -329,10 +346,11 @@ $(document).ready(()=> {
                     });
                 }
             },
-            error: function(xhr){
-
-                toastr.error('Hubo un error al obtener los autorizados. Consulte con el administrador', 'Error');
-                console.error(xhr);
+            error: function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;  
             }
         });
     }
@@ -361,15 +379,14 @@ $(document).ready(()=> {
                     $('#Provincia').append(nuevoOption);
                 },
                 error: function(xhr){
-                    toastr.warning('No se pudo autocompletar la provincia. Debe cargarlo manualmente.', 'Atención');
-                    console.error(xhr);
-                    
+                    toastr.warning('No se pudo autocompletar la provincia. Debe cargarlo manualmente.');                    
                 }
             });
         }
     }
 
-    $(document).on('click', '#addNumero', function() {
+    $(document).on('click', '#addNumero', function(e) {
+        e.preventDefault();
         let prefijo = $('#prefijoExtra').val(), numero = $('#numeroExtra').val(), observacion = $('#obsExtra').val();
 
         if (prefijo !== '' && numero !== '' && observacion !== '') {
@@ -400,7 +417,8 @@ $(document).ready(()=> {
         }
     });
 
-    $(document).on('click', '.ri-delete-bin-line', function() {
+    $(document).on('click', '.ri-delete-bin-line', function(e) {
+        e.preventDefault();
         let fila = $(this).closest('tr'), index = fila.index();
         fila.remove();
         $(`#hiddens .telefono-input:eq(${index})`).remove(); 
@@ -408,31 +426,31 @@ $(document).ready(()=> {
     });
 
      //Click para eliminar el telefono
-     $(document).on('click', '.eliminarTelefono', function(){
-
+     $(document).on('click', '.eliminarTelefono', function(e){
+        e.preventDefault();
         let telefonoId = $(this).data("id");
         quitarTelefono(telefonoId);
 
     });
 
-    $(document).on('click', '.editarTelefono', function(){
-
+    $(document).on('click', '.editarTelefono', function(e){
+        e.preventDefault();
         let telefonoId = $(this).data('id');
 
         verTelefono(telefonoId);
     });
 
-    $(document).on('click', '#saveCambiosEdit', function(){
-        
+    $(document).on('click', '#saveCambiosEdit', function(e){
+        e.preventDefault();
         let Id = $('#Id').val(), CodigoArea = $('#nuevoPrefijo').val(), NumeroTelefono = $('#nuevoNumero').val(), Observaciones = $('#nuevaObservacion').val();
 
         if(CodigoArea == "" || NumeroTelefono == "") {
-            toastr.warning("Faltan datos en el número de teléfono del cliente. No pueden haber campos vacíos.", "Atención");
+            toastr.warning("Faltan datos en el número de teléfono del cliente. No pueden haber campos vacíos.");
             return;
         }
 
         if(Observaciones == ""){
-            toastr.warning("Debe escribir alguna referencia en la observación.", "Atención");
+            toastr.warning("Debe escribir alguna referencia en la observación.");
             return;
         }
 
@@ -455,7 +473,7 @@ $(document).ready(()=> {
     }
 
     function telefonos(){
-
+        preloader('on');
         $.ajax({
             url: getTelefonos,
             type: 'GET',
@@ -464,6 +482,7 @@ $(document).ready(()=> {
                 tipo: 'all',
             },
             success: function(response){
+                preloader('off');
                 let telefonos = response;
 
                 if(telefonos.length > 0) {
@@ -484,16 +503,18 @@ $(document).ready(()=> {
                     $('#tablaTelefonos').append(contenido);
                 }
             },
-            error: function(xhr){
-                toastr.error('Hay un error en la carga de los telefonos adicionales. Consulte con el administrador', 'Error');
-                console.error(xhr);
+            error: function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;  
             }
 
         });
     }
    
     function quitarTelefono(id){
-
+        preloader('on');
         $.ajax({
 
             url: deleteTelefono,
@@ -503,13 +524,15 @@ $(document).ready(()=> {
                 _token: TOKEN
             },
             success: function(){
-
-                toastr.success("El número de telefono adicional se ha borrado de la base de datos.", "Excelente");
+                preloader('off');
+                toastr.success("El número de telefono adicional se ha borrado de la base de datos.");
+                return;
             },
-            error: function(xhr){ 
-
-                toastr.error("Ha ocurrido un error al intentar eliminar el número de telefono adicional. Consulte con el administrador", "Error");
-                console.error(xhr);
+            error: function(jqXHR){ 
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;  
             }
 
         });
@@ -529,7 +552,7 @@ $(document).ready(()=> {
                 _token: TOKEN
             },
 
-            success: function(result){
+            success: function(){
                 
                 let contenido = `
                     <lord-icon
@@ -555,9 +578,11 @@ $(document).ready(()=> {
                 telefonos(); 
                 
             },
-            error: function(xhr){
-                toastr.error('Hubo un error en el proceso de guardar los cambios telefonicos. Consulte con el administrador', 'Error');
-                console.error(xhr);
+            error: function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;  
             }
         });
     }
@@ -565,7 +590,7 @@ $(document).ready(()=> {
     function verTelefono(id){
 
         $('#editTelefonoModal .modal-footer').show();
-
+        preloader('on');
         $.ajax({
             url: getTelefonos,
             type: "GET",
@@ -574,7 +599,7 @@ $(document).ready(()=> {
                 tipo: 'one',
             },
             success: function(result){
-                
+                preloader('off');
                 let telefono = result;
                 $('#editTelefonoModal .modal-body').empty();
                 
@@ -605,9 +630,11 @@ $(document).ready(()=> {
                 $('#editTelefonoModal .modal-body').append(contenido);
 
             },
-            error: function(xhr){
-                toastr.error("Ha ocurrido un error en el proceso de obtener los datos. Consulte con el administrador", "Error");
-                console.error(xhr);
+            error: function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;  
             }
         });
     }
@@ -636,9 +663,11 @@ $(document).ready(()=> {
                     $('.telefonoAcciones').empty().hide();
                     }
             })
-            .fail(function(xhr){
-                console.error(xhr);
-                toastr.error("Ha ocurrido un error. Consulte con el administrador");
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;  
             });
     }
 
