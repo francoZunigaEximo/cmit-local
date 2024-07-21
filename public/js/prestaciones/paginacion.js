@@ -2,10 +2,12 @@ $(document).ready(()=>{
 
     $('th.sort').off("click"); // Se coloca provisoriamente, cuando se defina el modelo de ordenado a utilizar se puede quitar.
 
-    $('.buscarPrestaciones, .hoyPrestaciones').on('click', function(event) {
+    $('.buscarPrestaciones, .hoyPrestaciones').on('click', function(e) {
+        e.preventDefault();
 
-        event.preventDefault();
-        let nroprestacion = $('#nroprestacion').val(),
+        let fechaDesde = $('#fechaDesde').val(),
+            fechaHasta = $('#fechaHasta').val(),
+            nroprestacion = $('#nroprestacion').val(),
             pacienteSearch = $('#pacienteSearch').val(),
             empresaSearch = $('#empresaSearch').val(),
             artSearch = $('#artSearch').val(),
@@ -13,11 +15,33 @@ $(document).ready(()=>{
             pacienteSelect2 = $('#pacienteSelect2').val(),
             artSelect2 = $('#artSelect2').val(),
             tipoPrestacion = $('#TipoPrestacion').val(),
-            fechaDesde = $('#fechaDesde').val(),
-            fechaHasta = $('#fechaHasta').val(),
             estado = $('#Estado').val();
 
-        let dataTableConfig = {
+        let hoy = new Date().toLocaleDateString('en-CA');
+
+        if($(this).hasClass('hoyPrestaciones')) {
+
+                fechaDesde = hoy,
+                fechaHasta = hoy,
+                nroprestacion = null,
+                pacienteSearch = null,
+                empresaSearch = null,
+                artSearch = null,
+                empresaSelect2 = null,
+                pacienteSelect2 = null,
+                artSelect2 = null,
+                tipoPrestacion = null,
+                estado = null;
+        }
+
+        if((fechaDesde == '' || fechaHasta == '') && nroprestacion == ''){
+            swal('Alerta','La fecha "Desde" y "Hasta" son obligatorias.', 'warning');
+            return;
+        }
+
+        $('#listaPrestaciones').DataTable().clear().destroy();
+
+        new DataTable("#listaPrestaciones", {
             searching: false,
             ordering: true,
             order: [[0, 'desc'], [1, 'desc'], [2, 'desc'], [3, 'desc'], [4, 'desc'], [5, 'desc'], [6, 'desc'], [7, 'desc'], [8, 'desc'], [9, 'desc'], [10, 'desc'], [11, 'desc'], [12, 'desc'], [13, 'desc'], [14, 'desc'], [15, 'desc'], [16, 'desc'], [17, 'desc']],
@@ -28,6 +52,22 @@ $(document).ready(()=>{
             responsive: true,
             serverSide: true,
             deferRender: true,
+            ajax: {
+                url: SEARCH,
+                data: function(e) {
+                    e.pacienteSearch = pacienteSearch;
+                    e.empresaSearch = empresaSearch;
+                    e.artSearch = artSearch;
+                    e.pacienteSelect2 = pacienteSelect2;
+                    e.artSelect2 = artSelect2;
+                    e.empresaSelect2 = empresaSelect2;
+                    e.nroprestacion = nroprestacion;
+                    e.tipoPrestacion = tipoPrestacion;
+                    e.fechaDesde = fechaDesde;
+                    e.fechaHasta = fechaHasta;
+                    e.estado = estado;
+                }
+            },
             dataType: 'json',
             type: 'POST',
             columnDefs: [
@@ -272,66 +312,11 @@ $(document).ready(()=>{
                                             ? $(row).addClass('rojo negrita')
                                             : '';
             }
-        };
-
-        if ($(this).hasClass('hoyPrestaciones')) {
-
-            dataTableConfig.ajax = {
-                url: ROUTE,
-            };
-
-        } else {
-            
-            if((fechaDesde == '' || fechaHasta == '') && nroprestacion == ''){
-                swal('Alerta','La fecha "Desde" y "Hasta" son obligatorias.', 'warning');
-                return;
-            }
-
-            dataTableConfig.ajax = {
-                url: SEARCH,
-                data: function(e) {
-                    e.pacienteSearch = pacienteSearch;
-                    e.empresaSearch = empresaSearch;
-                    e.artSearch = artSearch;
-                    e.pacienteSelect2 = pacienteSelect2;
-                    e.artSelect2 = artSelect2;
-                    e.empresaSelect2 = empresaSelect2;
-                    e.nroprestacion = nroprestacion;
-                    e.tipoPrestacion = tipoPrestacion;
-                    e.fechaDesde = fechaDesde;
-                    e.fechaHasta = fechaHasta;
-                    e.estado = estado;
-                }
-            };
         }
+    );
 
         
-
-        $('#listaPrestaciones').DataTable().clear().destroy();
-
-        new DataTable("#listaPrestaciones", dataTableConfig);
-
     });
-
-
-    function fechaNow(fechaAformatear, divider, format) {
-        let dia, mes, anio; 
-    
-        if (fechaAformatear === null) {
-            let fechaHoy = new Date();
-    
-            dia = fechaHoy.getDate().toString().padStart(2, '0');
-            mes = (fechaHoy.getMonth() + 1).toString().padStart(2, '0');
-            anio = fechaHoy.getFullYear();
-        } else {
-            let nuevaFecha = fechaAformatear.split("-"); 
-            dia = nuevaFecha[0]; 
-            mes = nuevaFecha[1]; 
-            anio = nuevaFecha[2];
-        }
-    
-        return (format === 1) ? `${dia}${divider}${mes}${divider}${anio}` : `${anio}${divider}${mes}${divider}${dia}`;
-    }
 
 
 });
