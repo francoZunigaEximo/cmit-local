@@ -45,7 +45,7 @@ $(document).ready(function(){
 
     function nuevoEmpresa(id, name) {
         if (id && name) {
-            console.log(id, name)
+
             if ($('#empresaCreate').data('select2')) {
                 var nuevaOpcion = new Option(name, id, true, true);
                 $('#empresaCreate').append(nuevaOpcion).trigger('change');

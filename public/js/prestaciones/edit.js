@@ -115,11 +115,9 @@ $(document).ready(()=> {
 
         if(![null, undefined, '0', 0].includes(art) && tipoPrestacion !== 'ART') {
             toastr.warning("Si hay un cliente ART la prestación debe ser de tipo ART");
-            console.log(art);
             return;
         }
-        console.log("TP: " + tipoPrestacion + " | Mapas: " + mapas + " | ART: " + art);
-
+        
         preloader('on');
         $.ajax({
             url: updatePrestacion,
@@ -502,7 +500,7 @@ $(document).ready(()=> {
 
         if(actual == '') return;
 
-        let hoy = new Date().toISOString().slice(0, 10);
+        let hoy = new Date().toLocaleDateString('en-CA');
         if(hoy > actual){
             
             $.ajax({

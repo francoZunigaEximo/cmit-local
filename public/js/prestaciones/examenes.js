@@ -475,7 +475,7 @@ $(document).ready(()=>{
         let classes = $(this).attr('class').split(' '),
             //item = $(this).closest('tr').find('td:first').attr('id');
             item = $(this).closest('tr').find('td:eq(1)').attr('id');
-            console.log(item);
+
             const opcionesClasses = {
                 'incompleto': 'Incompleto',
                 'ausente': 'Ausente',
