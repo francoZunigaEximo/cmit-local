@@ -1,7 +1,7 @@
 $(document).ready(()=>{
     
     var empresaInput = $('#selectClientes').val(), artInput = $('#selectArt').val();
-    let hoy = new Date().toISOString().slice(0, 10), precarga = $('#tipoPrestacionPres').val();
+    let hoy = new Date().toLocaleDateString('en-CA'), precarga = $('#tipoPrestacionPres').val();
     $('#Fecha').val(hoy);
 
     $('#siguienteExCta, .seleccionExCta').hide();

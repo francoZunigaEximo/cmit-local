@@ -1,6 +1,6 @@
 $(document).ready(function(){
 
-    let hoy = new Date().toISOString().slice(0, 10);
+    let hoy = new Date().toLocaleDateString('en-CA');
     $('#fechaHasta').val(hoy);
 
     $(document).on('click', '.destinatarios, .historiaMensaje', function(){

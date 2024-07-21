@@ -1,6 +1,6 @@
 $(document).ready(()=>{
 
-    let hoy = new Date().toISOString().slice(0, 10), 
+    let hoy = new Date().toLocaleDateString('en-CA'), 
         maxCaracteres = 100;
 
     quitarDuplicados("#Estado");

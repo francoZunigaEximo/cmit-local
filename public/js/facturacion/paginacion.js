@@ -3,7 +3,7 @@ $(document).ready(function(){
     $(document).on('click', '.Hoy', function(e){
         e.preventDefault();
         let base = $('#listaFacturas');
-        let hoy = new Date().toISOString().slice(0, 10);
+        let hoy = new Date().toLocaleDateString('en-CA');
         let fechaDesde = hoy,
             fechaHasta = hoy;
             

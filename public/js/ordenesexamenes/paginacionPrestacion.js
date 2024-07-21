@@ -7,7 +7,7 @@ $(document).ready(()=>{
     //Botón de busqueda de Mapas
     $(document).on('click', '#buscarPres, .sesentaDias, .noventaDias, .totalDias, .ausenteDias, .hoyDias, .treintaDias', function() { 
 
-        let hoy = new Date();
+        let hoy = new Date().toLocaleDateString('en-CA');
         let fechaHasta = $(this).hasClass('hoyDias')
             ? new Date() 
             : $(this).hasClass('sesentaDias') || $(this).hasClass('noventaDias') || $(this).hasClass('totalDias') || $(this).hasClass('ausenteDias') || $(this).hasClass('treintaDias')
