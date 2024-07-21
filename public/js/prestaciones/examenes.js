@@ -62,13 +62,12 @@ $(document).ready(()=>{
             },
 
             success:function(response){
-
+                preloader('off');
                 let data = response.examenes,
                     ids = data.map(function(item) {
                     return item.Id;
                   });
                 saveExamen(ids);  
-                preloader('off');
                 $('.addPaquete').val([]).trigger('change.select2');
             },
             error: function(jqXHR){
@@ -130,14 +129,13 @@ $(document).ready(()=>{
                     },
                     success: function(response){
                         var estados = [];
-
+                        preloader('off');
                         response.forEach(function(msg) {
                             
                             let tipoRespuesta = {
                                 success: 'success',
                                 fail: 'info'
                             }
-                            preloader('off');
                             toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 });
                             estados.push(msg.estado);
         
@@ -201,14 +199,14 @@ $(document).ready(()=>{
                     success: function(response){
                         var estados = [];
                         
-                        
+                        preloader('off')
                         response.forEach(function(msg) {
 
                             let tipoRespuesta = {
                                 success: 'success',
                                 fail: 'info'
                             }
-                            preloader('off')
+                            
                             toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 })
                             
                             estados.push(msg.estado)
@@ -260,17 +258,16 @@ $(document).ready(()=>{
                     },
                     success: function(response){
                         var estados = [];
-
+                        preloader('off');
                         response.forEach(function(msg) {
                             
                             let tipoRespuesta = {
                                 success: 'success',
                                 fail: 'info'
                             }
-                            preloader('off');
+                           
                             toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 });
                             estados.push(msg.estado);
-        
                         });
 
                         if(estados.includes('success')) {
@@ -322,14 +319,14 @@ $(document).ready(()=>{
                     },
                     success: function(response){
                         var estados = [];
-
+                        preloader('off');
                         response.forEach(function(msg) {
                             
                             let tipoRespuesta = {
                                 success: 'success',
                                 fail: 'info'
                             }
-                            preloader('off');
+                            
                             toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 });
                             estados.push(msg.estado);
         
@@ -382,17 +379,16 @@ $(document).ready(()=>{
                     },
                     success: function(response){
                         var estados = [];
-
+                        preloader('off');
                         response.forEach(function(msg) {
                             
                             let tipoRespuesta = {
                                 success: 'success',
                                 fail: 'info'
                             }
-                            preloader('off');
+                            
                             toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 });
                             estados.push(msg.estado);
-        
                         });
 
                         if(estados.includes('success')) {
