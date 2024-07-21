@@ -479,6 +479,7 @@ $(document).ready(()=>{
         $('#blockPrestPaciente').prop('disabled', true);
         $('#estadoBadge').removeClass('badge badge-soft-success').addClass('badge badge-soft-danger');
         $('#estadoBadge').text('Bloqueado');
+        getListado(null);
     }
 
     async function getMap(x, y){
@@ -533,21 +534,12 @@ $(document).ready(()=>{
                 $('#listaPacientes tbody').empty();
                 $.each(pacientes.data, function(index, papre) {
 
-                    //Acortadores
-                    let prestacionArt = papre.Art,
-                        prestacionRz = papre.Empresa,
-                        prestacionPe = papre.ParaEmpresa;
-
-                    let recorteArt = prestacionArt.substring(0, 10),
-                        recorteRz = prestacionRz.substring(0,10),
-                        recortePe = prestacionPe.substring(0,10);
-
                     let cerradoAdjunto = papre.CerradoAdjunto || 0,
                         total = papre.Total || 1,
                         calculo = parseFloat(((cerradoAdjunto / total) * 100).toFixed(2)),
                         resultado = (calculo === 100) ? 'fondo-blanco' : (calculo >= 86 && calculo <= 99) ? 'fondo-verde' : (calculo >= 51 && calculo <= 85) ? 'fondo-amarillo' : (calculo >= 1 && calculo <= 50) ? 'fondo-naranja' : 'fondo-rojo';
 
-                    let row = `<tr class="${resultado}">
+                    let row = `<tr class="${papre.Anulado == 0 ? resultado : "rojo"}">
                                 <td>
                                     <input type="checkbox" name="Id" value=${papre.Id} checked="">
                                 </td>
@@ -563,38 +555,38 @@ $(document).ready(()=>{
                                 <td>
                                     ${papre.Tipo}
                                 </td>
-                                <td title="${papre.RazonSocial}">
-                                    ${recorteRz}
+                                <td title="${papre.Empresa}">
+                                    ${acortadorTexto(papre.Empresa, 10)}
                                 </td>
                                 <td title="${papre.ParaEmpresa}">
-                                    ${recortePe}
+                                    ${acortadorTexto(papre.ParaEmpresa, 10)}
                                 </td>
                                 <td title="${papre.Art}">
-                                    ${recorteArt}
+                                    ${acortadorTexto(papre.Art, 10)}
                                 </td>
                                 <td>
-                                    <span class="text-uppercase">${ (papre.Anulado == 0 ? "Habilitado" : "Bloqueado")}</span>
+                                    <span>${comprobarEstado(papre.Cerrado, papre.Finalizado, papre.Entregado)}</span>
                                 </td>
                                 <td>
                                     ${(`<div class="text-center"><i class="${papre.eEnviado === 1 ? `ri-checkbox-circle-fill negro` : `ri-close-circle-line negro`}"></i></div>`)}
                                 </td>
                                 <td>
-                                    ${(papre.Incompleto === 1 ? `<div class="text-center"><i class="ri-check-line"></i></div>` : `-`)}
+                                    <div class="text-center">${(papre.Incompleto === 1 ? `<i class="ri-check-line"></i>` : `-`)}</div>
                                 </td>
                                 <td>
-                                    ${(papre.Ausente === 1 ? `<div class="text-center"><i class="ri-check-line"></i></div>` : `-`)}
+                                    <div class="text-center">${(papre.Ausente === 1 ? `<i class="ri-check-line"></i>` : `-`)}</div>
                                 </td>
                                 <td>
-                                    ${(papre.Forma === 1 ? `<div class="text-center"><i class="ri-check-line"></i></div>` : `-`)}
+                                    <div class="text-center">${(papre.Forma === 1 ? `<i class="ri-check-line"></i>` : `-`)}</div>
                                 </td>
                                 <td>
-                                    ${(papre.Devol === 1 ? `<div class="text-center"><i class="ri-check-line"></i></div>` : `-`)}
+                                    <div class="text-center">${(papre.Devol === 1 ? `<i class="ri-check-line"></i>` : `-`)}</div>
                                 </td>
                                 <td>
                                     ${(papre.Pago == "B" ? 'Ctdo.' : papre.Pago == "C" ? "CCorriente" : papre.Pago == "C" ? "PCuenta" : "CCorriente")}
                                 </td>
                                 <td>
-                                    ${(papre.Facturado === 1 ? `<div class="text-center"><i class="ri-check-line"></i></div>` : `-`)}
+                                   <div class="text-center"> ${(papre.Facturado === 1 ? `<i class="ri-check-line"></i>` : `-`)}</div>
                                 </td>
                                 <td>
                                     <div class="d-flex gap-2">
@@ -614,6 +606,19 @@ $(document).ready(()=>{
                 });
             }
         });
+    }
+    
+    function comprobarEstado(cerrado, finalizado, entregado) {
+
+        return (cerrado === 1 &&  finalizado === 0)
+        ? "Cerrado"
+        : (cerrado === 1 && finalizado === 1)
+            ? "Finalizado"
+            : ( entregado === 1)
+                ? "Entregado"
+                : (cerrado === 0 && finalizado === 0)
+                    ? "Abierto"
+                    : "-"
     }
 
     async function getUltimasFacturadas(id) {

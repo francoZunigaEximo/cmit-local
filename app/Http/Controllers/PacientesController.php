@@ -103,7 +103,7 @@ class PacientesController extends Controller
 
         $prestacion = $this->condicionesBasicas($query, $paciente);
 
-        return response()->json(['pacientes' => $prestacion]);
+        return response()->json(['pacientes' => $prestacion], 200);
     }
 
     public function create():mixed
@@ -183,7 +183,10 @@ class PacientesController extends Controller
 
     public function update(Request $request, Paciente $paciente)
     {
-        if(!$this->hasPermission("paciente_edit")){abort(403);}
+        if(!$this->hasPermission("pacientes_edit"))
+        {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
         $paciente = Paciente::find($paciente->Id);
 
         $data = $request->only([
@@ -247,15 +250,18 @@ class PacientesController extends Controller
         {
             $paciente = Paciente::with('prestaciones')->where('Id', $id)->first();
 
+            $contadorAnulados = $paciente->prestaciones->every(function($prestacion) {
+                return $prestacion->Anulado === 1;
+            });
 
-            if($paciente && count($paciente->prestaciones) === 0) {
+            if($paciente && (count($paciente->prestaciones) === 0 || $contadorAnulados === true)) {
                 $paciente->Estado = 0;
                 $paciente->save();
  
                 $resultado = ['msg' => 'Paciente dado de baja correctamente: '. $paciente->Nombre.' '.$paciente->Apellido, 'status' => 200];
             }else{
 
-                $resultado = ['msg' => 'Error al dar de baja el paciente '.$paciente->Nombre.' '.$paciente->Apellido.'. Hay prestaciones activas', 'status' => 409]; 
+                $resultado = ['msg' => 'Error al dar de baja el paciente '.$paciente->Nombre.' '.$paciente->Apellido.'. Hay prestaciones activas.', 'status' => 409]; 
             }
 
             $resultados[] = $resultado;
@@ -336,7 +342,12 @@ class PacientesController extends Controller
             'prestaciones.Ausente as Ausente',
             'prestaciones.IdPaciente as Paciente',
             'prestaciones.Estado as Estado',
-            'prestaciones.Facturado as Facturado');
+            'prestaciones.Facturado as Facturado',
+            'prestaciones.Cerrado as Cerrado',
+            'prestaciones.Finalizado as Finalizado',
+            'prestaciones.Entregado as Entregado',
+            'prestaciones.eEnviado as eEnviado',
+        );
     }
 
     private function condicionesBasicas($query, $paciente)

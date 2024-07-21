@@ -149,10 +149,10 @@
                                     <i class="ri-add-line align-bottom me-1"></i> Nuevo
                             </button>
                             @endcan
-                            @can('prestaciones_report')
                             <button title="Filtros avanzados" class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#filtrosAvanzados" aria-expanded="false" aria-controls="filtrosAvanzados">
                                 Filtros <i class="ri-filter-2-line"></i>
                             </button>
+                            @can('prestaciones_report')
                             <button type="button" class="btn iconGeneral" title="Reporte Simple" onclick="exportExcel('simple')">
                                 Simple <i class="ri-file-excel-line"></i>
                             </button>
