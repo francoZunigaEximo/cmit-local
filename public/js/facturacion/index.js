@@ -1,6 +1,6 @@
 $(document).ready(function(){
     
-    let hoy = new Date().toISOString().slice(0, 10);
+    let hoy = new Date().toLocaleDateString('en-CA');
     $('#fechaHasta').val(hoy);
     $('#tabla').val('facturas');
 
@@ -237,7 +237,7 @@ $(document).ready(function(){
                 preloader('on');
                 $.get(enviarDetalle, {Ids: ids, Tipo: 'enviar', Opcion: arrOpciones})
                     .done(function(response){
-                        console.log(response);
+                      
                         preloader('off');
                         response.forEach(function(item){
                             let tipoToastr = item.original.icon === 'success' ? 'success' : 'warning';

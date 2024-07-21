@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    let hoy = new Date().toISOString().slice(0, 10);
+    let hoy = new Date().toLocaleDateString('en-CA');
     $('#fechaHastaA').val(hoy);
 
     listadoPrestaciones();
