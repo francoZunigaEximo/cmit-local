@@ -433,7 +433,7 @@ class PrestacionesController extends Controller
             // agrego un nuevo cupo al registro de mapa
             if (($mapa == '0' || $mapa == '') && ($prestacion->IdMapa != 'null' || $prestacion->IdMapa != '0' || $prestacion->IdMapa != '' )) {
                 echo "Mapa: ".$mapa." | IdMapa BD: ".$prestacion->IdMapa;
-                $this->updateMapeados($mapa, "agregar");
+                $this->updateMapeados($prestacion->IdMapa, "agregar");
             } 
         
             $prestacion->IdEmpresa = $request->Empresa ?? 0;
