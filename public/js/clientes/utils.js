@@ -38,13 +38,6 @@ $(document).ready(()=>{
         $(this).height('auto');
         $(this).height(this.scrollHeight);
     });
-
-
-    //Botón para redireccionar al index
-    $('#btnVolverCliente').click(function() {
-        window.location.href = GOINDEX;
-    });
-
     
     $('#Provincia').change(function() {
         let provincia = $(this).val();

@@ -16,6 +16,7 @@ $(document).ready(()=>{
                 pageLength: 50,
                 responsive: true,
                 serverSide: true,
+                deferRender: true,
                 dataType: 'json',
                 type: 'POST',
                 ajax: {
@@ -32,21 +33,19 @@ $(document).ready(()=>{
                     {
                         data: null,
                         render: function(data){
-                            return `<input type="checkbox" name="Id" value="${data.Id}" checked>`;
+                            return `<div class="text-center"><input type="checkbox" name="Id" value="${data.Id}" checked></div>`;
                         }
                     },
                     {
                         data: null,
                         render: function(data){
-                            let razonSocial = data.RazonSocial;
-                            return (razonSocial.length > 15) ? razonSocial.slice(0, 15) + "..." : razonSocial;
+                            return `<span title="${data.RazonSocial}">${acortadorTexto((data.RazonSocial).toUpperCase(), 20)}</span>`;
                         }
                     },
                     {
                         data: null,
                         render: function(data){
-                            let paraEmpresa = data.ParaEmpresa;
-                            return (paraEmpresa.length > 15) ? paraEmpresa.slice(0,15) + "..." : paraEmpresa;
+                            return `<span title="${data.ParaEmpresa}">${acortadorTexto((data.ParaEmpresa).toUpperCase(), 20)}</span>`;
                         }
                     },
                     {
@@ -56,25 +55,19 @@ $(document).ready(()=>{
                     {
                         data: null,
                         render: function(data){
-                            let tipo = (data.TipoCliente === 'E')? 'Empresa': 'ART';
-                            
-                            return tipo;
+                            return data.TipoCliente === 'E' ? 'Empresa': 'ART';
                         }
                     },
                     {
                         data: null,
                         render: function(data){
-                            let contenido = `<span class="badge badge-soft-${ (data.Bloqueado === 0)?'success':'danger' } text-uppercase">${(data.Bloqueado === 0)? 'Habilitado':'Bloqueado' }</span>`;
-                            
-                            return contenido;
+                            return `<span class="badge badge-soft-${ (data.Bloqueado === 0)?'success':'danger' } text-uppercase">${(data.Bloqueado === 0)? 'Habilitado':'Bloqueado' }</span>`;
                         }
                     },
                     {
                         data: null,
                         render: function(data){
-                            let contenido = (data.FPago == 'A')? 'CC': (data.FPago == 'B')? 'Ctdo': 'Ctdo(CC Bloq)';
-        
-                            return contenido;
+                            return data.FPago == 'A' ? 'CC' : (data.FPago == 'B')? 'Ctdo': 'Ctdo(CC Bloq)';
                         }
                     },
                     {
@@ -89,7 +82,7 @@ $(document).ready(()=>{
                     }  
                 ],
                 language: {
-                    processing: "Cargando listado de clientes de CMIT",
+                    processing: "<div style='text-align: center; margin-top: 20px;'><img src='./images/spinner.gif' /><p>Cargando...</p></div>",
                     emptyTable: "No hay clientes con los datos buscados",
                     paginate: {
                         first: "Primera",

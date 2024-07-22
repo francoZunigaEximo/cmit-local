@@ -11,7 +11,7 @@ $(document).ready(()=>{
         let fechaHasta = $(this).hasClass('hoyDias')
             ? new Date() 
             : $(this).hasClass('sesentaDias') || $(this).hasClass('noventaDias') || $(this).hasClass('totalDias') || $(this).hasClass('ausenteDias') || $(this).hasClass('treintaDias')
-                ? new Date(hoy.getTime() - 2 * 24 * 60 * 60 * 1000) 
+                ? new Date(new Date().getTime() - 2 * 24 * 60 * 60 * 1000) 
                 : $('#fechaHastaPres').val(); 
         
         let fechaDesde = $(this).hasClass('sesentaDias') || $(this).hasClass('noventaDias') || $(this).hasClass('totalDias') || $(this).hasClass('ausenteDias') || $(this).hasClass('hoyDias') || $(this).hasClass('treintaDias')
@@ -161,6 +161,7 @@ $(document).ready(()=>{
                 {//9
                     data: null,
                     render: function(data){
+                        console.log(data.EstadoEfector);
                         return `<div class="text-center">
                         ${data.EstadoEfector !== undefined 
                             ? data.EstadoEfector === 'Pendiente'

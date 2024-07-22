@@ -188,8 +188,8 @@ $(document).ready(function(){
         });
     });
  
-    $(document).on('click', '#asigEfector, #asigInf', function(){
-
+    $(document).on('click', '#asigEfector, #asigInf', function(e){
+        e.preventDefault();
         let obj = {
             asigEfector: ['#efectores', '#checkAllAsignar', '#listaOrdenesEfectores', 'Id_asignar'],
             asigInf: ['#informadores', '#checkAllAsigInf', '#listaOrdenesInformadores', 'Id_asigInf']
@@ -204,32 +204,37 @@ $(document).ready(function(){
         });
 
         if (profesional == '' || profesional == '0') { 
-            toastr.warning('No se ha seleccionado un Profesional para asignar', 'Atención');
+            toastr.warning('No se ha seleccionado un Profesional para asignar');
             return;
         }
     
         if(ids.length === 0 && checkAll === false){
-            toastr.warning('No hay ningun exámen seleccionado para asignar', 'Atención');
+            toastr.warning('No hay ningun exámen seleccionado para asignar');
             return;
         }
         
-        if (confirm("¿Desea confirmar la operación?")) {
-        
-            $.post(asignarProfesional, { _token: TOKEN, Ids: ids, IdProfesional: profesional, tipo: seleccion })
-            .done(function(response){
+        swal({
+            title: "¿Desea confirmar la operación?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar) {
+                $.post(asignarProfesional, { _token: TOKEN, Ids: ids, IdProfesional: profesional, tipo: seleccion })
+                .done(function(response){
 
-                let data = response.message;
-                toastr.info(data, "Información");
-                $(obj[seleccion][2]).DataTable().draw(false)
+                    let data = response.message;
+                    toastr.info(data, "Información");
+                    $(obj[seleccion][2]).DataTable().draw(false)
 
-            })
-            .fail(function(xhr) {
-
-                console.error(xhr);
-                toastr.error("Ha ocurrido un error en la asignación. Consulte con el administrador");
-            });
-        }
-        
+                })
+                .fail(function(jqXHR) {
+                    preloader('off');
+                    let errorData = JSON.parse(jqXHR.responseText);            
+                    checkError(jqXHR.status, errorData.msg);
+                    return; 
+                });
+            }
+        });
     });
 
     $(document).on('click', '.btnAbrir', function(e){
@@ -249,26 +254,30 @@ $(document).ready(function(){
             return;
         }
         
-        if (confirm("¿Desea confirmar la operación?")) {
-            
-            $.post(updateItem, {Id : ids, _token: TOKEN, Para: 'abrir' })
-            .done(function(){
-                toastr.success('Se ha realizado la acción correctamente', 'Actualizacion realizada');
-                
-                let table = $('#listaOrdenesEfectoresAsig').DataTable();
-                table.draw(false); 
-            })
-            .fail(function(xhr){
-                toastr.success('Ha ocurrido un error. Consulte con el administrador', 'Error');
-                console.error(xhr);
-            });
-        
-        }
-        
+        swal({
+            title: "¿Desea confirmar la operación?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar) {
+                preloader('on');
+                $.post(updateItem, {Id : ids, _token: TOKEN, Para: 'abrir' })
+                .done(function(){
+                    preloader('off');
+                    toastr.success('Se ha realizado la acción correctamente');                 
+                    $('#listaOrdenesEfectoresAsig').DataTable().draw(false);
+                })
+                .fail(function(jqXHR){
+                    preloader('off');
+                    let errorData = JSON.parse(jqXHR.responseText);            
+                    checkError(jqXHR.status, errorData.msg);
+                    return;  
+                });
+            }
+        });
     });
 
     $(document).on('click', '.btnCerrar', function(e){
-
         e.preventDefault();
 
         let ids = [];
@@ -284,22 +293,29 @@ $(document).ready(function(){
             return;
         }
 
-        if (confirm("¿Desea confirmar la operación?")) {
-            
-            $.post(updateItem, {Id : ids, _token: TOKEN, Para: 'cerrar' })
-            .done(function(){
-                toastr.success('Se ha realizado la acción correctamente', 'Actualizacion realizada');
-                
-                let table = $('#listaOrdenesEfectoresAsig').DataTable();
-                table.draw(false); 
-            })
-            .fail(function(xhr){
-                toastr.success('Ha ocurrido un error. Consulte con el administrador', 'Error');
-                console.error(xhr);
-            });
-        
-        }
-        
+        swal({
+            title: "¿Desea confirmar la operación?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar) {
+                preloader('on');
+                $.post(updateItem, {Id : ids, _token: TOKEN, Para: 'cerrar' })
+                .done(function(){
+                    preloader('off');
+                    toastr.success('Se ha realizado la acción correctamente');
+                    $('#listaOrdenesEfectoresAsig').DataTable().draw(false);
+                })
+                .fail(function(jqXHR){
+                    preloader('off');
+                    let errorData = JSON.parse(jqXHR.responseText);            
+                    checkError(jqXHR.status, errorData.msg);
+                    return;  
+                });  
+
+            }
+        });
+             
     });
 
     $(document).on('click', '.btnLiberar, .btnLiberarInf', function(e){
@@ -323,28 +339,33 @@ $(document).ready(function(){
         let checkAll =$(obj[seleccion][1]).prop('checked');
 
         if(ids.length === 0 && checkAll === false){
-            toastr.warning('No hay examenes seleccionados', 'Atención');
+            toastr.warning('No hay examenes seleccionados');
             return;
         }
        
-        if (confirm("¿Desea confirmar la operación?")) {
+        swal({
+            title: "¿Desea confirmar la operación?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar) {
 
-            $.post(asignarProfesional, { _token: TOKEN, Ids: ids, IdProfesional: 0, tipo: obj[seleccion][3]})
-            .done(function(response){
+                preloader('on');
+                $.post(asignarProfesional, { _token: TOKEN, Ids: ids, IdProfesional: 0, tipo: obj[seleccion][3]})
+                .done(function(response){
+                    preloader('off');
+                    toastr.success(response.message);
+                    $(obj[seleccion][2]).DataTable().draw(false);
+                })
+                .fail(function(jqXHR) {
+                    preloader('off');
+                    let errorData = JSON.parse(jqXHR.responseText);            
+                    checkError(jqXHR.status, errorData.msg);
+                    return;  
+                });
 
-                let data = response.message;
-                toastr.info(data, "Información");
-                let table = $(obj[seleccion][2]).DataTable();
-                table.draw(false);
-
-            })
-            .fail(function(xhr) {
-
-                console.error(xhr);
-                toastr.error("Ha ocurrido un error en la desasignación. Consulte con el administrador");
-            });
-
-        }
+            }
+        });
     });
 
     $(document).on("select2:open", () => {
@@ -524,15 +545,14 @@ $(document).ready(function(){
                 contentType: false,
                 success: function() {
                     preloader('off');
-                    toastr.success("Se ha cargado el reporte de manera correcta.", "Perfecto");
-                    let table = $(tabla).DataTable();
-                    table.clear().draw(false);
-
+                    toastr.success("Se ha cargado el reporte de manera correcta.");
+                    $(tabla).DataTable().clear().draw(false);
                 },
-                error: function (xhr) {
+                error: function (jqXHR) {
                     preloader('off');
-                    console.error(xhr);
-                    toastr.error("Ha ocurrido un error. Consulte con el administrador", "Atención");
+                    let errorData = JSON.parse(jqXHR.responseText);            
+                    checkError(jqXHR.status, errorData.msg);
+                    return;  
                 }
             });
            
@@ -582,18 +602,16 @@ $(document).ready(function(){
                 });
 
                 if(estados.includes('success')) {
-                    
-                    let table = $(obj[opcion][3]).DataTable();
-                    table.clear().draw(false);
+                    $(obj[opcion][3]).DataTable().clear().draw(false);
                 }
 
             })
-            .fail(function(xhr){
-                console.error(xhr)
-                toastr.error("Ha ocurrido un error. Consulte con el administrador", "Error");
+            .fail(function(jqXHR){
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;  
             })
-            .always(function() {
-               
+            .always(function() {   
                 preloader('off');
             });
         
@@ -625,81 +643,34 @@ $(document).ready(function(){
                 $.get(exportarOrdExa, {Id: ids})
                     .done(function(response){
                         preloader('off');
-                        createFile(response.filePath);
+                        createFile("excel", response.filePath, generarCodigoAleatorio() + '_reporte');
                         toastr.success("Se esta generando el reporte");
                     })
             }
         });
-        
-
-            
-        
     });
- 
-    function createFile(array){
-        let fecha = new Date(),
-            dia = fecha.getDay(),
-            mes = fecha.getMonth() + 1,
-            anio = fecha.getFullYear();
-
-        let filePath = array,
-            pattern = /storage(.*)/,
-            match = filePath.match(pattern),
-            path = match ? match[1] : '';
-
-        let url = new URL(location.href),
-            baseUrl = url.origin,
-            fullPath = baseUrl + '/cmit/storage' + path;
-
-        let link = document.createElement('a');
-        link.href = fullPath;
-        link.download = "reporte-"+ dia + "-" + mes + "-" + anio +".xlsx";
-        link.style.display = 'none';
-
-        document.body.appendChild(link);
-        link.click();
-        setTimeout(function() {
-            document.body.removeChild(link);
-        }, 100);
-    }
 
     function verificarArchivo(archivo){
 
         if (!archivo || archivo.size === 0) {
-            toastr.warning("El archivo se encuentra vacío o no es PDF", "Atención");
+            toastr.warning("El archivo se encuentra vacío o no es PDF");
             return false;
         }
 
         if (!archivo.name.includes('.')) {
-            toastr.warning("El archivo no tiene extensión o la misma es invalida", "Atención");
+            toastr.warning("El archivo no tiene extensión o la misma es invalida");
             return false;
         }
 
         let tipoArchivo = archivo.type.toLowerCase();
 
         if(tipoArchivo !== 'application/pdf') {
-            toastr.warning("Los archivos permitidos son PDF", "Atención");
+            toastr.warning("Los archivos permitidos son PDF");
             return false;
         }
 
         return true
 
-    }
-
-    function infoQr(idPrestacion, qr, examen) {
-        $('.generarQr').empty();
-
-        let contenido = `
-            <span>Prestacion: ${idPrestacion}. Examen: ${examen} 
-                <span id="qr">${qr}</span>
-            </span>
-            <button type="button" class="btn btn-sm botonGeneral copiarQr"><i class="ri-file-copy-line"></i>Copiar</button>
-        `;
-
-        $('#qrExamen').show();
-        $('.generarQr').append(contenido);
-
-        
     }
 
     function crearQR(tipo, prestacion, examen, paciente) {
@@ -710,25 +681,6 @@ $(document).ready(function(){
 
         let code = tipo.toUpperCase() + prestacionId + examenId + pacienteId;
         return code;
-    }
-
-    function fechaNow(fechaAformatear, divider, format) {
-        let dia, mes, anio; 
-    
-        if (fechaAformatear === null) {
-            let fechaHoy = new Date();
-    
-            dia = fechaHoy.getDate().toString().padStart(2, '0');
-            mes = (fechaHoy.getMonth() + 1).toString().padStart(2, '0');
-            anio = fechaHoy.getFullYear();
-        } else {
-            let nuevaFecha = fechaAformatear.split("-"); 
-            dia = nuevaFecha[0]; 
-            mes = nuevaFecha[1]; 
-            anio = nuevaFecha[2];
-        }
-    
-        return (format === 1) ? `${dia}${divider}${mes}${divider}${anio}` : `${anio}${divider}${mes}${divider}${dia}`;
     }
 
     function listaProveedores(){
@@ -766,22 +718,16 @@ $(document).ready(function(){
         }
 
         etiqueta.empty().append('<option value="" selected>Elija una opción...</option>')
-        
+        preloader('on');
         $.get(listGeneral, { proveedor: id, tipo: tipo })
             .done(async function (response) {
+                preloader('off');
                 let data = await response.resultados;
                 $.each(data, function (index, d) {
                     let contenido = `<option value="${d.Id}">${d.NombreCompleto}</option>`;
                     etiqueta.append(contenido);
                 });
             });
-    }
-
-    function preloader(opcion) {
-        $('#preloader').css({
-            opacity: '0.3',
-            visibility: opcion === 'on' ? 'visible' : 'hidden'
-        });
     }
 
 });

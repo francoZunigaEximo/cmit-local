@@ -1,7 +1,8 @@
 $(document).ready(()=>{
 
     //Botón de busqueda de Mapas
-    $(document).on('click', '#buscar', function() {
+    $(document).on('click', '#buscar', function(e) {
+        e.preventDefault();
 
         let fechaDesde = $('#fechaDesde').val(),
             fechaHasta = $('#fechaHasta').val(),
@@ -30,7 +31,6 @@ $(document).ready(()=>{
         }
 
         $('#listaOrdenesEfectores').DataTable().clear().destroy();
-        let currentDraw = 1;
 
         new DataTable("#listaOrdenesEfectores", {
 
@@ -45,27 +45,14 @@ $(document).ready(()=>{
             ajax: {
                 url: SEARCH,
                 data: function(d){
-                    d.fechaDesde = $('#fechaDesde').val();
-                    d.fechaHasta = $('#fechaHasta').val();
+                    d.fechaDesde = fechaDesde;
+                    d.fechaHasta = fechaHasta;
                     d.especialidad = $('#especialidad').val();
-                    d.prestacion = $('#prestacion').val();
+                    d.prestacion = prestacion;
                     d.empresa = $('#empresa').val();
                     d.paciente = $('#paciente').val();
                     d.examen = $('#examen').val();
-                    d.page = d.start / d.length + 1;
-                },
-                dataSrc: function (response) {
-                    let data = {
-                        draw: currentDraw,
-                        recordsTotal: response.total,
-                        recordsFiltered: response.total,
-                        data: response.data,
-                    };
-    
-                    currentDraw++;
-    
-                    return data.data;
-                },
+                }
             },
             dataType: 'json',
             type: 'POST',

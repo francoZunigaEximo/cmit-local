@@ -153,7 +153,7 @@ $(document).ready(()=>{
         let paciente = $('#paciente').select2('data').map(option => option.id);
 
         if (paciente.length == '') {
-            toastr.warning("El campo no puede estar vacío. Si su usuario no existe, pruebe con crearlo con el botón nuevo.", "Atención");
+            toastr.warning("El campo no puede estar vacío. Si su usuario no existe, pruebe con crearlo con el botón nuevo.");
             return;
         }
 
@@ -178,15 +178,20 @@ $(document).ready(()=>{
         }).then((aceptar) => {
             if(aceptar){
 
-                preloader('on');
+                $('#listaPrestaciones tbody').hide();
+                $('.dataTables_processing').show();
+
                 $.get(downPrestaActiva, {Id: prestacion})
                     .done(function(response){
-                        preloader('off');
+
                         if(response.estado === 'true') {
 
                             toastr.success(response.msg);
-                            $('#listaPrestaciones').DataTable();
-                            $('#listaPrestaciones').DataTable().draw(false);
+                            $('#listaPrestaciones').DataTable().ajax.reload(function(){
+                                $('#listaPrestaciones tbody').show();
+                                $('.dataTables_processing').hide();
+                            }, false);
+                            
                         } else {
                             toastr.info(response.msg);
                         }
@@ -254,7 +259,6 @@ $(document).ready(()=>{
                 },
 
                 error: function(jqXHR){
-
                     preloader('off');
                     let errorData = JSON.parse(jqXHR.responseText);            
                     checkError(jqXHR.status, errorData.msg);
@@ -274,14 +278,18 @@ $(document).ready(()=>{
             buttons: ["Cancelar", "Aceptar"],
         }).then((aceptar) => {
             if(aceptar){
+                $('#listaPrestaciones tbody').hide();
+                $('.dataTables_processing').show();
 
-                preloader('on');
                 $.get(blockPrestacion, {Id: id})
                     .done(function(){
-                        preloader('off');
+                 
                         toastr.success("Se ha bloqueado correctamente", "Perfecto");
-                        $('#listaPrestaciones').DataTable();
-                        $('#listaPrestaciones').DataTable().draw(false);
+                        $('#listaPrestaciones').DataTable().ajax.reload(function(){
+                            $('#listaPrestaciones tbody').show();
+                            $('.dataTables_processing').hide();
+                        }, false);
+                        
                     })
                     .fail(function(jqXHR) {
                         preloader('off');

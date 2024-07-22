@@ -21,7 +21,10 @@ $(document).ready(function(){
             buttons: ["Cancelar", "Aceptar"]
         }).then((confirmar)=> {
             if(confirmar){
-                preloader('on');
+                
+                $('#listaClientes tbody').hide();
+                $(".dataTables_processing").show();
+
                 $.ajax({
                     url: multipleDown,
                     type: 'POST',
@@ -30,11 +33,11 @@ $(document).ready(function(){
                         ids: ids
                     },
                     success: function(response) {
-                        preloader('off');
                         toastr.success(response.msg);
-                        setTimeout(()=>{
-                            $(tabla).DataTable().draw(false);
-                        }, 3000);
+                        $('#listaClientes').DataTable().ajax.reload(function() {
+                            $('#listaClientes tbody').show();
+                            $(".dataTables_processing").hide();
+                        }, false);
                     
                     },
                     error: function(jqXHR) {
@@ -114,14 +117,18 @@ $(document).ready(function(){
         }).then((confirmar)=>{
             if(confirmar){
 
-                preloader('on');
+                $('#listaClientes tbody').hide();
+                $(".dataTables_processing").show();
+
                 $.post(baja, {_token: TOKEN, Id: cliente})
                 .done(function(response){
-                    preloader('off');
                     toastr.success(response.msg);
-                    setTimeout(()=>{
-                        $(tabla).DataTable().draw(false);
-                    },3000);
+                    
+                    $('#listaClientes').DataTable().ajax.reload(function(){
+                        $('#listaClientes tbody').show();
+                        $(".dataTables_processing").hide();
+                    }, false);
+
                 })
                 .fail(function(jqXHR, xhr){
                     preloader('off');            

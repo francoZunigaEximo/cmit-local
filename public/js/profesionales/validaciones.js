@@ -1,11 +1,5 @@
 $(document).ready(()=>{
 
-    toastr.options = {
-        closeButton: true,   
-        progressBar: true,    
-        timeOut: 3000,        
-    };
-
     $("#form-update,e, #form-create").validate({
         
         rules: {
@@ -105,24 +99,28 @@ $(document).ready(()=>{
         return this.optional(element) || /^\w+([\.-]?\w+)*@(?:\w+\.)+[a-z]{2,3}$/i.test(value);
     }, "Por favor, ingresa una dirección de correo electrónico válida.");
 
-    $("#form-update, #form-create").on("submit", function(event) {
-        if ($(this).valid()) {
-            if($(this).attr("id") == "form-create"){
-                toastr.success("¡Se ha creado el profesional de manera correcta. Se habilitará las Opciones y el Seguro!", "Felicitaciones");
-                setTimeout(() => {
-                    $(this).unbind("submit").submit();
-                }, 5000);
-            }else{
-                toastr.success("¡Se ha actualizado el profesional de manera correcta.!", "Cambios realizados");
-                setTimeout(() => {
-                    $(this).unbind("submit").submit();
-                }, 5000);
+    $("#form-update, #form-create").on("submit", function(e) {
+        e.preventDefault();
+    
+        const form = $(this);
+        const submitButton = form.find('button[type="submit"]');
+    
+        submitButton.prop('disabled', true);
+    
+        if (form.valid()) {
+
+            if (form.attr("id") == "form-create") {
+                toastr.success("¡Se ha creado el profesional de manera correcta. Se habilitarán las Opciones y el Seguro!");
+            } else {
+                toastr.success("¡Se ha actualizado el profesional de manera correcta.!");
             }
+    
+            setTimeout(() => {
+                form.off("submit").submit();
+            }, 5000);
         } else {
-            toastr.warning("Por favor, complete todos los campos requeridos correctamente.", "Alerta");
+            submitButton.prop('disabled', false);
         }
-        
-        event.preventDefault();
     });
 
 });

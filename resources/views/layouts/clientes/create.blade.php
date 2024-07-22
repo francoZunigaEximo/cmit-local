@@ -6,13 +6,6 @@
 
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
     <h4 class="mb-sm-0">Registrar un nuevo cliente</h4>
-
-    <div class="page-title-right">
-        <ol class="breadcrumb m-0">
-            <li class="breadcrumb-item"><a href="{{ route('clientes.index') }}">Clientes</a></li>
-            <li class="breadcrumb-item active">Nuevo Cliente</li>
-        </ol>
-    </div>
 </div>
                         
 <div class="card-header">
@@ -185,8 +178,8 @@
                     <div class="col-lg-12 mt-3">
                         <div class="hstack gap-2 justify-content-end">
                             
-                            <button type="reset" class="btn botonGeneral">Cancelar</button>
-                            <button type="submit" class="btn botonGeneral">Registrar</button>
+                            <a href="{{ route('clientes.index') }}" class="btn bt-sm botonGeneral">Ir a Principal</a>
+                            <button type="submit" class="btn btn-sm botonGeneral">Registrar</button>
                         </div>
                     </div>
                     <!--end col-->

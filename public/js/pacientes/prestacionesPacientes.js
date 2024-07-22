@@ -610,13 +610,13 @@ $(document).ready(()=>{
     
     function comprobarEstado(cerrado, finalizado, entregado) {
 
-        return (cerrado === 1 &&  finalizado === 0)
+        return (cerrado === 1 && finalizado === 0 && entregado === 0)
         ? "Cerrado"
-        : (cerrado === 1 && finalizado === 1)
+        : (cerrado === 1 && finalizado === 1 && entregado === 0)
             ? "Finalizado"
-            : ( entregado === 1)
+            : (cerrado === 1 && finalizado === 1 && entregado === 1)
                 ? "Entregado"
-                : (cerrado === 0 && finalizado === 0)
+                : (cerrado === 0 && finalizado === 0 && entregado === 0)
                     ? "Abierto"
                     : "-"
     }

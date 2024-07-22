@@ -78,7 +78,7 @@ $(document).ready(()=>{
                     targets: 0,
                     render: function(data){
                    
-                        return `<input type="checkbox" name="Id" value="${data.Id}" checked>`;
+                        return `<div class="text-center"><input type="checkbox" name="Id" value="${data.Id}" checked></div>`;
                     }
                 },
                 {
@@ -178,13 +178,13 @@ $(document).ready(()=>{
                     targets: 9,
                     render: function(data){
 
-                        return (data.Cerrado === 1 && data.Finalizado === 0)
+                        return (data.Cerrado === 1 && data.Finalizado === 0 && data.Entregado === 0)
                                 ? "Cerrado"
-                                : (data.Cerrado === 1 && data.Finalizado === 1)
+                                : (data.Cerrado === 1 && data.Finalizado === 1 && data.Entregado === 0)
                                     ? "Finalizado"
-                                    : (data.Entregado === 1)
+                                    : (data.Cerrado === 1 && data.Finalizado === 1 && data.Entregado === 1)
                                         ? "Entregado"
-                                        : (data.Cerrado === 0 && data.Finalizado === 0)
+                                        : (data.Cerrado === 0 && data.Finalizado === 0 && data.Entregado === 0)
                                             ? "Abierto"
                                             : "-";
                     }

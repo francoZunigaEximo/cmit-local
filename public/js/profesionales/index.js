@@ -76,7 +76,7 @@ $(document).ready(()=> {
         });
 
         if (ids.length === 0) {
-            toastr.warning("Debe seleccionar al menos un profesional para la baja múltiple", "warning");
+            toastr.warning("Debe seleccionar al menos un profesional para la baja múltiple");
             return; 
         }
         swal({
@@ -113,10 +113,11 @@ $(document).ready(()=> {
             }
         };
 
+        preloader('on');
         $.post(estadoProfesional, {_token: TOKEN, Id: id, tipo: tipo})
 
             .done(function(){
-
+                preloader('off');
                 toastr.success(`Se ha/han ${listAccion[tipo][0]} correctamente`, `${listAccion[tipo][1]} profesional/es`);
                 setTimeout(()=>{
                     $('#listaProf').DataTable();
@@ -125,9 +126,11 @@ $(document).ready(()=> {
                 
 
             })
-            .fail(function(xhr){
-                console.error(xhr);
-                toastr.error("Ha ocurrido un error. Actualice la página y si el problema persiste, consulte con el administrador","Error");
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return; 
             })
     }
 

@@ -227,7 +227,7 @@
 
                     <div class="col-lg-12 pt-4">
                         <div class="hstack gap-2 justify-content-end">
-                            <button type="button" id="btnVolverCliente" class="btn botonGeneral">Volver</button>
+                            <a href="{{ route('clientes.index') }}" class="btn botonGeneral">Ir a Principal</a>
                             @can('clientes_edit')
                             <button type="submit" class="btn botonGeneral">Actualizar</button>
                             @endcan

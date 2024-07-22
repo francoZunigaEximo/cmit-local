@@ -67,54 +67,55 @@ $(document).ready(function(){
 
     });
 
-    $(document).on('click', '.addPerfilProf', function(){
+    $(document).on('click', '.addPerfilProf', function(e){
+        e.preventDefault();
 
         let perfil = $('#perfiles').val(), especialidad = $('#listaEspecialidad').val();
 
         if(perfil === '' || especialidad === '') {
-            toastr.warning("Debe seleccionar una especialidad y un perfil para poder añadirlo a la lista", "Atención");
+            toastr.warning("Debe seleccionar una especialidad y un perfil para poder añadirlo a la lista");
             return;
         }
 
         $.post(setPerfiles, {_token: TOKEN, perfil: perfil, especialidad: especialidad, Id: ID})
             .done(function(response){
-                
-                if(response.error){
-                    toastr.info(response.error);
-                    return;
-
-                }else{
-                    toastr.success(`Se ha añadido el perfil de manera correcta`);
-                    cargarPerfiles();
-                }   
+                toastr.success('Se ha añadido el perfil de manera correcta');
+                cargarPerfiles(); 
             })
-            .fail(function(xhr){
-
-                console.error(xhr);
-                toastr.error("Ha ocurrido un error. Actualice la página y si el problema persiste, consulte con el administrador", "Error");
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return; 
             });
     });
 
-    $(document).on('click', '.eliminarPerfil',  function(){
-        
+    $(document).on('click', '.eliminarPerfil',  function(e){
+        e.preventDefault();
         let IdProf = $(this).data('prof'),
             IdProv = $(this).data('prov');
 
-        if(confirm("¿Está seguro que desea eliminar?")){
-
-            $.post(delPerfil, {_token: TOKEN, IdProf: IdProf, IdProv: IdProv})
-            .done(function(){
-
-                toastr.success(`Se ha añadido el perfil de manera correcta`);
-                cargarPerfiles();
-            })
-            .fail(function(xhr){
-
-                toastr.error("Ha ocurrido un error. Actualice la página y si el problema persiste, consulte con el administrador", "Error");
-                console.error(xhr);
-            });
-        }
-        
+        swal({
+            title: "¿Está seguro que desea eliminar?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar) {
+                preloader('on');
+                $.post(delPerfil, {_token: TOKEN, IdProf: IdProf, IdProv: IdProv})
+                .done(function(){
+                    preloader('off')
+                    toastr.success(`Se ha añadido el perfil de manera correcta`);
+                    cargarPerfiles();
+                })
+                .fail(function(jqXHR){
+                    preloader('off');
+                    let errorData = JSON.parse(jqXHR.responseText);            
+                    checkError(jqXHR.status, errorData.msg);
+                    return; 
+                });
+            }
+        });           
     });
 
 

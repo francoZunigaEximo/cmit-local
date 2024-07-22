@@ -26,47 +26,10 @@ class PrestacionesController extends Controller
 
     use ObserverPrestaciones, ObserverFacturasVenta, CheckPermission;
 
-    public function index(Request $request): mixed
+    public function index(): mixed
     {
         if (!$this->hasPermission("prestaciones_show")) {
             return response()->json(['msg' => 'No tiene permisos'], 403);
-        }
-
-        if ($request->ajax()) {
-
-            $query = Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-                ->join('clientes as emp', 'prestaciones.IdEmpresa', '=', 'emp.Id')
-                ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
-                ->join('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
-                ->select(
-                    DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdART) AS Art'),
-                    DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdEmpresa) AS Empresa'),
-                    DB::raw('COALESCE(COUNT(itemsprestaciones.IdPrestacion), 0) as Total'),
-                    DB::raw('COALESCE(COUNT(CASE WHEN (itemsprestaciones.CAdj = 5 OR itemsprestaciones.CAdj = 3) AND itemsprestaciones.CInfo = 3 THEN itemsprestaciones.IdPrestacion END), 0) as CerradoAdjunto'),
-                    'emp.ParaEmpresa as ParaEmpresa',
-                    'emp.Identificacion as Identificacion',
-                    'prestaciones.Fecha as FechaAlta',
-                    'prestaciones.Id as Id',
-                    'pacientes.Nombre as Nombre',
-                    'pacientes.Apellido as Apellido',
-                    'prestaciones.TipoPrestacion as Tipo',
-                    'prestaciones.Anulado as Anulado',
-                    'prestaciones.Pago as Pago',
-                    'prestaciones.Ausente as Ausente',
-                    'prestaciones.Incompleto as Incompleto',
-                    'prestaciones.Devol as Devol',
-                    'prestaciones.Forma as Forma',
-                    'prestaciones.SinEsc as SinEsc',
-                    'prestaciones.Estado as Estado',
-                    'prestaciones.Facturado as Facturado'
-                )
-                ->where('prestaciones.Estado', '=', '1')
-                ->where('prestaciones.Fecha', '=', now()->format('Y-m-d'))
-                ->orderBy('prestaciones.Id', 'DESC')
-                ->groupBy('prestaciones.Id');
-
-            return Datatables::of($query)->make(true);
-
         }
 
         return view('layouts.prestaciones.index');
@@ -159,7 +122,7 @@ class PrestacionesController extends Controller
 
         if(!empty($request->pacienteSelect2)) {
             $query->where(function($query) use ($request) {
-                $query->where('paciente.Id', $request->pacienteSelect2);
+                $query->where('pacientes.Id', $request->pacienteSelect2);
             });
         }
 
@@ -418,7 +381,6 @@ class PrestacionesController extends Controller
             'Id' => $nuevoId,
             'IdPaciente' => $request->paciente,
             'TipoPrestacion' => $request->tipoPrestacion,
-            'Fecha' => $request->fecha,
             'IdMapa' => $request->tipoPrestacion <> 'ART' ? 0 : ($request->mapas ?? 0),
             'Pago' => $request->pago,
             'SPago' => $request->spago ?? '',
@@ -461,16 +423,19 @@ class PrestacionesController extends Controller
 
         if($prestacion) {
 
-            $mapa = (in_array($request->Art, [0, null, '', 'null', '0']) && $request->TipoPrestacion !== 'ART' ? 0 :  $request->Mapas);
+            $mapa = $request->Mapas ?? 0;
             
-            if ($prestacion->IdMapa !== 0 && $request->TipoPrestacion !== "ART" && in_array($request->Art, [0, null, '', 'null', '0'])) {
+            // nuevo registro de mapa
+            if (($mapa != "0" || $mapa != 'null' || $mapa != '') && $prestacion->IdMapa == "0") {
                 $this->updateMapeados($mapa, "quitar");
             }
 
-            if (!in_array($mapa, [0, null, '', 'null', '0']) && $prestacion->IdMapa === 0 && $request->TipoPrestacion === "ART" && in_array($request->Art, [0, null, '', 'null', '0'])) {
+            // agrego un nuevo cupo al registro de mapa
+            if (($mapa == '0' || $mapa == '') && ($prestacion->IdMapa != 'null' || $prestacion->IdMapa != '0' || $prestacion->IdMapa != '' )) {
+                echo "Mapa: ".$mapa." | IdMapa BD: ".$prestacion->IdMapa;
                 $this->updateMapeados($mapa, "agregar");
-            }
-
+            } 
+        
             $prestacion->IdEmpresa = $request->Empresa ?? 0;
             $prestacion->IdART = $request->Art ?? 0;
             $prestacion->Fecha = $request->Fecha ?? '';

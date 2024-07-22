@@ -573,10 +573,10 @@ $(document).ready(()=> {
     }
 
     function checkBloq(){
-
+        preloader('on');
         $.get(getBloqueoPrestacion, {Id: ID})
             .done(async function(response){
-
+                preloader('off');
                 if(await response.prestacion === true){
 
                     $('#art, #empresa, #paraEmpresa, #Fecha, #TipoPrestacion, #mapas, #cerrar, #finalizar, #entregar, #eEnviar, #pago, #SPago, #Tipo, #Autorizado, #IdEvaluador, #Evaluacion, #Calificacion, #Observaciones, #RxPreliminar, #SinEval, #ObsExamenes, #Obs, #actualizarPrestacion, #paquetes, #exam, #Sucursal, #NroFactura').prop('disabled', true);
@@ -586,6 +586,7 @@ $(document).ready(()=> {
                     }
             })
             .fail(function(jqXHR){
+                preloader('off');
                 let errorData = JSON.parse(jqXHR.responseText);            
                 checkError(jqXHR.status, errorData.msg);
                 return;  

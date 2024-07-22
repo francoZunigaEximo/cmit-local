@@ -305,7 +305,8 @@
             <div class="row">
                 <div class="col-12 text-center mt-2">
                     <hr class="mt-2 mb-2 d-block">
-                    <button type="button" class="btn botonGeneral" id="actualizarPrestacion">Guardar</button>
+                    <a href="{{ route('prestaciones.index') }}" class="btn btn-sm botonGeneral">Ir a Listado</a>
+                    <button type="button" class="btn btn-sm botonGeneral" id="actualizarPrestacion">Guardar</button>
                     <hr class="mt-2 mb-2 d-block">
                 </div>
             </div>

@@ -123,6 +123,10 @@ class ProfesionalesController extends Controller
 
     public function create()
     {
+        if(!$this->hasPermission("profesionales_add")) {
+            abort(403);
+        }
+
         return view('layouts.profesionales.create', with([
             'provincias' => Provincia::all()
         ]));
@@ -197,7 +201,7 @@ class ProfesionalesController extends Controller
     public function edit(Profesional $profesionale): mixed
     {
         if(!$this->hasPermission("profesionales_edit")) {
-            return response()->json(['msg' => 'No tiene los permisos adecuados'], 403);
+            abort(403);
         }
 
         return view('layouts.profesionales.edit', with([
@@ -242,7 +246,6 @@ class ProfesionalesController extends Controller
 
     public function getPerfil(Request $request)
     {
-
         $query = ProfesionalProv::join('profesionales', 'profesionales_prov.IdProf', '=', 'profesionales.Id')
             ->join('proveedores', 'profesionales_prov.IdProv', '=', 'proveedores.Id')
             ->select(
@@ -271,6 +274,10 @@ class ProfesionalesController extends Controller
 
     public function store(Request $request): string
     {
+        if(!$this->hasPermission("profesionales_add")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
+
         $nuevoId = Profesional::max('Id') + 1;
 
         if($request->hasFile('Foto')) {
@@ -304,6 +311,9 @@ class ProfesionalesController extends Controller
 
     public function update(Request $request, $profesionale)
     {   
+        if(!$this->hasPermission("profesionales_edit")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
 
         $update = Profesional::find($profesionale);
         $update->Documento = $request->Documento;
@@ -350,7 +360,6 @@ class ProfesionalesController extends Controller
     public function checkDocumento(Request $request): mixed
     {
         $check = Profesional::where('Documento', $request->Documento)->first();
-
         return response()->json(['check' => $check]);
     }
 

@@ -69,11 +69,11 @@ trait ObserverPrestaciones
 
         if($mapeado){
             switch ($tipo) {
-                case 'agregar':
+                case 'quitar':
                     $mapeado->Cmapeados -= 1;   
                     break;
                 
-                case 'quitar':
+                case 'agregar':
                     $mapeado->Cmapeados +=1;
                     break;
 

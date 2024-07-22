@@ -547,9 +547,9 @@ BEGIN
 	AND NOT i.IdProfesional = 0
 	AND (estados IS NULL OR CASE
         WHEN estados = 'abiertos' THEN
-            (i.CAdj IN (0, 1, 2) AND i.IdProfesional <> 0)
+            (i.CAdj IN (1,2,4) AND i.IdProfesional <> 0)
         WHEN estados = 'cerrados' THEN
-            (i.CAdj IN (3, 4, 5) AND i.IdProfesional <> 0)
+            (i.CAdj IN (3,5) AND i.IdProfesional <> 0)
         WHEN estados = 'asignados' THEN
             (i.IdProfesional <> 0
             AND
@@ -559,7 +559,7 @@ BEGIN
                 WHERE IdEntidad = i.Id
             ) = 0
             AND
-            i.CAdj IN (0, 1, 2))
+            i.CAdj IN (1,2,4))
             AND
             ex.Adjunto = 1
     END)
@@ -634,7 +634,7 @@ BEGIN
     and not i.IdProfesional = 0 
     and not i.IdProfesional2 = 0 
     and i.CAdj IN (3,5) 
-    and not i.CInfo = 3 
+    and not i.CInfo IN (3,0) 
     and NULLIF(i.FechaPagado, '0000-00-00') IS NULL
     and not exists (select 1 from itemsprestaciones_info where itemsprestaciones_info.IdIP = i.Id)
     AND i.Anulado = 0
@@ -655,7 +655,7 @@ BEGIN
     INNER JOIN profesionales prof ON i.IdProfesional2 = prof.Id AND (informador IS NULL OR prof.Id = informador) AND (prof.InfAdj = 1)
     WHERE i.Fecha BETWEEN fechaDesde AND fechaHasta
     AND NOT i.Id = 0 
-    AND i.CInfo IN (0, 1) 
+    AND i.CInfo = 1 
     AND NOT i.IdProfesional = 0 
     AND NOT i.IdProfesional2 = 0 
     AND i.CAdj IN (3, 5) 
@@ -682,9 +682,9 @@ BEGIN
     prof2.Apellido AS ApellidoProfesional2, exa.Nombre AS Examen, 
     exa.Id AS IdExamen, exa.DiasVencimiento as DiasVencimiento, 
     exa.NoImprime AS NoImprime, 
-    (CASE WHEN pre.Finalizado = 0 AND pre.Cerrado = 0 AND pre.Entregado = 0 THEN 'Abierto' WHEN pre.Cerrado = 1 AND pre.Finalizado = 0 THEN 'Cerrado' WHEN pre.Cerrado = 1 AND pre.Finalizado = 1 AND pre.Entregado = 0 THEN 'Finalizado' WHEN pre.Cerrado = 1 AND pre.Finalizado = 1 AND pre.Entregado = 1 THEN 'Entregado' WHEN pre.eEnviado = 1 THEN 'eEnviado' WHEN i.CAdj IN (1,4) AND i.CInfo IN (0,1) THEN 'pendiente' ELSE '-' END) AS estado,
-    (CASE WHEN i.CAdj IN (0,1,2) THEN 'Pendiente' WHEN i.CAdj IN (3,4,5) THEN 'Cerrado' ELSE '-' END) AS EstadoEfector,
-    (CASE WHEN i.CInfo IN (0,1) THEN 'Pendiente' WHEN i.CInfo = 2 THEN 'Borrador' WHEN i.CInfo = 3 THEN 'Cerrado' ELSE '-' END) AS EstadoInformador 
+    (CASE WHEN pre.Finalizado = 0 AND pre.Cerrado = 0 AND pre.Entregado = 0 THEN 'Abierto' WHEN pre.Cerrado = 1 AND pre.Finalizado = 0 THEN 'Cerrado' WHEN pre.Cerrado = 1 AND pre.Finalizado = 1 AND pre.Entregado = 0 THEN 'Finalizado' WHEN pre.Cerrado = 1 AND pre.Finalizado = 1 AND pre.Entregado = 1 THEN 'Entregado' WHEN pre.eEnviado = 1 THEN 'eEnviado' WHEN i.CAdj IN (1,2,4) AND i.CInfo = 1 THEN 'pendiente' ELSE '-' END) AS estado,
+    (CASE WHEN i.CAdj IN (1,2,4) THEN 'Pendiente' WHEN i.CAdj IN (3,5) THEN 'Cerrado' ELSE '-' END) AS EstadoEfector,
+    (CASE WHEN i.CInfo = 1 THEN 'Pendiente' WHEN i.CInfo = 2 THEN 'Borrador' WHEN i.CInfo IN (3,0) THEN 'Cerrado' ELSE '-' END) AS EstadoInformador 
     FROM itemsprestaciones i 
     INNER JOIN prestaciones pre ON i.IdPrestacion = pre.Id AND (pre.Estado = 1) AND (pre.Anulado = 0)
     INNER JOIN examenes exa ON i.IdExamen = exa.Id AND (examen IS NULL OR exa.Id = examen) AND (adjunto IS NULL OR (CASE WHEN adjunto = 'fisico' THEN exa.NoImprime = 0 WHEN adjunto = 'digital' THEN exa.NoImprime = 1 END))
@@ -707,15 +707,15 @@ BEGIN
     )
     AND (estadoEfector IS NULL OR
         (CASE 
-            WHEN estadoEfector = 'pendientes' THEN i.CAdj IN (0,1,4) 
-            WHEN estadoEfector = 'cerrados' THEN i.CAdj IN (3,4,5)
+            WHEN estadoEfector = 'pendientes' THEN i.CAdj IN (1,2,4) 
+            WHEN estadoEfector = 'cerrados' THEN i.CAdj IN (3,5)
         END)
     )
     AND (estadoInformador IS NULL OR
         (CASE 
-            WHEN estadoInformador = 'pendientes' THEN i.CInfo IN (0,1) 
+            WHEN estadoInformador = 'pendientes' THEN i.CInfo = 1 
             WHEN estadoInformador = 'borrador' THEN i.CInfo = 2
-            WHEN estadoInformador = 'pendienteYborrador' THEN i.CInfo IN (0,1,2)
+            WHEN estadoInformador = 'pendienteYborrador' THEN i.CInfo IN (1,2)
         END)
     )
     AND (tipoProv IS NULL OR
@@ -733,7 +733,7 @@ BEGIN
         END)
     )
     AND (pendiente IS NULL OR 
-        (CASE WHEN pendiente = 1 THEN i.CAdj IN(1,4) AND i.CInfo IN (0,1) END)
+        (CASE WHEN pendiente = 1 THEN i.CAdj IN(1,2,4) AND i.CInfo = 1 END)
     )
     AND (adjuntoEfector IS NULL OR
         (CASE WHEN adjuntoEfector = 1 THEN a.IdEntidad = i.Id AND exa.adjunto = 1 END)

@@ -31,12 +31,14 @@
                                     <div>
                                         <label for="fechaHasta" class="form-label"><strong>Fecha desde: </strong><span class="required">(*)</span></label>
                                         <input type="date" class="form-control" id="fechaDesde">
+                                        <small class="text-muted">Obligatorio.</small>
                                     </div>
                                 </div>
                                 <div class="col-sm-2 mb-3">
                                     <div>
                                         <label for="fechaHasta" class="form-label"><strong>Fecha hasta: </strong><span class="required">(*)</span></label>
                                         <input type="date" class="form-control" id="fechaHasta">
+                                        <small class="text-muted">Obligatorio.</small>
                                     </div>
                                 </div>
 
@@ -93,6 +95,7 @@
                                 <div class="col-sm-2 mb-3">
                                     <label for="nroprestacion" class="form-label font-weight-bold"><strong>Nro. Prestación</strong></label>
                                     <input type="text" placeholder="Nro." class="form-control" id="nroprestacion">
+                                    <small class="text-muted">Anula todos los filtros su uso.</small>
                                 </div>
 
                                 <div class="col-sm-2 mb-3 d-flex align-items-center">

@@ -30,6 +30,10 @@ class OrdenesExamenController extends Controller
 
     public function search(Request $request): mixed
     {   
+        if(!$this->hasPermission("etapas_show")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
+
         if($request->ajax())
         {
             $query = DB::table('itemsprestaciones')
@@ -306,15 +310,15 @@ public function searchPrestacion(Request $request)
                                         ? 'eEnviado'
                                         : '-'))));
 
-            $estadoEfector = in_array($item->Efector, [1,4]) 
+            $estadoEfector = in_array($item->Efector, [1,2,4]) 
                                 ? "Pendiente"
-                                : (in_array($item->Efector, [3,4,5])
+                                : (in_array($item->Efector, [3,5])
                                     ? 'Cerrado'
                                     : '-');
 
             $adjunto = $item->NoImprime === 1 ? 'ADJ_D' : 'ADJ_F';
             
-            $estadoInformador = in_array($item->Informador, [0,1]) 
+            $estadoInformador = ($item->Informador === 1) 
                                     ? "Pendiente"
                                     : ($item->Informador === 2
                                         ? 'Borrador'
