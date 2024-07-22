@@ -446,6 +446,7 @@ class MapasController extends Controller
             ->where('mapas.IdEMpresa', $empresa)
             ->where('mapas.Cmapeados', '>=', 1)
             ->whereDate('mapas.Fecha', '>', now())
+            ->whereNot('mapas.Inactivo', 1)
             ->get();
 
         return response()->json(['mapas' => $mapas]);

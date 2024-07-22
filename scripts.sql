@@ -1205,3 +1205,12 @@ INSERT INTO rol_permisos (rol_id, permiso_id) VALUES
 
 INSERT INTO rol_permisos (rol_id, permiso_id) VALUES
 (12,5),(12,42),(12,31);
+
+/****/
+INSERT INTO rol_permisos (rol_id, permiso_id) VALUES
+(12,20)
+
+DELETE FROM rol_permisos WHERE permiso_id = 5 AND rol_id = 12;
+
+INSERT INTO rol_permisos (rol_id, permiso_id) VALUES
+(7,20),(7,31),(7,42);
