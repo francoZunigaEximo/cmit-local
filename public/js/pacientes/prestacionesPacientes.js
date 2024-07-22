@@ -538,13 +538,15 @@ $(document).ready(()=>{
                         total = papre.Total || 1,
                         calculo = parseFloat(((cerradoAdjunto / total) * 100).toFixed(2)),
                         resultado = (calculo === 100) ? 'fondo-blanco' : (calculo >= 86 && calculo <= 99) ? 'fondo-verde' : (calculo >= 51 && calculo <= 85) ? 'fondo-amarillo' : (calculo >= 1 && calculo <= 50) ? 'fondo-naranja' : 'fondo-rojo';
+                    
+                    let porcentaje = parseFloat(((cerradoAdjunto / total) * 100).toFixed(2)) === 0 ? '0.00' : parseFloat(((cerradoAdjunto / total) * 100).toFixed(2));
 
-                    let row = `<tr class="${papre.Anulado == 0 ? resultado : "rojo"}">
+                    let row = `<tr>
                                 <td>
                                     <input type="checkbox" name="Id" value=${papre.Id} checked="">
                                 </td>
                                 <td>
-                                    ${parseFloat(((cerradoAdjunto / total) * 100).toFixed(2)) + `%`}
+                                    <div class="${papre.Anulado == 0 ? resultado : "rojo"}">${papre.Anulado == 0 ? porcentaje + `%` : '0.00%'}</div>
                                 </td>
                                 <td>
                                     ${fechaNow(papre.FechaAlta,'/',0)}

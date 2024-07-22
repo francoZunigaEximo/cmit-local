@@ -93,9 +93,9 @@ $(document).ready(()=>{
 
                         let resultado = data.Anulado === 0 
                             ? ((cerradoAdjunto/total)*100).toFixed(2) + '%'
-                            : 'Anul';
+                            : '0.00%';
 
-                        return resultado;
+                        return `<div class="${indicador(data)}">${resultado}</div>`;
                     }
 
                 },
@@ -291,32 +291,27 @@ $(document).ready(()=>{
                     }
                 },
                 info: "Mostrando _START_ a _END_ de _TOTAL_ de prestaciones",
-            },
-            createdRow: function (row, data, dataIndex) {
-
-                let cerradoAdjunto = data.CerradoAdjunto || 0,
-                    total = data.Total || 1,
-                    calculo = parseFloat(((cerradoAdjunto / total) * 100).toFixed(2));
-
-                return (calculo === 100) 
-                        ? $(row).addClass('fondo-blanco')
-                        : (data.Anulado === 0 && calculo >= 86 && calculo <= 99)
-                            ? $(row).addClass('fondo-verde')
-                            : (data.Anulado === 0 && calculo >= 51 && calculo <= 85)
-                                ? $(row).addClass('fondo-amarillo')
-                                : (data.Anulado === 0 && calculo >= 1 && calculo <= 50)
-                                    ? $(row).addClass('fondo-naranja')
-                                    : (data.Anulado === 0)
-                                        ? $(row).addClass('fondo-rojo')
-                                        : (data.Anulado === 1)
-                                            ? $(row).addClass('rojo negrita')
-                                            : '';
             }
-        }
-    );
-
-        
+        });
     });
-
-
 });
+
+function indicador(data) {
+    let cerradoAdjunto = data.CerradoAdjunto || 0,
+        total = data.Total || 1,
+        calculo = parseFloat(((cerradoAdjunto / total) * 100).toFixed(2));
+
+        return (calculo === 100) 
+                ? 'fondo-blanco'
+                : (data.Anulado === 0 && calculo >= 86 && calculo <= 99)
+                    ? 'fondo-verde'
+                    : (data.Anulado === 0 && calculo >= 51 && calculo <= 85)
+                        ? 'fondo-amarillo'
+                        : (data.Anulado === 0 && calculo >= 1 && calculo <= 50)
+                            ? 'fondo-naranja'
+                            : (data.Anulado === 0)
+                                ? 'fondo-rojo'
+                                : (data.Anulado === 1)
+                                    ? 'rojo negrita'
+                                    : '';
+}
