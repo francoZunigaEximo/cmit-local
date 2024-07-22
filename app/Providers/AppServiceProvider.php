@@ -44,6 +44,8 @@ class AppServiceProvider extends ServiceProvider
         $this->gateAccess([
             "etapas_efector",
             "etapas_informador",
+            "mapas_cerrar",
+            "mapas_finalizar"
         ]);
 
         $this->gateAccess([
@@ -87,7 +89,8 @@ class AppServiceProvider extends ServiceProvider
 
         $this->gateAccess([
             'etapas_eenviar',
-            'prestaciones_eEnviar'
+            'prestaciones_eEnviar',
+            'mapas_eenviar',
         ]);
     }
 

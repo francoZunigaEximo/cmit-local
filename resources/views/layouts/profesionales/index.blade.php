@@ -69,8 +69,8 @@
                             <button type="button" class="btn botonGeneral"><i class="ri-add-line align-bottom me-1"></i> Nuevo</button>
                         </a>
 
-                        <button class="btn botonGeneral multipleBProf"><i class="ri-forbid-2-line"></i></button>
-                        <button class="btn botonGeneral multipleDProf"><i class="ri-delete-bin-2-line"></i></button>
+                        <button class="btn botonGeneral multipleBProf"><i class="ri-forbid-2-line"></i> Bloquear</button>
+                        <button class="btn botonGeneral multipleDProf"><i class="ri-delete-bin-2-line"></i> Baja</button>
                     </div>
                 </div>
                 <div class="col-8">

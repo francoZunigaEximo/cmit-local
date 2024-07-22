@@ -17,6 +17,7 @@ $(document).ready(() => {
             ordering: false,
             processing: true,
             lengthChange: false,
+            deferRender: true,
             pageLength: 100,
             responsive: true,
             serverSide: true,
@@ -102,12 +103,12 @@ $(document).ready(() => {
                         return `
                         <div class="d-flex gap-2">
                             <div class="bloquear">
-                                <button data-id="${data.IdProfesional}" class="blockProfesional btn btn-sm botonGeneral" title="Inhabilitar">
+                                <button data-id="${data.IdProfesional}" class="blockProfesional btn iconGeneral" title="Inhabilitar" ${data.Estado === 1 ? 'disabled' : ''}>
                                     <i class="ri-forbid-2-line"></i>
                                 </button>
                             </div>
                             <div class="remove">
-                                <button data-id="${data.IdProfesional}" class="deleteProfesional btn btn-sm botonGeneral" title="Dar de baja">
+                                <button data-id="${data.IdProfesional}" class="deleteProfesional btn iconGeneral" title="Dar de baja">
                                     <i class="ri-delete-bin-2-line"></i>
                                 </button>
                             </div>
@@ -117,7 +118,7 @@ $(document).ready(() => {
                 }
             ],
             language: {
-                processing: "Cargando listado de profesionales de CMIT",
+                processing: "<div style='text-align: center; margin-top: 20px;'><img src='./images/spinner.gif' /><p>Cargando...</p></div>",
                 emptyTable: "No hay profesionales con los datos buscados",
                 paginate: {
                     first: "Primera",

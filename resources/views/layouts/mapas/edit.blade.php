@@ -31,6 +31,7 @@
                 Remitos
             </a>
         </li>
+        @can('mapas_cerrar')
         <li class="nav-item" role="presentation">
             <a class="nav-link" data-bs-toggle="tab" href="#cerrar" role="tab" aria-selected="false" tabindex="-1">
                 <span class="custom-badge original">
@@ -39,6 +40,8 @@
                 </span>
             </a>
         </li>
+        @endcan
+        @can('mapas_finalizar')
         <li class="nav-item" role="presentation">
             <a class="nav-link" data-bs-toggle="tab" href="#finalizar" role="tab" aria-selected="false" tabindex="-1">
                 <span class="custom-badge original">
@@ -47,6 +50,8 @@
                 </span>
             </a>
         </li>
+        @endcan
+        @can('mapas_eenviar')
         <li class="nav-item" role="presentation">
             <a class="nav-link text-info" data-bs-toggle="tab" href="#eenviar" role="tab" aria-selected="false" tabindex="-1">
                 <span class="custom-badge original">
@@ -55,6 +60,7 @@
                 </span>
             </a>
         </li>
+        @endcan
     </ul>
 </div>
 
@@ -262,7 +268,7 @@
                 </table>
             </div>
         </div>
-
+        @can('mapas_cerrar')
         <div class="tab-pane" id="cerrar" role="tabpanel">
             
             <div class="row">
@@ -336,7 +342,8 @@
             </div>
 
         </div>
-
+        @endcan
+        @can('mapas_finalizar')
         <div class="tab-pane" id="finalizar" role="tabpanel">
             
             <div class="row">
@@ -397,7 +404,8 @@
             </div>
 
         </div>
-
+        @endcan
+        @can('mapas_eenviar')
         <div class="tab-pane" id="eenviar" role="tabpanel">
             <div class="row">
 
@@ -507,6 +515,7 @@
                 </div>
             </div>
         </div>
+        @endcan
 
     </div>
 </div>

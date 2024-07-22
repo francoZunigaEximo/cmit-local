@@ -1199,3 +1199,9 @@ INSERT INTO permisos (Id, slug, descripcion) VALUES
 
 INSERT INTO rol_permisos (rol_id, permiso_id) VALUES
 (3,72),(3,73),(3,74),(3,75),(13,72),(13,73),(13,74),(13,75);
+
+INSERT INTO rol_permisos (rol_id, permiso_id) VALUES
+(5,42),(5,20),(5,33);
+
+INSERT INTO rol_permisos (rol_id, permiso_id) VALUES
+(12,5),(12,42),(12,31);

@@ -108,12 +108,10 @@ class ProfesionalesController extends Controller
                         $query->where('profesionales.Inactivo', 2);
                     
                     }
-                    
                 }
             });
 
             $result = $query->where('profesionales.Id', '<>', 0)
-                ->where('profesionales.Inactivo', 0)
                 ->orderBy('profesionales.Apellido', 'Asc');
 
             return Datatables::of($result)->make(true);

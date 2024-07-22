@@ -43,7 +43,7 @@ $(document).ready(()=> {
         swal({
             title: "¿Esta seguro que desea bloquear a este profesional?",
             icon: "warning",
-            buttons: ["Cancelar", "Aceptat"]
+            buttons: ["Cancelar", "Aceptar"]
         }).then((confirmar) => {
             if(confirmar){
                 accion("bloquear", $(this).data('id'));
@@ -55,7 +55,7 @@ $(document).ready(()=> {
         e.preventDefault();
 
         swal({
-            title: "¿Esta seguro que desea eliminar a este profesional?",
+            title: "¿Esta seguro que desea dar de baja a este profesional?",
             icon: "warning",
             buttons: ["Cancelar", "Aceptar"]
         }).then((confirmar) =>{
@@ -113,18 +113,18 @@ $(document).ready(()=> {
             }
         };
 
-        preloader('on');
+        $('#listaProf tbody').hide();
+        $('.dataTables_processing').show();
+
         $.post(estadoProfesional, {_token: TOKEN, Id: id, tipo: tipo})
 
             .done(function(){
-                preloader('off');
+  
                 toastr.success(`Se ha/han ${listAccion[tipo][0]} correctamente`, `${listAccion[tipo][1]} profesional/es`);
-                setTimeout(()=>{
-                    $('#listaProf').DataTable();
-                    $('#listaProf').DataTable().draw(false);
-                },3000);
-                
-
+                $('#listaProf').DataTable().ajax.reload(function(){
+                    $('#listaProf tbody').show();
+                    $('.dataTables_processing').hide();
+                }, false);
             })
             .fail(function(jqXHR){
                 preloader('off');
