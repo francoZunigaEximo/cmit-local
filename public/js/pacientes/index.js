@@ -26,10 +26,13 @@ $(document).ready(function(){
             buttons: ["No", "Sí"],
         }).then((confirmar) => {
             if(confirmar) {
-                preloader('on');
+
+                $('#listaPac tbody').hide();
+                $(".dataTables_processing").show();
+
                 $.post(down, {_token: TOKEN, ids: ids})
                 .done(function(response) {
-                    preloader('off');
+
                     let tipo = {
                         200: 'success',
                         409: 'warning'
@@ -39,10 +42,11 @@ $(document).ready(function(){
                         toastr[tipo[data.status]](data.msg);
                     });
                     
-                    setTimeout(() => {
-                        $('#listaPac').DataTable();
-                        $('#listaPac').DataTable().draw(false); 
-                    }, 3000);
+                    $('#listaPac').DataTable().ajax.reload(function() {
+                        $('#listaPac tbody').show();
+                        $(".dataTables_processing").hide();
+                    }, false);
+
                 })
                 .fail(function(jqXHR) {
                     preloader('off');
@@ -99,20 +103,24 @@ $(document).ready(function(){
 
     });
 
-    $(document).on('click', '.downPaciente', function(){
+    $(document).on('click', '.downPaciente', function(e){
+        e.preventDefault();
+        let paciente = $(this).data('id'), fullName = $(this).data('nombrecompleto');
 
-        let paciente = $(this).data('id'), fullName = $(this).data('nombrecompleto')
-        
         swal({
             title: `¿Está seguro que desea dar de baja a este paciente ${fullName}?`,
             icon: "warning",
             buttons: ["Cancelar", "Dar de baja"],
         }).then((confirmar) => {
             if(confirmar) {
-                preloader('on');
+                
+                $('#listaPac tbody').hide();
+                $(".dataTables_processing").show();
+
                 $.post(down, {_token: TOKEN, ids: paciente})
                 .done(function(response){
-                    preloader('off');
+              
+
                     let tipo = {
                         200: 'success',
                         409: 'warning'
@@ -121,12 +129,14 @@ $(document).ready(function(){
                     response.forEach(function(data) {
                         toastr[tipo[data.status]](data.msg);
                     });
+                    $('#listaPac').DataTable().ajax.reload(function() {
+                        $('#listaPac tbody').show();
+                        $(".dataTables_processing").hide();
+                    }, false);
 
-                    $('#listaPac').DataTable();
-                    $('#listaPac').DataTable().draw(false);
                 })
                 .fail(function(jqXHR){
-                    preloader('off');
+      
                     let errorData = JSON.parse(jqXHR.responseText);            
                     checkError(jqXHR.status, errorData.msg);
                     return;

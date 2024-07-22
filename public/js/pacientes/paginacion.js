@@ -28,15 +28,13 @@ $(document).ready(()=>{
                     {
                         data: null,
                         render: function(data){
-                            let id = data.Id;
-                            return `<div class="text-center"><input type="checkbox" name="Id" value="${id}" checked></div>`;
+                            return `<div class="text-center"><input type="checkbox" name="Id" value="${data.Id}" checked></div>`;
                         }
                     },
                     {
                         data: null,
                         render: function(data){
-                            let apellido = data.Apellido, nombre = data.Nombre;
-                            return `<strong>${apellido.toUpperCase()} ${nombre.toUpperCase()}</strong>`;
+                            return `<strong>${(data.Apellido).toUpperCase()} ${(data.Nombre).toUpperCase()}</strong>`;
                         }
                     },
                     {
@@ -46,12 +44,7 @@ $(document).ready(()=>{
                     {
                         data: null,
                         render: function(data){
-                            let cp = data.Cp;
-                            let numero = data.Telefono;
-        
-                            let completo = (cp === '')? numero : '(' + cp + ') ' + numero;
-        
-                            return completo;
+                            return (data.Cp === '') ? data.Telefono : '(' + data.Cp + ') ' + data.Telefono;
                         },
                         searching: false,
                         ordering: true,
@@ -87,8 +80,19 @@ $(document).ready(()=>{
                         }
                     },
                     info: "Mostrando _START_ a _END_ de _TOTAL_ de pacientes",
+                },
+                initComplete: function(settings, json) {
+                    $("#listaPac").show();
+                    $(".dataTables_processing").hide();
+                },
+                xhr: function(settings, json, xhr) {
+                    $("#listaPac").hide();
+                    $(".dataTables_processing").show();
+                },
+                drawCallback: function(settings) {
+                    $("#listaPac").show();
+                    $(".dataTables_processing").hide();
                 }
-
             });
 
         }
