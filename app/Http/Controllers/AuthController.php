@@ -50,7 +50,7 @@ class AuthController extends Controller
                     return redirect()->route('profesionales.index');
                 }
 
-                if ($roles->contains(['Evaluador', 'EvaluadorART'])) {
+                if ($roles->contains(['Evaluador', 'Evaluador ART'])) {
                     return redirect()->route('mapas.index');
                 }
             }
