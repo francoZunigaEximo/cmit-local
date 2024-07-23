@@ -46,11 +46,11 @@ class AuthController extends Controller
 
                 $roles = Auth::user()->role->pluck('nombre'); 
 
-                if ($roles->contains(['Efector', 'Informador'])) {
+                if ($roles->contains('Efector') || $roles->contains('Informador')) {
                     return redirect()->route('profesionales.index');
                 }
 
-                if ($roles->contains(['Evaluador', 'Evaluador ART'])) {
+                if ($roles->contains('Evaluador') || $roles->contains('Evaluador ART')) {
                     return redirect()->route('mapas.index');
                 }
             }
