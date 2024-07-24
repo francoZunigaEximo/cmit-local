@@ -31,6 +31,7 @@
 
                     <div class="col-auto d-flex justify-content-end align-items-end">
                         <button type="button" class="btn btn-sm botonGeneral buscarUsuario"><i class="ri-search-line"></i> Buscar</button>&nbsp;
+                        <button type="button" id="reiniciar" class="btn btn-sm botonGeneral"><i class="ri-refresh-line"></i> Reiniciar</button>
                     </div>
                 </div>
             </div>

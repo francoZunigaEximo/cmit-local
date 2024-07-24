@@ -115,19 +115,23 @@ $(document).ready(()=>{
             buttons: ["Cancelar", "Eliminar"],
         }).then((result) => {
             if(result){
-                preloader('on');
+
+                $('#listaUsuarios tbody').hide();
+                $('.dataTables_processing').show();
+
                 $.get(bajaUsuario, {Id: id})
                     .done(function(response){
-                        preloader('off');
+
                         let tipoToastr = response.estado === 'success' ? 'success' : 'warning';
 
                         toastr[tipoToastr](response.msg);
-                        setTimeout(()=> {
-                            $('#listaUsuarios').DataTable().draw(false);
-                        }, 2000);
+                        $('#listaUsuarios').DataTable().ajax.reload(function(){
+                            $('#listaUsuarios tbody').show();
+                            $('.dataTables_processing').hide();
+                        }, false);
                     })
                     .fail(function(jqXHR){
-                        preloader('off');
+
                         let errorData = JSON.parse(jqXHR.responseText);
                         checkError(jqXHR.status, errorData.msg);
                         return;
@@ -147,17 +151,21 @@ $(document).ready(()=>{
             buttons: ["No", "Si"]
         }).then((result) => {
             if(result){
-                preloader('on');
+
+                $('#listaUsuarios tbody').hide();
+                $('.dataTables_processing').show();
+
                 $.get(bloquearUsuario, {Id: id})
                     .done(function(response){
-                        preloader('off');
                         toastr.success(response.msg);
-                        setTimeout(()=> {
-                            $('#listaUsuarios').DataTable().draw(false);
-                        }, 2000);
+                        $('#listaUsuarios').DataTable().ajax.reload(function(){
+                            $('#listaUsuarios tbody').show();
+                            $('.dataTables_processing').hide();
+                        }, false);
+                        
                     })
                     .fail(function(jqXHR){
-                        preloader('off');
+
                         let errorData = JSON.parse(jqXHR.responseText);
                         checkError(jqXHR.status, errorData.msg);
                         return;
@@ -185,6 +193,18 @@ $(document).ready(()=>{
                     }); 
             }
         });      
+    });
+
+    $(document).on('click', '#reiniciar', function(e){
+        e.preventDefault();
+        $('#listaUsuarios tbody').hide();
+        $('.dataTables_processing').show();
+
+        $('#listaUsuarios').DataTable().ajax.reload(function(){
+            $('#listaUsuarios tbody').show();
+            $('.dataTables_processing').hide();
+        }, false);
+
     });
 
 });

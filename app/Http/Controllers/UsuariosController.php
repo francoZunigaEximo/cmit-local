@@ -23,27 +23,6 @@ class UsuariosController extends Controller
     {
         if(!$this->hasPermission("usuarios_show")) {
             abort(403);
-        }
-
-        if ($request->ajax()) {
-
-            $query = User::leftJoin('user_rol', 'users.id', '=', 'user_rol.user_id')
-                ->leftJoin('roles', 'user_rol.rol_id', '=', 'roles.Id')
-                ->leftJoin('datos', 'users.datos_id', '=', 'datos.Id')
-                ->select(
-                    'users.id as IdUser',
-                    'users.name as usuario',
-                    'datos.Nombre as Nombre',
-                    'datos.Apellido as Apellido',
-                    DB::raw("GROUP_CONCAT(roles.nombre SEPARATOR ', ') as RolUsuario"),
-                    'users.inactivo as Inactivo',
-                )
-                ->where('users.Anulado', 0)
-                ->groupBy('users.id');
-        
-            $result = $query->get();
-        
-            return Datatables::of($result)->make(true);
         } 
 
         return view('layouts.usuarios.index');
@@ -118,6 +97,7 @@ class UsuariosController extends Controller
                     DB::raw("GROUP_CONCAT(roles.nombre SEPARATOR ', ') as RolUsuario"),
                     'users.inactivo as Inactivo',
                 )
+                ->where('users.Anulado', 0)
                 ->groupBy('users.id');
         
             $query->when(!empty($request->nombre), function ($query) use ($request) {
@@ -264,6 +244,7 @@ class UsuariosController extends Controller
 
     public function baja(Request $request)
     {
+        
         if(!$this->hasPermission("usuarios_delete")) {
             return response()->json(["msg" => "No tiene permisos"], 403);
         }
