@@ -112,18 +112,25 @@ $(document).ready(()=>{
         e.preventDefault();
         let passw = $('#newPass').val();
 
-        if($('#form-updatePass').valid() && confirm("¿Esta seguro que desea actualizar su contraseña?")){
-            preloader('on');
-            $.post(actualizarPass, {_token: TOKEN, password: passw})
-                .done(function(response) {
-                    preloader('off');
-                    toastr.success("Se han actualizado su contraseña correctamente");
-                    setTimeout(()=>{
-                        location.reload();
-                    },2000);
-                });
+        if($('#form-updatePass').valid()) {
+            swal({
+                title: "¿Esta seguro que desea actualizar su contraseña?",
+                icon: "warning",
+                buttons: ["Cancelar", "Aceptar"]
+            }).then((confirmar) => {
+                if(confirmar) {
+                    preloader('on');
+                    $.post(actualizarPass, {_token: TOKEN, password: passw})
+                        .done(function(response) {
+                            preloader('off');
+                            toastr.success("Se han actualizado su contraseña correctamente");
+                            setTimeout(()=>{
+                                location.reload();
+                            },2000);
+                        });
+                }
+            }); 
         }
-    
     });
 
     $('#provincia').change(function() {

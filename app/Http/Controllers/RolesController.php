@@ -55,10 +55,15 @@ class RolesController extends Controller
     public function add(Request $request)
     {
         $user = User::find($request->user); 
-        $role = Rol::find($request->role); 
+        $role = Rol::find($request->role);
+        $contadorPermiso = $role->permiso->count();
         $result = [];
 
-        if ($user->role->contains($request->role))
+        if($contadorPermiso === 0) {
+            return response()->json(['msg' => 'No se puede asignar el rol porque no tiene permisos asociados'], 409);
+        }
+
+        if($user->role->contains($request->role))
         {
             $result = ['msg' => 'El usuario ya tiene ese rol asignado', 'estado' => 'false'];
             

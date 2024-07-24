@@ -16,6 +16,8 @@ use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Storage;
 
 use App\Traits\CheckPermission;
+use Illuminate\Support\Facades\Auth;
+
 class ProfesionalesController extends Controller
 {
     use ObserverProfesionales, ObserverPacientes, CheckPermission;
@@ -206,6 +208,7 @@ class ProfesionalesController extends Controller
             'profesionale' => $profesionale, 
             'telefono' => $this->getTelefono($profesionale->Id), 
             'provincias' => Provincia::OrderBy('Nombre', 'ASC')->get(),
+            'lstProveedor' => Proveedor::where('Inactivo', 0)->whereNot('Id', 0)->OrderBy('Nombre', 'ASC')->get(['Id', 'Nombre']),
             'listEspecialistas' => Proveedor::where('Inactivo', 0)->whereNot('Id', 0)->OrderBy('Nombre', 'ASC')->get(['Id', 'Nombre']),
             'detailsLocalidad' => $this->getLocalidad($profesionale->IdLocalidad)
         ]));
@@ -223,22 +226,29 @@ class ProfesionalesController extends Controller
 
         $consulta = ProfesionalProv::where('IdProf', $request->Id)
             ->where('IdProv', $request->especialidad)
-            ->where('IdRol', $request->perfil)
+            ->where('Tipo', $request->perfil)
             ->first();
 
         if(!$consulta){
 
-            $id = in_array(Auth()->role->first()->Id, [8, 9, 11, 12]) ? Auth()->role->first()->Id : 0;
+            $id = in_array(Auth::user()->role->first()->nombre, ["Efector", "Informador", "Combinado", "Evaluador", "EvaluadorART"]) 
+                ? (count(Auth::user()->role->first()->nombre) === 1 
+                    ? Auth::user()->role->first()->Id
+                    : 0)
+                : 0;
 
             ProfesionalProv::create([
                 'Id' => ProfesionalProv::max('Id') + 1,
                 'IdProf' => $request->Id,
                 'IdProv' => $request->especialidad,
                 'IdRol' => $id,
+                'Tipo' => $request->perfil ?? ''
             ]);
+
+            return response()->json(['msg' => 'Se ha añadido el perfil de manera correcta'], 201);
         }else{
 
-            return response()->json(['error' => 'Ya existe un perfil con esa especialidad']);
+            return response()->json(['msg' => 'Ya existe un perfil con esa especialidad'], 500);
         }
     }
 
@@ -257,7 +267,13 @@ class ProfesionalesController extends Controller
             ->groupBy('IdProf', 'IdProv')
             ->get();
 
-        return response()->json(['data' => $query]);
+        if($query){
+            return response()->json(['data' => $query], 200);
+        }else{
+            return response()->json(['msg' => "Sin perfiles. Ingrese uno"], 409);
+        }
+
+        
 
     }
 

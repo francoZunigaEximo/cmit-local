@@ -24,7 +24,8 @@ $(document).ready(function(){
         let total = (efector ? 1 : 0) + (informador ? 1 : 0) + (evaluador ? 1 : 0) + (combinado ? 1 : 0),
             tlp = (total > 1) ? 1 : 0,
             tmp = (total > 1) ? 1 : 0;
-        preloader('on');
+        
+            preloader('on');
         $.post(opcionesProf, {_token: TOKEN, T1: efector, T2: informador, T3: evaluador, T4: combinado, Pago: pago, InfAdj: informeAdj, TMP: tmp, TLP: tlp, Id: ID})
             .done(function(response){
                 preloader('off');
@@ -76,10 +77,12 @@ $(document).ready(function(){
             toastr.warning("Debe seleccionar una especialidad y un perfil para poder añadirlo a la lista");
             return;
         }
-
+        preloader('on');
         $.post(setPerfiles, {_token: TOKEN, perfil: perfil, especialidad: especialidad, Id: ID})
+            
             .done(function(response){
-                toastr.success('Se ha añadido el perfil de manera correcta');
+                preloader('off');
+                toastr.success(response.msg);
                 cargarPerfiles(); 
             })
             .fail(function(jqXHR){
@@ -94,7 +97,7 @@ $(document).ready(function(){
         e.preventDefault();
         let IdProf = $(this).data('prof'),
             IdProv = $(this).data('prov');
-
+        console.log(IdProf, IdProv);
         swal({
             title: "¿Está seguro que desea eliminar?",
             icon: "warning",
@@ -146,50 +149,59 @@ $(document).ready(function(){
     });
 
     function cargarPerfiles(){
-
+        preloader('on');
         $.get(getPerfiles, {Id: ID})
             .done(function(response){
-                
+                preloader('off')
                 let data = response.data;
 
                 $('#listaProfesionales').empty();
 
                 data.forEach(function (d) {
-                    let arr = d.Tipos.split(',');
-                
-                    const perfiles = {
-                        't1': ['Efector'],
-                        't2': ['Informador'],
-                        't3': ['Evaluador'],
-                        't4': ['Combinado']
-                    }
-                
-                    let imprimir = arr.map(e => {
-                        if (perfiles[e]) {
-                            return `<span class="badge custom-badge pequeno text-uppercase" style="margin-right: 3px; display:inline-block">${perfiles[e][0]}</span><br>`;
+
+                    if(d.Tipos) {
+                        let arr = d.Tipos.split(',');
+                    
+                        const perfiles = {
+                            't1': ['Efector'],
+                            't2': ['Informador'],
+                            't3': ['Evaluador'],
+                            't4': ['Combinado']
                         }
-                        return ''; 
-                    }).join(''); 
-                
-                    let contenido = `
-                        <tr style="text-align: center">
-                            <td>${d.especialidad}</td>
-                            <td style="margin-right: 3px;">
-                                ${imprimir}
-                            </td>
-                            <td>
-                                <div class="remove">
-                                    <button data-prof="${d.IdProf}" data-prov="${d.IdProv}" class="btn btn-sm iconGeneral eliminarPerfil" title="Dar de baja"><i class="ri-delete-bin-2-line"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                
-                    $('#listaProfesionales').append(contenido);
-                    $('#perfiles').val(''),
-                    $('#listaEspecialidad').val('');
+                    
+                        let imprimir = arr.map(e => {
+                            if (perfiles[e]) {
+                                return `<span class="badge custom-badge pequeno text-uppercase" style="margin-right: 3px; display:inline-block">${perfiles[e][0]}</span><br>`;
+                            }
+                            return ''; 
+                        }).join(''); 
+                    
+                        let contenido = `
+                            <tr style="text-align: center">
+                                <td>${d.especialidad}</td>
+                                <td style="margin-right: 3px;">
+                                    ${imprimir}
+                                </td>
+                                <td>
+                                    <div class="remove">
+                                        <button data-prof="${d.IdProf}" data-prov="${d.IdProv}" class="btn btn-sm iconGeneral eliminarPerfil" title="Dar de baja"><i class="ri-delete-bin-2-line"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    
+                        $('#listaProfesionales').append(contenido);
+                        $('#perfiles').val(''),
+                        $('#listaEspecialidad').val('');
+                    }
                 });
-            });    
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return; 
+            });
     }
 
     function perfiles(id)

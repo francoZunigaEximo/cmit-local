@@ -26,21 +26,31 @@ $(document).ready(()=>{
             Id = $('#Id').val(),
             email = $('#email').val();
 
-        if($('#form-update').valid() && confirm("¿Esta seguro que desea confirmar la operación?")) {
-            preloader('on');
-            $.post(actualizarDatos, {_token: TOKEN, Nombre: nombre, Apellido: apellido, TipoDocumento: tipoDocumento, Documento: documento, TipoIdentificacion: tipoIdentificacion, Identificacion: identificacion, Telefono: telefono, FechaNacimiento: fechaNacimiento, Provincia: provincia, IdLocalidad: localidad, CP: cp, Id: Id, email: email, Direccion: direccion})
-                .done(function(){
-                    preloader('off');
-                    toastr.success("Se han actualizado correctamente los datos del usuario");
-                    setTimeout(()=>{
-                        location.reload();
-                    },2000);
-                })
-                .fail(function(jqXHR){
-                    let errorData = JSON.parse(jqXHR.responseText);            
-                    checkError(jqXHR.status, errorData.msg);
-                    return;
-                })
+        if($('#form-update').valid()){ 
+            swal({
+                title: "¿Esta seguro que desea confirmar la operación?",
+                icon: "warning",
+                buttons: ["Cancelar", "Aceptar"]
+            }).then((confirmar) => {
+                if(confirmar) {
+                    preloader('on');
+                    $.post(actualizarDatos, {_token: TOKEN, Nombre: nombre, Apellido: apellido, TipoDocumento: tipoDocumento, Documento: documento, TipoIdentificacion: tipoIdentificacion, Identificacion: identificacion, Telefono: telefono, FechaNacimiento: fechaNacimiento, Provincia: provincia, IdLocalidad: localidad, CP: cp, Id: Id, email: email, Direccion: direccion})
+                        .done(function(response){
+                            preloader('off');
+                            toastr.success(response.msg);
+                            setTimeout(()=>{
+                                location.reload();
+                            },2000);
+                        })
+                        .fail(function(jqXHR){
+                            preloader('off');
+                            let errorData = JSON.parse(jqXHR.responseText);            
+                            checkError(jqXHR.status, errorData.msg);
+                            return;
+                        });
+                }
+            }) 
+            
         }
 
     });
@@ -111,6 +121,12 @@ $(document).ready(()=>{
                             }, 2000);
                         }
                     })
+                    .fail(function(jqXHR) {
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
+                    });
             }
         });
 

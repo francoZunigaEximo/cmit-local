@@ -15,10 +15,11 @@ use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use FPDF;
+use App\Traits\CheckPermission;
 
 class ExamenesCuentaController extends Controller
 {
-    use ObserverExamenesCuenta;
+    use ObserverExamenesCuenta, CheckPermission;
 
     const LOGO = "/archivos/reportes/LogoEmpresa.jpg";
     const NOMBRE ="CMIT | SALUD OCUPACIONAL SRL";
@@ -26,6 +27,10 @@ class ExamenesCuentaController extends Controller
 
     public function index(Request $request)
     {
+        if(!$this->hasPermission("examenCta_show")) {
+            abort(403);
+        }
+
         if ($request->ajax())
         {
             $query = $this->queryBasico();
@@ -40,6 +45,10 @@ class ExamenesCuentaController extends Controller
 
     public function search(Request $request)
     {
+        if(!$this->hasPermission("examenCta_show")) {
+            abort(403);
+        }
+
         if ($request->ajax())
         {
             $query = $this->queryBasico();
@@ -96,6 +105,10 @@ class ExamenesCuentaController extends Controller
 
     public function saldo(Request $request)
     {
+        if(!$this->hasPermission("examenCta_show")) {
+            abort(403);
+        }
+
         if ($request->ajax())
         {
             $query = ExamenCuenta::join('pagosacuenta_it', 'pagosacuenta.Id', '=', 'pagosacuenta_it.IdPago')
@@ -143,6 +156,10 @@ class ExamenesCuentaController extends Controller
 
     public function cambiarPago(Request $request)
     {
+        if(!$this->hasPermission("examenCta_show")) {
+            abort(403);
+        }
+
         $estados = $request->Id;
         $resultado = [];
 
@@ -169,16 +186,28 @@ class ExamenesCuentaController extends Controller
 
     public function create()
     {
+        if(!$this->hasPermission("examenCta_add")) {
+            abort(403);
+        }
+
         return view('layouts.examenesCuenta.create');
     }
 
     public function edit(ExamenCuenta $examenesCuentum)
     {
+        if(!$this->hasPermission("examenCta_edit")) {
+            abort(403);
+        }
+
         return view('layouts.examenesCuenta.edit', compact(['examenesCuentum']));
     }
 
     public function save(Request $request)
     {
+        if(!$this->hasPermission("examenCta_add")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
+
         $nuevoId = ExamenCuenta::max('Id') + 1;
 
         ExamenCuenta::create([
@@ -200,6 +229,10 @@ class ExamenesCuentaController extends Controller
 
     public function update(Request $request)
     {
+        if(!$this->hasPermission("examenCta_edit")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
+
         $examen = ExamenCuenta::find($request->Id);
 
         if($examen)
@@ -219,6 +252,9 @@ class ExamenesCuentaController extends Controller
 
     public function detalles(Request $request)
     {
+        if(!$this->hasPermission("examenCta_show")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
 
         $detalle = ExamenCuenta::join('pagosacuenta_it', 'pagosacuenta.Id', '=', 'pagosacuenta_it.IdPago')
             ->join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
@@ -238,7 +274,11 @@ class ExamenesCuentaController extends Controller
     }
 
     public function delete(Request $request)
-    {
+    {   
+        if(!$this->hasPermission("examenCta_delete")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
+
         $examen = ExamenCuenta::find($request->Id);
         $resultado = [];
 
@@ -257,6 +297,10 @@ class ExamenesCuentaController extends Controller
 
     public function deleteItem(Request $request)
     {
+        if(!$this->hasPermission("examenCta_delete")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
+
         $examenes = $request->Id;
 
         if (!is_array($examenes)) {
@@ -272,6 +316,10 @@ class ExamenesCuentaController extends Controller
 
     public function liberarItem(Request $request)
     {
+        if(!$this->hasPermission("examenCta_edit")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
+
         $examenes = $request->Id;
 
         if (!is_array($examenes)) {
@@ -291,6 +339,9 @@ class ExamenesCuentaController extends Controller
 
     public function precarga(Request $request)
     {
+        if(!$this->hasPermission("examenCta_edit")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
 
         $examenes = $request->Id;
 
@@ -311,6 +362,10 @@ class ExamenesCuentaController extends Controller
 
     public function listado(Request $request)
     {
+        if(!$this->hasPermission("examenCta_show")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
+
         $query = ExamenCuentaIt::join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
             ->join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
             ->join('prestaciones', 'pagosacuenta_it.IdPrestacion', '=', 'prestaciones.Id')
@@ -335,6 +390,9 @@ class ExamenesCuentaController extends Controller
 
     public function saveEx(Request $request)
     {
+        if(!$this->hasPermission("examenCta_add")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
 
         switch($request->Tipo) {
 
@@ -419,6 +477,10 @@ class ExamenesCuentaController extends Controller
 
     public function lstClientes(Request $request)
     {
+        if(!$this->hasPermission("examenCta_show")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
+
         $clientes = ExamenCuenta::join('pagosacuenta_it', 'pagosacuenta.Id', '=', 'pagosacuenta_it.IdPago')
             ->join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
             ->join('prestaciones', 'pagosacuenta_it.IdPrestacion', '=', 'prestaciones.Id')
@@ -443,6 +505,10 @@ class ExamenesCuentaController extends Controller
 
     public function listadoDni(Request $request)
     {
+        if(!$this->hasPermission("examenCta_show")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
+
         $clientes = ExamenCuentaIt::join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
             ->join('prestaciones', 'pagosacuenta_it.IdPrestacion', '=', 'prestaciones.Id')
             ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
@@ -463,6 +529,10 @@ class ExamenesCuentaController extends Controller
    
     public function listadoEx(Request $request)
     {
+        if(!$this->hasPermission("examenCta_show")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
+
         $clientes = ExamenCuentaIt::join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
             ->join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
             ->select(
@@ -487,6 +557,10 @@ class ExamenesCuentaController extends Controller
 
     public function excel(Request $request)
     {
+        if(!$this->hasPermission("examenCta_report")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
+
         $examen = $this->tituloReporte($request->Id);
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -614,6 +688,10 @@ class ExamenesCuentaController extends Controller
 
     public function pdf(Request $request)
     {
+        if(!$this->hasPermission("examenCta_report")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
+
         $examen = $this->tituloReporte($request->Id);
         $filePath = storage_path('app/public/archivo.pdf');
 
@@ -718,6 +796,10 @@ class ExamenesCuentaController extends Controller
 
     public function reporteGeneral(Request $request)
     {
+        if(!$this->hasPermission("examenCta_report")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
+
         $examenes = $this->querySalDet($request->Id);
 
         $spreadsheet = new Spreadsheet();
@@ -797,6 +879,10 @@ class ExamenesCuentaController extends Controller
 
     public function disponibilidad(Request $request)
     {
+        if(!$this->hasPermission("examenCta_show")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
+
         $examen = ExamenCuentaIt::join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
             ->join('clientes', 'pagosacuenta.IdEmpresa', '=', 'clientes.Id')
             ->join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
@@ -818,6 +904,10 @@ class ExamenesCuentaController extends Controller
 
     public function listadoUltimas(Request $request)
     {
+        if(!$this->hasPermission("examenCta_show")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
+
         $prestacion = ExamenCuentaIt::join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
                 ->join('clientes', 'pagosacuenta.IdEmpresa', '=', 'clientes.Id')
                 ->join('prestaciones', 'pagosacuenta_it.IdPrestacion', '=', 'prestaciones.Id')
@@ -840,6 +930,9 @@ class ExamenesCuentaController extends Controller
 
     public function saldoNoDatatable(Request $request)
     {
+        if(!$this->hasPermission("examenCta_show")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
 
         $query = ExamenCuenta::join('pagosacuenta_it', 'pagosacuenta.Id', '=', 'pagosacuenta_it.IdPago')
         ->join('clientes', 'pagosacuenta.IdEmpresa', '=', 'clientes.Id')
@@ -864,6 +957,10 @@ class ExamenesCuentaController extends Controller
 
     public function disponibles(Request $request)
     {
+        if(!$this->hasPermission("examenCta_show")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
+
         $query = ExamenCuenta::join('pagosacuenta_it', 'pagosacuenta.Id', '=', 'pagosacuenta_it.IdPago')
             ->where('pagosacuenta.IdEmpresa', $request->Id)
             ->where('pagosacuenta_it.IdPrestacion', 0)
@@ -876,6 +973,10 @@ class ExamenesCuentaController extends Controller
      //Listado dentro de Pacientes en Alta de Prestación - Muestra las facturas en la grilla
      public function lstExClientes(Request $request)
      {
+        if(!$this->hasPermission("prestaciones_show")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
+
          $clientes = ExamenCuentaIt::join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
              ->join('pagosacuenta', function($join) use ($request) {
                 $join->on('pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id');
@@ -900,6 +1001,9 @@ class ExamenesCuentaController extends Controller
     //Listado dentro de Pacientes en Alta de Prestación con todos los DNI precargados
     public function listadoPrecarga(Request $request)
     {
+        if(!$this->hasPermission("prestaciones_show")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
 
         $clientes = ExamenCuentaIt::join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
             ->select(
@@ -924,6 +1028,10 @@ class ExamenesCuentaController extends Controller
     //Listado dentro de Pacientes en Alta de Prestación
     public function listadoExCta(Request $request)
     {
+        if(!$this->hasPermission("prestaciones_show")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
+
         $clientes = ExamenCuentaIt::join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
             ->join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
             ->select(

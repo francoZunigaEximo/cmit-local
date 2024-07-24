@@ -29,7 +29,7 @@ class PrestacionesController extends Controller
     public function index(): mixed
     {
         if (!$this->hasPermission("prestaciones_show")) {
-            return response()->json(['msg' => 'No tiene permisos'], 403);
+            abort(403);
         }
 
         return view('layouts.prestaciones.index');

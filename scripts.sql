@@ -1020,7 +1020,7 @@ INSERT INTO permisos (slug,descripcion) VALUES
 	 ('noticias_edit',0x456469746172206E6F7469636961),
 	 ('noticias_delete',0x456C696D696E6172206E6F746963696173);
 INSERT INTO permisos (slug,descripcion) VALUES
-	 ('examenCuenta_show',0x56697375616C697A6172206578616D656E65732061206375656E7461);
+	 ('examenCta_show',0x56697375616C697A6172206578616D656E65732061206375656E7461);
 
 CREATE TABLE `user_rol` (
   `user_id` bigint(20) unsigned NOT NULL,
@@ -1103,7 +1103,7 @@ INSERT INTO rol_permisos(rol_id, permiso_id) VALUES
 (1,54),(2,54),(3,54),(4,54),(5,54),(6,54);
 
 INSERT INTO permisos(slug, descripcion) VALUES
-("examenCuenta_show","Visualizar examenes a cuenta");
+("examenCta_show","Visualizar examenes a cuenta");
 
 INSERT INTO permisos(slug, descripcion) VALUES
 ("mensajeria_edit","Editar y actualizar correos");
@@ -1208,9 +1208,32 @@ INSERT INTO rol_permisos (rol_id, permiso_id) VALUES
 
 /****/
 INSERT INTO rol_permisos (rol_id, permiso_id) VALUES
-(12,20)
+(12,20);
 
 DELETE FROM rol_permisos WHERE permiso_id = 5 AND rol_id = 12;
 
 INSERT INTO rol_permisos (rol_id, permiso_id) VALUES
 (7,20),(7,31),(7,42);
+
+ALTER TABLE profesionales_prov ADD Tipo VARCHAR(10) NULL; /*** Falta en Pre_Produccion ***/
+ALTER TABLE profesionales MODIFY wImage varchar(100) DEFAULT '250px';  /*** Falta en Pre_Produccion ***/
+ALTER TABLE profesionales MODIFY hImage varchar(100) DEFAULT '250px';  /*** Falta en Pre_Produccion ***/
+ALTER TABLE profesionales ADD RegHis TINYINT UNSIGNED DEFAULT 1; /** Falta en Pre_Produccion **/
+INSERT INTO permisos (Id, slug, descripcion) VALUES
+('76', 'datos_add', 'Creacion y actualizacion de datos del usuario'),
+('77', 'usuarios_show', 'Visualizar usuarios'),
+('78', 'usuarios_add', 'Crear nuevo usuario'),
+('79', 'usuarios_edit', 'Editar usuario'),
+('80', 'usuarios_delete', 'Eliminar usuario'),
+('81', 'examenCta_report', 'Reporte examen a cuenta');/** Falta en Pre_Produccion**/
+INSERT INTO rol_permisos (rol_id, permiso_id) VALUES
+(13,76),(13,77),(13,78),(13,79),(13,80);/** Falta en Pre_Produccion**/
+UPDATE permisos SET slug = "examenCta_show" where Id = 51;/** Falta en Pre_Produccion**/
+UPDATE permisos SET descripcion = "Eliminar mapa" where Id = 64;/** Falta en Pre_Produccion**/
+UPDATE permisos SET descripcion = "Acceso a usuarios" where Id = 29;/** Falta en Pre_Produccion**/
+INSERT INTO rol_permisos (rol_id, permiso_id) VALUES
+(1,51),(1,26),(1,27),(1,28),(1,81),
+(2,51),(2,26),(2,27),(2,28),(2,81),
+(3,51),(3,26),(3,27),(3,28),(3,81),
+(6,51),(6,26),(6,27),(6,28),(6,81),
+(13,51),(13,26),(13,27),(13,28),(13,81);/** Falta en Pre_Produccion**/

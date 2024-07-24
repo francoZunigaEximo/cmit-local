@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use App\Models\Provincia;
+use Illuminate\Database\QueryException;
 
 class AuthController extends Controller
 {
@@ -66,17 +67,31 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $pass = "cmit1234";
-
-        User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($pass),
-            'datos_id' => 0,
-            'inactivo' => 1,
-        ]);
-
-        return response()->json(User::max('id'));
+    
+        try {
+            $register = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($pass),
+                'datos_id' => 0,
+                'inactivo' => 1,
+            ]);
+    
+            $register->refresh();
+            return response()->json(['msg' => 'Se ha creado el usuario correctamente', 'id' => $register->id], 201);
+    
+        } catch (QueryException $e) {
+            return response()->json([
+                'msg' => 'No se ha podido registrar al usuario. Por favor, intente nuevamente más tarde.'
+            ], 500);
+    
+        } catch (\Exception $e) {
+            return response()->json([
+                'msg' => 'Se ha producido un error inesperado. Por favor, intente nuevamente más tarde.'
+            ], 500);
+        }
     }
+    
 
     public function logout()
     {

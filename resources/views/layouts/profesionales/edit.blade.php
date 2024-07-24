@@ -6,13 +6,6 @@
 
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
     <h4 class="mb-sm-0">Editar Profesionales</h4>
-
-    <div class="page-title-right">
-        <ol class="breadcrumb m-0">
-            <li class="breadcrumb-item"><a href="{{ route('profesionales.index') }}">Profesionales</a></li>
-            <li class="breadcrumb-item active">Editar</li>
-        </ol>
-    </div>
 </div>
 
 <div class="col-xxl-12">
@@ -171,16 +164,14 @@
                             <div id="1">
                                 <div class="row">
                                     <div class="col-lg-3">
-
                                         <div class="form-check form-check-success mb-6">
                                             <input class="form-check-input" type="checkbox" id="T1" {{($profesionale->T1 == 1 ? 'checked' : '') ?? ''}}>
                                             <label class="form-check-label" for="T1">
                                                 Efector
                                             </label>
                                         </div>
-
                                     </div>
-                                    <!--end col-->
+                                   
                                     <div class="col-lg-3">
                                         <div class="form-check form-check-success mb-6">
                                             <input class="form-check-input" type="checkbox" id="T2" {{($profesionale->T2 == 1 ? 'checked' : '') ?? ''}}>
@@ -189,6 +180,7 @@
                                             </label>
                                         </div>
                                     </div>
+
                                     <div class="col-lg-3">
                                         <div class="form-check form-check-success mb-6">
                                             <input class="form-check-input" type="checkbox" id="T4" {{($profesionale->T4 == 1 ? 'checked' : '') ?? ''}}>
@@ -197,28 +189,94 @@
                                             </label>
                                         </div>
                                     </div>
-                                    <!--end col-->
+                                    
                                     <div class="col-lg-3">
-                                        <div class="mb-3">
-                                            <div class="form-check form-check-success mb-6">
-                                                <input class="form-check-input" type="checkbox" id="T3" {{($profesionale->T3 == 1 ? 'checked' : '') ?? ''}}>
-                                                <label class="form-check-label" for="T3">
-                                                    Evaluador
-                                                </label>
-                                            </div>
+                                        <div class="form-check form-check-success mb-6">
+                                            <input class="form-check-input" type="checkbox" id="T3" {{($profesionale->T3 == 1 ? 'checked' : '') ?? ''}}>
+                                            <label class="form-check-label" for="T3">
+                                                Evaluador
+                                            </label>
+                                        </div>
+                                    </div>
 
-                                            <!--end row-->
+                                    <div class="col-lg-3">
+                                        <div class="form-check form-check-success mb-6">
+                                            <input class="form-check-input" type="checkbox" id="Pago" {{ ($profesionale->Pago == 1 ? 'checked' : '') ?? ''}}>
+                                            <label class="form-check-label" for="Pago">Pago por hora</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-3">
+                                        <div class="form-check form-check-success mb-6">
+                                            <input class="form-check-input" type="checkbox" id="InfAdj" {{ ($profesionale->InfAdj == 1 ? 'checked' : '') ?? ''}}>
+                                            <label class="form-check-label" for="InfAdj"> Informe Adjunto </label>
                                         </div>
                                     </div>
                                    
-
-                                    
-                                    <!--end row-->
+                                    <div class="row">
+                                        <div class="col-12 text-end">
+                                            <button type="button" class="saveOpciones btn botonGeneral">Guardar</button>
+                                        </div>
+                                    </div>
+                                              
+                                    <div class="mt-4 mb-4">
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <span class="fw-bold">Especialidad</span>
+                                                <select class="form-select" id="listaEspecialidad" name="listaEspecialidad">
+                                                    <option selected value="">Elija una opción...</option>
+                                                    @foreach($lstProveedor as $proveedor)
+                                                        <option value="{{ $proveedor->Id ?? ''}}">{{ $proveedor->Nombre ?? ''}}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                        
+                                            <div class="col-sm-6">
+                                                <span class="fw-bold">Perfiles</span>
+                                                <div class="d-flex align-items-center">
+                                                    <select class="form-select" id="perfiles" name="perfiles">
+                                                        <option selected value="">Elija una opción...</option>
+                                                    </select>
+                                                    <i class="addPerfilProf ri-add-circle-line ml-2" title="Añadir perfil"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                            
+                                    <div class="col-lg-12">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h4 class="card-title mb-0">Especialidades y Perfiles: </h4>
+                                            </div><!-- end card header -->
+                
+                                            <div class="card-body">
+                                                <div class="listjs-table">
+                
+                
+                                                    <div class="table-responsive table-card mt-3 mb-1">
+                                                        <table class="table align-middle table-nowrap" id="customerTable">
+                                                            <thead class="table-light">
+                                                                <tr class="text-center">
+                
+                                                                    <th class="sort" data-sort="action">Especialidad</th>
+                                                                    <th class="sort" data-sort="email">Perfiles</th>
+                
+                                                                    <th>Acciones</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody class="list form-check-all" id="listaProfesionales">
+                                                                
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div><!-- end card -->
+                                        </div>
+                                        <!-- end col -->
+                                    </div>
                                 </div>
-                            </div>
-
-                   </div>         <!--end col-->
-                    
+                            </div>        <!--end col-->
+                        </div>
                 </div>
 
                 <div class="tab-pane" id="seguro" role="tabpanel">
@@ -282,7 +340,7 @@
                     <i class="ri-user-smile-line label-icon"></i><small>Coloquese en los bordes de la imagen para modificar el tamaño.</small>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
-                <img id="imagenModal" src="#" width="{{ isset($profesionale->wImage) && $profesionale->wImage !== 0 ? $profesionale->wImage : '20px' }}" height="{{ isset($profesionale->hImage) && $profesionale->hImage !== 0 ? $profesionale->hImage : '20px' }}" style="display:block; max-width: 100%; max-height: 400px; border: 1px solid #eeeeee">
+                <img id="imagenModal" src="#" width="{{ isset($profesionale->wImage) && $profesionale->wImage !== 0 ? $profesionale->wImage : '250px' }}" height="{{ isset($profesionale->hImage) && $profesionale->hImage !== 0 ? $profesionale->hImage : '250px' }}" style="display:block; max-width: 100%; max-height: 400px; border: 1px solid #eeeeee">
                 <p id="selloModal"></p> 
             </div>
             <div class="modal-footer">

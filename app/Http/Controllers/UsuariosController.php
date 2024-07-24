@@ -12,13 +12,19 @@ use Illuminate\Support\Facades\Cache;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use App\Traits\CheckPermission;
 
 class UsuariosController extends Controller
 {
     const password = "cmit1234";
+    use CheckPermission;
 
     public function index(Request $request)
     {
+        if(!$this->hasPermission("usuarios_show")) {
+            abort(403);
+        }
+
         if ($request->ajax()) {
 
             $query = User::leftJoin('user_rol', 'users.id', '=', 'user_rol.user_id')
@@ -45,11 +51,19 @@ class UsuariosController extends Controller
 
     public function create()
     {
+        if(!$this->hasPermission("usuarios_add")){
+            abort(403);
+        }
+
         return view('layouts.usuarios.create');
     }
 
     public function edit(User $usuario)
     {
+        if(!$this->hasPermission("usuarios_edit")){
+            abort(403);
+        }
+
         $provincias = Provincia::all();
 
         $roles = Rol::orderBy('nombre', 'asc')->get();
@@ -87,6 +101,10 @@ class UsuariosController extends Controller
 
     public function buscar(Request $request) 
     {
+        if(!$this->hasPermission("usuarios_show")){
+            return response()->json(['msg' => 'No tiene acceso'], 403);
+        }
+
         if ($request->ajax()) {
 
             $query = User::leftJoin('user_rol', 'users.id', '=', 'user_rol.user_id')
@@ -124,6 +142,10 @@ class UsuariosController extends Controller
 
     public function NombreUsuario(Request $request): mixed
     {
+        if(!$this->hasPermission("usuarios_show")) {
+            return response()->json(['msg' => 'No tiene permisos', 403]);
+        }
+
         $buscar = $request->buscar;
 
         $resultados = Cache::remember('Nombre_usuario_'.$buscar, 5, function () use ($buscar) {
@@ -177,7 +199,13 @@ class UsuariosController extends Controller
     public function checkUsuario(Request $request): mixed
     {
         $query = User::where('name', $request->usuario)->exists();
-        return response()->json($query);       
+        return response()->json(['exists' => $query]);       
+    }
+
+    public function checkMail(Request $request): mixed
+    {
+        $query = User::where('email', $request->email)->exists();
+        return response()->json(['exists' => $query]);
     }
 
     public function checkCorreo(Request $request)
@@ -199,6 +227,10 @@ class UsuariosController extends Controller
 
     public function checkTelefono(Request $request): mixed
     {
+        if(!$this->hasPermission("usuarios_edit")) {
+            return response()->json(["msg" => "No tiene permisos"], 403);
+        }
+
         $query = User::has('personal')->whereHas('personal', function($query) use ($request) {
             $query->where('Telefono', $request->telefono)->doesntExist();
         });
@@ -207,6 +239,10 @@ class UsuariosController extends Controller
 
     public function checkEmailUpdate(Request $request)
     {
+        if(!$this->hasPermission("usuarios_edit") || !$this->hasPermission("profesionales_edit")) {
+            return response()->json(["msg" => "No tiene permisos"], 403);
+        }
+
         $verificar = User::where('email', $request->email)->first();
 
         if ($verificar && $verificar->name !== $request->name) {
@@ -228,6 +264,10 @@ class UsuariosController extends Controller
 
     public function baja(Request $request)
     {
+        if(!$this->hasPermission("usuarios_delete")) {
+            return response()->json(["msg" => "No tiene permisos"], 403);
+        }
+
         $query = User::with('role')->find($request->Id);
 
         if($query) 
@@ -252,6 +292,10 @@ class UsuariosController extends Controller
 
     public function bloquear(Request $request)
     {
+        if(!$this->hasPermission("usuarios_delete")) {
+            return response()->json(["msg" => "No tiene permisos"], 403);
+        }
+
         $query = User::find($request->Id);
 
         if($query) 
@@ -277,6 +321,7 @@ class UsuariosController extends Controller
 
     public function cambiarPassword(Request $request)
     {
+        
         $query = User::find($request->Id);
 
         if($query) 

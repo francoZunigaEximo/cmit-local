@@ -178,3 +178,8 @@ function correoValido(correo) {
     let comprobar = /^[\w.-]+(\.[\w.-]+)*@[\w.-]+\.[A-Za-z]{2,}$/;
     return comprobar.test(correo);
 }
+
+function verificarUsuario(usuario) {
+    let validar = /^[A-Za-z0-9]{1,25}$/;
+    return validar.test(usuario);
+}

@@ -1,52 +1,69 @@
 $(document).ready(()=>{
 
-    $("#form-create").validate({
-        rules: {
-            usuario: {
-                required: true,
-                maxlength: 15,
-                remote: checkUsuario,
-            },
-            email: {
-                required: true,
-                email: true,
-                remote: checkCorreo,
-            }
-        },
-        messages: {
-            usuario: {
-                required: "El usuario es obligatorio.",
-                maxlength: "El máximo de caracteres es de 15",
-                remote: "El usuario ya se encuentra en la base de datos"
-            },
-            email: {
-                required: "El correo es obligatorio.",
-                email: "Debe tener un formato de correo electronico",
-                remote: "El email ya se encuentra en la base de datos"
-            },
-        }
-
-    });
-
-    $(document).on('click', '#crear', function(e){
+    $(document).on('click', '#crear', async function(e) {
         e.preventDefault();
-        let usuario = $('#usuario').val(), email = $('#email').val();
+        let usuario = $('#usuario').val();
+        let email = $('#email').val();
 
-        if($('#form-create').valid() && confirm("¿Esta seguro que desea confirmar la operación?")) {
-            preloader('on');
-            $.post(register, {_token: TOKEN, name: usuario, email: email})
-                .done(function(response){
-                    preloader('off');
-                    toastr.success('Se ha realizado los cambios de manera correcta');
-                    setTimeout(function(){
-                        let url = location.href,
-                        clearUrl = url.replace('create', ''),
-                        redireccionar =  clearUrl + response + '/edit';
-                        window.location.href = redireccionar;
-                    },3000);
-                });
+        if(usuario === '') {
+            toastr.warning('El usuario no puede estar vacío');
+            return;
         }
 
+        if(verificarUsuario(usuario) === false) {
+            toastr.warning("El usuario no puede contener espacios vacíos, caracteres especiales y solo hasta 25 caracteres");
+            return;
+        }
+      
+        if(email === '') {
+            toastr.warning('El email no se puede encontrar vacío');
+            return;
+        }
+
+        if(correoValido(email) === false) {
+            toastr.warning('El email no es válido');
+            return;
+        }
+
+        let emailValido = await comprobarEmail(email);
+        let usuarioExiste = await comprobarUsuario(usuario);
+    
+        if(usuarioExiste && usuarioExiste.exists) {
+            toastr.warning('El usuario ya se encuentra registrado en la base de datos');
+            return;
+        }
+
+        if(emailValido && emailValido.exists) {
+            toastr.warning('El email ya se encuentra registrado en la base de datos');
+            return;
+        }
+
+        swal({
+            title: "¿Está seguro que desea confirmar la operación?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if (confirmar) {
+                preloader('on');
+                $.post(register, {_token: TOKEN, name: usuario, email: email})
+                    .done(function(response) {
+                        preloader('off');
+                        toastr.success(response.msg);
+                        $('#crear').attr('disabled', true);
+                        setTimeout(function() {
+                            let url = location.href;
+                            let clearUrl = url.replace('create', '');
+                            let redireccionar =  clearUrl + response.id + '/edit';
+                            window.location.href = redireccionar;
+                        }, 3000);
+                    })
+                    .fail(function(jqXHR) {
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
+                    });
+            }
+        });
     });
 
     $(document).on('click', '#volver', function(e){
@@ -54,5 +71,17 @@ $(document).ready(()=>{
         history.back();
     });
 
-
+    async function comprobarEmail(email) {
+        preloader('on');
+        let response = await $.get(checkMail, { email: email });
+        preloader('off');
+        return response;
+    }
+    
+    async function comprobarUsuario(usuario) {
+        preloader('on');
+        let response = await $.get(checkUsuario, { usuario: usuario });
+        preloader('off');
+        return response;
+    }
 });

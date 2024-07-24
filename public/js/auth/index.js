@@ -123,7 +123,6 @@ $(document).ready(()=>{
 
                         toastr[tipoToastr](response.msg);
                         setTimeout(()=> {
-                            $('#listaUsuarios').DataTable();
                             $('#listaUsuarios').DataTable().draw(false);
                         }, 2000);
                     })
@@ -154,9 +153,14 @@ $(document).ready(()=>{
                         preloader('off');
                         toastr.success(response.msg);
                         setTimeout(()=> {
-                            $('#listaUsuarios').DataTable();
                             $('#listaUsuarios').DataTable().draw(false);
                         }, 2000);
+                    })
+                    .fail(function(jqXHR){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
                     });
             }
         });      

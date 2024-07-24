@@ -17,7 +17,8 @@ class ProfesionalProv extends Model
         'Id',
         'IdProf',
         'IdProv',
-        'Tipo'
+        'IdRol',
+        'Tipo' //Provisorio para registros viejos
     ];
 
     public $timestamps = false;

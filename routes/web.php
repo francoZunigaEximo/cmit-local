@@ -302,6 +302,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('buscarUsuario', [UsuariosController::class, 'buscar'])->name('buscarUsuario');
     Route::get('checkUsuario', [UsuariosController::class, 'checkUsuario'])->name('checkUsuario');
     Route::get('checkCorreo', [UsuariosController::class, 'checkCorreo'])->name('checkCorreo');
+    Route::get('checkMail', [UsuariosController::class, 'checkMail'])->name('checkMail');
     Route::get('checkEmailUpdate', [UsuariosController::class, 'checkEmailUpdate'])->name('checkEmailUpdate');
     Route::get('bloquearUsuario', [UsuariosController::class, 'bloquear'])->name('bloquearUsuario');
     Route::get('checkTelefono', [UsuariosController::class, 'checkTelefono'])->name('checkTelefono');
