@@ -311,11 +311,21 @@ class PacientesController extends Controller
         return response()->json(['pacientes' => $resultados]);
     }
 
-    public function deletePicture(Request $request): void
+    public function deletePicture(Request $request): mixed
     {
         $paciente = Paciente::find($request->Id);
-        $paciente->Foto = 'foto-default.png';
-        $paciente->save();
+
+        if($paciente) {
+
+            $paciente->Foto = 'foto-default.png';
+            $paciente->save();
+
+            return response()->json(['msg' => 'Se ha eliminado la imagen correctamente'], 200);
+        }else{
+            return response()->json(['msg' => 'No se ha podido eliminar. Intentelo nuevamente mas tarde.'], 500);
+        }
+
+        
     }
 
     private function queryBasico()
