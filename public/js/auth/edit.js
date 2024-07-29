@@ -1,6 +1,7 @@
 $(document).ready(()=>{
 
     let IdProfesional = $('#IdProfesional').val();
+    let resizing = false, startWidth, startHeight, startX, startY; //variables de ancho de imagen
 
     quitarDuplicados("#provincia");
     quitarDuplicados("#cuil");
@@ -158,6 +159,33 @@ $(document).ready(()=>{
             }
         });  
     });
+
+    $('#imagenModal').mousedown(function (e) {
+        resizing = true;
+        startWidth = $('#imagenModal').width();
+        startHeight = $('#imagenModal').height();
+        startX = e.clientX;
+        startY = e.clientY;
+    });
+
+    $(document).mousemove(function (e) {
+        if (resizing) {
+            let newWidth = startWidth + (e.clientX - startX);
+            let newHeight = startHeight + (e.clientY - startY);
+
+            // Aplica nuevas dimensiones
+            $('#imagenModal').width(newWidth);
+            $('#imagenModal').height(newHeight);
+
+            $('#wImage').val(newWidth);
+            $('#hImage').val(newHeight);
+        }
+    });
+
+    $(document).mouseup(function () {
+        resizing = false;
+    });
+
     
     function listadoRoles() {
         preloader('on');

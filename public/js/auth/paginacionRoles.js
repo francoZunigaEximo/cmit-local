@@ -79,8 +79,4 @@ $(document).ready(()=>{
         },
     });
 
-    function acortadorTexto(cadena, nroCaracteres = 10) {
-        return cadena.length <= nroCaracteres ? cadena : cadena.substring(0,nroCaracteres);
-    }
-
 });

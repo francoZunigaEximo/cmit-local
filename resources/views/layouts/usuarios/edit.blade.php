@@ -7,17 +7,21 @@
 <div class="row">
     <div class="col-12">
         <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-            <h4 class="mb-sm-0">Alta Usuario</h4>
-
-            <div class="page-title-right">
-                <ol class="breadcrumb m-0">
-                    <li class="breadcrumb-item">Usuario</li>
-                    <li class="breadcrumb-item active">Nuevo</li>
-                </ol> 
-            </div>
+            <h4 class="mb-sm-0">Editar Usuario</h4>
         </div>
+
+
+
+        @if($contador === 0)
+        <div class="alert alert-warning" role="alert">
+            <strong> Atención: </strong> Los datos profesionales se encontrarán disponibles si el usuario es efector, informador, combinado o evaluador.
+        </div>
+        @endif
+        
     </div>
 </div>
+
+
 
 <div class="card-header card-header-tabs d-flex justify-content-between">
     <ul class="nav nav-tabs-custom rounded card-header-tabs border-bottom-0" role="tablist">
@@ -42,12 +46,14 @@
             </a>
         </li> 
 
+        @if($contador > 0)
         <li class="nav-item" role="presentation">
             <a class="nav-link" data-bs-toggle="tab" href="#opciones" role="tab" aria-selected="false" tabindex="-1">
                 <i class="ri-window-line"></i>
                 Opciones
             </a>
-        </li> 
+        </li>
+        @endif
         
     </ul>
 </div>
@@ -194,25 +200,49 @@
         <!-- End Roles permisos -->
     </div>
 
-    <div class="tab-pane" id="opciones" role="tabpanel">
+    @if($contador > 0)
+    <div class="tab-pane opciones" id="opciones" role="tabpanel">
         <div class="row">
+
+            <div class="row mt-4 mb-4">
+                <div class="col-6">
+                    <label for="Sello" class="form-label fw-bold">Sello</label>
+                    <textarea class="form-control Firma" name="Firma" id="Firma">{{ $query->Firma ?? ''}}</textarea>
+                </div>
+
+                <div class="col-6 text-center">
+                    <label for="Foto" class="form-label fw-bold">Firma</label>
+                    <input type="file" class="form-control-sm custom-file-input" id="Foto" name="Foto" accept="image/*" style="display: none;">
+                    <label class="custom-file-label" for="Foto" style="cursor: pointer;">Selecciona una imagen aquí</label>
+                    <button type="button" class="previsualizar btn btn-soft-info waves-effect waves-light" data-bs-toggle="modal" data-bs-target="#z">Vista Previa Firma</button>
+
+                    <div class="d-flex justify-content-center">
+                        <img id="vistaPrevia" src="{{ asset('storage/profesionales/'.$query->Foto) }}" alt="Previsualización de imagen" style="{{ $query->Foto ? '' : 'display: none;' }} max-width: 150px; max-height: 150px;">
+                    </div>
+                    
+                    <input type="hidden" name="wImage" id="wImage" value="{{ $query->wImage ?? ''}}">
+                    <input type="hidden" name="hImage" id="hImage"  value="{{ $query->hImage ?? ''}}">
+                    <small style="display: block;">La imagen se edita en la "Vista Previa"</small>
+                </div>
+            </div>
 
             <div class="col-12 fondo-grisClaro">
 
                 <div class="row p-4">
                     <div class="col-6">
-                            <input class="form-check-input" type="checkbox" id="Pago">
+                            <input class="form-check-input" type="checkbox" id="Pago" {{ ($query->Pago === 1 ? 'checked' : '') ?? ''}}>
                             <label class="form-check-label" for="Pago">Pago por hora</label>
                                
-                            <input class="form-check-input" type="checkbox" id="InfAdj" >
+                            <input class="form-check-input" type="checkbox" id="InfAdj" {{ ($query->InfAdj === 1 ? 'checked' : '') ?? ''}}>
                             <label class="form-check-label" for="InfAdj"> Informe Adjunto </label>
-                               
-                            <button type="button" class="saveOpciones btn botonGeneral">Confirmar</button>
+                            
                         </div>
                     </div>
                 </div>
                 
             </div>
+
+            <hr class="hr" />
                 
             <div class="mt-4 mb-4">
                 <div class="row">
@@ -238,44 +268,77 @@
                 </div>
             </div>
 
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title mb-0">Especialidades y Perfiles | Perfil principal: </h4>
+                    </div><!-- end card header -->
+
+                    <div class="card-body">
+                        <div class="listjs-table">
 
 
-                    <div class="col-lg-12">
-                        <div class="card">
-                            <div class="card-header">
-                                <h4 class="card-title mb-0">Especialidades y Perfiles | Perfil principal: </h4>
-                            </div><!-- end card header -->
+                            <div class="table-responsive table-card mt-3 mb-1">
+                                <table class="table align-middle table-nowrap" id="customerTable">
+                                    <thead class="table-light">
+                                        <tr class="text-center">
 
-                            <div class="card-body">
-                                <div class="listjs-table">
+                                            <th class="sort" data-sort="action">Especialidad</th>
+                                            <th class="sort" data-sort="email">Perfiles</th>
 
-
-                                    <div class="table-responsive table-card mt-3 mb-1">
-                                        <table class="table align-middle table-nowrap" id="customerTable">
-                                            <thead class="table-light">
-                                                <tr class="text-center">
-
-                                                    <th class="sort" data-sort="action">Especialidad</th>
-                                                    <th class="sort" data-sort="email">Perfiles</th>
-
-                                                    <th>Acciones</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody class="list form-check-all" id="listaProfesionales">
-                                                
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div><!-- end card -->
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="list form-check-all" id="listaProfesionales">
+                                        
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                        <!-- end col -->
-                    </div>
+                    </div><!-- end card -->
+                </div>
+                <!-- end col -->
+            </div>
+
+            <hr class="hr">
+            <div class="row">
+                <div class="col-sm-12 text-center">
+                    <button type="button" class="saveOpciones btn botonGeneral">Confirmar</button>
+                </div>
+            </div>
+            <hr class="hr">
+
                 
             </div>
        </div>
     </div>
+    @endif
 </div>
+
+<div id="previsualizarModal" class="modal fadeInUp" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-primary alert-dismissible alert-label-icon rounded-label fade show" role="alert">
+                    <i class="ri-user-smile-line label-icon"></i><small>Coloquese en los bordes de la imagen para modificar el tamaño.</small>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <div class="alert alert-primary alert-dismissible alert-label-icon rounded-label fade show" role="alert">
+                    <i class="ri-user-smile-line label-icon"></i><small>Cierre la ventana para confirmar.</small>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <img id="imagenModal" src="#" width="{{ isset($profesionale->wImage) && $profesionale->wImage !== 0 ? $profesionale->wImage : '250px' }}" height="{{ isset($profesionale->hImage) && $profesionale->hImage !== 0 ? $profesionale->hImage : '250px' }}" style="display:block; max-width: 100%; max-height: 400px; border: 1px solid #eeeeee">
+                <p id="selloModal"></p> 
+            </div>
+            <div class="modal-footer">
+            </div>
+
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
 <script>
     const ROUTE = "{{ route('listadoRoles') }}";
@@ -297,6 +360,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
 
 <link rel="stylesheet" href="{{ asset('css/fixSelect2.css') }}">
+<link rel="stylesheet" href="{{ asset('css/richtext.min.css') }}">
 @endpush
 
 @push('scripts')
@@ -308,7 +372,8 @@
 <script src="{{ asset('js/jquery.validate.min.js') }}"></script>
 <script src="{{ asset('js/auth/edit.js')}}?v={{ time() }}"></script>
 <script src="{{ asset('js/auth/validaciones.js')}}?v={{ time() }}"></script>
-
+<script src="{{ asset('js/richText/jquery.richtext.js') }}?v={{ time() }}"></script>
+<script src="{{ asset('js/profesionales/utils.js') }}?v={{ time() }}"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/i18n/es.js"></script>

@@ -6,13 +6,6 @@
 
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
     <h4 class="mb-sm-0">Crear Profesional</h4>
-
-    <div class="page-title-right">
-        <ol class="breadcrumb m-0">
-            <li class="breadcrumb-item"><a href="{{ route('profesionales.index') }}">Profesionales</a></li>
-            <li class="breadcrumb-item active">Crear</li>
-        </ol>
-    </div>
 </div>
 
 <div class="col-xxl-12">
@@ -25,21 +18,15 @@
                         Datos Básicos
                     </a>
                 </li>
-                <li class="nav-item" role="presentation">
-                    <a class="nav-link" data-bs-toggle="tab" href="#opciones" role="tab" aria-selected="false" tabindex="-1">
-                        <i class="ri-settings-3-line"></i>
-                        Opciones
-                    </a>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <a class="nav-link" data-bs-toggle="tab" href="#seguro" role="tab" aria-selected="false" tabindex="-1">
-                        <i class="far fa-envelope"></i>
-                        Seguro
-                    </a>
-                </li>
+
 
             </ul>
         </div>
+
+        <div class="alert alert-info mt-2" role="alert">
+            <strong> El listado de usuarios que aparece a continuación es de usuarios que no tienen datos personales asociados y datos profesionales.</strong>
+        </div>
+
         <div class="card-body p-4">
             <div class="tab-content">
                 <div class="tab-pane active" id="datosBasicos" role="tabpanel">
@@ -48,7 +35,17 @@
                         <div class="row">
                             <div id="messageBasico"></div>
                             <div class="col-2">
-
+                                <div class="mb-3">
+                                    <label for="Documento" class="form-label"> Usuario  <span class="required">(*)</span></label>
+                                    <select class="form-control" name="usuario" id="usuario">
+                                        <option value="" selected>Elija usuario</option>
+                                        @foreach($usuarios as $user)
+                                            <option value="{{ $user->id ?? ''}}">{{ $user->name ?? '' }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div><!--end col-->
+                            <div class="col-2">
                                 <div class="mb-3">
                                     <label for="Documento" class="form-label"> Documento  <span class="required">(*)</span></label>
                                     <input type="text" class="form-control" placeholder="DNI" id="Documento" name="Documento">
@@ -61,7 +58,7 @@
                                     <input type="text" class="form-control" placeholder="Apellido del profesional" id="Apellido" name="Apellido">
                                 </div>
                             </div><!--end col-->
-                            <div class="col-6">
+                            <div class="col-4">
                                 <div class="mb-3">
                                     <label for="Nombre" class="form-label">Nombre <span class="required">(*)</span></label>
                                     <input type="text" class="form-control" placeholder="Nombre del profesional" id="Nombre" name="Nombre">
@@ -122,33 +119,7 @@
                                     <option value="0">Activo</option>
                                     <option value="2">Inhabilitado</option>
                                     <option value="1">Baja</option>
-
-
                                 </select>
-                            </div>
-                            <div class="col-6">
-                                <div class="mb-3">
-                                    <label for="Sello" class="form-label">Sello</label>
-                                    <textarea class="form-control Firma" name="Firma" id="Firma"></textarea>
-                                </div>
-                            </div><!--end col-->
-                            <div class="col-3">
-                                <div class="mb-3">
-                                    <label for="Foto" class="form-label">Firma</label>
-                                    <input type="file" class="form-control-sm custom-file-input" id="Foto" name="Foto" accept="image/*" style="display: none;">
-                                    <label class="custom-file-label" for="Foto" style="cursor: pointer;">Selecciona o arrastra una imagen aquí</label>
-                                    <img id="vistaPrevia" src="#" alt="Previsualización de imagen" style="display: none; max-width: 200px; max-height: 200px;">
-                                    <input type="hidden" name="wImagen" id="wImagen">
-                                    <input type="hidden" name="hImagen" id="hImagen">
-                                    <small style="display: block;">La imagen se edita en la "Vista Previa"</small>
-                                </div>
-
-                            </div><!--end col-->
-                            <div class="col-3">
-                                <div class="mb-3" style="text-align: right;">
-                                    <label for="previsualizar" class="form-label"><br><br><br></label>
-                                    <button type="button" class="previsualizar btn btn-soft-info waves-effect waves-light" data-bs-toggle="modal" data-bs-target="#previsualizarModal">Previsualizar Firma</button>
-                                </div>
                             </div>
                             <!--end col-->
                             <div class="col-lg-12">
@@ -160,231 +131,12 @@
                             <!--end col-->
                         </div>
                     </form>
-                </div>
-
-                <div class="tab-pane" id="opciones" role="tabpanel">
-                        <div id="newlink">
-                            <div id="1">
-                                <div class="alert alert-dark" role="alert">
-                                    <strong> Atención: </strong> ¡Debe registrar los datos básicos para habilitar esta opción!
-                                </div>
-                                <div class="row">
-                                    <div class="col-lg-3">
-
-                                        <div class="form-check form-check-success mb-6">
-                                            <input class="form-check-input" type="checkbox" id="formCheck8" checked="" disabled>
-                                            <label class="form-check-label" for="formCheck8">
-                                                Efector
-                                            </label>
-                                        </div>
-
-                                    </div>
-                                    <!--end col-->
-                                    <div class="col-lg-3">
-                                        <div class="form-check form-check-success mb-6">
-                                            <input class="form-check-input" type="checkbox" id="formCheck8" checked="" disabled>
-                                            <label class="form-check-label" for="formCheck8">
-                                                Informador
-                                            </label>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-3">
-                                        <div class="form-check form-check-success mb-6">
-                                            <input class="form-check-input" type="checkbox" id="formCheck8" checked="" disabled>
-                                            <label class="form-check-label" for="formCheck8">
-                                                Combinado
-                                            </label>
-                                        </div>
-                                    </div>
-                                    <!--end col-->
-                                    <div class="col-lg-3">
-                                        <div class="mb-3">
-                                            <div class="form-check form-check-success mb-6">
-                                                <input class="form-check-input" type="checkbox" id="formCheck8" checked="" disabled>
-                                                <label class="form-check-label" for="formCheck8">
-                                                    Evaluador
-                                                </label>
-                                            </div>
-
-                                            <!--end row-->
-                                        </div>
-                                    </div>
-                                   
-
-                                    <div class="col-lg-3">
-                                        <div class="mb-3">
-                                            <div class="form-check form-check-success mb-6">
-                                                <input class="form-check-input" type="checkbox" id="formCheck8" checked="" disabled>
-                                                <label class="form-check-label" for="formCheck8">
-                                                    Pago por hora
-                                                </label>
-                                            </div>
-
-                                            <!--end row-->
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-3">
-                                        <div class="form-check form-check-success mb-6">
-                                            <input class="form-check-input" type="checkbox" id="formCheck8" checked="" disabled>
-                                            <label class="form-check-label" for="formCheck8">
-                                                Informe Adjunto
-                                            </label>
-                                        </div>
-                                    </div>
-                                    
-                                    <!--end col-->
-
-                                    <div style="margin-block: 15px; ">
-                                        
-                                            <div class="row g-2">
-                                                <div class="col-4">
-                                                    <!-- Esto debería ser un select múltiple. -->
-                                                    Especialidad
-                                                    <select class="form-select" data-choices="" data-choices-sorting="true" id="autoSizingSelect" required="" disabled>
-                                                        <option selected="">Médicos CMIT</option>
-                                                        <option value="2">Laboratorio</option>
-                                                        <option value="1">Rayos</option>
-
-
-                                                    </select>
-                                                </div>
-                                                <div class="col-4">
-                                                    <!-- Esto debería ser un select múltiple. -->
-                                                    Perfiles
-                                                    <select class="form-select" data-choices="" data-choices-sorting="true" id="autoSizingSelect" required="" disabled>
-                                                        <option selected="">Efector</option>
-                                                        <option value="2">Informador</option>
-                                                        <option value="1">Combinado</option>
-                                                        <option value="1">Evaluador</option>
-
-
-                                                    </select>
-                                                </div>
-
-                                                <!--end col-->
-                                                <div class="col-4">
-                                                    <br>
-                                                    <div class="text-end">
-                                                        <button type="submit" class="btn btn-primary" disabled>Agregar</button>
-                                                        <a class="btn btn-success" disabled>Guardar</a>
-                                                    </div>
-                                                </div>
-
-                                            </div>
-                                        
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-lg-12">
-                                            <div class="card">
-                                                <div class="card-header">
-                                                    <h4 class="card-title mb-0">Especialidades y Perfiles</h4>
-                                                </div><!-- end card header -->
-
-                                                <div class="card-body">
-                                                    <div class="listjs-table" id="customerList">
-
-
-                                                        <div class="table-responsive table-card mt-3 mb-1">
-                                                            <table class="table align-middle table-nowrap" id="customerTable">
-                                                                <thead class="table-light">
-                                                                    <tr class="text-center">
-
-                                                                        <th class="sort" data-sort="action">Especialidad</th>
-                                                                        <th class="sort" data-sort="email">Perfiles</th>
-
-                                                                        <th>Acciones</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody class="list form-check-all">
-                                                                  
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    </div>
-                                                </div><!-- end card -->
-                                            </div>
-                                            <!-- end col -->
-                                        </div>
-                                    </div>
-                                    <!--end row-->
-                                </div>
-                            </div>
-
-                   </div>         <!--end col-->
-                    
-                </div>
-
-                <div class="tab-pane" id="seguro" role="tabpanel">
-                        <div class="row">
-                            <div class="alert alert-dark" role="alert">
-                                <strong> Atención: </strong> ¡Debe registrar los datos básicos para habilitar esta opción!
-                            </div>
-
-                            <div class="col-6">
-
-                                <div class="mb-3">
-                                    <label for="firstNameinput" class="form-label">N° Matrícula  </label>
-                                    <input type="text" class="form-control" placeholder="Matrícula" id="DNI" required="" disabled>
-                                </div>
-                            </div><!--end col-->
-
-                            <div class="col-6">
-                                <br>
-                                <span class="badge badge-soft-success">Seguro Vigente</span>
-                            </div><!--end col-->
-
-                            <div class="col-6">
-                                <div class="mb-3">
-                                    <label for="firstNameinput" class="form-label">Seguro Mala Práxis</label>
-                                    <input type="text" class="form-control" placeholder="N° seguro" id="firstNameinput" required="" disabled>
-                                </div>
-                            </div><!--end col-->
-
-
-                            <div class="col-6">
-                                <div class="mb-3">
-                                    <label for="dateInput" class="form-label">Vigencia de Seguro</label>
-                                    <input type="date" class="form-control" data-provider="flatpickr" id="dateInput" disabled>
-                                </div>
-                            </div><!--end col-->
-                            <!--end col-->
-                            <div class="col-lg-12">
-                                <div class="hstack gap-2 justify-content-end">
-
-                                    <button type="submit" class="btn btn-success" disabled>Guardar</button>
-                                </div>
-                            </div>
-                            <!--end col-->
-                        </div>
-                        <!--end row-->
-                    </form>
-
-                </div>
-
-
-            
+                </div>           
         </div>
     </div>
 </div>
 <!--end col-->
 </div>
-
-<div id="previsualizarModal" class="modal fadeInUp" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>
-            </div>
-            <div class="modal-body">
-                <img id="imagenModal" src="#" style="display:block; max-width: 100%; max-height: 400px;">
-                <p id="selloModal"></p> 
-            </div>
-            <div class="modal-footer">
-            </div>
-
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
 
 <div id="alertaModal" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
     <div class="modal-dialog">

@@ -44,7 +44,7 @@
                 <option value="t1">Efector</option>
                 <option value="t4">Combinado</option>
                 <option value="t3">Evaluador</option>
-
+                <option value="t5">Evaluador ART</option>
             </select>
         </div>
         <div class="col-2 p-2 mb-2">

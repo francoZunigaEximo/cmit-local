@@ -6,6 +6,7 @@ use App\Models\Profesional;
 use App\Models\ProfesionalProv;
 use App\Models\Proveedor;
 use App\Models\Provincia;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use App\Traits\ObserverProfesionales;
@@ -52,7 +53,11 @@ class ProfesionalesController extends Controller
         
         if($request->ajax())
         {
-            $query = Profesional::select(
+
+            $query = Profesional::join('proveedores', 'profesionales.IdProveedor', '=', 'proveedores.Id')
+            ->join('users', 'profesionales.Id', '=' , 'users.profesional_id')
+            ->join('datos', 'users.datos_id', '=', 'datos.Id')
+            ->select(
                 'profesionales.Id as IdProfesional',
                 'profesionales.Apellido as Apellido',
                 'profesionales.Nombre as Nombre',
@@ -63,16 +68,18 @@ class ProfesionalesController extends Controller
                 'profesionales.T2 as Informador',
                 'profesionales.T3 as Evaluador',
                 'profesionales.T4 as Combinado',
+                'profesionales.T5 as Evaluador ART',
                 'profesionales.TLP as Login',
                 'profesionales.Pago as Pago',
-                'profesionales.Inactivo as Estado'
-            )
-            ->join('proveedores', 'profesionales.IdProveedor', '=', 'proveedores.Id');
+                'profesionales.Inactivo as Estado',
+                'users.name as NombreUsuario',
+                'profesionales.RegHis as RegHis',
+            );
 
             $query->when(is_array($tipo), function ($query) use ($tipo) {
                 foreach ($tipo as $valor) {
                     $campo = strtoupper($valor);
-                    $query->when(in_array($valor, ['t1', 't2', 't3', 't4']), function ($query) use ($campo) {
+                    $query->when(in_array($valor, ['t1', 't2', 't3', 't4', 't5']), function ($query) use ($campo) {
                         $query->where($campo, '=', '1');
                         $query->where('profesionales.Inactivo', 0);
                     });
@@ -128,7 +135,8 @@ class ProfesionalesController extends Controller
         }
 
         return view('layouts.profesionales.create', with([
-            'provincias' => Provincia::all()
+            'provincias' => Provincia::all(),
+            'usuarios' => User::where('profesional_id', 0)->where('datos_id', 0)->where('Anulado', 0)->get(['id', 'name'])
         ]));
     }
 
@@ -210,7 +218,8 @@ class ProfesionalesController extends Controller
             'provincias' => Provincia::OrderBy('Nombre', 'ASC')->get(),
             'lstProveedor' => Proveedor::where('Inactivo', 0)->whereNot('Id', 0)->OrderBy('Nombre', 'ASC')->get(['Id', 'Nombre']),
             'listEspecialistas' => Proveedor::where('Inactivo', 0)->whereNot('Id', 0)->OrderBy('Nombre', 'ASC')->get(['Id', 'Nombre']),
-            'detailsLocalidad' => $this->getLocalidad($profesionale->IdLocalidad)
+            'detailsLocalidad' => $this->getLocalidad($profesionale->IdLocalidad),
+            'usuarios' => User::where('profesional_id', 0)->where('Anulado', 0)->get(['id', 'name'])
         ]));
     }
 
@@ -294,11 +303,6 @@ class ProfesionalesController extends Controller
 
         $nuevoId = Profesional::max('Id') + 1;
 
-        if($request->hasFile('Foto')) {
-            $fileName = 'PROF'.$nuevoId. '.' . $request->Foto->extension();
-            $request->Foto->storeAs('public/profesionales', $fileName);
-        }
-
         Profesional::create([
             'Id' => $nuevoId,
             'Documento' => $request->Documento,
@@ -311,9 +315,6 @@ class ProfesionalesController extends Controller
             'Firma' => $request->Firma ?? '',
             'CP' => $request->CP ?? '0',
             'Inactivo' => $request->estado,
-            'wImagen' => $request->wImage ?? '0',
-            'hImagen' => $request->hImage ?? '0',
-            'Foto' => $fileName ?? ''
         ]);
         if($request->Telefono) {
             $this->setTelefono($nuevoId, $request->Telefono);

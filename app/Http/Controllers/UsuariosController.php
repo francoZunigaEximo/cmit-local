@@ -19,7 +19,7 @@ class UsuariosController extends Controller
     const password = "cmit1234";
     use CheckPermission;
 
-    public function index(Request $request)
+    public function index()
     {
         if(!$this->hasPermission("usuarios_show")) {
             abort(403);
@@ -43,6 +43,8 @@ class UsuariosController extends Controller
             abort(403);
         }
 
+        $lstRoles = ['Efector', 'Informador', 'Evaluador', 'EvaluadorART'];
+
         $provincias = Provincia::all();
 
         $roles = Rol::orderBy('nombre', 'asc')->get();
@@ -52,6 +54,8 @@ class UsuariosController extends Controller
         $query = User::join('datos', 'users.datos_id', '=', 'datos.Id')
             ->join('localidades', 'datos.IdLocalidad', '=', 'localidades.Id')
             ->join('profesionales', 'users.profesional_id', '=', 'profesionales.Id')
+            ->leftJoin('user_rol', 'users.id', '=', 'user_rol.user_id')
+            ->leftJoin('roles', 'user_rol.rol_id', '=', 'roles.Id')
             ->select(
                 "users.id as UserId",
                 "users.name as Name",
@@ -72,10 +76,20 @@ class UsuariosController extends Controller
                 "datos.CP as CP",
                 "datos.Id as Id",
                 "localidades.Nombre as NombreLocalidad",
-                "profesionales.Id as IdProfesional"
+                "profesionales.Id as IdProfesional",
+                "profesionales.Firma as Firma",
+                "profesionales.Foto as Foto",
+                "profesionales.wImage as wImage",
+                "profesionales.hImage as hImage",
+                "profesionales.InfAdj as InfAdj",
+                "profesionales.Pago as Pago",
+                DB::raw("GROUP_CONCAT(roles.nombre SEPARATOR ',') as NombreRol")
             )->find($usuario->id);
 
-        return view('layouts.usuarios.edit', compact(['query', 'provincias', 'roles', 'lstProveedor']));
+        $listado = explode(',', $query->NombreRol);
+        $contador = count(array_intersect($lstRoles, $listado));
+
+        return view('layouts.usuarios.edit', compact(['query', 'provincias', 'roles', 'lstProveedor', 'contador']));
     }
 
     public function buscar(Request $request) 

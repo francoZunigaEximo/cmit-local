@@ -32,7 +32,8 @@
                 </li>
 
             </ul>
-        </div>
+        </div> 
+
         <div class="card-body p-4">
             <div class="tab-content">
                 <div class="tab-pane active" id="datosBasicos" role="tabpanel">
@@ -42,7 +43,18 @@
                         <div class="row">
                             <div id="messageBasico"></div>
                             <div class="col-2">
+                                <div class="mb-3">
+                                    <label for="Documento" class="form-label"> Usuario  <span class="required">(*)</span></label>
+                                    <select class="form-control" name="usuario" id="usuario">
+                                        <option value="" selected>Elija usuario</option>
+                                        @foreach($usuarios as $user)
+                                            <option value="{{ $user->id ?? ''}}">{{ $user->name ?? '' }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div><!--end col-->
 
+                            <div class="col-2">
                                 <div class="mb-3">
                                     <label for="Documento" class="form-label"> Documento  <span class="required">(*)</span></label>
                                     <input type="text" class="form-control" placeholder="DNI" id="Documento" name="Documento" value="{{ $profesionale->Documento }}">
@@ -55,7 +67,7 @@
                                     <input type="text" class="form-control" placeholder="Apellido del profesional" id="Apellido" name="Apellido" value="{{ $profesionale->Apellido ?? ''}}">
                                 </div>
                             </div><!--end col-->
-                            <div class="col-6">
+                            <div class="col-4">
                                 <div class="mb-3">
                                     <label for="Nombre" class="form-label">Nombre <span class="required">(*)</span></label>
                                     <input type="text" class="form-control" placeholder="Nombre del profesional" id="Nombre" name="Nombre" value="{{ $profesionale->Nombre ?? ''}}">
@@ -165,7 +177,7 @@
                                 <div class="row">
                                     <div class="col-lg-3">
                                         <div class="form-check form-check-success mb-6">
-                                            <input class="form-check-input" type="checkbox" id="T1" {{($profesionale->T1 == 1 ? 'checked' : '') ?? ''}}>
+                                            <input class="form-check-input" type="checkbox" id="T1" {{($profesionale->T1 == 1 ? 'checked' : '') ?? ''}} @disabled(true)>
                                             <label class="form-check-label" for="T1">
                                                 Efector
                                             </label>
@@ -174,7 +186,7 @@
                                    
                                     <div class="col-lg-3">
                                         <div class="form-check form-check-success mb-6">
-                                            <input class="form-check-input" type="checkbox" id="T2" {{($profesionale->T2 == 1 ? 'checked' : '') ?? ''}}>
+                                            <input class="form-check-input" type="checkbox" id="T2" {{($profesionale->T2 == 1 ? 'checked' : '') ?? ''}} @disabled(true)>
                                             <label class="form-check-label" for="T2">
                                                 Informador
                                             </label>
@@ -183,7 +195,7 @@
 
                                     <div class="col-lg-3">
                                         <div class="form-check form-check-success mb-6">
-                                            <input class="form-check-input" type="checkbox" id="T4" {{($profesionale->T4 == 1 ? 'checked' : '') ?? ''}}>
+                                            <input class="form-check-input" type="checkbox" id="T4" {{($profesionale->T4 == 1 ? 'checked' : '') ?? ''}} @disabled(true)>
                                             <label class="form-check-label" for="T4">
                                                 Combinado
                                             </label>
@@ -192,9 +204,18 @@
                                     
                                     <div class="col-lg-3">
                                         <div class="form-check form-check-success mb-6">
-                                            <input class="form-check-input" type="checkbox" id="T3" {{($profesionale->T3 == 1 ? 'checked' : '') ?? ''}}>
+                                            <input class="form-check-input" type="checkbox" id="T3" {{($profesionale->T3 == 1 ? 'checked' : '') ?? ''}} @disabled(true)>
                                             <label class="form-check-label" for="T3">
                                                 Evaluador
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-3">
+                                        <div class="form-check form-check-success mb-6">
+                                            <input class="form-check-input" type="checkbox" id="T5" {{($profesionale->T5 == 1 ? 'checked' : '') ?? ''}} @disabled(true)>
+                                            <label class="form-check-label" for="T5">
+                                                Evaluador ART
                                             </label>
                                         </div>
                                     </div>
