@@ -10,14 +10,9 @@
             <h4 class="mb-sm-0">Editar Usuario</h4>
         </div>
 
-
-
-        @if($contador === 0)
-        <div class="alert alert-warning" role="alert">
+        <div class="alert alert-warning verAlerta" role="alert">
             <strong> Atención: </strong> Los datos profesionales se encontrarán disponibles si el usuario es efector, informador, combinado o evaluador.
-        </div>
-        @endif
-        
+        </div>   
     </div>
 </div>
 
@@ -46,14 +41,12 @@
             </a>
         </li> 
 
-        @if($contador > 0)
-        <li class="nav-item" role="presentation">
+        <li class="nav-item verOpciones" role="presentation">
             <a class="nav-link" data-bs-toggle="tab" href="#opciones" role="tab" aria-selected="false" tabindex="-1">
                 <i class="ri-window-line"></i>
                 Opciones
             </a>
         </li>
-        @endif
         
     </ul>
 </div>
@@ -85,6 +78,7 @@
                 <input id="nombre" name="nombre" class="form-control" type="text" value="{{ $query->Nombre ?? '' }}">
                 <input type="hidden" id="Id" value="{{ $query->Id ?? 0 }}">
                 <input type="hidden" id="IdProfesional" value="{{ $query->IdProfesional ?? 0 }}">
+                <input type="hidden" id="UserId" value="{{ $query->UserId ?? 0 }}">
             </div>
             <div class="p-2 col-md-6">
                 <label for="apellido" class="form-label font-weight-bold"><strong>Apellido  <i class="text-danger">*</i></strong></label>
@@ -200,8 +194,7 @@
         <!-- End Roles permisos -->
     </div>
 
-    @if($contador > 0)
-    <div class="tab-pane opciones" id="opciones" role="tabpanel">
+    <div class="tab-pane verOpciones" id="opciones" role="tabpanel">
         <div class="row">
 
             <div class="row mt-4 mb-4">
@@ -217,7 +210,7 @@
                     <button type="button" class="previsualizar btn btn-soft-info waves-effect waves-light" data-bs-toggle="modal" data-bs-target="#z">Vista Previa Firma</button>
 
                     <div class="d-flex justify-content-center">
-                        <img id="vistaPrevia" src="{{ asset('storage/profesionales/'.$query->Foto) }}" alt="Previsualización de imagen" style="{{ $query->Foto ? '' : 'display: none;' }} max-width: 150px; max-height: 150px;">
+                        <img id="vistaPrevia" src="{{ asset('storage/profesionales/'.$query->Foto ?? 'foto-default.png') }}" alt="Previsualización de imagen" style="{{ $query->Foto ? '' : 'display: none;' }} max-width: 150px; max-height: 150px;">
                     </div>
                     
                     <input type="hidden" name="wImage" id="wImage" value="{{ $query->wImage ?? ''}}">
@@ -260,7 +253,6 @@
                         <span class="fw-bold">Perfiles</span>
                         <div class="d-flex align-items-center">
                             <select class="form-select" id="perfiles" name="perfiles">
-                                <option selected value="">Elija una opción...</option>
                             </select>
                             <i class="addPerfilProf ri-add-circle-line ml-2" title="Añadir perfil"></i>
                         </div>
@@ -271,7 +263,7 @@
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-header">
-                        <h4 class="card-title mb-0">Especialidades y Perfiles | Perfil principal: </h4>
+                        <h4 class="card-title mb-0">Especialidades y Perfiles: </h4>
                     </div><!-- end card header -->
 
                     <div class="card-body">
@@ -312,7 +304,7 @@
             </div>
        </div>
     </div>
-    @endif
+
 </div>
 
 <div id="previsualizarModal" class="modal fadeInUp" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
@@ -330,7 +322,7 @@
                     <i class="ri-user-smile-line label-icon"></i><small>Cierre la ventana para confirmar.</small>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
-                <img id="imagenModal" src="#" width="{{ isset($profesionale->wImage) && $profesionale->wImage !== 0 ? $profesionale->wImage : '250px' }}" height="{{ isset($profesionale->hImage) && $profesionale->hImage !== 0 ? $profesionale->hImage : '250px' }}" style="display:block; max-width: 100%; max-height: 400px; border: 1px solid #eeeeee">
+                <img id="imagenModal" src="#" width="{{ !in_array($query->wImage, [0, '']) ? $query->wImage.'px' : '250px' }}" height="{{ !in_array($query->hImage, [0, '']) ? $query->hImage.'px' : '250px' }}" style="display:block; max-width: 100%; max-height: 400px; border: 1px solid #eeeeee">
                 <p id="selloModal"></p> 
             </div>
             <div class="modal-footer">
@@ -347,12 +339,18 @@
     const TOKEN = '{{ csrf_token() }}';
     const actualizarDatos = "{{ route('actualizarDatos') }}";
     const ID = "{{ $query->UserId }}";
+    const IDPROF = "{{ $query->IdProfesional }}";
     const lstRolAsignados = "{{ route('lstRolAsignados') }}";
     const checkEmailUpdate = "{{ route('checkEmailUpdate') }}";
     const verificarCorreo = "{{ $query->EMail ?? '' }}";
     const addRol = "{{ route('addRol') }}";
     const deleteRol = "{{ route('deleteRol') }}";
     const INDEX = "{{ route('usuarios.index') }}";
+    const setPerfiles = "{{ route('setPerfiles') }}";
+    const getPerfiles = "{{ route('getPerfiles') }}";
+    const delPerfil = "{{ route('delPerfil') }}";
+    const datosProf = "{{ route('usuarios.updateProfesional') }}";
+    const checkRoles = "{{ route('checkRoles') }}";
 </script>
 
 @push('styles')

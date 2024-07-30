@@ -307,6 +307,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('bloquearUsuario', [UsuariosController::class, 'bloquear'])->name('bloquearUsuario');
     Route::get('checkTelefono', [UsuariosController::class, 'checkTelefono'])->name('checkTelefono');
     Route::get('cambiarPassUsuario', [UsuariosController::class, 'cambiarPassword'])->name('cambiarPassUsuario');
+    Route::post('/usuarios/update/profesional', [UsuariosController::class, 'updateProfesional'])->name('usuarios.updateProfesional');
+    Route::get('checkRoles', [UsuariosController::class, 'checkRoles'])->name('checkRoles');
 
     //Rutas de Roles
     Route::get('searchRol', [RolesController::class, 'listado'])->name('searchRol');

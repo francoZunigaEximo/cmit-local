@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Profesional;
+use App\Models\ProfesionalProv;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use App\Models\Rol;
@@ -136,10 +137,9 @@ class RolesController extends Controller
         foreach (SELF::lstRoles as $key => $value) {
             $user->profesional->$value = in_array($key, $buscar) === true ? 0 : $user->profesional->$value;
         }
-        $user->profesional->profesionalProv()->where('IdProf', $user->profesional_id)->delete();
         $user->profesional->save();
+        ProfesionalProv::where('IdProf', $user->profesional_id)->delete();
     }
-
 
     private function listadoRoles($rol)
     {
@@ -147,4 +147,6 @@ class RolesController extends Controller
         $arrKey = array_keys(SELF::lstRoles);
         return array_intersect($arrList, $arrKey);
     }
+
+
 }

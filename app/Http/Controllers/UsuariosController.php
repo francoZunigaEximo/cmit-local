@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Profesional;
 use App\Models\Proveedor;
 use App\Models\Provincia;
 use App\Models\Rol;
@@ -13,6 +14,7 @@ use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use App\Traits\CheckPermission;
+use Illuminate\Support\Facades\Storage;
 
 class UsuariosController extends Controller
 {
@@ -326,6 +328,47 @@ class UsuariosController extends Controller
 
             return response()->json(['msg' => 'Se ha cambiado la contraseña correctamente'], 200);
         }
+    }
+
+    public function updateProfesional(Request $request) 
+    {
+
+        $query = Profesional::find($request->Id);
+
+        if($query) {
+            $query->Pago = $request->Pago;
+            $query->InfAdj = $request->InfAdj;
+            $query->Firma = $request->Firma;
+            $query->wImage = $request->wImage;
+            $query->hImage = $request->hImage;
+
+            if ($request->hasFile('Foto')) {
+   
+                $fotoExistente = 'public/profesionales/' . $request->Foto;
+                if (Storage::exists($fotoExistente)) {
+                    Storage::delete($fotoExistente);
+                }
+    
+                $fileName = 'PROF' . $request->Id . '.' . $request->Foto->extension();
+                $request->Foto->storeAs('public/profesionales', $fileName);
+    
+                $query->Foto = $fileName;
+            }
+
+            $query->save();
+
+            return response()->json(['msg' => 'Se han cargado los cambios correctamente.'], 200);
+
+        }else{
+            return response()->json(['msg' => 'No se ha podido realizar la actualización.'], 500);
+        }
+    }
+
+    public function checkRoles(Request $request)
+    {
+        $query = User::with('role')->where('profesional_id', $request->Id)->first();
+
+        return response()->json($query->role);
     }
 
 }

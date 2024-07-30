@@ -37,7 +37,7 @@ class DatosController extends Controller
                 'CP' => $request->CP ?? ''
             ]);
 
-            $user = User::find(Auth::user()->Id);
+            $user = User::find($request->UserId);
 
             if($user) {
                 $user->email = $request->email ?? '';
@@ -67,8 +67,7 @@ class DatosController extends Controller
                 $query->CP = $request->CP;
                 $query->user->email = $request->email;
                 $query->user->datos_id = $Id;
-                $query->user->save();
-                $query->save();
+                $query->push();
 
                 return response()->json(['msg' => 'Se han actualizado correctamente los datos del usuario'], 200);
             }else{
