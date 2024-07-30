@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 
 class RolesController extends Controller
 {
-    const lstRoles = ["Efector" => "T1", "Informador" => "T2", "Combinado" => "T3", "Evaluador" => "T4", "EvaluadorART" => "T5"];
+    const lstRoles = ["Efector" => "T1", "Informador" => "T2", "Evaluador" => "T3", "Combinado" => "T4", "Evaluador ART" => "T5"];
 
     public function listado(Request $request)
     {
