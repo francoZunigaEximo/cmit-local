@@ -2,12 +2,16 @@ $(document).ready(()=>{
 
     let IdProfesional = $('#IdProfesional').val();
     let resizing = false, startWidth, startHeight, startX, startY; //variables de ancho de imagen
+    $('.verOpciones').hide();
+    $('.verAlerta').show();
 
     quitarDuplicados("#provincia");
     quitarDuplicados("#cuil");
     quitarDuplicados("#tipoDoc");
     listadoRoles();
+    cargarPerfiles();
     perfiles(IdProfesional);
+    checkRol(IdProfesional);
 
     $(document).on('click', '.updateDatos', function(e){
         e.preventDefault();
@@ -25,7 +29,8 @@ $(document).ready(()=>{
             direccion = $('#direccion').val(),
             cp = $('#codPostal').val(),
             Id = $('#Id').val(),
-            email = $('#email').val();
+            email = $('#email').val(),
+            userId = $('#UserId').val();
 
         if($('#form-update').valid()){ 
             swal({
@@ -35,7 +40,7 @@ $(document).ready(()=>{
             }).then((confirmar) => {
                 if(confirmar) {
                     preloader('on');
-                    $.post(actualizarDatos, {_token: TOKEN, Nombre: nombre, Apellido: apellido, TipoDocumento: tipoDocumento, Documento: documento, TipoIdentificacion: tipoIdentificacion, Identificacion: identificacion, Telefono: telefono, FechaNacimiento: fechaNacimiento, Provincia: provincia, IdLocalidad: localidad, CP: cp, Id: Id, email: email, Direccion: direccion})
+                    $.post(actualizarDatos, {_token: TOKEN, Nombre: nombre, Apellido: apellido, TipoDocumento: tipoDocumento, Documento: documento, TipoIdentificacion: tipoIdentificacion, Identificacion: identificacion, Telefono: telefono, FechaNacimiento: fechaNacimiento, Provincia: provincia, IdLocalidad: localidad, CP: cp, Id: Id, email: email, Direccion: direccion, UserId: userId})
                         .done(function(response){
                             preloader('off');
                             toastr.success(response.msg);
@@ -117,6 +122,8 @@ $(document).ready(()=>{
                             toastr.warning(response.msg);
                         }else if(response.estado === 'true'){
                             toastr.success(response.msg);
+                            checkRol(IdProfesional);
+                            perfiles(IdProfesional);
                             setTimeout(() => {
                                 listadoRoles();
                             }, 2000);
@@ -130,9 +137,7 @@ $(document).ready(()=>{
                     });
             }
         });
-
-           
-        
+   
     });
 
     $(document).on('click', '.eliminar', function(e){
@@ -152,6 +157,9 @@ $(document).ready(()=>{
                     .done(function(response){
                         preloader('off');
                         toastr.success(response.msg);
+                        checkRol(IdProfesional);
+                        perfiles(IdProfesional);
+                        cargarPerfiles();
                         setTimeout(() => {
                             listadoRoles();
                         }, 2000);
@@ -166,6 +174,56 @@ $(document).ready(()=>{
         startHeight = $('#imagenModal').height();
         startX = e.clientX;
         startY = e.clientY;
+    });
+
+    $(document).on('click', '.saveOpciones', function(e){
+        e.preventDefault();
+        
+        let Pago = $('#Pago').prop('checked') ? 1 : 0,
+            InfAdj = $('#InfAdj').prop('checked') ? 1 : 0,
+            Firma = $('#Firma').val(),
+            Foto = $('#Foto')[0].files[0],
+            wImage = $('#wImage').val(),
+            hImage = $('#hImage').val(),
+            Id = $('#IdProfesional').val();
+
+        let formData = new FormData();
+        formData.append('_token', TOKEN);
+        formData.append('Pago', Pago);
+        formData.append('InfAdj', InfAdj);
+        formData.append('Firma', Firma);
+        if (Foto) formData.append('Foto', Foto);
+        formData.append('wImage', wImage);
+        formData.append('hImage', hImage);
+        formData.append('Id', Id);
+
+        swal({
+            title: "¿Está seguro que desea actualizar los datos",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar){
+                
+                preloader('on');
+                $.ajax({
+                    url: datosProf,
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        preloader('off');
+                        toastr.success(response.msg);
+                    },
+                    error: function(xhr, status, error) {
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return;  
+                    }
+                });
+            }
+        });
     });
 
     $(document).mousemove(function (e) {
@@ -184,6 +242,59 @@ $(document).ready(()=>{
 
     $(document).mouseup(function () {
         resizing = false;
+    });
+
+    $(document).on('click', '.addPerfilProf', function(e){
+        e.preventDefault();
+
+        let perfil = $('#perfiles').val(), especialidad = $('#listaEspecialidad').val();
+
+        if(perfil === '' || especialidad === '') {
+            toastr.warning("Debe seleccionar una especialidad y un perfil para poder añadirlo a la lista");
+            return;
+        }
+        preloader('on');
+        $.post(setPerfiles, {_token: TOKEN, perfil: perfil, especialidad: especialidad, Id: IDPROF})
+            
+            .done(function(response){
+                preloader('off');
+                toastr.success(response.msg);
+                cargarPerfiles(); 
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return; 
+            });
+    });
+
+    $(document).on('click', '.eliminarPerfil',  function(e){
+        e.preventDefault();
+        let IdProf = $(this).data('prof'),
+            IdProv = $(this).data('prov');
+
+        swal({
+            title: "¿Está seguro que desea eliminar?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar) {
+                preloader('on');
+                $.post(delPerfil, {_token: TOKEN, IdProf: IdProf, IdProv: IdProv})
+                .done(function(){
+                    preloader('off')
+                    toastr.success(`Se ha añadido el perfil de manera correcta`);
+                    cargarPerfiles();
+                })
+                .fail(function(jqXHR){
+                    preloader('off');
+                    let errorData = JSON.parse(jqXHR.responseText);            
+                    checkError(jqXHR.status, errorData.msg);
+                    return; 
+                });
+            }
+        });           
     });
 
     
@@ -258,6 +369,9 @@ $(document).ready(()=>{
     {
         if([0, null, undefined, ''].includes(id)) return;
 
+        $("#perfiles").empty();
+        $("#perfiles").append('<option value="" selected>Elija una opción...</option>');
+
         $.get(choisePerfil, {Id: id})
             .done(function(response){
 
@@ -278,5 +392,80 @@ $(document).ready(()=>{
               
             });
     }
+
+    function checkRol(id) {
+        $.get(checkRoles, { Id: id }, function(response) {
+
+            let arr = ['Efector', 'Informador', 'Evaluador', 'Combinado', 'Evaluador ART'];
+            let buscados = response.map(item => item.nombre);
+            
+            let resultados = buscados.some(e => arr.includes(e));
+
+            if (resultados) {
+                $('.verOpciones').css('display', ''); 
+                $('.verAlerta').hide();
+            } else {
+                $('.verOpciones').css('display', 'none');
+                $('.verAlerta').show();
+            }
+        });
+    }
+
+    function cargarPerfiles(){
+        preloader('on');
+        $('#listaProfesionales').empty();
+
+        $.get(getPerfiles, {Id: IDPROF})
+            .done(function(response){
+                preloader('off')
+                let data = response.data;
+                data.forEach(function (d) {
+
+                    if(d.Tipos) {
+                        let arr = d.Tipos.split(',');
+                    
+                        const perfiles = {
+                            't1': ['Efector'],
+                            't2': ['Informador'],
+                            't3': ['Evaluador'],
+                            't4': ['Combinado']
+                        }
+                    
+                        let imprimir = arr.map(e => {
+                            if (perfiles[e]) {
+                                return `<span class="badge custom-badge pequeno text-uppercase" style="margin-right: 3px; display:inline-block">${perfiles[e][0]}</span><br>`;
+                            }
+                            return ''; 
+                        }).join(''); 
+                    
+                        let contenido = `
+                            <tr style="text-align: center">
+                                <td>${d.especialidad}</td>
+                                <td style="margin-right: 3px;">
+                                    ${imprimir}
+                                </td>
+                                <td>
+                                    <div class="remove">
+                                        <button data-prof="${d.IdProf}" data-prov="${d.IdProv}" class="btn btn-sm iconGeneral eliminarPerfil" title="Dar de baja"><i class="ri-delete-bin-2-line"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    
+                        $('#listaProfesionales').append(contenido);
+                        $('#perfiles').val(''),
+                        $('#listaEspecialidad').val('');
+                    }
+                });
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return; 
+            });
+    }
+
+    
 
 });
