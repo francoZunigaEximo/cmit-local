@@ -375,20 +375,21 @@ $(document).ready(()=>{
         $.get(choisePerfil, {Id: id})
             .done(function(response){
 
-                select = $("#perfiles");
+                const perfiles = new Map([
+                    ['T1', 'Efector'],
+                    ['T2', 'Informador'],
+                    ['T3', 'Evaluador'],
+                    ['T4', 'Combinado'],
+                    ['T5', 'Evaluador ART']
+                ]);
+
+                let select = $("#perfiles");
                 
-                if (response.T1 === 1) {
-                    select.append(`<option value="t1">Efector</option>`);
-                }
-                if (response.T2 === 1) {
-                    select.append(`<option value="t2">Informador</option>`);
-                }
-                if (response.T3 === 1) {
-                    select.append(`<option value="t3">Evaluador</option>`);
-                }
-                if (response.T4 === 1) {
-                    select.append(`<option value="t4">Combinado</option>`);
-                }
+                perfiles.forEach((descripcion, clave) => {
+                    if (response[clave] === 1) {
+                        select.append(`<option value="${clave.toLowerCase()}">${descripcion}</option>`);
+                    }
+                });
               
             });
     }
