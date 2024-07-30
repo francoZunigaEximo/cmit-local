@@ -428,7 +428,8 @@ $(document).ready(()=>{
                             't1': ['Efector'],
                             't2': ['Informador'],
                             't3': ['Evaluador'],
-                            't4': ['Combinado']
+                            't4': ['Combinado'],
+                            't5': ['Evaluador ART']
                         }
                     
                         let imprimir = arr.map(e => {
