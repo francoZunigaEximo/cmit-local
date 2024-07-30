@@ -61,11 +61,6 @@ $(document).ready(()=> {
             toastr.warning('¡El motivo es un campo obligatorio si ha seleccionado la opción bloquear. Debe escribir un motivo!');
             return;
         }
-
-        if(motivo !== '' && bloqueado === 0){
-            toastr.warning('¡No puede escribir un motivo si no ha bloqueado al cliente!');
-            return;
-        }
         
         preloader('on');
         $.ajax({
@@ -80,6 +75,7 @@ $(document).ready(()=> {
                 mensajeria: mensajeria,
                 bloqueado: bloqueado,
                 anexo: anexo,
+                motivo: motivo,
                 Id: ID,
             },
             success: function(){
@@ -98,7 +94,7 @@ $(document).ready(()=> {
                         },
                         success: function() {
                             
-                            swal('Atención', 'Se recargará la app para bloquear las funcionalidades', 'warning');
+                            swal('Atención', 'Se recargará la app tras el bloqueo', 'warning');
                             setTimeout(()=> {
                                 location.reload();
                             }, 3000);
@@ -658,9 +654,6 @@ $(document).ready(()=> {
                         <strong> Motivo del bloqueo: </strong> ${data.Motivo}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>`);
-
-                    $('#addNumero, #Bloqueado, #btnOpciones, #guardarEmail, #btnAutorizado, #btnObservaciones, [type="submit"]').prop('disabled', true);
-                    $('.telefonoAcciones').empty().hide();
                     }
             })
             .fail(function(jqXHR){

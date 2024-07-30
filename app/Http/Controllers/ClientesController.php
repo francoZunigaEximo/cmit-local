@@ -350,6 +350,7 @@ class ClientesController extends Controller
                 'SinPF' => $request->facturacionSinPaq,
                 'Bloqueado' => $request->bloqueado,
                 'Anexo' => $request->anexo,
+                'Motivo' => $request->motivo
             ]);
             $cliente->Entrega = ($request->mensajeria === 'true' ? 2 : ($request->correo === 'true' ? 4 : 0)); 
             $cliente->save();
