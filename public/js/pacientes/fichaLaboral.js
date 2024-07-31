@@ -3,15 +3,17 @@ $(document).ready(function () {
     let pagoLaboral = $('#PagoLaboral').val(), changeTipo = $('input[name="TipoPrestacion"]:checked').val();
     $('.nuevaPrestacionModal, .observacionesModal, .nuevaPrestacion, .ObBloqueoEmpresa, .ObBloqueoArt, .ObEmpresa, .ObsPaciente, .ObsPres, .Factura, .TareaRealizar, .UltimoPuesto, .PuestoActual, .SectorActual, .AntiguedadPuesto, .AntiguedadEmpresa, .FechaIngreso, .FechaEgreso, .selectMapaPres, .Autoriza, .listadoExCta, #alertaExCta, #examenesDisponibles, #ultimasFacturadas').hide();
 
+    let IDficha = $('selectClientes').val() === undefined ? IDFICHA : $('selectClientes').val();
+    
     quitarDuplicados("#Horario");
     quitarDuplicados("#Tipo");
     quitarDuplicados("#TipoPrestacion");
     quitarDuplicados('#PagoLaboral');
     calcularAntiguedad();
     mostrarFinanciador();
-    checkExamenesCuenta($('selectClientes').val());
-    
- 
+    checkExamenesCuenta(IDficha);
+
+
     const listOpciones = {
         '.TareaRealizar': ['OCUPACIONAL', 'OTRO', 'INGRESO', 'ART'],
         '.PuestoActual': ['OCUPACIONAL', 'OTRO', 'PERIODICO', 'EGRESO', 'ART'],
@@ -156,12 +158,12 @@ $(document).ready(function () {
         }
     });
     
-    $('#selectClientes').on('select2:select', function (e) {
+    /*$('#selectClientes').on('select2:select', function (e) {
         if (!confirm('¿Está seguro que desea seleccionar esta empresa para el paciente?')) {
             $(this).val(null).trigger('change.select2');
             e.stopPropagation();
         }
-    });
+    });*/
 
     //Alerta - verificacion de clientes bloqueados
     $('#selectClientes').on('select2:select', function (e) {
@@ -593,12 +595,12 @@ $(document).ready(function () {
             });    
     }
 
-    function checkExamenesCuenta(id){
+    async function checkExamenesCuenta(id){
 
         $.get(lstExDisponibles, {Id: id})
-            .done(function(response){
+            .done(await function(response){
                 if(response && response.length > 0) {
-                    
+                    console.log(response.length)
                     $('#alertaExCta, .examenesDisponibles, .ultimasFacturadas, #siguienteExCta').show();
                     $('#PagoLaboral, #Pago').val('P');
                     $('#guardarPrestacion').hide();

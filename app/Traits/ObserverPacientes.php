@@ -27,7 +27,7 @@ trait ObserverPacientes
     {
 
         $result = null;
-        $ficha = Fichalaboral::where('IdPaciente', $id)->first() ?? '';
+        $ficha = Fichalaboral::where('IdPaciente', $id)->orderBy('Id', 'desc')->first() ?? '';
 
         if ($ficha && $tipo == 'art')
         {
