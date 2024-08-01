@@ -72,11 +72,11 @@ class MensajesController extends Controller
                 $query->whereIn('clientes.FPago', ['A','B','C']);
             });
 
-            $query->when(!empty($request->Bloqueado) && $request->Bloqueado === 'bloqueado', function($query) use ($request) {
+            $query->when(!empty($request->Bloqueado) && $request->Bloqueado === 'bloqueado', function($query) {
                 $query->where('clientes.Bloqueado', 1);
             });
 
-            $query->when(!empty($request->Bloqueado) && $request->Bloqueado === 'noBloqueado', function($query) use ($request) {
+            $query->when(!empty($request->Bloqueado) && $request->Bloqueado === 'noBloqueado', function($query) {
                 $query->where('clientes.Bloqueado', 0);
             });
 

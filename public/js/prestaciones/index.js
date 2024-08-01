@@ -1,5 +1,12 @@
 $(document).ready(()=>{
 
+    //Fix de presionar enter sobre los campos
+    $('#fechaDesde, #fechaHasta, #TipoPrestacion, #Estado, #nroprestacion').on('keydown', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+        }
+    });
+
     let IdComentario = null;
 
     //Fechas en filtros

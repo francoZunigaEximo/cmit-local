@@ -56,7 +56,7 @@
                     </div>
 
                     <div class="col-3">
-                        <div class="input-group input-group-sm selectSize">
+                        <div class="input-group input-group-sm">
                             <span class="input-group-text">Para Empresa</span>
                             <input type="text" name="paraEmpresa" id="paraEmpresa" class="class form-control" value="{{ $prestacione->empresa->RazonSocial }}" title="{{ $prestacione->empresa->RazonSocial }}" @readonly(true)>
                         </div>
