@@ -53,7 +53,7 @@ class NoticiasController extends Controller
                 Storage::delete($fotoExistente);
             }
 
-            $fileName = 'NOTICIA.' . $request->Ruta->extension();
+            $fileName = 'NOTICIA_' . $request->Ruta->extension();
             $request->Ruta->storeAs('public/noticias', $fileName);
 
             $noticia->Ruta = $fileName;
