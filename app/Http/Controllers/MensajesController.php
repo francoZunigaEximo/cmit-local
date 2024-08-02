@@ -64,7 +64,13 @@ class MensajesController extends Controller
                 $query->whereIn('clientes.TipoCliente', ['A','E']);
             });
 
-            $query->when(!empty($request->Pago) && ($request->Pago === 'A' || $request->Pago === 'B' || $request->Pago === 'C'), function($query) use ($request) {
+            $query->when(empty($request->Pago) || ($request->Pago === 'A'), function($query) {
+                $query->where('clientes.FPago', 'A')
+                    ->orWhere('clientes.FPago', '')
+                    ->orWhereNull('clientes.FPago');
+            });
+
+            $query->when(!empty($request->Pago) && ($request->Pago === 'B' || $request->Pago === 'C'), function($query) use ($request) {
                 $query->where('clientes.FPago', $request->Pago);
             });
 

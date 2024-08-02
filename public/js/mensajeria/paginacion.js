@@ -99,7 +99,7 @@ $(document).ready(function(){
                             C: "Ctdo(CC Bloq)",
                         };
                         let valor = data.FPago;
-                    return `<div class="text-center"><span>${[undefined, null, ''].includes(valor) ? '-' : tipo[valor]}</span></div>`;
+                    return `<div class="text-center"><span>${[undefined, null, ''].includes(valor) ? 'CC' : tipo[valor]}</span></div>`;
                     }
                 },
                 {

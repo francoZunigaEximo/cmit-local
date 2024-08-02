@@ -242,8 +242,8 @@ $(document).ready(()=>{
                     targets: 15,
                     render: function(data){
 
-                        let pagos = { 'B': 'Ctdo', 'P': 'ExCta', 'C': 'CC'};
-                        return [undefined, null, ''].includes(pagos[data.Pago]) ? '-' : pagos[data.Pago];      
+                        let pagos = { 'B': 'Ctdo', 'C': 'Ctdo', 'P': 'ExCta', 'A': 'CC'};
+                        return [null, '', undefined].includes(pagos[data.Pago]) ? 'CC' : pagos[data.Pago];      
                     }
                 },
                 {

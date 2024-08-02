@@ -111,8 +111,14 @@ class ClientesController extends Controller
                 $query->where('TipoCliente', '=', $tipo);
             });
 
-            $query->when($fpago, function ($query) use ($fpago) {
-                $query->where('FPago', '=', $fpago);
+            $query->when(empty($fpago) || $fpago === 'A', function ($query) use ($fpago) {
+                $query->where('FPago', 'A')
+                    ->orWhere('FPago', '')
+                    ->orWhereNull('FPago');
+            });
+
+            $query->when($fpago !== 'A' || !empty($fpago), function ($query) use ($fpago) {
+                $query->where('FPago', $fpago);
             });
 
             $query->when(is_array($filtro) && in_array('bloqueados', $filtro), function ($query) {

@@ -154,9 +154,9 @@
                             <div class="input-group input-group-sm">
                                 <span class="input-group-text">Forma de Pago</span>
                                 <select class="form-select" id="pago">
-                                    <option value="{{ $prestacione->Pago ?? '' }}" selected>{{ ($prestacione->Pago === "B")? 'Contado' : (($prestacione->Pago === 'C')? 'Cuenta Corriente' : (($prestacione->Pago === 'P')? 'Examenes a cuenta' : 'Elija una opción...')) }}</option>
+                                    <option value="{{ $prestacione->Pago ?? '' }}" selected>{{ ($prestacione->Pago === "B" || $prestacione->Pago === "C")? 'Contado' : (($prestacione->Pago === 'A' || empty($prestacione->Pago))? 'Cuenta Corriente' : (($prestacione->Pago === 'P')? 'Examenes a cuenta' : 'Elija una opción...')) }}</option>
                                     <option value="B">Contado</option>
-                                    <option value="C">Cuenta Corriente</option>
+                                    <option value="A">Cuenta Corriente</option>
                                     <option value="P">Examen a cuenta</option>
                                 </select>
                             </div>

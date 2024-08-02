@@ -546,7 +546,7 @@ $(document).ready(function () {
                 if(![null,undefined, ''].includes(obsEmpresa.Motivo)) {
                     $('.ObBloqueoEmpresa').show();
                     $('.ObBloqueoEmpresa p').text(obsEmpresa.Motivo);
-                    $('.seguirAl').prop('disabled', true).attr('title', 'Boton bloqueado');
+                    //$('.seguirAl').prop('disabled', true).attr('title', 'Boton bloqueado');
                 }
                 
                 if(![null, undefined, ''].includes(obsPaciente.Observaciones)) {

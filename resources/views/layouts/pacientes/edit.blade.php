@@ -452,7 +452,7 @@
                                         <select class="form-select" id="PagoLaboral">
                                             <option value="" selected>Elija una opción...</option>
                                             <option value="B">Contado</option>
-                                            <option value="C">Cuenta Corriente</option>
+                                            <option value="A">Cuenta Corriente</option>
                                             <option value="P">Exámen a Cuenta</option>
                                         </select>
                                     </div>
@@ -575,7 +575,7 @@
                                             <select class="form-select" id="Pago">
                                                 <option value="" selected>Elija una opción...</option>
                                                 <option value="B">Contado</option>
-                                                <option value="C">Cuenta Corriente</option>
+                                                <option value="A">Cuenta Corriente</option>
                                                 <option value="P">Examen a cuenta</option>
                                             </select>
                                         </div>
