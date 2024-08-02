@@ -80,7 +80,10 @@ $(document).ready(()=> {
             },
             success: function(){
                 preloader('off');
-                toastr.success('¡Los datos se han guardado correctamente!', 'Perfecto');
+                toastr.success('¡Los datos se han guardado correctamente. Se recargará la página');
+                setTimeout(()=> {
+                    location.reload();
+                }, 3000);
                 
                if(bloqueado === 1 && motivo !== ''){
 
