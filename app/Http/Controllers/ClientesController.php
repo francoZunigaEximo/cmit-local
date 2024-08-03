@@ -108,11 +108,11 @@ class ClientesController extends Controller
                 $query->where('Bloqueado', 1);
             });
 
-            $query->when($fpago !== 'A', function ($query) use ($fpago) {
+            $query->when(!empty($fpago) && $fpago !== 'A', function ($query) use ($fpago) {
                 $query->where('FPago', $fpago);
             });
 
-            $query->when($fpago === 'A', function ($query) {
+            $query->when(!empty($fpago) && $fpago === 'A', function ($query) {
                 $query->whereIn('FPago', [null, '', 'A']);
             });
 
