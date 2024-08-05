@@ -23,7 +23,7 @@ class FichaAltaController extends Controller
             'Pago' => $request->pago ?? '',
             'TipoJornada' => $request->tipo ?? '',
             'Observaciones' => $request->observaciones ?? '',
-            'TareasEmpAnterior' => $request->ultimoPuesto,
+            'TareasEmpAnterior' => $request->ultimoPuesto ?? '',
             'Puesto' => $request->puestoActual ?? '',
             'Sector' => $request->sectorActual ?? '',
             'CCosto' => $request->ccosto ?? '',
