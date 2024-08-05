@@ -26,6 +26,7 @@ class Fichalaboral extends Model
         'AntigPuesto',
         'Tipojornada',
         'Jornada',
+        'TareasEmpAnterior',
         'Observaciones',
         'TipoActividad',
         'CCosto',

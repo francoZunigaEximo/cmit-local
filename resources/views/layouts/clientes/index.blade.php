@@ -14,12 +14,12 @@
     <div class="card-body">
         <div class="listjs-table" id="customerList">
             <div class="row mb-2">
-                <div class="col-3">
+                <div class="col-2">
                         
                     <div>
                         @can('clientes_add')
                         <a href="{{ route('clientes.create') }}">
-                            <button type="button" class="btn botonGeneral add-btn"  id="create-btn" data-bs-target="#showModal"><i class="ri-add-line align-bottom me-1"></i> Nuevo</button>
+                            <button type="button" class="btn botonGeneral add-btn"  id="create-btn"><i class="ri-add-line align-bottom me-1"></i> Nuevo</button>
                         </a>
                         @endcan
                         @can('clientes_export')
@@ -65,10 +65,13 @@
                 </div>
                 <div class="col-3">
                     <div class="" style="width: 100%;">
-                        <div class="search-box ms-1">
-                            <input type="text" id="buscar" name="buscar" class="form-control search" placeholder="Buscar CUIT, R. Social o ParaEmpresa">
-                            <p id="search-instructions" style="font-size: 10px; color: #888;">ENTER para buscar | ESC para limpiar la busqueda</p>
-                        </div>
+                        <input type="text" name="buscar" class="form-control" placeholder="CUIT, R. Social o ParaEmpresa">
+                        <p id="search-instructions">ENTER para buscar</p>
+                    </div>
+                </div>
+                <div class="col-1 v-flex justify-content-end align-items-center">
+                    <div>
+                        <a href="{{ route('clientes.index') }}" class="btn btn-sm botonGeneral">Reiniciar</a>
                     </div>
                 </div>
             </div>

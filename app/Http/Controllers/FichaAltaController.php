@@ -40,8 +40,6 @@ class FichaAltaController extends Controller
         }else{
             return response()->json(['msg' => '¡Ha ocurrido un error al intentar guardar los datos!'], 500);
         }
-            
-
     }
 
     //Verificamos para emplear la vista full
