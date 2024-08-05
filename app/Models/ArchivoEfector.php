@@ -24,7 +24,7 @@ class ArchivoEfector extends Model
 
     public $timestamps = false;
 
-    public function ItemPrestacion()
+    public function itemPrestacion()
     {
         return $this->hasMany(ItemPrestacion::class, 'Id', 'IdEntidad');
     }

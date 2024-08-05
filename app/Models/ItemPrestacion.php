@@ -82,7 +82,7 @@ class ItemPrestacion extends Model
 
     public function archivoEfector()
     {
-        return $this->hasOne(ArchivoEfector::class, 'IdEntidad', 'Id');
+        return $this->hasMany(ArchivoEfector::class, 'IdEntidad', 'Id');
     }
 
     public function proveedores()

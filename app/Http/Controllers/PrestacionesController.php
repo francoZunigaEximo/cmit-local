@@ -322,21 +322,16 @@ class PrestacionesController extends Controller
             return response()->json(['msg' => 'No tienes permisos'], 403);
         }
 
-        $prestaciones = Prestacion::with([
-            'itemsPrestacion' => [
-                'profesionales1',
-                'profesionales2'
-            ]
-        ])->find($request->Id);
+        $prestaciones = Prestacion::with(['itemsPrestacion.archivoEfector'])->find($request->Id);
 
         $contadorProfesional = $prestaciones->itemsPrestacion()
             ->where('IdProfesional','!=', 0)
             ->count();
 
-        $contadorAdjuntos = $prestaciones->itemsPrestacion->archivoEfector()
-            ->count();
+        $contadorAdjuntos = $prestaciones->itemsPrestacion->archivoEfector->count();
+        var_dump($contadorAdjuntos); exit;
 
-        $contadorCierres = $prestaciones->itemsPrestaciones()
+        $contadorEstado = $prestaciones->itemsPrestaciones()
                 ->whereIn('CAdj', [3,5])
                 ->count();
 
