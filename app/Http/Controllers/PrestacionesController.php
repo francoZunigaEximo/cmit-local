@@ -322,7 +322,33 @@ class PrestacionesController extends Controller
             return response()->json(['msg' => 'No tienes permisos'], 403);
         }
 
-        $prestaciones = Prestacion::find($request->Id);
+        $prestaciones = Prestacion::with([
+            'itemsPrestacion' => [
+                'profesionales1',
+                'profesionales2'
+            ]
+        ])->find($request->Id);
+
+        $contadorProfesional = $prestaciones->itemsPrestacion()
+            ->where('IdProfesional','!=', 0)
+            ->count();
+
+        $contadorAdjuntos = $prestaciones->itemsPrestacion->archivoEfector()
+            ->count();
+
+        $contadorCierres = $prestaciones->itemsPrestaciones()
+                ->whereIn('CAdj', [3,5])
+                ->count();
+
+        if($contadorAdjuntos > 0) {
+            return response()->json(['msg' => 'La prestacion posee adjuntos asociados', 'estado' => 'false']);
+        }
+
+        if($contadorProfesional > 0) {
+            return response()->json(['msg' => 'La prestacion posee profesionales asignados', 'estado' => 'false']);
+        }
+
+        
 
         if ($prestaciones) {
             $prestaciones->update(['Estado' => '0']);
@@ -330,7 +356,7 @@ class PrestacionesController extends Controller
             return response()->json(['msg' => 'Se ha dado de baja la prestación', 'estado' => 'true'], 200);
         }
 
-        return response()->json(['msg' => 'No se encontró la prestación', 'estado' => 'false'], 404);
+        return response()->json(['msg' => 'No se encontró la prestación'], 404);
     }
 
 

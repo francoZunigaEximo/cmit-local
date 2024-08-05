@@ -65,8 +65,8 @@
                 </div>
                 <div class="col-3">
                     <div class="" style="width: 100%;">
-                        <input type="text" name="buscar" class="form-control" placeholder="CUIT, R. Social o ParaEmpresa">
-                        <p id="search-instructions">ENTER para buscar</p>
+                        <input type="text" name="buscar" class="form-control" id="buscar" placeholder="CUIT, R. Social o ParaEmpresa">
+                        <p class="text-muted" id="search-instructions">ENTER para buscar</p>
                     </div>
                 </div>
                 <div class="col-1 v-flex justify-content-end align-items-center">

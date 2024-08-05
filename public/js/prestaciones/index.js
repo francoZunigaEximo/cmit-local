@@ -184,23 +184,17 @@ $(document).ready(()=>{
             buttons: ["Cancelar", "Aceptar"],
         }).then((aceptar) => {
             if(aceptar){
-
-                $('#listaPrestaciones tbody').hide();
-                $('.dataTables_processing').show();
+                preloader('on');
 
                 $.get(downPrestaActiva, {Id: prestacion})
                     .done(function(response){
+                        preloader('off');
 
                         if(response.estado === 'true') {
-
                             toastr.success(response.msg);
-                            $('#listaPrestaciones').DataTable().ajax.reload(function(){
-                                $('#listaPrestaciones tbody').show();
-                                $('.dataTables_processing').hide();
-                            }, false);
-                            
-                        } else {
-                            toastr.info(response.msg);
+                            $('#listaPrestaciones').DataTable().clear().draw(false);
+                        }else{
+                            toastr.warning(response.msg);
                         }
                     })
                     .fail(function(jqXHR) {
