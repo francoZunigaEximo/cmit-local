@@ -650,3 +650,7 @@ tr.shown td.details-control {
 #filtrosAvanzados .card {
 	margin-bottom: 0.5rem !important;
 }
+
+.row {
+    --vz-gutter-x: 0.25rem !important;
+}

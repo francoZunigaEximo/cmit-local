@@ -12,6 +12,7 @@ $(document).ready(()=>{
     listadoConSaldos(empresaInput);
     cantidadDisponibles(empresaInput);
     listadoFacturas(empresaInput, null);
+    getUltimasFacturadas(empresaInput);
 
 
     $(document).on('change', '#tipoPrestacionPres', function(){
@@ -721,20 +722,21 @@ $(document).ready(()=>{
             })
     }
 
-    function listadoFacturas(id, idexamen){
+    function listadoFacturas(id, idexamen) {
         $('#lstEx').empty();
         preloader('on');
-
-        $.get(lstExClientes, {Id: id})
-            .done(async function(response){
-           
+    
+        $.get(lstExClientes, { Id: id })
+            .done(async function(response) {
                 preloader('off');
-                let promises = response.map(async function(r) {
-                    if(response && response.length) {
-                        let suc = [null,0,undefined,''].includes(r.Suc) ? '' : (r.Suc ? r.Suc.toString().padStart(4, '0') : '-'), 
-                            numero = [null,0,undefined,''].includes(r.Nro) ? '' : (r.Nro ? r.Nro.toString().padStart(8, '0') : '-'), 
-                            moduloResult = await vistaDni(r.Id,idexamen);
-                        let contenido = `
+                if (response && response.length) {
+                    // Utiliza Promise.all para manejar todas las promesas a la vez
+                    let promises = response.map(async function(r) {
+                        let suc = [null, 0, undefined, ''].includes(r.Suc) ? '' : (r.Suc ? r.Suc.toString().padStart(4, '0') : '-');
+                        let numero = [null, 0, undefined, ''].includes(r.Nro) ? '' : (r.Nro ? r.Nro.toString().padStart(8, '0') : '-');
+                        let moduloResult = await vistaDni(r.Id, idexamen);
+                        
+                        return `
                         <tr class="fondo-gris">
                             <td colspan="3"><span class="fw-bolder text-capitalize">fact </span> ${r.Tipo ?? '-'}${suc}-${numero}</td>
                             <td>
@@ -747,73 +749,77 @@ $(document).ready(()=>{
                         </tr>
                         ${moduloResult}
                         `;
-                        
-                        return contenido;
-                    }else{
-                        return '<tr class="mb-2"><td>No hay historial de facturas disponible</td></tr>';
-                    } 
-                });
-                let contents = await Promise.all(promises);
-                contents.forEach(content => $('#lstEx').append(content));
+                    });
+    
+                    let contents = await Promise.all(promises);
+                    $('#lstEx').append(contents.join(''));
+                } else {
+                    $('#lstEx').append('<tr><td>No hay historial de facturas disponible</td></tr>');
+                }
+            })
+            .fail(function(error) {
+                preloader('off');
+                console.error('Error fetching facturas:', error);
             });
     }
-
-    async function vistaDni(id,idexamen) {
+    
+    async function vistaDni(id, idexamen) {
         return new Promise((resolve, reject) => {
             preloader('on');
-
-            $.get(listPrecarga, {Id: id, IdExamen: idexamen})
-                .done(async function(response){
+    
+            $.get(listPrecarga, { Id: id, IdExamen: idexamen })
+                .done(async function(response) {
                     preloader('off');
-                    
                     if (response && response.length) {
-                        let result = '';
-                        for (let r of response) {
-                            detallesResult = await detalles(r.Documento, r.IdPago); 
-                            result += `
-                            <tr class="mb-1">   
-                                <tr class="fondo-grisClaro mb-2">
-                                    <td colspan="4" class="fw-bolder"><span class="fw-bolder">${[0,''].includes(r.Documento) ? '' : 'DNI Precargado: '}</span> ${[0,''].includes(r.Documento) ? 'Sin precarga' : r.Documento}</td>          
-                                    ${detallesResult}
-                                </tr>
+                        let promises = response.map(async function(r) {
+                            let detallesResult = await detalles(r.Documento, r.IdPago);
+                            return `
+                            <tr class="fondo-grisClaro mb-2">
+                                <td colspan="4" class="fw-bolder"><span class="fw-bolder">${[0, ''].includes(r.Documento) ? '' : 'DNI Precargado: '}</span> ${[0, ''].includes(r.Documento) ? 'Sin precarga' : r.Documento}</td>          
+                                ${detallesResult}
                             </tr>
                             `;
-                        }
-                        resolve(result);
+                        });
+    
+                        let result = await Promise.all(promises);
+                        resolve(result.join(''));
+                    } else {
+                        resolve('<tr><td>No hay detalles disponibles</td></tr>');
                     }
                 })
-                .fail(function(error){
+                .fail(function(error) {
+                    preloader('off');
                     reject(error);
                 });
         });
     }
-
+    
     async function detalles(documento, idpago) {
         return new Promise((resolve, reject) => {
             preloader('on');
-            $.get(listExCta, {Id: documento, IdPago: idpago})
-                .done(async function(response){
+            $.get(listExCta, { Id: documento, IdPago: idpago })
+                .done(async function(response) {
                     preloader('off');
                     if (response && response.length) {
-                        let result =  ``;
-                        for (let r of response) {
-                            result += `
-                            <tr>  
-                                <td>${r.Cantidad}</td>
-                                <td>${r.NombreExamen}</td>
-                                <td><input type="checkbox" class="form-check-input" value="${r.IdEx}"></td>
-                            </tr>
-                            `;
-                        }
+                        let result = response.map(r => `
+                        <tr>  
+                            <td>${r.Cantidad}</td>
+                            <td>${r.NombreExamen}</td>
+                            <td><input type="checkbox" class="form-check-input" value="${r.IdEx}"></td>
+                        </tr>
+                        `).join('');
                         resolve(result);
+                    } else {
+                        resolve('<tr><td>No hay detalles disponibles</td></tr>');
                     }
                 })
-                .fail(function(error){
+                .fail(function(error) {
+                    preloader('off');
                     reject(error);
                 });
         });
-        
     }
+    
 
 
 

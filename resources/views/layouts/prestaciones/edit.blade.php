@@ -16,7 +16,7 @@
             <i class="ri-heart-line align-bottom me-1"></i> Paciente
         </button>
 
-        <button type="button" class="btn botonGeneral">
+        <button type="button" class="btn botonGeneral" data-bs-toggle="modal" data-bs-target="#exaCuenta">
             <i class="ri-add-line align-bottom me-1"></i> Ex. Cuenta
         </button>
     </div>
@@ -29,39 +29,49 @@
 
             <div class="col-12 box-information mb-2">
                 <div class="row">
-                    <div class="col-3">
-                        <div class="input-group input-group-sm">
-                            <span class="input-group-text">Paciente</span>
-                            <input type="text" class="form-control" id="Id" name="Id" value="{{ $prestacione->IdPaciente }}" @readonly(true) title="{{ $prestacione->IdPaciente }}">
-                            <input type="text" class="form-control" style="width: 35%" id="NombreCompleto" name="NombreCompleto" value="{{ $prestacione->paciente->Apellido }} {{ $prestacione->paciente->Nombre }}" @readonly(true) title="{{ $prestacione->paciente->Apellido }} {{ $prestacione->paciente->Nombre }}">
-                        </div>
+                    <div class="col-1">
+                        <label class="form-label">Nro</label>
+                        <input type="text" class="form-control" id="Id" name="Id" value="{{ $prestacione->IdPaciente }}" @readonly(true) title="{{ $prestacione->IdPaciente }}">   
                     </div>
 
-                    <div class="col-3">
-                        <div class="input-group input-group-sm selectSize">
-                            <span class="input-group-text">ART</span>
-                            <select data-id="{{ $prestacione->art->Id}}" type="text" name="art" id="art" class="form-control">
-                                <option value="{{ $prestacione->art->Id}}" selected>{{ $prestacione->art->RazonSocial }} - {{ $prestacione->art->Identificacion }}</option>
-                            </select>
-                        </div>
-                    </div>
-    
-                    <div class="col-3">
-                        <div class="input-group input-group-sm selectSize">
-                            <span class="input-group-text">Empresa</span>
-                            <select type="text" class="form-control" name="empresa" id="empresa" >
-                                <option value="{{ $prestacione->empresa->Id}}" selected>{{ $prestacione->empresa->RazonSocial }} - {{ $prestacione->empresa->Identificacion }}</option>
-                            </select>
-                        </div>
+                    <div class="col-1">
+                        <label class="form-label">Fecha</label>
+                        <input type="date" class="form-control" id="Fecha" value="{{ $prestacione->Fecha ?? ''}}">
                     </div>
 
-                    <div class="col-3">
-                        <div class="input-group input-group-sm">
-                            <span class="input-group-text">Para Empresa</span>
-                            <input type="text" name="paraEmpresa" id="paraEmpresa" class="class form-control" value="{{ $prestacione->empresa->RazonSocial }}" title="{{ $prestacione->empresa->RazonSocial }}" @readonly(true)>
-                        </div>
+                    <div class="col-2">
+                        <label for="form-label">Apellido y Nombre</label>
+                        <input type="text" class="form-control" id="NombreCompleto" name="NombreCompleto" value="{{ $prestacione->paciente->Apellido }} {{ $prestacione->paciente->Nombre }}" @readonly(true) title="{{ $prestacione->paciente->Apellido }} {{ $prestacione->paciente->Nombre }}">  
+                    </div>
+
+                    <div class="col-2">
+                        <label class="form-label">ART</label>
+                        <select data-id="{{ $prestacione->art->Id}}" type="text" name="art" id="art" class="form-control">
+                            <option value="{{ $prestacione->art->Id}}" selected>{{ $prestacione->art->RazonSocial }} - {{ $prestacione->art->Identificacion }}</option>
+                        </select>
                     </div>
     
+                    <div class="col-2">
+                        <label class="form-label">Empresa</label>
+                        <select type="text" class="form-control" name="empresa" id="empresa" >
+                            <option value="{{ $prestacione->empresa->Id}}" selected>{{ $prestacione->empresa->RazonSocial }} - {{ $prestacione->empresa->Identificacion }}</option>
+                        </select>
+                    </div>
+
+                    <div class="col-2">
+                        <label class="form-label">Para Empresa</label>
+                        <input type="text" name="paraEmpresa" id="paraEmpresa" class="class form-control" value="{{ $prestacione->empresa->RazonSocial }}" title="{{ $prestacione->empresa->RazonSocial }}" @readonly(true)>
+                    </div>
+    
+                    <div class="col-2">
+                        <label class="form-label">Tipo Prestación</label>
+                        <select class="form-control" name="TipoPrestacion" id="TipoPrestacion">
+                            <option value="{{ $prestacione->TipoPrestacion ? $prestacione->TipoPrestacion : '' }}">{{ $prestacione->TipoPrestacion ? $prestacione->TipoPrestacion : 'Elija una opción...' }}</option>
+                            @foreach($tipoPrestacion as $tipo)
+                                <option value="{{ $tipo->Nombre }}">{{$tipo->Nombre }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                     
                 </div>   
             </div>
@@ -69,34 +79,6 @@
             <div class="col-12 box-information mb-2">
                 <div class="row">
 
-                    <div class="col-4">
-                        <div class="col-10 mb-2">
-                            <div class="input-group input-group-sm">
-                                <span class="input-group-text">Fecha</span>
-                                <input type="date" class="form-control" id="Fecha" value="{{ $prestacione->Fecha ?? ''}}">
-                            </div>
-                        </div>
-                        <div class="col-10 mb-2">
-                            <div class="input-group input-group-sm">
-                                <span class="input-group-text">Tipo Prestación</span>
-                                <select class="form-control" name="TipoPrestacion" id="TipoPrestacion">
-                                    <option value="{{ $prestacione->TipoPrestacion ? $prestacione->TipoPrestacion : '' }}">{{ $prestacione->TipoPrestacion ? $prestacione->TipoPrestacion : 'Elija una opción...' }}</option>
-                                    @foreach($tipoPrestacion as $tipo)
-                                        <option value="{{ $tipo->Nombre }}">{{$tipo->Nombre }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-10 mapas">
-                            <div class="input-group input-group-sm">
-                                <span class="input-group-text">Mapa</span>
-                                <select class="form-control" name="mapas" id="mapas">
-                                    <option value="{{ $prestacione->IdMapa ?? ''}}" selected>{{ $prestacione->mapa->Nro ?? ''}} {{ "| Empresa " . $prestacione->mapa->empresaMapa->RazonSocial ?? ''}} {{ " - ART: " . $prestacione->mapa->artMapa->RazonSocial ?? 'Elija una opción...' }}</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    
                     <div class="col-4">
                         <div class="col-10">
                             <div class="input-group input-group-sm">
@@ -128,6 +110,13 @@
                         </div>
 
                         <div class="col-10 mt-2">
+                            <div class="input-group input-group-sm"> 
+                                <span class="input-group-text">Fecha Anulado</span>
+                                <input type="date" class="form-control" id="FechaAnul" value="{{ in_array($prestacione->FechaAnul, [null, '0000-00-00']) ? '': $prestacione->FechaAnul }}" @readonly(true)>
+                            </div>
+                        </div>
+
+                        <div class="col-10 mt-2">
                             <div class="input-group input-group-sm">
                                 <span class="input-group-text">Facturado</span>
                                 <input type="date" class="form-control" id="FechaFact" value="{{ ($prestacione->FechaFact == '0000-00-00' || $prestacione->FechaFact == null ? '': $prestacione->FechaFact) }}" @readonly(true)>
@@ -146,10 +135,18 @@
                                 <input type="date" class="form-control" id="FechaVto" value="{{ $prestacione->FechaVto }}" @readonly(true)>
                             </div>
                         </div>
-                        
                     </div>
-
+                    
                     <div class="col-4">
+                        <div class="col-10 mapas">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text">Mapa</span>
+                                <select class="form-control" name="mapas" id="mapas">
+                                    <option value="{{ $prestacione->IdMapa ?? ''}}" selected>{{ $prestacione->mapa->Nro ?? ''}} {{ "| Empresa " . $prestacione->mapa->empresaMapa->RazonSocial ?? ''}} {{ " - ART: " . $prestacione->mapa->artMapa->RazonSocial ?? 'Elija una opción...' }}</option>
+                                </select>
+                            </div>
+                        </div>
+
                         <div class="col-10">
                             <div class="input-group input-group-sm">
                                 <span class="input-group-text">Forma de Pago</span>
@@ -213,8 +210,10 @@
                                 </select>
                             </div>
                         </div>
-
+                        
                     </div>
+
+                    <div class="col-4"></div>
                 </div>
             </div>
 
@@ -353,9 +352,9 @@
                         </div>
                     </div>
 
-                    <div class="table-responsive table-card mt-3 mb-1">
+                    <div class="table mt-3 mb-1">
                         
-                        <table class="display table table-bordered" style="width:100%"  id="listado">
+                        <table class="table table-bordered" id="listado">
                             <thead class="table-light">
                                 <th><input type="checkbox" id="checkAllExamenes" name="Id_examenes"></th>
                                 <th class="sort">Exámen</th>
@@ -399,8 +398,8 @@
                                     <h4 class="card-title mb-0">Observaciones privadas</h4><button type="button" class="btn bt-sm botonGeneral" data-bs-toggle="modal" data-bs-target="#addObs">Añadir</button>
                                 </div>
                                 <div class="card-body">
-                                    <div class="table-responsive table-card mb-1">
-                                        <table id="lstPrivPrestaciones" class="display table table-bordered" style="100%">
+                                    <div class="table-card mb-1">
+                                        <table id="lstPrivPrestaciones" class="table table-bordered">
                                             <thead class="table-light">
                                                 <tr>
                                                     <th class="sort">Fecha</th>
@@ -450,8 +449,8 @@
                                     <h4 class="card-title mb-0">Auditoria</h4>
                                 </div>
                                 <div class="card-body">
-                                    <div class="table-responsive table-card mb-1">
-                                        <table id="lstAuditorias" class="display table table-bordered" style="100%">
+                                    <div class="table mb-1">
+                                        <table id="lstAuditorias" class="table table-bordered" style="100%">
                                             <thead class="table-light">
                                                 <tr>
                                                     <th>Fecha y hora</th>
@@ -670,6 +669,35 @@
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+<div id="exaCuenta" class="modal fadeInUp" tabindex="-1" aria-labelledby="myModalLabel" aria-hidde="true" style="display: none">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel"> Disponibilidad Examenes a Cuenta</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>
+            </div>
+            <div class="modal-body" class="text-center p-3">
+                <div class="row auto-mx mb-3">
+                    <div class="table mt-3 mb-1 mx-auto col-sm-7">
+                        <table id="listadoSaldos" class="table table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="sort">Precarga</th>
+                                    <th class="sort">Examen</th>
+                                </tr>
+                            </thead>
+                            <tbody class="list form-check-all" id="lstSaldos">
+                
+                            </tbody>
+                        </table>
+                
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 //Rutas
 const updatePrestacion = "{{ route('updatePrestacion') }}";
@@ -701,6 +729,7 @@ const getBloqueoPrestacion = "{{ route('getBloqueoPrestacion') }}";
 const privateComment = "{{ route('comentariosPriv') }}";
 const savePrivComent = "{{ route('savePrivComent') }}";
 const getAutorizados = "{{ route('getAutorizados') }}";
+const lstExDisponibles = "{{ route('lstExDisponibles') }}";
 
 //Extras
 const TOKEN = "{{ csrf_token() }}";

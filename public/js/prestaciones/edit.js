@@ -4,10 +4,12 @@ $(document).ready(()=> {
     var empresa = $('#empresa').val(), art = $('#art').val();
 
     precargaMapa();
+    examenesCta(empresa);
     
     $(document).on('change', '#empresa, #art, #TipoPrestacion', function(){
         let emp = $('#empresa').val(), art = $('#art').val();
         getMap(emp, art);
+        examenesCta(emp);
     });
     
     quitarDuplicados("#tipoPrestacion");
@@ -70,6 +72,7 @@ $(document).ready(()=> {
             SinEval =$('#SinEval').prop('checked');
             RxPreliminar = $('#RxPreliminar').prop('checked'),
             ObsExamenes = $('#ObsExamenes').val(),
+            FechaAnul = $('#FechaAnul').val(),
             Obs = $('#Obs').val();
  
          //Validamos la factura
@@ -142,6 +145,7 @@ $(document).ready(()=> {
                 tipo: tipo,
                 sucursal: sucursal,
                 nroFactura: nroFactura,
+                FechaAnul: FechaAnul,
                 Obs: Obs,
                 _token: TOKEN
             },
@@ -662,6 +666,40 @@ $(document).ready(()=> {
                 return; 
             }
         });
+    }
+
+    function examenesCta(id) {
+
+        $('#lstSaldos').empty();
+        preloader('on');
+
+        $.get(lstExDisponibles, {Id: id})
+            .done(function(response) {
+                var contenido = '';
+                preloader('off');
+
+                if(response && response.length > 0){
+
+                    $.each(response, function(index, r) {
+                    
+                        contenido += `
+                        <tr>
+                            <td>${r.Precarga === '' ? '-' : r.Precarga}</td>
+                            <td>${r.NombreExamen}</td>
+                        </tr>
+                        `;
+                    });
+                }else{
+                    contenido = `
+                        <tr>
+                            <td>No hay registros de examenes a cuenta</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        `;
+                }
+                $('#lstSaldos').append(contenido); 
+            });    
     }
     
 

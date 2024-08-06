@@ -326,8 +326,7 @@ class PrestacionesController extends Controller
             return response()->json(['msg' => 'No tienes permisos'], 403);
         }
 
-        $prestaciones = Prestacion::with('itemsPrestacion')->find($request->Id);
-
+        $prestaciones = Prestacion::find($request->Id);
 
         if($this->contadorProfesional($prestaciones) > 0) {
             return response()->json(['msg' => 'La prestacion posee profesionales asignados', 'estado' => 'false']);
@@ -348,7 +347,6 @@ class PrestacionesController extends Controller
         if ($prestaciones) {
             $prestaciones->update(['Estado' => '0']);
             $this->deleteExaCuenta($prestaciones);
-            Auditor::setAuditoria($request->Id, 1, 14, Auth::user()->name);
             return response()->json(['msg' => 'Se ha dado de baja la prestación', 'estado' => 'true'], 200);
         }
 
@@ -366,7 +364,7 @@ class PrestacionesController extends Controller
 
         if($prestaciones)
         {
-            $prestaciones->update(['Anulado' => '1']); // 0 => Habilitado, 1 => Anulado
+            $prestaciones->update(['Anulado' => 1, 'FechaAnul' => now()->format('Y-m-d')]); // 0 => Habilitado, 1 => Anulado
             Auditor::setAuditoria($request->Id, 1, 3, Auth::user()->name);
             return response()->json(['msg' => 'Se ha bloqueado la prestación', 'estado' => 'true'], 200);
         }
@@ -473,6 +471,7 @@ class PrestacionesController extends Controller
             $prestacion->Calificacion = $request->Calificacion ?? 0;
             $prestacion->RxPreliminar = $request->RxPreliminar === 'true' ? 1 : 0;
             $prestacion->ObsExamenes = $request->ObsExamenes ?? '';
+            $prestacion->FechaAnul = $request->FechaAnul ?? '0000-00-00';
             $prestacion->save();
             
             $request->SinEval && $this->setPrestacionAtributo($request->Id, $request->SinEval);
@@ -640,17 +639,20 @@ class PrestacionesController extends Controller
 
     private function contadorEstado($prestacion)
     {
-        return $prestacion->itemsPrestaciones()->whereIn('CAdj', [3,5])->count();
+        return $prestacion->itemsPrestacion()->whereIn('CAdj', [3,5])->count();
     }
 
     private function deleteExaCuenta($prestacion)
     {
-        $exaCuenta = ExamenCuentaIt::where('IdPrestacion', $prestacion->Id)->where('IdExamen', $prestacion->itemsPrestaciones->IdExamen)->first();
+        $exaCuenta = ExamenCuentaIt::where('IdPrestacion', $prestacion->Id)->get();
 
-        if($exaCuenta) {
-            $exaCuenta->IdPrestacion = 0;
-            $exaCuenta->save();
-        }
+        if($exaCuenta->isNotEmpty()) {
+            foreach($exaCuenta as $row) {
+
+                $row->IdPrestacion = 0;
+                $row->save();
+            } 
+        } 
     }
 
 }

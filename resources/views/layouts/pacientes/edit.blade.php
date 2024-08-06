@@ -165,8 +165,8 @@
                             </div>
                         </div>
                         
-                        <div class="table-responsive table-card mt-3 mb-1 mx-auto">
-                            <table id="listaPacientes" class="display table table-bordered" style="width:100%">
+                        <div class="table mt-3 mb-1 mx-auto">
+                            <table id="listaPacientes" class="table table-bordered">
                                 <thead class="table-light">
                                     <tr>
                                         <th><input type="checkbox" id="checkAll" name="Id"></th>
@@ -299,37 +299,37 @@
                             <div class="row text-center">
                                 <div class="col-12">
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="ART" value="ART" {{ $fichaLaboral->TipoPrestacion === 'ART' ? 'checked' : '' }}>
+                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="ART" value="ART" {{ isset($fichaLaboral) && $fichaLaboral->TipoPrestacion === 'ART' ? 'checked' : '' }}>
                                         <label class="form-check-label" for="ART">ART</label>
                                     </div>
 
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="INGRESO" value="INGRESO" {{ $fichaLaboral->TipoPrestacion === 'INGRESO' ? 'checked' : '' }}>
+                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="INGRESO" value="INGRESO" {{ isset($fichaLaboral) && $fichaLaboral->TipoPrestacion === 'INGRESO' ? 'checked' : '' }}>
                                         <label class="form-check-label" for="ingreso">INGRESO</label>
                                     </div>
                             
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="PERIODICO" value="PERIODICO" {{ $fichaLaboral->TipoPrestacion === 'PERIODICO' ? 'checked' : '' }}>
+                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="PERIODICO" value="PERIODICO" {{ isset($fichaLaboral) && $fichaLaboral->TipoPrestacion === 'PERIODICO' ? 'checked' : '' }}>
                                         <label class="form-check-label" for="periodico">PERIODICO</label>
                                     </div>
 
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="OCUPACIONAL" value="OCUPACIONAL" {{ $fichaLaboral->TipoPrestacion === 'OCUPACIONAL' ? 'checked' : '' }}>
+                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="OCUPACIONAL" value="OCUPACIONAL" {{ isset($fichaLaboral) && $fichaLaboral->TipoPrestacion === 'OCUPACIONAL' ? 'checked' : '' }}>
                                         <label class="form-check-label" for="ocupacional">OCUPACIONAL</label>
                                     </div>
 
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="EGRESO" value="EGRESO" {{ $fichaLaboral->TipoPrestacion === 'EGRESO' ? 'checked' : '' }}>
+                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="EGRESO" value="EGRESO" {{ isset($fichaLaboral) && $fichaLaboral->TipoPrestacion === 'EGRESO' ? 'checked' : '' }}>
                                         <label class="form-check-label" for="egreso">EGRESO</label>
                                     </div>
 
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="TipoPrestacion" id="OTRO" value="OTRO" {{ in_array($fichaLaboral->TipoPrestacion, ['CARNET', 'NO ART', 'RECMED','S/C_OCUPACIONAL']) ? 'checked' : '' }}>
+                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="TipoPrestacion" id="OTRO" value="OTRO" {{ isset($fichaLaboral) && in_array($fichaLaboral->TipoPrestacion, ['CARNET', 'NO ART', 'RECMED','S/C_OCUPACIONAL']) ? 'checked' : '' }}>
                                         <label class="form-check-label" for="otro">OTRO</label>
                                     </div>
-                                    <div class="form-check form-check-inline" id="divtipoPrestacionPresOtros" style="display: {{  in_array($fichaLaboral->TipoPrestacion, ['CARNET', 'NO ART', 'RECMED','S/C_OCUPACIONAL']) ? '' : 'none' }}">
+                                    <div class="form-check form-check-inline" id="divtipoPrestacionPresOtros" style="display: {{  isset($fichaLaboral) && in_array($fichaLaboral->TipoPrestacion, ['CARNET', 'NO ART', 'RECMED','S/C_OCUPACIONAL']) ? '' : 'none' }}">
                                         <select class="form-select" id="tipoPrestacionPresOtros">
-                                            <option selected value="{{ in_array($fichaLaboral->TipoPrestacion, ['CARNET', 'NO ART', 'RECMED','S/C_OCUPACIONAL']) ? $fichaLaboral->TipoPrestacion : '' }}">{{ in_array($fichaLaboral->TipoPrestacion, ['CARNET', 'NO ART', 'RECMED','S/C_OCUPACIONAL']) ? $fichaLaboral->TipoPrestacion : 'Elija una opción...' }}</option>
+                                            <option selected value="{{ isset($fichaLaboral) && in_array($fichaLaboral->TipoPrestacion, ['CARNET', 'NO ART', 'RECMED','S/C_OCUPACIONAL']) ? $fichaLaboral->TipoPrestacion : '' }}">{{ isset($fichaLaboral) && in_array($fichaLaboral->TipoPrestacion, ['CARNET', 'NO ART', 'RECMED','S/C_OCUPACIONAL']) ? $fichaLaboral->TipoPrestacion : 'Elija una opción...' }}</option>
                                             @foreach ($tiposPrestacionOtros as $tipo)
                                             <option value="{{ $tipo->Nombre }}">{{ $tipo->Nombre }}</option>
                                             @endforeach
@@ -630,8 +630,8 @@
                                             <h4 class="card-title mb-0">Ultimas prestaciones facturadas</h4>
                                         </div>
                                         <div class="card-body">
-                                            <div class="table-responsive table-card mb-1 col-sm-12">
-                                                <table id="lstDisponibles" class="display table table-bordered">
+                                            <div class="table mb-1 col-sm-12">
+                                                <table id="lstDisponibles" class="table table-bordered">
                                                     <thead class="table-light">
                                                     </thead>
                                                     <tbody class="list form-check-all" id="grillaFacturadas">
@@ -696,8 +696,8 @@
                             </div>
 
                             <div class="row auto-mx mb-3">
-                                <div class="table-responsive table-card mt-3 mb-1 mx-auto col-sm-7">
-                                    <table id="listadoSaldos" class="display table table-bordered">
+                                <div class="table mt-3 mb-1 mx-auto col-sm-7">
+                                    <table id="listadoSaldos" class="table table-bordered">
                                         <thead class="table-light">
                                             <tr>
                                                 <th class="sort">Precarga</th>
@@ -833,7 +833,7 @@ const listExCta = "{{ route('listExCta') }}";
 const lstExClientes = "{{ route('lstExClientes') }}";
 const searchExamen = "{{ route('searchExamen') }}";
 const preExamenes = "{{ route('preExamenes') }}";
-const IDFICHA = "{{ $dataCliente->Id }}";
+const IDFICHA = "{{ $dataCliente->Id ?? ''}}";
 
 const getMapas = "{{ route('getMapas') }}";
 

@@ -47,7 +47,7 @@ class Prestacion extends Model
         'FechaAnul',
         'FechaFact',
         'Evaluacion',
-        'Anulado'
+        'Anulado',
     ];
 
     public $timestamps = false;
