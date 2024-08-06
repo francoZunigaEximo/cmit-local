@@ -16,6 +16,9 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
 use App\Exports\PrestacionesExport;
+use App\Models\ArchivoEfector;
+use App\Models\ArchivoInformador;
+use App\Models\ExamenCuentaIt;
 use Maatwebsite\Excel\Facades\Excel;
 use stdClass;
 use Illuminate\Support\Facades\Auth;
@@ -322,31 +325,28 @@ class PrestacionesController extends Controller
             return response()->json(['msg' => 'No tienes permisos'], 403);
         }
 
-        $prestaciones = Prestacion::with(['itemsPrestacion.archivoEfector'])->find($request->Id);
+        $prestaciones = Prestacion::with('itemsPrestacion')->find($request->Id);
 
-        $contadorProfesional = $prestaciones->itemsPrestacion()
-            ->where('IdProfesional','!=', 0)
-            ->count();
 
-        $contadorAdjuntos = $prestaciones->itemsPrestacion->archivoEfector->count();
-        var_dump($contadorAdjuntos); exit;
-
-        $contadorEstado = $prestaciones->itemsPrestaciones()
-                ->whereIn('CAdj', [3,5])
-                ->count();
-
-        if($contadorAdjuntos > 0) {
-            return response()->json(['msg' => 'La prestacion posee adjuntos asociados', 'estado' => 'false']);
-        }
-
-        if($contadorProfesional > 0) {
+        if($this->contadorProfesional($prestaciones) > 0) {
             return response()->json(['msg' => 'La prestacion posee profesionales asignados', 'estado' => 'false']);
         }
 
-        
+        if($this->contadorAdjuntosEfector($prestaciones) > 0) {
+            return response()->json(['msg' => 'La prestacion posee adjuntos efector asociados', 'estado' => 'false']);
+        }
+
+        if($this->contadorAdjuntosInformador($prestaciones) > 0) {
+            return response()->json(['msg' => 'La prestacion posee adjuntos informador asociados', 'estado' => 'false']);
+        }
+
+        if($this->contadorEstado($prestaciones) > 0) {
+            return response()->json(['msg' => 'La prestacion posee examenes con estados cerrados', 'estado' => 'false']);
+        }
 
         if ($prestaciones) {
             $prestaciones->update(['Estado' => '0']);
+            $this->deleteExaCuenta($prestaciones);
             Auditor::setAuditoria($request->Id, 1, 14, Auth::user()->name);
             return response()->json(['msg' => 'Se ha dado de baja la prestación', 'estado' => 'true'], 200);
         }
@@ -622,5 +622,34 @@ class PrestacionesController extends Controller
         return response()->json(PrestacionesTipo::all());
     }
 
+    private function contadorProfesional($prestacion)
+    {
+        return $prestacion->itemsPrestacion()->where('IdProfesional','!=', 0)->count();
+    }
+
+    private function contadorAdjuntosEfector($prestacion)
+    {
+        return ArchivoEfector::join('itemsprestaciones', 'archivosefector.IdEntidad', '=', 'itemsprestaciones.Id')->where('IdEntidad', $prestacion->Id)->count();
+    }
+
+    private function contadorAdjuntosInformador($prestacion)
+    {
+        return ArchivoInformador::join('itemsprestaciones', 'archivosinformador.IdEntidad', '=', 'itemsprestaciones.Id')->where('IdEntidad', $prestacion->Id)->count();
+    }
+
+    private function contadorEstado($prestacion)
+    {
+        return $prestacion->itemsPrestaciones()->whereIn('CAdj', [3,5])->count();
+    }
+
+    private function deleteExaCuenta($prestacion)
+    {
+        $exaCuenta = ExamenCuentaIt::where('IdPrestacion', $prestacion->Id)->where('IdExamen', $prestacion->itemsPrestaciones->IdExamen)->first();
+
+        if($exaCuenta) {
+            $exaCuenta->IdPrestacion = 0;
+            $exaCuenta->save();
+        }
+    }
 
 }
