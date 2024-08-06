@@ -635,3 +635,18 @@ tr.shown td.details-control {
 	margin-top: 0px !important;
 }
 
+.page-content {
+    padding: calc(50px + 1.5rem) calc(1.5rem* .5) 60px calc(1.5rem* .5) !important;
+}
+
+.btn-group-sm>.btn, .btn-sm {
+    --vz-btn-padding-y: 0.10rem !important;
+}
+
+:root {
+	--vz-card-spacer-y: 0.50rem !important;
+}
+
+#filtrosAvanzados .card {
+	margin-bottom: 0.5rem !important;
+}

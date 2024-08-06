@@ -92,16 +92,17 @@ $(document).ready(()=>{
                             total = data.Total || 1;
 
                         let resultado = data.Anulado === 0 
-                            ? ((cerradoAdjunto/total)*100).toFixed(2) + '%'
-                            : '0.00%';
+                            ? ((cerradoAdjunto/total)*100).toFixed(0)
+                            : '0';
 
-                        return `<div class="${indicador(data)}">${resultado}</div>`;
+                        return `<div class="text-center ${indicador(data)}">${resultado}</div>`;
                     }
 
                 },
                 {
                     data: null,
                     name: 'FechaAlta',
+                    width: "65.8px",
                     targets: 2,
                     orderable: true,
                     render: function(data){
@@ -111,6 +112,7 @@ $(document).ready(()=>{
                 {
                     data: null,
                     name: 'Id',
+                    width: "42.8px",
                     target: 3,
                     orderable: true,
                     render: function(data){
@@ -132,6 +134,7 @@ $(document).ready(()=>{
                 {
                     data: null,
                     name: 'Tipo',
+                    width: "86.8px",
                     orderable: true,
                     targets: 5,
                     render: function(data){
@@ -174,6 +177,7 @@ $(document).ready(()=>{
                 {
                     data: null,
                     name: 'Id',
+                    width: "58.8px",
                     orderable: true,
                     targets: 9,
                     render: function(data){
@@ -192,6 +196,7 @@ $(document).ready(()=>{
                 {
                     data: null,
                     name: 'eEnviado',
+                    width: "28.8px",
                     orderable: false,
                     targets: 10,
                     render: function(data){
@@ -201,9 +206,9 @@ $(document).ready(()=>{
                 {
                     data: null,
                     name: 'INC',
+                    width: "10px",
                     orderable: false, 
                     targets: 11,
-                    width: "10px",
                     render: function(data){
                         return data.Incompleto === 1 ? `<div class="text-center"><i class="ri-check-line"></i></div>` : `-`;
                     }
@@ -238,6 +243,7 @@ $(document).ready(()=>{
                 {
                     data: null,
                     name: 'FP',
+                    width: "32.8px",
                     orderable: false, 
                     targets: 15,
                     render: function(data){
@@ -249,6 +255,7 @@ $(document).ready(()=>{
                 {
                     data: null,
                     name: 'Factura',
+                    width: "22.8px",
                     orderable: false,
                     targets: 16,
                     render: function(data){
@@ -260,6 +267,7 @@ $(document).ready(()=>{
                 {
                     data: null,
                     name: 'Id',
+                    width: '102.4px',
                     orderable: false,
                     targets: 17,
                     render: function(data){

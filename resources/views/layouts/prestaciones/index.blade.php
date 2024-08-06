@@ -14,138 +14,137 @@
 
 
 <div class="row">
-    <div class="col-lg-12">
+    <div class="col-12">
         <div class="card">
  
             <div id="mensajeria"></div>
 
             <div class="card-body">
                 <div class="listjs-table" id="customerList">
-                    <div class="row g-4 mb-3">
+                    <div class="row g-4 mb-3 justify-content-center">
 
                         <form id="form-index">
                             <div class="col-12 p-3 border border-1 border-color" style="border-color: #666666;">
-                            <div class="row">
-                                
-                                <div class="col-sm-2 mb-3">
-                                    <div>
-                                        <label for="fechaHasta" class="form-label"><strong>Fecha desde: </strong><span class="required">(*)</span></label>
-                                        <input type="date" class="form-control" id="fechaDesde">
-                                        <small class="text-muted">Obligatorio.</small>
-                                    </div>
-                                </div>
-                                <div class="col-sm-2 mb-3">
-                                    <div>
-                                        <label for="fechaHasta" class="form-label"><strong>Fecha hasta: </strong><span class="required">(*)</span></label>
-                                        <input type="date" class="form-control" id="fechaHasta">
-                                        <small class="text-muted">Obligatorio.</small>
-                                    </div>
-                                </div>
+                                <div class="row">
 
-                                <div class="col-sm-2 mb-3">
-                                    <label for="TipoPrestacion" class="form-label"><strong>Tipo de prestación:</strong></label>
-                                    <select class="js-example-basic-multiple" name="tipoPrestacion[]" multiple="multiple" id="TipoPrestacion" data-placeholder="Elija una opción...">
-                                        <option value="CARNET">Carnet</option>
-                                        <option value="EGRESO">Egreso</option>
-                                        <option value="INGRESO">Ingreso</option>
-                                        <option value="NO_ART">NO ART</option>
-                                        <option value="OCUPACIONAL">Ocupacional</option>
-                                        <option value="OTRO">Otro</option>
-                                        <option value="PERIODICO">Periódico</option>
-                                        <option value="RECMED">Redmec</option>
-                                        <option value="S/C_OCUPACIO">S/C Ocupacional</option>
-                                    </select>
-                                </div>
-
-                                <div class="col-sm-2 mb-3">
-                                    <div>
-                                        <label for="Estado" class="form-label"><strong>Estado:</strong></label>
-                                        <select class="js-example-basic-multiple" name="estados[]" multiple="multiple" id="Estado" data-placeholder="Elija una opción...">
-                                            <optgroup label="Estado">
-                                                <option value="Abierto">Abierto</option>
-                                                <option value="Cerrado">Cerrado</option>
-                                                <option value="Finalizado">Finalizado</option>
-                                                <option value="Entregado">Entregado</option>
-                                                <option value="eEnviado">eEnviado</option>
-                                                <option value="Facturado">Facturado</option>
-                                            </optgroup>
-                                            <optgroup label="Pago">
-                                                <option value="Pago-C">Cuenta corriente</option>
-                                                <option value="Pago-P">Examen a cuenta</option>
-                                                <option value="Pago-B">Contado</option>
-                                            </optgroup>
-                                            <optgroup label="Forma de Pago">
-                                                <option value="SPago-G">Sin cargo</option>
-                                                <option value="SPago-F">Transferencia</option>
-                                                <option value="SPago-E">Otra</option>
-                                            </optgroup>
-                                            <optgroup label="Filtros">
-                                                <option value="Anulado">Anulado</option>
-                                                <option value="Ausente">Ausente</option>
-                                                <option value="Devol">Devolución</option>
-                                                <option value="Forma">Forma</option>
-                                                <option value="Incompleto">Incompleto</option>
-                                                <option value="RxPreliminar">Rx Preliminar</option>
-                                                <option value="SinEsc">Sin Escanear</option>
-                                            </optgroup>
-                                        </select>
-                                    </div>  
-                                </div>
-
-                                <div class="col-sm-2 mb-3">
-                                    <label for="nroprestacion" class="form-label font-weight-bold"><strong>Nro. Prestación</strong></label>
-                                    <input type="text" placeholder="Nro." class="form-control" id="nroprestacion">
-                                    <small class="text-muted">Anula todos los filtros su uso.</small>
-                                </div>
-
-                                <div class="col-sm-2 mb-3 d-flex align-items-center">
-                                    <button type="button" class="btn botonGeneral buscarPrestaciones"><i class="ri-zoom-in-line"></i>&nbsp;Buscar</button>&nbsp;
-                                    <button type="button" class="btn botonGeneral hoyPrestaciones"><i class="ri-zoom-in-line"></i>&nbsp;Solo Hoy</button>
-                                </div>
-
-                               <!-- Filtros avanzados --> 
-                               <div class="collapse" id="filtrosAvanzados">
-                                <div class="card mb-3">
-                                  <div class="card-body" style="background: #eaeef3">
-                                    <div class="row">
+               
+                                        <div class="col-2 p-1">
+                                            <div>
+                                                <label for="fechaHasta" class="form-label"><strong>Fecha desde: </strong><span class="required">(*)</span></label>
+                                                <input type="date" class="form-control" id="fechaDesde">
+                                                <small class="text-muted">Obligatorio.</small>
+                                            </div>
+                                        </div>
+    
+                                        <div class="col-2 p-1">
+                                            <div>
+                                                <label for="fechaHasta" class="form-label"><strong>Fecha hasta: </strong><span class="required">(*)</span></label>
+                                                <input type="date" class="form-control" id="fechaHasta">
+                                                <small class="text-muted">Obligatorio.</small>
+                                            </div>
+                                        </div>
+    
+                                        <div class="col-2 p-1">
+                                            <label for="TipoPrestacion" class="form-label"><strong>Tipo de prestación:</strong></label>
+                                            <select class="js-example-basic-multiple" name="tipoPrestacion[]" multiple="multiple" id="TipoPrestacion" data-placeholder="Elija una opción...">
+                                                <option value="CARNET">Carnet</option>
+                                                <option value="EGRESO">Egreso</option>
+                                                <option value="INGRESO">Ingreso</option>
+                                                <option value="NO_ART">NO ART</option>
+                                                <option value="OCUPACIONAL">Ocupacional</option>
+                                                <option value="OTRO">Otro</option>
+                                                <option value="PERIODICO">Periódico</option>
+                                                <option value="RECMED">Redmec</option>
+                                                <option value="S/C_OCUPACIO">S/C Ocupacional</option>
+                                            </select>
+                                        </div>
+    
+                                        <div class="col-2 p-1">
+                                            <div>
+                                                <label for="Estado" class="form-label"><strong>Estado:</strong></label>
+                                                <select class="js-example-basic-multiple" name="estados[]" multiple="multiple" id="Estado" data-placeholder="Elija una opción...">
+                                                    <optgroup label="Estado">
+                                                        <option value="Abierto">Abierto</option>
+                                                        <option value="Cerrado">Cerrado</option>
+                                                        <option value="Finalizado">Finalizado</option>
+                                                        <option value="Entregado">Entregado</option>
+                                                        <option value="eEnviado">eEnviado</option>
+                                                        <option value="Facturado">Facturado</option>
+                                                    </optgroup>
+                                                    <optgroup label="Pago">
+                                                        <option value="Pago-C">Cuenta corriente</option>
+                                                        <option value="Pago-P">Examen a cuenta</option>
+                                                        <option value="Pago-B">Contado</option>
+                                                    </optgroup>
+                                                    <optgroup label="Forma de Pago">
+                                                        <option value="SPago-G">Sin cargo</option>
+                                                        <option value="SPago-F">Transferencia</option>
+                                                        <option value="SPago-E">Otra</option>
+                                                    </optgroup>
+                                                    <optgroup label="Filtros">
+                                                        <option value="Anulado">Anulado</option>
+                                                        <option value="Ausente">Ausente</option>
+                                                        <option value="Devol">Devolución</option>
+                                                        <option value="Forma">Forma</option>
+                                                        <option value="Incompleto">Incompleto</option>
+                                                        <option value="RxPreliminar">Rx Preliminar</option>
+                                                        <option value="SinEsc">Sin Escanear</option>
+                                                    </optgroup>
+                                                </select>
+                                            </div>  
+                                        </div>
+    
+                                        <div class="col-2 p-1">
+                                            <label for="nroprestacion" class="form-label font-weight-bold"><strong>Nro. Prestación</strong></label>
+                                            <input type="text" placeholder="Nro." class="form-control" id="nroprestacion">
+                                            <small class="text-muted">Anula todos los filtros su uso.</small>
+                                        </div>
+    
+                                        <div class="col-2 p-1 d-flex align-items-center justify-content-center">
+                                            <button type="button" class="btn botonGeneral buscarPrestaciones"><i class="ri-zoom-in-line"></i>&nbsp;Buscar</button>&nbsp;
+                                            <button type="button" class="btn botonGeneral hoyPrestaciones"><i class="ri-zoom-in-line"></i>&nbsp;Hoy</button>
+                                        </div>
+                      
                                     
-                                        <div class="col-sm-3 mb-3">
-                                            <div>
-                                                <label for="pacienteSelect2" class="form-label font-weight-bold"><strong>Paciente</strong></label>
-                                                <select name="pacienteSelect2" class="form-control" id="pacienteSelect2">
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-3 mb-3">
-                                            <div>
-                                                <label for="empresaSelect2" class="form-label font-weight-bold"><strong>Empresa</strong></label>
-                                                <select name="empresaSelect2" class="form-control" id="empresaSelect2">
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-3 mb-3">
-                                            <div>
-                                                <label for="artSelect2" class="form-label font-weight-bold"><strong>Art</strong></label>
-                                                <select name="artSelect2" class="form-control" id="artSelect2">
-                                                </select>
-                                            </div>
-                                        </div>
+                                    <!-- Filtros avanzados --> 
+                                    <div class="collapse" id="filtrosAvanzados">
+                                        <div class="card mb-3">
+                                            <div class="card-body" style="background: #eaeef3">
+                                                <div class="row">
+                                                
+                                                    <div class="col-3 p-2">
+                                                        <div>
+                                                            <label for="pacienteSelect2" class="form-label font-weight-bold"><strong>Paciente</strong></label>
+                                                            <select name="pacienteSelect2" class="form-control" id="pacienteSelect2">
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-3 p-2">
+                                                        <div>
+                                                            <label for="empresaSelect2" class="form-label font-weight-bold"><strong>Empresa</strong></label>
+                                                            <select name="empresaSelect2" class="form-control" id="empresaSelect2">
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-3 p-2">
+                                                        <div>
+                                                            <label for="artSelect2" class="form-label font-weight-bold"><strong>Art</strong></label>
+                                                            <select name="artSelect2" class="form-control" id="artSelect2">
+                                                            </select>
+                                                        </div>
+                                                    </div>
 
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                  </div>
-                                </div>
-                              </div>
-                                <!-- Fin del filtro avanzado -->
-                                <div class="hstack gap-2 justify-content-end">
                                     
                                 </div>
-                                
-                            </div>
                             </div>
                         </form>
                     </div>
 
-                    <div class="col-sm-9">
+                    <div class="col-12">
                         <div>
                             @can('prestaciones_add')
                             <button type="button" class="btn botonGeneral add-btn" data-bs-toggle="offcanvas" data-bs-target="#offcanvasTop" aria-controls="offcanvasTop">
@@ -169,8 +168,9 @@
                         </div>
                     </div>
 
-                    <div class="table-responsive table-card mt-3 mb-1">
-                        <table id="listaPrestaciones" class="display table table-bordered" style="width:100%">
+                    <div class="table w-100 mt-3 mb-1">
+                        
+                        <table id="listaPrestaciones" class="table nowrap align-middle" style="width:100%">
                             <thead class="table-light">
                                 <tr>
                                     <th><input type="checkbox" id="checkAll" name="Id"></th>

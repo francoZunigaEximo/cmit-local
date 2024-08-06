@@ -83,7 +83,8 @@ class PrestacionesController extends Controller
                 'prestaciones.Entregado as Entregado'
             )
             ->where('prestaciones.Estado', 1)
-            ->groupBy('prestaciones.Id');
+            ->groupBy('prestaciones.Id')
+            ->orderBy('prestaciones.Fecha', 'ASC');
     
         if (!empty($request->nroprestacion)) {
             $query->where('prestaciones.Id', '=', $request->nroprestacion);
