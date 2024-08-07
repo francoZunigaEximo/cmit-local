@@ -19,6 +19,7 @@ use App\Exports\PrestacionesExport;
 use App\Models\ArchivoEfector;
 use App\Models\ArchivoInformador;
 use App\Models\ExamenCuentaIt;
+use App\Models\ItemPrestacion;
 use Maatwebsite\Excel\Facades\Excel;
 use stdClass;
 use Illuminate\Support\Facades\Auth;
@@ -409,6 +410,7 @@ class PrestacionesController extends Controller
             'IdART' => $request->IdART,
             'Fecha' => now()->format('Y-m-d'),
             'Financiador' => $request->financiador,
+            'NroFactProv' => $request->NroFactProv
         ]);
 
         Auditor::setAuditoria($nuevoId, 1, 44, Auth::user()->name);
@@ -452,7 +454,7 @@ class PrestacionesController extends Controller
 
             // agrego un nuevo cupo al registro de mapa
             if (($mapa == '0' || $mapa == '') && ($prestacion->IdMapa != 'null' || $prestacion->IdMapa != '0' || $prestacion->IdMapa != '' )) {
-                echo "Mapa: ".$mapa." | IdMapa BD: ".$prestacion->IdMapa;
+
                 $this->updateMapeados($prestacion->IdMapa, "agregar");
             } 
         
@@ -472,6 +474,7 @@ class PrestacionesController extends Controller
             $prestacion->RxPreliminar = $request->RxPreliminar === 'true' ? 1 : 0;
             $prestacion->ObsExamenes = $request->ObsExamenes ?? '';
             $prestacion->FechaAnul = $request->FechaAnul ?? '0000-00-00';
+            $prestacion->NroFactProv = $request->NroFactProv ?? '';
             $prestacion->save();
             
             $request->SinEval && $this->setPrestacionAtributo($request->Id, $request->SinEval);
@@ -610,7 +613,6 @@ class PrestacionesController extends Controller
         {
             return response()->json(['prestacion' => true]);
         }
-
     }
 
     public function lstTipoPrestacion()
@@ -620,6 +622,13 @@ class PrestacionesController extends Controller
         }
 
         return response()->json(PrestacionesTipo::all());
+    }
+
+    public function buscarEx(Request $request)
+    {
+        $contar = ItemPrestacion::where('IdPrestacion', $request->Id)->count();
+
+        return response()->json($contar);
     }
 
     private function contadorProfesional($prestacion)

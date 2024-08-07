@@ -40,7 +40,7 @@
                     </div>
 
                     <div class="col-2">
-                        <label for="form-label">Apellido y Nombre</label>
+                        <label class="form-label">Apellido y Nombre</label>
                         <input type="text" class="form-control" id="NombreCompleto" name="NombreCompleto" value="{{ $prestacione->paciente->Apellido }} {{ $prestacione->paciente->Nombre }}" @readonly(true) title="{{ $prestacione->paciente->Apellido }} {{ $prestacione->paciente->Nombre }}">  
                     </div>
 
@@ -76,10 +76,11 @@
                 </div>   
             </div>
 
-            <div class="col-12 box-information mb-2">
+            <div class="col-12 box-information mb-2 ">
                 <div class="row">
 
-                    <div class="col-4">
+                    <div class="col-4 banderas">
+
                         <div class="col-10">
                             <div class="input-group input-group-sm">
                                 {!! ($prestacione->FechaCierre == '0000-00-00' || $prestacione->FechaCierre == null ? '<span class="input-group-text cerrar"><i class="ri-lock-unlock-line"></i>&nbsp;Cerrar' : '<span class="input-group-text cerrar"><i class="ri-lock-line"></i>&nbsp;Cerrado' ) !!}
@@ -102,7 +103,11 @@
                             </div>
                         </div>
 
-                        <div class="col-10 FechaEnviado mt-2">
+                    </div>
+                    
+                    <div class="col-4">
+
+                        <div class="col-10 FechaEnviado">
                             <div class="input-group input-group-sm">
                                 {!! ($prestacione->Cerrado == 1 ? ($prestacione->eEnviado == 1 ? '<span class="input-group-text eEnviar"><i class="ri-lock-line"></i>&nbsp;E-enviado</span>' : '<span class="input-group-text eEnviar"><i class="ri-lock-unlock-line"></i>&nbsp;E-enviar</span>') : '<span class="input-group-text eEnviar"><i class="ri-lock-unlock-line"></i>&nbsp;E-enviar</span>') !!}
                                 <input type="text" class="form-control" id="eEnviar" placeholder="dd/mm/aaaa" value="{{ ($prestacione->FechaEnviado == '0000-00-00' || $prestacione->FechaEnviado == null ? '' : \Carbon\Carbon::parse($prestacione->FechaEnviado)->format('d/m/Y')) }}" @readonly(true)>
@@ -113,13 +118,6 @@
                             <div class="input-group input-group-sm"> 
                                 <span class="input-group-text">Fecha Anulado</span>
                                 <input type="date" class="form-control" id="FechaAnul" value="{{ in_array($prestacione->FechaAnul, [null, '0000-00-00']) ? '': $prestacione->FechaAnul }}" @readonly(true)>
-                            </div>
-                        </div>
-
-                        <div class="col-10 mt-2">
-                            <div class="input-group input-group-sm">
-                                <span class="input-group-text">Facturado</span>
-                                <input type="date" class="form-control" id="FechaFact" value="{{ ($prestacione->FechaFact == '0000-00-00' || $prestacione->FechaFact == null ? '': $prestacione->FechaFact) }}" @readonly(true)>
                             </div>
                         </div>
 
@@ -135,9 +133,28 @@
                                 <input type="date" class="form-control" id="FechaVto" value="{{ $prestacione->FechaVto }}" @readonly(true)>
                             </div>
                         </div>
+
+                        <div class="col-10 mt-2">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text">Facturado</span>
+                                <input type="date" class="form-control" id="FechaFact" value="{{ ($prestacione->FechaFact == '0000-00-00' || $prestacione->FechaFact == null ? '': $prestacione->FechaFact) }}" @readonly(true)>
+                            </div>
+                        </div>
+
+                        <div class="col-10 mt-2 Autoriza">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text">Autorizado por</span>
+                                <select class="form-select" id="Autorizado">
+                                    <option value="" selected>Elija una opción...</option>
+                                    <option value="lucas">Lucas Grunmann</option>
+                                    <option value="martin">Martin</option>
+                                </select>
+                            </div>
+                        </div>                     
                     </div>
-                    
+
                     <div class="col-4">
+
                         <div class="col-10 mapas">
                             <div class="input-group input-group-sm">
                                 <span class="input-group-text">Mapa</span>
@@ -147,7 +164,7 @@
                             </div>
                         </div>
 
-                        <div class="col-10">
+                        <div class="col-10 mt-2">
                             <div class="input-group input-group-sm">
                                 <span class="input-group-text">Forma de Pago</span>
                                 <select class="form-select" id="pago">
@@ -200,24 +217,18 @@
                             </div>
                         </div>
 
-                        <div class="col-10 mt-2 Autoriza">
-                            <div class="input-group input-group">
-                                <span class="input-group-text">Autorizado por</span>
-                                <select class="form-select" id="Autorizado">
-                                    <option value="" selected>Elija una opción...</option>
-                                    <option value="lucas">Lucas Grunmann</option>
-                                    <option value="martin">Martin</option>
-                                </select>
+                        <div class="col-10 mt-2 NroFactProv">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text">Nro Factura Provisoria</span>
+                                <input type="text" class="form-control" id="NroFactProv" name="NroFactProv" value="{{ $prestacione->NroFactProv ?? ''}}">
                             </div>
                         </div>
-                        
-                    </div>
 
-                    <div class="col-4"></div>
+                    </div>
                 </div>
             </div>
 
-            <div class="col-12 box-information mb-2">
+            <div class="col-12 box-information mb-2 evaluacion">
                 <div class="row">
                     <div class="col-6">
 
@@ -417,15 +428,15 @@
                         </div>
                     </div>
 
-                    <div class="row mt-2">
+                    <div class="row mt-2 autorizados">
                         <div class="col-lg-12">
                             <div class="card titulo-tabla">
                                 <div class="card-header d-flex justify-content-between align-items-center">
                                     <h4 class="card-title mb-0">Autorizados</h4>
                                 </div>
                                 <div class="card-body">
-                                    <div class="table-responsive table-card mb-1">
-                                        <table id="lstAutorizados" class="display table table-bordered" style="100%">
+                                    <div class="table mb-1">
+                                        <table id="lstAutorizados" class="table table-bordered">
                                             <thead class="table-light">
                                                 <tr>
                                                     <th>Nombre y Apellido</th>
@@ -442,7 +453,7 @@
                         </div>
                     </div>
 
-                    <div class="row mt-2">
+                    <div class="row mt-2 auditoria">
                         <div class="col-lg-12">
                             <div class="card titulo-tabla">
                                 <div class="card-header d-flex justify-content-between align-items-center">
@@ -730,6 +741,7 @@ const privateComment = "{{ route('comentariosPriv') }}";
 const savePrivComent = "{{ route('savePrivComent') }}";
 const getAutorizados = "{{ route('getAutorizados') }}";
 const lstExDisponibles = "{{ route('lstExDisponibles') }}";
+const buscarEx = "{{ route('buscarEx')}}";
 
 //Extras
 const TOKEN = "{{ csrf_token() }}";
