@@ -281,6 +281,7 @@ $(document).ready(function () {
                 toastr.success(response.msg);
                 mostrarFinanciador();
                 selectMedioPago();
+                selectorPago(pago)
                 setTimeout(() => {
                     checkObservaciones();
                 }, 2000);
@@ -484,12 +485,14 @@ $(document).ready(function () {
             $('.SPago').show();
             $('.ObsPres').show();
             $('.Factura').show();
+            $('.NroFactProv').show();
             $('#SPago').empty().append(contenido);
        
         }else{
             $('.SPago').hide();
             $('.ObsPres').hide();
             $('.Factura').hide();
+            $('.NroFactProv').hide();
             $('.Autoriza').hide();
         }
     }
@@ -602,9 +605,9 @@ $(document).ready(function () {
         $.get(lstExDisponibles, {Id: id})
             .done(await function(response){
                 if(response && response.length > 0) {
-                    console.log(response.length)
+
                     $('#alertaExCta, .examenesDisponibles, .ultimasFacturadas, #siguienteExCta').show();
-                    $('#PagoLaboral, #Pago').val('P');
+                    $('#PagoLaboral, #Pago ').val('P');
                     $('#guardarPrestacion').hide();
                 } else {
 
@@ -613,6 +616,32 @@ $(document).ready(function () {
                     $('#guardarPrestacion').show();
                 }
             })
+    }
+
+    function selectorPago(pago) {
+        
+        if (pago != 'B') {
+            $('#SPago, #Tipo, #Sucursal, #NroFactura').val(" ");
+        }
+
+        if(['B','C', ''].includes(pago)) {
+            
+            $('.ultimasFacturadas, .examenesDisponibles').hide();
+            $('#siguienteExCta').hide();
+            $('#guardarPrestacion').show();
+        }else{
+            preloader('on');
+            $.get(cantTotalDisponibles, {Id: $('#selectClientes').val()})
+            .done(function(response){
+                preloader('off');
+                if(response > 0) {
+                    $('.ultimasFacturadas, .examenesDisponibles').show();
+                    $('#siguienteExCta').show();
+                    $('#guardarPrestacion').hide();
+                }
+            });
+        }
+
     }
 
     
