@@ -12,6 +12,12 @@ $(document).ready(()=>{
     //Datos Default
     $('#Ver').val('activo');
 
+    $('#Nro, #ART, #TipoPrestacion, #Empresa, #Estado, #corteDesde, #corteHasta, #entregaDesde, #entregaHasta, #Vencimiento, #Ver ').on('keydown', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+        }
+    });
+
     //Exportar Excel a clientes
     $('#excel').click(function(e) {
         e.preventDefault();
