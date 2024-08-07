@@ -601,6 +601,11 @@
                                             <input type="text"  class="form-control" placeholder="nro de factura" id="NroFactura">
                                         </div>
 
+                                        <div class="input-group input-group-sm mb-2 NroFactProv">
+                                            <span class="input-group-text">Nro Factura Provisoria</span>
+                                            <input type="text" class="form-control" placeholder="Numero de factura provisoria" id="NroFactProv">
+                                        </div>
+
                                         <div class="input-group input-group-sm mb-2 Autoriza">
                                             <span class="input-group-text">Autorizado por</span>
                                             <select class="form-select" id="Autorizado">
@@ -834,6 +839,7 @@ const lstExClientes = "{{ route('lstExClientes') }}";
 const searchExamen = "{{ route('searchExamen') }}";
 const preExamenes = "{{ route('preExamenes') }}";
 const IDFICHA = "{{ $dataCliente->Id ?? ''}}";
+const pagoInput = "{{ $fichaLaboral->Pago ?? ''}} ";
 
 const getMapas = "{{ route('getMapas') }}";
 

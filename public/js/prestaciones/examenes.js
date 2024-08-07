@@ -62,6 +62,7 @@ $(document).ready(()=>{
             },
 
             success:function(response){
+
                 preloader('off');
                 let data = response.examenes,
                     ids = data.map(function(item) {
@@ -128,8 +129,9 @@ $(document).ready(()=>{
                         _token: TOKEN
                     },
                     success: function(response){
-                        var estados = [];
                         preloader('off');
+                        var estados = [];
+                        
                         response.forEach(function(msg) {
                             
                             let tipoRespuesta = {
@@ -146,6 +148,7 @@ $(document).ready(()=>{
                             $('#exam').val([]).trigger('change.select2');
                             $('#addPaquete').val([]).trigger('change.select2');
                             cargarExamen();
+                            checkExamenes(ID);
                         }
 
                     }
@@ -404,7 +407,8 @@ $(document).ready(()=>{
         });     
     });
 
-    $(document).on('click', '.addExamen', function(){
+    $(document).on('click', '.addExamen', function(e){
+        e.preventDefault();
 
         let id = $("#exam").val();
         
@@ -412,7 +416,6 @@ $(document).ready(()=>{
             toastr.warning("Debe seleccionar un examen para poder añadirlo a la lista", "Atención");
             return;
         }
-        
         saveExamen(id);
     });
 
@@ -529,7 +532,7 @@ $(document).ready(()=>{
                 Id: ID,
             },
             success: function(result) {
-                
+                preloader('off');
                 let estado = result.respuesta;
                 let examenes = result.examenes;
             
@@ -546,8 +549,10 @@ $(document).ready(()=>{
                             tipo: 'listado'
                         },
                         success: function(response){
+                            
                             preloader('off');
                             let registros = response.examenes;
+                            checkExamenes(ID);
 
                             registros.forEach(function(examen) {
                                 let examenId = examen.IdExamen;
@@ -641,6 +646,16 @@ $(document).ready(()=>{
                 return;  
             }
         });
+    }
+
+    async function checkExamenes(id) {
+
+        $.get(await buscarEx, {Id: id}, function(response){
+
+            response === 0 
+                ? $('.auditoria, .autorizados, .evaluacion, .banderas').hide()
+                : $('.auditoria, .autorizados, .evaluacion, .banderas').show()  
+        })
     }
 
 
