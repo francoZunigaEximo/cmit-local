@@ -5,6 +5,7 @@ $(document).ready(()=> {
 
     precargaMapa();
     examenesCta(empresa);
+    checkExamenes(ID);
     
     $(document).on('change', '#empresa, #art, #TipoPrestacion', function(){
         let emp = $('#empresa').val(), art = $('#art').val();
@@ -74,6 +75,7 @@ $(document).ready(()=> {
             ObsExamenes = $('#ObsExamenes').val(),
             FechaAnul = $('#FechaAnul').val(),
             Obs = $('#Obs').val();
+            NroFactProv = $('#NroFactProv').val();
  
          //Validamos la factura
         if (spago === 'G' && autorizado === ''){ 
@@ -147,6 +149,7 @@ $(document).ready(()=> {
                 nroFactura: nroFactura,
                 FechaAnul: FechaAnul,
                 Obs: Obs,
+                NroFactProv: NroFactProv,
                 _token: TOKEN
             },
             success: function(response){
@@ -526,11 +529,13 @@ $(document).ready(()=> {
         if(opcion === 'B'){
             $('.SPago').show();
             $('.Factura').show();
+            $('.NroFactProv').show();
             $('.Autoriza').hide();
         }else {
             $('.SPago').hide();
             $('.ObsPres').hide();
             $('.Factura').hide();
+            $('.NroFactProv').hide();
             $('.Autoriza').hide();
         }
     }
@@ -700,6 +705,16 @@ $(document).ready(()=> {
                 }
                 $('#lstSaldos').append(contenido); 
             });    
+    }
+
+    async function checkExamenes(id) {
+
+        $.get(await buscarEx, {Id: id}, function(response){
+
+            response === 0 
+                ? $('.auditoria, .autorizados, .evaluacion, .banderas').hide()
+                : $('.auditoria, .autorizados, .evaluacion, .banderas').show()  
+        })
     }
     
 

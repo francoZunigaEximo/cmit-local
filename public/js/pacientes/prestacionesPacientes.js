@@ -5,7 +5,7 @@ $(document).ready(()=>{
     $('#Fecha').val(hoy);
 
     $('#siguienteExCta, .seleccionExCta').hide();
-
+    console.log(pagoInput)
     precargaTipoPrestacion(precarga);
     getMap(empresaInput, artInput);
     getListado(null);
@@ -13,6 +13,7 @@ $(document).ready(()=>{
     cantidadDisponibles(empresaInput);
     listadoFacturas(empresaInput, null);
     getUltimasFacturadas(empresaInput);
+    selectorPago(pagoInput);
 
 
     $(document).on('change', '#tipoPrestacionPres', function(){
@@ -69,7 +70,9 @@ $(document).ready(()=>{
             tipo = $('#Tipo').val();
             sucursal = $('#Sucursal').val();
             nroFactura = $('#NroFactura').val(),
-            financiador = $('#financiador').val();
+            financiador = $('#financiador').val(),
+            NroFactProv = $('#NroFactProv').val();
+            
 
         //Validamos la factura
         if (spago === 'G' && autorizado === ''){
@@ -138,6 +141,7 @@ $(document).ready(()=>{
                         IdART: clienteArt.Id ?? 0,
                         IdEmpresa: cliente.Id ?? 0,
                         examenCuenta: ids,
+                        NroFactProv: NroFactProv,
                         _token: TOKEN
                     },
                     success: function(response){
@@ -267,6 +271,11 @@ $(document).ready(()=>{
     $(document).on('change', '#Pago', function(){
 
         let pago = $(this).val();
+        selectorPago(pago);
+    });
+
+    function selectorPago(pago) {
+        
         if (pago != 'B') {
             $('#SPago, #Tipo, #Sucursal, #NroFactura').val(" ");
         }
@@ -289,8 +298,7 @@ $(document).ready(()=>{
             });
         }
 
-        
-    });
+    }
 
     $(document).on('click', '#siguienteExCta', function(e){
         e.preventDefault();

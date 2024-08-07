@@ -111,6 +111,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/prestaciones/excel', [PrestacionesController::class, 'exportExcel'])->name('excelPrestaciones');
     Route::get('/prestaciones/obtener-bloqueo', [PrestacionesController::class, 'getBloqueo'])->name('getBloqueoPrestacion');
     Route::get('lstTipoPrestacion', [PrestacionesController::class, 'lstTipoPrestacion'])->name('lstTipoPrestacion');
+    Route::get('buscarEx', [PrestacionesController::class, 'buscarEx'])->name('buscarEx');
     Route::resource('prestaciones', PrestacionesController::class);
 
     //Ruta Ficha Laboral
