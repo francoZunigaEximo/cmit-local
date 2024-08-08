@@ -20,7 +20,6 @@ $(document).ready(() => {
         'c': lnkClientes,
         'r': lnkPrestaciones,
         'm': lnkMapas,
-        'o': lnkProfesionales,
         'e': lnkEspecialidades,
         'n': lnkNoticias,
         'x': lnkExamenes

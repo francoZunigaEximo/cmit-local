@@ -34,7 +34,6 @@ class AppServiceProvider extends ServiceProvider
             "pacientes_show",
             "facturacion_show",
             "especialidades_show",
-            "profesionales_show",
             "notaCredito_show",
             "mensajeria_show",
             "examenes_show",
@@ -56,8 +55,7 @@ class AppServiceProvider extends ServiceProvider
             "especialidades_add",
             "examenCta_add",
             "mapas_add",
-            "examenes_add",
-            "profesionales_add",
+            "examenes_add"
         ]);
 
         $this->gateAccess([
@@ -68,8 +66,7 @@ class AppServiceProvider extends ServiceProvider
             "especialidades_edit",
             "examenCta_edit",
             "examenes_edit",
-            "pacientes_edit",
-            "profesionales_edit"
+            "pacientes_edit"
         ]);
 
         $this->gateAccess([

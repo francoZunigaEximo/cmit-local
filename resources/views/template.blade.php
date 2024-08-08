@@ -173,11 +173,6 @@
                                         <a href="{{ route('especialidades.index') }}" class="nav-link enlace-blanco" data-key="t-especialidades"> Especialidades </a>
                                     </li>
                                     @endcan
-                                    @can("profesionales_show")
-                                    <li class="nav-item">
-                                        <a href="{{ route('profesionales.index') }}" class="nav-link enlace-blanco" data-key="t-profesionales"> Profesionales </a>
-                                    </li>
-                                    @endcan
                                     @can("examenes_show")
                                     <li class="nav-item">
                                         <a href="{{ route('examenes.index') }}" class="nav-link enlace-blanco" data-key="t-examenes"> Examenes </a>
@@ -332,7 +327,6 @@
         const lnkClientes= "{{ route('clientes.index') }}";
         const lnkPrestaciones = "{{ route('prestaciones.index') }}";
         const lnkMapas = "{{ route('mapas.index') }}";
-        const lnkProfesionales = "{{ route('profesionales.index') }}";
         const lnkEspecialidades = "{{ route('especialidades.index') }}";
         const lnkNoticias = "{{ route('noticias.index') }}";
         const lnkExamenes = "{{ route('examenes.index') }}";

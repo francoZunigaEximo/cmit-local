@@ -1241,3 +1241,8 @@ ALTER TABLE profesionales ADD T5 TINYINT UNSIGNED DEFAULT 0;/** Falta en Pre_Pro
 
 ALTER TABLE prestaciones add NroFactProv VARCHAR(200) NULL;/** Falta en Pre_Produccion**/
 ALTER TABLE clientes add Descuento INTEGER DEFAULT 0; /** Falta en Pre_Produccion **/
+DELETE FROM rol_permisos 
+WHERE rol_id = 3 AND permiso_id IN (65, 66, 67, 68);
+DELETE FROM rol_permisos 
+WHERE rol_id = 13 AND permiso_id IN (65, 66, 67, 68);
+DELETE FROM permisos WHERE Id IN (65,66,67,68);

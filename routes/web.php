@@ -176,7 +176,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('reverseRemito', [MapasController::class, 'reverseRemito'])->name('reverseRemito');
     
     //Rutas de Profesionales
-    Route::resource('profesionales', ProfesionalesController::class);
+    //Route::resource('profesionales', ProfesionalesController::class);
     Route::get('getEvaluador', [ProfesionalesController::class, 'getEvaluador'])->name('getEvaluador');
     Route::get('searchProfesionales', [ProfesionalesController::class, 'search'])->name('searchProfesionales');
     Route::post('estadoProfesional', [ProfesionalesController::class, 'estado'])->name('estadoProfesional');

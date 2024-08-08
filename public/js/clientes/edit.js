@@ -466,12 +466,6 @@ $(document).ready(()=> {
         window.location.href = RUTAEXAMEN;
     });
 
-    $('#Descuento').inputmask('99%', { 
-        numericInput: true, 
-        placeholder: '0%', 
-        rightAlignNumerics: false 
-    });
-
     function actualizarInputHidden() {
         $('#hiddens .telefono-input').each(function(index) {
             $(this).attr('name', `telefonos[]`);

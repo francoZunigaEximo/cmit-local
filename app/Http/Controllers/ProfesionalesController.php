@@ -25,19 +25,11 @@ class ProfesionalesController extends Controller
 
     public function index()
     {
-        if(!$this->hasPermission("profesionales_show")) {
-            abort(403);
-        }
-
         return view('layouts.profesionales.index');
     }
 
     public function search(Request $request): mixed
     {
-        if(!$this->hasPermission("profesionales_show")) {
-            return response()->json(['msg' => 'No tiene permisos'], 403);
-        }
-
         $tipo = $request->tipo;
         $opciones = $request->opciones;
         $especialidad = intval($request->especialidad);
@@ -130,9 +122,6 @@ class ProfesionalesController extends Controller
 
     public function create()
     {
-        if(!$this->hasPermission("profesionales_add")) {
-            abort(403);
-        }
 
         return view('layouts.profesionales.create', with([
             'provincias' => Provincia::all(),
@@ -208,10 +197,6 @@ class ProfesionalesController extends Controller
         
     public function edit(Profesional $profesionale): mixed
     {
-        if(!$this->hasPermission("profesionales_edit")) {
-            abort(403);
-        }
-
         return view('layouts.profesionales.edit', with([
             'profesionale' => $profesionale, 
             'telefono' => $this->getTelefono($profesionale->Id), 
@@ -297,10 +282,6 @@ class ProfesionalesController extends Controller
 
     public function store(Request $request): string
     {
-        if(!$this->hasPermission("profesionales_add")) {
-            return response()->json(['msg' => 'No tiene permisos'], 403);
-        }
-
         $nuevoId = Profesional::max('Id') + 1;
 
         Profesional::create([
@@ -326,10 +307,6 @@ class ProfesionalesController extends Controller
 
     public function update(Request $request, $profesionale)
     {   
-        if(!$this->hasPermission("profesionales_edit")) {
-            return response()->json(['msg' => 'No tiene permisos'], 403);
-        }
-
         $update = Profesional::find($profesionale);
         $update->Documento = $request->Documento;
         $update->Apellido = $request->Apellido;
@@ -380,10 +357,6 @@ class ProfesionalesController extends Controller
 
     public function opciones(Request $request):mixed
     {
-        if(!$this->hasPermission("profesionales_edit")) {
-            return response()->json(['msg' => 'No tiene los permisos adecuados'], 200);
-        }
-
         $prof = Profesional::find($request->Id);
 
         if($prof)
@@ -407,10 +380,6 @@ class ProfesionalesController extends Controller
 
     public function seguro(Request $request): mixed
     {
-        if(!$this->hasPermission("profesionales_edit")) {
-            return response()->json(['msg' => 'No tiene los permisos adecuados para acceder'], 200);
-        }
-
         $prof = Profesional::find($request->Id);
 
         if($prof)

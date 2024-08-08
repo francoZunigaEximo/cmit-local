@@ -55,6 +55,9 @@ $(document).ready(function() {
             },
             obsExtra: {
                 maxlength: 50,
+            },
+            Descuento: {
+                percentage: true
             }
         },
         messages: {
@@ -110,6 +113,9 @@ $(document).ready(function() {
             },
             obsExtra: {
                 maxlength: "La Observacion debe tener un máximo de 50 caracteres.",
+            },
+            Descuento: {
+                percentage: "El descuento debe estar entre 0 y 100 y ser un número entero."
             }
         }
 
@@ -125,6 +131,10 @@ $(document).ready(function() {
     $.validator.addMethod("formatoEspecial", function(value, element) {
         return this.optional(element) || /^\(\d{3}\)\d{3}-\d{4}$/.test(value);
     }, "El formato es (xxx)xxx-xxxx. Los parentesis y guiones se completan automaticamente.");
+
+    $.validator.addMethod("percentage", function(value, element) {
+        return this.optional(element) || (value >= 0 && value <= 100 && Number.isInteger(parseFloat(value)));
+    }, "Por favor, ingrese un valor entre 0 y 100.");
      
 
     $("#form-update, #form-create").on("submit", function(event) {
