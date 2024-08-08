@@ -41,137 +41,126 @@
                             <input type="text" class="form-control" id="Identificacion" name="Identificacion" placeholder="CUIT">
                         </div>
                     </div><!--end col-->
-                    <div class="col-6">
-                        <div class="mb-3">
-                            <label for="RazonSocial" class="form-label">Razón Social <span class="required">(*)</span></label>
-                            <input type="text" class="form-control" placeholder="Nombre cliente" id="RazonSocial" name="RazonSocial">
-                        </div>
+                    <div class="col-6 mb-3">
+                        <label for="RazonSocial" class="form-label">Razón Social <span class="required">(*)</span></label>
+                        <input type="text" class="form-control" placeholder="Nombre cliente" id="RazonSocial" name="RazonSocial">
                     </div><!--end col-->
-                    <div class="col-6">
-                        <div class="mb-3">
-                            <label for="ParaEmpresa" class="form-label">Para empresa <span class="required">(*)</span></label>
-                            <input type="text" name="ParaEmpresa" class="form-control" placeholder="Nombre empresa para" id="ParaEmpresa">
-                        </div>
+                    <div class="col-6 mb-3">
+                        <label for="ParaEmpresa" class="form-label">Para empresa <span class="required">(*)</span></label>
+                        <input type="text" name="ParaEmpresa" class="form-control" placeholder="Nombre empresa para" id="ParaEmpresa">
                     </div><!--end col-->
                     
-                    <div class="col-6">
-                        <div class="mb-3">
-                            <label for="NombreFantasia" class="form-label">Alias</label>
-                            <input type="text" class="form-control" placeholder="Alias cliente" id="NombreFantasia" name="NombreFantasia">
-                        </div>
+                    <div class="col-6 mb-3">
+                        <label for="NombreFantasia" class="form-label">Alias</label>
+                        <input type="text" class="form-control" placeholder="Alias cliente" id="NombreFantasia" name="NombreFantasia">
                     </div><!--end col-->
                     
-                    <div class="col-6">
-                        <div class="mb-3">
-                            <label for="CondicionIva" class="form-label">Condición</label>
-                            <select class="form-select" name="CondicionIva" id="CondicionIva">
-                                <option selected value="">Elija una opción...</option>
-                                <option value="RESPONSABLE INSCRIPTO">Responsable Inscripto</option>
-                                <option value="EXENTO">Exento</option>
-                                <option value="CONSUMIDOR FINAL">Consumidor Final</option>
-                                <option value="NO RESPONSABLE">No Responsable</option>
-                                <option value="MONOTRIBUTISTA">Monotributista</option>
-                                <option value="DEL EXTERIOR">Del Exterior</option>
-                            </select>
-                        </div>
+                    <div class="col-6 mb-3">
+                        <label for="CondicionIva" class="form-label">Condición</label>
+                        <select class="form-select" name="CondicionIva" id="CondicionIva">
+                            <option selected value="">Elija una opción...</option>
+                            <option value="RESPONSABLE INSCRIPTO">Responsable Inscripto</option>
+                            <option value="EXENTO">Exento</option>
+                            <option value="CONSUMIDOR FINAL">Consumidor Final</option>
+                            <option value="NO RESPONSABLE">No Responsable</option>
+                            <option value="MONOTRIBUTISTA">Monotributista</option>
+                            <option value="DEL EXTERIOR">Del Exterior</option>
+                        </select>
                     </div><!--end col-->
 
                     
-                    <div class="col-6">
-                        <div class="mb-3">
-                            <label for="emailidInput" class="form-label">Asignado</label>
-                            <select class="form-select" data-choices="" data-choices-sorting="true" id="autoSizingSelect">
-                                <option selected value="">Juan Perez</option>
-                                <option value="1">...</option>
-                                <option value="2">...</option>
-                            </select>
-                        </div>
+                    <div class="col-6 mb-3">
+                        <label for="emailidInput" class="form-label">Asignado</label>
+                        <select class="form-select" data-choices="" data-choices-sorting="true" id="autoSizingSelect">
+                            <option selected value="">Juan Perez</option>
+                            <option value="1">...</option>
+                            <option value="2">...</option>
+                        </select>
                     </div><!--end col-->
 
-                    <div class="col-6">
-                        <div class="mb-3">
-                            <label for="Telefono" class="form-label">Teléfono <span class="required">(*)</span></label>
-                            <input type="text" class="form-control" placeholder="(xxx)xxx-xxxx" id="cleave-phone" name="Telefono">
-                            
-                        </div>
+                    <div class="col-6 mb-3">
+                        <label for="Telefono" class="form-label">Teléfono <span class="required">(*)</span></label>
+                        <input type="text" class="form-control" placeholder="(xxx)xxx-xxxx" id="cleave-phone" name="Telefono">
                     </div><!--end col-->
 
-                    <div class="col-6">
-                        <div class="mb-3">
-                            <label for="Direccion" class="form-label">Dirección</label>
-                            <input type="text" class="form-control" name="Direccion" id="Direccion">
-                        </div>
+                    <div class="col-6 mb-3">
+                        <label for="Direccion" class="form-label">Dirección</label>
+                        <input type="text" class="form-control" name="Direccion" id="Direccion">
                     </div><!--end col-->
 
-                    <div class="col-6">
-                        <div class="mb-3">
-                            <label for="EMail" class="form-label">Email</label>
-                            <input type="text" class="form-control" name="EMail" id="EMail">
-                        </div>
+                    <div class="col-6 mb-3">
+                        <label for="EMail" class="form-label">Email</label>
+                        <input type="text" class="form-control" name="EMail" id="EMail">
                     </div>
 
-                    <div class="col-6">
-                        <div class="mb-3">
-                            <label for="ObsEMail" class="form-label">Observaciones</label>
-                            <textarea name="ObsEMail" class="form-control" id="ObsEMail"></textarea>
-                        </div>
+                    <div class="col-6 mb-3">
+                        <label for="ObsEMail" class="form-label">Observaciones</label>
+                        <textarea name="ObsEMail" class="form-control" id="ObsEMail"></textarea>
                     </div>
 
-                    <div class="col-4">
-                        <div class="mb-3">
-                            <label for="Provincia" class="form-label">Provincia <span class="required">(*)</span></label>
-                            <select class="form-select" name="Provincia" id="Provincia">
-                                <option selected value="">Elija una opción...</option>
-                                @foreach ($provincias as $provincia)
-                                    <option value="{{ $provincia->Nombre }}">{{ $provincia->Nombre }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div><!--end col-->
-                    <div class="col-4">
-                        <div class="mb-3">
-                            <label for="IdLocalidad" class="form-label">Localidad <span class="required">(*)</span></label>
-                            <select class="form-select" id="IdLocalidad" name="IdLocalidad">
-                                <option selected value="">Elija una opción...</option>
-                            </select>
-                        </div>
+                    <div class="col-3 mb-3">
+                        <label for="FPago" class="form-label">Forma de pago </label>
+                        <select name="FPago" id="FPago" class="form-select">
+                            <option value="" selected>Elija una opción...</option>
+                            <option value="A">CC.</option>
+                            <option value="B">Ctdo.</option>
+                            <option value="C">Ctdo(CC Bloq)</option>
+                        </select>
+                    </div>
+
+                    <div class="col-2 mb-3">
+                        <label for="Descuento" class="form-label">Descuento</label>
+                        <input class="form-control" type="number" id="Descuento" name="Descuento">
+                    </div>
+
+                    <div class="col-3 mb-3">
+                        <label for="Provincia" class="form-label">Provincia <span class="required">(*)</span></label>
+                        <select class="form-select" name="Provincia" id="Provincia">
+                            <option selected value="">Elija una opción...</option>
+                            @foreach ($provincias as $provincia)
+                                <option value="{{ $provincia->Nombre }}">{{ $provincia->Nombre }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    
+                    <div class="col-2 mb-3">
+                        <label for="IdLocalidad" class="form-label">Localidad <span class="required">(*)</span></label>
+                        <select class="form-select" id="IdLocalidad" name="IdLocalidad">
+                            <option selected value="">Elija una opción...</option>
+                        </select>
                     </div>   
                     
-                    <div class="col-2">
-                        <div class="mb-3">
-                            <label for="CP" class="form-label">CP</label>
-                            <input type="text" class="form-control" placeholder="3300" id="CP" name="CP">
+                    <div class="col-2 mb-3">
+                        <label for="CP" class="form-label">CP</label>
+                        <input type="text" class="form-control" placeholder="3300" id="CP" name="CP">
+                    </div>
+
+                    <div class="col-12 mb-3" style="border: 1px solid #eeeeee; padding: 1em">
+                        <label for="Telefonos" class="form-label">Teléfonos</label>
+                        <div class="input-group mb-4">
+                            <input name="prefijoExtra" id="prefijoExtra" type="number" class="form-control" placeholder="Prefijo">
+                            <span class="input-group-addon">-</span>
+                            <input name="numeroExtra" id="numeroExtra" type="number" class="form-control" placeholder="Numero">
+                            <span class="input-group-addon">-</span>
+                            <input name="obsExtra" id="obsExtra" type="text" class="form-control" placeholder="Observación">
+                            <span class="input-group-addon">-</span>
+                            <button type="button" class="btn botonGeneral" id="addNumero">Agregar Número adicional</button>
                         </div>
-                    </div><!--end col-->
+                        <table class="table table-nowrap" style="border: 1px solid #eeeeee">
+                            <thead>
+                                <tr style="background-color: #eeeeee">
+                                    <th scope="col">Prefijo</th>
+                                    <th scope="col">Número</th>
+                                    <th scope="col">Observación</th>
+                                    <th scope="col">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaTelefonos">
 
-                    <div class="col-12" style="border: 1px solid #eeeeee; padding: 1em">
-                        <div class="mb-3">
-                            <label for="Telefonos" class="form-label">Teléfonos</label>
-                            <div class="input-group mb-4">
-                                <input name="prefijoExtra" id="prefijoExtra" type="number" class="form-control" placeholder="Prefijo">
-                                <span class="input-group-addon">-</span>
-                                <input name="numeroExtra" id="numeroExtra" type="number" class="form-control" placeholder="Numero">
-                                <span class="input-group-addon">-</span>
-                                <input name="obsExtra" id="obsExtra" type="text" class="form-control" placeholder="Observación">
-                                <span class="input-group-addon">-</span>
-                                <button type="button" class="btn botonGeneral" id="addNumero">Agregar Número adicional</button>
-                            </div>
-                            <table class="table table-nowrap" style="border: 1px solid #eeeeee">
-                                <thead>
-                                    <tr style="background-color: #eeeeee">
-                                        <th scope="col">Prefijo</th>
-                                        <th scope="col">Número</th>
-                                        <th scope="col">Observación</th>
-                                        <th scope="col">Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tablaTelefonos">
+                            </tbody>
+                        </table>
+                        <div id="hiddens">
 
-                                </tbody>
-                            </table>
-                            <div id="hiddens">
-
-                            </div>
                         </div>
                     </div>
                     

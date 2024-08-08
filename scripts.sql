@@ -1237,6 +1237,7 @@ INSERT INTO rol_permisos (rol_id, permiso_id) VALUES
 (3,51),(3,26),(3,27),(3,28),(3,81),
 (6,51),(6,26),(6,27),(6,28),(6,81),
 (13,51),(13,26),(13,27),(13,28),(13,81);/** Falta en Pre_Produccion**/
-ALTER TABLE profesionales ADD T5 TINYINT UNSIGNED DEFAULT 0;/** Falta en Test y Pre_Produccion**/
+ALTER TABLE profesionales ADD T5 TINYINT UNSIGNED DEFAULT 0;/** Falta en Pre_Produccion**/
 
-ALTER TABLE prestaciones add NroFactProv VARCHAR(200) NULL;/** Falta en Test y Pre_Produccion**/
+ALTER TABLE prestaciones add NroFactProv VARCHAR(200) NULL;/** Falta en Pre_Produccion**/
+ALTER TABLE clientes add Descuento INTEGER DEFAULT 0; /** Falta en Pre_Produccion **/

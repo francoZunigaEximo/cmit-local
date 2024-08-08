@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use App\Models\Cliente;
 use App\Models\FacturaDeVenta;
 use App\Models\PrecioPorCodigo;
 use App\Models\ReporteFinneg;
@@ -56,11 +57,13 @@ trait ReporteExcel
             $q->where('TipoCliente', $tipo);
         })->whereIn('Id', $ids)->orderBy('Id')->get();
 
-
         $fila = 2;
         foreach($query as $data){
+            
+            $cliente = Cliente::find($data->IdEmpresa, ['Descuento']);
+
             $queryPrecio = PrecioPorCodigo::where('Cod', $data->facturaResumen->Cod)->whereNot('Id', 0)->first();
-            $precio = $data->facturaResumen->Ajuste != 0 ? $queryPrecio->Precio * (1-($data->facturaResumen->Ajuste/100)) : ($queryPrecio->Precio ?? '0.00');
+            $precio = $cliente->Descuento != 0 ? $queryPrecio->Precio * (1-($cliente->Descuento/100)) : ($queryPrecio->Precio ?? '0.00');
 
             $contador = ReporteFinneg::count() === 0 ? 10000 : ReporteFinneg::max('IdFinneg') + 1;
 

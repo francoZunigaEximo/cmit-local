@@ -51,10 +51,16 @@ $(document).ready(()=>{
             success: function(response){
                 
                 if(response.existe){
-                    toastr.warning('Ya existe ese cuit registrado en la base de datos', 'Atención');
+                    toastr.warning('Ya existe ese cuit registrado en la base de datos');
                 }
             }
         });
+    });
+
+    $('#Descuento').inputmask('99%', { 
+        numericInput: true, 
+        placeholder: '0%', 
+        rightAlignNumerics: false 
     });
 
     function buscarLocalidad(id){

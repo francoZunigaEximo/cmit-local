@@ -8,6 +8,7 @@ $(document).ready(()=> {
     telefonos();
     quitarDuplicados("#Provincia");
     quitarDuplicados("#CondicionIva");
+    quitarDuplicados("#FPago");
     checkBloq();
     examenes();
 
@@ -463,6 +464,12 @@ $(document).ready(()=> {
         localStorage.setItem('nuevaId', $(this).data('id'));
         localStorage.setItem('nuevaRazonSocial', $(this).data('name'));
         window.location.href = RUTAEXAMEN;
+    });
+
+    $('#Descuento').inputmask('99%', { 
+        numericInput: true, 
+        placeholder: '0%', 
+        rightAlignNumerics: false 
     });
 
     function actualizarInputHidden() {

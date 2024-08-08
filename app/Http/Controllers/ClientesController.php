@@ -191,6 +191,7 @@ class ClientesController extends Controller
             'Provincia' => $request->Provincia,
             'CP' => $request->CP,
             'Bloqueado' => '0',
+            'FPago' => $request->FPago
         ]);
         
         $this->setTelefono($nuevoId, $request->telefonos);

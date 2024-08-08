@@ -58,14 +58,15 @@ class Cliente extends Model
         'Observaciones',
         'Estado',
         'Anexo',
-        'EMailAnexo'
+        'EMailAnexo',
+        'Descuento'
     ];
 
     public $timestamps = false;
 
     public function prestacion()
     {
-        return $this->hasMany(Prestacion::class, ['IdArt', 'IdEmpresa'], 'Id');
+        return $this->hasMany(Prestacion::class, ['IdART', 'IdEmpresa'], 'Id');
     }
 
     public function mapa()
