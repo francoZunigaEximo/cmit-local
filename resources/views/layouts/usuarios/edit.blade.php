@@ -47,6 +47,13 @@
                 Opciones
             </a>
         </li>
+
+        <li class="nav-item verOpciones" role="presentation">
+            <a class="nav-link" data-bs-toggle="tab" href="#seguro" role="tab" aria-selected="false" tabindex="-1">
+                <i class="ri-window-line"></i>
+                Seguro
+            </a>
+        </li>
         
     </ul>
 </div>
@@ -303,6 +310,10 @@
                 
             </div>
        </div>
+    </div>
+
+    <div class="tab-panel verOpciones" id="seguro" role="tabpanel">
+
     </div>
 
 </div>

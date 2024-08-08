@@ -150,14 +150,14 @@
                     </div>
                     @php
                         $arr = ["A" => "CC", "B" => "Ctdo", "C" => "Ctdo(CC Bloq)"];
+                        $selectValor = $cliente->FPago ?? '';
+                        $selectTexto = $arr[$selectValor] ?? 'Elija una opción...';
                     @endphp
 
                     <div class="col-3 mb-3">
                         <label for="FPago" class="form-label">Forma de pago </label>
                         <select name="FPago" id="FPago" class="form-select">
-                            <option value="{{ $cliente->FPago ?? '' }}" selected>{{ 
-                                    $arr[$cliente->FPago]
-                                }}</option>
+                            <option value="{{ $selectValor }}" selected>{{ $selectTexto }}</option>
                             <option value="A">CC.</option>
                             <option value="B">Ctdo.</option>
                             <option value="C">Ctdo(CC Bloq)</option>
