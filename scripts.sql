@@ -1215,32 +1215,32 @@ DELETE FROM rol_permisos WHERE permiso_id = 5 AND rol_id = 12;
 INSERT INTO rol_permisos (rol_id, permiso_id) VALUES
 (7,20),(7,31),(7,42);
 
-ALTER TABLE profesionales_prov ADD Tipo VARCHAR(10) NULL; /*** Falta en Pre_Produccion ***/
-ALTER TABLE profesionales MODIFY wImage varchar(100) DEFAULT '250px';  /*** Falta en Pre_Produccion ***/
-ALTER TABLE profesionales MODIFY hImage varchar(100) DEFAULT '250px';  /*** Falta en Pre_Produccion ***/
-ALTER TABLE profesionales ADD RegHis TINYINT UNSIGNED DEFAULT 1; /** Falta en Pre_Produccion **/
+ALTER TABLE profesionales_prov ADD Tipo VARCHAR(10) NULL; 
+ALTER TABLE profesionales MODIFY wImage varchar(100) DEFAULT '250px';  
+ALTER TABLE profesionales MODIFY hImage varchar(100) DEFAULT '250px'; 
+ALTER TABLE profesionales ADD RegHis TINYINT UNSIGNED DEFAULT 1; 
 INSERT INTO permisos (Id, slug, descripcion) VALUES
 ('76', 'datos_add', 'Creacion y actualizacion de datos del usuario'),
 ('77', 'usuarios_show', 'Visualizar usuarios'),
 ('78', 'usuarios_add', 'Crear nuevo usuario'),
 ('79', 'usuarios_edit', 'Editar usuario'),
 ('80', 'usuarios_delete', 'Eliminar usuario'),
-('81', 'examenCta_report', 'Reporte examen a cuenta');/** Falta en Pre_Produccion**/
+('81', 'examenCta_report', 'Reporte examen a cuenta');
 INSERT INTO rol_permisos (rol_id, permiso_id) VALUES
-(13,76),(13,77),(13,78),(13,79),(13,80);/** Falta en Pre_Produccion**/
-UPDATE permisos SET slug = "examenCta_show" where Id = 51;/** Falta en Pre_Produccion**/
-UPDATE permisos SET descripcion = "Eliminar mapa" where Id = 64;/** Falta en Pre_Produccion**/
-UPDATE permisos SET descripcion = "Acceso a usuarios" where Id = 29;/** Falta en Pre_Produccion**/
+(13,76),(13,77),(13,78),(13,79),(13,80);
+UPDATE permisos SET slug = "examenCta_show" where Id = 51;
+UPDATE permisos SET descripcion = "Eliminar mapa" where Id = 64;
+UPDATE permisos SET descripcion = "Acceso a usuarios" where Id = 29;
 INSERT INTO rol_permisos (rol_id, permiso_id) VALUES
 (1,51),(1,26),(1,27),(1,28),(1,81),
 (2,51),(2,26),(2,27),(2,28),(2,81),
 (3,51),(3,26),(3,27),(3,28),(3,81),
 (6,51),(6,26),(6,27),(6,28),(6,81),
-(13,51),(13,26),(13,27),(13,28),(13,81);/** Falta en Pre_Produccion**/
-ALTER TABLE profesionales ADD T5 TINYINT UNSIGNED DEFAULT 0;/** Falta en Pre_Produccion**/
+(13,51),(13,26),(13,27),(13,28),(13,81);
+ALTER TABLE profesionales ADD T5 TINYINT UNSIGNED DEFAULT 0;
 
-ALTER TABLE prestaciones add NroFactProv VARCHAR(200) NULL;/** Falta en Pre_Produccion**/
-ALTER TABLE clientes add Descuento INTEGER DEFAULT 0; /** Falta en Pre_Produccion **/
+ALTER TABLE prestaciones add NroFactProv VARCHAR(200) NULL;
+ALTER TABLE clientes add Descuento INTEGER DEFAULT 0;
 DELETE FROM rol_permisos 
 WHERE rol_id = 3 AND permiso_id IN (65, 66, 67, 68);
 DELETE FROM rol_permisos 
