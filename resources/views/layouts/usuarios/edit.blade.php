@@ -39,7 +39,7 @@
                 <i class="ri-window-line"></i>
                 Roles
             </a>
-        </li> 
+        </li>
 
         <li class="nav-item verOpciones" role="presentation">
             <a class="nav-link" data-bs-toggle="tab" href="#opciones" role="tab" aria-selected="false" tabindex="-1">
@@ -54,11 +54,15 @@
                 Seguro
             </a>
         </li>
+
+        
+
         
     </ul>
 </div>
 
 <div class="p-4 tab-content">
+    
     <div class="tab-pane active" id="datosUsuarios" role="tabpanel">
         <div class="col-12 d-flex  flex-wrap">
             <div class="p-2 col-md-6">
@@ -79,95 +83,95 @@
 
     <div class="tab-pane" id="datosPersonales" role="tabpanel">
         <form id="form-update">
-        <div class="col-12 d-flex  flex-wrap">
-            <div class="p-2 col-md-6">
-                <label for="nombre" class="form-label font-weight-bold"><strong>Nombre <i class="text-danger">*</i></strong></label>
-                <input id="nombre" name="nombre" class="form-control" type="text" value="{{ $query->Nombre ?? '' }}">
-                <input type="hidden" id="Id" value="{{ $query->Id ?? 0 }}">
-                <input type="hidden" id="IdProfesional" value="{{ $query->IdProfesional ?? 0 }}">
-                <input type="hidden" id="UserId" value="{{ $query->UserId ?? 0 }}">
-            </div>
-            <div class="p-2 col-md-6">
-                <label for="apellido" class="form-label font-weight-bold"><strong>Apellido  <i class="text-danger">*</i></strong></label>
-                <input id="apellido" name="apellido" class="form-control" type="text" value="{{ $query->Apellido ?? '' }}">
-            </div>
+            <div class="col-12 d-flex  flex-wrap">
+                <div class="p-2 col-md-6">
+                    <label for="nombre" class="form-label font-weight-bold"><strong>Nombre <i class="text-danger">*</i></strong></label>
+                    <input id="nombre" name="nombre" class="form-control" type="text" value="{{ $query->Nombre ?? '' }}">
+                    <input type="hidden" id="Id" value="{{ $query->Id ?? 0 }}">
+                    <input type="hidden" id="IdProfesional" value="{{ $query->IdProfesional ?? 0 }}">
+                    <input type="hidden" id="UserId" value="{{ $query->UserId ?? 0 }}">
+                </div>
+                <div class="p-2 col-md-6">
+                    <label for="apellido" class="form-label font-weight-bold"><strong>Apellido  <i class="text-danger">*</i></strong></label>
+                    <input id="apellido" name="apellido" class="form-control" type="text" value="{{ $query->Apellido ?? '' }}">
+                </div>
 
 
-            <div class="p-2 col-md-6">
-                <label for="tipoDoc" class="form-label font-weight-bold"><strong>Tipo Documento <i class="text-danger">*</i></strong></label>
-                <select id="tipoDoc" name="tipoDoc" class="form-select font-weight-bold" >
-                    <option value="{{ $query->TipoDocumento ?? '' }}" selected>{{ $query->TipoDocumento ?? 'Elija una opción...' }}</option>
-                    <option value="DNI">DNI</option>
-                    <option value="CF">CF</option>
-                    <option value="LC">LC</option>
-                    <option value="LE">LE</option>
-                    <option value="PS">PS</option>
-                </select>
-            </div>
+                <div class="p-2 col-md-6">
+                    <label for="tipoDoc" class="form-label font-weight-bold"><strong>Tipo Documento <i class="text-danger">*</i></strong></label>
+                    <select id="tipoDoc" name="tipoDoc" class="form-select font-weight-bold" >
+                        <option value="{{ $query->TipoDocumento ?? '' }}" selected>{{ $query->TipoDocumento ?? 'Elija una opción...' }}</option>
+                        <option value="DNI">DNI</option>
+                        <option value="CF">CF</option>
+                        <option value="LC">LC</option>
+                        <option value="LE">LE</option>
+                        <option value="PS">PS</option>
+                    </select>
+                </div>
 
-            <div class="p-2 col-md-6">
-                <label for="numeroDoc" class="form-label font-weight-bold"><strong>Numero de Documento <i class="text-danger">*</i></strong></label>
-                <input id="numeroDoc" name="numeroDoc" class="form-control" type="text" value="{{ $query->Documento ?? '' }}">
-            </div>
-            
-            <div class="p-2 col-md-6">
-                <label for="cuil" class="form-label font-weight-bold"><strong>CUIL <i class="text-danger">*</i></strong></label>
-                <select id="cuil" name="cuil" class="form-select font-weight-bold" >
-                    <option value="{{ $query->TipoIdentificacion ?? '' }}" selected>{{ $query->TipoIdentificacion ?? 'Elija una opción...' }}</option>
-                    <option value="CUIT" >CUIT</option>
-                    <option value="CUIL" selected>CUIL</option>   
-                </select>
-            </div>
+                <div class="p-2 col-md-6">
+                    <label for="numeroDoc" class="form-label font-weight-bold"><strong>Numero de Documento <i class="text-danger">*</i></strong></label>
+                    <input id="numeroDoc" name="numeroDoc" class="form-control" type="text" value="{{ $query->Documento ?? '' }}">
+                </div>
+                
+                <div class="p-2 col-md-6">
+                    <label for="cuil" class="form-label font-weight-bold"><strong>CUIL <i class="text-danger">*</i></strong></label>
+                    <select id="cuil" name="cuil" class="form-select font-weight-bold" >
+                        <option value="{{ $query->TipoIdentificacion ?? '' }}" selected>{{ $query->TipoIdentificacion ?? 'Elija una opción...' }}</option>
+                        <option value="CUIT" >CUIT</option>
+                        <option value="CUIL" selected>CUIL</option>   
+                    </select>
+                </div>
 
-            <div class="p-2 col-md-6">
-                <label for="numeroCUIL" class="form-label font-weight-bold"><strong>Numero de Cuil/Cuit <i class="text-danger">*</i></strong></label>
-                <input id="numeroCUIL" name="numeroCUIL" class="form-control" type="text" value="{{ $query->Identificacion ?? '' }}" placeholder="xx-xxxxxxxx-x">
-            </div>
+                <div class="p-2 col-md-6">
+                    <label for="numeroCUIL" class="form-label font-weight-bold"><strong>Numero de Cuil/Cuit <i class="text-danger">*</i></strong></label>
+                    <input id="numeroCUIL" name="numeroCUIL" class="form-control" type="text" value="{{ $query->Identificacion ?? '' }}" placeholder="xx-xxxxxxxx-x">
+                </div>
 
-            <div class="p-2 col-md-6">
-                <label for="numTelefono" class="form-label font-weight-bold"><strong>Número de Telefono</strong></label>
-                <input id="numTelefono" name="numTelefono" class="form-control" type="text" value="{{ $query->Telefono ?? '' }}">
-            </div>
+                <div class="p-2 col-md-6">
+                    <label for="numTelefono" class="form-label font-weight-bold"><strong>Número de Telefono</strong></label>
+                    <input id="numTelefono" name="numTelefono" class="form-control" type="text" value="{{ $query->Telefono ?? '' }}">
+                </div>
 
-            <div class="p-2 col-md-6">
-                <label for="fechaNac" class="form-label font-weight-bold"><strong>Fecha de Naciemiento</strong></label>
-                <input id="fechaNac" name="fechaNac" class="form-control" type="date" value="{{ $query->FechaNacimiento ?? '' }}">
-            </div>
-            
-            <!-- Agregar las provincias en base al lugar de nacimiento -->
-            <div class="p-2 col-md-4">
-                <label for="provincia" class="form-label font-weight-bold"><strong>Provincia </strong></label>
-                <select id="provincia" name="provincia" class="form-select font-weight-bold" >
-                    <option value="{{ $query->Provincia ?? ''}}" selected>{{ $query->Provincia ?? 'Seleccionar una opción...' }}</option>
-                    @foreach ($provincias as $provincia)
-                        <option value="{{ $provincia->Nombre }}">{{ $provincia->Nombre }}</option>
-                    @endforeach
-                </select>
-            </div>
+                <div class="p-2 col-md-6">
+                    <label for="fechaNac" class="form-label font-weight-bold"><strong>Fecha de Naciemiento</strong></label>
+                    <input id="fechaNac" name="fechaNac" class="form-control" type="date" value="{{ $query->FechaNacimiento ?? '' }}">
+                </div>
+                
+                <!-- Agregar las provincias en base al lugar de nacimiento -->
+                <div class="p-2 col-md-4">
+                    <label for="provincia" class="form-label font-weight-bold"><strong>Provincia </strong></label>
+                    <select id="provincia" name="provincia" class="form-select font-weight-bold" >
+                        <option value="{{ $query->Provincia ?? ''}}" selected>{{ $query->Provincia ?? 'Seleccionar una opción...' }}</option>
+                        @foreach ($provincias as $provincia)
+                            <option value="{{ $provincia->Nombre }}">{{ $provincia->Nombre }}</option>
+                        @endforeach
+                    </select>
+                </div>
 
-            <div class="p-2 col-md-4">
-                <label for="localidad" class="form-label font-weight-bold"><strong>Localidad </strong></label>
-                <select id="localidad" name="localidad" class="form-select font-weight-bold" >
-                    <option value="{{ $query->ILocalidad ?? ''}}" selected>{{ $query->NombreLocalidad ?? 'Seleccionar una opción...' }}</option>
-                </select>
-            </div>
+                <div class="p-2 col-md-4">
+                    <label for="localidad" class="form-label font-weight-bold"><strong>Localidad </strong></label>
+                    <select id="localidad" name="localidad" class="form-select font-weight-bold" >
+                        <option value="{{ $query->ILocalidad ?? ''}}" selected>{{ $query->NombreLocalidad ?? 'Seleccionar una opción...' }}</option>
+                    </select>
+                </div>
 
-            <div class="p-2 col-md-4">
-                <label for="codPostal" class="form-label font-weight-bold">Codigo Postal</label>
-                <input class="form-control" id="codPostal" type="text" value="{{ $query->CP }}" @readonly(true)>
-            </div>
+                <div class="p-2 col-md-4">
+                    <label for="codPostal" class="form-label font-weight-bold">Codigo Postal</label>
+                    <input class="form-control" id="codPostal" type="text" value="{{ $query->CP }}" @readonly(true)>
+                </div>
 
-            <div class="p-2 col-md-6">
-                <label for="direccion" class="form-label font-weight-bold">Dirección</label>
-                <input class="form-control" id="direccion" type="text" value="{{ $query->Direccion ?? ''}}">
+                <div class="p-2 col-md-6">
+                    <label for="direccion" class="form-label font-weight-bold">Dirección</label>
+                    <input class="form-control" id="direccion" type="text" value="{{ $query->Direccion ?? ''}}">
+                </div>
             </div>
-        </div>
         
-        <div class="p-3 col-md-12 d-flex justify-content-end ">
-            <button class="btn botonGeneral m-2 updateDatos">Actualizar</button>
-        </div>
+            <div class="p-3 col-md-12 d-flex justify-content-end ">
+                <button class="btn botonGeneral m-2 updateDatos">Actualizar</button>
+            </div>
 
-    </form>
+        </form>
     </div>
 
      <div class="tab-pane" id="roles" role="tabpanel">
@@ -235,8 +239,6 @@
                                
                             <input class="form-check-input" type="checkbox" id="InfAdj" {{ ($query->InfAdj === 1 ? 'checked' : '') ?? ''}}>
                             <label class="form-check-label" for="InfAdj"> Informe Adjunto </label>
-                            
-                        </div>
                     </div>
                 </div>
                 
@@ -276,8 +278,7 @@
                     <div class="card-body">
                         <div class="listjs-table">
 
-
-                            <div class="table-responsive table-card mt-3 mb-1">
+                            <div class="table mt-3 mb-1">
                                 <table class="table align-middle table-nowrap" id="customerTable">
                                     <thead class="table-light">
                                         <tr class="text-center">
@@ -293,29 +294,55 @@
                                     </tbody>
                                 </table>
                             </div>
+
                         </div>
                     </div><!-- end card -->
                 </div>
                 <!-- end col -->
             </div>
-
-            <hr class="hr">
+            
             <div class="row">
                 <div class="col-sm-12 text-center">
                     <button type="button" class="saveOpciones btn botonGeneral">Confirmar</button>
                 </div>
             </div>
-            <hr class="hr">
-
-                
-            </div>
        </div>
     </div>
 
-    <div class="tab-panel verOpciones" id="seguro" role="tabpanel">
+    <div class="tab-pane verOpciones" id="seguro" role="tabpanel">
+        <div class="row">
 
+            <div class="col-6 mb-3">
+                <label for="MN" class="form-label">N° Matrícula  </label>
+                <input type="text" class="form-control" placeholder="Matrícula" id="MN" value="{{ $query->MN}}">
+            </div>
+
+            <div class="col-6 v-flex align-item-center">
+                <br /><br />
+                {!!                    
+                    ($query->SeguroMP >= now()->format('Y-m-d') ? '<span class="badge badge-soft-success">Seguro Vigente</span>' : ($query->SeguroMP < now()->format('Y-m-d') && $query->SeguroMP <> '0000-00-00' ? '<span class="badge badge-soft-danger">Seguro Vencido</span>' : ($query->SeguroMP === '0000-00-00' || $query->SeguroMP === '' ? '<span class="badge badge-soft-warning">Seguro Pendiente</span>' : '')))
+                !!}
+            </div><!--end col-->
+            
+            <div class="col-6 mb-3">
+                <label for="MP" class="form-label">Seguro Mala Práxis</label>
+                <input type="text" class="form-control" placeholder="N° seguro" id="MP" value="{{ $query->MP}}">
+            </div>
+
+            <div class="col-6 mb-3">
+                <label for="SeguroMP" class="form-label">Vigencia de Seguro</label>
+                <input type="date" class="form-control" id="SeguroMP" value="{{ $query->SeguroMP}}">
+            </div>
+        
+            <div class="col-lg-12">
+                <div class="hstack gap-2 justify-content-end">
+
+                    <button type="button" class="saveSeguro btn botonGeneral">Guardar</button>
+                </div>
+            </div>
+          
+        </div>
     </div>
-
 </div>
 
 <div id="previsualizarModal" class="modal fadeInUp" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
@@ -362,6 +389,7 @@
     const delPerfil = "{{ route('delPerfil') }}";
     const datosProf = "{{ route('usuarios.updateProfesional') }}";
     const checkRoles = "{{ route('checkRoles') }}";
+    const seguroProf = "{{ route('profesionales.seguro') }}";
 </script>
 
 @push('styles')

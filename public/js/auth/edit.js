@@ -226,6 +226,33 @@ $(document).ready(()=>{
         });
     });
 
+    $(document).on('click', '.saveSeguro', function(e){
+        e.preventDefault();
+
+        let mn = $('#MN').val(),
+            mp = $('#MP').val(),
+            seguroMP = $('#SeguroMP').val(),
+            Id = $('#IdProfesional').val();
+
+        if(mn < 0) {
+            toastr.warning("Matricula no acepta números negativos");
+            return;
+        }
+        preloader('on');
+        $.post(seguroProf, {_token: TOKEN, MN: mn, MP: mp, SeguroMP: seguroMP, Id: Id})
+            
+            .done(function(response){
+                preloader('off');
+                toastr.success(response.msg);
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            })
+    });
+
     $(document).mousemove(function (e) {
         if (resizing) {
             let newWidth = startWidth + (e.clientX - startX);
