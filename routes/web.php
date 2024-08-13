@@ -119,6 +119,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('verificarAlta', [FichaAltaController::class, 'verificar'])->name('verificarAlta');
     Route::get('getTipoPrestacion', [FichaAltaController::class, 'getTipoPrestacion'])->name('getTipoPrestacion');
     Route::get('checkObs', [FichaAltaController::class, 'checkObs'])->name('checkObs');
+    Route::get('verFicha', [FichaAltaController::class, 'verFicha'])->name('verFicha');
+    Route::resource('fichalaboral', FichaAltaController::class);
 
     //Ruta Examenes
     Route::resource('examenes', ExamenesController::class);

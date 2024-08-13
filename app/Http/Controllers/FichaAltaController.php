@@ -9,36 +9,69 @@ use Illuminate\Http\Request;
 
 class FichaAltaController extends Controller
 {
+    public function edit(Fichalaboral $fichalaboral)
+    {
+        $tiposPrestacionPrincipales = ['ART', 'INGRESO', 'PERIODICO', 'OCUPACIONAL', 'EGRESO', 'OTRO'];
+
+        $tiposPrestacionOtros = PrestacionesTipo::whereNotIn('Nombre', $tiposPrestacionPrincipales)->get();
+
+        return view('layouts.fichalaboral.edit', compact(['fichalaboral', 'tiposPrestacionOtros']));
+    }
+
     public function save(Request $request)
     {
+        if(!in_array($request->Id, ['', null, 0])) {
 
-        $fichaLaboral = Fichalaboral::create([
-            'Id' => Fichalaboral::max('Id') + 1,
-            'IdPaciente' => $request->paciente,
-            'IdEmpresa' => $request->cliente ?? 0,
-            'IdART' => $request->art ?? 0,
-            'TipoPrestacion' => $request->tipoPrestacion ?? '',
-            'Tareas' => $request->tareaRealizar ?? '',
-            'Jornada' => $request->horario ?? '',
-            'Pago' => $request->pago ?? '',
-            'TipoJornada' => $request->tipo ?? '',
-            'Observaciones' => $request->observaciones ?? '',
-            'TareasEmpAnterior' => $request->ultimoPuesto ?? '',
-            'Puesto' => $request->puestoActual ?? '',
-            'Sector' => $request->sectorActual ?? '',
-            'CCosto' => $request->ccosto ?? '',
-            'AntigPuesto' => $request->antiguedadPuesto ?? '',
-            'FechaIngreso' => $request->fechaIngreso ?? '',
-            'FechaEgreso' => $request->fechaEgreso ?? '',
-            'FechaPreocupacional' => $request->fechaPreocupacional ?? '',
-            'FechaUltPeriod' => $request->fechaUltPeriod ?? '',
-            'FechaExArt' => $request->fechaExArt ?? ''
-        ]);
+            $fichaLaboral = Fichalaboral::find($request->Id);
+            $fichaLaboral->IdPaciente = $request->paciente;
+            $fichaLaboral->IdEmpresa = $request->cliente ?? 0;
+            $fichaLaboral->IdART =$request->art ?? 0;
+            $fichaLaboral->TipoPrestacion = $request->tipoPrestacion ?? '';
+            $fichaLaboral->Tareas = $request->tareaRealizar ?? '';
+            $fichaLaboral->Jornada = $request->horario ?? '';
+            $fichaLaboral->Pago = $request->pago ?? '';
+            $fichaLaboral->TipoJornada = $request->tipo ?? '';
+            $fichaLaboral->Observaciones = $request->observaciones ?? '';
+            $fichaLaboral->TareasEmpAnterior = $request->ultimoPuesto ?? '';
+            $fichaLaboral->Puesto = $request->puestoActual ?? '';
+            $fichaLaboral->Sector = $request->sectorActual ?? '';
+            $fichaLaboral->CCosto = $request->ccosto ?? '';
+            $fichaLaboral->AntigPuesto = $request->antiguedadPuesto ?? '';
+            $fichaLaboral->FechaIngreso = $request->fechaIngreso ?? '';
+            $fichaLaboral->FechaEgreso = $request->fechaEgreso ?? '';
+            $fichaLaboral->FechaPreocupacional = $request->fechaPreocupacional ?? '';
+            $fichaLaboral->FechaUltPeriod = $request->fechaUltPeriod ?? '';
+            $fichaLaboral->FechaExArt = $request->fechaExArt ?? '';
+            $fichaLaboral->save();
 
-        if ($fichaLaboral) {
-            return response()->json(['msg' => '¡Los datos se han actualizado. Nos redirigimos a la nueva prestación.!'], 200);
+            return response()->json(['msg' => 'Se ha actualizado el registro correctamente'], 200);
+
         }else{
-            return response()->json(['msg' => '¡Ha ocurrido un error al intentar guardar los datos!'], 500);
+
+            $fichaLaboral = Fichalaboral::create([
+                'Id' => Fichalaboral::max('Id') + 1,
+                'IdPaciente' => $request->paciente,
+                'IdEmpresa' => $request->cliente ?? 0,
+                'IdART' => $request->art ?? 0,
+                'TipoPrestacion' => $request->tipoPrestacion ?? '',
+                'Tareas' => $request->tareaRealizar ?? '',
+                'Jornada' => $request->horario ?? '',
+                'Pago' => $request->pago ?? '',
+                'TipoJornada' => $request->tipo ?? '',
+                'Observaciones' => $request->observaciones ?? '',
+                'TareasEmpAnterior' => $request->ultimoPuesto ?? '',
+                'Puesto' => $request->puestoActual ?? '',
+                'Sector' => $request->sectorActual ?? '',
+                'CCosto' => $request->ccosto ?? '',
+                'AntigPuesto' => $request->antiguedadPuesto ?? '',
+                'FechaIngreso' => $request->fechaIngreso ?? '',
+                'FechaEgreso' => $request->fechaEgreso ?? '',
+                'FechaPreocupacional' => $request->fechaPreocupacional ?? '',
+                'FechaUltPeriod' => $request->fechaUltPeriod ?? '',
+                'FechaExArt' => $request->fechaExArt ?? ''
+            ]);
+
+            return response()->json(['msg' => 'Se ha creado el registro correctamente'], 200);
         }
     }
 
@@ -93,6 +126,12 @@ class FichaAltaController extends Controller
         });
         
         return response()->json(['tiposPrestacion' => $tiposPrestacion]);
+    }
+
+    public function verFicha(Request $request)
+    {
+        $query = Fichalaboral::where('IdPaciente', $request->Id)->orderBy('Id', 'DESC')->first();
+        return redirect()->route('fichalaboral.edit', ['fichalaboral' => $query->Id]);
     }
 
 }

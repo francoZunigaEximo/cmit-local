@@ -482,7 +482,6 @@ $(document).ready(()=> {
                     comentariosPrivados();
                 }, 3000);
             })
-
     });
 
     function precargaMapa(){

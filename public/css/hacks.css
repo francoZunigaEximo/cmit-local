@@ -365,11 +365,11 @@ body .selectSize-lg .select2.select2-container {
 }
 
 body .selectClientes2 .select2.select2-container {
-	width: 399px !important;
+	width: 23rem !important;
 }
 
 body .selectArt2 .select2.select2-container {
-	width: 427px !important;
+	width: 24rem !important;
 }
 
 #altaPrestacionModal .modal-body {
@@ -684,12 +684,17 @@ tr.shown td.details-control {
 }
 
 .select2-container--default .select2-selection--single {
-    height: 1.5rem;
+    height: 1.5rem !important;
+}
+
+.select2-container .select2-selection--single {
+    height: calc(1.2em + 1rem + 2px) !important;
 }
 
 .btn {
     --vz-btn-font-size: 0.6rem !important;
 }
+
 
 table {
 	font-size: 0.6rem !important; 
@@ -698,3 +703,4 @@ table {
 th {
 	font-size: 0.7rem !important; 
 }
+

@@ -19,6 +19,7 @@ use App\Exports\PrestacionesExport;
 use App\Models\ArchivoEfector;
 use App\Models\ArchivoInformador;
 use App\Models\ExamenCuentaIt;
+use App\Models\Fichalaboral;
 use App\Models\ItemPrestacion;
 use Maatwebsite\Excel\Facades\Excel;
 use stdClass;
@@ -248,13 +249,15 @@ class PrestacionesController extends Controller
         if (!$this->hasPermission("prestaciones_edit")) {
             abort(403);
         }
+        $tiposPrestacionPrincipales = ['ART', 'INGRESO', 'PERIODICO', 'OCUPACIONAL', 'EGRESO', 'OTRO'];
 
         $tipoPrestacion = PrestacionesTipo::all();
         $financiador = Cliente::find($prestacione->Financiador, ['RazonSocial', 'Id', 'Identificacion']);
         $auditorias = Auditor::with('auditarAccion')->where('IdTabla', 1)->where('IdRegistro', $prestacione->Id)->orderBy('Id', 'Desc')->get();
+        $fichalaboral = Fichalaboral::where('IdPaciente', $prestacione->IdPaciente)->orderBy('Id', 'Desc')->first();
+        $tiposPrestacionOtros = PrestacionesTipo::whereNotIn('Nombre', $tiposPrestacionPrincipales)->get();
 
-        return view('layouts.prestaciones.edit', compact(['tipoPrestacion', 'prestacione', 'financiador', 'auditorias']));
-
+        return view('layouts.prestaciones.edit', compact(['tipoPrestacion', 'prestacione', 'financiador', 'auditorias', 'fichalaboral', 'tiposPrestacionOtros']));
     }
 
     public function estados(Request $request)
@@ -491,7 +494,9 @@ class PrestacionesController extends Controller
         return response()->json(['msg' => 'No se ha actualizado la prestación'], 500);
     }
 
-    public function vencimiento(Request $request): mixed
+    public function show(){}
+
+    public function vencimiento(Request $request)
     {
         if (!$this->hasPermission("prestaciones_edit")) {
             return response()->json(['msg' => 'No tienes permisos'], 403);
