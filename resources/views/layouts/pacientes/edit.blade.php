@@ -268,20 +268,21 @@
                     <div class="row">
                         <div class="col-9 mx-auto box-information">
                             <div class="row">
+                               
                                 <div class="col-6">
                                     <div class="input-group input-group-sm mb-2">
                                         <span class="input-group-text">Paciente</span>
                                         <input type="text" class="form-control" id="Id" name="Id" value="{{ $paciente->Id }}" @readonly(true)>
-                                        <input type="text" class="form-control" style="width: 50%" id="NombreCompleto" name="NombreCompleto" value="{{ $paciente->Apellido }} {{ $paciente->Nombre }}" @readonly(true)>
+                                        <input type="text" class="form-control" style="width: 50%" id="NombreCompleto" name="NombreCompleto" value="{{ $fichaLaboral->paciente->Apellido }} {{ $fichaLaboral->paciente->Nombre }}" @readonly(true)>
                                     </div>
     
                                     <div class="input-group input-group-sm mb-2 selectClientes2">
                                         <span class="input-group-text">Empresa</span>
                                         <select class="form-control-sm" id="selectClientes">
-                                            <option value="{{ $dataCliente->Id ?? '' }}">{{ $dataCliente->RazonSocial ?? '' }}</option>
+                                            <option value="{{ $fichaLaboral->empresa->Id ?? '' }}">{{ $fichaLaboral->empresa->RazonSocial ?? '' }}</option>
                                         </select>
                                     </div>
-    
+                                    <input type="hidden" id="IdFichaLaboral" value="{{ $fichaLaboral->Id ?? 0 }}">
                                     
                                 </div>
                             
@@ -290,7 +291,7 @@
                                     <div class="input-group input-group-sm  mb-2 selectArt2">
                                         <span class="input-group-text">ART</span>
                                         <select class="form-control" id="selectArt">
-                                            <option value="{{ $dataArt->Id ?? '' }}">{{ $dataArt->RazonSocial ?? '' }}</option>
+                                            <option value="{{ $fichaLaboral->art->Id ?? '' }}">{{ $fichaLaboral->art->RazonSocial ?? '' }}</option>
                                         </select>
                                     </div>
                                 </div>
@@ -446,11 +447,14 @@
 
                             <div class="row">
                                 <div class="col-sm-6">
-
+                                    @php
+                                        $pagos = ["B" => "Contado", "A" => "Cuenta Corriente", "P" => "Exámen a Cuenta"];    
+                                    @endphp
+                  
                                     <div class="input-group input-group-sm mb-2">
                                         <span class="input-group-text">Forma de Pago</span>
-                                        <select class="form-select" id="PagoLaboral">
-                                            <option value="" selected>Elija una opción...</option>
+                                        <select class="form-control" id="PagoLaboral">
+                                            <option selected value="">Elija una opción...</option>
                                             <option value="B">Contado</option>
                                             <option value="A">Cuenta Corriente</option>
                                             <option value="P">Exámen a Cuenta</option>
@@ -838,7 +842,7 @@ const listExCta = "{{ route('listExCta') }}";
 const lstExClientes = "{{ route('lstExClientes') }}";
 const searchExamen = "{{ route('searchExamen') }}";
 const preExamenes = "{{ route('preExamenes') }}";
-const IDFICHA = "{{ $dataCliente->Id ?? ''}}";
+const IDFICHA = "{{ $fichaLaboral->empresa->Id ?? ''}}";
 const pagoInput = "{{ $fichaLaboral->Pago ?? ''}} ";
 
 const getMapas = "{{ route('getMapas') }}";

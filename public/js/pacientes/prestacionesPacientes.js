@@ -5,7 +5,6 @@ $(document).ready(()=>{
     $('#Fecha').val(hoy);
 
     $('#siguienteExCta, .seleccionExCta').hide();
-    console.log(pagoInput)
     precargaTipoPrestacion(precarga);
     getMap(empresaInput, artInput);
     getListado(null);

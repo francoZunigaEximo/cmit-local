@@ -1,11 +1,9 @@
 $(document).ready(function () {
 
-    let pagoLaboral = $('#PagoLaboral').val(), changeTipo = $('input[name="TipoPrestacion"]:checked').val();
-    /*$('.nuevaPrestacionModal, .observacionesModal, .nuevaPrestacion, .ObBloqueoEmpresa, .ObBloqueoArt, .ObEmpresa, .ObsPaciente, .ObsPres, .Factura, .TareaRealizar, .UltimoPuesto, .PuestoActual, .SectorActual, .AntiguedadPuesto, .AntiguedadEmpresa, .FechaIngreso, .FechaEgreso, .selectMapaPres, .Autoriza, .listadoExCta, #alertaExCta, #examenesDisponibles, #ultimasFacturadas').hide();*/
+    let pagoLaboral = $('#PagoLaboral').val(), changeTipo = $('input[name="TipoPrestacion"]:checked').val(), empresaInput = $('selectClientes').val();
+    $('.nuevaPrestacionModal, .observacionesModal, .nuevaPrestacion, .ObBloqueoEmpresa, .ObBloqueoArt, .ObEmpresa, .ObsPaciente, .ObsPres, .Factura, .TareaRealizar, .UltimoPuesto, .PuestoActual, .SectorActual, .AntiguedadPuesto, .AntiguedadEmpresa, .FechaIngreso, .FechaEgreso, .selectMapaPres, .Autoriza, .listadoExCta, #examenesDisponibles, #ultimasFacturadas, #alertaExCta').hide();
 
-    $('.nuevaPrestacionModal, .observacionesModal, .nuevaPrestacion, .ObBloqueoEmpresa, .ObBloqueoArt, .ObEmpresa, .ObsPaciente, .ObsPres, .Factura, .selectMapaPres, .Autoriza, .listadoExCta, #alertaExCta, #examenesDisponibles, #ultimasFacturadas').hide();
-
-    let IDficha = $('selectClientes').val() === undefined ? IDFICHA : $('selectClientes').val();
+    let IDficha = ['', null, undefined].includes(empresaInput) ? IDFICHA : empresaInput;
     
     quitarDuplicados("#Horario");
     quitarDuplicados("#Tipo");
@@ -14,6 +12,7 @@ $(document).ready(function () {
     calcularAntiguedad();
     mostrarFinanciador();
     checkExamenesCuenta(IDficha);
+    marcarPago(pagoInput);
 
 
     const listOpciones = {
@@ -159,13 +158,6 @@ $(document).ready(function () {
             $('.Autoriza').hide();
         }
     });
-    
-    /*$('#selectClientes').on('select2:select', function (e) {
-        if (!confirm('¿Está seguro que desea seleccionar esta empresa para el paciente?')) {
-            $(this).val(null).trigger('change.select2');
-            e.stopPropagation();
-        }
-    });*/
 
     //Alerta - verificacion de clientes bloqueados
     $('#selectClientes').on('select2:select', function (e) {
@@ -221,7 +213,8 @@ $(document).ready(function () {
             fechaPreocupacional = $('#FechaPreocupacional').val(),
             fechaUltPeriod =$('#FechaUltPeriod').val(),
             fechaExArt = $('#FechaExArt').val(),
-            antiguedadEmpresa = $('#AntiguedadEmpresa').val();
+            antiguedadEmpresa = $('#AntiguedadEmpresa').val(),
+            Id = $('#IdFichaLaboral').val();
 
         if(tipoPrestacion === 'OTRO' && tipoPrestacionPresOtros) {
             tipoPrestacion = tipoPrestacionPresOtros;
@@ -254,7 +247,8 @@ $(document).ready(function () {
         }
 
         preloader('on');
-        $.post(saveFichaAlta, {paciente: paciente,
+        $.post(saveFichaAlta, {
+            paciente: paciente,
             cliente: cliente,
             art: art,
             tareaRealizar: tareaRealizar,
@@ -274,6 +268,7 @@ $(document).ready(function () {
             fechaPreocupacional: fechaPreocupacional,
             fechaUltPeriod: fechaUltPeriod,
             fechaExArt: fechaExArt,
+            Id: Id,
             _token: TOKEN,
             }) 
             .done(function(response) {
@@ -604,6 +599,8 @@ $(document).ready(function () {
 
         $.get(lstExDisponibles, {Id: id})
             .done(await function(response){
+                let data = selectorPago(pagoInput);
+
                 if(response && response.length > 0) {
 
                     $('#alertaExCta, .examenesDisponibles, .ultimasFacturadas, #siguienteExCta').show();
@@ -611,9 +608,10 @@ $(document).ready(function () {
                     $('#guardarPrestacion').hide();
                 } else {
 
-                    $('#alertaExCta, .examenesDisponibles, .ultimasFacturadas, #siguienteExCta').hide();
-                    $('#PagoLaboral').val('');
+                    $('examenesDisponibles, .ultimasFacturadas, #siguienteExCta').hide();
+                    $('#PagoLaboral').val(data);
                     $('#guardarPrestacion').show();
+                    $('#alertaExCta').hide();
                 }
             })
     }
@@ -644,5 +642,22 @@ $(document).ready(function () {
 
     }
 
+    function marcarPago(pago) {
+        console.log("pago: " + pago)
+        switch (pago) {
+            case 'P':
+                $('#PagoLaboral').val('P');
+                break;
+            case 'A':
+                $('#PagoLaboral').val('A');
+                break;
+            case 'B':
+                $('#PagoLaboral').val('B');
+                break;
+            default:
+                $('#PagoLaboral').val('');
+                break;
+        }
+    }
     
 });
