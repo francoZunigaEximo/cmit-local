@@ -151,7 +151,7 @@
                     @php
                         $arr = ["A" => "CC", "B" => "Ctdo", "C" => "Ctdo(CC Bloq)"];
                         $selectValor = $cliente->FPago ?? '';
-                        $selectTexto = $arr[$selectValor] ?? 'Elija una opción...';
+                        $selectTexto = $arr[$selectValor] ?? 'CC';
                     @endphp
 
                     <div class="col-3 mb-3">
