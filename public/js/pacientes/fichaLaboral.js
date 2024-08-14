@@ -14,7 +14,6 @@ $(document).ready(function () {
     checkExamenesCuenta(IDficha);
     marcarPago(pagoInput);
 
-
     const listOpciones = {
         '.TareaRealizar': ['OCUPACIONAL', 'OTRO', 'INGRESO', 'ART'],
         '.PuestoActual': ['OCUPACIONAL', 'OTRO', 'PERIODICO', 'EGRESO', 'ART'],
@@ -63,13 +62,7 @@ $(document).ready(function () {
     $('input[name="TipoPrestacion"]').change(function(){
         changeTipo = $(this).val(); 
         $('#tipoPrestacionHidden').val(changeTipo);
-
-        if(changeTipo === 'OTRO') {
-            $("#divtipoPrestacionPresOtros").show();
-        }
-        else {
-            $("#divtipoPrestacionPresOtros").hide();
-        }
+        changeTipo === 'OTRO' ? $("#divtipoPrestacionPresOtros").show() : $("#divtipoPrestacionPresOtros").hide();
     });
 
     $('#Pago').val(pagoLaboral);
@@ -149,14 +142,8 @@ $(document).ready(function () {
     });
 
     $(document).on('change', '#SPago', function(){
-
         let pago = $(this).val();
-
-        if(pago === 'G'){
-            $('.Autoriza').show();
-        }else{
-            $('.Autoriza').hide();
-        }
+        pago === 'G' ? $('.Autoriza').show() : $('.Autoriza').hide();
     });
 
     //Alerta - verificacion de clientes bloqueados
@@ -294,7 +281,6 @@ $(document).ready(function () {
     //Calcular Antiguedad en la Empresa en FichaLaboral
     $('#FechaIngreso, #FechaEgreso').change(function(){
         calcularAntiguedad();
-
     });
 
     //Actualizamos
@@ -313,7 +299,6 @@ $(document).ready(function () {
 
         let id = $('#selectClientes').val();
         examenesCta(id);
-        
     });
 
     $(document).on('click', '.cerrarlstExCta', function(e){
@@ -329,9 +314,7 @@ $(document).ready(function () {
 
     //Bloqueo de cliente si existe
     function cargarBloqueo(response) {
-        let razonSocial = response.RazonSocial,
-            motivo = response.Motivo,
-            identificacion = response.Identificacion;
+        let razonSocial = response.RazonSocial, motivo = response.Motivo, identificacion = response.Identificacion;
 
         $('#razonSocialModal').text(razonSocial);
         $('#motivoModal').text(motivo);
@@ -346,15 +329,12 @@ $(document).ready(function () {
         $('#guardarFicha').removeAttr('disabled').removeAttr('title', 'Botón habilitado').removeAttr('data-toggle', 'tooltip').removeAttr('data-placement', 'top');
     }
 
-
-     function mostrarFinanciador(){
+    function mostrarFinanciador(){
         preloader('on');
         $.ajax({
             url: verificarAlta,
             type: 'GET',
-            data: {
-                Id: ID,
-            },
+            data: { Id: ID },
             success: function(response){
                 preloader('off');
                 let verificar = response.fichaLaboral, cliente = response.cliente, clienteArt = response.clienteArt;
@@ -362,7 +342,7 @@ $(document).ready(function () {
                 if(verificar !== undefined && verificar.Id ) {
 
                     $('.updateFinanciador').empty();
-    
+
                     let prestacion = `<select class="form-select" name="financiador" id="financiador">
                                         <option id="emptyFinanciador" value="" selected>Elija una opción...</option>
                                         <option id="artFinanciador" value="${clienteArt.Id}">ART:  ${clienteArt.RazonSocial} - ${clienteArt.Identificacion}</option>
@@ -389,12 +369,10 @@ $(document).ready(function () {
                     }
 
                     filtrarTipoPrestacion($('#financiador').val(), estado);
-
-                 }
-
+                }
             }
         });   
-     }
+    }
 
     function filtrarTipoPrestacion(idFinanciador, estado) {
         preloader('on');
@@ -440,11 +418,8 @@ $(document).ready(function () {
     //Creamos función para trabajar cambios en fechas automaticamente
     function calcularAntiguedad(){
         
-        let ingreso = $('#FechaIngreso').val();
-        let egreso = $('#FechaEgreso').val();
-
-        let dateIngreso = new Date(ingreso);
-        let dateEgreso = egreso ? new Date(egreso) : new Date();
+        let ingreso = $('#FechaIngreso').val(), egreso = $('#FechaEgreso').val();
+        let dateIngreso = new Date(ingreso), dateEgreso = egreso ? new Date(egreso) : new Date();
 
         let diff = dateEgreso.getFullYear() - dateIngreso.getFullYear();
 
@@ -639,7 +614,6 @@ $(document).ready(function () {
                 }
             });
         }
-
     }
 
     function marcarPago(pago) {
