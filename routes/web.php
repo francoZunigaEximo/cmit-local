@@ -112,6 +112,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/prestaciones/obtener-bloqueo', [PrestacionesController::class, 'getBloqueo'])->name('getBloqueoPrestacion');
     Route::get('lstTipoPrestacion', [PrestacionesController::class, 'lstTipoPrestacion'])->name('lstTipoPrestacion');
     Route::get('buscarEx', [PrestacionesController::class, 'buscarEx'])->name('buscarEx');
+    Route::get('/prestaciones/check-incompleto', [PrestacionesController::class, 'checkIncompleto'])->name('prestaciones.checkIncompleto');
     Route::resource('prestaciones', PrestacionesController::class);
 
     //Ruta Ficha Laboral

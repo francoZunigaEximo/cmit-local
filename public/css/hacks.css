@@ -262,6 +262,14 @@ label {
 	color: gray;
 }
 
+.grisFuerte {
+	color: #292e31 !important;
+}
+
+.grisClaro {
+	color: #eeeeee !important;
+}
+
 .verde {
 	color: green;
 }

@@ -511,6 +511,7 @@ $(document).ready(()=>{
                     contenido = (clase === 'badge badge-soft-dark' ? 'custom-badge rojo' : 'badge badge-soft-dark');
             
                 span.removeClass().addClass(contenido);
+                checkerIncompletos(ID);
             },
             error: function(jqXHR){
                 preloader('off');
@@ -519,7 +520,24 @@ $(document).ready(()=>{
                 return;  
             }
         });
+    }
 
+    async function checkerIncompletos(idPrestacion)
+    {
+        if([null,'',0].includes(idPrestacion)) return;
+
+        $.get(await checkInc, { Id: idPrestacion }, function(response) {
+
+            let ids = ['Incompleto', 'Ausente', 'Forma', 'SinEsc', 'Devol'];
+            let propiedades = ['inc', 'aus', 'forma', 'sin', 'devo'];
+        
+            ids.forEach((id, index) => {
+                let propiedad = propiedades[index];
+                let className = response[propiedad] === 'Completo' ? 'grisClaro' : 'grisFuerte';
+        
+                $('#' + id).removeClass().addClass('form-control ' + className);
+            });
+        });
     }
 
     function cargarExamen(){

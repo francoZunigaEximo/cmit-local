@@ -636,6 +636,36 @@ class PrestacionesController extends Controller
         return response()->json($contar);
     }
 
+    public function checkIncompleto(Request $request)
+    {
+        $result = $this->verificarEstados($request->Id);
+
+        $items = ["inc" => "Incompleto", "aus" => "Ausente", "forma" => "Forma", "sin" => "SinEsc", "devo" => "Devolucion"];
+
+        foreach ($items as $key => $column) {
+            $valor = $result->$key === "Completo" ? 0 : 1;
+            Prestacion::find($request->Id)->update([$column => $valor]);
+        }
+
+        return response()->json($result);
+    }
+
+    private function verificarEstados(int $id)
+    {
+        return Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+        ->leftJoin('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
+        ->join('mapas', 'prestaciones.IdMapa', '=', 'mapas.Id')
+        ->select(
+            DB::raw('(SELECT CASE WHEN COUNT(*) = SUM(CASE WHEN items.Incompleto = 0 THEN 1 ELSE 0 END) THEN "Completo" ELSE "Incompleto" END FROM itemsprestaciones AS items WHERE items.IdPrestacion = prestaciones.Id) AS inc'),
+            DB::raw('(SELECT CASE WHEN COUNT(*) = SUM(CASE WHEN items.Ausente = 0 THEN 1 ELSE 0 END) THEN "Completo" ELSE "Incompleto" END FROM itemsprestaciones AS items WHERE items.IdPrestacion = prestaciones.Id) AS aus'),
+            DB::raw('(SELECT CASE WHEN COUNT(*) = SUM(CASE WHEN items.Forma = 0 THEN 1 ELSE 0 END) THEN "Completo" ELSE "Incompleto" END FROM itemsprestaciones AS items WHERE items.IdPrestacion = prestaciones.Id) AS forma'),
+            DB::raw('(SELECT CASE WHEN COUNT(*) = SUM(CASE WHEN items.SinEsc = 0 THEN 1 ELSE 0 END) THEN "Completo" ELSE "Incompleto" END FROM itemsprestaciones AS items WHERE items.IdPrestacion = prestaciones.Id) AS sin'),
+            DB::raw('(SELECT CASE WHEN COUNT(*) = SUM(CASE WHEN items.Devol = 0 THEN 1 ELSE 0 END) THEN "Completo" ELSE "Incompleto" END FROM itemsprestaciones AS items WHERE items.IdPrestacion = prestaciones.Id) AS devo'),
+            )
+            ->where('prestaciones.Id', $id)
+            ->first();
+    }
+
     private function contadorProfesional($prestacion)
     {
         return $prestacion->itemsPrestacion()->where('IdProfesional','!=', 0)->count();

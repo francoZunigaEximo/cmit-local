@@ -6,6 +6,7 @@ $(document).ready(()=> {
     precargaMapa();
     examenesCta(empresa);
     checkExamenes(ID);
+    checkerIncompletos(ID);
     
     $(document).on('change', '#empresa, #art, #TipoPrestacion', function(){
         let emp = $('#empresa').val(), art = $('#art').val();
@@ -716,5 +717,13 @@ $(document).ready(()=> {
         })
     }
     
+    async function checkerIncompletos(idPrestacion)
+    {
+        if([null,'',0].includes(idPrestacion)) return;
+
+        $.get(await checkInc, {Id: idPrestacion}, function(){
+            console.log("Actualizados los estados");
+        });
+    }
 
 });
