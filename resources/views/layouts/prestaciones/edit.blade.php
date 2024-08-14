@@ -341,7 +341,7 @@
                             <div class="mb-3">
                                 <div class="cajaExamenes">
                                     <select class="form-select" name="paquetes" id="paquetes"></select>
-                                    <i class="addPaquete ri-play-list-add-line" title="Añadir paquete completo"></i>
+                                    <i class="addPaquete ri-play-list-add-line naranja" title="Añadir paquete completo"></i>
                                 </div>
                             </div>
                         </div>
@@ -350,7 +350,7 @@
                             <div class="mb-3">
                                 <div class="cajaExamenes">
                                     <select class="form-select" name ="exam" id="exam"></select>
-                                    <i class="addExamen ri-add-circle-line" title="Añadir examén de la busqueda"></i>
+                                    <i class="addExamen ri-add-circle-line naranja" title="Añadir examén de la busqueda"></i>
                                 </div>
                             </div>
                         </div>

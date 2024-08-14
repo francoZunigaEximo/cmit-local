@@ -274,6 +274,10 @@ label {
 	color: green;
 }
 
+.naranja {
+	color: orangered;
+}
+
 .borde-inferior {
 	border-bottom: 2px solid rgb(26, 24, 24);
 }
@@ -712,3 +716,6 @@ th {
 	font-size: 0.7rem !important; 
 }
 
+.cajaExamenes .select2-container .select2-selection--single .select2-selection__rendered {
+  color: orangered !important;
+}

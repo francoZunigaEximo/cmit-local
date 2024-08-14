@@ -831,8 +831,8 @@ class ItemPrestacionesController extends Controller
             } 
 
             return $query->orderBy('efector.IdProveedor', 'ASC')
-                         ->orderBy('ApellidoE', 'ASC')
-                         ->orderBy('itemsprestaciones.Fecha', 'ASC')
+                         ->orderBy('examenes.Nombre', 'ASC')
+                         //->orderBy('itemsprestaciones.Fecha', 'ASC')
                          //->groupBy('itemsprestaciones.Id')
                 ->get();
         });
