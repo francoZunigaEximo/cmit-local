@@ -197,8 +197,8 @@
             
                                 </div>
             
-                                <div class="table-responsive table-card mt-3 mb-1 mx-auto">
-                                    <table id="listaOrdenesPrestaciones" class="display table table-bordered" style="width:100%">
+                                <div class="table mt-3 mb-1 mx-auto">
+                                    <table id="listaOrdenesPrestaciones" class="table table-bordered" style="width:100%">
                                         <thead class="table-light">
                                             <tr>
                                                 <th class="sort">Especialidad</th>
@@ -348,8 +348,8 @@
                     
                                         </div>
                     
-                                        <div class="table-responsive table-card mt-3 mb-1 mx-auto">
-                                            <table id="listaOrdenesEfectores" class="display table table-bordered" style="width:100%">
+                                        <div class="table mt-3 mb-1 mx-auto">
+                                            <table id="listaOrdenesEfectores" class="table table-bordered">
                                                 <thead class="table-light">
                                                     <tr>
                                                         <th class="sort">Fecha</th>
@@ -470,8 +470,8 @@
                     
                                         </div>
                     
-                                        <div class="table-responsive table-card mt-3 mb-1 mx-auto">
-                                            <table id="listaOrdenesEfectoresAsig" class="display table table-bordered" style="width:100%">
+                                        <div class="table mt-3 mb-1 mx-auto">
+                                            <table id="listaOrdenesEfectoresAsig" class="table table-bordered">
                                                 <thead class="table-light">
                                                     <tr>
                                                         <th class="sort">Fecha</th>
@@ -570,8 +570,8 @@
                                             <div class="preloader"></div>
                                         </div>
                     
-                                        <div class="table-responsive table-card mt-3 mb-1 mx-auto">
-                                            <table id="listaOrdenesEfectoresAdj" class="display table table-bordered" style="width:100%">
+                                        <div class="table mt-3 mb-1 mx-auto">
+                                            <table id="listaOrdenesEfectoresAdj" class="table table-bordered"">
                                                 <thead class="table-light">
                                                     <tr>
                                                         <th class="sort">Fecha</th>
@@ -720,8 +720,8 @@
                     
                                         </div>
                     
-                                        <div class="table-responsive table-card mt-3 mb-1 mx-auto">
-                                            <table id="listaOrdenesInformadores" class="display table table-bordered" style="width:100%">
+                                        <div class="table mt-3 mb-1 mx-auto">
+                                            <table id="listaOrdenesInformadores" class="table table-bordered">
                                                 <thead class="table-light">
                                                     <tr>
                                                         <th class="sort">Fecha</th>
@@ -830,8 +830,8 @@
                     
                                         </div>
                     
-                                        <div class="table-responsive table-card mt-3 mb-1 mx-auto">
-                                            <table id="listaOrdenesInformadoresAsig" class="display table table-bordered" style="width:100%">
+                                        <div class="table mt-3 mb-1 mx-auto">
+                                            <table id="listaOrdenesInformadoresAsig" class="table table-bordered">
                                                 <thead class="table-light">
                                                     <tr>
                                                         <th class="sort">Fecha</th>
@@ -930,8 +930,8 @@
                                             </div>
                                         </div>
                     
-                                        <div class="table-responsive table-card mt-3 mb-1 mx-auto">
-                                            <table id="listaOrdenesInformadoresAdj" class="display table table-bordered" style="width:100%">
+                                        <div class="table mt-3 mb-1 mx-auto">
+                                            <table id="listaOrdenesInformadoresAdj" class="table table-bordered">
                                                 <thead class="table-light">
                                                     <tr>
                                                         <th class="sort">Fecha</th>
@@ -1032,8 +1032,8 @@
                                                 </div>
                                             </div>
 
-                                            <div class="table-responsive table-card mt-3 mb-1 mx-auto">
-                                                <table id="listaOrdenesEEnviar" class="display table table-bordered" style="width:100%">
+                                            <div class="table mt-3 mb-1 mx-auto">
+                                                <table id="listaOrdenesEEnviar" class="table table-bordered">
                                                     <thead class="table-light">
                                                         <tr>
                                                             <th class="sort">Fecha</th>
