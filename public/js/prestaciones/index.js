@@ -302,8 +302,8 @@ $(document).ready(()=>{
         });       
     });
     
-    $('#checkAll').on('click', function() {
+    /*$('#checkAll').on('click', function() {
         $('input[type="checkbox"][name="Id"]:not(#checkAll)').prop('checked', this.checked);
-    });
+    });*/
 
 });

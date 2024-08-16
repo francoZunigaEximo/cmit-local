@@ -429,6 +429,7 @@ class PrestacionesExport implements FromCollection,WithHeadings
 
          if (empty($this->filters)) {
             return $query->whereIn('prestaciones.Id', $this->ids)
+            ->groupBy('prestaciones.Id')
             ->orderBy('prestaciones.Id', 'DESC')
             ->get();
          }
@@ -502,6 +503,7 @@ class PrestacionesExport implements FromCollection,WithHeadings
 
         if (empty($this->filters)) {
             return $query->whereIn('prestaciones.Id', $this->ids)
+            ->groupBy('prestaciones.Id')
             ->orderBy('prestaciones.Id', 'DESC')
             ->get();
         }

@@ -170,7 +170,7 @@
 
                     <div class="table w-100 mt-3 mb-1">
                         
-                        <table id="listaPrestaciones" class="table nowrap align-middle" style="width:100%">
+                        <table id="listaPrestaciones" class="table table-bordered">
                             <thead class="table-light">
                                 <tr>
                                     <th><input type="checkbox" id="checkAll" name="Id"></th>

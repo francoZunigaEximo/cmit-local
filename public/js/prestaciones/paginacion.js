@@ -52,6 +52,10 @@ $(document).ready(()=>{
             responsive: true,
             serverSide: true,
             deferRender: true,
+            autoWidth: false,
+            select: {
+                style: 'multi'
+            },
             ajax: {
                 url: SEARCH,
                 data: function(e) {
@@ -78,7 +82,7 @@ $(document).ready(()=>{
                     targets: 0,
                     render: function(data){
                    
-                        return `<div class="text-center"><input type="checkbox" name="Id" value="${data.Id}" checked></div>`;
+                        return `<div class="text-center"><input type="checkbox" name="Id" value="${data.Id}"></div>`;
                     }
                 },
                 {
@@ -301,6 +305,22 @@ $(document).ready(()=>{
                 info: "Mostrando _START_ a _END_ de _TOTAL_ de prestaciones",
             }
         });
+
+        $('#checkAll').on('change', function() {
+            let isChecked = $(this).is(':checked');
+            if (isChecked) {
+                table.rows().select();
+            } else {
+                table.rows().deselect();
+            }
+        });
+
+        $('#listaPrestaciones tbody').on('change', '.row-select', function() {
+            let allChecked = $('#listaPrestaciones .row-select').length === $('#listaPrestaciones .row-select:checked').length;
+            $('#checkAll').prop('checked', allChecked);
+        });
+
+
     });
 });
 
