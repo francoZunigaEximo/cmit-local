@@ -165,7 +165,7 @@ $(document).ready(()=>{
                         return `<div class="text-center">
                         ${data.EstadoEfector !== undefined 
                             ? data.EstadoEfector === 'Pendiente'
-                                ? '<span class="custom-badge rojo">Pendiente</span>'
+                                ? '<span class="custom-badge rojo">Pdte</span>'
                                 : data.EstadoEfector === 'Cerrado'
                                     ? '<span class="custom-badge verde">Cerrado</span>'
                                     : ' - '
