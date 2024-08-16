@@ -1,5 +1,7 @@
 @extends('template')
 
+@section('title', 'Novedades')
+
 @section('content')
 
 <div class="text-center rounded-3 p-5 shadow-lg text-white">
