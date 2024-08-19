@@ -483,7 +483,8 @@ class PrestacionesController extends Controller
             $request->SinEval && $this->setPrestacionAtributo($request->Id, $request->SinEval);
             $request->Obs && $this->setPrestacionComentario($request->Id, $request->Obs);
             $empresa = ($request->tipoPrestacion === 'ART' ? $request->ART : $request->Empresa);
-            
+            ItemPrestacion::InsertarVtoPrestacion($request->Id);
+
             $this->updateFichaLaboral($request->IdPaciente, $request->Art, $request->Empresa);
             $this->addFactura($request->tipo, $request->sucursal, $request->nroFactura, $empresa, $request->tipoPrestacion, $request->Id);
             Auditor::setAuditoria($request->Id, 1, 2, Auth::user()->name);

@@ -47,7 +47,7 @@ class PrestacionesExport implements FromCollection,WithHeadings
                     'Forma Pago',
                     'Vencimiento',
                     'Evaluacion',
-                    'Califiacion',
+                    'Calificacion',
                     'Obs.Resultado',
                     'Anulada',
                     'Obs.Anulada',
@@ -180,11 +180,11 @@ class PrestacionesExport implements FromCollection,WithHeadings
             $prestacionExcel = new stdClass();
 
             $prestacionExcel->fecha             = Carbon::parse($prestacion->Fecha)->format('d-m-Y') ?? '-';
-            $prestacionExcel->prestacion        = $prestacion->Id ?? '-';
-            $prestacionExcel->tipoPrestacion    = $prestacion->TipoPrestacion ?? '-';
-            $prestacionExcel->empresa           = $prestacion->empresa->RazonSocial ?? '-';
-            $prestacionExcel->paraEmpresa       = $prestacion->empresa->ParaEmpresa ?? '-';
-            $prestacionExcel->art               = $prestacion->art->RazonSocial ?? '-';
+            $prestacionExcel->prestacion        = $prestacion->Id ?? '';
+            $prestacionExcel->tipoPrestacion    = $prestacion->TipoPrestacion ?? '';
+            $prestacionExcel->empresa           = $prestacion->empresa->RazonSocial ?? '';
+            $prestacionExcel->paraEmpresa       = $prestacion->empresa->ParaEmpresa ?? '';
+            $prestacionExcel->art               = $prestacion->art->RazonSocial ?? '';
             $prestacionExcel->estado            = $prestacion->Estado === 1 ? 'Habilitado' : 'Inhabilitado';
             $prestacionExcel->eEnviado          = $prestacion->eEnviado === 1 ? "Si" : "No";
             $prestacionExcel->incompleto        = $prestacion->Incompleto === 1 ? "Si" : "No";
@@ -203,7 +203,7 @@ class PrestacionesExport implements FromCollection,WithHeadings
                     $prestacionExcel->formaPago = 'ExCuenta';
                     break;
                 default:
-                    $prestacionExcel->formaPago = '-';
+                    $prestacionExcel->formaPago = 'CCorriente';
                     break;
             }
 
@@ -250,23 +250,23 @@ class PrestacionesExport implements FromCollection,WithHeadings
                     $prestacionExcel->formaPago = 'ExCuenta';
                     break;
                 default:
-                    $prestacionExcel->formaPago = '-';
+                    $prestacionExcel->formaPago = 'CCorriente';
                     break;
             }
 
-            $prestacionExcel->vencimiento       = $prestacion->FechaVto ?? '-';
-            $prestacionExcel->evaluacion        = $prestacion->Evaluacion ?? '-';
-            $prestacionExcel->calificacion      = $prestacion->Calificacion ?? '-';
-            $prestacionExcel->obsResultado      = $prestacion->Observaciones ?? '-';
-            $prestacionExcel->anulada           = $prestacion->Anulado ?? '-';
-            $prestacionExcel->obsAnulado        = $prestacion->ObsAnulado ?? '-';
-            $prestacionExcel->nroCe             = $prestacion->NroCEE ?? '-';
-            $prestacionExcel->ccostos           = $prestacion->CCosto ?? '-';
-            $prestacionExcel->inc               = $prestacion->Incompleto === 0 ? '-' : 'Sí';
-            $prestacionExcel->aus               = $prestacion->Ausente === 0 ? '-' : 'Sí';
-            $prestacionExcel->for               = $prestacion->Forma === 0 ? '-' : 'Sí';
-            $prestacionExcel->dev               = $prestacion->Devol === 0 ? '-' : 'Sí';
-            $prestacionExcel->observacionEstado = $prestacion->ObsEstado ?? '-';
+            $prestacionExcel->vencimiento       = $prestacion->FechaVto ?? '';
+            $prestacionExcel->evaluacion        = $prestacion->Evaluacion ?? '';
+            $prestacionExcel->calificacion      = $prestacion->Calificacion ?? '';
+            $prestacionExcel->obsResultado      = $prestacion->Observaciones ?? '';
+            $prestacionExcel->anulada           = $prestacion->Anulado ?? '';
+            $prestacionExcel->obsAnulado        = $prestacion->ObsAnulado ?? '';
+            $prestacionExcel->nroCe             = $prestacion->NroCEE ?? '';
+            $prestacionExcel->ccostos           = $prestacion->CCosto ?? '';
+            $prestacionExcel->inc               = $prestacion->Incompleto === 0 ? '' : 'Sí';
+            $prestacionExcel->aus               = $prestacion->Ausente === 0 ? '' : 'Sí';
+            $prestacionExcel->for               = $prestacion->Forma === 0 ? '' : 'Sí';
+            $prestacionExcel->dev               = $prestacion->Devol === 0 ? '' : 'Sí';
+            $prestacionExcel->observacionEstado = $prestacion->ObsEstado ?? '';
 
             $prestacionesExcel->push($prestacionExcel);
         }
@@ -283,25 +283,25 @@ class PrestacionesExport implements FromCollection,WithHeadings
 
             $prestacionExcel = new stdClass();
 
-            $prestacionExcel->fecha             = Carbon::parse($prestacion->FechaAlta)->format('d-m-Y') ?? '-'; // Formatear
-            $prestacionExcel->prestacion        = $prestacion->Id ?? '-';
-            $prestacionExcel->tipo              = $prestacion->TipoPrestacion ?? '-';
-            $prestacionExcel->paciente          = $prestacion->Apellido . " " .  $prestacion->Nombre ?? '-';
-            $prestacionExcel->dni               = $prestacion->DNI ?? '-';
+            $prestacionExcel->fecha             = Carbon::parse($prestacion->FechaAlta)->format('d-m-Y') ?? ''; // Formatear
+            $prestacionExcel->prestacion        = $prestacion->Id ?? '';
+            $prestacionExcel->tipo              = $prestacion->TipoPrestacion ?? '';
+            $prestacionExcel->paciente          = $prestacion->Apellido . " " .  $prestacion->Nombre ?? '';
+            $prestacionExcel->dni               = $prestacion->DNI ?? '';
             $prestacionExcel->cliente           = $prestacion->EmpresaRazonSocial . ' ' . $prestacion->EmpresaIdentificacion ?? '-'; 
-            $prestacionExcel->empresa           = $prestacion->EmpresaParaEmp ?? '-';
-            $prestacionExcel->art               = $prestacion->ArtRazonSocial ?? '-';
-            $prestacionExcel->ccostos           = $prestacion->CCosto ?? '-';
-            $prestacionExcel->nroCe             = $prestacion->NroCEE ?? '-';
-            $prestacionExcel->anulada           = $prestacion->Anulado === 1 ? 'Sí' : '-';
-            $prestacionExcel->obsAnulado        = $prestacion->ObsAnulado ?? '-';
-            $prestacionExcel->examen            = $prestacion->Examen ?? '-';
-            $prestacionExcel->exaAnulado        = $prestacion->ExaAnulado ?? '-'; // Consultar Exa Anulado 
-            $prestacionExcel->inc               = ($prestacion->Incompleto === 1 ? 'Sí' : '-');
-            $prestacionExcel->aus               = $prestacion->Ausente === 1 ? 'Sí' : '-';
-            $prestacionExcel->for               = $prestacion->Forma === 1 ? 'Sí' : '-';
-            $prestacionExcel->dev               = $prestacion->Devol === 1 ? 'Sí' : '-';
-            $prestacionExcel->observacionEstado = $prestacion->ObsEstado ?? '-';
+            $prestacionExcel->empresa           = $prestacion->EmpresaParaEmp ?? '';
+            $prestacionExcel->art               = $prestacion->ArtRazonSocial ?? '';
+            $prestacionExcel->ccostos           = $prestacion->CCosto ?? '';
+            $prestacionExcel->nroCe             = $prestacion->NroCEE ?? '';
+            $prestacionExcel->anulada           = $prestacion->Anulado === 1 ? 'Sí' : '';
+            $prestacionExcel->obsAnulado        = $prestacion->ObsAnulado ?? '';
+            $prestacionExcel->examen            = $prestacion->Examen ?? '';
+            $prestacionExcel->exaAnulado        = $prestacion->ExaAnulado ?? ''; // Consultar Exa Anulado 
+            $prestacionExcel->inc               = ($prestacion->Incompleto === 1 ? 'Sí' : '');
+            $prestacionExcel->aus               = $prestacion->Ausente === 1 ? 'Sí' : '';
+            $prestacionExcel->for               = $prestacion->Forma === 1 ? 'Sí' : '';
+            $prestacionExcel->dev               = $prestacion->Devol === 1 ? 'Sí' : '';
+            $prestacionExcel->observacionEstado = $prestacion->ObsEstado ?? '';
 
             $prestacionesExcel->push($prestacionExcel);
         }
@@ -319,33 +319,33 @@ class PrestacionesExport implements FromCollection,WithHeadings
             $prestacionExcel = new stdClass();
 
             $prestacionExcel->fecha             = Carbon::parse($prestacion->FechaAlta)->format('d-m-Y') ?? '-'; // Formatear
-            $prestacionExcel->prestacion        = $prestacion->Id ?? '-';
-            $prestacionExcel->tipo              = $prestacion->TipoPrestacion ?? '-';
+            $prestacionExcel->prestacion        = $prestacion->Id ?? '';
+            $prestacionExcel->tipo              = $prestacion->TipoPrestacion ?? '';
             $prestacionExcel->paciente          = $prestacion->Apellido . " " .  $prestacion->Nombre ?? '-';
-            $prestacionExcel->dni               = $prestacion->DNI ?? '-';
+            $prestacionExcel->dni               = $prestacion->DNI ?? '';
             $prestacionExcel->cliente           = $prestacion->EmpresaRazonSocial . ' ' . $prestacion->EmpresaIdentificacion ?? '-';
-            $prestacionExcel->empresa           = $prestacion->EmpresaParaEmp ?? '-';
-            $prestacionExcel->art               = $prestacion->ArtRazonSocial ?? '-';
-            $prestacionExcel->ccostos           = $prestacion->CCosto ?? '-';
-            $prestacionExcel->nroCe             = $prestacion->NroCEE ?? '-';
-            $prestacionExcel->anulada           = $prestacion->Anulado ?? '-';
-            $prestacionExcel->obsAnulado        = $prestacion->ObsAnulado ?? '-';
-            $prestacionExcel->cerrado           = $prestacion->Cerrado ?? '-';
-            $prestacionExcel->finalizado        = $prestacion->Finalizado ?? '-';
-            $prestacionExcel->entregado         = $prestacion->Entregado ?? '-';
-            $prestacionExcel->eEnviado          = $prestacion->eEnviado ?? '-';
-            $prestacionExcel->vencimiento       = $prestacion->FechaVto ?? '-';
-            $prestacionExcel->evaluacion        = $prestacion->Evaluacion ?? '-';
-            $prestacionExcel->calificacion      = $prestacion->Calificacion ?? '-';
-            $prestacionExcel->obsResultado      = $prestacion->Observaciones ?? '-';
-            $prestacionExcel->examen            = $prestacion->Examen ?? '-';
-            $prestacionExcel->anulado           = $prestacion->ExaAnulado ?? '-';
-            $prestacionExcel->inc               = $prestacion->Incompleto === 1 ? 'Sí' : '-';
-            $prestacionExcel->aus               = $prestacion->Ausente === 1 ? 'Sí' : '-';
-            $prestacionExcel->for               = $prestacion->Forma === 1 ? 'Sí' : '-';
-            $prestacionExcel->dev               = $prestacion->Devol === 1 ? 'Sí' : '-';
-            $prestacionExcel->observacionEstado = $prestacion->ObsEstado ?? '-';
-            $prestacionExcel->facturado         = $prestacion->Facturado ?? '-';
+            $prestacionExcel->empresa           = $prestacion->EmpresaParaEmp ?? '';
+            $prestacionExcel->art               = $prestacion->ArtRazonSocial ?? '';
+            $prestacionExcel->ccostos           = $prestacion->CCosto ?? '';
+            $prestacionExcel->nroCe             = $prestacion->NroCEE ?? '';
+            $prestacionExcel->anulada           = $prestacion->Anulado ?? '';
+            $prestacionExcel->obsAnulado        = $prestacion->ObsAnulado ?? '';
+            $prestacionExcel->cerrado           = $prestacion->Cerrado ?? '';
+            $prestacionExcel->finalizado        = $prestacion->Finalizado ?? '';
+            $prestacionExcel->entregado         = $prestacion->Entregado ?? '';
+            $prestacionExcel->eEnviado          = $prestacion->eEnviado ?? '';
+            $prestacionExcel->vencimiento       = $prestacion->FechaVto ?? '';
+            $prestacionExcel->evaluacion        = $prestacion->Evaluacion ?? '';
+            $prestacionExcel->calificacion      = $prestacion->Calificacion ?? '';
+            $prestacionExcel->obsResultado      = $prestacion->Observaciones ?? '';
+            $prestacionExcel->examen            = $prestacion->Examen ?? '';
+            $prestacionExcel->anulado           = $prestacion->ExaAnulado ?? '';
+            $prestacionExcel->inc               = $prestacion->Incompleto === 1 ? 'Sí' : '';
+            $prestacionExcel->aus               = $prestacion->Ausente === 1 ? 'Sí' : '';
+            $prestacionExcel->for               = $prestacion->Forma === 1 ? 'Sí' : '';
+            $prestacionExcel->dev               = $prestacion->Devol === 1 ? 'Sí' : '';
+            $prestacionExcel->observacionEstado = $prestacion->ObsEstado ?? '';
+            $prestacionExcel->facturado         = $prestacion->Facturado ?? '';
             $prestacionExcel->factura           = $prestacion->Tipo."".(sprintf('%05d', $prestacion->Sucursal))."-".$prestacion->NroFactura ?? '-';
 
             switch ($prestacion->Pago) {
@@ -359,7 +359,7 @@ class PrestacionesExport implements FromCollection,WithHeadings
                     $prestacionExcel->formaPago = 'ExCuenta';
                     break;
                 default:
-                    $prestacionExcel->formaPago = '-';
+                    $prestacionExcel->formaPago = 'CCorriente';
                     break;
             }
 

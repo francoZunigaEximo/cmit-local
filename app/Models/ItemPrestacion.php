@@ -45,6 +45,35 @@ class ItemPrestacion extends Model
 
     public $timestamps = false;
 
+    public static function InsertarVtoPrestacion(int $idPrestacion)
+    {
+        $query = ItemPrestacion::with('prestaciones')->max('VtoItem')->where('Anulado',0)->where('IdPrestacion', $idPrestacion)->first();
+
+        $maxvto = $query === false || is_null($query->VtoPrestacion) ? $query->VtoPrestacion : 0;
+
+        if($maxvto !== 0)
+        {
+            $vto = $maxvto;
+            $vbfecha = $query->prestaciones->Fecha;
+            $diashabiles = 0;
+            $diastotal = 0;
+
+            while($diashabiles < $vto){ 
+                $vbdia = date('w',strtotime($vbfecha));
+                
+                if(($vbdia!=6) And ($vbdia!=0))
+                {
+                    $diashabiles=$diashabiles + 1;
+                }//6:s,0:do
+                $diastotal=$diastotal + 1;$vbfecha=date ( 'Y-m-j' ,strtotime ( '+1 day' , strtotime ( $vbfecha ))) ; 
+            }
+            $fechavto = date ( 'Y-m-j' ,strtotime ( '+'.$diastotal.' day' , strtotime ( $query->prestaciones->Fecha ))) ; 
+        }else{
+            $fechavto="0000-00-00";
+        }
+        $query->prestaciones()->update(['FechaVto' => $fechavto, 'Vto' => $maxvto]);
+    }
+
     public function prestaciones()
     {
         return $this->hasOne(Prestacion::class, 'Id', 'IdPrestacion');

@@ -49,7 +49,7 @@ $(document).ready(()=>{
         let paquete = $('#paquetes').val();
         
         if([null, undefined, ''].includes(paquete)){
-            toastr.warning("Debe seleccionar un paquete para poder añadirlo en su totalidad", "Atención");
+            toastr.warning("Debe seleccionar un paquete para poder añadirlo en su totalidad");
             return;
         }
         preloader('on');

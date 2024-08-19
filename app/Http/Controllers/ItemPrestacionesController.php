@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Examen;
 use App\Models\ExamenCuentaIt;
+use App\Models\ExamenPrecioProveedor;
 use App\Traits\CheckPermission;
 
 class ItemPrestacionesController extends Controller
@@ -211,7 +212,7 @@ class ItemPrestacionesController extends Controller
     public function updateAsignado(Request $request)
     {
 
-        $item = ItemPrestacion::with('profesionales2')->find($request->Id);
+        $item = ItemPrestacion::with(['profesionales2', 'proveedores'])->find($request->Id);
 
         if($item)
         {
@@ -222,7 +223,12 @@ class ItemPrestacionesController extends Controller
                 $item->IdProfesional2 = $request->IdProfesional;
             }
             
+            $horaFin = $this->HoraAsegundos(date("H:i:s")) + ($item->proveedores->Min * 60);
+            $horaAsigFin = $this->SegundosAminutos($horaFin).':00';
+
             $item->FechaAsignado = (($request->fecha == '0000-00-00' ||  $request->fecha == '0') ? '' : now()->format('Y-m-d'));
+            $item->HoraAsignado = date("H:i:s");
+            $item->HoraFAsignado = $horaAsigFin;
             $item->save();
             
             return response()->json(['msg' => 'Se ha actualizado el efector de manera correcta'], 200);
@@ -746,6 +752,7 @@ class ItemPrestacionesController extends Controller
            
             if ($item && ($item->prestaciones->Cerrado === 0 && $item->CInfo != 3 && $item->CAdj != 5 && $item->IdProfesional2 === 0 && $item->IdProfesional2 === 0)) {
                 $item->delete();
+                ItemPrestacion::InsertarVtoPrestacion($item->IdPrestacion);
                 $resultado = ['message' => 'Se ha eliminado con éxito el exámen '.$item->examenes->Nombre.'', 'estado' => 'success'];
             
             }else{
@@ -779,8 +786,10 @@ class ItemPrestacionesController extends Controller
             }else{
 
                 $item->update(['Anulado' => 1]);
-                $resultado = ['message' => 'Se ha bloqueado con éxito el exámen de '.$item->examenes->Nombre.'', 'estado' => 'success'];
+                ItemPrestacion::InsertarVtoPrestacion($item->IdPrestacion);
+                $resultado = ['message' => 'Se ha bloqueado con éxito el exámen de '.$item->examenes->Nombre.'', 'estado' => 'success']; 
             }
+            
             $resultados[] = $resultado;
         }
         return response()->json($resultados);
@@ -855,16 +864,26 @@ class ItemPrestacionesController extends Controller
 
             if(!$itemPrestacion){
 
-                $result = Examen::select('Informe', 'Adjunto')->find($examen);
+                $examen = Examen::find($examen);
+                $honorarios = $this->honorarios($examen->Id, $examen->IdProveedor);
 
                 ItemPrestacion::create([
                     'Id' => ItemPrestacion::max('Id') + 1,
                     'IdPrestacion' => $request->idPrestacion,
                     'IdExamen' => $examen,
                     'Fecha' => now()->format('Y-m-d'),
-                    'CAdj' => $result->Adjunto === 1 ? 1 : 0,
-                    'CInfo' => $result->Informe === 0 ? 0 : 1
+                    'CAdj' => $examen->Cerrado === 1 ? 3 : 4,
+                    'CInfo' => $examen->Informe,
+                    'IdProveedor' => $examen->IdProveedor,
+                    'VtoItem' => $examen->DiasVencimiento,
+                    'SinEsc' => $examen->SinEsc,
+                    'Forma' => $examen->Forma,
+                    'Ausente' => $examen->Ausente,
+                    'Devol' => $examen->Devol,
+                    'Honorarios' => $honorarios == 'true' ? $honorarios->Honorarios : 0
                 ]);
+
+                ItemPrestacion::InsertarVtoPrestacion($request->idPrestacion);
             }   
         }
     }
@@ -956,6 +975,7 @@ class ItemPrestacionesController extends Controller
                 $idProfesional = $request->IdProfesional ?? 0;
                 $tipo = $request->tipo == 'asigEfector' ? 'IdProfesional' : 'IdProfesional2';
                 $itemPrestacion->update([$tipo => $idProfesional]);
+                Auditor::setAuditoria($examen, 1, 34, Auth::user()->name);
                 array_push($listado, $examen);
             }
         }
@@ -1013,6 +1033,23 @@ class ItemPrestacionesController extends Controller
     private function generarCodigo(int $idprest, int $idex, int $idpac)
     {
         return 'A'.str_pad($idprest, 9, "0", STR_PAD_LEFT).str_pad($idex, 5, "0", STR_PAD_LEFT).str_pad($idpac, 7, "0", STR_PAD_LEFT).".pdf";
+    }
+
+    private function HoraAsegundos($hora){
+        list($h,$m,$s) = explode(":",$hora);
+        $segundos = ($h*3600)+($m*60) + $s;
+        return $segundos;
+    }
+
+    private function SegundosAminutos($segundos){
+        $horas = floor($segundos / 3600);
+        $minutos = floor(($segundos - ($horas * 3600)) / 60);
+        return str_pad($horas,2, "0", STR_PAD_LEFT).':'.str_pad($minutos,2, "0", STR_PAD_LEFT);
+    }
+    
+    private function honorarios(int $idExamen, int $idProveedor)
+    {
+        return ExamenPrecioProveedor::where('IdExamen', $idExamen)->where('IdProveedor', $idProveedor)->first(['Honorarios']);
     }
 
 }

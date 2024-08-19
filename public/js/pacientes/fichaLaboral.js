@@ -223,10 +223,10 @@ $(document).ready(function () {
             return;
         }
 
-        if(tipoPrestacion === 'ART' && (![0, null, undefined, ''].includes(art)) && ([0, null, undefined, ''].includes(cliente))){
+        /*if(tipoPrestacion === 'ART' && (![0, null, undefined, ''].includes(art)) && ([0, null, undefined, ''].includes(cliente))){
             toastr.warning('¡Debe seleccionar una Empresa para el tipo de prestación ART y la ART seleccionada!');
             return;
-        }
+        }*/
         
         if(tipoPrestacion !== 'ART' && ([0, null, undefined, ''].includes(cliente))){
             toastr.warning('¡Debe seleccionar una empresa para el tipo de prestación seleccionado!');
