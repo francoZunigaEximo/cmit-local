@@ -672,76 +672,123 @@ END
 CREATE PROCEDURE getSearchPrestacion(IN fechaDesde DATE, IN fechaHasta DATE, IN estadoPres VARCHAR, IN estadoEfector VARCHAR, IN estadoInformador VARCHAR, IN efector INT, IN informador INT, IN tipoProv VARCHAR, IN adjunto VARCHAR, IN examen INT, IN pendiente INT, IN vencido INT, IN especialidad INT, IN ausente VARCHAR, IN adjuntoEfector INT)
 
 BEGIN
-    SELECT i.Id AS IdItem, i.Fecha AS Fecha, i.CAdj AS Efector, i.CInfo AS Informador, i.IdProfesional AS IdProfesional, 
-    pro.Nombre AS Especialidad, pro.Id AS IdEspecialidad, pre.Id AS IdPrestacion, 
-    pre.Cerrado AS PresCerrado, pre.Finalizado AS PresFinalizado, 
-    pre.Entregado AS PresEntregado, pre.eEnviado AS PresEnviado, 
-    cli.RazonSocial AS Empresa, pa.Nombre AS NombrePaciente, 
-    pa.Apellido AS ApellidoPaciente, prof1.Nombre AS NombreProfesional, 
-    prof1.Apellido AS ApellidoProfesional, prof2.Nombre AS NombreProfesional2, 
-    prof2.Apellido AS ApellidoProfesional2, exa.Nombre AS Examen, 
-    exa.Id AS IdExamen, exa.DiasVencimiento as DiasVencimiento, 
-    exa.NoImprime AS NoImprime, 
-    (CASE WHEN pre.Finalizado = 0 AND pre.Cerrado = 0 AND pre.Entregado = 0 THEN 'Abierto' WHEN pre.Cerrado = 1 AND pre.Finalizado = 0 THEN 'Cerrado' WHEN pre.Cerrado = 1 AND pre.Finalizado = 1 AND pre.Entregado = 0 THEN 'Finalizado' WHEN pre.Cerrado = 1 AND pre.Finalizado = 1 AND pre.Entregado = 1 THEN 'Entregado' WHEN pre.eEnviado = 1 THEN 'eEnviado' WHEN i.CAdj IN (1,2,4) AND i.CInfo = 1 THEN 'pendiente' ELSE '-' END) AS estado,
-    (CASE WHEN i.CAdj IN (1,2,4) THEN 'Pendiente' WHEN i.CAdj IN (3,5) THEN 'Cerrado' ELSE '-' END) AS EstadoEfector,
-    (CASE WHEN i.CInfo = 1 THEN 'Pendiente' WHEN i.CInfo = 2 THEN 'Borrador' WHEN i.CInfo IN (3,0) THEN 'Cerrado' ELSE '-' END) AS EstadoInformador 
+    SELECT 
+        i.Id AS IdItem, 
+        i.Fecha AS Fecha, 
+        i.CAdj AS Efector, 
+        i.CInfo AS Informador, 
+        i.IdProfesional AS IdProfesional, 
+        pro.Nombre AS Especialidad, 
+        pro.Id AS IdEspecialidad, 
+        pre.Id AS IdPrestacion, 
+        pre.Cerrado AS PresCerrado, 
+        pre.Finalizado AS PresFinalizado, 
+        pre.Entregado AS PresEntregado, 
+        pre.eEnviado AS PresEnviado, 
+        cli.RazonSocial AS Empresa, 
+        pa.Nombre AS NombrePaciente, 
+        pa.Apellido AS ApellidoPaciente, 
+        pa.Documento AS Dni, 
+        prof1.Nombre AS NombreProfesional, 
+        prof1.Apellido AS ApellidoProfesional, 
+        prof2.Nombre AS NombreProfesional2, 
+        prof2.Apellido AS ApellidoProfesional2, 
+        exa.Nombre AS Examen, 
+        exa.Id AS IdExamen, 
+        exa.DiasVencimiento AS DiasVencimiento, 
+        (CASE 
+            WHEN i.CAdj IN (1,4) AND exa.NoImprime = 1 THEN 'Pdte_D' 
+            WHEN i.CAdj IN (1,4) AND exa.NoImprime = 0 THEN 'Pdte_F' 
+            WHEN i.CAdj IN (2,5) THEN 'Adj' 
+            ELSE ' ' 
+        END) AS Adj,
+        (CASE 
+            WHEN pre.Finalizado = 0 AND pre.Cerrado = 0 AND pre.Entregado = 0 THEN 'Abierto' 
+            WHEN pre.Cerrado = 1 AND pre.Finalizado = 0 THEN 'Cerrado' 
+            WHEN pre.Cerrado = 1 AND pre.Finalizado = 1 AND pre.Entregado = 0 THEN 'Finalizado' 
+            WHEN pre.Cerrado = 1 AND pre.Finalizado = 1 AND pre.Entregado = 1 THEN 'Entregado' 
+            ELSE ' ' 
+        END) AS estado,
+        (CASE 
+            WHEN pre.eEnviado = 1 THEN 'eEnv' 
+            ELSE '' 
+        END) AS eEnv,
+        (CASE 
+            WHEN i.CAdj IN (1,2,4) THEN 'Pendiente' 
+            WHEN i.CAdj IN (3,5) THEN 'Cerrado' 
+            ELSE '-' 
+        END) AS EstadoEfector,
+        (CASE 
+            WHEN i.CInfo = 1 THEN 'Pendiente' 
+            WHEN i.CInfo = 2 THEN 'Borrador' 
+            WHEN i.CInfo IN (3,0) THEN 'Cerrado' 
+            ELSE '-' 
+        END) AS EstadoInformador
     FROM itemsprestaciones i 
-    INNER JOIN prestaciones pre ON i.IdPrestacion = pre.Id AND (pre.Estado = 1) AND (pre.Anulado = 0)
-    INNER JOIN examenes exa ON i.IdExamen = exa.Id AND (examen IS NULL OR exa.Id = examen) AND (adjunto IS NULL OR (CASE WHEN adjunto = 'fisico' THEN exa.NoImprime = 0 WHEN adjunto = 'digital' THEN exa.NoImprime = 1 END))
-    INNER JOIN proveedores pro ON exa.IdProveedor2 = pro.Id AND (especialidad IS NULL OR pro.Id = especialidad)
+    INNER JOIN prestaciones pre ON i.IdPrestacion = pre.Id 
+        AND pre.Estado = 1 
+        AND pre.Anulado = 0
+    INNER JOIN examenes exa ON i.IdExamen = exa.Id 
+        AND (examen IS NULL OR exa.Id = examen) 
+        AND (adjunto IS NULL OR 
+            (CASE 
+                WHEN adjunto = 'fisico' THEN exa.NoImprime = 0 
+                WHEN adjunto = 'digital' THEN exa.NoImprime = 1 
+            END)
+        )
+    INNER JOIN proveedores pro ON exa.IdProveedor2 = pro.Id 
+        AND (especialidad IS NULL OR pro.Id = especialidad)
     INNER JOIN clientes cli ON pre.IdEmpresa = cli.Id 
     INNER JOIN pacientes pa ON pre.IdPaciente = pa.Id 
-    INNER JOIN profesionales prof1 ON i.IdProfesional = prof1.Id AND (efector IS NULL OR prof1.Id = efector)
-    INNER JOIN profesionales prof2 ON i.IdProfesional2 = prof2.Id AND (informador IS NULL OR prof2.Id = informador)
+    INNER JOIN profesionales prof1 ON i.IdProfesional = prof1.Id 
+        AND (efector IS NULL OR prof1.Id = efector)
+    INNER JOIN profesionales prof2 ON i.IdProfesional2 = prof2.Id 
+        AND (informador IS NULL OR prof2.Id = informador)
     LEFT JOIN archivosefector a ON i.Id = a.IdEntidad 
-    WHERE NOT i.Id = 0 
-    AND i.Fecha BETWEEN fechaDesde AND fechaHasta 
-    AND (estadoPres IS NULL OR
-        (CASE 
-            WHEN estadoPres = 'abierto' THEN pre.Finalizado = 0 AND pre.Cerrado = 0 AND pre.Entregado = 0 
-            WHEN estadoPres = 'cerrado' THEN pre.Cerrado = 1 AND pre.Finalizado = 0
-            WHEN estadoPres = 'finalizado' THEN pre.Cerrado = 1 AND pre.Finalizado = 1 AND pre.Entregado = 0
-            WHEN estadoPres = 'entregado' THEN pre.Cerrado = 1 AND pre.Finalizado = 1 AND pre.Entregado = 1
-            WHEN estadoPres = 'eenviado' THEN pre.eEnviado = 1
-        END)
-    )
-    AND (estadoEfector IS NULL OR
-        (CASE 
-            WHEN estadoEfector = 'pendientes' THEN i.CAdj IN (1,2,4) 
-            WHEN estadoEfector = 'cerrados' THEN i.CAdj IN (3,5)
-        END)
-    )
-    AND (estadoInformador IS NULL OR
-        (CASE 
-            WHEN estadoInformador = 'pendientes' THEN i.CInfo = 1 
-            WHEN estadoInformador = 'borrador' THEN i.CInfo = 2
-            WHEN estadoInformador = 'pendienteYborrador' THEN i.CInfo IN (1,2)
-        END)
-    )
-    AND (tipoProv IS NULL OR
-        (CASE 
-            WHEN tipoProv = 'interno' THEN pro.Externo = 0 
-            WHEN tipoProv = 'externo' THEN pro.Externo = 1
-            WHEN tipoProv = 'todos' THEN pro.Externo IN (0,1)
-        END)
-    )
-    AND (ausente IS NULL OR
-        (CASE 
-            WHEN ausente = 'ausente' THEN i.Ausente = 1 
-            WHEN ausente = 'noAusente' THEN i.Ausente = 0
-            WHEN ausente = 'todos' THEN i.Ausente IN (0,1)
-        END)
-    )
-    AND (pendiente IS NULL OR 
-        (CASE WHEN pendiente = 1 THEN i.CAdj IN(1,2,4) AND i.CInfo = 1 END)
-    )
-    AND (adjuntoEfector IS NULL OR
-        (CASE WHEN adjuntoEfector = 1 THEN a.IdEntidad = i.Id AND exa.adjunto = 1 END)
-    )
-    AND (vencido IS NULL OR
-        CASE WHEN vencido = 1 THEN DATE_ADD(i.Fecha, INTERVAL exa.DiasVencimiento DAY) <= fechaHasta AND DAY(DATE_ADD(i.Fecha, INTERVAL exa.DiasVencimiento DAY)) > DAY(i.Fecha) END
-    )
-    AND i.Anulado = 0
+    WHERE 
+        i.Id <> 0 
+        AND i.Fecha BETWEEN fechaDesde AND fechaHasta 
+        AND (estadoPres IS NULL OR
+            (estadoPres = 'abierto' AND pre.Finalizado = 0 AND pre.Cerrado = 0 AND pre.Entregado = 0
+            OR estadoPres = 'cerrado' AND pre.Cerrado = 1 AND pre.Finalizado = 0
+            OR estadoPres = 'finalizado' AND pre.Cerrado = 1 AND pre.Finalizado = 1 AND pre.Entregado = 0
+            OR estadoPres = 'entregado' AND pre.Cerrado = 1 AND pre.Finalizado = 1 AND pre.Entregado = 1
+            OR estadoPres = 'eenviado' AND pre.eEnviado = 1
+            )
+        )
+        AND (estadoEfector IS NULL OR
+            (estadoEfector = 'pendientes' AND i.CAdj IN (1,2,4) 
+            OR estadoEfector = 'cerrados' AND i.CAdj IN (3,5)
+            )
+        )
+        AND (estadoInformador IS NULL OR
+            (estadoInformador = 'pendientes' AND i.CInfo = 1 
+            OR estadoInformador = 'borrador' AND i.CInfo = 2
+            OR estadoInformador = 'pendienteYborrador' AND i.CInfo IN (1,2)
+            )
+        )
+        AND (tipoProv IS NULL OR
+            (tipoProv = 'interno' AND pro.Externo = 0 
+            OR tipoProv = 'externo' AND pro.Externo = 1
+            OR tipoProv = 'todos' AND pro.Externo IN (0,1)
+            )
+        )
+        AND (ausente IS NULL OR
+            (ausente = 'ausente' AND i.Ausente = 1 
+            OR ausente = 'noAusente' AND i.Ausente = 0
+            OR ausente = 'todos' AND i.Ausente IN (0,1)
+            )
+        )
+        AND (pendiente IS NULL OR 
+            (pendiente = 1 AND i.CAdj IN (1,2,4) AND i.CInfo = 1)
+        )
+        AND (adjuntoEfector IS NULL OR
+            (adjuntoEfector = 1 AND a.IdEntidad = i.Id AND exa.adjunto = 1)
+        )
+        AND (vencido IS NULL OR
+            (vencido = 1 AND DATE_ADD(i.Fecha, INTERVAL exa.DiasVencimiento DAY) <= fechaHasta AND DAY(DATE_ADD(i.Fecha, INTERVAL exa.DiasVencimiento DAY)) > DAY(i.Fecha))
+        )
+        AND i.Anulado = 0
     ORDER BY i.Id DESC 
     LIMIT 5000;
 END

@@ -198,7 +198,7 @@
                                 </div>
             
                                 <div class="table mt-3 mb-1 mx-auto">
-                                    <table id="listaOrdenesPrestaciones" class="table table-bordered" style="width:100%">
+                                    <table id="listaOrdenesPrestaciones" class="table table-bordered">
                                         <thead class="table-light">
                                             <tr>
                                                 <th class="sort">Especialidad</th>
@@ -206,13 +206,16 @@
                                                 <th class="sort">Prestación</th>
                                                 <th class="sort">Empresa</th>
                                                 <th class="sort">Paciente</th>
-                                                <th class="sort">Estado</th>
+                                                <th>DNI</th>
+                                                <th class="sort">E_Presta</th>
+                                                <th>eEnv</th>
                                                 <th class="sort">Examen</th>
                                                 <th class="sort">Efector</th>
-                                                <th class="sort">E_F</th>
-                                                <th class="sort">Tipo Adj</th>
+                                                <th class="sort">E_EFE</th>
+                                                <th class="sort">ADJ</th>
                                                 <th class="sort">Informador</th>
-                                                <th class="sort">E_I</th>
+                                                <th class="sort">E_INF</th>
+                                                <th>Fecha Vto</th>
                                                 <th class="sort">Acción</th>
                                             </tr>
                                         </thead>

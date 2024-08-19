@@ -116,7 +116,6 @@ $(document).ready(()=>{
                 {//4
                     data: null,
                     render: function(data) {
-
                         return `<span title="${data.Empresa}">${acortadorTexto(data.Empresa, 7)}</span>`;
                     }
                 },
@@ -124,13 +123,19 @@ $(document).ready(()=>{
                     data: null,
                     render: function(data){
                         let NombreCompleto = data.NombrePaciente + ' ' + data.ApellidoPaciente;
-                        return `<span title="${NombreCompleto}">${acortadorTexto(NombreCompleto, 9)}</span>`;
+                        return `<span title="${NombreCompleto}">${[null, undefined, ''].includes(NombreCompleto) ? '' : acortadorTexto(NombreCompleto, 9)}</span>`;
+                    }
+                },
+                {
+                    data: null,
+                    render: function(data) {
+                        return data.Dni;
                     }
                 },
                 {//6
                     data: null,
                     render: function(data){
-                        return data.estado !== undefined 
+                        return [undefined, null, ''].includes(data.estado) 
                             ? data.estado === 'Abierto'
                                 ? '<div class="text-center"><span class="custom-badge rojo">Abierto</span></div>'
                                 : data.estado === 'Cerrado'
@@ -139,10 +144,14 @@ $(document).ready(()=>{
                                         ? '<div class="text-center"><span class="custom-badge verde">Finalizado</span></div>'
                                         : data.estado === 'Entregado'
                                             ? '<div class="text-center"><span class="custom-badge verde">Entregado</span></div>'
-                                            : data.estado === 'eEnviado'
-                                                ? '<div class="text-center"><span class="custom-badge verde">eEnviado</span></div>'
-                                                : '-'
-                            : `<div class="text-center"><span class="custom-badge gris">${data.estado}</span></div>`;    
+                                            : ``
+                            : '';    
+                    }
+                },
+                {
+                    data: null,
+                    render: function(data) {
+                        return data.eEnv;
                     }
                 },
                 {//7
@@ -154,29 +163,31 @@ $(document).ready(()=>{
                 {//8
                     data: null,
                     render: function(data){
-                        let NombreCompleto = data.NombreProfesional + ' ' + data.ApellidoProfesional;
+                        let nombre = [null, '', 0].includes(data.NombreProfesional) ? '' : data.NombreProfesional,
+                            apellido = [null, '', 0].includes(data.ApellidoProfesional) ? '' : data.ApellidoProfesional
+                        let NombreCompleto = nombre + ' ' + apellido;
                         return `<span title="${NombreCompleto}">${acortadorTexto(NombreCompleto, 6)}</span>`
                     }
                 },
+                
                 {//9
                     data: null,
                     render: function(data){
-                        console.log(data.EstadoEfector);
                         return `<div class="text-center">
-                        ${data.EstadoEfector !== undefined 
+                        ${[undefined, null, ''].includes(data.EstadoEfector)
                             ? data.EstadoEfector === 'Pendiente'
-                                ? '<span class="custom-badge rojo">Pdte</span>'
+                                ? '<span class="custom-badge rojo">Abie</span>'
                                 : data.EstadoEfector === 'Cerrado'
-                                    ? '<span class="custom-badge verde">Cerrado</span>'
+                                    ? '<span class="custom-badge verde">Cerr</span>'
                                     : ' - '
-                            : '<span class="custom-badge gris">' + data.EstadoEfector + '</span>'}
+                            : ''}
                         </div>`;
                     }
                 },
                 {//10
                     data: null,
                     render: function(data){
-                        return `<div class="text-center">${data.NoImprime === 1 ? 'ADJ_D' : 'ADJ_F'}</div>`;
+                        return `<div class="text-center ${['Pdte_D','Pdte_F'].includes(data.Adj) ? 'rojo' : 'verde'}">${data.Adj}</div>`;
                     }
                 },
                 {//11
@@ -191,19 +202,19 @@ $(document).ready(()=>{
                     render: function(data) {
 
                         return `<div class="text-center">
-                        ${data.EstadoInformador !== undefined 
+                        ${[undefined, null, ''].includes(data.EstadoInformador) 
                             ? data.Informador === 'Pendiente' 
-                                ? '<span class="custom-badge rojo">Pendiente</span>'
+                                ? '<span class="custom-badge rojo">Pdte</span>'
                                 : data.Informador === 'Borrador' 
-                                    ? '<span class="custom-badge rojo">Borrador</span>'
+                                    ? '<span class="custom-badge naranja">Borr</span>'
                                     : data.Informador === "Cerrado"
-                                        ? '<span class="custom-badge verde">Cerrado</span>'
+                                        ? '<span class="custom-badge verde">Cerr</span>'
                                         : '<span class="custom-badge gris">-</span>'
-                            : data.EstadoInformador}
+                            : ''}
                         </div>`;
                     }
                 },
-                /*{//13
+                {//13
                     data: null,
                     render: function(data) {
                         let fecha = new Date(data.Fecha + 'T00:00'); 
@@ -215,7 +226,7 @@ $(document).ready(()=>{
                 
                         return `<span class="custom-badge generalNegro">${dia}/${mes}/${ano}</span>`;
                     }
-                },  */        
+                },         
                 {//13
                     data: null,
                     render: function(data) {
