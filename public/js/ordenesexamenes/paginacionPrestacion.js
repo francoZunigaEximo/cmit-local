@@ -135,7 +135,7 @@ $(document).ready(()=>{
                 {//6
                     data: null,
                     render: function(data){
-                        return [undefined, null, ''].includes(data.estado) 
+                        return ![undefined, null, ''].includes(data.estado) 
                             ? data.estado === 'Abierto'
                                 ? '<div class="text-center"><span class="custom-badge rojo">Abierto</span></div>'
                                 : data.estado === 'Cerrado'
@@ -145,7 +145,7 @@ $(document).ready(()=>{
                                         : data.estado === 'Entregado'
                                             ? '<div class="text-center"><span class="custom-badge verde">Entregado</span></div>'
                                             : ``
-                            : '';    
+                            : '<div class="text-center"><span class="custom-badge rojo">Abierto</span></div>';    
                     }
                 },
                 {
@@ -174,13 +174,13 @@ $(document).ready(()=>{
                     data: null,
                     render: function(data){
                         return `<div class="text-center">
-                        ${[undefined, null, ''].includes(data.EstadoEfector)
+                        ${![undefined, null, ''].includes(data.EstadoEfector)
                             ? data.EstadoEfector === 'Pendiente'
                                 ? '<span class="custom-badge rojo">Abie</span>'
                                 : data.EstadoEfector === 'Cerrado'
                                     ? '<span class="custom-badge verde">Cerr</span>'
-                                    : ' - '
-                            : ''}
+                                    : '<span class="custom-badge rojo">Abie</span>'
+                            : '<span class="custom-badge rojo">Abie</span>'}
                         </div>`;
                     }
                 },
@@ -202,7 +202,7 @@ $(document).ready(()=>{
                     render: function(data) {
 
                         return `<div class="text-center">
-                        ${[undefined, null, ''].includes(data.EstadoInformador) 
+                        ${![undefined, null, ''].includes(data.EstadoInformador) 
                             ? data.Informador === 'Pendiente' 
                                 ? '<span class="custom-badge rojo">Pdte</span>'
                                 : data.Informador === 'Borrador' 
@@ -210,7 +210,7 @@ $(document).ready(()=>{
                                     : data.Informador === "Cerrado"
                                         ? '<span class="custom-badge verde">Cerr</span>'
                                         : '<span class="custom-badge gris">-</span>'
-                            : ''}
+                            : '<span class="custom-badge rojo">Pdte</span>'}
                         </div>`;
                     }
                 },

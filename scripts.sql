@@ -757,8 +757,8 @@ BEGIN
             )
         )
         AND (estadoEfector IS NULL OR
-            (estadoEfector = 'pendientes' AND i.CAdj IN (1,2,4) 
-            OR estadoEfector = 'cerrados' AND i.CAdj IN (3,5)
+            (estadoEfector = 'pendientes' AND i.CAdj IN (0,1,2) 
+            OR estadoEfector = 'cerrados' AND i.CAdj IN (3,4,5)
             )
         )
         AND (estadoInformador IS NULL OR
@@ -779,14 +779,22 @@ BEGIN
             OR ausente = 'todos' AND i.Ausente IN (0,1)
             )
         )
-        AND (pendiente IS NULL OR 
-            (pendiente = 1 AND i.CAdj IN (1,2,4) AND i.CInfo = 1)
-        )
         AND (adjuntoEfector IS NULL OR
             (adjuntoEfector = 1 AND a.IdEntidad = i.Id AND exa.adjunto = 1)
         )
         AND (vencido IS NULL OR
-            (vencido = 1 AND DATE_ADD(i.Fecha, INTERVAL exa.DiasVencimiento DAY) <= fechaHasta AND DAY(DATE_ADD(i.Fecha, INTERVAL exa.DiasVencimiento DAY)) > DAY(i.Fecha))
+            (vencido = 1 AND exa.DiasVencimiento > 0 AND pre.Finalizado = 0 AND pre.Vto <> 0 AND DATE_ADD(i.Fecha, INTERVAL exa.DiasVencimiento DAY) <= fechaHasta AND DAY(DATE_ADD(i.Fecha, INTERVAL exa.DiasVencimiento DAY)) > DAY(i.Fecha))
+        )
+        AND (pendiente IS NULL OR 
+            (pendiente = 1 AND i.CAdj IN(0,1,2) 
+                           OR i.CAdj IN(1,4) 
+                           OR i.CInfo=1 
+                           OR i.CInfo=2 
+                           AND (estadoInformador IS NULL
+                           AND tipoProv IS NULL 
+                           AND ausente IS NULL
+                           AND adjuntoEfector IS NULL)
+            )
         )
         AND i.Anulado = 0
     ORDER BY i.Id DESC 
