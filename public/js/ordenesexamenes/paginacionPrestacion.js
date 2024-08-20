@@ -96,6 +96,7 @@ $(document).ready(()=>{
             columns: [
                 {//1
                     data: null,
+                    width: "80.3px",
                     render: function(data) {
 
                         return `<div id="listado" data-id="${data.IdItem}"><span title="${data.Especialidad}">${acortadorTexto(data.Especialidad, 11)}</span></div>`;
@@ -103,12 +104,14 @@ $(document).ready(()=>{
                 },
                 {//2
                     data: null,
+                    width: "63.3px",
                     render: function(data) {
                         return `<div class="text-center">${fechaNow(data.Fecha,'/',0)}</div>`;
                     }
                 },
                 {//3
                     data: null,
+                    width: "70.3px",
                     render: function(data) {
                         return `<div class="text-center">${data.IdPrestacion}</div>`;
                     } 
@@ -128,12 +131,14 @@ $(document).ready(()=>{
                 },
                 {
                     data: null,
+                    width: "65.3px",
                     render: function(data) {
                         return data.Dni;
                     }
                 },
                 {//6
                     data: null,
+                    width: "60.3px",
                     render: function(data){
                         return ![undefined, null, ''].includes(data.estado) 
                             ? data.estado === 'Abierto'

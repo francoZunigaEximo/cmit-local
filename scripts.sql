@@ -1301,3 +1301,6 @@ WHERE rol_id = 3 AND permiso_id IN (65, 66, 67, 68);
 DELETE FROM rol_permisos 
 WHERE rol_id = 13 AND permiso_id IN (65, 66, 67, 68);
 DELETE FROM permisos WHERE Id IN (65,66,67,68);
+
+ALTER TABLE itemsprestaciones ADD FechaAsignadoI DATE DEFAULT '0000-00-00';
+ALTER TABLE itemsprestaciones ADD HoraAsignadoI TIME DEFAULT '00:00:00';
