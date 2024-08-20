@@ -870,7 +870,7 @@ class ItemPrestacionesController extends Controller
                 ItemPrestacion::create([
                     'Id' => ItemPrestacion::max('Id') + 1,
                     'IdPrestacion' => $request->idPrestacion,
-                    'IdExamen' => $examen,
+                    'IdExamen' => $examen->Id,
                     'Fecha' => now()->format('Y-m-d'),
                     'CAdj' => $examen->Cerrado === 1 ? 3 : 4,
                     'CInfo' => $examen->Informe,

@@ -47,9 +47,14 @@ class ItemPrestacion extends Model
 
     public static function InsertarVtoPrestacion(int $idPrestacion)
     {
-        $query = ItemPrestacion::with('prestaciones')->max('VtoItem')->where('Anulado',0)->where('IdPrestacion', $idPrestacion)->first();
+        $maxVtoItem = ItemPrestacion::max('VtoItem');
 
-        $maxvto = $query === false || is_null($query->VtoPrestacion) ? $query->VtoPrestacion : 0;
+        $query = ItemPrestacion::where('Anulado', 0)
+            ->where('IdPrestacion', $idPrestacion)
+            ->where('VtoItem', $maxVtoItem)
+            ->first();
+
+        $maxvto = $query && !is_null($query->VtoPrestacion) ? $query->VtoPrestacion : 0;
 
         if($maxvto !== 0)
         {
@@ -71,7 +76,10 @@ class ItemPrestacion extends Model
         }else{
             $fechavto="0000-00-00";
         }
-        $query->prestaciones()->update(['FechaVto' => $fechavto, 'Vto' => $maxvto]);
+
+        if ($query && $query->prestaciones) {
+            $query->prestaciones->update(['FechaVto' => $fechavto, 'Vto' => $maxvto]);
+        }
     }
 
     public function prestaciones()
