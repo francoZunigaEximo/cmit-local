@@ -56,6 +56,15 @@ return [
             'throw' => false,
         ],
 
+        'smb' => [
+            'driver' => 'smb',
+            'host' => env('HOST_SMB'),
+            'share' => env('SHARE_SMB'),
+            'username' => env('USER_SMB'),
+            'password' => env('PASS_SMB'),
+            'domain' => env('DOMAIN_SMB')
+        ]
+
     ],
 
     /*
