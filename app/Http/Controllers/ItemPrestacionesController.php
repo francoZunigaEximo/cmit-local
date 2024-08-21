@@ -872,7 +872,9 @@ class ItemPrestacionesController extends Controller
                     'IdPrestacion' => $request->idPrestacion,
                     'IdExamen' => $examen->Id,
                     'Fecha' => now()->format('Y-m-d'),
-                    'CAdj' => $examen->Cerrado === 1 ? 3 : 4,
+                    'CAdj' => $examen->Cerrado === 1 
+                               ? ($examen->Adjunto === 0 ? 3 : 4) 
+                               : 1,
                     'CInfo' => $examen->Informe,
                     'IdProveedor' => $examen->IdProveedor,
                     'VtoItem' => $examen->DiasVencimiento,
@@ -880,6 +882,7 @@ class ItemPrestacionesController extends Controller
                     'Forma' => $examen->Forma,
                     'Ausente' => $examen->Ausente,
                     'Devol' => $examen->Devol,
+                    'IdProfesional' => $examen->Cerrado === 1 ? 26 : 0,
                     'Honorarios' => $honorarios == 'true' ? $honorarios->Honorarios : 0
                 ]);
 
