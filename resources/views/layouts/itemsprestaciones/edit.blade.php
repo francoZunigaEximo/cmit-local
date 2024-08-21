@@ -130,7 +130,7 @@
                 <div class="col-md-4">
                     <div class="input-group input-group-sm mb-2">
                         <span class="input-group-text">Informador</span>
-                            @if($itemsprestacione->CInfo !== 0)
+                            @if($itemsprestacione->CInfo === 0)
 
                                 <input type="text" class="form-control" value="Sin informador requerido" @disabled(true)>
 
