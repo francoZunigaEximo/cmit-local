@@ -262,6 +262,7 @@
                         <div class="col-sm-4 text-center"><h3 class="ff-secondary fw-bold mt-1 text-center">Ficha Laboral</h3></div>
                         <div class="col-sm-4 text-center">
                             <button type="button" class=" btn btn-sm botonGeneral verListadoExCta"><i class="ri-list-unordered"></i> Examenes a cuenta</button>
+                            
                         </div>
                     </div>
                    
@@ -273,9 +274,61 @@
                                     <div class="input-group input-group-sm mb-2">
                                         <span class="input-group-text">Paciente</span>
                                         <input type="text" class="form-control" id="Id" name="Id" value="{{ $paciente->Id }}" @readonly(true)>
-                                        <input type="text" class="form-control" style="width: 50%" id="NombreCompleto" name="NombreCompleto" value="{{ $fichaLaboral->paciente->Apellido }} {{ $fichaLaboral->paciente->Nombre }}" @readonly(true)>
+                                        <input type="text" class="form-control" style="width: 50%" id="NombreCompleto" name="NombreCompleto" value="{{ $fichaLaboral->paciente->Apellido ?? $paciente->Apellido }} {{ $fichaLaboral->paciente->Nombre ?? $paciente->Nombre }}" @readonly(true)>
                                     </div>
     
+                                    @php
+                                        $pagos = ["B" => "Contado", "A" => "Cuenta Corriente", "P" => "Exámen a Cuenta"];    
+                                    @endphp
+                  
+                                    <div class="input-group input-group-sm mb-2">
+                                        <span class="input-group-text">Forma de Pago</span>
+                                        <select class="form-control" id="PagoLaboral">
+                                            <option selected value="">Elija una opción...</option>
+                                            <option value="B">Contado</option>
+                                            <option value="A">Cuenta Corriente</option>
+                                            <option value="P">Exámen a Cuenta</option>
+                                        </select>
+                                    </div>
+                                    <small id="alertaExCta" class="fw-bolder rojo mb-2">Exa Cta Disponible</small>
+
+                                    <div class="input-group input-group-sm mb-2 SPago">
+                                        <span class="input-group-text">Medio de pago</span>
+                                        <select class="form-select" id="SPago">
+                                        </select>
+                                    </div>
+
+                                    <div class="input-group input-group-sm mb-2 Factura">
+                                        <span class="input-group-text">Numero Factura</span>
+                                        <select class="form-select" id="Tipo">
+                                            <option value="" selected>Elija una opción...</option>
+                                            <option value="A">A</option>
+                                            <option value="B">B</option>
+                                            <option value="E">E</option>
+                                            <option value="P">P</option>
+                                            <option value="R">R</option>
+                                            <option value="Z">Z</option>
+                                        </select>
+                                        <input type="text"  class="form-control" placeholder="nro sucursal" id="Sucursal">
+                                        <input type="text"  class="form-control" placeholder="nro de factura" id="NroFactura">
+                                    </div>
+
+                                    <div class="input-group input-group-sm mb-2 NroFactProv">
+                                        <span class="input-group-text">Nro Factura Provisoria</span>
+                                        <input type="text" class="form-control" placeholder="Numero de factura provisoria" id="NroFactProv">
+                                    </div>
+
+                                    <div class="input-group input-group-sm mb-2 Autoriza">
+                                        <span class="input-group-text">Autorizado por</span>
+                                        <select class="form-select" id="Autorizado">
+                                            <option value="" selected>Elija una opción...</option>
+                                            <option value="0">Lucas Grunmann</option>
+                                        </select>
+                                    </div>
+                                    
+                                </div>
+                            
+                                <div class="col-6">
                                     <div class="input-group input-group-sm mb-2 selectClientes2">
                                         <span class="input-group-text">Empresa</span>
                                         <select class="form-control-sm" id="selectClientes">
@@ -283,11 +336,6 @@
                                         </select>
                                     </div>
                                     <input type="hidden" id="IdFichaLaboral" value="{{ $fichaLaboral->Id ?? 0 }}">
-                                    
-                                </div>
-                            
-                                <div class="col-6">
-                                    <br /><br />
                                     <div class="input-group input-group-sm  mb-2 selectArt2">
                                         <span class="input-group-text">ART</span>
                                         <select class="form-control" id="selectArt">
@@ -445,30 +493,6 @@
 
                             <hr class="mt-1 mb-1">
 
-                            <div class="row">
-                                <div class="col-sm-6">
-                                    @php
-                                        $pagos = ["B" => "Contado", "A" => "Cuenta Corriente", "P" => "Exámen a Cuenta"];    
-                                    @endphp
-                  
-                                    <div class="input-group input-group-sm mb-2">
-                                        <span class="input-group-text">Forma de Pago</span>
-                                        <select class="form-control" id="PagoLaboral">
-                                            <option selected value="">Elija una opción...</option>
-                                            <option value="B">Contado</option>
-                                            <option value="A">Cuenta Corriente</option>
-                                            <option value="P">Exámen a Cuenta</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="col-sm-6 justify-content-left d-flex align-items-center" >
-                                    <span id="alertaExCta" class="fw-bolder rojo">Exa Cta Disponible</span>
-                                </div>
-                            </div>
-
-                                <hr class="mt-1 mb-1">
-
                                 <div class="row">
                                     <div class="col-12 text-center mt-2">
                                         <button type="button" class="btn botonGeneral eventDelete" data-bs-dismiss="modal">Cancelar</button>
@@ -537,10 +561,16 @@
                                 <div class="messagePrestacion"></div>
                                 <div class="row">
                                     <div class="col-6">
-                                        <div class="input-group input-group-sm mb-2 Financiador">
-                                            <span class="input-group-text">Financiador</span>
-                                            <div class="updateFinanciador"></div>
+                                        <div class="input-group input-group-sm mb-2 selectClientes2">
+                                            <span class="input-group-text">Empresa</span>
+                                            <input type="text" class="form-control" id="selectClientesPres" @readonly(true)>
                                         </div>
+
+                                        <div class="input-group input-group-sm mb-2 selectArt2">
+                                            <span class="input-group-text">ART</span>
+                                            <input type="text" class="form-control" id="selectArtPres" @readonly(true)>
+                                        </div>
+
                                         <input type="hidden" id="tipoPrestacionHidden"/>
                                         <div class="input-group input-group-sm mb-2 Tprestacion">
                                             <span class="input-group-text">Tipo Prestacion</span>
@@ -572,51 +602,6 @@
                                             <input type="date" class="form-control" id="Fecha" name="Fecha">
                                         </div>
 
-                                        <hr class="mt-3 mb-3">
-
-                                        <div class="input-group input-group-sm mb-2">
-                                            <span class="input-group-text">Forma de Pago</span>
-                                            <select class="form-select" id="Pago">
-                                                <option value="" selected>Elija una opción...</option>
-                                                <option value="B">Contado</option>
-                                                <option value="A">Cuenta Corriente</option>
-                                                <option value="P">Examen a cuenta</option>
-                                            </select>
-                                        </div>
-
-                                        <div class="input-group input-group-sm mb-2 SPago">
-                                            <span class="input-group-text">Medio de pago</span>
-                                            <select class="form-select" id="SPago">
-                                            </select>
-                                        </div>
-
-                                        <div class="input-group input-group-sm mb-2 Factura">
-                                            <span class="input-group-text">Numero Factura</span>
-                                            <select class="form-select" id="Tipo">
-                                                <option value="" selected>Elija una opción...</option>
-                                                <option value="A">A</option>
-                                                <option value="B">B</option>
-                                                <option value="E">E</option>
-                                                <option value="P">P</option>
-                                                <option value="R">R</option>
-                                                <option value="Z">Z</option>
-                                            </select>
-                                            <input type="text"  class="form-control" placeholder="nro sucursal" id="Sucursal">
-                                            <input type="text"  class="form-control" placeholder="nro de factura" id="NroFactura">
-                                        </div>
-
-                                        <div class="input-group input-group-sm mb-2 NroFactProv">
-                                            <span class="input-group-text">Nro Factura Provisoria</span>
-                                            <input type="text" class="form-control" placeholder="Numero de factura provisoria" id="NroFactProv">
-                                        </div>
-
-                                        <div class="input-group input-group-sm mb-2 Autoriza">
-                                            <span class="input-group-text">Autorizado por</span>
-                                            <select class="form-select" id="Autorizado">
-                                                <option value="" selected>Elija una opción...</option>
-                                                <option value="0">Lucas Grunmann</option>
-                                            </select>
-                                        </div>
                                     </div>
                             </div>
                             

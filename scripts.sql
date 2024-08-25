@@ -1301,6 +1301,12 @@ WHERE rol_id = 3 AND permiso_id IN (65, 66, 67, 68);
 DELETE FROM rol_permisos 
 WHERE rol_id = 13 AND permiso_id IN (65, 66, 67, 68);
 DELETE FROM permisos WHERE Id IN (65,66,67,68);
-
-ALTER TABLE itemsprestaciones ADD FechaAsignadoI DATE DEFAULT '0000-00-00';
-ALTER TABLE itemsprestaciones ADD HoraAsignadoI TIME DEFAULT '00:00:00';
+/*******************/
+ALTER TABLE itemsprestaciones ADD FechaAsignadoI DATE DEFAULT '0000-00-00';/* Falta en PreProduccion */
+ALTER TABLE itemsprestaciones ADD HoraAsignadoI TIME DEFAULT '00:00:00'; /* Falta en PreProduccion */
+ALTER TABLE fichaslaborales ADD SPago CHAR(1);
+ALTER TABLE fichaslaborales ADD Tipo CHAR(1);
+ALTER TABLE fichaslaborales ADD Sucursal INT;
+ALTER TABLE fichaslaborales ADD NroFactura INT;
+ALTER TABLE fichaslaborales ADD NroFactProv VARCHAR(50);
+ALTER TABLE fichaslaborales ADD Autorizado VARCHAR(150);

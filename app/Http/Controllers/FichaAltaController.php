@@ -103,20 +103,10 @@ class FichaAltaController extends Controller
     }
 
     // Devuelve el listado de prestaciones segun el financiador seleccionado
-    public function getTipoPrestacion(Request $request){
+    public function getTipoPrestacion()
+    {
 
-        if(!$request->financiador){
-            return response()->json(['tiposPrestacion' => []]);
-        }
-
-        $tipoCliente = Cliente::where('Id', $request->financiador)->first()->TipoCliente;
-
-        if($tipoCliente == "A"){
-            $tiposPrestacion = PrestacionesTipo::select('Id','Nombre')->where('Nombre', 'ART')->get();
-        }
-        else {
-            $tiposPrestacion = PrestacionesTipo::select('Id','Nombre')->where('Nombre', '!=', 'ART')->get();
-        }
+        $tiposPrestacion = PrestacionesTipo::all();
 
         $tiposPrestacion = $tiposPrestacion->map(function ($tipoPrestacion) {
             return [

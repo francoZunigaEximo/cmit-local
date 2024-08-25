@@ -1,7 +1,7 @@
 $(document).ready(function () {
 
     let pagoLaboral = $('#PagoLaboral').val(), changeTipo = $('input[name="TipoPrestacion"]:checked').val(), empresaInput = $('selectClientes').val();
-    $('.nuevaPrestacionModal, .observacionesModal, .nuevaPrestacion, .ObBloqueoEmpresa, .ObBloqueoArt, .ObEmpresa, .ObsPaciente, .ObsPres, .Factura, .TareaRealizar, .UltimoPuesto, .PuestoActual, .SectorActual, .AntiguedadPuesto, .AntiguedadEmpresa, .FechaIngreso, .FechaEgreso, .selectMapaPres, .Autoriza, .listadoExCta, #examenesDisponibles, #ultimasFacturadas, #alertaExCta').hide();
+    $('.nuevaPrestacionModal, .observacionesModal, .nuevaPrestacion, .ObBloqueoEmpresa, .ObBloqueoArt, .ObEmpresa, .ObsPaciente, .ObsPres, .Factura, .TareaRealizar, .UltimoPuesto, .PuestoActual, .SectorActual, .AntiguedadPuesto, .AntiguedadEmpresa, .FechaIngreso, .FechaEgreso, .selectMapaPres, .Autoriza, .listadoExCta, #examenesDisponibles, #ultimasFacturadas, #alertaExCta, .NroFactProv').hide();
 
     let IDficha = ['', null, undefined].includes(empresaInput) ? IDFICHA : empresaInput;
     
@@ -13,6 +13,7 @@ $(document).ready(function () {
     mostrarFinanciador();
     checkExamenesCuenta(IDficha);
     marcarPago(pagoInput);
+    selectMedioPago();
 
     const listOpciones = {
         '.TareaRealizar': ['OCUPACIONAL', 'OTRO', 'INGRESO', 'ART'],
@@ -164,7 +165,7 @@ $(document).ready(function () {
         });
     });
 
-    $(document).on('change', '#Pago', function(){
+    $(document).on('change', '#PagoLaboral', function(){
         selectMedioPago();
     });
 
@@ -222,11 +223,6 @@ $(document).ready(function () {
             toastr.warning('¡Debe seleccionar una ART para el tipo de prestación ART!');
             return;
         }
-
-        /*if(tipoPrestacion === 'ART' && (![0, null, undefined, ''].includes(art)) && ([0, null, undefined, ''].includes(cliente))){
-            toastr.warning('¡Debe seleccionar una Empresa para el tipo de prestación ART y la ART seleccionada!');
-            return;
-        }*/
         
         if(tipoPrestacion !== 'ART' && ([0, null, undefined, ''].includes(cliente))){
             toastr.warning('¡Debe seleccionar una empresa para el tipo de prestación seleccionado!');
@@ -263,7 +259,6 @@ $(document).ready(function () {
                 toastr.success(response.msg);
                 mostrarFinanciador();
                 selectMedioPago();
-                selectorPago(pago)
                 setTimeout(() => {
                     checkObservaciones();
                 }, 2000);
@@ -341,48 +336,35 @@ $(document).ready(function () {
 
                 if(verificar !== undefined && verificar.Id ) {
 
-                    $('.updateFinanciador').empty();
+                    $('#selectClientesPres, #selectArtPres').empty();
 
-                    let prestacion = `<select class="form-select" name="financiador" id="financiador">
-                                        <option id="emptyFinanciador" value="" selected>Elija una opción...</option>
-                                        <option id="artFinanciador" value="${clienteArt.Id}">ART:  ${clienteArt.RazonSocial} - ${clienteArt.Identificacion}</option>
-                                        <option id="empresaFinanciador" value="${cliente.Id}">EMPRESA: ${cliente.RazonSocial} - ${cliente.Identificacion}</option>
-                                    </select>`;
+                    $('#selectClientesPres').val(cliente.RazonSocial);
+                    $('#selectArtPres').val(clienteArt.RazonSocial);
 
-                    $('.updateFinanciador').append(prestacion);
-
-                    $('#financiador').change(function() {
-                        filtrarTipoPrestacion($('#financiador').val(), null);
+                    $('#selectClientesPres').change(function() {
+                        filtrarTipoPrestacion($('#selectClientesPres').val(), null);
                     });
 
                     let estado = $('#tipoPrestacionHidden').val();
                     
-                    if (estado !== 'ART') {
-                        $("#empresaFinanciador").prop("selected", true);
-                        $('.selectMapaPres').hide();
-                    } else if (estado === '') {
-                        $("#emptyFinanciador").prop("selected", true);
+                    if (estado !== 'ART' || estado === '') {
                         $('.selectMapaPres').hide();
                     } else {
-                        $("#artFinanciador").prop("selected", true);
                         $('.selectMapaPres').show();
                     }
 
-                    filtrarTipoPrestacion($('#financiador').val(), estado);
+                    filtrarTipoPrestacion(estado);
                 }
             }
         });   
     }
 
-    function filtrarTipoPrestacion(idFinanciador, estado) {
+    function filtrarTipoPrestacion(estado) {
         preloader('on');
         $.ajax({
             url: getTipoPrestacion,
             type: "GET",
-            data: {
-                financiador: idFinanciador,
-                _token: TOKEN
-            },
+
             success: function(response) {
                 preloader('off');
                 let tiposPrestacion = response.tiposPrestacion;
@@ -405,12 +387,8 @@ $(document).ready(function () {
 
     function activarMapas(estado){
         if (estado === 'ART') {
-            $("#artFinanciador").prop("selected", true);
-            $("empresaFinanciador").prop("selected", false);
             $('.selectMapaPres').show();
         }else{
-            $("#artFinanciador").prop("selected", false);
-            $("#empresaFinanciador").prop("selected", true);
             $('.selectMapaPres').hide();
         }
     }
@@ -438,7 +416,7 @@ $(document).ready(function () {
 
     function selectMedioPago()
     {
-        let opcion = $('#Pago').val()
+        let opcion = $('#PagoLaboral').val()
         if(opcion === 'B'){
 
             let contenido = `
@@ -458,6 +436,14 @@ $(document).ready(function () {
             $('.NroFactProv').show();
             $('#SPago').empty().append(contenido);
        
+        }else if(opcion === 'C') {
+
+            $('.SPago').hide();
+            $('.ObsPres').hide();
+            $('.Factura').hide();
+            $('.NroFactProv').hide();
+            $('.Autoriza').show();
+
         }else{
             $('.SPago').hide();
             $('.ObsPres').hide();
@@ -617,7 +603,7 @@ $(document).ready(function () {
     }
 
     function marcarPago(pago) {
-        console.log("pago: " + pago)
+
         switch (pago) {
             case 'P':
                 $('#PagoLaboral').val('P');

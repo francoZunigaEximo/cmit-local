@@ -14,7 +14,6 @@ $(document).ready(()=>{
     getUltimasFacturadas(empresaInput);
     selectorPago(pagoInput);
 
-
     $(document).on('change', '#tipoPrestacionPres', function(){
         let actPrecarga = $('#tipoPrestacionPres').val();
         precargaTipoPrestacion(actPrecarga);
@@ -31,15 +30,7 @@ $(document).ready(()=>{
         listadoFacturas(empresaCap, null);
     });
 
-    $(document).on('change', '#financiador', function(){
-        let updateFinanciador = $('#financiador').val();
-        getUltimasFacturadas(updateFinanciador);
-        listadoConSaldos(updateFinanciador);
-        cantidadDisponibles(updateFinanciador);
-        listadoFacturas(updateFinanciador, null);
-    });
-    
-    //Guardamos la prestación
+     //Guardamos la prestación
     $(document).on('click', '.cargarExPrestacion, #guardarPrestacion', function(e){
         e.preventDefault();
 
@@ -62,14 +53,13 @@ $(document).ready(()=>{
             fecha = $('#Fecha').val(),
             tipoPrestacion = $('#tipoPrestacionPres').val(),
             mapa = $('#mapas').val(),
-            pago = $('#Pago').val(),
+            pago = $('#PagoLaboral').val(),
             spago = $('#SPago').val(),
             observaciones = $('#Observaciones').val(),
             autorizado = $('#Autorizado').val(),
             tipo = $('#Tipo').val();
             sucursal = $('#Sucursal').val();
             nroFactura = $('#NroFactura').val(),
-            financiador = $('#financiador').val(),
             NroFactProv = $('#NroFactProv').val();
             
 
@@ -103,11 +93,6 @@ $(document).ready(()=>{
             toastr.warning('El pago es contado, asi que debe agregar el número de factura para continuar.', 'Alerta');
             return;
         }
-
-        if (financiador === ''){
-            toastr.warning('El campo financiador es obligatorio', 'Alerta');
-            return;
-        }
         
         preloader('on');
         $.ajax({
@@ -136,7 +121,6 @@ $(document).ready(()=>{
                         autorizado: autorizado,
                         sucursal: sucursal,
                         nroFactura: nroFactura,
-                        financiador: financiador,
                         IdART: clienteArt.Id ?? 0,
                         IdEmpresa: cliente.Id ?? 0,
                         examenCuenta: ids,
@@ -457,6 +441,32 @@ $(document).ready(()=>{
                     }
                 });
             })
+    }
+
+    function selectorPago(pago) {
+        
+        if (pago != 'B') {
+            $('#SPago, #Tipo, #Sucursal, #NroFactura').val(" ");
+        }
+
+        if(['B', ''].includes(pago)) {
+            
+            $('.ultimasFacturadas, .examenesDisponibles').hide();
+            $('#siguienteExCta').hide();
+            $('#guardarPrestacion').show();
+        }else{
+            preloader('on');
+            $.get(cantTotalDisponibles, {Id: $('#selectClientes').val()})
+            .done(function(response){
+                preloader('off');
+                if(response > 0) {
+                    $('.ultimasFacturadas, .examenesDisponibles').show();
+                    $('#siguienteExCta').show();
+                    $('#guardarPrestacion').hide();
+                }
+            });
+        }
+
     }
 
     //Obtener fechas
