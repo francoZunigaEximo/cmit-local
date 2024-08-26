@@ -49,6 +49,7 @@ $(document).ready(function () {
 
     $('#selectClientes').select2({
         placeholder: 'Seleccionar Cliente',
+        dropdownParent: $('#fichaLaboral'),
         language: 'es',
         allowClear: true,
         language: {
@@ -83,6 +84,7 @@ $(document).ready(function () {
     });
 
     $('#selectArt').select2({
+        dropdownParent: $('#fichaLaboral'),
         placeholder: 'Seleccionar ART',
         language: 'es',
         allowClear: true,
@@ -183,7 +185,8 @@ $(document).ready(function () {
             fechaUltPeriod =$('#FechaUltPeriod').val(),
             fechaExArt = $('#FechaExArt').val(),
             antiguedadEmpresa = $('#AntiguedadEmpresa').val(),
-            Id = $('#IdFichaLaboral').val();
+            Id = $('#IdFichaLaboral').val(),
+            idPrestacion = $('#idPrestacion').val();
 
         if(tipoPrestacion === 'OTRO' && tipoPrestacionPresOtros) {
             tipoPrestacion = tipoPrestacionPresOtros;
@@ -238,11 +241,16 @@ $(document).ready(function () {
             fechaUltPeriod: fechaUltPeriod,
             fechaExArt: fechaExArt,
             Id: Id,
+            idPrestacion: idPrestacion,
             _token: TOKEN,
             }) 
-            .done(function() {
+            .done(function(response) {
                 preloader('off');
-                toastr.success("Se ha actualizado la ficha laboral");
+                toastr.success(response.msg);
+                swal('Atención', 'Se actualizará la pantalla en segundos...', 'success');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
             })
             .fail(function(jqXHR) {
                 preloader('off');

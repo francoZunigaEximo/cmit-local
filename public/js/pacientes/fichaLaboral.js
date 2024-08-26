@@ -5,10 +5,12 @@ $(document).ready(function () {
 
     let IDficha = ['', null, undefined].includes(empresaInput) ? IDFICHA : empresaInput;
     
-    quitarDuplicados("#Horario");
-    quitarDuplicados("#Tipo");
-    quitarDuplicados("#TipoPrestacion");
-    quitarDuplicados('#PagoLaboral');
+    quitarDuplicados('#Horario');
+    quitarDuplicados('#Tipo');
+    quitarDuplicados('#TipoPrestacion');
+    //quitarDuplicados('#PagoLaboral');
+    quitarDuplicados('#Tipo');
+    quitarDuplicados('#Autorizado');
     calcularAntiguedad();
     mostrarFinanciador();
     checkExamenesCuenta(IDficha);
@@ -189,6 +191,12 @@ $(document).ready(function () {
             tareaRealizar = $('#TareaRealizar').val(),
             tipo = $('#TipoJornada').val(),
             pago = $('#PagoLaboral').val(),
+            spago = $('#SPago').val(),
+            tipoF = $('#Tipo').val(),
+            sucursalF = $('#Sucursal').val(),
+            numeroF = $('#NroFactura').val(),
+            numeroProvF = $('#NroFactProv').val(),
+            autoriza = $('#Autorizado').val(),
             horario = $('#Horario').val(),
             observaciones = $('#ObservacionesFicha').val(),
             ultimoPuesto = $('#UltimoPuesto').val(),
@@ -203,6 +211,27 @@ $(document).ready(function () {
             fechaExArt = $('#FechaExArt').val(),
             antiguedadEmpresa = $('#AntiguedadEmpresa').val(),
             Id = $('#IdFichaLaboral').val();
+
+        //Validamos la factura
+        if (spago === 'G' && autoriza === ''){
+            toastr.warning('Si el medio de pago es gratuito, debe seleccionar quien autoriza.');
+            return;
+        }
+
+        if (pago === 'B' && spago === '') {
+            toastr.warning('Debe seleccionar un "medio de pago" cuando la "forma de pago" es "contado"');
+            return;
+        }
+
+        if (['',null,undefined].includes(pago)) {
+            toastr.warning('Debe seleccionar una "forma de pago"');
+            return;
+        }
+
+        if (pago === 'B' && (tipo == '' || sucursal === '' || nroFactura === '')){
+            toastr.warning('El pago es contado, asi que debe agregar el número de factura para continuar.');
+            return;
+        }
 
         if(tipoPrestacion === 'OTRO' && tipoPrestacionPresOtros) {
             tipoPrestacion = tipoPrestacionPresOtros;
@@ -252,6 +281,12 @@ $(document).ready(function () {
             fechaUltPeriod: fechaUltPeriod,
             fechaExArt: fechaExArt,
             Id: Id,
+            Spago: spago,
+            TipoF: tipoF,
+            SucursalF: sucursalF,
+            NumeroF: numeroF,
+            NumeroProvF: numeroProvF,
+            Autoriza: autoriza,
             _token: TOKEN,
             }) 
             .done(function(response) {

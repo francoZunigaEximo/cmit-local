@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Cliente;
 use App\Models\Fichalaboral;
+use App\Models\Prestacion;
 use App\Models\PrestacionesTipo;
 use Illuminate\Http\Request;
 
@@ -25,7 +26,7 @@ class FichaAltaController extends Controller
             $fichaLaboral = Fichalaboral::find($request->Id);
             $fichaLaboral->IdPaciente = $request->paciente;
             $fichaLaboral->IdEmpresa = $request->cliente ?? 0;
-            $fichaLaboral->IdART =$request->art ?? 0;
+            $fichaLaboral->IdART = $request->art ?? 0;
             $fichaLaboral->TipoPrestacion = $request->tipoPrestacion ?? '';
             $fichaLaboral->Tareas = $request->tareaRealizar ?? '';
             $fichaLaboral->Jornada = $request->horario ?? '';
@@ -42,8 +43,31 @@ class FichaAltaController extends Controller
             $fichaLaboral->FechaPreocupacional = $request->fechaPreocupacional ?? '';
             $fichaLaboral->FechaUltPeriod = $request->fechaUltPeriod ?? '';
             $fichaLaboral->FechaExArt = $request->fechaExArt ?? '';
+            $fichaLaboral->SPago = $request->Spago ?? '';
+            $fichaLaboral->Tipo = $request->TipoF ?? '';
+            $fichaLaboral->Sucursal = $request->SucursalF ?? '';
+            $fichaLaboral->NroFactura = $request->NumeroF ?? '';
+            $fichaLaboral->NroFactProv = $request->NumeroProvF ?? '';
+            $fichaLaboral->Autorizado = $request->Autoriza ?? '';
             $fichaLaboral->save();
 
+            if(!empty($request->idPrestacion)) {
+
+                $prestacion = Prestacion::find($request->idPrestacion); 
+                
+                if($prestacion->Cerrado === 1) {
+
+                    return response()->json(['msg' => 'No se ha actualizado la prestación porque la misma se encuentra cerrada'], 405);
+
+                }else{
+
+                    $prestacion->IdEmpresa = $request->cliente ?? $prestacion->IdEmpresa;
+                    $prestacion->IdART = $request->art ?? $prestacion->IdART;
+                    $prestacion->TipoPrestacion = $request->tipoPrestacion ?? $prestacion->TipoPrestacion;
+                    $prestacion->Pago = $request->pago ?? $prestacion->Pago;
+                    $prestacion->save();
+                }
+            }
             return response()->json(['msg' => 'Se ha actualizado el registro correctamente'], 200);
 
         }else{
@@ -68,7 +92,13 @@ class FichaAltaController extends Controller
                 'FechaEgreso' => $request->fechaEgreso ?? '',
                 'FechaPreocupacional' => $request->fechaPreocupacional ?? '',
                 'FechaUltPeriod' => $request->fechaUltPeriod ?? '',
-                'FechaExArt' => $request->fechaExArt ?? ''
+                'FechaExArt' => $request->fechaExArt ?? '',
+                'SPago' => $request->Spago ?? '',
+                'Tipo' => $request->TipoF ?? '',
+                'Sucursal' => $request->SucursalF ?? '',
+                'NroFactura' => $request->NumeroF ?? '',
+                'NroFactProv' => $request->NumeroProvF ?? '',
+                'Autorizado' => $request->Autoriza ?? ''
             ]);
 
             return response()->json(['msg' => 'Se ha creado el registro correctamente'], 200);

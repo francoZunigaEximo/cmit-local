@@ -62,35 +62,13 @@ $(document).ready(()=>{
             nroFactura = $('#NroFactura').val(),
             NroFactProv = $('#NroFactProv').val();
             
-
-        //Validamos la factura
-        if (spago === 'G' && autorizado === ''){
-            toastr.warning('Si el medio de pago es gratuito, debe seleccionar quien autoriza.', 'Alerta');
-            return;
-        }
-
         if (['', null].includes(tipoPrestacion)) {
-            toastr.warning('El tipo de prestación no puede ser un campo vacío', 'Alerta');
+            toastr.warning('El tipo de prestación no puede ser un campo vacío');
             return;
         }
 
         if (tipoPrestacion === 'ART' && (mapa == '0' || mapa === '')){
-            toastr.warning('Debe seleccionar un mapa vigente para continuar si su prestacion es ART', 'Alerta');
-            return;
-        }
-
-        if (pago === 'B' && spago === '') {
-            toastr.warning('Debe seleccionar un "medio de pago" cuando la "forma de pago" es "contado"', 'Alerta');
-            return;
-        }
-
-        if (['',null,undefined].includes(pago)) {
-            toastr.warning('Debe seleccionar una "forma de pago"', 'Alerta');
-            return;
-        }
-
-        if (pago === 'B' && (tipo == '' || sucursal === '' || nroFactura === '')){
-            toastr.warning('El pago es contado, asi que debe agregar el número de factura para continuar.', 'Alerta');
+            toastr.warning('Debe seleccionar un mapa vigente para continuar si su prestacion es ART');
             return;
         }
         
@@ -251,7 +229,7 @@ $(document).ready(()=>{
         }
     });
 
-    $(document).on('change', '#Pago', function(){
+    $(document).on('change', '#PagoLaboral', function(){
 
         let pago = $(this).val();
         selectorPago(pago);

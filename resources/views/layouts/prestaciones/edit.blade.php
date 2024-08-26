@@ -32,6 +32,7 @@
                     <div class="col-1">
                         <label class="form-label">Nro</label>
                         <input type="text" class="form-control" id="Id" name="Id" value="{{ $prestacione->IdPaciente }}" @readonly(true) title="{{ $prestacione->IdPaciente }}">   
+                        <input type="hidden" id="idPrestacion" value="{{ $prestacione->Id }}">
                     </div>
 
                     <div class="col-1">
