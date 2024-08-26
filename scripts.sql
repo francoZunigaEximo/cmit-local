@@ -846,7 +846,7 @@ INSERT INTO users (name,email,datos_id,email_verified_at,password,remember_token
 	 ('nicolas','nmaximowicz@eximo.com.ar',52,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2024-05-20 01:44:18',230,0,0),
 	 ('lucas','lucas@cmit.com.ar',1,NULL,'$2y$10$5xxjrbNwlDFSu/Q.wAvCMeJ/URPDh57efpgaPTfflvk2fmM74CzHK',NULL,'2023-05-08 16:27:18','2024-05-20 01:34:23',0,0,0),
 	 ('abigailh','abigailh@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',212,0,0),
-	 ('admin','admin@cmit.com.ar',1,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2024-05-20 02:55:32',0,0,0),
+	 ('admin','admin@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2024-05-20 02:55:32',0,0,0),
 	 ('agalvan','agalvan@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',139,0,0),
 	 ('alagos','alagos@cmit.com.ar',42,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2024-05-23 11:16:52',0,0,0),
 	 ('arusso','arusso@cmit.com.ar',0,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2023-05-10 07:19:53',175,0,0),
@@ -1088,8 +1088,8 @@ CREATE TABLE `user_rol` (
 
 
 INSERT INTO user_rol(user_id, rol_id) VALUES
-(1,3),
-(2,3);
+(1,13),
+(2,13);
 
 CREATE TABLE rol_permisos(
     rol_id INT,
