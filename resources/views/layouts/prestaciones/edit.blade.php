@@ -166,12 +166,11 @@
                     </div>
 
                     <div class="col-4">
-
                         <div class="col-10 mapas">
                             <div class="input-group input-group-sm">
                                 <span class="input-group-text">Mapa</span>
                                 <select class="form-control" name="mapas" id="mapas">
-                                    <option value="{{ $prestacione->IdMapa ?? ''}}" selected>{{ $prestacione->mapa->Nro ?? ''}} {{ "| Empresa " . $prestacione->mapa->empresaMapa->RazonSocial ?? ''}} {{ " - ART: " . $prestacione->mapa->artMapa->RazonSocial ?? 'Elija una opción...' }}</option>
+                                    <option value="{{ $prestacione->IdMapa ?? ''}}" selected>{{ $prestacione->mapa->Nro ?? ''}} {{ "| Empresa " . (empty($prestacione->mapa->empresaMapa->RazonSocial) ? '' : $prestacione->mapa->empresaMapa->RazonSocial) }} {{ " - ART: " . empty($prestacione->mapa->artMapa->RazonSocial) ? 'Elija una opción...' : $prestacione->mapa->artMapa->RazonSocial }}</option>
                                 </select>
                             </div>
                         </div>
