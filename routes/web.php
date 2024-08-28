@@ -21,6 +21,7 @@ use App\Http\Controllers\NoticiasController;
 use App\Http\Controllers\PrestacionesObsFasesController;
 use App\Http\Controllers\OrdenesExamenController;
 use App\Http\Controllers\ExamenesCuentaController;
+use App\Http\Controllers\FileController;
 use App\Http\Controllers\MensajesController;
 use App\Http\Controllers\NotasCreditoController;
 use App\Http\Controllers\PaqueteEstudioController;
@@ -344,5 +345,8 @@ Route::group(['middleware' => 'auth'], function () {
 
     //Rutas de Notas de Crédito
     Route::get('nota-de-credito/check', [NotasCreditoController::class, 'checkNotaCredito'])->name('nota-de-credito.check');
+
+    //Rutas SMB
+    Route::get('/files/{filePath}', [FileController::class, 'show'])->where('filePath', '.*');
 });
 
