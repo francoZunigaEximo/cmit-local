@@ -20,7 +20,7 @@ class FileHelper
             $server = $factory->createServer(env('HOST_SMB'), $auth);
             $share = $server->getShare(env('SHARE_SMB'));
             //return 'smb://' . env('HOST_SMB') . '/' . env('SHARE_SMB') . '/';
-            return new Filesystem(new SmbAdapter($share, env('ROOT_SMB')));
+            return 'smb://' . env('HOST_SMB') . '/' . env('SHARE_SMB') . '/';
         } else {
             return $type === 'lectura' ? asset('storage') : storage_path('app/public');
         }
