@@ -12,7 +12,7 @@ class FileHelper
 {
     public static function getFileUrl(?string $type)
     {
-        $disk = Storage::disk(config('filesystems.default'));
+        $disk = env('FILESYSTEM_DISK');
 
         if ($disk  === 'smb') {
             $factory = new ServerFactory();
