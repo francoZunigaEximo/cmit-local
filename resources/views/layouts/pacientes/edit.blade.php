@@ -95,17 +95,16 @@
                     </div>
 
                 </div>
-    
                 <div class="col-3 box-information mx-auto">
                     <div class="profile-user position-relative d-inline-block mx-auto mb-2">
-                        <div id="profile-image-preview" class="img-thumbnail user-profile-image" style="width: 200px; height: 140px; background-image: url('{{ asset("archivos/fotos/" . (empty($paciente->Foto) ? "foto-default.png" : $paciente->Foto)) }}'); background-size: cover; background-position: center;"></div>
+                        <div id="profile-image-preview" class="img-thumbnail user-profile-image" style="width: 200px; height: 140px; background-image: url('@fileUrl('lectura')/Fotos/{{ $paciente->Foto}}'); background-size: cover; background-position: center;"></div>
                     <div class="avatar-xs p-0 rounded-circle profile-photo-edit">
                             <input id="profile-img-file-input" type="button" class="profile-img-file-input" value="Tomar foto" onClick="takeSnapshot()">
                             <input type="hidden" name="Foto" class="image-tag">
                             <label for="profile-img-file-input" class="profile-photo-edit avatar-xs">
                                 <span class="avatar-title rounded-circle bg-light text-body">
                                     <i class="ri-camera-fill"></i>
-                                </span>
+                                </span
                             </label>
                         </div> 
                     </div>
@@ -141,7 +140,7 @@
             </div> 
         </div>
    </div>
-
+    </form>
 
     <div class="row mt-3">
         <div class="col-lg-12">
@@ -793,6 +792,10 @@
 
                         </div>
                     </div>
+                </div>
+
+                <div class="row prestacionLimpia">
+
                 </div>
             </div>
         </div><!-- /.modal-content -->

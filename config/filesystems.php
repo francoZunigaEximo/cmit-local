@@ -1,5 +1,9 @@
 <?php
 
+use League\Flysystem\Filesystem;
+use League\Flysystem\Smb\SmbAdapter;
+use League\Flysystem\Adapter\Local as LocalAdapter;
+
 return [
 
     /*
@@ -56,14 +60,15 @@ return [
             'throw' => false,
         ],
 
-        'smb' => [
+        'nfs' => [
             'driver' => 'smb',
             'host' => env('HOST_SMB'),
             'share' => env('SHARE_SMB'),
             'username' => env('USER_SMB'),
             'password' => env('PASS_SMB'),
-            'domain' => env('DOMAIN_SMB')
-        ]
+            'domain' => env('DOMAIN_SMB'),
+            'root' => 'archivos',
+        ],
 
     ],
 

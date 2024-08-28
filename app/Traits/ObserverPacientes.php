@@ -2,8 +2,8 @@
 
 namespace App\Traits;
 
+use App\Helpers\FileHelper;
 use App\Models\Fichalaboral;
-use App\Models\Provincia;
 use App\Models\Telefono;
 use App\Models\Localidad;
 use App\Models\Cliente;
@@ -87,14 +87,11 @@ trait ObserverPacientes
     {
         if ($foto && ($tipo === 'update' || $tipo === 'create')) {
             $img = $foto;
-            $folderPath = 'archivos/fotos/';
+            $folderPath = FileHelper::getFileUrl('escritura').'/Fotos/';
 
             $image_parts = explode(';base64,', $img);
-            $image_type_aux = explode('image/', $image_parts[0]);
-            $image_type = $image_type_aux[1];
-
             $image_base64 = base64_decode($image_parts[1]);
-            $fileName = 'P'.$id.'.png';
+            $fileName = 'P'.$id.'.jpg';
 
             $filePath = $folderPath.$fileName;
             file_put_contents($filePath, $image_base64);

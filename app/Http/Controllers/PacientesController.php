@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\FileHelper;
 use App\Models\Paciente;
 use App\Models\Prestacion;
 use App\Models\PrestacionesTipo;
@@ -14,6 +15,8 @@ use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
 use App\Traits\CheckPermission;
 use App\Traits\ReporteExcel;
+
+use Illuminate\Support\Facades\Storage;
 
 class PacientesController extends Controller
 {
@@ -120,8 +123,10 @@ class PacientesController extends Controller
 
         $nuevoIdPaciente = Paciente::max('Id') + 1;
 
-        $foto = $this->addFoto($request->Foto, $nuevoIdPaciente, 'create');
-
+        if(!empty($request->hasFile('Foto'))) {
+            $foto = $this->addFoto($request->hasFile('Foto'), $nuevoIdPaciente, 'create');
+        }
+        
         $paciente = Paciente::create([
             'Id' => $nuevoIdPaciente,
             'Nombre' => $request->Nombre,
@@ -185,6 +190,7 @@ class PacientesController extends Controller
         {
             return response()->json(['msg' => 'No tiene permisos'], 403);
         }
+
         $paciente = Paciente::find($paciente->Id);
 
         $data = $request->only([
