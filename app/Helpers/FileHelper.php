@@ -19,7 +19,6 @@ class FileHelper
             $auth = new BasicAuth(env('USER_SMB'), env('DOMAIN_SMB'), env('PASS_SMB'));
             $server = $factory->createServer(env('HOST_SMB'), $auth);
             $share = $server->getShare(env('SHARE_SMB'));
-            //return 'smb://' . env('HOST_SMB') . '/' . env('SHARE_SMB') . '/';
             return 'smb://' . env('HOST_SMB') . '/' . env('SHARE_SMB') . '/';
         } else {
             return $type === 'lectura' ? asset('storage') : storage_path('app/public');
