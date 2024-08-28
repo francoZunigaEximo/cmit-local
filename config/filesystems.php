@@ -61,7 +61,6 @@ return [
         ],
 
         'nfs' => [
-            'driver' => 'smb',
             'host' => env('HOST_SMB'),
             'share' => env('SHARE_SMB'),
             'username' => env('USER_SMB'),

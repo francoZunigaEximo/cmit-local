@@ -1,5 +1,6 @@
 composer require setasign/fpdf /** Reportes **/
-composer require robgridley/flysystem-smb /** Trabajar en el NAS **/
+composer require robgridley/flysystem-smb /** Trabajar en el NAS alternativo **/
+composer require icewind/smb
 
 /*** Permisos CHMOD ***/
 sudo mkdir /opt/lampp/htdocs/cmit/storage/app/public/facturas

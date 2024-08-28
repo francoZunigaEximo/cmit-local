@@ -345,8 +345,5 @@ Route::group(['middleware' => 'auth'], function () {
 
     //Rutas de Notas de Crédito
     Route::get('nota-de-credito/check', [NotasCreditoController::class, 'checkNotaCredito'])->name('nota-de-credito.check');
-
-    //Rutas SMB
-    Route::get('/files/{filePath}', [FileController::class, 'show'])->where('filePath', '.*');
 });
 
