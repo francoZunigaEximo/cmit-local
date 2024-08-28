@@ -67,7 +67,7 @@ return [
             'username' => env('USER_SMB'),
             'password' => env('PASS_SMB'),
             'domain' => env('DOMAIN_SMB'),
-            'root' => 'archivos',
+            'root' => env('ROOT_SMB'),
         ],
 
     ],
