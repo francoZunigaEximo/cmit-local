@@ -1,4 +1,5 @@
-composer require setasign/fpdf
+composer require setasign/fpdf /** Reportes **/
+composer require robgridley/flysystem-smb /** Trabajar en el NAS **/
 
 /*** Permisos CHMOD ***/
 sudo mkdir /opt/lampp/htdocs/cmit/storage/app/public/facturas
@@ -43,6 +44,7 @@ ALTER TABLE telefonos ADD COLUMN IdCliente INT DEFAULT 0 NULL;
 ALTER TABLE profesionales_prov ADD Tipo VARCHAR(10) NULL; 
 
 ALTER TABLE pacientes ADD COLUMN Estado INT DEFAULT 1;
+ALTER TABLE pacientes MODIFY COLUMN Foto VARCHAR(100) DEFAULT 'foto-default.png' NULL;
 
 /*** Pacientes ***/
 ALTER TABLE prestaciones ADD COLUMN Estado INT DEFAULT 1;
