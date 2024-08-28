@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Blade;
 use App\Traits\AccessPolicy;
+use App\Helpers\FileHelper;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,6 +26,10 @@ class AppServiceProvider extends ServiceProvider
     {
         ini_set('max_execution_time', 300);
         ini_set('memory_limit', '256M');
+
+        Blade::directive('fileUrl', function ($expression) {
+            return "<?php echo \\App\\Helpers\\FileHelper::getFileUrl({$expression}); ?>";
+        });
 
         $this->gateAccess([
             "prestaciones_show",

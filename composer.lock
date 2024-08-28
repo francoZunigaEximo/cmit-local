@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "eb077a775bb19949b96edb07854480f2",
+    "content-hash": "75847aea7c3dddeb593efcee4bfc4e01",
     "packages": [
         {
             "name": "barryvdh/laravel-dompdf",
@@ -1250,6 +1250,98 @@
                 }
             ],
             "time": "2023-08-27T10:19:19+00:00"
+        },
+        {
+            "name": "icewind/smb",
+            "version": "v3.6.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/icewind1991/SMB.git",
+                "reference": "e0e86b16640f5892dd00408ed50ad18357dac6c1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/icewind1991/SMB/zipball/e0e86b16640f5892dd00408ed50ad18357dac6c1",
+                "reference": "e0e86b16640f5892dd00408ed50ad18357dac6c1",
+                "shasum": ""
+            },
+            "require": {
+                "icewind/streams": ">=0.7.3",
+                "php": ">=7.2"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.16",
+                "phpstan/phpstan": "^0.12.57",
+                "phpunit/phpunit": "^8.5|^9.3.8",
+                "psalm/phar": "^4.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Icewind\\SMB\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Robin Appelman",
+                    "email": "icewind@owncloud.com"
+                }
+            ],
+            "description": "php wrapper for smbclient and libsmbclient-php",
+            "support": {
+                "issues": "https://github.com/icewind1991/SMB/issues",
+                "source": "https://github.com/icewind1991/SMB/tree/v3.6.0"
+            },
+            "time": "2023-08-10T13:17:39+00:00"
+        },
+        {
+            "name": "icewind/streams",
+            "version": "v0.7.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/icewind1991/Streams.git",
+                "reference": "64200fd7cfcc7f550c3c695c48d8fd8bba97fecb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/icewind1991/Streams/zipball/64200fd7cfcc7f550c3c695c48d8fd8bba97fecb",
+                "reference": "64200fd7cfcc7f550c3c695c48d8fd8bba97fecb",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2",
+                "phpstan/phpstan": "^0.12",
+                "phpunit/phpunit": "^9"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Icewind\\Streams\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Robin Appelman",
+                    "email": "icewind@owncloud.com"
+                }
+            ],
+            "description": "A set of generic stream wrappers",
+            "support": {
+                "issues": "https://github.com/icewind1991/Streams/issues",
+                "source": "https://github.com/icewind1991/Streams/tree/v0.7.7"
+            },
+            "time": "2023-03-16T14:52:25+00:00"
         },
         {
             "name": "innocenzi/laravel-vite",
@@ -4135,6 +4227,57 @@
                 }
             ],
             "time": "2023-04-15T23:01:58+00:00"
+        },
+        {
+            "name": "robgridley/flysystem-smb",
+            "version": "3.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/robgridley/flysystem-smb.git",
+                "reference": "0b2b1ad34b555fcd063ff4007ac02cff796ecd6f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/robgridley/flysystem-smb/zipball/0b2b1ad34b555fcd063ff4007ac02cff796ecd6f",
+                "reference": "0b2b1ad34b555fcd063ff4007ac02cff796ecd6f",
+                "shasum": ""
+            },
+            "require": {
+                "icewind/smb": "^3.0",
+                "league/flysystem": "^3.0",
+                "php": "^8.1"
+            },
+            "require-dev": {
+                "league/flysystem-adapter-test-utilities": "^3.15",
+                "phpunit/phpunit": "^9.6"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "RobGridley\\Flysystem\\Smb\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Rob Gridley",
+                    "email": "me@robgridley.com"
+                }
+            ],
+            "description": "Flysystem adapter for Icewind SMB.",
+            "keywords": [
+                "Flysystem",
+                "samba",
+                "smb"
+            ],
+            "support": {
+                "issues": "https://github.com/robgridley/flysystem-smb/issues",
+                "source": "https://github.com/robgridley/flysystem-smb/tree/3.0.0"
+            },
+            "time": "2023-05-18T13:34:36+00:00"
         },
         {
             "name": "sabberworm/php-css-parser",
