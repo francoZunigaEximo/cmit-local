@@ -189,12 +189,13 @@ $(document).ready(()=>{
                 $.get(downPrestaActiva, {Id: prestacion})
                     .done(function(response){
                         preloader('off');
-
+                        let tipoToastr = response.estado === 'true' ? 'success' : 'warning';
                         if(response.estado === 'true') {
-                            toastr.success(response.msg);
+                            
+                            toastr[tipoToastr](response.msg);
                             $('#listaPrestaciones').DataTable().clear().draw(false);
                         }else{
-                            toastr.warning(response.msg);
+                            toastr[tipoToastr](response.msg);
                         }
                     })
                     .fail(function(jqXHR) {
