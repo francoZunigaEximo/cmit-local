@@ -2,10 +2,6 @@
 
 namespace App\Helpers;
 
-use Exception;
-use Icewind\SMB\BasicAuth;
-use Icewind\SMB\ServerFactory;
-
 class FileHelper
 {
     public static function getFileUrl(?string $type)
@@ -14,7 +10,7 @@ class FileHelper
 
         if ($disk  === 'smb') {
             
-            return 'http://localhost:8005/';
+            return env('LINK_SMB').'/';
 
         } else {
             return $type === 'lectura' ? asset('storage') : storage_path('app/public');
