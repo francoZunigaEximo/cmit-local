@@ -6,11 +6,11 @@ class FileHelper
 {
     public static function getFileUrl(?string $type)
     {
-        $disk = env('FILESYSTEM_DISK');
+        $disk = config('filesystems.default');
 
         if ($disk  === 'smb') {
             
-            return env('LINK_SMB').'/';
+            return config('filesystems.smb_link') . '/';
 
         } else {
             return $type === 'lectura' ? asset('storage') : storage_path('app/public');

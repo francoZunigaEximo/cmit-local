@@ -86,4 +86,7 @@ return [
         public_path('storage') => storage_path('app/public'),
     ],
 
+    'default' => env('FILESYSTEM_DISK', 'local'),
+    'smb_link' => env('LINK_SMB', 'http://default.url/smb'),
+
 ];
