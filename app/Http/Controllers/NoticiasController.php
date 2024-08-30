@@ -70,8 +70,7 @@ class NoticiasController extends Controller
                 $command = "mv " . escapeshellarg($rutaTemporal). " ".escapeshellarg($destino);
                 exec($command, $output);
             }
-
-            $request->Ruta->move($path, $fileName);
+            
             $noticia->Ruta = $fileName;
         }
 
