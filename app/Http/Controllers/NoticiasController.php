@@ -56,9 +56,19 @@ class NoticiasController extends Controller
 
             $fileName = 'NOTICIA_.' . $request->Ruta->extension();
             $path = FileHelper::getFileUrl('escritura')."/Noticias";
+            
+            $rutaTemporal = $request->Ruta->getPathname();
+            $destino = FileHelper::getFileUrl('escritura')."/Noticias/" . $fileName;
 
             if (!file_exists($path)) {
                 mkdir($path, 0755, true);
+            }
+
+            if (config('filesystems.default') !== 'smb') {
+                $request->Ruta->move($path, $fileName);
+            }else{
+                $command = "mv " . escapeshellarg($rutaTemporal). " ".escapeshellarg($destino);
+                exec($command, $output);
             }
 
             $request->Ruta->move($path, $fileName);
