@@ -2,13 +2,12 @@ $(document).ready(function () {
 
     let pagoLaboral = $('#PagoLaboral').val(), changeTipo = $('input[name="TipoPrestacion"]:checked').val(), empresaInput = $('selectClientes').val();
     $('.nuevaPrestacionModal, .observacionesModal, .nuevaPrestacion, .ObBloqueoEmpresa, .ObBloqueoArt, .ObEmpresa, .ObsPaciente, .ObsPres, .Factura, .TareaRealizar, .UltimoPuesto, .PuestoActual, .SectorActual, .AntiguedadPuesto, .AntiguedadEmpresa, .FechaIngreso, .FechaEgreso, .selectMapaPres, .Autoriza, .listadoExCta, #examenesDisponibles, #ultimasFacturadas, #alertaExCta, .NroFactProv').hide();
-
     let IDficha = ['', null, undefined].includes(empresaInput) ? IDFICHA : empresaInput;
     
     quitarDuplicados('#Horario');
     quitarDuplicados('#Tipo');
     quitarDuplicados('#TipoPrestacion');
-    //quitarDuplicados('#PagoLaboral');
+    quitarDuplicados('#PagoLaboral');
     quitarDuplicados('#Tipo');
     quitarDuplicados('#Autorizado');
     calcularAntiguedad();
@@ -228,7 +227,7 @@ $(document).ready(function () {
             return;
         }
 
-        if (pago === 'B' && (tipo == '' || sucursal === '' || nroFactura === '')){
+        if (pago === 'B' && (tipoF == '' || sucursalF === '' || numeroF === '')){
             toastr.warning('El pago es contado, asi que debe agregar el número de factura para continuar.');
             return;
         }
@@ -342,6 +341,12 @@ $(document).ready(function () {
         checkExamenesCuenta(id);
     });
 
+    $('#altaPrestacionModal').on('hidden.bs.modal', function () {
+        $('.prestacionLimpia, .observacionesModal, .nuevaPrestacion').hide();
+        $('.fichaLaboralModal').show();
+        checkExamenesCuenta(IDficha);
+      });
+
     //Bloqueo de cliente si existe
     function cargarBloqueo(response) {
         let razonSocial = response.RazonSocial, motivo = response.Motivo, identificacion = response.Identificacion;
@@ -371,21 +376,21 @@ $(document).ready(function () {
 
                 if(verificar !== undefined && verificar.Id ) {
 
-                    $('#selectClientesPres, #selectArtPres').empty();
+                    $('#selectClientesPres, #selectArtPres, #selectClientesPresN, #selectArtPresN').empty();
 
-                    $('#selectClientesPres').val(cliente.RazonSocial);
-                    $('#selectArtPres').val(clienteArt.RazonSocial);
+                    $('#selectClientesPres, #selectClientesPresN').val(cliente.RazonSocial);
+                    $('#selectArtPres, #selectArtPresN').val(clienteArt.RazonSocial);
 
                     $('#selectClientesPres').change(function() {
-                        filtrarTipoPrestacion($('#selectClientesPres').val(), null);
+                        filtrarTipoPrestacion($('#selectClientesPres, #tipoPrestacionPresN').val(), null);
                     });
 
                     let estado = $('#tipoPrestacionHidden').val();
                     
                     if (estado !== 'ART' || estado === '') {
-                        $('.selectMapaPres').hide();
+                        $('.selectMapaPres, .selectMapaPresN').hide();
                     } else {
-                        $('.selectMapaPres').show();
+                        $('.selectMapaPres, .selectMapaPresN').show();
                     }
 
                     filtrarTipoPrestacion(estado);
@@ -405,15 +410,17 @@ $(document).ready(function () {
                 let tiposPrestacion = response.tiposPrestacion;
                 
                 if(tiposPrestacion) {
-                    $('#tipoPrestacionPres').empty();
-                    $('#tipoPrestacionPres').append('<option value="" selected>Elija una opción...</option>');
+                    $('#tipoPrestacionPres, #tipoPrestacionPresN').empty();
+                    $('#tipoPrestacionPres, #tipoPrestacionPresN').append('<option value="" selected>Elija una opción...</option>');
 
                     tiposPrestacion.forEach(function(tipoPrestacion) {
                         $('#tipoPrestacionPres').append('<option value="' + tipoPrestacion.nombre + '">' + tipoPrestacion.nombre + '</option>');
+
+                        $('#tipoPrestacionPresN').append('<option value="' + tipoPrestacion.nombre + '">' + tipoPrestacion.nombre + '</option>');
                     });
                     
                     if(estado) {    
-                        $('#tipoPrestacionPres').val(estado);
+                        $('#tipoPrestacionPres, #tipoPrestacionPresN').val(estado);
                     }
                 }
             }

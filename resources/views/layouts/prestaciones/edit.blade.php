@@ -519,7 +519,7 @@
     <div class="offcanvas-body text-center">
         <h4 class="fs-16 mb-1">{{ $prestacione->paciente->Apellido ?? '' }} {{ $prestacione->paciente->Nombre ?? '' }}</h4>
 
-        <img src="{{ asset("archivos/fotos/" . (empty($prestacione->paciente->Foto) ? "foto-default.png" : $prestacione->paciente->Foto)) }}" alt="" width="200px">
+        <img src="@fileUrl('lectura')/Fotos/{{ $prestacione->paciente->Foto }}?v={{ time() }}" alt="" width="200px">
 
         <div class="col-12 box-information mb-2">
             <p><span>Documento:</spna> {{ $prestacione->paciente->Documento }}</p>

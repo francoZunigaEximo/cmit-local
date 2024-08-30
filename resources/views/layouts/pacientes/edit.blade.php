@@ -14,6 +14,8 @@
     </div>
 </div>
 
+<input type="hidden" id="idPrestacion">
+
 <div class="container-fluid">
     <form id="form-update" action="{{ route('pacientes.update', ['paciente' => $paciente->Id]) }}" method="POST" enctype="multipart/form-data" novalidate>
         @csrf
@@ -97,7 +99,7 @@
                 </div>
                 <div class="col-3 box-information mx-auto">
                     <div class="profile-user position-relative d-inline-block mx-auto mb-2">
-                        <div id="profile-image-preview" class="img-thumbnail user-profile-image" style="width: 200px; height: 140px; background-image: url('@fileUrl('lectura')/Fotos/{{ $paciente->Foto}}'); background-size: cover; background-position: center;"></div>
+                        <div id="profile-image-preview" class="img-thumbnail user-profile-image" style="width: 200px; height: 140px; background-image: url('@fileUrl('lectura')/Fotos/{{ $paciente->Foto}}?v={{ time() }}'); background-size: cover; background-position: center;"></div>
                     <div class="avatar-xs p-0 rounded-circle profile-photo-edit">
                             <input id="profile-img-file-input" type="button" class="profile-img-file-input" value="Tomar foto" onClick="takeSnapshot()">
                             <input type="hidden" name="Foto" class="image-tag">
@@ -283,7 +285,7 @@
                                     <div class="input-group input-group-sm mb-2">
                                         <span class="input-group-text">Forma de Pago</span>
                                         <select class="form-control" id="PagoLaboral">
-                                            <option selected value="{{ $fichaLaboral->Pago ?? '' }}">{{ empty($fichaLaboral->Pagos) ? 'Elija una opción...' : $pagos[$fichaLaboral->Pago] }}</option>
+                                            <option selected value="{{ $fichaLaboral->Pago ?? '' }}">{{ empty($fichaLaboral->Pago) ? 'Elija una opción...' : $pagos[$fichaLaboral->Pago] }}</option>
                                             <option value="B">Contado</option>
                                             <option value="A">Cuenta Corriente</option>
                                             <option value="P">Exámen a Cuenta</option>
@@ -795,7 +797,114 @@
                 </div>
 
                 <div class="row prestacionLimpia">
+                    <h3 class="ff-secondary fw-bold mt-1 text-center">Alta Prestación</h3>
+                    <div class="row">
+                        <div class="col-9 mx-auto box-information">
+                            <div class="messagePrestacion"></div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="input-group input-group-sm mb-2 selectClientes2">
+                                        <span class="input-group-text">Empresa</span>
+                                        <input type="text" class="form-control" id="selectClientesPresN" @readonly(true)>
+                                    </div>
 
+                                    <div class="input-group input-group-sm mb-2 selectArt2">
+                                        <span class="input-group-text">ART</span>
+                                        <input type="text" class="form-control" id="selectArtPresN" @readonly(true)>
+                                    </div>
+
+                                    <input type="hidden" id="tipoPrestacionHidden"/>
+                                    <div class="input-group input-group-sm mb-2 Tprestacion">
+                                        <span class="input-group-text">Tipo Prestacion</span>
+                                        <select class="form-select tipoPrestacionPresN" id="tipoPrestacionPresN">
+                                            <option selected value="">Elija una opción...</option>
+                                            @foreach ($tipoPrestacion as $tipo)
+                                            <option value="{{ $tipo->Nombre }}">{{ $tipo->Nombre }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                    <div class="input-group input-group-sm mb-2 selectMapaPresN">
+                                        <span class="input-group-text">Mapas</span>
+                                        <select class="form-control" name="mapasN" id="mapasN">
+                                        </select>
+                                    </div>
+
+                                </div>
+
+                                <div class="col-6">
+                                    <div class="input-group input-group-sm mb-2">
+                                        <span class="input-group-text">Paciente</span>
+                                        <input type="text" class="form-control" id="Id" name="Id" value="{{ $paciente->Id }}" @readonly(true)>
+                                        <input type="text" class="form-control" style="width: 50%" id="NombreCompleto" name="NombreCompleto" value="{{ $paciente->Apellido }} {{ $paciente->Nombre }}" @readonly(true)>
+                                    </div>
+
+                                    <div class="input-group input-group-sm mb-2">
+                                        <span class="input-group-text">Fecha</span>
+                                        <input type="date" class="form-control" id="FechaN" name="FechaN">
+                                    </div>
+
+                                </div>
+                        </div>
+                        
+                        <div class="row ObsPres">
+                            <div class="col-12">
+                                <hr class="mt-3 mb-3">
+                                <div class="input-group input-group-sm mb-2">
+                                    <span class="input-group-text">Observaciones</span>
+                                    <input type="text" class="form-control" id="ObservacionesPresN" name="ObservacionesPresN">
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="mt-3 mb-3">
+
+                        <div class="row">
+                    
+                            <div class="col-6">
+                                <label for="paquetes" class="form-label">Paquetes</label> <!-- select 2 de paquetes de exámenes -->
+                                <div class="mb-3">
+                                    <div class="cajaExamenes">
+                                        <select class="form-select" name="paquetes" id="paquetes"></select>
+                                        <i class="addPaquete ri-play-list-add-line naranja" title="Añadir paquete completo"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <label for="examenes" class="form-label">Examen</label> <!-- select 2 de exámenes -->
+                                <div class="mb-3">
+                                    <div class="cajaExamenes">
+                                        <select class="form-select" name ="exam" id="exam"></select>
+                                        <i class="addExamen ri-add-circle-line naranja" title="Añadir examén de la busqueda"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-2">
+                            <div class="table mt-3 mb-1 mx-auto col-sm-8">
+                        
+                                <table class="table table-bordered" id="listado" >
+                                    <thead class="table-light">
+                                        <th></th>
+                                        <th class="sort">Exámen</th>
+                                        <th>Acciones</th>
+                                    </thead>
+                                    <tbody id="listaExamenes" class="list form-check-all">
+        
+                                    </tbody>
+                                </table>
+        
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 text-center mt-2">
+                                <hr class="mt-2 mb-2 d-block">
+                                <button type="button" id="finalizarWizzard" class="btn botonGeneral"><i class="ri-save-line"></i>Finalizar</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div><!-- /.modal-content -->
@@ -832,6 +941,12 @@ const searchExamen = "{{ route('searchExamen') }}";
 const preExamenes = "{{ route('preExamenes') }}";
 const IDFICHA = "{{ $fichaLaboral->empresa->Id ?? ''}}";
 const pagoInput = "{{ $fichaLaboral->Pago ?? ''}} ";
+const checkItemExamen = "{{ route('checkItemExamen') }}";
+const saveItemExamenes = "{{ route('saveItemExamenes') }}";
+const getItemExamenes = "{{ route('itemsprestaciones.listadoexamenes') }}";
+const getPaquetes = "{{ route('getPaquetes') }}";
+const paqueteId = "{{ route('paqueteId') }}";
+const deleteItemExamen = "{{ route('deleteItemExamen')}}";
 
 const getMapas = "{{ route('getMapas') }}";
 
@@ -905,7 +1020,7 @@ $('#excel').click(function(e) {
 <script src="{{ asset('js/utils.js') }}?v={{ time() }}"></script>
 <script src="{{ asset('js/pacientes/fichaLaboral.js') }}?v={{ time() }}"></script>
 <script src="{{ asset('js/pacientes/prestacionesPacientes.js') }}?v={{ time() }}"></script>
-<script src="{{ asset('js/pacientes/prestacionesComentarios.js') }}?v={{ time() }}"></script>
+
 
 <script src="{{ asset('js/webcam.min.js') }}?v={{ time() }}"></script>
 <script src="{{ asset('js/webcam-picture.js') }}?v={{ time() }}"></script>
@@ -914,7 +1029,7 @@ $('#excel').click(function(e) {
 <script src="{{ asset('js/pages/form-masks.init.js') }}"></script>
 <script src="{{ asset('js/select2.min.js') }}"></script>
 <script src="{{ asset('js/pages/select2.init.js') }}"></script>
-
+<script src="{{ asset('js/fancyTable.js') }}"></script>
 @endpush
 
 @endsection

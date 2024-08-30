@@ -177,6 +177,7 @@ class PacientesController extends Controller
                 'telefono' => $this->getTelefono($paciente->Id) ,
                 'suEdad' => $this->getAge($paciente->FechaNacimiento) ?? '',
                 'tipoPrestacion' => PrestacionesTipo::all(),
+                'tipoPrestacionN' => PrestacionesTipo::all(),
                 'fichaLaboral' => $this->getFichaLaboral($paciente->Id, null) ?? null,
                 'pacientePrestacion' => $this->getPrestacion($paciente->Id),
                 'tiposPrestacionOtros' => PrestacionesTipo::whereNotIn('Nombre', $tiposPrestacionPrincipales)->get(),

@@ -1,8 +1,10 @@
 $(document).ready(()=>{
+
+    var IdNueva;
     
     var empresaInput = $('#selectClientes').val(), artInput = $('#selectArt').val();
     let hoy = new Date().toLocaleDateString('en-CA'), precarga = $('#tipoPrestacionPres').val();
-    $('#Fecha').val(hoy);
+    $('#Fecha, #FechaN').val(hoy);
 
     $('#siguienteExCta, .seleccionExCta').hide();
     precargaTipoPrestacion(precarga);
@@ -106,17 +108,13 @@ $(document).ready(()=>{
                         _token: TOKEN
                     },
                     success: function(response){
-                        
-                        let nuevoId = response.nuevoId;
-                        toastr.success('Se ha generado la prestación del paciente. Se redireccionará en 3 segundos a edición de prestaciones.', '¡Alta exitosa!');
-                        $('#Pago, #SPago, #Observaciones, #NumeroFacturaVta, #Autorizado').val("");
-                        setTimeout(function(){
-                            let url = location.href,
-                                clearUrl = url.replace(/\/pacientes\/.*/, ''),
-                                redireccionar =  clearUrl + '/prestaciones/' + nuevoId + '/edit';
-                            window.location.href = redireccionar;
-                        },3000);
-                        
+                        toastr.success('Se ha generado la prestación del paciente.');
+                        $('.nuevaPrestacion, .listadoExCta, .seleccionExCta').hide();
+                        $('.prestacionLimpia').show();
+
+                        IdNueva = response.nuevoId;
+                        cargarExamen(response.nuevoId);
+                        $('#idPrestacion').val(response.nuevoId);
                     },
                     error: function(jqXHR){
                         preloader('off');
@@ -423,11 +421,7 @@ $(document).ready(()=>{
 
     function selectorPago(pago) {
         
-        if (pago != 'B') {
-            $('#SPago, #Tipo, #Sucursal, #NroFactura').val(" ");
-        }
-
-        if(['B', ''].includes(pago)) {
+        if(['B', 'A', ''].includes(pago)) {
             
             $('.ultimasFacturadas, .examenesDisponibles').hide();
             $('#siguienteExCta').hide();
@@ -814,7 +808,376 @@ $(document).ready(()=>{
                 });
         });
     }
+
+
+    /******************************Nueva pantalla de prestaciones **************************************/
     
+    $('.prestacionLimpia').hide();
+
+    $(document).on('click', '.cargarExPrestacion, #guardarPrestacion', function(e){
+        e.preventDefault();
+        cargarExamen($('#idPrestacion').val());
+        $('#listaExamenes').empty();
+        
+    });
+
+    $(document).on('click', '#guardarFicha', function(e){
+        e.preventDefault();
+    });
+   
+
+    $('#exam').select2({
+        dropdownParent: $('#altaPrestacionModal'),
+        placeholder: 'Seleccionar exámen...',
+        language: {
+            noResults: function() {
+
+            return "No hay examenes con esos datos";        
+            },
+            searching: function() {
+
+            return "Buscando..";
+            },
+            inputTooShort: function () {
+                return "Por favor, ingrese 2 o más caracteres";
+            }
+        },
+        allowClear: true,
+        ajax: {
+           url: searchExamen,
+           dataType: 'json',
+           delay: 250,
+           data: function(params) {
+                return {
+                    buscar: params.term,
+                };
+           },
+           processResults: function(data) {
+                return {
+                    results: data.examen
+                };
+           },
+           cache: true,
+        },
+        minimumInputLength: 2
+    });
+
+    $('#paquetes').select2({
+        dropdownParent: $('#altaPrestacionModal'),
+        placeholder: 'Seleccionar paquete...',
+        language: {
+            noResults: function() {
+
+            return "No hay paquete con esos datos";        
+            },
+            searching: function() {
+
+            return "Buscando..";
+            },
+            inputTooShort: function () {
+                return "Por favor, ingrese 2 o más caracteres";
+            }
+        },
+        allowClear: true,
+        ajax: {
+           url: getPaquetes,
+           dataType: 'json',
+           delay: 250,
+           data: function(params) {
+                return {
+                    buscar: params.term,
+                };
+           },
+           processResults: function(data) {
+                return {
+                    results: data.paquete
+                };
+           },
+           cache: true,
+        },
+        minimumInputLength: 2
+    });
+
+    $(document).on("select2:open", () => {
+        document.querySelector(".select2-container--open .select2-search__field").focus()
+    });
+
+    $(document).on('click', '.addPaquete', function(e){
+        e.preventDefault();
+        
+        let paquete = $('#paquetes').val();
+        
+        if([null, undefined, ''].includes(paquete)){
+            toastr.warning("Debe seleccionar un paquete para poder añadirlo en su totalidad");
+            return;
+        }
+        preloader('on');
+       $.ajax({
+            url: paqueteId,
+            type: 'POST',
+            data: {
+                _token: TOKEN,
+                IdPaquete: paquete,
+            },
+
+            success:function(response){
+
+                preloader('off');
+                let data = response.examenes,
+                    ids = data.map(function(item) {
+                    return item.Id;
+                  });
+                saveExamen(ids, $('#idPrestacion').val());  
+                $('.addPaquete').val([]).trigger('change.select2');
+            },
+            error: function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return; 
+            }
+       });
+       
+    });
+
+    $(document).on('click', '.deleteExamenes, .deleteExamen', function(e){
+
+        e.preventDefault();
+
+        let ids = [], tieneAdjunto = false, id = $(this).data('delete'), adjunto, archivos;
+        var checkAll ='';
+
+        if ($(this).hasClass('deleteExamenes')) {
+
+            $('input[name="Id_examenes"]:checked').each(function() {
+                adjunto = $(this).data('adjunto'), archivos = $(this).data('archivo');
+                adjunto == 1 && archivos > 0 ? tieneAdjunto = true : ids.push($(this).val());
+            });
+    
+            checkAll = $('#checkAllExamenes').prop('checked');
+
+        } else if($(this).hasClass('deleteExamen')) {
+
+            adjunto = $(this).data('adjunto'), archivos = $(this).data('archivo');
+            adjunto == 1 && archivos > 0 ? tieneAdjunto = true : ids.push(id);
+        }
+
+        if (tieneAdjunto) {
+            toastr.warning('El o los examenes seleccionados tienen un reporte adjuntado. El mismo no se podrá eliminar.', 'Atención');
+            return;
+        }
+
+        if(ids.length === 0 && checkAll === false){
+            toastr.warning('No hay examenes seleccionados', 'Atención');
+            return;
+        }  
+    
+        swal({
+            title: "Confirme la eliminación de los examenes",
+            icon: "warning",
+            buttons: ["Cancelar", "Eliminar"],
+        }).then((confirmar) => {
+            if (confirmar){
+
+                preloader('on');
+                $.ajax({
+                    url: deleteItemExamen,
+                    type: 'POST',
+                    data: {
+                        Id: ids,
+                        _token: TOKEN
+                    },
+                    success: function(response){
+                        preloader('off');
+                        var estados = [];
+                        
+                        response.forEach(function(msg) {
+                            
+                            let tipoRespuesta = {
+                                success: 'success',
+                                fail: 'info'
+                            }
+                            toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 });
+                            estados.push(msg.estado);
+        
+                        });
+
+                        if(estados.includes('success')) {
+                            $('#listaExamenes').empty();
+                            $('#exam').val([]).trigger('change.select2');
+                            $('#addPaquete').val([]).trigger('change.select2');
+                            cargarExamen(IdNueva);
+
+                        }
+
+                    }
+                });
+            }
+            
+        });
+    });
+
+    $(document).on('click', '.addExamen', function(e){
+        e.preventDefault();
+
+        let id = $("#exam").val();
+        
+        if(['', null, undefined].includes(id)) {
+            toastr.warning("Debe seleccionar un examen para poder añadirlo a la lista", "Atención");
+            return;
+        }
+        saveExamen(id, $('#idPrestacion').val());
+    });
+
+    $('#altaPrestacionModal').on('hidden.bs.modal', function () {
+        $('.prestacionLimpia, .observacionesModal, .nuevaPrestacion').hide();
+        $('.fichaLaboralModal').show();
+        checkExamenesCuenta(IDFICHA);
+      });
+
+        function saveExamen(id, idPrestacion){
+
+        idExamen = [];
+        if (Array.isArray(id)) {
+            $.each(id, function(index, item) {
+                idExamen.push(item);
+              });
+        }else{
+            idExamen.push(id);
+        }
+
+        if (idExamen.length === 0) {
+            toastr.warning("No existe el exámen o el paquete no contiene examenes", "Atención");
+            return;
+        }
+        preloader('on');
+        $.ajax({
+
+            url: saveItemExamenes,
+            type: 'post',
+            data: {
+                _token: TOKEN,
+                idPrestacion: idPrestacion,
+                idExamen: idExamen
+            },
+            success: function(){
+                preloader('off');
+                $('#listaExamenes').empty();
+                $('#exam').val([]).trigger('change.select2');
+                $('#addPaquete').val([]).trigger('change.select2');
+                cargarExamen(idPrestacion);
+        },
+            error: function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;  
+            }
+        });
+    }
+    
+    $(document).on('click', '#finalizarWizzard', function(e){
+        e.preventDefault();
+
+        let url = location.href,
+            clearUrl = url.replace(/\/pacientes\/.*/, ''),
+            redireccionar =  clearUrl + '/prestaciones/' + $('#idPrestacion').val() + '/edit';
+        
+        window.location.href = redireccionar;
+    });
+    
+    async function cargarExamen(id) {
+        try {
+            preloader('on');
+    
+            let result = await $.ajax({
+                url: checkItemExamen,
+                method: 'GET',
+                data: { Id: id }
+            });
+    
+            let estado = result.respuesta;
+            let examenes = result.examenes;
+    
+            if (estado === true) {
+                // Segunda llamada AJAX para obtener los exámenes
+                let response = await $.ajax({
+                    url: getItemExamenes,
+                    method: 'post',
+                    data: {
+                        _token: TOKEN,
+                        IdExamen: examenes,
+                        Id: id,
+                        tipo: 'listado'
+                    }
+                });
+    
+                preloader('off');
+                let registros = response.examenes;
+    
+                registros.forEach(function(examen) {
+                    let examenId = examen.IdExamen;
+                    let url = editUrl.replace('__examen__', examen.IdItem);
+    
+                    let fila = `
+                        <tr ${examen.Anulado === 1 ? 'class="filaBaja"' : ''}>
+                            <td><input type="checkbox" name="Id_examenes" value="${examen.IdItem}" checked disabled></td>
+                            <td data-idexam="${examenId}" id="${examen.IdItem}" style="text-align:left">${examen.Nombre}</td>
+                            <td>    
+                                <div class="d-flex gap-2">
+                                    ${examen.Anulado === 0 ? `
+                                        <div class="remove">
+                                            <button data-delete="${examen.IdItem}" class="btn btn-sm iconGeneral deleteExamen" title="Eliminar">
+                                                <i class="ri-delete-bin-2-line"></i>
+                                            </button>
+                                        </div>    
+                                    ` : ''}
+                                </div>
+                            </td>
+                        </tr>`;
+    
+                    $('#listaExamenes').append(fila);
+                });
+    
+                $("#listado").fancyTable({
+                    pagination: true,
+                    perPage: 50,
+                    searchable: false,
+                    globalSearch: false,
+                    sortable: false, 
+                });
+            }
+    
+        } catch (error) {
+            preloader('off');
+            let errorData = JSON.parse(error.responseText);
+            checkError(error.status, errorData.msg);
+        } finally {
+            preloader('off');
+        }
+    }
+    
+
+    async function checkExamenesCuenta(id){
+
+        $.get(lstExDisponibles, {Id: id})
+            .done(await function(response){
+                let data = selectorPago(pagoInput);
+
+                if(response && response.length > 0) {
+
+                    $('#alertaExCta, .examenesDisponibles, .ultimasFacturadas, #siguienteExCta').show();
+                    $('#PagoLaboral, #Pago ').val('P');
+                    $('#guardarPrestacion').hide();
+                } else {
+
+                    $('examenesDisponibles, .ultimasFacturadas, #siguienteExCta').hide();
+                    $('#PagoLaboral').val(data);
+                    $('#guardarPrestacion').show();
+                    $('#alertaExCta').hide();
+                }
+            })
+    }
 
 
 
