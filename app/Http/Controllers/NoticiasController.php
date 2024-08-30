@@ -67,10 +67,10 @@ class NoticiasController extends Controller
             if (config('filesystems.default') !== 'smb') {
                 $request->Ruta->move($path, $fileName);
             }else{
-                $command = "mv " . escapeshellarg($rutaTemporal). " ".escapeshellarg($destino);
-                exec($command, $output);
+                copy($rutaTemporal, $destino);
+                chmod($destino, 0664);
             }
-            
+
             $noticia->Ruta = $fileName;
         }
 
