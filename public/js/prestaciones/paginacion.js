@@ -44,7 +44,7 @@ $(document).ready(()=>{
         new DataTable("#listaPrestaciones", {
             searching: false,
             ordering: true,
-            order: [[0, 'desc'], [1, 'desc'], [2, 'desc'], [3, 'desc'], [4, 'desc'], [5, 'desc'], [6, 'desc'], [7, 'desc'], [8, 'desc'], [9, 'desc'], [10, 'desc'], [11, 'desc'], [12, 'desc'], [13, 'desc'], [14, 'desc'], [15, 'desc'], [16, 'desc'], [17, 'desc']],
+            order: [[0, 'desc'], [1, 'desc'], [2, 'desc'], [3, 'desc'], [4, 'desc'], [5, 'desc'], [6, 'desc'], [7, 'desc'], [8, 'desc'], [9, 'desc'], [10, 'desc'], [11, 'desc'], [12, 'desc'], [13, 'desc'], [14, 'desc'], [15, 'desc'], [16, 'desc']],
             fixedColumns: true,
             processing: true,
             lengthChange: false,
@@ -77,19 +77,9 @@ $(document).ready(()=>{
             columnDefs: [
                 {
                     data: null,
-                    name: 'selectId',
-                    orderable: false,
-                    targets: 0,
-                    render: function(data){
-                   
-                        return `<div class="text-center"><input type="checkbox" name="Id" value="${data.Id}"></div>`;
-                    }
-                },
-                {
-                    data: null,
                     name: 'Id',
                     orderable: true,
-                    targets: 1,
+                    targets: 0,
                     render: function(data){
 
                         let cerradoAdjunto = data.CerradoAdjunto || 0,
@@ -107,7 +97,7 @@ $(document).ready(()=>{
                     data: null,
                     name: 'FechaAlta',
                     width: "65.8px",
-                    targets: 2,
+                    targets: 1,
                     orderable: true,
                     render: function(data){
                         return fechaNow(data.FechaAlta,'/',0);
@@ -117,7 +107,7 @@ $(document).ready(()=>{
                     data: null,
                     name: 'Id',
                     width: "42.8px",
-                    target: 3,
+                    target: 2,
                     orderable: true,
                     render: function(data){
                         return `<div class="text-center"><span>${data.Id}</span></div>`;
@@ -127,7 +117,7 @@ $(document).ready(()=>{
                     data: null,
                     name: 'Apellido',
                     orderable: true,
-                    targets: 4,
+                    targets: 3,
                     width: 80,
                     render: function(data){
                         let nombreCompleto = data.Apellido + ' ' + data.Nombre;
@@ -140,7 +130,7 @@ $(document).ready(()=>{
                     name: 'Tipo',
                     width: "86.8px",
                     orderable: true,
-                    targets: 5,
+                    targets: 4,
                     render: function(data){
                         return data.Tipo; 
                     }
@@ -149,7 +139,7 @@ $(document).ready(()=>{
                     data: null,
                     name: 'Empresa',
                     orderable: true,
-                    targets: 6,
+                    targets: 5,
                     render: function(data){
                         let prestacionEmp = data.Empresa ===  null ? '-' : data.Empresa;
                         let recorteEm = prestacionEmp.substring(0,7) + "...";
@@ -160,7 +150,7 @@ $(document).ready(()=>{
                     data: null,
                     name: 'ParaEmpresa',
                     orderable: true,
-                    targets: 7,
+                    targets: 6,
                     render: function(data){
                         let prestacionPe = data.ParaEmpresa === null ? '-' : data.ParaEmpresa;
                         let recortePe = prestacionPe.substring(0,7) + "...";
@@ -171,7 +161,7 @@ $(document).ready(()=>{
                     data: null,
                     name: 'Art',
                     orderable: true,
-                    targets: 8,
+                    targets: 7,
                     render: function(data){
                         let prestacionArt = data.Art === null ? '-' : data.Art;
                         let recorteArt = prestacionArt.substring(0, 7) + "...";
@@ -183,7 +173,7 @@ $(document).ready(()=>{
                     name: 'Id',
                     width: "58.8px",
                     orderable: true,
-                    targets: 9,
+                    targets: 8,
                     render: function(data){
 
                         return (data.Cerrado === 1 && data.Finalizado === 0 && data.Entregado === 0)
@@ -202,7 +192,7 @@ $(document).ready(()=>{
                     name: 'eEnviado',
                     width: "28.8px",
                     orderable: false,
-                    targets: 10,
+                    targets: 9,
                     render: function(data){
                         return `<div class="text-center"><i class="${data.eEnviado === 1 ? `ri-checkbox-circle-fill negro` : `ri-close-circle-line negro`}"></i></div>`;
                     }
@@ -212,7 +202,7 @@ $(document).ready(()=>{
                     name: 'INC',
                     width: "10px",
                     orderable: false, 
-                    targets: 11,
+                    targets: 10,
                     render: function(data){
                         return data.Incompleto === 1 ? `<div class="text-center"><i class="ri-check-line"></i></div>` : `-`;
                     }
@@ -221,7 +211,7 @@ $(document).ready(()=>{
                     data: null,
                     name: 'AUS',
                     orderable: false, 
-                    targets: 12,
+                    targets: 11,
                     render: function(data){
                         return data.Ausente === 1 ? `<div class="text-center"><i class="ri-check-line"></i></div>` : `-`;
                     }
@@ -230,7 +220,7 @@ $(document).ready(()=>{
                     data: null,
                     name: 'FOR',
                     orderable: false, 
-                    targets: 13,
+                    targets: 12,
                     render: function(data){
                         return data.Forma === 1 ? `<div class="text-center"><i class="ri-check-line"></i></div>` : `-`;
                     }
@@ -239,7 +229,7 @@ $(document).ready(()=>{
                     data: null,
                     name: 'DEV',
                     orderable: false, 
-                    targets: 14,
+                    targets: 13,
                     render: function(data){
                         return data.Devol === 1 ? `<div class="text-center"><i class="ri-check-line"></i></div>` : `-`;
                     }
@@ -249,7 +239,7 @@ $(document).ready(()=>{
                     name: 'FP',
                     width: "32.8px",
                     orderable: false, 
-                    targets: 15,
+                    targets: 14,
                     render: function(data){
 
                         let pagos = { 'B': 'Ctdo', 'C': 'Ctdo', 'P': 'ExCta', 'A': 'CC'};
@@ -261,7 +251,7 @@ $(document).ready(()=>{
                     name: 'Factura',
                     width: "22.8px",
                     orderable: false,
-                    targets: 16,
+                    targets: 15,
                     render: function(data){
                         return data.Facturado === 1 
                                 ? `<div class="text-center"><i class="ri-check-line"></i></div>` 
@@ -273,7 +263,7 @@ $(document).ready(()=>{
                     name: 'Id',
                     width: '102.4px',
                     orderable: false,
-                    targets: 17,
+                    targets: 16,
                     render: function(data){
                         let editar = `<a title="Editar" href="${location.href}/${data.Id}/edit"><button type="button" class="btn btn-sm iconGeneralNegro"><i class="ri-edit-line"></i></button></a>`,
                         

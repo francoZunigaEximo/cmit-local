@@ -173,7 +173,6 @@
                         <table id="listaPrestaciones" class="table table-bordered">
                             <thead class="table-light">
                                 <tr>
-                                    <th><input type="checkbox" id="checkAll" name="Id"></th>
                                     <th class="sort">% Av</th>
                                     <th class="sort">Fecha</th>
                                     <th class="sort">Nro</th>
@@ -281,25 +280,16 @@ function exportExcel(tipo) {
         return;
     }
 
-    ids     = "";
+
     filters = "";
     length  = $('input[name="Id"]:checked').length;
 
-    $('input[name="Id"]:checked').each(function(index,element) {
-        
-        if($(this).val() == "on"){
-            return;
-        }
-
-        if(index == (length - 1)){
-            ids += $(this).val();    
-        }
-        else {
-            ids += $(this).val() + ",";    
-        }
+    let data = listaPrestaciones.rows({ page: 'current' }).data().toArray();
+    let ids = data.map(function(row) {
+        return row.Id;
     });
 
-    if($("#checkAll").prop('checked') == true) {
+    if(!['',0, null].includes(ids)) {
         filters += "nroprestacion:" + $('#nroprestacion').val() + ",";
         filters += "paciente:" + $('#pacienteSearch').val() + ",";
         filters += "empresa:" + $('#empresaSearch').val() + ",";
