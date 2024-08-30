@@ -30,7 +30,7 @@
 
         <div class="row">
             <div class="col-9 mt-3">
-                <img id="vistaPrevia" src="{{ asset('storage/noticias/'.$noticia->Ruta) }}" alt="Previsualización de imagen" style="{{ $noticia->Ruta ? '' : 'display: none;' }}  max-width: 200px; max-height: 200px;">
+                <img id="vistaPrevia" src="@fileUrl('lectura')/Noticias/{{ $noticia->Ruta }}?v={{ time() }}" alt="Previsualización de imagen" style="{{ $noticia->Ruta ? '' : 'display: none;' }}  max-width: 200px; max-height: 200px;">
             </div>
         </div>
         

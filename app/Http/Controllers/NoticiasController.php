@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\FileHelper;
 use App\Models\Noticia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -48,14 +49,19 @@ class NoticiasController extends Controller
 
         if ($request->hasFile('Ruta')) {
 
-            $fotoExistente = 'public/noticias/' . $request->Ruta;
-            if (Storage::exists($fotoExistente)) {
-                Storage::delete($fotoExistente);
+            $fotoExistente =  FileHelper::getFileUrl('lectura') . $request->Ruta;
+            if (file_exists($fotoExistente)) {
+                unlink($fotoExistente);
             }
 
-            $fileName = 'NOTICIA_' . $request->Ruta->extension();
-            $request->Ruta->storeAs('public/noticias', $fileName);
+            $fileName = 'NOTICIA_.' . $request->Ruta->extension();
+            $path = FileHelper::getFileUrl('escritura')."/Noticias/";
 
+            if (!file_exists($path)) {
+                mkdir($path, 0755, true);
+            }
+
+            $request->Ruta->move($path, $fileName);
             $noticia->Ruta = $fileName;
         }
 

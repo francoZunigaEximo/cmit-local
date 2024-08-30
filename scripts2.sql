@@ -56,6 +56,7 @@ ALTER TABLE profesionales ADD COLUMN wImage varchar(100) DEFAULT '250px';
 ALTER TABLE profesionales ADD COLUMN hImage varchar(100) DEFAULT '250px';
 ALTER TABLE profesionales ADD RegHis TINYINT UNSIGNED DEFAULT 1;
 ALTER TABLE profesionales ADD T5 TINYINT UNSIGNED DEFAULT 0;
+ALTER TABLE profesionales ADD InfAdj INT DEFAULT 1 NOT NULL;
 
 /*** Facturas de Venta ***/
 ALTER TABLE facturasventa ADD COLUMN IdPrestacion INT DEFAULT 0;

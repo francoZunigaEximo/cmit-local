@@ -1055,4 +1055,15 @@ class ItemPrestacionesController extends Controller
         return ExamenPrecioProveedor::where('IdExamen', $idExamen)->where('IdProveedor', $idProveedor)->first(['Honorarios']);
     }
 
+    private function deleteExaCuenta($prestacion)
+    {
+        $exaCuenta = ExamenCuentaIt::where('IdPrestacion', $prestacion->Id)->where()->first();
+
+        if($exaCuenta) {
+            $exaCuenta->IdPrestacion = 0;
+            $exaCuenta->save();
+
+        } 
+    }
+
 }

@@ -170,7 +170,6 @@
                             <table id="listaPacientes" class="table table-bordered">
                                 <thead class="table-light">
                                     <tr>
-                                        <th><input type="checkbox" id="checkAll" name="Id"></th>
                                         <th class="sort">% Av</th>
                                         <th class="sort">Fecha</th>
                                         <th class="sort">Nro</th>
@@ -975,6 +974,12 @@ $('#excel').click(function(e) {
     $('input[name="Id"]:checked').each(function() {
         ids.push($(this).val());  
     });
+
+    let table = $('#listaPacientes tbody tr');
+    
+    /*let ids = table.map(function(){
+        return $(this).data('id');
+    }).get();*/
 
     if (ids.length === 0) { 
         toastr.info('No existen registros para exportar', 'Atención');

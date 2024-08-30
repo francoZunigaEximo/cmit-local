@@ -10,7 +10,7 @@
     <h4 style={{$estiloSubitutlo}}> {{$noticia->Subtitulo}} </h4> 
     <br><br>
     <h4> {!! $noticia->Texto !!} </h4> 
-    <img class="img-fluid" src="{{ asset('storage/noticias/'.$noticia->Ruta) }}"></img>
+    <img class="img-fluid" src="@fileUrl('lectura')/Noticias/{{ $noticia->Ruta }}?v={{ time() }}"></img>
 </div>
 
 @push('styles')
