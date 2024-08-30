@@ -68,7 +68,7 @@ class NoticiasController extends Controller
                 $request->Ruta->move($path, $fileName);
             }else{
                 copy($rutaTemporal, $destino);
-                chmod($destino, 0664);
+                chmod($destino, 0777);
             }
 
             $noticia->Ruta = $fileName;
