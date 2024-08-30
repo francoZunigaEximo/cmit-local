@@ -55,7 +55,7 @@ class NoticiasController extends Controller
             }
 
             $fileName = 'NOTICIA_.' . $request->Ruta->extension();
-            $path = FileHelper::getFileUrl('escritura')."/Noticias/";
+            $path = FileHelper::getFileUrl('escritura')."/Noticias";
 
             if (!file_exists($path)) {
                 mkdir($path, 0755, true);
