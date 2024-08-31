@@ -68,7 +68,7 @@ class NoticiasController extends Controller
                 $request->Ruta->move($path, $fileName);
             }else{
                 
-                $this->smbClienteServicecreateFile(FileHelper::getFileUrl('escritura').$fileName, $remotePath);
+                $this->smbClienteService->createFile(FileHelper::getFileUrl('escritura').$fileName, $remotePath);
             }
             
             $noticia->Ruta = $fileName;
