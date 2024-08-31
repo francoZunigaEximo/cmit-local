@@ -10,7 +10,7 @@ class FileHelper
 
         if ($disk  === 'smb') {
             
-            return $type === 'lectura' ? config('filesystems.smb_link') : '//192.168.1.253/GestionCMIT/archivos/';
+            return $type === 'lectura' ? config('filesystems.smb_link') : 'smb://192.168.1.253/GestionCMIT/archivos/';
 
         } else {
             return $type === 'lectura' ? asset('storage') : storage_path('app/public');
