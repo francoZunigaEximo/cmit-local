@@ -57,10 +57,6 @@ class NoticiasController extends Controller
             $path = FileHelper::getFileUrl('escritura')."/Noticias";
             $pathTemp = $request->Ruta->getPathName();
 
-            if (!file_exists($path)) {
-                mkdir($path, 0755, true);
-            }
-
             if (config('filesystems.default') !== 'smb') {
                 $request->Ruta->move($path, $fileName);
             }else{
