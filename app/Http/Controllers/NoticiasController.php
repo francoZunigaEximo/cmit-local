@@ -12,6 +12,13 @@ class NoticiasController extends Controller
 {
     use CheckPermission;
 
+    private $smbClienteService;
+
+    public function __construct(SmbClientService $smbClienteService)
+    {
+        $this->smbClienteService = $smbClienteService;
+    }
+
 	public function index(): mixed
     {
         if(!$this->hasPermission("noticias_show")) {
@@ -61,7 +68,7 @@ class NoticiasController extends Controller
                 $request->Ruta->move($path, $fileName);
             }else{
                 
-                $this->createFile(FileHelper::getFileUrl('escritura')."Fotos", $pathTemp);
+                $this->smbClienteService->createFile(FileHelper::getFileUrl('escritura')."Fotos", $pathTemp);
             }
             
             $noticia->Ruta = $fileName;
