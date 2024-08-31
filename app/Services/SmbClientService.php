@@ -59,6 +59,24 @@ class SmbClientService
         
     }
 
+    public function listFiles($remoteDirectory)
+    {
+        $files = [];
+        $dirStream = opendir($remoteDirectory, $this->smbClient);
+
+        if ($dirStream === false) {
+            throw new \Exception("No se pudo abrir el directorio en el servidor SMB.");
+        }
+
+        while (($file = readdir($dirStream)) !== false) {
+            $files[] = $file;
+        }
+
+        closedir($dirStream);
+
+        return $files;
+    }
+
 
 
 
