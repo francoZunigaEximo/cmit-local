@@ -5,9 +5,8 @@ namespace App\Http\Controllers;
 use App\Helpers\FileHelper;
 use App\Models\Noticia;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use App\Traits\CheckPermission;
-
+use App\Services\SmbClientService;
 
 class NoticiasController extends Controller 
 {
@@ -56,9 +55,7 @@ class NoticiasController extends Controller
 
             $fileName = 'NOTICIA_.' . $request->Ruta->extension();
             $path = FileHelper::getFileUrl('escritura')."/Noticias";
-            
-            $rutaTemporal = $request->Ruta->getPathname();
-            $destino = FileHelper::getFileUrl('escritura')."/Noticias/" . $fileName;
+            $pathTemp = $request->Ruta->getPathName();
 
             if (!file_exists($path)) {
                 mkdir($path, 0755, true);
@@ -67,8 +64,8 @@ class NoticiasController extends Controller
             if (config('filesystems.default') !== 'smb') {
                 $request->Ruta->move($path, $fileName);
             }else{
-                $command = "mv " . escapeshellarg($rutaTemporal). " ".escapeshellarg($destino);
-                exec($command, $output);
+                
+                $this->createFile(FileHelper::getFileUrl('escritura')."Fotos", $pathTemp);
             }
             
             $noticia->Ruta = $fileName;
