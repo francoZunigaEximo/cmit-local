@@ -121,8 +121,7 @@ $(document).ready(()=>{
                     width: 80,
                     render: function(data){
                         let nombreCompleto = data.Apellido + ' ' + data.Nombre;
-                        let recorteNom = nombreCompleto.substring(0,7) + "...";
-                        return `<span title="${nombreCompleto}">${recorteNom}</span>`;
+                        return `<span title="${nombreCompleto}">${formatoCeldaDataTable(nombreCompleto, 15)}</span>`;
                     }
                 },
                 {
@@ -142,8 +141,7 @@ $(document).ready(()=>{
                     targets: 5,
                     render: function(data){
                         let prestacionEmp = data.Empresa ===  null ? '-' : data.Empresa;
-                        let recorteEm = prestacionEmp.substring(0,7) + "...";
-                        return `<span title="${data.Empresa}">${recorteEm}</span>`;
+                        return `<span title="${data.Empresa}">${formatoCeldaDataTable(prestacionEmp, 15)}</span>`;
                     }  
                 },  
                 {
@@ -153,8 +151,7 @@ $(document).ready(()=>{
                     targets: 6,
                     render: function(data){
                         let prestacionPe = data.ParaEmpresa === null ? '-' : data.ParaEmpresa;
-                        let recortePe = prestacionPe.substring(0,7) + "...";
-                        return `<span title="${data.ParaEmpresa}">${recortePe}</span>`;
+                        return `<span title="${data.ParaEmpresa}">${formatoCeldaDataTable(prestacionPe, 15)}</span>`;
                     }
                 }, 
                 {
@@ -164,8 +161,7 @@ $(document).ready(()=>{
                     targets: 7,
                     render: function(data){
                         let prestacionArt = data.Art === null ? '-' : data.Art;
-                        let recorteArt = prestacionArt.substring(0, 7) + "...";
-                        return `<span title="${data.Art}">${recorteArt}</span>`;
+                        return `<span title="${data.Art}">${formatoCeldaDataTable(prestacionArt,15)}</span>`;
                     }
                 },
                 {
