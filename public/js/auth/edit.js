@@ -432,9 +432,16 @@ $(document).ready(()=>{
             if (resultados) {
                 $('.verOpciones').css('display', ''); 
                 $('.verAlerta').hide();
+                $('.addPerfilProf').show();
+                $('.saveOpciones').show();
+                $('.saveSeguro').show();
             } else {
-                $('.verOpciones').css('display', 'none');
+                //$('.verOpciones').css('display', 'none');
+                $('.verOpciones').css('display', ''); 
                 $('.verAlerta').show();
+                $('.addPerfilProf').hide();
+                $('.saveOpciones').hide();
+                $('.saveSeguro').hide();
             }
         });
     }

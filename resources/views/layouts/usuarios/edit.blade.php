@@ -11,7 +11,7 @@
         </div>
 
         <div class="alert alert-warning verAlerta" role="alert">
-            <strong> Atención: </strong> Los datos profesionales se encontrarán disponibles si el usuario es efector, informador, combinado o evaluador.
+            <strong> Atención: </strong> Los actualización de los datos profesionales se encontrarán disponibles si el usuario es efector, informador, combinado o evaluador.
         </div>   
     </div>
 </div>
