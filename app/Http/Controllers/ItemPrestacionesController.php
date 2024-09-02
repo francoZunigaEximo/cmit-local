@@ -751,8 +751,11 @@ class ItemPrestacionesController extends Controller
             $item = ItemPrestacion::with(['prestaciones','examenes'])->find($examen);
            
             if ($item && ($item->prestaciones->Cerrado === 0 && $item->CInfo != 3 && !in_array($item->CAdj,[3,5]) && $item->IdProfesional2 === 0 && $item->IdProfesional2 === 0)) {
+
                 $item->delete();
                 ItemPrestacion::InsertarVtoPrestacion($item->IdPrestacion);
+                $this->deleteExaCuenta($item->IdPrestacion, $item->IdExamen);
+                
                 $resultado = ['message' => 'Se ha eliminado con éxito el exámen '.$item->examenes->Nombre.'', 'estado' => 'success'];
             
             }else{
@@ -1055,9 +1058,9 @@ class ItemPrestacionesController extends Controller
         return ExamenPrecioProveedor::where('IdExamen', $idExamen)->where('IdProveedor', $idProveedor)->first(['Honorarios']);
     }
 
-    private function deleteExaCuenta($prestacion)
+    private function deleteExaCuenta($prestacion, $examen)
     {
-        $exaCuenta = ExamenCuentaIt::where('IdPrestacion', $prestacion->Id)->where()->first();
+        $exaCuenta = ExamenCuentaIt::where('IdPrestacion', $prestacion)->where('IdExamen', $examen)->first();
 
         if($exaCuenta) {
             $exaCuenta->IdPrestacion = 0;
