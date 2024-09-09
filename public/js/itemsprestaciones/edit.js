@@ -3,7 +3,7 @@ $(document).ready(function(){
     const valAbrir = ['3','4','5'], valCerrar = ['0','1','2'], ID = $('#Id').val();
     let cadj = $('#CAdj').val(), CInfo = $('#CInfo').val(), efector = $('#efectores').val(), informador = $('#informadores').val(), provEfector = $('#IdEfector').val(), provInformador = $('#IdInformador').val(), Estado = $('#Estado').val(), EstadoI = $('#EstadoI').val();
 
-    $('.abrir, .cerrar, .asignar, .liberar, .asignarI, .cerrarI, .adjuntarEfector, .adjuntarInformador').hide();
+    $('.abrir, .cerrar, .asignar, .liberar, .asignarI, .liberarI, .cerrarI, .adjuntarEfector, .adjuntarInformador').hide();
     $('#efectores option[value="0"]').text('Elija una opción...');
     $('#informadores option[value="0"]').text('Elija una opción...');
     
@@ -12,6 +12,7 @@ $(document).ready(function(){
     asignar(efector, 'efector');
     asignar(informador, 'informador');
     liberar(cadj, efector);
+    liberarI(CInfo, informador);
     abrir(cadj);
     cerrar(cadj, efector, 'efector');
     cerrar(cadj, informador, 'informador');
@@ -219,13 +220,15 @@ $(document).ready(function(){
             })
     });
 
-    $(document).on('click', '#liberar', function() {
+    $(document).on('click', '#liberar, #liberarI', function(e) {
+        e.preventDefault();
 
-        let checkEmpty = $('#efectores').val();
+        let checkEmptyE = $('#efectores').val(), checkEmptyI = $('#informadores').val(), who = $(this).attr('id') === 'liberar' ? checkEmptyE : checkEmptyI;
+        
 
-        if (checkEmpty !== '0') {
+        if (who != '0') {
 
-            $.post(updateAsignado, { Id: ID, _token: TOKEN, IdProfesional: 0, fecha: 0, Para: 'asignar'})
+            $.post(updateAsignado, { Id: ID, _token: TOKEN, IdProfesional: 0, fecha: 0, Para: who === 'liberar' ? 'asignar' : 'asignarI'})
             .done(function(response){
                 toastr.success(response.msg);
                 setTimeout(() => {
@@ -234,7 +237,6 @@ $(document).ready(function(){
                 
             })
         }
-   
     });
 
     $(document).on('click', '#adjuntos', function() {
@@ -394,14 +396,24 @@ $(document).ready(function(){
         }
     }
        
-
+    
     async function liberar(val, e){
-        let resultado = await (e !== '' && e !== null && e !== '0' && valCerrar.includes(val));
+        let resultado = await (!['',null,'0'].includes(e) && valCerrar.includes(val));
         
         if (resultado) {
             $('.liberar').show();
             $('.asignarI').hide();
             $('.adjuntarEfector').show();
+        }  
+    }
+
+    async function liberarI(e){
+        let resultado = await (!['',null,'0'].includes(e));
+        
+        if (resultado) {
+            $('.liberarI').show();
+            $('.asignarI').hide();
+            $('.adjuntarInformador').show();
         }  
 
     }
@@ -569,7 +581,7 @@ $(document).ready(function(){
                 if(await response.prestacion === true){
 
                     $('#Fecha, #ObsExamen, #efectores, #informadores').prop('disabled', true);
-                    $('button').removeClass('asignar liberar abrir cerrar asignarI cerrarI');
+                    $('button').removeClass('asignar liberar abrir cerrar asignarI liberarI cerrarI');
                     $('button').removeAttr('id');
                     $('i.ri-play-list-add-line').removeClass('addPaquete');
                     }

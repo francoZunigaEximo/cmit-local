@@ -214,26 +214,34 @@ class ItemPrestacionesController extends Controller
 
         $item = ItemPrestacion::with(['profesionales2', 'proveedores'])->find($request->Id);
 
+        $asignado = $request->Para === 'asignar' ? 'efector' : 'informador';
+
         if($item)
         {
-            if($request->Para === 'asignar'){
-                $item->IdProfesional = $request->IdProfesional;
-
-            }elseif($request->Para === 'asignarI'){
-                $item->IdProfesional2 = $request->IdProfesional;
-            }
-            
             $horaFin = $this->HoraAsegundos(date("H:i:s")) + ($item->proveedores->Min * 60);
             $horaAsigFin = $this->SegundosAminutos($horaFin).':00';
 
-            $item->FechaAsignado = (($request->fecha == '0000-00-00' ||  $request->fecha == '0') ? '' : now()->format('Y-m-d'));
-            $item->HoraAsignado = date("H:i:s");
-            $item->HoraFAsignado = $horaAsigFin;
+            if($request->Para === 'asignar'){
+                $item->IdProfesional = $request->IdProfesional;
+
+                $item->FechaAsignado = (($request->fecha == '0000-00-00' ||  $request->fecha == '0') ? '' : now()->format('Y-m-d'));
+                $item->HoraAsignado = date("H:i:s");
+                $item->HoraFAsignado = $horaAsigFin;
+
+
+            }elseif($request->Para === 'asignarI'){
+                $item->IdProfesional2 = $request->IdProfesional;
+
+                $item->FechaAsignadoI = (($request->fecha == '0000-00-00' ||  $request->fecha == '0') ? '' : now()->format('Y-m-d'));
+                $item->HoraAsignadoI = date("H:i:s");
+                //$item->HoraFAsignado = $horaAsigFin;
+            }
+            
             $item->save();
             
-            return response()->json(['msg' => 'Se ha actualizado el efector de manera correcta'], 200);
+            return response()->json(['msg' => 'Se ha actualizado el '. $asignado .' de manera correcta'], 200);
         }else{
-            return response()->json(['msg' => 'No se ha podido actualizar el efector'], 500);
+            return response()->json(['msg' => 'No se ha podido actualizar el '. $asignado], 500);
         }
     }
 

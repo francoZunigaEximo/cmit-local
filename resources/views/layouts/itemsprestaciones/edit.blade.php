@@ -167,6 +167,7 @@
 
                     @if($itemsprestacione->CInfo !== 0)
                         <button type="button" id="asignarI" class="btn botonGeneral btn-sm asignarI">Asignar</button>
+                        <button type="button" id="liberarI" class="btn botonGeneral btn-sm liberarI">Liberar</button>
                         <button type="button" id="cerrarI" class="btn botonGeneral btn-sm cerrarI">Cerrar</button>
                         <input type="hidden" value="{{ $itemsprestacione->CInfo }}" id="CInfo">
                     @endif
