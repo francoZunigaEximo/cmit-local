@@ -60,9 +60,9 @@ class FichaAltaController extends Controller
                     return response()->json(['msg' => 'No se ha actualizado la prestación porque la misma se encuentra cerrada'], 405);
 
                 }else{
-
-                    $prestacion->IdEmpresa = $request->cliente ?? $prestacion->IdEmpresa;
-                    $prestacion->IdART = $request->art ?? $prestacion->IdART;
+                    
+                    $prestacion->IdEmpresa = in_array($request->cliente, ['', null, 0]) ? null : $request->cliente;
+                    $prestacion->IdART = in_array($request->art, ['', null, 0]) ? null : $request->art;
                     $prestacion->TipoPrestacion = $request->tipoPrestacion ?? $prestacion->TipoPrestacion;
                     $prestacion->Pago = $request->pago ?? $prestacion->Pago;
                     $prestacion->save();

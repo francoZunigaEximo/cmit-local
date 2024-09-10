@@ -132,7 +132,7 @@
                                 <input type="date" class="form-control" id="FechaAnul" value="{{ in_array($prestacione->FechaAnul, [null, '0000-00-00']) ? '': $prestacione->FechaAnul }}" @readonly(true)>
                             </div>
                         </div>
-
+                 
                         <div class="col-10 FechaVto mt-2">
                             <div class="input-group input-group-sm">
                                 @if($prestacione->FechaVto === null || $prestacione->FechaVto === '0000-00-00')
@@ -567,7 +567,7 @@
                                 <br /><br />
                                 <div class="input-group input-group-sm mb-2 selectArt2">
                                     <span class="input-group-text">ART</span>
-                                    <select class="form-control-sm" id="selectArt" >
+                                    <select class="form-control" id="selectArt" >
                                         <option value="{{ $fichalaboral->art->Id ?? '' }}">{{ $fichalaboral->art->RazonSocial ?? '' }}</option>
                                     </select>
                                 </div>
