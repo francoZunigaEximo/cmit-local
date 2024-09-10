@@ -431,12 +431,12 @@ class PrestacionesExport implements FromCollection,WithHeadings
             'facturasventa.NroFactura as NroFactura',
             'fichaslaborales.CCosto as CCosto'
         )
-        ->where('prestaciones.Estado', '1');
+        ->where('prestaciones.Estado', '1')
+        ->groupBy('prestaciones.Id');
 
          if (empty($this->filters)) {
             return $query->whereIn('prestaciones.Id', $this->ids)
             ->orderBy('prestaciones.Id', 'DESC')
-            ->groupBy('prestaciones.Id')
             ->get();
          }
          else {
