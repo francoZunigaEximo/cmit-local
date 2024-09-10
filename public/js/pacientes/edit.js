@@ -4,7 +4,6 @@ $(document).ready(function(){
     quitarDuplicados("#provincia");
     quitarDuplicados("#tipoIdentificacion");
     checkProvincia();
-    tabActivo();
 
     
     $('#provincia').change(function() {
@@ -81,32 +80,5 @@ $(document).ready(function(){
             });
         }
     }
-
-    //Fix  TABS
-    function tabActivo(){
-        $('.tab-pane').removeClass('active show');
-        $('#datosPersonales').addClass('active show');
-        $('.nav-link[href="datosPersonales"]').tab('show');
-    }
-
-    $('a[href="#datosPersonales"]').click(function() {
-        $('.tab-pane').removeClass('active show');
-        $('#datosPersonales').addClass('active show');
-        $('.nav-link[href="datosPersonales"]').tab('show');
-    });
-
-    $('a[href="#fichaLaboral"]').click(function() {
-        $('.tab-pane').removeClass('active show');
-        $('#fichaLaboral').addClass('active show');
-        $('.nav-link[href="fichaLaboral"]').tab('show');
-    });
-
-    $('a[href="#prestaciones"]').click(function() {
-        $('.tab-pane').removeClass('active show');
-        $('#prestaciones').addClass('active show');
-        $('.nav-link[href="prestaciones"]').tab('show');
-    });
-
-
 
 });
