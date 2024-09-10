@@ -12,8 +12,8 @@ $(document).ready(function () {
     quitarDuplicados('#Autorizado');
     calcularAntiguedad();
     mostrarFinanciador();
-    checkExamenesCuenta(IDficha);
-    marcarPago(pagoInput);
+    selectorPago(pagoLaboral, IDFICHA)
+    marcarPago(pagoLaboral);
     selectMedioPago();
 
     const listOpciones = {
@@ -56,9 +56,10 @@ $(document).ready(function () {
         opcionesFicha(inputShow);
     });
 
-    $('#PagoLaboral').change(function(){
+    $('#PagoLaboral').change(function(IDFICHA){
         let valor = $(this).val(); 
         $('#Pago').val(valor).find('option[value="' + valor + '"]').prop('selected', true);
+        selectorPago(valor, IDFICHA)
     });
 
     $('input[name="TipoPrestacion"]').change(function(){
@@ -598,34 +599,15 @@ $(document).ready(function () {
             });    
     }
 
-    async function checkExamenesCuenta(id){
+    
 
-        $.get(lstExDisponibles, {Id: id})
-            .done(await function(response){
-                let data = selectorPago(pagoInput);
+    function selectorPago(pago, id) {
 
-                if(response && response.length > 0) {
-
-                    $('#alertaExCta, .examenesDisponibles, .ultimasFacturadas, #siguienteExCta').show();
-                    $('#PagoLaboral, #Pago ').val('P');
-                    $('#guardarPrestacion').hide();
-                } else {
-
-                    $('examenesDisponibles, .ultimasFacturadas, #siguienteExCta').hide();
-                    $('#PagoLaboral').val(data);
-                    $('#guardarPrestacion').show();
-                    $('#alertaExCta').hide();
-                }
-            })
-    }
-
-    function selectorPago(pago) {
-        
         if (pago != 'B') {
             $('#SPago, #Tipo, #Sucursal, #NroFactura').val(" ");
         }
 
-        if(['B','C', ''].includes(pago)) {
+        if(['B','A', ''].includes(pago)) {
             
             $('.ultimasFacturadas, .examenesDisponibles').hide();
             $('#siguienteExCta').hide();
@@ -639,9 +621,25 @@ $(document).ready(function () {
                     $('.ultimasFacturadas, .examenesDisponibles').show();
                     $('#siguienteExCta').show();
                     $('#guardarPrestacion').hide();
+                    checkExamenesCuenta(id)
                 }
             });
         }
+    }
+
+    async function checkExamenesCuenta(id){
+
+        $.get(lstExDisponibles, {Id: id})
+            .done(await function(response){
+
+                if(response && response.length > 0) {
+
+                    $('#alertaExCta').show();
+                    $('#PagoLaboral, #Pago ').val('P');
+                } else {
+                    $('#alertaExCta').hide();
+                }
+            })
     }
 
     function marcarPago(pago) {
