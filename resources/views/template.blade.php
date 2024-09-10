@@ -68,12 +68,12 @@
                     <div class="d-flex align-items-center">
 
                         <div class="ms-1 header-item d-none d-sm-flex">
-                            <a class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle ms-2" title="Pacientes (ALT + A)" href="{{ route('pacientes.index')}}">
-                                <img src="{{ asset('images/iconos/pacientes.svg')}}" alt="Pacientes" width="40px" height="40px">
-                            </a>
                             <button id="prestacionButton" type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle ms-2" title="Prestación rápida (ALT+ P)" data-bs-toggle="offcanvas" data-bs-target="#prestacionFast" aria-controls="offcanvas">
-                                <img src="{{ asset('images/iconos/prestaciones.svg')}}" alt="Prestaciones" width="40px" height="40px">
+                                <img src="{{ asset('images/iconos/pacientes.svg')}}" alt="Alta prestación rápida" width="40px" height="40px">
                             </button>
+                            <a class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle ms-2" title="Pacientes (ALT + A)" href="{{ route('prestaciones.index')}}">
+                                <img src="{{ asset('images/iconos/prestaciones.svg')}}" alt="Grilla prestaciones" width="40px" height="40px">
+                            </a>
                             <a class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle ms-2" title="Etapas (ALT + S)" href="{{ route('ordenesExamen.index')}}">
                                 <img src="{{ asset('images/iconos/etapas.svg')}}" alt="Etapas" width="40px" height="40px">
                             </a>
