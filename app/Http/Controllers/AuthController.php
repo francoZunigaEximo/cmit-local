@@ -135,8 +135,16 @@ class AuthController extends Controller
     public function updatePass(Request $request)
     {
             $user = $request->user();
+            $passActual = $user->password;
+
+            if (Hash::check($request->password, $passActual)) {
+                return response()->json(['msg' => 'La nueva contraseña no puede ser la misma que la actual'], 409);
+            }
+
             $user->password = Hash::make($request->password);
             $user->save();
+
+            return response()->json(['msg' => 'Se ha actualizado la contraseña correctamente'], 200);
     }
 
     public function checkPassword(Request $request)

@@ -123,10 +123,17 @@ $(document).ready(()=>{
                     $.post(actualizarPass, {_token: TOKEN, password: passw})
                         .done(function(response) {
                             preloader('off');
-                            toastr.success("Se han actualizado su contraseña correctamente");
+
+                            toastr.success(response.msg);
                             setTimeout(()=>{
                                 location.reload();
                             },2000);
+                        })
+                        .fail(function(jqXHR){
+                            preloader('off');
+                            let errorData = JSON.parse(jqXHR.responseText);            
+                            checkError(jqXHR.status, errorData.msg);
+                            return;
                         });
                 }
             }); 
