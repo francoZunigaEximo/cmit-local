@@ -35,7 +35,8 @@ class Fichalaboral extends Model
         'TipoPrestacion',
         'FechaPreocupacional',
         'FechaUltPeriod',
-        'FechaExArt'
+        'FechaExArt',
+        'SPago'
     ];
 
     public $timestamps = false;
