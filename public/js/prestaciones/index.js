@@ -212,7 +212,8 @@ $(document).ready(()=>{
     });
 
     //Arrastramos eventos
-    $(document).on('click', '.prestacionComentario', function() {
+    $(document).on('click', '.prestacionComentario', function(e) {
+        e.preventDefault();
         
         let IdComentario = $(this).data('id');
         $('#IdComentarioEs').text(IdComentario);

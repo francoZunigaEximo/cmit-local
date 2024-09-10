@@ -34,7 +34,8 @@ $(document).ready(function () {
         $('.fichaLaboralModal').show();
     });
 
-    $('.seguirAl').on('click', function(){
+    $('.seguirAl').on('click', function(e){
+        e.preventDefault();
         $('.nuevaPrestacion').show();
         $('.observacionesModal').hide();
     });

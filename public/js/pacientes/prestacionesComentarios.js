@@ -38,9 +38,9 @@ $(document).ready(function(){
             }
         });
 
-        $('.guardarComentario').off('click').on('click', function() {
+        $('.guardarComentario').off('click').on('click', function(e) {
 
-            event.stopPropagation();
+            e.preventDefault();
             let IdComentario = $(this).data('id');
 
             if (IdComentario) {
