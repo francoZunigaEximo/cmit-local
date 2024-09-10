@@ -531,10 +531,7 @@ $(document).ready(()=>{
                     
                     let porcentaje = parseFloat(((cerradoAdjunto / total) * 100).toFixed(2)) === 0 ? '0.00' : parseFloat(((cerradoAdjunto / total) * 100).toFixed(2));
 
-                    let row = `<tr>
-                                <td>
-                                    <input type="checkbox" name="Id" value=${papre.Id} checked="">
-                                </td>
+                    let row = `<tr data-id="${papre.Id}">
                                 <td>
                                     <div class="${papre.Anulado == 0 ? resultado : "rojo"}">${papre.Anulado == 0 ? porcentaje + `%` : '0.00%'}</div>
                                 </td>

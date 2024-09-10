@@ -977,12 +977,12 @@ $('#excel').click(function(e) {
 
     let table = $('#listaPacientes tbody tr');
     
-    /*let ids = table.map(function(){
+    ids = table.map(function(){
         return $(this).data('id');
-    }).get();*/
+    }).get();
 
     if (ids.length === 0) { 
-        toastr.info('No existen registros para exportar', 'Atención');
+        toastr.warning('No existen registros para exportar');
         return;
     }
 
