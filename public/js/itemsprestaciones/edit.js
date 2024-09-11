@@ -1,6 +1,6 @@
 $(document).ready(function(){
 
-    const valAbrir = ['3','4','5'], valCerrar = ['0','1','2'], ID = $('#Id').val();
+    const valAbrir = ['3','4','5'], valCerrar = ['0','1','2'], ID = $('#Id').val(), valCerrarI = 3;
     let cadj = $('#CAdj').val(), CInfo = $('#CInfo').val(), efector = $('#efectores').val(), informador = $('#informadores').val(), provEfector = $('#IdEfector').val(), provInformador = $('#IdInformador').val(), Estado = $('#Estado').val(), EstadoI = $('#EstadoI').val();
 
     $('.abrir, .cerrar, .asignar, .liberar, .asignarI, .liberarI, .cerrarI, .adjuntarEfector, .adjuntarInformador').hide();
@@ -11,8 +11,8 @@ $(document).ready(function(){
 
     asignar(efector, 'efector');
     asignar(informador, 'informador');
-    liberar(cadj, efector);
-    liberarI(CInfo, informador);
+    liberar(cadj, efector, 'efector');
+    liberar(CInfo, informador, 'informador');
     abrir(cadj);
     cerrar(cadj, efector, 'efector');
     cerrar(cadj, informador, 'informador');
@@ -398,25 +398,28 @@ $(document).ready(function(){
     }
        
     
-    async function liberar(val, e){
-        let resultado = await (!['',null,'0'].includes(e) && valCerrar.includes(val));
+    async function liberar(val, e, tipo){
         
-        if (resultado) {
-            $('.liberar').show();
-            $('.asignarI').hide();
-            $('.adjuntarEfector').show();
-        }  
-    }
+        if(tipo === 'efector') {
 
-    async function liberarI(e){
-        let resultado = await (!['',null,'0'].includes(e));
+            let resultado = await (!['',null,'0'].includes(e) && valCerrar.includes(val));
+            
+            if (resultado) {
+                $('.liberar').show();
+                $('.asignarI').hide();
+                $('.adjuntarEfector').show();
+            } 
+        }else if(tipo === 'informador') {
+
+            let resultado = await (!['',null,'0'].includes(e) && valCerrarI !== val);
         
-        if (resultado) {
-            $('.liberarI').show();
-            $('.asignarI').hide();
-            $('.adjuntarInformador').show();
-        }  
+            if (resultado) {
+                $('.liberarI').show();
+                $('.asignarI').hide();
+                $('.adjuntarInformador').show();
+            }  
 
+        }
     }
 
     function optionsGeneral(id, tipo) {
