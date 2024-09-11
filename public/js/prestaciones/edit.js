@@ -112,10 +112,6 @@ $(document).ready(()=> {
             return;
         }
 
-        if(![null, undefined, '0', 0].includes(art) && tipoPrestacion !== 'ART') {
-            toastr.warning("Si hay un cliente ART la prestación debe ser de tipo ART");
-            return;
-        }
         
         preloader('on');
         $.ajax({
