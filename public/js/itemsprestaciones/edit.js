@@ -204,8 +204,8 @@ $(document).ready(function(){
         let who = $(this).hasClass('asignar') ? 'asignar' : 'asignarI',
             check = (who === 'asignar') ? $('#efectores').val() : $('#informadores').val();
 
-        if(['', null, 0].includes(check)) {
-            toastr.warning("Debe seleccionar un Efector/Informador para poder asignar uno", "Atención");
+        if(['', null, 0, '0'].includes(check)) {
+            toastr.warning("Debe seleccionar un Efector/Informador para poder asignar uno");
             return;
         }
 
@@ -366,6 +366,7 @@ $(document).ready(function(){
 
                 $('.cerrarI').hide();
                 $('.abrir').hide();
+                $('.liberarI').hide();
                 $('.adjuntarInformador').hide();
             }
         }
