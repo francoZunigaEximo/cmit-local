@@ -572,7 +572,13 @@ $(document).ready(()=>{
                                     <div class="text-center">${(papre.Devol === 1 ? `<i class="ri-check-line"></i>` : `-`)}</div>
                                 </td>
                                 <td>
-                                    ${(papre.Pago == "B" ? 'Ctdo.' : papre.Pago == "C" ? "CCorriente" : papre.Pago == "C" ? "PCuenta" : "CCorriente")}
+                                    ${(papre.Pago == "B" 
+                                        ? 'Ctdo.' 
+                                        : papre.Pago == "C" 
+                                            ? "Ctdo" 
+                                            : papre.Pago == "P" 
+                                                ? "ExCta" 
+                                                : "CC")}
                                 </td>
                                 <td>
                                    <div class="text-center"> ${(papre.Facturado === 1 ? `<i class="ri-check-line"></i>` : `-`)}</div>
