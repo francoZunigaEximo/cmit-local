@@ -858,6 +858,13 @@ class MapasController extends Controller
         }
     }
 
+    public function controlPacienteMapa(Request $request)
+    {
+        $query = Prestacion::with(['mapa', 'paciente'])->where('IdMapa', $request->mapa)->where('IdPaciente', $request->paciente)->count();
+
+        return response()->json($query);
+    }
+
     private function queryBase()
     {
         return Mapa::leftJoin('prestaciones', 'mapas.Id', '=', 'prestaciones.IdMapa')
