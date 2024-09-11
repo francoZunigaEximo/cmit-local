@@ -391,6 +391,7 @@ $(document).ready(function(){
             
             if (resultado) {
                 $('.asignarI').show();
+                $('.liberarI').hide();
                 $('.abrir').show();
             }
         }

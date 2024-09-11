@@ -846,19 +846,58 @@
                                 </div>
                         </div>
                         
-                        <div class="row ObsPres">
+                        <div class="row">
                             <div class="col-12">
                                 <hr class="mt-3 mb-3">
                                 <div class="input-group input-group-sm mb-2">
                                     <span class="input-group-text">Observaciones</span>
                                     <input type="text" class="form-control" id="ObservacionesPresN" name="ObservacionesPresN">
                                 </div>
+
+                                <div class="input-group input-group">
+                                    <span class="input-group-text">Obs exámenes</span>
+                                    <input type="text" class="form-control" placeholder="Observaciones" id="ObsExamenes" name="ObsExamenes">
+                                </div>
+                
+                                <div class="input-group input-group mt-2">
+                                    <span class="input-group-text">Obs estado</span>
+                                    <input type="text" class="form-control" placeholder="Observaciones" id="Obs" name="Obs">
+                                </div>
+
                             </div>
                         </div>
 
+                            
+
                         <hr class="mt-3 mb-3">
 
-                        <div class="row">
+                        <div class="row text-left">
+                            <div class="col-auto">
+                                <button type="button" class="btn btn-sm botonGeneral" data-bs-toggle="modal" data-bs-target="#imprimir" ><i class="bx bxs-file-pdf"></i>&nbsp;Imprimir</button>
+                            </div>
+                            
+                            <div class="col-auto">
+                                <button type="button" class="btn btn-sm botonGeneral"><i class="ri-send-plane-line"></i>&nbsp;Opciones</button>
+                            </div>
+                            
+                            <div class="col-auto">
+                                <button type="button" class="btn btn-sm botonGeneral deleteExamenes"><i class="ri-delete-bin-2-line"></i>&nbsp;Eliminar</button>
+                            </div>
+                            <div class="col-auto">
+                                <button type="button" class="btn btn-sm botonGeneral bloquearExamenes"><i class="ri-forbid-2-line"></i>&nbsp;Anular</button>
+                            </div>
+                            <div class="col-auto">
+                                <button type="button" class="btn btn-sm botonGeneral abrirExamenes">Abrir</button>
+                            </div>
+                            <div class="col-auto">
+                                <button type="button" class="btn btn-sm botonGeneral adjuntoExamenes"><i class="ri-attachment-line"></i>&nbsp;Adjuntado</button>
+                            </div>
+                            <div class="col-auto">
+                                <button type="button" class="btn btn-sm botonGeneral liberarExamenes">Liberar</button>
+                            </div>
+                        </div>
+
+                        <div class="row mt-2">
                     
                             <div class="col-6">
                                 <label for="paquetes" class="form-label">Paquetes</label> <!-- select 2 de paquetes de exámenes -->
