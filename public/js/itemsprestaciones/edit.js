@@ -225,10 +225,9 @@ $(document).ready(function(){
 
         let checkEmptyE = $('#efectores').val(), checkEmptyI = $('#informadores').val(), who = $(this).attr('id') === 'liberar' ? checkEmptyE : checkEmptyI;
         
-
         if (who != '0') {
 
-            $.post(updateAsignado, { Id: ID, _token: TOKEN, IdProfesional: 0, fecha: 0, Para: who === 'liberar' ? 'asignar' : 'asignarI'})
+            $.post(updateAsignado, { Id: ID, _token: TOKEN, IdProfesional: 0, fecha: 0, Para: $(this).attr('id') === 'liberar' ? 'asignar' : 'asignarI'})
             .done(function(response){
                 toastr.success(response.msg);
                 setTimeout(() => {
