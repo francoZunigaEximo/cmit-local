@@ -485,7 +485,7 @@ $(document).ready(()=>{
             .done(await function(response){
    
                 let mapas = response.mapas;
-                $('#mapas, #mapasN').empty().append('<option value="" selected>Elija un mapa...</option>');
+                $('#mapas, #mapasN').empty();
                 
                 if(mapas.length === 0)
                 {
