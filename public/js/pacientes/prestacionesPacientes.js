@@ -21,15 +21,18 @@ $(document).ready(()=>{
         precargaTipoPrestacion(actPrecarga);
     });
 
-    $(document).on('change', '#selectClientes, #selectArt', function(){
-        let empresaCap = $('#selectClientes').val();
-        let artCap = $('#selectArt').val();
-        
-        getMap(empresaCap, artCap);
+    $(document).on('change', '#selectClientes, #selectArt, input[type=radio][name=TipoPrestacion]', function() {
+
+        let empresaCap = $('#selectClientes').val(), artCap = $('#selectArt').val(), tipoPrestacion = $('input[type=radio][name=TipoPrestacion]:checked').val();
+
         getUltimasFacturadas(empresaCap);
         listadoConSaldos(empresaCap);
         cantidadDisponibles(empresaCap);
         listadoFacturas(empresaCap, null);
+
+        if (tipoPrestacion === 'ART') {
+            getMap(empresaCap, artCap);  
+        }
     });
 
      //Guardamos la prestación
@@ -472,9 +475,9 @@ $(document).ready(()=>{
         getListado(null);
     }
 
-    async function getMap(x, y){
+    async function getMap(idEmpresa, idArt){
 
-        let empresa = x, art = y;
+        let empresa = idEmpresa, art = idArt;
  
         $.get(getMapas, {empresa: empresa, art: art})
             .done(await function(response){
