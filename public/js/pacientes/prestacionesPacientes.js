@@ -1087,10 +1087,13 @@ $(document).ready(()=>{
     $(document).on('click', '#finalizarWizzard', function(e){
         e.preventDefault();
 
-        let url = location.href,
+        let idP = $('#idPrestacion').val(),
+            url = location.href,
             clearUrl = url.replace(/\/pacientes\/.*/, ''),
-            redireccionar =  clearUrl + '/prestaciones/' + $('#idPrestacion').val() + '/edit';
+            redireccionar =  clearUrl + '/prestaciones/' + idP + '/edit';
         
+        //$.post(altaprovPrestacion, {_token: TOKEN, })
+
         window.location.href = redireccionar;
     });
     
