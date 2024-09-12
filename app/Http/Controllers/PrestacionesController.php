@@ -399,6 +399,10 @@ class PrestacionesController extends Controller
             return response()->json(['msg' => 'No tienes permisos'], 403);
         }
 
+        if ($this->checkPacientePresMapa($request->paciente, $request->mapas) > 0 && $request->mapas !== 0) {
+            return response()->json(['msg' => 'El paciente ya se encuentra incluido en el mapa'], 409);
+        }
+
         $nuevoId = Prestacion::max('Id') + 1;
 
         Prestacion::create([
@@ -698,6 +702,12 @@ class PrestacionesController extends Controller
                 $row->save();
             } 
         } 
+    }
+
+    //Checkea si el paciente y la prestación ya existen en ese mapa para no volver a incluilos
+    private function checkPacientePresMapa(int $paciente, int $mapa)
+    {
+        return Prestacion::where('IdPaciente', $paciente)->where('IdMapa', $mapa)->count();
     }
 
 }
