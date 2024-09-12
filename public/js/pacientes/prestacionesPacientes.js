@@ -24,13 +24,15 @@ $(document).ready(()=>{
     $(document).on('change', '#selectClientes, #selectArt, input[type=radio][name=TipoPrestacion]', function() {
 
         let empresaCap = $('#selectClientes').val(), artCap = $('#selectArt').val(), tipoPrestacion = $('input[type=radio][name=TipoPrestacion]:checked').val();
-
+        console.log('TipoPrestacion ' + tipoPrestacion)
         getUltimasFacturadas(empresaCap);
         listadoConSaldos(empresaCap);
         cantidadDisponibles(empresaCap);
         listadoFacturas(empresaCap, null);
 
         if (tipoPrestacion === 'ART') {
+            console.log('empresa: ' + empresaCap);
+            console.log('art: ' + artCap);    
             getMap(empresaCap, artCap);  
         }
     });
