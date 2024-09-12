@@ -435,7 +435,7 @@ class PrestacionesController extends Controller
             $this->addFactura($request->tipo, $request->sucursal, $request->nroFactura, $empresa, $request->tipoPrestacion, $nuevoId);
         }
     
-        return response()->json(['nuevoId' => $nuevoId], 200);
+        return response()->json(['nuevoId' => $nuevoId, 'msg' => 'Se ha generado la prestación del paciente.'], 200);
     }
 
     public function updatePrestacion(Request $request)

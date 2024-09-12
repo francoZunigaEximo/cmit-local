@@ -108,7 +108,7 @@ $(document).ready(()=>{
                         _token: TOKEN
                     },
                     success: function(response){
-                        toastr.success('Se ha generado la prestación del paciente.');
+                        toastr.success(response.msg);
                         $('.nuevaPrestacion, .listadoExCta, .seleccionExCta').hide();
                         $('.prestacionLimpia').show();
 
