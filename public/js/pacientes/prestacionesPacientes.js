@@ -485,18 +485,18 @@ $(document).ready(()=>{
             .done(await function(response){
    
                 let mapas = response.mapas;
-                $('#mapas').empty().append('<option value="" selected>Elija un mapa...</option>');
+                $('#mapas, #mapasN').empty().append('<option value="" selected>Elija un mapa...</option>');
                 
                 if(mapas.length === 0)
                 {
-                    $('#mapas').empty().append('<option title="Sin mapas disponibles para esta ART y Empresa." value="0" selected>Sin mapas disponibles.</option>');
+                    $('#mapas, #mapasN').empty().append('<option title="Sin mapas disponibles para esta ART y Empresa." value="0" selected>Sin mapas disponibles.</option>');
                 }else{
 
                     $.each(mapas, function(index, d){
 
                         let contenido = `<option value="${d.Id}">${d.Nro} | Empresa: ${d.RSE} - ART: ${d.RSArt}</option>`;
     
-                        $('#mapas').append(contenido);
+                        $('#mapas, #mapasN').append(contenido);
                     });
                 } 
             })
