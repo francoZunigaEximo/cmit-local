@@ -55,7 +55,7 @@ $(document).ready(()=>{
             lengthChange: false,
             pageLength: 50,
             deferRender: true,
-            responsive: true,
+            responsive: false,
             serverSide: true,
             ajax: {
                 url: SEARCHASIG,
@@ -98,14 +98,14 @@ $(document).ready(()=>{
                     data: null,
                     render: function(data) {
 
-                        return `<span title="${data.Empresa}">${acortadorTexto(data.Empresa, 7)}</span>`;
+                        return `<span title="${data.Empresa}">${data.Empresa}</span>`;
                     }
                 },
                 {
                     data: null,
                     render: function(data){
                         let NombreCompleto = data.pacNombre + ' ' + data.pacApellido;
-                        return `<span title="${NombreCompleto}">${acortadorTexto(NombreCompleto)}</span>`;
+                        return `<span title="${NombreCompleto}">${NombreCompleto}</span>`;
                     }
                 },
                 {
@@ -115,7 +115,7 @@ $(document).ready(()=>{
                 {
                     data: null,
                     render: function(data) {
-                        return `<span title="${data.Examen}">${acortadorTexto(data.Examen, 20)}</span>`;
+                        return `<span title="${data.Examen}">${data.Examen}</span>`;
                     }
                 },
                 {

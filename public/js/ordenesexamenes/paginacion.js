@@ -40,7 +40,8 @@ $(document).ready(()=>{
             lengthChange: false,
             pageLength: 50,
             deferRender: true,
-            responsive: true,
+            responsive: false,
+            scrollCollapse: true,
             serverSide: true,
             ajax: {
                 url: SEARCH,
@@ -66,8 +67,7 @@ $(document).ready(()=>{
                 {
                     data: null,
                     render: function(data){
-                        let recorte = (data.Especialidad).substring(0.15) + "...";
-                        return recorte.length >=15 ? `<span title="${data.Especialidad}">${recorte}</span>` : data.Especialidad;
+                        return `<span title="${data.Especialidad}">${data.Especialidad}</span>`;
                         
                     }
                 },
@@ -80,17 +80,13 @@ $(document).ready(()=>{
                 {
                     data: null,
                     render: function(data) {
-
-                        let recorte = (data.Empresa).substring(0,15) + "...";
-                        return recorte.length >= 15 ? `<span title="${data.Empresa}">${recorte}</span>` : data.Empresa;
-                    }
+                        return `<span title="${data.Empresa}">${data.Empresa}</span>`}
                 },
                 {
                     data: null,
                     render: function(data){
                         let NombreCompleto = data.pacNombre + ' ' + data.pacApellido;
-                        let recorte = (NombreCompleto).substring(0,15) + "...";
-                        return recorte.length >= 15 ? `<span title="${NombreCompleto}">${recorte}</span>` : NombreCompleto;
+                        return `<span title="${NombreCompleto}">${NombreCompleto}</span>`;
                     }
                 },
                 {
@@ -100,8 +96,7 @@ $(document).ready(()=>{
                 {
                     data: null,
                     render: function(data) {
-                        let recorte = (data.Examen).substring(0,20) + "...";
-                        return recorte.length >= 20 ? `<span title="${data.Examen}">${recorte}</span>` : data.Examen;
+                        return `<span title="${data.Examen}">${data.Examen}</span>`;
                     }
                 },
                 {

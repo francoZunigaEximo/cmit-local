@@ -33,7 +33,7 @@ $(document).ready(()=>{
             lengthChange: false,
             pageLength: 50,
             deferRender: true,
-            responsive: true,
+            responsive: false,
             serverSide: true,
             ajax: {
                 url: SEARCHASIGINF,
@@ -83,9 +83,7 @@ $(document).ready(()=>{
                 {
                     data: null,
                     render: function(data) {
-
-                        let recorte = (data.Empresa).substring(0,20) + "...";
-                        return recorte.length >= 20 ? `<span title="${data.Empresa}">${recorte}</span>` : data.Empresa;
+                        return `<span title="${data.Empresa}">${data.Empresa}</span>`;
                     }
                 },
                 {
@@ -99,8 +97,7 @@ $(document).ready(()=>{
                 {
                     data: null,
                     render: function(data) {
-                        let recorte = (data.Examen).substring(0,20) + "...";
-                        return recorte.length >= 20 ? `<span title="${data.Examen}">${recorte}</span>` : data.Examen;
+                        return `<span title="${data.Examen}">${data.Examen}</span>`;
                     }
                 },
                 {

@@ -27,7 +27,7 @@ $(document).ready(()=>{
             lengthChange: false,
             pageLength: 50,
             deferRender: true,
-            responsive: true,
+            responsive: false,
             serverSide: true,
             ajax: {
                 url: SEARCHEENVIAR,
@@ -64,14 +64,14 @@ $(document).ready(()=>{
                     targets: 2,
                     render: function(data) {
 
-                        return `<span title="${data.Empresa}">${acortadorTexto(data.Empresa, 12)}</span>`;
+                        return `<span title="${data.Empresa}">${data.Empresa}</span>`;
                     }
                 },
                 {
                     data: null,
                     targets: 3,
                     render: function(data) {
-                        return  `<span title="${data.NombreCompleto}">${acortadorTexto(data.NombreCompleto, 10)}</span>`; 
+                        return  `<span title="${data.NombreCompleto}">${data.NombreCompleto}</span>`; 
                     }
                 },
                 {
@@ -83,7 +83,7 @@ $(document).ready(()=>{
                     data: null,
                     targets: 5,
                     render: function(data) {
-                        return `<span title="${data.Examen}">${acortadorTexto(data.Examen, 12)}</span>`;
+                        return `<span title="${data.Examen}">${data.Examen}</span>`;
                     }
                 },
                 {
@@ -97,7 +97,7 @@ $(document).ready(()=>{
                     data: null,
                     targets: 7,
                     render: function(data){
-                        return `<span title="${data.Correo}">${[undefined, null].includes(data.Correo) ? '-' : acortadorTexto(data.Correo, 15)}</span>`;
+                        return `<span title="${data.Correo}">${[undefined, null].includes(data.Correo) ? '-' : data.Correo}</span>`;
                     } 
                 },
                 {

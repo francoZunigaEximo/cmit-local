@@ -28,7 +28,7 @@ $(document).ready(()=>{
             lengthChange: false,
             pageLength: 50,
             deferRender: true,
-            responsive: true,
+            responsive: false,
             serverSide: true,
             ajax: {
                 url: SEARCHADJINF,
@@ -66,7 +66,7 @@ $(document).ready(()=>{
                 {
                     data: null,
                     render: function(data){
-                        return `<span title="${data.Especialidad}">${acortadorTexto(data.Especialidad, 12)}</span>` ;
+                        return `<span title="${data.Especialidad}">${data.Especialidad}</span>` ;
                     }
                 },
                 {
@@ -78,14 +78,14 @@ $(document).ready(()=>{
                 {
                     data: null,
                     render: function(data) {
-                        return `<span title="${data.Empresa}">${acortadorTexto(data.Empresa, 12)}</span>`;
+                        return `<span title="${data.Empresa}">${data.Empresa}</span>`;
                     }
                 },
                 {
                     data: null,
                     render: function(data){
                         let NombreCompleto = data.pacApellido + ' ' + data.pacNombre;
-                        return `<span title="${NombreCompleto}">${acortadorTexto(NombreCompleto, 12)}</span>`;
+                        return `<span title="${NombreCompleto}">${NombreCompleto}</span>`;
                     }
                 },
                 {
@@ -95,14 +95,14 @@ $(document).ready(()=>{
                 {
                     data: null,
                     render: function(data) {
-                        return `<span title="${data.examen_nombre}">${acortadorTexto(data.examen_nombre, 10)}</span>`;
+                        return `<span title="${data.examen_nombre}">${data.examen_nombre}</span>`;
                     }
                 },
                 {
                     data: null,
                     render: function(data){
                         let NombreProfesional = data.proApellido + ' ' + data.proNombre;
-                        return `<span title="${NombreProfesional}">${acortadorTexto(NombreProfesional, 12)}</span>`;
+                        return `<span title="${NombreProfesional}">${NombreProfesional}</span>`;
                     }
                 },
                 {

@@ -68,7 +68,7 @@ $(document).ready(()=>{
             lengthChange: false,
             pageLength: 500,
             deferRender: true,
-            responsive: true,
+            responsive: false,
             serverSide: true,
             ajax: {
                 url: SEARCHPRESTACION,
@@ -99,7 +99,7 @@ $(document).ready(()=>{
                     width: "80.3px",
                     render: function(data) {
 
-                        return `<div id="listado" data-id="${data.IdItem}"><span title="${data.Especialidad}">${acortadorTexto(data.Especialidad, 11)}</span></div>`;
+                        return `<div id="listado" data-id="${data.IdItem}"><span title="${data.Especialidad}">${data.Especialidad}</span></div>`;
                     }
                 },
                 {//2
@@ -119,14 +119,14 @@ $(document).ready(()=>{
                 {//4
                     data: null,
                     render: function(data) {
-                        return `<span title="${data.Empresa}">${acortadorTexto(data.Empresa, 7)}</span>`;
+                        return `<span title="${data.Empresa}">${data.Empresa}</span>`;
                     }
                 },
                 {//5
                     data: null,
                     render: function(data){
                         let NombreCompleto = data.NombrePaciente + ' ' + data.ApellidoPaciente;
-                        return `<span title="${NombreCompleto}">${[null, undefined, ''].includes(NombreCompleto) ? '' : acortadorTexto(NombreCompleto, 9)}</span>`;
+                        return `<span title="${NombreCompleto}">${[null, undefined, ''].includes(NombreCompleto) ? '' : NombreCompleto}</span>`;
                     }
                 },
                 {
@@ -162,7 +162,7 @@ $(document).ready(()=>{
                 {//7
                     data: null,
                     render: function(data) {
-                        return `<span title="${data.Examen}">${acortadorTexto(data.Examen, 7)}</span>`;
+                        return `<span title="${data.Examen}">${data.Examen}</span>`;
                     }
                 },
                 {//8
@@ -171,7 +171,7 @@ $(document).ready(()=>{
                         let nombre = [null, '', 0].includes(data.NombreProfesional) ? '' : data.NombreProfesional,
                             apellido = [null, '', 0].includes(data.ApellidoProfesional) ? '' : data.ApellidoProfesional
                         let NombreCompleto = nombre + ' ' + apellido;
-                        return `<span title="${NombreCompleto}">${acortadorTexto(NombreCompleto, 6)}</span>`
+                        return `<span title="${NombreCompleto}">${NombreCompleto}</span>`
                     }
                 },
                 
@@ -199,7 +199,7 @@ $(document).ready(()=>{
                     data: null,
                     render: function(data){
                         let NombreCompleto = data.NombreProfesional2 + ' ' + data.ApellidoProfesional2;
-                        return `<span title="${NombreCompleto}">${acortadorTexto(NombreCompleto)}</span>`;
+                        return `<span title="${NombreCompleto}">${NombreCompleto}</span>`;
                     }
                 },
                 {//12
