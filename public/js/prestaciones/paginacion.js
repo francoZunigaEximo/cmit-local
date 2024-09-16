@@ -45,13 +45,13 @@ $(document).ready(()=>{
             searching: false,
             ordering: true,
             order: [[0, 'desc'], [1, 'desc'], [2, 'desc'], [3, 'desc'], [4, 'desc'], [5, 'desc'], [6, 'desc'], [7, 'desc'], [8, 'desc'], [9, 'desc'], [10, 'desc'], [11, 'desc'], [12, 'desc'], [13, 'desc'], [14, 'desc'], [15, 'desc'], [16, 'desc']],
-            fixedColumns: true,
             processing: true,
             lengthChange: false,
             pageLength: 150,
-            responsive: true,
+            responsive: false,
             serverSide: true,
             deferRender: true,
+            scrollCollapse: true,
             autoWidth: false,
             select: {
                 style: 'multi'
@@ -96,7 +96,6 @@ $(document).ready(()=>{
                 {
                     data: null,
                     name: 'FechaAlta',
-                    width: "65.8px",
                     targets: 1,
                     orderable: true,
                     render: function(data){
@@ -106,7 +105,6 @@ $(document).ready(()=>{
                 {
                     data: null,
                     name: 'Id',
-                    width: "42.8px",
                     target: 2,
                     orderable: true,
                     render: function(data){
@@ -118,16 +116,14 @@ $(document).ready(()=>{
                     name: 'Apellido',
                     orderable: true,
                     targets: 3,
-                    width: 80,
                     render: function(data){
                         let nombreCompleto = data.Apellido + ' ' + data.Nombre;
-                        return `<span title="${nombreCompleto}">${formatoCeldaDataTable(nombreCompleto, 15)}</span>`;
+                        return `<span title="${nombreCompleto}">${nombreCompleto}</span>`;
                     }
                 },
                 {
                     data: null,
                     name: 'Tipo',
-                    width: "86.8px",
                     orderable: true,
                     targets: 4,
                     render: function(data){
@@ -141,7 +137,7 @@ $(document).ready(()=>{
                     targets: 5,
                     render: function(data){
                         let prestacionEmp = data.Empresa ===  null ? '-' : data.Empresa;
-                        return `<span title="${data.Empresa}">${formatoCeldaDataTable(prestacionEmp, 15)}</span>`;
+                        return `<span title="${data.Empresa}">${prestacionEmp}</span>`;
                     }  
                 },  
                 {
@@ -151,7 +147,7 @@ $(document).ready(()=>{
                     targets: 6,
                     render: function(data){
                         let prestacionPe = data.ParaEmpresa === null ? '-' : data.ParaEmpresa;
-                        return `<span title="${data.ParaEmpresa}">${formatoCeldaDataTable(prestacionPe, 15)}</span>`;
+                        return `<span title="${data.ParaEmpresa}">${prestacionPe}</span>`;
                     }
                 }, 
                 {
@@ -161,13 +157,12 @@ $(document).ready(()=>{
                     targets: 7,
                     render: function(data){
                         let prestacionArt = data.Art === null ? '-' : data.Art;
-                        return `<span title="${data.Art}">${formatoCeldaDataTable(prestacionArt,15)}</span>`;
+                        return `<span title="${data.Art}">${prestacionArt}</span>`;
                     }
                 },
                 {
                     data: null,
                     name: 'Id',
-                    width: "58.8px",
                     orderable: true,
                     targets: 8,
                     render: function(data){
@@ -186,7 +181,6 @@ $(document).ready(()=>{
                 {
                     data: null,
                     name: 'eEnviado',
-                    width: "28.8px",
                     orderable: false,
                     targets: 9,
                     render: function(data){
@@ -196,7 +190,6 @@ $(document).ready(()=>{
                 {
                     data: null,
                     name: 'INC',
-                    width: "10px",
                     orderable: false, 
                     targets: 10,
                     render: function(data){
@@ -233,7 +226,6 @@ $(document).ready(()=>{
                 {
                     data: null,
                     name: 'FP',
-                    width: "32.8px",
                     orderable: false, 
                     targets: 14,
                     render: function(data){
@@ -245,7 +237,6 @@ $(document).ready(()=>{
                 {
                     data: null,
                     name: 'Factura',
-                    width: "22.8px",
                     orderable: false,
                     targets: 15,
                     render: function(data){
@@ -257,8 +248,8 @@ $(document).ready(()=>{
                 {
                     data: null,
                     name: 'Id',
-                    width: '102.4px',
                     orderable: false,
+                    width: 100,
                     targets: 16,
                     render: function(data){
                         let editar = `<a title="Editar" href="${location.href}/${data.Id}/edit"><button type="button" class="btn btn-sm iconGeneralNegro"><i class="ri-edit-line"></i></button></a>`,
@@ -305,7 +296,6 @@ $(document).ready(()=>{
             let allChecked = $('#listaPrestaciones .row-select').length === $('#listaPrestaciones .row-select:checked').length;
             $('#checkAll').prop('checked', allChecked);
         });
-
 
     });
 });

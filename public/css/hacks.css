@@ -704,17 +704,34 @@ tr.shown td.details-control {
 }
 
 .btn {
-    --vz-btn-font-size: 0.6rem !important;
+    --vz-btn-font-size: 0.65rem !important;
 }
 
 table {
-	font-size: 0.55rem !important; 
+	font-size: 0.60rem !important; 
 }
 
 th {
-	font-size: 0.65rem !important; 
+	font-size: 0.70rem !important; 
 }
 
 .cajaExamenes .select2-container .select2-selection--single .select2-selection__rendered {
   color: orangered !important;
 }
+
+table.dataTable {
+	width: 100% !important;
+	border-collapse: collapse !important;
+}
+table.dataTable th, table.dataTable td {
+	padding: 8px !important;
+	overflow: hidden !important;
+	word-wrap: break-word !important;
+	white-space: normal !important;
+}
+
+div.dataTables_scrollBody table {
+	table-layout: auto;
+	width: 100% !important;
+  }
+  

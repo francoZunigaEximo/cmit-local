@@ -399,7 +399,7 @@ class PrestacionesController extends Controller
             return response()->json(['msg' => 'No tienes permisos'], 403);
         }
 
-        if ($this->checkPacientePresMapa($request->paciente, $request->mapas) > 0 && $request->mapas !== 0) {
+        if ($this->checkPacientePresMapa($request->paciente, $request->mapas) > 0 && $request->mapas !== 0 && $request->tipoPrestacion === 'ART') {
             return response()->json(['msg' => 'El paciente ya se encuentra incluido en el mapa'], 409);
         }
 

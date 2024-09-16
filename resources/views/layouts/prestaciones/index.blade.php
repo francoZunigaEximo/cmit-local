@@ -170,7 +170,7 @@
 
                     <div class="table w-100 mt-3 mb-1">
                         
-                        <table id="listaPrestaciones" class="table table-bordered">
+                        <table id="listaPrestaciones" class="table nowrap align-middle">
                             <thead class="table-light">
                                 <tr>
                                     <th class="sort">% Av</th>
@@ -325,9 +325,10 @@ function exportExcel(tipo) {
 
 @push('scripts')
 <!--datatable js-->
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/2.1.6/js/dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+
 
 <script src="{{ asset('js/prestaciones/index.js') }}?v={{ time() }}"></script>
 <script src="{{ asset('js/prestaciones/utils.js') }}?v={{ time() }}"></script>

@@ -253,7 +253,7 @@
     <div class="modal-dialog modal-fullscreen">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="btn-close eventDelete" data-bs-dismiss="modal" aria-label="Close"> </button>
+               
             </div>
             <div class="modal-body">
                 <div class="row fichaLaboralModal">
@@ -292,9 +292,14 @@
                                     </div>
                                     <small id="alertaExCta" class="fw-bolder rojo mb-2">Exa Cta Disponible</small>
 
+                                    @php
+                                    $spagos = ["A" => "Efectivo", "B" => "Débito", "C" => "Crédito", "D" => "Cheque", "E" => "Otro", "F" => "Transferencia", "G" => "Sin Cargo"];    
+                                @endphp
+
                                     <div class="input-group input-group-sm mb-2 SPago">
                                         <span class="input-group-text">Medio de pago</span>
                                         <select class="form-select" id="SPago">
+                                            <option selected value="{{ $fichaLaboral->SPago ?? '' }}">{{ empty($fichaLaboral->SPago) ? 'Elija una opción...' : $spagos[$fichaLaboral->SPago] }}</option>
                                         </select>
                                     </div>
 
@@ -886,15 +891,6 @@
                             <div class="col-auto">
                                 <button type="button" class="btn btn-sm botonGeneral bloquearExamenes"><i class="ri-forbid-2-line"></i>&nbsp;Anular</button>
                             </div>
-                            <div class="col-auto">
-                                <button type="button" class="btn btn-sm botonGeneral abrirExamenes">Abrir</button>
-                            </div>
-                            <div class="col-auto">
-                                <button type="button" class="btn btn-sm botonGeneral adjuntoExamenes"><i class="ri-attachment-line"></i>&nbsp;Adjuntado</button>
-                            </div>
-                            <div class="col-auto">
-                                <button type="button" class="btn btn-sm botonGeneral liberarExamenes">Liberar</button>
-                            </div>
                         </div>
 
                         <div class="row mt-2">
@@ -936,10 +932,48 @@
                             </div>
                         </div>
 
+                        <hr class="mt-3 mb-3">
+
+                        <div class="row">
+                            <div class="col-lg-12 mb-2">
+                                <p>Escriba un comentario de la cuestión o situación:</p>
+                                <textarea name="Comentario" id="Comentario" class="form-control" rows="10"></textarea>
+                                <div class="text-center mt-2">
+                                    <button type="button" class="btn botonGeneral confirmarComentarioPriv">Confirmar</button>
+                                </div>
+                            </div>
+                            
+                            <hr class="mt-3 mb-3">
+
+                            <div class="col-lg-12">
+                                <div class="card titulo-tabla">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h4 class="card-title mb-0">Observaciones privadas</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-card mb-1">
+                                            <table id="lstPrivPrestaciones" class="table table-bordered">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th class="sort">Fecha</th>
+                                                        <th>Usuario</th>
+                                                        <th>Rol</th>
+                                                        <th>Comentario</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="list form-check-all" id="privadoPrestaciones">
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="row">
                             <div class="col-12 text-center mt-2">
                                 <hr class="mt-2 mb-2 d-block">
-                                <button type="button" id="finalizarWizzard" class="btn botonGeneral"><i class="ri-save-line"></i>Finalizar</button>
+                                <button type="button" id="finalizarWizzard" class="btn botonGeneral"><i class="ri-save-line"></i>Guardar</button>
                             </div>
                         </div>
                     </div>
@@ -948,6 +982,7 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+
 
 
 <script>
@@ -985,6 +1020,9 @@ const getItemExamenes = "{{ route('itemsprestaciones.listadoexamenes') }}";
 const getPaquetes = "{{ route('getPaquetes') }}";
 const paqueteId = "{{ route('paqueteId') }}";
 const deleteItemExamen = "{{ route('deleteItemExamen')}}";
+const privateComment = "{{ route('comentariosPriv') }}";
+const savePrivComent = "{{ route('savePrivComent') }}";
+const obsNuevaPrestacion = "{{ route('obsNuevaPrestacion') }}";
 
 const getMapas = "{{ route('getMapas') }}";
 

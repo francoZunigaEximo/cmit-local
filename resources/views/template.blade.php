@@ -5,7 +5,7 @@
 <head>
 
     <meta charset="utf-8" />
-    <title>@yield('title') | Sistema Ocupacional SRL</title>
+    <title>@yield('title') | Salud Ocupacional SRL</title>
 
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/apple-touch-icon.png') }}">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/favicon-32x32.png') }}">

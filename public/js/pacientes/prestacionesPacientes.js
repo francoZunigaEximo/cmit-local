@@ -24,15 +24,13 @@ $(document).ready(()=>{
     $(document).on('change', '#selectClientes, #selectArt, input[type=radio][name=TipoPrestacion]', function() {
 
         let empresaCap = $('#selectClientes').val(), artCap = $('#selectArt').val(), tipoPrestacion = $('input[type=radio][name=TipoPrestacion]:checked').val();
-        console.log('TipoPrestacion ' + tipoPrestacion)
+
         getUltimasFacturadas(empresaCap);
         listadoConSaldos(empresaCap);
         cantidadDisponibles(empresaCap);
         listadoFacturas(empresaCap, null);
 
-        if (tipoPrestacion === 'ART') {
-            console.log('empresa: ' + empresaCap);
-            console.log('art: ' + artCap);    
+        if (tipoPrestacion === 'ART') {  
             getMap(empresaCap, artCap);  
         }
     });
@@ -1088,13 +1086,33 @@ $(document).ready(()=>{
         e.preventDefault();
 
         let idP = $('#idPrestacion').val(),
-            url = location.href,
-            clearUrl = url.replace(/\/pacientes\/.*/, ''),
-            redireccionar =  clearUrl + '/prestaciones/' + idP + '/edit';
-        
-        //$.post(altaprovPrestacion, {_token: TOKEN, })
+            ObservacionesPres = $('#ObservacionesPresN').val(),
+            ObsExamenes = $('#ObsExamenes').val(),
+            Obs = $('#Obs').val();
 
-        window.location.href = redireccionar;
+        preloader('on');
+        $.post(obsNuevaPrestacion, {_token: TOKEN, IdPrestacion: idP, ObservacionesPres: ObservacionesPres, ObsExamenes: ObsExamenes, Obs: Obs})
+            .done(function(response){
+                preloader('off');
+                let url = location.href,
+                clearUrl = url.replace(/\/pacientes\/.*/, ''),
+                redireccionar =  clearUrl + '/noticias';
+
+                toastr.success('Todos los datos fueron guardados correctamente. Aguarde.');
+                setTimeout(() => {
+                    window.location.href = redireccionar;
+                }, 2000);
+
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;  
+            });
+        
+       
+        
     });
     
     async function cargarExamen(id) {
@@ -1128,11 +1146,11 @@ $(document).ready(()=>{
     
                 registros.forEach(function(examen) {
                     let examenId = examen.IdExamen;
-                    let url = editUrl.replace('__examen__', examen.IdItem);
+                    //let url = editUrl.replace('__examen__', examen.IdItem);
     
                     let fila = `
                         <tr ${examen.Anulado === 1 ? 'class="filaBaja"' : ''}>
-                            <td><input type="checkbox" name="Id_examenes" value="${examen.IdItem}" checked disabled></td>
+                            <td><input type="checkbox" name="Id_examenes" value="${examen.IdItem}" checked></td>
                             <td data-idexam="${examenId}" id="${examen.IdItem}" style="text-align:left">${examen.Nombre}</td>
                             <td>    
                                 <div class="d-flex gap-2">
@@ -1141,7 +1159,7 @@ $(document).ready(()=>{
                                             <button data-delete="${examen.IdItem}" class="btn btn-sm iconGeneral deleteExamen" title="Eliminar">
                                                 <i class="ri-delete-bin-2-line"></i>
                                             </button>
-                                        </div>    
+                                        </div>  
                                     ` : ''}
                                 </div>
                             </td>
@@ -1190,6 +1208,61 @@ $(document).ready(()=>{
             })
     }
 
+    $(document).on('click', '.confirmarComentarioPriv', function(e){
+        e.preventDefault();
+        let comentario = $('#Comentario').val();
 
+        if(comentario === ''){
+            toastr.warning('La observación no puede estar vacía');
+            return;
+        }
+
+        let idp =  $('#idPrestacion').val();
+        preloader('on');
+        $.post(savePrivComent, {_token: TOKEN, Comentario: comentario, IdEntidad: idp, obsfasesid: 2})
+            .done(function(){
+                preloader('off');
+                toastr.success('Se ha generado la observación correctamente');
+
+                setTimeout(() => {
+                    $('#privadoPrestaciones').empty();
+                    $("#Comentario").val("");
+                    comentariosPrivados();
+                }, 3000);
+            })
+    });
+
+    function comentariosPrivados(){
+
+        $('#privadoPrestaciones').empty();
+        preloader('on');
+        let idp =  $('#idPrestacion').val();
+        $.get(privateComment, {Id: idp,  tipo: 'prestacion'})
+            .done(async function(response){
+                preloader('off');
+                let data = await response.result;
+
+                $.each(data, function(index, d){
+ 
+                    let contenido =  `
+                        <tr>
+                            <td>${fechaCompleta(d.Fecha)}</td>
+                            <td>${d.IdUsuario}</td>
+                            <td>${d.nombre_perfil}</td>
+                            <td>${d.Comentario}</td>
+                        </tr>
+                    `;
+                    $('#privadoPrestaciones').append(contenido);
+                });
+
+                $('#lstPrivPrestaciones').fancyTable({
+                    pagination: true,
+                    perPage: 15,
+                    searchable: false,
+                    globalSearch: false,
+                    sortable: false, 
+                });
+            })   
+    }
 
 });

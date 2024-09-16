@@ -209,3 +209,20 @@ function formatoCeldaDataTable(texto, maxCaracteres) {
 
     return resultado;
 }
+
+function fechaCompleta(fecha) {
+    const date = new Date(fecha.replace(' ', 'T'));
+
+    // Obtén el día, mes y año
+    const dia = String(date.getDate()).padStart(2, '0');
+    const mes = String(date.getMonth() + 1).padStart(2, '0'); // Los meses van de 0 a 11
+    const anio = date.getFullYear();
+
+    const hora = String(date.getHours()).padStart(2, '0');
+    const minuto = String(date.getMinutes()).padStart(2, '0');
+    const segundos = String(date.getSeconds()).padStart(2, '0');
+
+    const formatoCompleto = `${dia}/${mes}/${anio} ${hora}:${minutos}:${segundos}`;
+
+    return formatoCompleto;
+}

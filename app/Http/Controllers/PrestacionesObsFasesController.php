@@ -37,7 +37,7 @@ class PrestacionesObsFasesController extends Controller
             'IdEntidad' => $request->IdEntidad,
             'Comentario' => $request->Comentario,
             'IdUsuario' => Auth::user()->name,
-            'Fecha' => now()->format('Y-m-d'),
+            'Fecha' => now()->format('Y-m-d H:i:s'),
             'Rol' => Auth::user()->role->first()->nombre,
             'obsfases_id' => $request->obsfasesid
         ]);
