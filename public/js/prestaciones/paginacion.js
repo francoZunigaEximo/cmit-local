@@ -184,7 +184,7 @@ $(document).ready(()=>{
                     orderable: false,
                     targets: 9,
                     render: function(data){
-                        return `<div class="text-center"><i class="${data.eEnviado === 1 ? `ri-checkbox-circle-fill negro` : `ri-close-circle-line negro`}"></i></div>`;
+                        return `<div class="text-center"><i class="${data.eEnviado === 1 ? `ri-checkbox-circle-fill verde` : ``}"></i></div>`;
                     }
                 },
                 {
