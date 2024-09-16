@@ -87,6 +87,6 @@ return [
     ],
 
     'default' => env('FILESYSTEM_DISK', 'local'),
-    'smb_link' => env('LINK_SMB', 'http://default.url/smb'),
+    'link_smb' => env('LINK_SMB', 'http://default.url/smb'),
 
 ];
