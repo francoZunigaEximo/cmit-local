@@ -10,7 +10,7 @@ class FileHelper
 
         if ($disk  === 'smb') {
             
-            return $type === 'lectura' ? config('filesystems.smb_link') : '/media/nas/';
+            return $type === 'lectura' ? config('filesystems.link_smb') : '/media/nas/';
 
         } else {
             return $type === 'lectura' ? asset('storage') : storage_path('app/public');
