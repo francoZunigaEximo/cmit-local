@@ -548,13 +548,13 @@ $(document).ready(()=>{
                                     ${papre.Tipo}
                                 </td>
                                 <td title="${papre.Empresa}">
-                                    ${acortadorTexto(papre.Empresa, 10)}
+                                    ${papre.Empresa}
                                 </td>
                                 <td title="${papre.ParaEmpresa}">
-                                    ${acortadorTexto(papre.ParaEmpresa, 10)}
+                                    ${papre.ParaEmpresa}
                                 </td>
                                 <td title="${papre.Art}">
-                                    ${acortadorTexto(papre.Art, 10)}
+                                    ${papre.Art}
                                 </td>
                                 <td>
                                     <span>${comprobarEstado(papre.Cerrado, papre.Finalizado, papre.Entregado)}</span>

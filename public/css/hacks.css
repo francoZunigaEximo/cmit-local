@@ -735,4 +735,18 @@ div.dataTables_scrollBody table {
 	width: 100% !important;
   }
 
+table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+}
 
+table th, table td {
+    padding: 8px !important;
+    overflow: hidden !important;
+    word-wrap: break-word !important;
+    white-space: normal !important;
+}
+
+table th {
+    text-align: left !important;
+}

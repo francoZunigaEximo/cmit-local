@@ -1022,7 +1022,6 @@ const paqueteId = "{{ route('paqueteId') }}";
 const deleteItemExamen = "{{ route('deleteItemExamen')}}";
 const privateComment = "{{ route('comentariosPriv') }}";
 const savePrivComent = "{{ route('savePrivComent') }}";
-const obsNuevaPrestacion = "{{ route('obsNuevaPrestacion') }}";
 
 const getMapas = "{{ route('getMapas') }}";
 
