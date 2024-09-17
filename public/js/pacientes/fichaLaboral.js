@@ -12,7 +12,8 @@ $(document).ready(function () {
     quitarDuplicados('#Autorizado');
     calcularAntiguedad();
     mostrarFinanciador();
-    selectorPago(pagoLaboral, IDFICHA)
+    selectorPago(pagoLaboral, IDFICHA);
+    checkExamenesCuenta(IDficha);
     marcarPago(pagoLaboral);
     selectMedioPago();
 
@@ -295,6 +296,7 @@ $(document).ready(function () {
                 toastr.success(response.msg);
                 mostrarFinanciador();
                 selectMedioPago();
+                selectorPago(pago, IDFICHA);
                 setTimeout(() => {
                     checkObservaciones();
                 }, 2000);
@@ -607,7 +609,7 @@ $(document).ready(function () {
         if (pago != 'B') {
             $('#SPago, #Tipo, #Sucursal, #NroFactura').val(" ");
         }
-
+        console.log(pago);
         if(['B','A', ''].includes(pago)) {
             
             $('.ultimasFacturadas, .examenesDisponibles').hide();

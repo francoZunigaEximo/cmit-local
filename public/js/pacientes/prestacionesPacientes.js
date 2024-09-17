@@ -827,10 +827,6 @@ $(document).ready(()=>{
         
     });
 
-    $(document).on('click', '#guardarFicha', function(e){
-        e.preventDefault();
-    });
-   
 
     $('#exam').select2({
         dropdownParent: $('#altaPrestacionModal'),
@@ -960,7 +956,7 @@ $(document).ready(()=>{
                 adjunto == 1 && archivos > 0 ? tieneAdjunto = true : ids.push($(this).val());
             });
     
-            checkAll = $('#checkAllExamenes').prop('checked');
+            checkAll = $('#checkAllExa').prop('checked');
 
         } else if($(this).hasClass('deleteExamen')) {
 
@@ -1039,9 +1035,13 @@ $(document).ready(()=>{
         $('.prestacionLimpia, .observacionesModal, .nuevaPrestacion').hide();
         $('.fichaLaboralModal').show();
         checkExamenesCuenta(IDFICHA);
-      });
+    });
 
-        function saveExamen(id, idPrestacion){
+    $('#checkAllExa').on('click', function() {
+        $('input[type="checkbox"][name="Id_examenes"]:not(#checkAllExa)').prop('checked', this.checked);
+    });
+
+    function saveExamen(id, idPrestacion){
 
         idExamen = [];
         if (Array.isArray(id)) {
@@ -1155,6 +1155,11 @@ $(document).ready(()=>{
                             <td>    
                                 <div class="d-flex gap-2">
                                     ${examen.Anulado === 0 ? `
+                                         <div class="bloquear">
+                                                    <button data-bloquear="${examen.IdItem}" class="btn btn-sm iconGeneral bloquearExamen" title="Baja">
+                                                        <i class="ri-forbid-2-line"></i>
+                                                    </button>
+                                                </div>
                                         <div class="remove">
                                             <button data-delete="${examen.IdItem}" class="btn btn-sm iconGeneral deleteExamen" title="Eliminar">
                                                 <i class="ri-delete-bin-2-line"></i>
@@ -1185,6 +1190,76 @@ $(document).ready(()=>{
             preloader('off');
         }
     }
+
+    $(document).on('click', '.bloquearExamenes, .bloquearExamen', function(e){
+
+        e.preventDefault();
+
+        let ids = [], id = $(this).data('bloquear');
+        var checkAll ='';
+
+        if ($(this).hasClass('bloquearExamenes')) {
+
+            $('input[name="Id_examenes"]:checked').each(function() {
+                ids.push($(this).val());
+        
+            });
+    
+            checkAll =$('#checkAllExa').prop('checked');
+        
+        }else if($(this).hasClass('bloquearExamen')){
+
+            ids.push(id);
+        }
+
+        if(ids.length === 0 && checkAll === false){
+            toastr.warning('No hay examenes seleccionados', 'Atención');
+            return;
+        }
+    
+        swal({
+            title: "Confirme el bloqueo de los examenes",
+            icon: "warning",
+            buttons: ["Cancelar", "Bloquear"],
+        }).then((confirmar) => {
+            if(confirmar){
+
+                preloader('on');
+                $.ajax({    
+                    url: bloquearItemExamen,
+                    type: 'POST',
+                    data: {
+                        Id: ids,
+                        _token: TOKEN
+                    },
+                    success: function(response){
+                        var estados = [];
+                        
+                        preloader('off')
+                        response.forEach(function(msg) {
+
+                            let tipoRespuesta = {
+                                success: 'success',
+                                fail: 'info'
+                            }
+                            
+                            toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 })
+                            
+                            estados.push(msg.estado)
+                            
+                        });
+                        
+                        if(estados.includes('success')) {
+                            $('#listaExamenes').empty();
+                            $('#exam').val([]).trigger('change.select2');
+                            $('#addPaquete').val([]).trigger('change.select2');
+                            cargarExamen(IdNueva);
+                        }
+                    }
+                });
+            }
+        });     
+    });
     
 
     async function checkExamenesCuenta(id){

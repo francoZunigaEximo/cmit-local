@@ -920,7 +920,7 @@
                         
                                 <table class="table table-bordered" id="listado" >
                                     <thead class="table-light">
-                                        <th></th>
+                                        <th><input type="checkbox" id="checkAllExa" name="Id_examenes"></th>
                                         <th class="sort">Exámen</th>
                                         <th>Acciones</th>
                                     </thead>
@@ -1022,6 +1022,7 @@ const paqueteId = "{{ route('paqueteId') }}";
 const deleteItemExamen = "{{ route('deleteItemExamen')}}";
 const privateComment = "{{ route('comentariosPriv') }}";
 const savePrivComent = "{{ route('savePrivComent') }}";
+const bloquearItemExamen ="{{ route('bloquearItemExamen') }}";
 
 const getMapas = "{{ route('getMapas') }}";
 
