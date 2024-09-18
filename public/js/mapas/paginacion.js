@@ -13,7 +13,7 @@ $(document).ready(()=>{
                 lengthChange: false,
                 pageLength: 50,
                 deferRender: true,
-                responsive: true,
+                responsive: false,
                 serverSide: true,
                 ajax: {
                     url: SEARCH,
@@ -35,6 +35,7 @@ $(document).ready(()=>{
                 columns: [
                     {
                         data: null,
+                        width: 30,
                         render: function(data){
                             return `<input data-paciente="${data.IdPaciente}" data-prestacion="${data.IdPrestacion}" type="checkbox" name="Id" value="${data.Id}" checked>`;
                         }
@@ -42,25 +43,23 @@ $(document).ready(()=>{
                     {
                         data: 'Nro',
                         name: 'Nro',
+                        width: 40,
                     },
                     {
                         data: null,
                         render: function(data){
-                            let cortar = data.Art;
-                            let recorte = cortar.substring(0,12) + "...";
-                            return `<span title="Art: ${data.Art} - ParaEmpresa: ${data.ParaEmpresa_Art} - Alias: ${data.NombreFantasia_Art}">${recorte}</span>`;
+                            return `<span title="Art: ${data.Art} - ParaEmpresa: ${data.ParaEmpresa_Art} - Alias: ${data.NombreFantasia_Art}">${data.Art}</span>`;
                         }
                     },
                     {
                         data: null,
                         render: function(data){
-                            let cortar = data.Empresa;
-                            let recorte = cortar.substring(0,12) + "...";
-                            return `<span title="Empresa: ${data.Empresa} - ParaEmpresa: ${data.ParaEmpresa_Empresa} - Alias: ${data.NombreFantasia_Empresa}">${recorte}</span>`;
+                            return `<span title="Empresa: ${data.Empresa} - ParaEmpresa: ${data.ParaEmpresa_Empresa} - Alias: ${data.NombreFantasia_Empresa}">${data.Empresa}</span>`;
                         }
                     },
                     {
                         data:null,
+                        width: 60,
                         render: function(data){
                             
                             let totalDias = getDias(data.Fecha);
@@ -77,6 +76,7 @@ $(document).ready(()=>{
                     },
                     {
                         data: null,
+                        width: 60,
                         render: function(data){
 
                             let totalDias = getDias(data.FechaE),
@@ -91,6 +91,7 @@ $(document).ready(()=>{
                     },
                     {
                         data: null,
+                        width: 50,
                         render: function(data){
 
                             return `<div class="text-center">${data.contadorPrestaciones}/${data.contadorPacientes === 0 && data.contadorPrestaciones !== 0 ? data.contadorPrestaciones : data.contadorPacientes}</div>`;
@@ -99,6 +100,7 @@ $(document).ready(()=>{
                     },
                     {
                         data: null,
+                        width: 50,
                         render: function(data) {
                             
                             let enviados = data.contadorPrestaciones > 0 && data.contadorPrestaciones === data.cdorEEnviados, 
@@ -126,6 +128,7 @@ $(document).ready(()=>{
                     },
                     {
                         data: null,
+                        width: 80,
                         render: function(data){
                             
                             let editar = '<a title="Editar" href="'+ location.href + '/' + data.Id + '/edit">' + '<button type="button" class="btn btn-sm iconGeneral edit-item-btn"><i class="ri-edit-line"></i></button>' + '</a>';
