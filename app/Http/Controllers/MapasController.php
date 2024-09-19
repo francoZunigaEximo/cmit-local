@@ -29,7 +29,7 @@ class MapasController extends Controller
 
     public function index()
     {
-        if(!$this->hasPermission('mapas_show')) {
+        if (!$this->hasPermission('mapas_show')) {
             abort(403);
         }
 
@@ -38,7 +38,7 @@ class MapasController extends Controller
 
     public function search(Request $request): mixed
     {
-        if(!$this->hasPermission('mapas_show')) {
+        if (!$this->hasPermission('mapas_show')) {
             return response()->json(['msg' => 'No tiene permisos'], 403);
         }
 
@@ -205,10 +205,9 @@ class MapasController extends Controller
 
     public function create(): mixed
     {
-        if(!$this->hasPermission('mapas_add')) {
+        if (!$this->hasPermission('mapas_add')) {
             abort(403);
         }
-
         return view('layouts.mapas.create');
     }
 
@@ -265,8 +264,20 @@ class MapasController extends Controller
         }
 
         $mapa = Mapa::where('Id', $request->Id)->first();
+        $totalPrestacion = Prestacion::where('IdMapa', $request->Id)->count();
 
-        if($mapa){
+        if ($request->Cpacientes < $totalPrestacion && $mapa->Cmapeados !== $mapa->Cpacientes) {
+            return response()->json(['msg' => 'No se puede actualizar el numero de pacientes porque el numero de pacientes que ya integra el mapa es superior'], 409);
+        }
+
+        $data = $this->nuevosPacientesMapeados($mapa->Cpacientes, $mapa->Cmapeados, $request->Cpacientes);
+
+        if ($data['totalMapeados'] < 0 ) {
+            return response()->json(['msg' => 'Ya hay prestaciones en el mapa y la cantidad de pacientes no puede puede ser menor a los mapeados'], 409);
+        }
+
+        if ($mapa)
+        {
             $mapa->Nro = $request->Nro;
             $mapa->IdART = $request->IdART;
             $mapa->IdEMpresa = $request->IdEmpresa;
@@ -274,25 +285,24 @@ class MapasController extends Controller
             $mapa->FechaE = $request->FechaEEdicion;
             $mapa->Inactivo = $request->Estado;
             $mapa->Obs = $request->Obs;
-            $mapa->Cmapeados = $request->Cmapeados;
-            $mapa->Cpacientes = $request->Cpacientes;
+            $mapa->Cmapeados = $data['totalMapeados'] ?? $request->Cmapeados;
+            $mapa->Cpacientes = $data['pacientes'] ?? $request->Cpacientes;
             $mapa->save();
         
             return response()->json(['msg' => 'Mapa actualizado'], 200);
-        }else{
+        } else {
             return response()->json(['msg' => 'Mapa no encontrado'], 404);
         }
     }
 
     public function delete(Request $request)
     {
-        if(!$this->hasPermission('mapas_delete')) {
+        if (!$this->hasPermission('mapas_delete')) {
             return response()->json(['msg' => 'No tiene permisos'], 403);
         }
 
         $mapa = Mapa::find($request->Id);
-        if($mapa)
-        {
+        if ($mapa) {
             $mapa->Inactivo = 1;
             $mapa->save();
 
@@ -387,7 +397,7 @@ class MapasController extends Controller
         }
         $mapas = $this->queryBase();
 
-        if($request->archivo === 'csv')
+        if ($request->archivo === 'csv')
         {
 
             $mapas->when($request->modulo === 'remito', function ($mapas) use ($ids, $request) {
@@ -407,7 +417,7 @@ class MapasController extends Controller
 
             return $this->listadoMapa($result);
 
-        } elseif($request->archivo === 'pdf'){
+        } elseif ($request->archivo === 'pdf') {
 
             $result = $mapas->whereIn('prestaciones.NroCEE', $ids)
             ->where('mapas.Nro', $request->mapa)
@@ -456,7 +466,8 @@ class MapasController extends Controller
     {
         $remitos = Prestacion::where('NroCEE', $request->Id)->get();
 
-        if($remitos) {
+        if ($remitos) 
+        {
 
             foreach ($remitos as $remito) {
                 $remito->Entregado = 1;
@@ -467,7 +478,7 @@ class MapasController extends Controller
             constanciase::obsRemito($request->Id, $request->Obs);
             return response()->json(['msg' => 'Se han registrado las fechas de entrega en los remitos correspondientes'], 200);
 
-        }else{
+        } else {
             return response()->json(['msg' => 'Ha ocurrido un error y no se ha registrado la fecha'], 500);
         }
 
@@ -572,7 +583,7 @@ class MapasController extends Controller
         foreach ($ids as $id) {
             $prestacion = Prestacion::where('Id', $id)->first();
             
-            if($prestacion){
+            if ($prestacion) {
                 $prestacion->Cerrado = 1;
                 $prestacion->FechaCierre = now()->format('Y-m-d');
                 $prestacion->save();
@@ -598,14 +609,15 @@ class MapasController extends Controller
             foreach ($ids as $id) {
                 $prestacion = Prestacion::where('Id', $id)->first();
                 
-                if ($prestacion) {
+                if ($prestacion) 
+                {
                     $prestacion->$estado = 1;
                     $prestacion->$fecha = now()->format('Y-m-d');
                     $prestacion->save();
 
                     $respuesta = ['msg' => 'Se ha cerrado la prestación '.$id.' del mapa', 'estado' => 'success'];
 
-                }else{
+                } else {
                     $respuesta = ['msg' => 'No se ha podido cerrar la prestación '.$id.' del mapa', 'estado' => 'warning'];
                 }
 
@@ -808,8 +820,7 @@ class MapasController extends Controller
             ? ItemPrestacion::find($request->Id) 
             : Prestacion::find($request->Id));
      
-        if($estado)
-        {
+        if ($estado) {
             $estado->Incompleto = ($estado->Incompleto === 1 ? 0 : 1);
             $estado->save();
 
@@ -842,7 +853,7 @@ class MapasController extends Controller
     {
         $remitos = Prestacion::where('NroCEE', $request->Id)->get();
 
-        if($remitos)
+        if ($remitos)
         {
             foreach($remitos as $prestacion)
             {
@@ -853,7 +864,7 @@ class MapasController extends Controller
 
             Constanciase::obsRemito($request->Id, '');
             return response()->json(['msg' => 'Se ha revertido la entrega correctamente'], 200);
-        }else{
+        } else {
             return response()->json(['msg' => 'Ha ocurrido un error y no se ha podido revertir la entrega'], 500);
         }
     }
@@ -999,6 +1010,38 @@ class MapasController extends Controller
 
         return $query;
     }
+
+
+    private function nuevosPacientesMapeados(int $actual, int $totalMapeados, int $nuevo)
+    {
+        if ($nuevo === $actual) {
+            return ['pacientes' => $actual, 'totalMapeados' => $totalMapeados];
+        }
+
+        if ($actual === $totalMapeados && $nuevo <> $actual) {
+            return ['pacientes' => $nuevo, 'totalMapeados' => $nuevo];
+        }
+
+        if ($nuevo > $actual) {
+            // Se suman los nuevos mapeados según la diferencia de pacientes
+            $diferencia = $nuevo - $actual;
+            return [
+                'pacientes' => $nuevo,
+                'totalMapeados' => $totalMapeados + $diferencia // Se incrementan los mapeados
+            ];
+        } else {
+            $diferencia = $actual - $nuevo;
+            $nuevosMapeados = max(0, $totalMapeados - $diferencia);
+
+            return [
+                'pacientes' => $nuevo,
+                'totalMapeados' => $nuevosMapeados
+            ];
+        }
+    }
+
+
+
 
 
 } 

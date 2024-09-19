@@ -1,11 +1,5 @@
 $(document).ready(()=>{
 
-    toastr.options = {
-        closeButton: true,   
-        progressBar: true,    
-        timeOut: 3000,        
-    };
-
     $("#form-update, #form-create").off();
     $("#form-update, #form-create").validate({
         rules: {
@@ -29,7 +23,9 @@ $(document).ready(()=>{
                 fechaPosterior: true,
             },
             Cpacientes: {
-                required: true,   
+                required: true,
+                noNegativePaciente: true,
+                noZero: true
             }
         },
         messages: {
@@ -56,8 +52,7 @@ $(document).ready(()=>{
     });
 
     $.validator.addMethod("fechaPosterior", function(value, element) {
-        var fechaActual = new Date();
-        var fechaIngresada = new Date(value);
+        let fechaActual = new Date(), fechaIngresada = new Date(value);
         return fechaIngresada > fechaActual;
     }, "La fecha debe ser posterior a la fecha de hoy");
 
@@ -65,19 +60,27 @@ $(document).ready(()=>{
         return this.optional(element) || /^[a-zA-Z0-9]+$/.test(value);
     }, "Solo se permiten letras o números sin caracteres especiales");
 
+    $.validator.addMethod("noNegativePaciente", function(value, element) {
+        return this.optional(element) || /^[0-9]+$/.test(value);
+    }, "No se permiten numeros negativos");
+
+    $.validator.addMethod("noZero", function(value, element) {
+        return this.optional(element) || parseInt(value) > 0;
+    }, "No pueden haber cero pacientes");
+
 
     $("#form-create").on("submit", function(event) {
         // Verificar si el formulario es válido
         if ($(this).valid()) {
             if($(this).attr("id") == "form-create"){
-                toastr.success('¡Se ha generado el mapa de manera correcta.', 'Felicitaciones');
+                toastr.success('¡Se ha generado el mapa de manera correcta.');
                 setTimeout(() => {
                     $(this).unbind("submit").submit();
                 }, 3000);   
             }
 
         } else {
-            toastr.warning('Por favor, complete todos los campos requeridos correctamente.', 'Atención');
+            toastr.warning('Por favor, complete todos los campos requeridos correctamente.');
         }
         
         event.preventDefault();

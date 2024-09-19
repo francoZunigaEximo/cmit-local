@@ -1,8 +1,11 @@
 $(document).ready(function () {
 
-    let pagoLaboral = $('#PagoLaboral').val(), changeTipo = $('input[name="TipoPrestacion"]:checked').val(), empresaInput = $('selectClientes').val();
+    let pagoLaboral = $('#PagoLaboral').val(), changeTipo = $('input[name="TipoPrestacion"]:checked').val(), empresaInput = $('#selectClientes').val(), artInput = $('#selectArt').val();
     $('.nuevaPrestacionModal, .observacionesModal, .nuevaPrestacion, .ObBloqueoEmpresa, .ObBloqueoArt, .ObEmpresa, .ObsPaciente, .ObsPres, .Factura, .TareaRealizar, .UltimoPuesto, .PuestoActual, .SectorActual, .AntiguedadPuesto, .AntiguedadEmpresa, .FechaIngreso, .FechaEgreso, .selectMapaPres, .Autoriza, .listadoExCta, #examenesDisponibles, #ultimasFacturadas, #alertaExCta, .NroFactProv').hide();
     let IDficha = ['', null, undefined].includes(empresaInput) ? IDFICHA : empresaInput;
+
+    console.log('empresaInput: ' + empresaInput);
+    console.log('artInput: ' + artInput);
     
     quitarDuplicados('#Horario');
     quitarDuplicados('#Tipo');
@@ -17,6 +20,11 @@ $(document).ready(function () {
     marcarPago(pagoLaboral);
     selectMedioPago();
 
+    $(document).on('change', '#selectClientes, #selectArt', function(){
+        let empresaInput = $('#selectClientes').val(), artInput = $('#selectArt').val();
+        getMap(empresaInput, artInput);
+    });
+
     const listOpciones = {
         '.TareaRealizar': ['OCUPACIONAL', 'OTRO', 'INGRESO', 'ART'],
         '.PuestoActual': ['OCUPACIONAL', 'OTRO', 'PERIODICO', 'EGRESO', 'ART'],
@@ -30,9 +38,10 @@ $(document).ready(function () {
     };
 
     $('.eventDelete').on('click', function() {
-        $('.nuevaPrestacion').hide();
-        $('.observacionesModal').hide();
-        $('.fichaLaboralModal').show();
+        //$('.nuevaPrestacion').hide();
+        //$('.observacionesModal').hide();
+        //$('.fichaLaboralModal').show();
+        location.reload();
     });
 
     $('.seguirAl').on('click', function(e){
@@ -214,6 +223,11 @@ $(document).ready(function () {
             antiguedadEmpresa = $('#AntiguedadEmpresa').val(),
             Id = $('#IdFichaLaboral').val();
 
+            console.log('FichaNro: ' + Id);
+            console.log('ART: ' + art);
+            console.log('Empresa: ' + cliente);
+            console.log('Nro Paciente: ' + paciente);
+
         //Validamos la factura
         if (spago === 'G' && autoriza === ''){
             toastr.warning('Si el medio de pago es gratuito, debe seleccionar quien autoriza.');
@@ -297,6 +311,8 @@ $(document).ready(function () {
                 mostrarFinanciador();
                 selectMedioPago();
                 selectorPago(pago, IDFICHA);
+                console.log(cliente, art);
+                getMap(cliente, art);
                 setTimeout(() => {
                     checkObservaciones();
                 }, 2000);
@@ -349,6 +365,7 @@ $(document).ready(function () {
         $('.prestacionLimpia, .observacionesModal, .nuevaPrestacion').hide();
         $('.fichaLaboralModal').show();
         checkExamenesCuenta(IDficha);
+        getMap(empresaInput, artInput);
       });
 
     //Bloqueo de cliente si existe
@@ -661,6 +678,31 @@ $(document).ready(function () {
                 $('#PagoLaboral').val('');
                 break;
         }
+    }
+
+    async function getMap(idEmpresa, idArt){
+
+        let empresa = idEmpresa, art = idArt;
+ 
+        $.get(getMapas, {empresa: empresa, art: art})
+            .done(await function(response){
+                console.log(response)
+                let mapas = response.mapas;
+                $('#mapas, #mapasN').empty();
+
+                if(mapas.length === 0)
+                {
+                    $('#mapas, #mapasN').empty().append('<option title="Sin mapas disponibles para esta ART y Empresa." value="0" selected>Sin mapas disponibles.</option>');
+                }else{
+
+                    $.each(mapas, function(index, d){
+
+                        let contenido = `<option value="${d.Id}">${d.Nro} | Empresa: ${d.RSE} - ART: ${d.RSArt}</option>`;
+    
+                        $('#mapas, #mapasN').append(contenido);
+                    });
+                } 
+            })
     }
     
 });

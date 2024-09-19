@@ -94,12 +94,13 @@ $(document).ready(()=>{
             FechaEEdicion = $('#FechaEEdicion').val(),
             Estado = $('#Estado').val(),
             Cpacientes = $('#Cpacientes').val(),
+            Cmapeados = $('#Cmapeados').val(),
             Obs = $('#Obs').val(),
             IdMap = $('#Id').val();
-
+        
             if($('#form-update').valid()) {
-                
-                $.post(updateMapa, {_token: TOKEN, Nro:Nro, IdART: IdART, IdEmpresa: IdEmpresa, FechaEdicion: FechaEdicion, FechaEEdicion: FechaEEdicion, Estado: Estado, Cpacientes: Cpacientes, Obs: Obs, Id: IdMap})
+                preloader('off');
+                $.post(updateMapa, {_token: TOKEN, Nro:Nro, IdART: IdART, IdEmpresa: IdEmpresa, FechaEdicion: FechaEdicion, FechaEEdicion: FechaEEdicion, Estado: Estado, Cpacientes: Cpacientes, Obs: Obs, Id: IdMap, Cmapeados: Cmapeados})
                 .done(function(response){
                     toastr.success(response.msg);
                     setTimeout(() => {

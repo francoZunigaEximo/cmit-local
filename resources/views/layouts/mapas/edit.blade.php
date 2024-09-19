@@ -101,6 +101,7 @@
                         <div class="input-group input-group-sm size80porcent">
                             <span class="input-group-text">Cant Total de Pacientes&nbsp;<span class="required">(*)</span></span>
                             <input type="number" class="form-control" id="Cpacientes" name="Cpacientes" value="{{ $mapa->Cpacientes }}">
+                            <input type="hidden" name="Cmapeados" id="Cmapeados" value="{{ $mapa->Cmapeados }}">
                         </div>
 
                     </div>
