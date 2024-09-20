@@ -219,7 +219,7 @@ function fechaCompleta(fecha) {
     const anio = date.getFullYear();
 
     const hora = String(date.getHours()).padStart(2, '0');
-    const minuto = String(date.getMinutes()).padStart(2, '0');
+    const minutos = String(date.getMinutes()).padStart(2, '0');
     const segundos = String(date.getSeconds()).padStart(2, '0');
 
     const formatoCompleto = `${dia}/${mes}/${anio} ${hora}:${minutos}:${segundos}`;
