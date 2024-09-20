@@ -704,15 +704,15 @@ tr.shown td.details-control {
 }
 
 .btn {
-    --vz-btn-font-size: 0.65rem !important;
+    --vz-btn-font-size: 0.67rem !important;
 }
 
 table {
-	font-size: 0.60rem !important; 
+	font-size: 0.63rem !important; 
 }
 
 th {
-	font-size: 0.70rem !important; 
+	font-size: 0.73rem !important; 
 }
 
 .cajaExamenes .select2-container .select2-selection--single .select2-selection__rendered {
