@@ -861,12 +861,12 @@
 
                                 <div class="input-group input-group">
                                     <span class="input-group-text">Obs exámenes</span>
-                                    <input type="text" class="form-control" placeholder="Observaciones" id="ObsExamenes" name="ObsExamenes">
+                                    <input type="text" class="form-control" placeholder="Observaciones" id="ObsExamenesN" name="ObsExamenesN">
                                 </div>
                 
                                 <div class="input-group input-group mt-2">
                                     <span class="input-group-text">Obs estado</span>
-                                    <input type="text" class="form-control" placeholder="Observaciones" id="Obs" name="Obs">
+                                    <input type="text" class="form-control" placeholder="Observaciones" id="ObsN" name="ObsB">
                                 </div>
 
                             </div>
@@ -1022,7 +1022,8 @@ const paqueteId = "{{ route('paqueteId') }}";
 const deleteItemExamen = "{{ route('deleteItemExamen')}}";
 const privateComment = "{{ route('comentariosPriv') }}";
 const savePrivComent = "{{ route('savePrivComent') }}";
-const bloquearItemExamen ="{{ route('bloquearItemExamen') }}";
+const bloquearItemExamen = "{{ route('bloquearItemExamen') }}";
+const obsNuevaPrestacion = "{{ route('obsNuevaPrestacion') }}";
 
 const getMapas = "{{ route('getMapas') }}";
 

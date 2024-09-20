@@ -860,6 +860,8 @@ class ItemPrestacionesController extends Controller
         return response()->json(['examenes' => $resultados]);
     }
 
+    public function show(){}
+
     public function save(Request $request): void
     {
 

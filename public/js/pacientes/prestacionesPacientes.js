@@ -1087,8 +1087,8 @@ $(document).ready(()=>{
 
         let idP = $('#idPrestacion').val(),
             ObservacionesPres = $('#ObservacionesPresN').val(),
-            ObsExamenes = $('#ObsExamenes').val(),
-            Obs = $('#Obs').val();
+            ObsExamenes = $('#ObsExamenesN').val(),
+            Obs = $('#ObsN').val();
 
         preloader('on');
         $.post(obsNuevaPrestacion, {_token: TOKEN, IdPrestacion: idP, ObservacionesPres: ObservacionesPres, ObsExamenes: ObsExamenes, Obs: Obs})
@@ -1098,7 +1098,7 @@ $(document).ready(()=>{
                 clearUrl = url.replace(/\/pacientes\/.*/, ''),
                 redireccionar =  clearUrl + '/noticias';
 
-                toastr.success('Todos los datos fueron guardados correctamente. Aguarde.');
+                toastr.success(response.msg);
                 setTimeout(() => {
                     window.location.href = redireccionar;
                 }, 2000);
@@ -1143,15 +1143,15 @@ $(document).ready(()=>{
     
                 preloader('off');
                 let registros = response.examenes;
-    
+
                 registros.forEach(function(examen) {
                     let examenId = examen.IdExamen;
                     //let url = editUrl.replace('__examen__', examen.IdItem);
     
                     let fila = `
                         <tr ${examen.Anulado === 1 ? 'class="filaBaja"' : ''}>
-                            <td><input type="checkbox" name="Id_examenes" value="${examen.IdItem}" checked></td>
-                            <td data-idexam="${examenId}" id="${examen.IdItem}" style="text-align:left">${examen.Nombre}</td>
+                            <td><input type="checkbox" name="Id_examenes" value="${examen.IdItem}" checked ${examen.Anulado === 1 ? 'disabled' : ''}></td>
+                            <td data-idexam="${examenId}" id="${examen.IdItem}" style="text-align:left">${examen.Nombre} ${examen.Anulado === 1 ? '<span class="custom-badge rojo">Bloqueado</span>' : ''}</td>
                             <td>    
                                 <div class="d-flex gap-2">
                                     ${examen.Anulado === 0 ? `
@@ -1160,12 +1160,13 @@ $(document).ready(()=>{
                                                         <i class="ri-forbid-2-line"></i>
                                                     </button>
                                                 </div>
-                                        <div class="remove">
-                                            <button data-delete="${examen.IdItem}" class="btn btn-sm iconGeneral deleteExamen" title="Eliminar">
-                                                <i class="ri-delete-bin-2-line"></i>
-                                            </button>
-                                        </div>  
                                     ` : ''}
+                                    <div class="remove">
+                                        <button data-delete="${examen.IdItem}" class="btn btn-sm iconGeneral deleteExamen" title="Eliminar">
+                                            <i class="ri-delete-bin-2-line"></i>
+                                        </button>
+                                    </div>  
+                                    
                                 </div>
                             </td>
                         </tr>`;
@@ -1181,6 +1182,7 @@ $(document).ready(()=>{
                     sortable: false, 
                 });
             }
+            
     
         } catch (error) {
             preloader('off');

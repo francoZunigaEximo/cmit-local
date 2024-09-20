@@ -655,6 +655,24 @@ class PrestacionesController extends Controller
         return response()->json($result);
     }
 
+    public function obsNuevaPrestacion(Request $request)
+    {
+        $query = Prestacion::find($request->IdPrestacion);
+
+        if ($query)
+        {
+            $query->Observaciones = $request->Observaciones ?? '';
+            $query->ObsExamenes = $request->ObsExamenes ?? '';
+            $query->save();
+            
+            $request->Obs && $this->setPrestacionComentario($request->IdPrestacion, $request->Obs);
+
+            return response()->json(['msg' => 'Se ha actualizado la información'], 200);
+        } else {
+            return response()->json(['msg' => 'No se ha podido actualizar la información.'], 500);
+        }
+    }
+
     private function verificarEstados(int $id)
     {
         return Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')

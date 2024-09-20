@@ -3,9 +3,6 @@ $(document).ready(function () {
     let pagoLaboral = $('#PagoLaboral').val(), changeTipo = $('input[name="TipoPrestacion"]:checked').val(), empresaInput = $('#selectClientes').val(), artInput = $('#selectArt').val();
     $('.nuevaPrestacionModal, .observacionesModal, .nuevaPrestacion, .ObBloqueoEmpresa, .ObBloqueoArt, .ObEmpresa, .ObsPaciente, .ObsPres, .Factura, .TareaRealizar, .UltimoPuesto, .PuestoActual, .SectorActual, .AntiguedadPuesto, .AntiguedadEmpresa, .FechaIngreso, .FechaEgreso, .selectMapaPres, .Autoriza, .listadoExCta, #examenesDisponibles, #ultimasFacturadas, #alertaExCta, .NroFactProv').hide();
     let IDficha = ['', null, undefined].includes(empresaInput) ? IDFICHA : empresaInput;
-
-    console.log('empresaInput: ' + empresaInput);
-    console.log('artInput: ' + artInput);
     
     quitarDuplicados('#Horario');
     quitarDuplicados('#Tipo');
@@ -223,11 +220,6 @@ $(document).ready(function () {
             antiguedadEmpresa = $('#AntiguedadEmpresa').val(),
             Id = $('#IdFichaLaboral').val();
 
-            console.log('FichaNro: ' + Id);
-            console.log('ART: ' + art);
-            console.log('Empresa: ' + cliente);
-            console.log('Nro Paciente: ' + paciente);
-
         //Validamos la factura
         if (spago === 'G' && autoriza === ''){
             toastr.warning('Si el medio de pago es gratuito, debe seleccionar quien autoriza.');
@@ -311,7 +303,6 @@ $(document).ready(function () {
                 mostrarFinanciador();
                 selectMedioPago();
                 selectorPago(pago, IDFICHA);
-                console.log(cliente, art);
                 getMap(cliente, art);
                 setTimeout(() => {
                     checkObservaciones();
@@ -626,7 +617,7 @@ $(document).ready(function () {
         if (pago != 'B') {
             $('#SPago, #Tipo, #Sucursal, #NroFactura').val(" ");
         }
-        console.log(pago);
+
         if(['B','A', ''].includes(pago)) {
             
             $('.ultimasFacturadas, .examenesDisponibles').hide();
@@ -686,7 +677,7 @@ $(document).ready(function () {
  
         $.get(getMapas, {empresa: empresa, art: art})
             .done(await function(response){
-                console.log(response)
+
                 let mapas = response.mapas;
                 $('#mapas, #mapasN').empty();
 

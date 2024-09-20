@@ -114,6 +114,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('lstTipoPrestacion', [PrestacionesController::class, 'lstTipoPrestacion'])->name('lstTipoPrestacion');
     Route::get('buscarEx', [PrestacionesController::class, 'buscarEx'])->name('buscarEx');
     Route::get('/prestaciones/check-incompleto', [PrestacionesController::class, 'checkIncompleto'])->name('prestaciones.checkIncompleto');
+    Route::post('/prestaciones/nueva-observacion', [PrestacionesController::class, 'obsNuevaPrestacion'])->name('obsNuevaPrestacion');
     Route::resource('prestaciones', PrestacionesController::class);
 
     //Ruta Ficha Laboral
