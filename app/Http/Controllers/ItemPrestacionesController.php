@@ -278,6 +278,7 @@ class ItemPrestacionesController extends Controller
                 'archivosefector.Ruta as RutaE',
                 'examenes.NoImprime as Adjunto',
                 'proveedores.MultiE as MultiE',
+                'itemsprestaciones.Anulado as Anulado'
             )
             ->where('archivosefector.IdEntidad', $Id)
             ->get();
@@ -293,6 +294,7 @@ class ItemPrestacionesController extends Controller
                     'archivosinformador.Descripcion as DescripcionI',
                     'archivosinformador.Ruta as RutaI',
                     'examenes.Adjunto as Adjunto',
+                    'itemsprestaciones.Anulado as Anulado'
                 )
                 ->where('archivosinformador.IdEntidad', $Id)
                 ->get();

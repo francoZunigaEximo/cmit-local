@@ -485,7 +485,7 @@ $(document).ready(function(){
                                         </button>
                                     </div>
                                     ` : ``}
-                                    ${(Estado === 'Cerrado') ? `` : `
+                                    ${(Estado === 'Cerrado') || (d.Anulado === 1) ? `` : `
                                         <div class="remove">
                                             <button data-id="${d.IdE}" data-tipo="efector" class="btn btn-sm iconGeneral deleteAdjunto" title="Eliminar">
                                                 <i class="ri-delete-bin-2-line"></i>
@@ -585,9 +585,10 @@ $(document).ready(function(){
                 if(await response.prestacion === true){
 
                     $('#Fecha, #ObsExamen, #efectores, #informadores').prop('disabled', true);
-                    $('button').removeClass('asignar liberar abrir cerrar asignarI liberarI cerrarI');
-                    $('button').removeAttr('id');
+                    $('button').removeClass('asignar abrir cerrar asignarI cerrarI');
+                    //p$('button').removeAttr('id');
                     $('i.ri-play-list-add-line').removeClass('addPaquete');
+                    $('#liberarI, #liberar').show();
                     }
             })
             .fail(function(jqXHR){
@@ -595,7 +596,7 @@ $(document).ready(function(){
                 let errorData = JSON.parse(jqXHR.responseText);            
                 checkError(jqXHR.status, errorData.msg);
                 return;
-    });
+            });
     }
    
 });

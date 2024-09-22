@@ -102,11 +102,11 @@
                 </div>
 
                 <div class="col-md-2">
-                    <button type="button" id="asignar" class="btn botonGeneral btn-sm asignar">Asignar</button>
+                    {!! ($itemsprestacione->Anulado === 1) ? '' : '<button type="button" id="asignar" class="btn botonGeneral btn-sm asignar">Asignar</button>' !!}
                     <button type="button" id="liberar" class="btn botonGeneral btn-sm liberar">Liberar</button>
-                    <button type="button" id="abrir" class="btn botonGeneral btn-sm abrir">Abrir</button>
-                    <button type="button" id="cerrar" class="btn botonGeneral btn-sm cerrar">Cerrar</button>
-                    <input type="hidden" value="{{ $itemsprestacione->CAdj }}" id="CAdj">
+                    {!! ($itemsprestacione->Anulado === 1) ? '' : '<button type="button" id="abrir" class="btn botonGeneral btn-sm abrir">Abrir</button>' !!}
+                    {!! ($itemsprestacione->Anulado === 1) ? '' : '<button type="button" id="cerrar" class="btn botonGeneral btn-sm cerrar">Cerrar</button>' !!}
+                   <input type="hidden" value="{{ $itemsprestacione->CAdj }}" id="CAdj">
                 </div>
 
             </div>
@@ -166,9 +166,9 @@
                 <div class="col-md-2">
 
                     @if($itemsprestacione->CInfo !== 0)
-                        <button type="button" id="asignarI" class="btn botonGeneral btn-sm asignarI">Asignar</button>
+                        {!! ($itemsprestacione->Anulado === 1) ? '' : '<button type="button" id="asignarI" class="btn botonGeneral btn-sm asignarI">Asignar</button>' !!}
                         <button type="button" id="liberarI" class="btn botonGeneral btn-sm liberarI">Liberar</button>
-                        <button type="button" id="cerrarI" class="btn botonGeneral btn-sm cerrarI">Cerrar</button>
+                        {!! ($itemsprestacione->Anulado === 1) ? '' : '<button type="button" id="cerrarI" class="btn botonGeneral btn-sm cerrarI">Cerrar</button>' !!}
                         <input type="hidden" value="{{ $itemsprestacione->CInfo }}" id="CInfo">
                     @endif
                 </div>
@@ -248,7 +248,7 @@
                             <th>Descripción</th>
                             <th>Adjuntar</th>
                             <th>Multi</th>
-                            <th>Acciones <button type="button" class="btn botonGeneral adjuntarEfector" data-bs-toggle="modal" data-bs-target="#modalEfector">Adjuntar archivo</button></th>
+                            <th>Acciones {!! $itemsprestacione->Anulado === 1 ? '' : '<button type="button" class="btn botonGeneral adjuntarEfector" data-bs-toggle="modal" data-bs-target="#modalEfector">Adjuntar archivo</button>' !!}</th>
                         </tr>
                     </thead>
                     <tbody id="listaefectores" class="list form-check-all">

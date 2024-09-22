@@ -104,12 +104,12 @@ $(document).ready(()=>{
         }
 
         if (tieneAdjunto) {
-            toastr.warning('El o los examenes seleccionados tienen un reporte adjuntado. El mismo no se podrá eliminar.', 'Atención');
+            toastr.warning('El o los examenes seleccionados tienen un reporte adjuntado. El mismo no se podrá eliminar.');
             return;
         }
 
         if(ids.length === 0 && checkAll === false){
-            toastr.warning('No hay examenes seleccionados', 'Atención');
+            toastr.warning('No hay examenes seleccionados');
             return;
         }  
     
@@ -180,7 +180,7 @@ $(document).ready(()=>{
         }
 
         if(ids.length === 0 && checkAll === false){
-            toastr.warning('No hay examenes seleccionados', 'Atención');
+            toastr.warning('No hay examenes seleccionados');
             return;
         }
     
@@ -240,7 +240,7 @@ $(document).ready(()=>{
         let checkAll = $('#checkAllExamenes').prop('checked');
 
         if(ids.length === 0 && checkAll === false){
-            toastr.warning('No hay examenes seleccionados', 'Atención');
+            toastr.warning('No hay examenes seleccionados');
             return;
         }
 
@@ -301,7 +301,7 @@ $(document).ready(()=>{
         let checkAll = $('#checkAllExamenes').prop('checked');
 
         if(ids.length === 0 && checkAll === false){
-            toastr.warning('No hay examenes seleccionados', 'Atención');
+            toastr.warning('No hay examenes seleccionados');
             return;
         }
 
@@ -361,7 +361,7 @@ $(document).ready(()=>{
         let checkAll = $('#checkAllExamenes').prop('checked');
 
         if(ids.length === 0 && checkAll === false){
-            toastr.warning('No hay examenes seleccionados', 'Atención');
+            toastr.warning('No hay examenes seleccionados');
             return;
         }
 
@@ -413,7 +413,7 @@ $(document).ready(()=>{
         let id = $("#exam").val();
         
         if(['', null, undefined].includes(id)) {
-            toastr.warning("Debe seleccionar un examen para poder añadirlo a la lista", "Atención");
+            toastr.warning("Debe seleccionar un examen para poder añadirlo a la lista");
             return;
         }
         saveExamen(id);
@@ -440,7 +440,7 @@ $(document).ready(()=>{
         }
 
         if (idExamen.length === 0) {
-            toastr.warning("No existe el exámen o el paquete no contiene examenes", "Atención");
+            toastr.warning("No existe el exámen o el paquete no contiene examenes");
             return;
         }
         preloader('on');
@@ -580,7 +580,7 @@ $(document).ready(()=>{
                                 let fila = `
                                         <tr ${examen.Anulado === 1 ? 'class="filaBaja"' : ''}>
                                             <td><input type="checkbox" name="Id_examenes" value="${examen.IdItem}" checked data-adjunto="${examen.ExaAdj}" data-archivo="${examen.archivos}"></td>
-                                            <td data-idexam="${examenId}" id="${examen.IdItem}" style="text-align:left">${examen.Nombre}</td>
+                                            <td data-idexam="${examenId}" id="${examen.IdItem}" style="text-align:left">${examen.Nombre} ${examen.Anulado === 1 ? '<span class="custom-badge rojo">Bloqueado</span>' : ''}</td>
                                             <td>
                                                 <span id="incompleto" class="${(examen.Incompleto === 0 ||  examen.Incompleto === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
                                                     <i class="ri-flag-2-line ${examen.Anulado === 0 ? 'incompleto' : ''}"></i>
@@ -632,12 +632,12 @@ $(document).ready(()=>{
                                                         <i class="ri-forbid-2-line"></i>
                                                     </button>
                                                 </div>
+                                                ` : ''}
                                                 <div class="remove">
                                                     <button data-delete="${examen.IdItem}"  class="btn btn-sm iconGeneral deleteExamen" title="Eliminar">
                                                         <i class="ri-delete-bin-2-line"></i>
                                                     </button>
-                                                </div>    
-                                                ` : ''}
+                                                </div>  
                                             
                                         </div>
                                     </td>
