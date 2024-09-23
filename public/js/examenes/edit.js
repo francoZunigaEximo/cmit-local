@@ -5,7 +5,8 @@ $(document).ready(()=>{
     quitarDuplicados('#ProvEfector');
     quitarDuplicados('#ProvInformador');
 
-    $(document).on('click', '#volver', function(){
+    $(document).on('click', '#volver', function(e){
+        e.preventDefault();
         history.back();
     });
 
@@ -33,18 +34,29 @@ $(document).ready(()=>{
 
             if($('#form-update').valid()) {
 
-                $.post(updateExamen, {_token: TOKEN, Id: ID, Examen:Examen, IdEstudio: Estudio, Descripcion: Descripcion, IdReporte: Reporte, Cod: CodigoEx, Cod2: CodigoE, IdForm: Formulario, DiasVencimiento: DiasVencimiento, Inactivo: Inactivo, PI: priImpresion, IdProveedor: ProvEfector, IdProveedor2: ProvInformador, Informe: Informe, NoImprime: Fisico, Adjunto: Adjunto, Ausente: Ausente, Devol: Devolucion, Evaluador: EvalExclusivo, EvalCopia: ExpAnexo})
-            .done(function(){
-                toastr.success('Se ha actualizado el exámen correctamente', 'Perfecto');
-               setTimeout(() => {
-                    location.reload();
-                }, 3000);
-                
-            })
-            .fail(function(xhr){
-                toastr.error('No se ha podido guardar la actualización. Recargue la página y si el problema persiste, consulte con el administrador', 'Error');
-            });
+                swal({
+                    title: "¿Esta seguro que desea guardar",
+                    icon: "warning",
+                    buttons: ["Cancelar", "Aceptar"]
+                }).then((confirmar) => {
+                    if(confirmar) {
 
+                        $.post(updateExamen, {_token: TOKEN, Id: ID, Examen:Examen, IdEstudio: Estudio, Descripcion: Descripcion, IdReporte: Reporte, Cod: CodigoEx, Cod2: CodigoE, IdForm: Formulario, DiasVencimiento: DiasVencimiento, Inactivo: Inactivo, PI: priImpresion, IdProveedor: ProvEfector, IdProveedor2: ProvInformador, Informe: Informe, NoImprime: Fisico, Adjunto: Adjunto, Ausente: Ausente, Devol: Devolucion, Evaluador: EvalExclusivo, EvalCopia: ExpAnexo})
+                        .done(function(){
+                            toastr.success('Se ha actualizado el exámen correctamente');
+                            setTimeout(() => {
+                                location.reload();
+                            }, 3000);
+                            
+                        })
+                        .fail(function(jqXHR){
+                            preloader('off');
+                            let errorData = JSON.parse(jqXHR.responseText);            
+                            checkError(jqXHR.status, errorData.msg);
+                            return; 
+                        });
+                    }
+                });
             }
    
     });
@@ -70,66 +82,68 @@ $(document).ready(()=>{
             EvalExclusivo = $('#EvalExclusivo').prop('checked'),
             ExpAnexo = $('#ExpAnexo').prop('checked');
 
-        if(confirm("¿Esta seguro que desea clonar la infomación?")) {
+        swal({
+            title: "¿Esta seguro que desea clonar la infomación?",
+            icon: "warning",
+            button: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar) {
+                localStorage.setItem('clon_Examen', Examen);
+                localStorage.setItem('clon_Estudio', Estudio);
+                localStorage.setItem('clon_Descripcion', Descripcion);
+                localStorage.setItem('clon_Reporte', Reporte);
+                localStorage.setItem('clon_Formulario', Formulario);
+                localStorage.setItem('clon_CodigoE', CodigoE);
+                localStorage.setItem('clon_Diasvencimiento', DiasVencimiento);
+                localStorage.setItem('clon_Inactivo', Inactivo);
+                localStorage.setItem('clon_priImpresion', priImpresion);
+                localStorage.setItem('clon_ProvEfector', ProvEfector);
+                localStorage.setItem('clon_ProvInformador', ProvInformador)
+                localStorage.setItem('clon_Informe', Informe)
+                localStorage.setItem('clon_Fisico', Fisico)
+                localStorage.setItem('clon_Adjunto', Adjunto)
+                localStorage.setItem('clon_Ausente', Ausente)
+                localStorage.setItem('clon:Devolucion', Devolucion)
+                localStorage.setItem('clon_EvalExclusivo', EvalExclusivo)
+                localStorage.setItem('clon_ExpAnexo', ExpAnexo)
 
-            localStorage.setItem('clon_Examen', Examen);
-            localStorage.setItem('clon_Estudio', Estudio);
-            localStorage.setItem('clon_Descripcion', Descripcion);
-            localStorage.setItem('clon_Reporte', Reporte);
-            localStorage.setItem('clon_Formulario', Formulario);
-            localStorage.setItem('clon_CodigoE', CodigoE);
-            localStorage.setItem('clon_Diasvencimiento', DiasVencimiento);
-            localStorage.setItem('clon_Inactivo', Inactivo);
-            localStorage.setItem('clon_priImpresion', priImpresion);
-            localStorage.setItem('clon_ProvEfector', ProvEfector);
-            localStorage.setItem('clon_ProvInformador', ProvInformador)
-            localStorage.setItem('clon_Informe', Informe)
-            localStorage.setItem('clon_Fisico', Fisico)
-            localStorage.setItem('clon_Adjunto', Adjunto)
-            localStorage.setItem('clon_Ausente', Ausente)
-            localStorage.setItem('clon:Devolucion', Devolucion)
-            localStorage.setItem('clon_EvalExclusivo', EvalExclusivo)
-            localStorage.setItem('clon_ExpAnexo', ExpAnexo)
-
-            window.location.href = GOCREATE;
-
-        }
+                window.location.href = GOCREATE;
+            }
+        })
     });
 
     $(document).on('click', '#eliminar', function(e){
         e.preventDefault();
 
-        if (confirm("¿Está seguro que desea eliminar el examen")) {
+        swal({
+            title: "¿Está seguro que desea eliminar el examen?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar) {
+                $.post(deleteExamen, {Id: ID, _token: TOKEN})
+                .done(function(estatus){
 
-            $.post(deleteExamen, {Id: ID, _token: TOKEN})
-            .done(function(estatus){
+                    if (estatus.estatus === true) {
+                        toastr.warning('No se puede eliminar el exámen porque esta siendo utilizada por una prestación');
+                        return;
+            
+                    } else if(estatus.estatus === false){
 
-                if (estatus.estatus === true) {
-                    toastr.warning('No se puede eliminar el exámen porque esta siendo utilizada por una prestación');
-                    return;
-        
-                } else if(estatus.estatus === false){
-
-                    toastr.success('Se ha eliminado correctamente el exámen. Se redireccionará a la pantalla de creación de examenes');
-                    setTimeout(()=>{
-                        location.href = GOINDEX;
-                    }, 3000);
-                }
-            })
-            .fail(function(xhr){
-                console.error(xhr);
-                toastr.error('Ha ocurrido un error. Consulte con el administrador');
-            })
-        }
-        
+                        toastr.success('Se ha eliminado correctamente el exámen. Se redireccionará a la pantalla de creación de examenes');
+                        setTimeout(()=>{
+                            location.href = GOINDEX;
+                        }, 3000);
+                    }
+                })
+                .fail(function(jqXHR){
+                    preloader('off');
+                    let errorData = JSON.parse(jqXHR.responseText);            
+                    checkError(jqXHR.status, errorData.msg);
+                    return; 
+                });   
+            }
+        })
     });
 
-    function quitarDuplicados(selector) {
-        let seleccion = $(selector).val();
-        let countSeleccion = $(selector + " option[value='" + seleccion + "']").length;
-    
-        if (countSeleccion > 1) {
-            $(selector + " option[value='" + seleccion + "']:gt(0)").hide();
-        }
-    }
 });

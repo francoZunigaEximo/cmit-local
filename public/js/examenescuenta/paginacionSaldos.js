@@ -21,7 +21,7 @@ $(document).ready(()=>{
             lengthChange: false,
             pageLength: 50,
             deferRender: true,
-            responsive: true,
+            responsive: false,
             serverSide: true,
             ajax: {
                 url: SALDOS,
@@ -39,8 +39,7 @@ $(document).ready(()=>{
                     orderable: true,
                     targets: 0,
                     render: function(data){
-                        let recorte = (data.Empresa).substring(0,35) + "...";
-                        return recorte.length >= 35 ? `<span title="${data.Empresa}">${recorte}</span>` : data.Empresa;
+                        return `<span title="${data.Empresa}">${data.Empresa}</span>`;
                     }
                 },
                 {
@@ -49,8 +48,7 @@ $(document).ready(()=>{
                     orderable: true,
                     targets: 1,
                     render: function(data){
-                        let recorte = (data.Examen).substring(0,35) + "...";
-                        return recorte.length >= 35 ? `<span title="${data.Examen}">${recorte}</span>` : data.Examen;
+                        return `<span title="${data.Examen}">${data.Examen}</span>`;
                     }
                 },
                 {

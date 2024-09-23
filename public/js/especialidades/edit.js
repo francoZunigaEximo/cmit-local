@@ -4,12 +4,13 @@ $(document).ready(function(){
     quitarDuplicados("#Inactivo");
     quitarDuplicados("#Provincia");
 
-    $(document).on('click', '#updateBasico, #updateOpciones', function(){
+    $(document).on('click', '#updateBasico, #updateOpciones', function(e){
+        e.preventDefault();
 
         let Nombre = $('#Nombre').val(), Id = $('#Id').val(), Externo = $('#Externo').val(), Inactivo = $('#Inactivo').val(), Telefono = $('#Telefono').val(), Direccion = $('#Direccion').val(), IdLocalidad = $('#IdLocalidad').val(), Obs = $('#Obs').val(), Multi = $('#Multi').prop('checked'), MultiE = $('#MultiE').prop('checked'), Min = $('#Min').val(), PR = $('#PR').val(), InfAdj = $('#InfAdj').val();
         
         if(Nombre === ''){
-            toastr.warning('El campo Nombre es obligatorio', 'Atención');
+            toastr.warning('El campo Nombre es obligatorio');
             return;
         }
 
@@ -33,19 +34,26 @@ $(document).ready(function(){
             return;
         }
 
-        preloader('on');
-        $.post(updateProveedor, { _token: TOKEN, Id: Id, Nombre: Nombre, Externo: Externo, Inactivo: Inactivo, Telefono: Telefono, Direccion: Direccion, IdLocalidad: IdLocalidad, Obs: Obs, Multi: Multi, MultiE, Min: Min, PR: PR, InfAdj: InfAdj })
-            .done(function(response){
-                preloader('off');
-                toastr.success(response.msg, 'Perfecto');
-            })
-            .fail(function(jqXHR){
-                preloader('off');            
-                let errorData = JSON.parse(jqXHR.responseText);            
-                checkError(jqXHR.status, errorData.msg);
-                return; 
-            });
-
+        swal({
+            title: "¿Esta seguro que desea realizar la operación?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar) {
+                preloader('on');
+                $.post(updateProveedor, { _token: TOKEN, Id: Id, Nombre: Nombre, Externo: Externo, Inactivo: Inactivo, Telefono: Telefono, Direccion: Direccion, IdLocalidad: IdLocalidad, Obs: Obs, Multi: Multi, MultiE, Min: Min, PR: PR, InfAdj: InfAdj })
+                    .done(function(response){
+                        preloader('off');
+                        toastr.success(response.msg, 'Perfecto');
+                    })
+                    .fail(function(jqXHR){
+                        preloader('off');            
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return; 
+                    });
+            }
+        })
     });
 
     $('#Provincia').change(function() {

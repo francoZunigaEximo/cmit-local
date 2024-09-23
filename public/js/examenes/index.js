@@ -17,38 +17,30 @@ $(document).ready(function(){
     activoClass.hide();
     estadoClass.hide();
 
-    $(document).on('change', "#atributos", function(){
-
-        if($(this).val() === 'opciones'){
-            opcionesClass.show();
-            activoClass.hide();
-            estadoClass.hide();
-            activo.val('');
-            estado.val('');
-
-        }else if($(this).val() === 'activo'){
-            activoClass.show();
-            opcionesClass.hide();
-            estadoClass.hide();
-            opciones.val('');
-            estado.val('');
+    $(document).on('change', "#atributos", function() {
+        const data = $(this).val();
+    
+        opcionesClass.hide();
+        activoClass.hide();
+        estadoClass.hide();
         
-        }else if($(this).val() === 'estado'){
-            estadoClass.show();
-            activoClass.hide();
-            opcionesClass.hide();
-            activo.val('');
-            opciones.val('');
-        }else{
-            estadoClass.hide();
-            activoClass.hide();
-            opcionesClass.hide();
-            estado.val();
-            activo.val('');
-            opciones.val('');
+        activo.val('');
+        estado.val('');
+        opciones.val('');
+    
+        switch (data) {
+            case 'opciones':
+                opcionesClass.show();
+                break;
+            case 'activo':
+                activoClass.show();
+                break;
+            case 'estado':
+                estadoClass.show();
+                break;
         }
     });
-
+    
     codigoex.on('input', function() {
 
         let textoInput = codigoex.val(), textoEnMayusculas = textoInput.toUpperCase();

@@ -2,12 +2,6 @@ $(document).ready(()=> {
 
     const tabla = "#listadoExamenesCuentas";
 
-    toastr.options = {
-        closeButton: true,   
-        progressBar: true,    
-        timeOut: 3000,        
-    };
-
     $('#fechaHasta, #FechaCreate').val(fechaNow(null, "-", 0));
     $('#estado').val("todos");
 
@@ -146,25 +140,32 @@ $(document).ready(()=> {
         e.preventDefault();
         let id = $(this).data('id');
 
-        if(confirm('¿Está seguro que desea realizar la operación?')){
+        swal({
+            title: "¿Está seguro que desea realizar la operación?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar) {
+                preloader('on');
+                $.post(cambiarPago, {Id: id, _token: TOKEN})
+                    .done(function(response){
+                        preloader('off');
+                        let tipoToastr = response.estado == 'success' ? ['success', 'Perfecto'] : ['info', 'Atención'];
 
-            preloader('on');
-            $.post(cambiarPago, {Id: id, _token: TOKEN})
-                .done(function(response){
+                        toastr[tipoToastr[0]](response.message, [tipoToastr[1]], { timeOut: 10000 })
+                        let table = $(tabla).DataTable();
+                        table.draw(false);
+                    })
+                    .fail(function(jqXHR){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return;  
+                    })
+            }
+        })
 
-                    preloader('off');
-                    let tipoToastr = response.estado == 'success' ? ['success', 'Perfecto'] : ['info', 'Atención'];
-
-                    toastr[tipoToastr[0]](response.message, [tipoToastr[1]], { timeOut: 10000 })
-                    let table = $(tabla).DataTable();
-                    table.draw(false);
-                })
-                .fail(function(xhr){
-
-                    preloader('off');
-                    toastr.error('Ha ocurrido un error. Consulte con el administrador', 'Error');
-                })
-        }
+            
         
     });
 
@@ -173,20 +174,26 @@ $(document).ready(()=> {
 
         let id = $(this).data('id');
         
-        if (confirm("¿Estas seguro que deseas eliminar el examen a cuenta?")) {
-            preloader('on');
-            $.post(eliminarExCuenta, {Id: id, _token: TOKEN})
-                .done(function(response){
+        swal({
+            title: "¿Estas seguro que deseas eliminar el examen a cuenta?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar) {
+                preloader('on');
+                $.post(eliminarExCuenta, {Id: id, _token: TOKEN})
+                    .done(function(response){
 
-                    preloader('off');
-                    let tipoToastr = response.estado == 'success' ? ['success', 'Perfecto'] : ['info', 'Atención'];
+                        preloader('off');
+                        let tipoToastr = response.estado == 'success' ? ['success', 'Perfecto'] : ['info', 'Atención'];
 
-                    toastr[tipoToastr[0]](response.message, [tipoToastr[1]], { timeOut: 10000 })
-                    let table = $(tabla).DataTable();
-                    table.draw(false);
+                        toastr[tipoToastr[0]](response.message, [tipoToastr[1]], { timeOut: 10000 })
+                        let table = $(tabla).DataTable();
+                        table.draw(false);
 
-                })
-        }
+                    })
+            }
+        });    
     });
 
     $('#checkAll').on('click', function() {
@@ -201,9 +208,17 @@ $(document).ready(()=> {
             ids.push($(this).val());
         });
 
-        if(ids.length > 0) {
-            if (confirm('¿Esta seguro que desea realizar esta operación?')) {
+        if (ids.length === 0) {
+            toastr.warning('Debes seleccionar al menos un item para realizar la operación.');
+            return;
+        }
 
+        swal({
+            title: "¿Esta seguro que desea realizar esta operación?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar) {
                 preloader('on');
                 $.post(cambiarPago, {Id: ids, _token: TOKEN})
                     .done(function(response){
@@ -212,19 +227,17 @@ $(document).ready(()=> {
                         let tipoToastr = response.estado == 'success' ? ['success', 'Perfecto'] : ['info', 'Atención'];
 
                         toastr[tipoToastr[0]](response.message, [tipoToastr[1]], { timeOut: 10000 })
-                        let table = $(tabla).DataTable();
-                        table.draw(false);
-                    })
-                    .fail(function(xhr){
+                        $(tabla).DataTable().draw(false);
 
-                        preloader('off');
-                        toastr.error('Ha ocurrido un error. Consulte con el administrador', 'Error');
                     })
-           }
-        
-        }else{
-            toastr.warning('Debes seleccionar al menos un item para realizar la operación.','Alerta');
-        }
+                    .fail(function(jqXHR){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return;  
+                    })
+            }
+        });
     });
 
     $(document).on('click', '.sieteFacturas', function(e){
@@ -243,69 +256,23 @@ $(document).ready(()=> {
             toastr.warning("No posee identificador para iniciar el proceso");
             return;
         }
-        if(confirm("¿Estas seguro que deseas generar el reporte de " + tipo)) {
 
-            $.get(exportGeneral, {Id: id, Tipo: tipo})
-            .done(function(response){
+        swal({
+            title: "¿Estas seguro que deseas generar el reporte de " + tipo,
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar) {
+                $.get(exportGeneral, {Id: id, Tipo: tipo})
+                .done(function(response){
 
-                createFile(response.filePath);
-                toastr.success("Se esta generando el reporte");
-            })
-
-        }
+                    createFile("xlsx", response.filePath, "reporte");
+                    toastr.success("Se esta generando el reporte");
+                });
+            }
+        });
     });
 
-    function fechaNow(fechaAformatear, divider, format) {
-        let dia, mes, anio; 
-    
-        if (fechaAformatear === null) {
-            let fechaHoy = new Date();
-    
-            dia = fechaHoy.getDate().toString().padStart(2, '0');
-            mes = (fechaHoy.getMonth() + 1).toString().padStart(2, '0');
-            anio = fechaHoy.getFullYear();
-        } else {
-            let nuevaFecha = fechaAformatear.split("-"); 
-            dia = nuevaFecha[0]; 
-            mes = nuevaFecha[1]; 
-            anio = nuevaFecha[2];
-        }
-    
-        return (format === 1) ? `${dia}${divider}${mes}${divider}${anio}` : `${anio}${divider}${mes}${divider}${dia}`;
-    }
 
-    function preloader(opcion) {
-        $('#preloader').css({
-            opacity: '0.3',
-            visibility: opcion === 'on' ? 'visible' : 'hidden'
-        });
-    }
-
-    function createFile(array){
-        let fecha = new Date(),
-            dia = fecha.getDay(),
-            mes = fecha.getMonth() + 1,
-            anio = fecha.getFullYear();
-
-        let filePath = array,
-            pattern = /storage(.*)/,
-            match = filePath.match(pattern),
-            path = match ? match[1] : '';
-
-        let url = new URL(location.href),
-            baseUrl = url.origin,
-            fullPath = baseUrl + '/cmit/storage' + path;
-
-        let link = document.createElement('a');
-        link.href = fullPath;
-        link.download = "reporte-"+ dia + "-" + mes + "-" + anio +".xlsx";
-        link.style.display = 'none';
-
-        document.body.appendChild(link);
-        link.click();
-        setTimeout(function() {
-            document.body.removeChild(link);
-        }, 100);
-    }
 
 });

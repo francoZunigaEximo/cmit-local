@@ -94,7 +94,6 @@ $(document).ready(()=> {
         
         if(especialidad === '') return;
 
-
         swal({
             title: "¿Está seguro que desea dar de baja la especialidad?",
             icon: "warning",

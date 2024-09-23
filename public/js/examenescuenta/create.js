@@ -1,11 +1,5 @@
 $(document).ready(function(){
 
-    toastr.options = {
-        closeButton: true,   
-        progressBar: true,    
-        timeOut: 3000,        
-    };
-
     nuevoEmpresa(localStorage.getItem('nuevaId'), localStorage.getItem('nuevaRazonSocial'));
 
     $(document).on('click', '.crearPagoCuenta', function(){
@@ -19,29 +13,30 @@ $(document).ready(function(){
             return;
         }
 
-        preloader('on');
-        $.post(saveExamenCuenta, {_token: TOKEN, IdEmpresa: empresaCreate, Fecha: FechaCreate, Tipo: partes[0], Suc: parseInt(partes[1], 10), Nro: parseInt(partes[2], 10), Obs: ObsPago, FechaP: FechaPago})
-            .done(function(response){
-                preloader('off');
-                toastr.success('Se ha realizado la operación correctamente. Se habilitarán las opciones');
-                setTimeout(()=> {
-                    let nuevo = location.href.replace("create", "");
-                    let lnk = nuevo + response.id + "/edit";
-                    window.location.href = lnk;
-                }, 3000);
-            })
+        swal({
+            title: "¿Estas seguro que desea crearlo?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar) {
+                preloader('on');
+                $.post(saveExamenCuenta, {_token: TOKEN, IdEmpresa: empresaCreate, Fecha: FechaCreate, Tipo: partes[0], Suc: parseInt(partes[1], 10), Nro: parseInt(partes[2], 10), Obs: ObsPago, FechaP: FechaPago})
+                    .done(function(response){
+                        preloader('off');
+                        toastr.success('Se ha realizado la operación correctamente. Se habilitarán las opciones');
+                        setTimeout(()=> {
+                            let nuevo = location.href.replace("create", "");
+                            let lnk = nuevo + response.id + "/edit";
+                            window.location.href = lnk;
+                        }, 3000);
+                    })
+            }
+        });
     });
 
     $('.volverPagoCuenta').click(function(){
         history.back();
     });
-
-    function preloader(opcion) {
-        $('#preloader').css({
-            opacity: '0.3',
-            visibility: opcion === 'on' ? 'visible' : 'hidden'
-        });
-    }
 
     function nuevoEmpresa(id, name) {
         if (id && name) {

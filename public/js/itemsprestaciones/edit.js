@@ -6,8 +6,10 @@ $(document).ready(function(){
     $('.abrir, .cerrar, .asignar, .liberar, .asignarI, .liberarI, .cerrarI, .adjuntarEfector, .adjuntarInformador').hide();
     $('#efectores option[value="0"]').text('Elija una opción...');
     $('#informadores option[value="0"]').text('Elija una opción...');
-    
+    checkAdjunto(IDITEMPRES, 'informador') == 'true' ? $('.adjuntarInformador').show() : $('.adjuntarInformador').hide();
     checkBloq();
+    
+    
 
     asignar(efector, 'efector');
     asignar(informador, 'informador');
@@ -101,7 +103,7 @@ $(document).ready(function(){
             $.post(updateItem, {Id : ID, _token: TOKEN, CAdj: lista[cadj], Para: 'abrir' })
                 .done(function(){
                     preloader('off');
-                    toastr.success('Se ha realizado la acción correctamente', 'Actualizacion realizada');
+                    toastr.success('Se ha realizado la acción correctamente');
                     setTimeout(() => {
                         location.reload();
                     }, 3000);
@@ -166,7 +168,7 @@ $(document).ready(function(){
             $.post(updateItem, {Id : ID, _token: TOKEN, CAdj: listaE[cadj], Para: who })
                 .done(function(){
                     preloader('off');
-                    toastr.success('Se ha cerrado al efector correctamente', 'Actualizacion realizada');
+                    toastr.success('Se ha cerrado al efector correctamente');
                     setTimeout(() => {
                         location.reload();
                     }, 3000);
@@ -184,7 +186,7 @@ $(document).ready(function(){
             $.post(updateItem, {Id : ID, _token: TOKEN, CInfo: 3, Para: who })
                 .done(function(){
                     preloader('off');
-                    toastr.success('Se ha cerrado al informador correctamente', 'Actualizacion realizada');
+                    toastr.success('Se ha cerrado al informador correctamente');
                     setTimeout(() => {
                         location.reload();
                     }, 3000);
@@ -213,7 +215,7 @@ $(document).ready(function(){
         $.post(updateAsignado, { Id: ID, _token: TOKEN, IdProfesional: check, fecha: 1, Para: who})
             .done(function(){
                 preloader('off');
-                toastr.success('Se ha actualizado la información de manera correcta', 'Actualización realizada');
+                toastr.success('Se ha actualizado la información de manera correcta');
                 setTimeout(() => {
                     location.reload();             
                 }, 3000); 
@@ -238,7 +240,8 @@ $(document).ready(function(){
         }
     });
 
-    $(document).on('click', '#adjuntos', function() {
+    $(document).on('click', '#adjuntos', function(e) {
+        e.preventDefault();
 
         let lista = {1: 2, 4: 5, 2: 1, 5: 4};
 
@@ -256,7 +259,8 @@ $(document).ready(function(){
             
     });
 
-    $(document).on('click', '#actualizarExamen', function(){
+    $(document).on('click', '#actualizarExamen', function(e){
+        e.preventDefault();
 
         let ObsExamen = $('#ObsExamen').val(), Profesionales2 = $('#informadores').val(), Obs = $('#Obs').val(), Fecha = $('#Fecha').val();
         
@@ -367,7 +371,7 @@ $(document).ready(function(){
                 $('.cerrarI').hide();
                 $('.abrir').hide();
                 $('.liberarI').hide();
-                $('.adjuntarInformador').hide();
+                checkAdjunto(IDITEMPRES, 'informador') == 'true' ? $('.adjuntarInformador').show() : $('.adjuntarInformador').hide();
             }
         }
     }
@@ -485,13 +489,13 @@ $(document).ready(function(){
                                         </button>
                                     </div>
                                     ` : ``}
-                                    ${(Estado === 'Cerrado') || (d.Anulado === 1) ? `` : `
-                                        <div class="remove">
-                                            <button data-id="${d.IdE}" data-tipo="efector" class="btn btn-sm iconGeneral deleteAdjunto" title="Eliminar">
-                                                <i class="ri-delete-bin-2-line"></i>
-                                            </button>
-                                        </div>
-                                    `}
+                                    ${(Estado === 'Cerrado') || (d.Anulado === 1) ? `
+                                    <div class="remove">
+                                        <button data-id="${d.IdE}" data-tipo="efector" class="btn btn-sm iconGeneral deleteAdjunto" title="Eliminar">
+                                            <i class="ri-delete-bin-2-line"></i>
+                                        </button>
+                                    </div>
+                                    ` : ``}
                                     
                                 </div>
                             </td>
@@ -537,13 +541,13 @@ $(document).ready(function(){
                                         </button> 
                                     </div>
                                         `:``}
-                                    ${(EstadoI === 'Cerrado') ? `` : `
+                                    ${(EstadoI === 'Cerrado') ? `
                                     <div class="remove">
                                         <button data-id="${d.IdI}" data-tipo="informador" class="btn btn-sm iconGeneral deleteAdjunto" title="Eliminar">
                                             <i class="ri-delete-bin-2-line"></i>
                                         </button>
                                     </div>
-                                    `}
+                                    ` : ''}
                                 </div>
                             </td>
                         </tr>
@@ -599,4 +603,16 @@ $(document).ready(function(){
             });
     }
    
+
+    function checkAdjunto(id, tipo) {
+
+        if (['',0,null].includes(id)) return;
+
+        //Tipo se refiere a efector o informador en el caso de que el mismo lo requiera
+        $.get(checkAdj, {Id: id, Tipo: tipo})
+            .done(function(response){
+                console.log(response);
+                return response;
+            });
+    }
 });

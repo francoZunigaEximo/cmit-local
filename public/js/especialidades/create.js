@@ -3,16 +3,14 @@ $(document).ready(function(){
     $('#Provincia').val('NEUQUEN');
     $('#IdLocalidad').val(3); //Elije la ciudad de Neuquen como default
     $('.Telefono, .Direccion, .Provincia, .IdLocalidad, .Obs').hide();
-
-    
-    
+ 
     $(document).on('change', '#Externo', function(){
 
         let externo = $(this).val();
         if(externo === '1'){
             $('.Telefono, .Direccion, .Provincia, .IdLocalidad, .Obs').show();
         
-        } else if(externo === '0' || externo === ''){
+        } else if(['',0,null].includes(externo)){
             $('.Telefono, .Direccion, .Provincia, .IdLocalidad, .Obs').hide();
         }
     });
@@ -22,7 +20,8 @@ $(document).ready(function(){
         changeProvincia(provincia);
     });
 
-    $(document).on('click', '#saveBasico', function(){
+    $(document).on('click', '#saveBasico', function(e){
+        e.preventDefault();
 
         let Nombre = $('#Nombre').val(), Externo = $('#Externo').val(), Inactivo = $('#Inactivo').val(), Telefono = $('#Telefono').val(), Direccion = $('#Direccion').val(), IdLocalidad = $('#IdLocalidad').val(), Obs = $('#Obs').val();
 
@@ -36,32 +35,39 @@ $(document).ready(function(){
             return;
         }
 
-
         if([0,null,''].includes(Inactivo)) {
             toastr.warning('Debe especificar si el campo es inactivo o no');
             return;
         }
 
-        preloader('on');
-        $.post(saveBasico, {_token: TOKEN, Nombre: Nombre, Externo: Externo, Inactivo: Inactivo, Telefono: Telefono, Direccion: Direccion, IdLocalidad: IdLocalidad, Obs: Obs})
-            
-            .done(function(response){
-                preloader('off');
-                let data = response.especialidad;
+        swal({
+            title: "¿Estas seguro que deseas realizar la operación?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar) {
+                preloader('on');
+                $.post(saveBasico, {_token: TOKEN, Nombre: Nombre, Externo: Externo, Inactivo: Inactivo, Telefono: Telefono, Direccion: Direccion, IdLocalidad: IdLocalidad, Obs: Obs})
+                    
+                    .done(function(response){
+                        preloader('off');
+                        let data = response.especialidad;
 
-                toastr.success(response.msg);
-                setTimeout(() => {
-                    let nuevo = location.href.replace("create", "");
-                    let lnk = nuevo + "" + data + "/edit";
-                    window.location.href = lnk;
-                }, 3000);
-            })
-            .fail(function(jqXHR){
-                preloader('off');            
-                let errorData = JSON.parse(jqXHR.responseText);            
-                checkError(jqXHR.status, errorData.msg);
-                return; 
-            });
+                        toastr.success(response.msg);
+                        setTimeout(() => {
+                            let nuevo = location.href.replace("create", "");
+                            let lnk = nuevo + "" + data + "/edit";
+                            window.location.href = lnk;
+                        }, 3000);
+                    })
+                    .fail(function(jqXHR){
+                        preloader('off');            
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return; 
+                    });
+            }   
+        }) 
     });
 
     $(document).on('change', '#Nombre', function(){

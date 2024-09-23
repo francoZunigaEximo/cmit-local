@@ -1,11 +1,5 @@
 $(document).ready(function(){
 
-    toastr.options = {
-        closeButton: true,   
-        progressBar: true,     
-        timeOut: 3000,        
-    };
-
     listado();
 
     $('#examen').each(function(){
@@ -181,7 +175,9 @@ $(document).ready(function(){
             })
     });
 
-    $(document).on('click', '.actualizarPagoCuenta', function(){
+    $(document).on('click', '.actualizarPagoCuenta', function(e){
+
+        e.preventDefault();
 
         let empresa = $('#empresa').val(), Fecha = $('#Fecha').val(), Factura = $('#Factura').val(), FechaPago = $('#FechaPago').val(), Obs = $('#Obs').val(),
             condiciones = [empresa, Fecha, Factura],
@@ -192,12 +188,22 @@ $(document).ready(function(){
             return;
         }
 
-        preloader('on');
-        $.post(updateExamenCuenta, {_token: TOKEN, IdEmpresa: empresa, Fecha: Fecha, Tipo: partes[0], Suc: parseInt(partes[1], 10), Nro: parseInt(partes[2], 10), Obs: Obs, FechaP: FechaPago, Id: ID})
-            .done(function(response){
-                preloader('off');
-                toastr.success('Se ha actualizado el examen a cuenta correctamente');
-            })
+        swal({
+            title: "¿Esta segudo que desea actualizar el examen a cuenta?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar) {
+                preloader('on');
+                $.post(updateExamenCuenta, {_token: TOKEN, IdEmpresa: empresa, Fecha: Fecha, Tipo: partes[0], Suc: parseInt(partes[1], 10), Nro: parseInt(partes[2], 10), Obs: Obs, FechaP: FechaPago, Id: ID})
+                    .done(function(response){
+                        preloader('off');
+                        toastr.success('Se ha actualizado el examen a cuenta correctamente');
+                    })
+            }
+         });
+
+        
     });
 
     function listado() {
@@ -276,7 +282,7 @@ $(document).ready(function(){
             if(ids.length === 0 && checkAll === false){
                 $(".saveCambiosEdit").hide();
                 $("#dniNuevo").attr("disabled", true);
-                toastr.warning('No hay items seleccionados', 'Atención');
+                toastr.warning('No hay items seleccionados');
                 return;
             }
 
@@ -310,31 +316,35 @@ $(document).ready(function(){
     $(document).on('click', '.liberarItemMasivo', function(e){
         e.preventDefault();
 
-        let id = [];
+        let id = [], checkAll = $('#checkAll').prop('checked');
 
         $('input[name="Id"]:checked').each(function() {
             id.push($(this).val());
         });
-
-        let checkAll =$('#checkAll').prop('checked');
 
         if(id.length === 0 && checkAll === false){
             toastr.warning('No hay items seleccionados', 'Atención');
             return;
         }
 
-        if(confirm("¿Esta seguro que desea liberar esos items del examen a cuenta?")) {
+        swal({
+            title: "¿Esta seguro que desea liberar esos items del examen a cuenta?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar) {
 
-            preloader('on');
-            $.get(liberarItemExCta, {Id: id})
-                .done(function(){
-                    preloader('off');
-                    toastr.success("Se ha realizado la liberación de los items correctamente");
-                    setTimeout(()=>{
-                        listado()
-                    },2000);
-                });
-        }
+                preloader('on');
+                $.get(liberarItemExCta, {Id: id})
+                    .done(function(){
+                        preloader('off');
+                        toastr.success("Se ha realizado la liberación de los items correctamente");
+                        setTimeout(()=>{
+                            listado()
+                        },2000);
+                    });
+            }
+        });
     });
 
     $(document).on('click', '.deleteItem, .deleteItemMasivo', function(e){
@@ -363,18 +373,23 @@ $(document).ready(function(){
             }
         }
 
-        if(confirm("¿Esta seguro que desea eliminar el item del exámen?"))
-        {
-            preloader('on');
-            $.get(deleteItemExCta, {Id: id})
-                .done(function(){
-                    preloader('off');
-                    toastr.success("Se ha realizado la eliminación");
-                    setTimeout(()=>{
-                        listado()
-                    },2000);
-                });
-        }
+        swal({
+            title: "¿Esta seguro que desea eliminar el item del exámen?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar)=>{
+            if(confirmar){
+                preloader('on');
+                $.get(deleteItemExCta, {Id: id})
+                    .done(function(){
+                        preloader('off');
+                        toastr.success("Se ha realizado la eliminación");
+                        setTimeout(()=>{
+                            listado()
+                        },2000);
+                    });
+            }
+        });
     });
 
     //Exportar Excel a clientes
