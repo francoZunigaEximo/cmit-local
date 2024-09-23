@@ -49,35 +49,36 @@ trait ObserverMapas
             ->count();
     }
 
-    public function contadorConEstado(int $id)
+    public function contadorConEstado(int $id): int
     {
-        $conteo = Prestacion::join('mapas', 'prestaciones.IdMapa', 'mapas.Id')
-            ->where('prestaciones.IdMapa', $id)
-            ->selectRaw('SUM(CASE WHEN prestaciones.Forma = 1 OR prestaciones.Incompleto = 1 OR prestaciones.Ausente = 1 OR prestaciones.Devol = 1 THEN 1 ELSE 0 END) as conEstados')
-            ->first();
-
-        return $conteo ? $conteo->conEstados : 0;
+        return Prestacion::join('mapas as m', 'prestaciones.IdMapa', '=', 'm.Id')
+        ->join('itemsprestaciones as i', 'prestaciones.Id', '=', 'i.IdPrestacion')
+        ->where('m.Id', $id)
+        ->where(function($query) {
+            $query->where('i.Forma', 1)
+                  ->orWhere('i.Devol', 1)
+                  ->orWhere('i.Incompleto', 1)
+                  ->orWhere('i.Ausente', 1);
+        })
+        ->count();
     }
 
     public function contadorCompletas(int $id): int
     {
-        $totalPrestaciones = Prestacion::join('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
+        return Prestacion::join('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
             ->join('mapas', 'prestaciones.IdMapa', '=', 'mapas.Id')
-            ->where('mapas.Id', $id) 
-            ->select('prestaciones.Id as prestacionId') 
-            ->where(function ($query) {
-                $query->whereIn('itemsprestaciones.CAdj', [3, 5])
-                    ->orWhere('itemsprestaciones.Cinfo', 'IN', [3, 0]);
-            })
+            ->where('mapas.Id', $id)
             ->where('prestaciones.Cerrado', 0)
             ->where('prestaciones.Finalizado', 0)
             ->where('prestaciones.Entregado', 0)
-            ->groupBy('prestacionId')
+            
+            ->groupBy('prestaciones.Id')
             ->havingRaw('COUNT(*) = COUNT(CASE WHEN itemsprestaciones.CAdj IN (3, 5) AND itemsprestaciones.Cinfo IN (3, 0) THEN 1 END)')
+            ->select('prestaciones.Id') // Seleccionamos explícitamente la columna Id de prestaciones
             ->count();
-
-        return $totalPrestaciones;
     }
+
+
 
 
     public function contadorEnProceso(int $id): int

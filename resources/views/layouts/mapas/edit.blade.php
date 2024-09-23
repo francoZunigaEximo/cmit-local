@@ -12,7 +12,7 @@
     </div>
 </div>
 
-<h4 class="mb-4 mt-3 d-flex align-items-center"></span> {{ $mapa->artMapa->RazonSocial }} | {{ $mapa->empresaMapa->RazonSocial }} &nbsp;<span class="custom-badge original">{{$mapa->Nro }}</h4>
+<h4 class="mb-4 mt-3 d-flex align-items-center"></span> {{ $mapa->artMapa->RazonSocial }} | {{ $mapa->empresaMapa->RazonSocial }} &nbsp; <span class="custom-badge original">Para empresa: {{ $mapa->empresaMapa->ParaEmpresa}}</span>&nbsp;<span class="custom-badge original">Cod Mapa:  {{$mapa->Nro }}</h4>
 
 <div class="card-header">
     <ul class="nav nav-tabs-custom rounded card-header-tabs border-bottom-0" role="tablist">

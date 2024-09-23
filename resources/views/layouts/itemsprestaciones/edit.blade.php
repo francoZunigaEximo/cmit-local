@@ -261,7 +261,7 @@
                         <thead class="table-light">
                             <th class="sort" title="Adjunto Informador">Adjunto Informador</th>
                             <th>Descripción</th>
-                            <th>Acciones <button type="button" class="btn botonGeneral adjuntarInformador  data-bs-toggle="modal" data-bs-target="#modalInformador">Adjuntar archivo</button></th>
+                            <th>Acciones <button type="button" class="btn botonGeneral adjuntarInformador"  data-bs-toggle="modal" data-bs-target="#modalInformador">Adjuntar archivo</button></th>
                         </thead>
                         <tbody id="listainformadores" class="list form-check-all">
                 
@@ -411,10 +411,6 @@
 <link rel="stylesheet" href="{{ asset('css/hacks.css')}}?v={{ time() }}">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
 <link rel="stylesheet" href="{{ asset('css/fixSelect2.css') }}">
-<link href="https://unpkg.com/filepond/dist/filepond.css" rel="stylesheet">
-
-<!-- include FilePond image preview styles (if needed) -->
-<link href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css" rel="stylesheet">
 @endpush
 
 @push('scripts')

@@ -52,9 +52,9 @@ $(document).ready(function(){
         $(obj[who][1]).each(function() {
             ids.push($(this).val());
         });
-
+        debugger;
         if(ids.length === 0 && multi == "success"){
-            toastr.warning('No hay examenes seleccionados', 'Atención');
+            toastr.warning('No hay examenes seleccionados');
             return;
         }
         
@@ -383,7 +383,7 @@ $(document).ready(function(){
                 $('.cerrarI').hide();
                 $('.abrir').hide();
                 $('.liberarI').hide();
-                checkAdjunto(IDITEMPRES, 'informador') == 'true' ? $('.adjuntarInformador').show() : $('.adjuntarInformador').hide();
+                $('.adjuntarInformador').hide();
             }
         }
     }
