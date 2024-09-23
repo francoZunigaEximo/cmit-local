@@ -248,19 +248,20 @@
                             <th>Descripción</th>
                             <th>Adjuntar</th>
                             <th>Multi</th>
-                            <th>Acciones {!! $itemsprestacione->Anulado === 1 ? '' : '<button type="button" class="btn botonGeneral adjuntarEfector" data-bs-toggle="modal" data-bs-target="#modalEfector">Adjuntar archivo</button>' !!}</th>
+                            <th>Acciones <button type="button" class="btn botonGeneral adjuntarEfector" data-bs-toggle="modal" data-bs-target="#modalEfector">Adjuntar archivo</button></th>
                         </tr>
                     </thead>
                     <tbody id="listaefectores" class="list form-check-all">
             
                     </tbody>
                 </table>
+
                 @if($itemsprestacione->CInfo !== 0)
                     <table class="display table table-bordered mt-4" style="width:100%"  id="listadoInformador">
                         <thead class="table-light">
                             <th class="sort" title="Adjunto Informador">Adjunto Informador</th>
                             <th>Descripción</th>
-                            <th>Acciones <button type="button" class="btn botonGeneral adjuntarInformador" data-bs-toggle="modal" data-bs-target="#modalInformador">Adjuntar archivo</button></th>
+                            <th>Acciones <button type="button" class="btn botonGeneral adjuntarInformador  data-bs-toggle="modal" data-bs-target="#modalInformador">Adjuntar archivo</button></th>
                         </thead>
                         <tbody id="listainformadores" class="list form-check-all">
                 
@@ -385,6 +386,7 @@
 <script>
     const TOKEN = '{{ csrf_token() }}';
 
+    const IDITEMPRES = "{{ $itemsprestacione->Id }}";
     const updateItem = "{{ route('updateItem') }}";
     const updateAsignado = "{{ route('updateAsignado') }}";
     const listGeneral = "{{ route('listGeneral') }}";
@@ -398,6 +400,7 @@
     const deleteIdAdjunto = "{{ route('deleteIdAdjunto') }}";
     const replaceIdAdjunto = "{{ route('replaceIdAdjunto') }}";
     const getBloqueoItemPrestacion = "{{ route('getBloqueoItemPrestacion') }}";
+    const checkAdj = "{{ route('itemsprestaciones.checkAdjuntos') }}";
 
 
 

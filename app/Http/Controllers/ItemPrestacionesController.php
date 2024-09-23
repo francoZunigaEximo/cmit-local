@@ -1048,6 +1048,22 @@ class ItemPrestacionesController extends Controller
         return response()->json($listado);
     }
 
+    public function checkAdjunto(Request $request)
+    {
+        $resultado = '';
+        $query = ItemPrestacion::find($request->Id);
+
+       if ($request->Tipo === 'efector') 
+       {
+            $resultado = $this->adjuntoEfector($request->Id) === 0 && $query->examenes->Adjunto === 1 ? true : false; //true es que falta adjuntar el archivo
+
+       }else{
+            $resultado = $this->adjuntoInformador($request->Id) === 0 && $query->profesionales2->InfAdj === 1 ? true :  false;
+       }
+
+       return response()->json($resultado);
+    }
+
     private function generarCodigo(int $idprest, int $idex, int $idpac)
     {
         return 'A'.str_pad($idprest, 9, "0", STR_PAD_LEFT).str_pad($idex, 5, "0", STR_PAD_LEFT).str_pad($idpac, 7, "0", STR_PAD_LEFT).".pdf";

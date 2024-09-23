@@ -6,10 +6,22 @@ $(document).ready(function(){
     $('.abrir, .cerrar, .asignar, .liberar, .asignarI, .liberarI, .cerrarI, .adjuntarEfector, .adjuntarInformador').hide();
     $('#efectores option[value="0"]').text('Elija una opción...');
     $('#informadores option[value="0"]').text('Elija una opción...');
-    checkAdjunto(IDITEMPRES, 'informador') == 'true' ? $('.adjuntarInformador').show() : $('.adjuntarInformador').hide();
     checkBloq();
-    
-    
+    checkAdjunto(IDITEMPRES, 'informador').then(response => {
+        if (response === true) {
+            $('.adjuntarInformador').show();
+        } else {
+            $('.adjuntarInformador').hide();
+        }
+    });
+
+    checkAdjunto(IDITEMPRES, 'efector').then(response => {
+        if (response === true) {
+            $('.adjuntarEfector').show();
+        } else {
+            $('.adjuntarEfector').hide();
+        }
+    });
 
     asignar(efector, 'efector');
     asignar(informador, 'informador');
@@ -604,15 +616,18 @@ $(document).ready(function(){
     }
    
 
-    function checkAdjunto(id, tipo) {
+    async function checkAdjunto(id, tipo) {
+    if (['', 0, null].includes(id)) return;
 
-        if (['',0,null].includes(id)) return;
-
-        //Tipo se refiere a efector o informador en el caso de que el mismo lo requiera
-        $.get(checkAdj, {Id: id, Tipo: tipo})
-            .done(function(response){
-                console.log(response);
-                return response;
+    return new Promise((resolve, reject) => {
+        $.get(checkAdj, { Id: id, Tipo: tipo })
+            .done(function(response) { 
+                resolve(response);      
+            })
+            .fail(function(error) {
+                console.error("Error:", error);
+                reject(error);
             });
-    }
+    });
+}
 });

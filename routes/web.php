@@ -210,6 +210,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     //Rutas de ItemsPrestaciones
     Route::post('itemsprestaciones/lista-examenes', [ItemPrestacionesController::class, 'getExamenes'])->name('itemsprestaciones.listadoexamenes');
+    Route::get('itemsprestaciones/check-adjuntos', [ItemPrestacionesController::class, 'checkAdjunto'])->name('itemsprestaciones.checkAdjuntos');
     Route::resource('itemsprestaciones', ItemPrestacionesController::class);
     Route::post('updateItem', [ItemPrestacionesController::class, 'updateItem'])->name('updateItem');
     Route::post('updateAsignado', [ItemPrestacionesController::class, 'updateAsignado'])->name('updateAsignado');
