@@ -236,8 +236,7 @@ class ItemPrestacionesController extends Controller
                 $item->FechaAsignadoI = (($request->fecha == '0000-00-00' ||  $request->fecha == '0') ? '' : now()->format('Y-m-d'));
                 $item->HoraAsignadoI = date("H:i:s");
                 //$item->HoraFAsignado = $horaAsigFin;
-
-                $item->CInfo = ($request->IdProfesional === 0 && $item->profesionales2->InfAdj === 1) ? 1 : 0;
+                $item->CInfo = 1;
             }
             
             $item->save();
