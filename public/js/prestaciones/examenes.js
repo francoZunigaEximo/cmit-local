@@ -611,7 +611,7 @@ $(document).ready(()=>{
                                                 <span class="badge badge-soft-${([0,1,2].includes(examen.CAdj) ? 'danger': ([3,4,5].includes(examen.CAdj) ? 'success' : ''))}">
                                                     ${([0,1,2].includes(examen.CAdj) ? 'Abierto': ([3,4,5].includes(examen.CAdj) ? 'Cerrado' : ''))}
                                                 </span>
-                                                ${examen.ExaAdj === 1 ? `<i class="ri-attachment-line ${examen.archivo > 0 ? 'verde' : 'gris'}"></i>`: ``}    
+                                                ${examen.ExaAdj === 1 ? `<i class="ri-attachment-line ${examen.archivos > 0 ? 'verde' : 'gris'}"></i>`: ``}    
                                             </td>
                                             <td class="date text-center" title="${examen.Informe === 0 ? examen.ApellidoI : ''} ${examen.Informe === 1 ? examen.NombreI : ''}">${examen.Informe === 1 ? examen.ApellidoI : ''}
                                                 <span class="badge badge-soft-${(examen.CInfo === 0 ? 'dark' :(examen.CInfo === 3 ? 'success' : ([0,1,2].includes(examen.CInfo)) ? 'danger' : ''))}">${(examen.CInfo === 0 ? 'Sin informador' : (examen.CInfo === 3 ? 'Cerrado' : (examen.CInfo == 2 ? 'Borrador' : ([0,1].includes(examen.CInfo) ? 'Pendiente': ''))))}</span>
