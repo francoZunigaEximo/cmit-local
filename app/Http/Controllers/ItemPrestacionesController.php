@@ -764,7 +764,7 @@ class ItemPrestacionesController extends Controller
 
             $item = ItemPrestacion::with(['prestaciones','examenes'])->find($examen);
            
-            if ($item && ($item->prestaciones->Cerrado === 0 && $item->CInfo != 3 && !in_array($item->CAdj,[3,5]) && $item->IdProfesional2 === 0 && $item->IdProfesional2 === 0)) {
+            if ($item && ($item->prestaciones->Cerrado === 0 && $item->CInfo != 3 && !in_array($item->CAdj,[3,5]) && $item->IdProfesional === 0 && $item->IdProfesional2 === 0)) {
 
                 $item->delete();
                 ItemPrestacion::InsertarVtoPrestacion($item->IdPrestacion);
