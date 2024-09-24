@@ -224,7 +224,7 @@ class ItemPrestacionesController extends Controller
             if($request->Para === 'asignar'){
                 $item->IdProfesional = $request->IdProfesional;
 
-                $item->CAdj = ($request->IdProfesional === 0 && $item->examenes->Adjunto === 1 ) ? 1 : 2;
+                $item->CAdj = ($request->IdProfesional === 0 && $item->examenes->Adjunto === 1) ? 1 : 2;
 
                 $item->FechaAsignado = (($request->fecha == '0000-00-00' ||  $request->fecha == '0') ? '' : now()->format('Y-m-d'));
                 $item->HoraAsignado = date("H:i:s");
@@ -846,7 +846,8 @@ class ItemPrestacionesController extends Controller
                     'itemsprestaciones.CInfo as CInfo',
                     'itemsprestaciones.Id as IdItem',
                     'itemsprestaciones.Anulado as Anulado',
-                    DB::raw('(SELECT COUNT(*) FROM archivosefector WHERE IdEntidad = itemsprestaciones.Id) as archivos')
+                    DB::raw('(SELECT COUNT(*) FROM archivosefector WHERE IdEntidad = itemsprestaciones.Id) as archivos'),
+                    DB::raw('(SELECT COUT(*) FROM archivosinformador WHERE IdEntidad = itemprestaciones.Id) as archivosI')
                 );                
 
             if ($request->tipo === 'listado' && is_array($request->IdExamen)) {
