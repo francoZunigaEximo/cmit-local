@@ -213,7 +213,8 @@ $(document).ready(function(){
         }
     });
 
-    $(document).on('click', '#asignar, #asignarI', function() {
+    $(document).on('click', '#asignar, #asignarI', function(e) {
+        e.preventDefault();
 
         let who = $(this).hasClass('asignar') ? 'asignar' : 'asignarI',
             check = (who === 'asignar') ? $('#efectores').val() : $('#informadores').val();
@@ -223,15 +224,30 @@ $(document).ready(function(){
             return;
         }
 
-        preloader('on');
-        $.post(updateAsignado, { Id: ID, _token: TOKEN, IdProfesional: check, fecha: 1, Para: who})
-            .done(function(){
-                preloader('off');
-                toastr.success('Se ha actualizado la información de manera correcta');
-                setTimeout(() => {
-                    location.reload();             
-                }, 3000); 
-            })
+        swal({
+            title: "¿Esta seguro que desea asignar?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar) {
+
+                preloader('on');
+                $.post(updateAsignado, { Id: ID, _token: TOKEN, IdProfesional: check, fecha: 1, Para: who})
+                    .done(function(){
+                        preloader('off');
+                        toastr.success('Se ha actualizado la información de manera correcta');
+                        setTimeout(() => {
+                            location.reload();             
+                        }, 3000); 
+                    })
+                    .fail(function(jqXHR){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
+                    });
+            }
+        });
     });
 
     $(document).on('click', '#liberar, #liberarI', function(e) {
@@ -241,14 +257,32 @@ $(document).ready(function(){
         
         if (who != '0') {
 
-            $.post(updateAsignado, { Id: ID, _token: TOKEN, IdProfesional: 0, fecha: 0, Para: $(this).attr('id') === 'liberar' ? 'asignar' : 'asignarI'})
-            .done(function(response){
-                toastr.success(response.msg);
-                setTimeout(() => {
-                    location.reload();
-                }, 3000);
-                
+            swal({
+                title: "¿Esta seguro que desea liberar el exámen?",
+                icon: "warning",
+                buttons: ["Cancelar", "Aceptar"]
+            }).then((confirmar) => {
+                if (confirmar) {
+                    
+                    preloader('on');
+                    $.post(updateAsignado, { Id: ID, _token: TOKEN, IdProfesional: 0, fecha: 0, Para: $(this).attr('id') === 'liberar' ? 'asignar' : 'asignarI'})
+                    .done(function(response){
+                        preloader('off');
+                        toastr.success(response.msg);
+                        setTimeout(() => {
+                            location.reload();
+                        }, 3000);
+                    })
+                    .fail(function(jqXHR){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
+                    });
+                }
             })
+
+            
         }
     });
 
@@ -267,6 +301,12 @@ $(document).ready(function(){
                         location.reload();
                     }, 3000);
                 })
+                .fail(function(jqXHR){
+                    preloader('off');
+                    let errorData = JSON.parse(jqXHR.responseText);            
+                    checkError(jqXHR.status, errorData.msg);
+                    return;
+                });
         }
             
     });

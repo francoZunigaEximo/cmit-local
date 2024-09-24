@@ -8,13 +8,19 @@ class FileHelper
     {
         $disk = config('filesystems.default');
 
-        if ($disk  === 'smb') {
-            
-            return $type === 'lectura' ? config('filesystems.link_smb') : '/media/nas/';
+        // Configuración basada en el disco
+        $config = [
+            'smb' => [
+                'lectura' => config('filesystems.link_smb'),
+                'escritura' => '/media/nas/',
+            ],
+            'test' => [
+                'lectura' => asset('storage'),
+                'escritura' => storage_path('app/public'),
+            ],
+        ];
 
-        } else {
-            return $type === 'lectura' ? asset('storage') : storage_path('app/public');
-        }    
+        // Selecciona el tipo de URL
+        return $config[$disk][$type] ?? $config['test']['lectura'];
     }
-
 }

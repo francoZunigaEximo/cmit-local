@@ -224,10 +224,11 @@ class ItemPrestacionesController extends Controller
             if($request->Para === 'asignar'){
                 $item->IdProfesional = $request->IdProfesional;
 
+                $item->CAdj = ($request->IdProfesional === 0 && $item->examenes->Adjunto === 1 ) ? 1 : 2;
+
                 $item->FechaAsignado = (($request->fecha == '0000-00-00' ||  $request->fecha == '0') ? '' : now()->format('Y-m-d'));
                 $item->HoraAsignado = date("H:i:s");
                 $item->HoraFAsignado = $horaAsigFin;
-
 
             }elseif($request->Para === 'asignarI'){
                 $item->IdProfesional2 = $request->IdProfesional;
@@ -235,6 +236,8 @@ class ItemPrestacionesController extends Controller
                 $item->FechaAsignadoI = (($request->fecha == '0000-00-00' ||  $request->fecha == '0') ? '' : now()->format('Y-m-d'));
                 $item->HoraAsignadoI = date("H:i:s");
                 //$item->HoraFAsignado = $horaAsigFin;
+
+                $item->CInfo = ($request->IdProfesional === 0 && $item->profesionales2->InfAdj === 1) ? 1 : 0;
             }
             
             $item->save();
@@ -709,6 +712,7 @@ class ItemPrestacionesController extends Controller
 
             if ($adjunto) {
                 $adjunto->delete();
+                
                 $this->updateEstado($request->Tipo, $request->ItemP, $request->Tipo === 'efector' ? $request->Id : null, $request->Tipo === 'informador' ? $request->Id : null, null, null);
             
                 return response()->json(['msg' => 'Se ha eliminado el adjunto de manera correcta'], 200);
