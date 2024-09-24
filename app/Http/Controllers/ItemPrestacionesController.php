@@ -826,6 +826,7 @@ class ItemPrestacionesController extends Controller
                 ->join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
                 ->join('profesionales as informador', 'itemsprestaciones.IdProfesional2', '=', 'informador.Id')
                 ->leftJoin('archivosefector', 'itemsprestaciones.Id', '=', 'archivosefector.IdEntidad')
+                ->leftJoin('archivosinformador', 'itemsprestaciones.Id', '=', 'archivosinformador.IdEntidad')
                 ->select(
                     'examenes.Nombre as Nombre',
                     'examenes.Id as IdExamen',
@@ -847,7 +848,7 @@ class ItemPrestacionesController extends Controller
                     'itemsprestaciones.Id as IdItem',
                     'itemsprestaciones.Anulado as Anulado',
                     DB::raw('(SELECT COUNT(*) FROM archivosefector WHERE IdEntidad = itemsprestaciones.Id) as archivos'),
-                    DB::raw('(SELECT COUT(*) FROM archivosinformador WHERE IdEntidad = itemprestaciones.Id) as archivosI')
+                    DB::raw('(SELECT COUNT(*) FROM archivosinformador WHERE IdEntidad = itemprestaciones.Id) as archivosI')
                 );                
 
             if ($request->tipo === 'listado' && is_array($request->IdExamen)) {
