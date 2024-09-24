@@ -848,7 +848,7 @@ class ItemPrestacionesController extends Controller
                     'itemsprestaciones.Id as IdItem',
                     'itemsprestaciones.Anulado as Anulado',
                     DB::raw('(SELECT COUNT(*) FROM archivosefector WHERE IdEntidad = itemsprestaciones.Id) as archivos'),
-                    DB::raw('(SELECT COUNT(*) FROM archivosinformador WHERE IdEntidad = itemprestaciones.Id) as archivosI')
+                    DB::raw('(SELECT COUNT(*) FROM archivosinformador WHERE IdEntidad = itemsprestaciones.Id) as archivosI')
                 );                
 
             if ($request->tipo === 'listado' && is_array($request->IdExamen)) {
