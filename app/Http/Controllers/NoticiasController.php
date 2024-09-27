@@ -6,18 +6,10 @@ use App\Helpers\FileHelper;
 use App\Models\Noticia;
 use Illuminate\Http\Request;
 use App\Traits\CheckPermission;
-use App\Services\SmbClientService;
 
 class NoticiasController extends Controller 
 {
     use CheckPermission;
-
-    private $smbClienteService;
-
-    public function __construct(SmbClientService $smbClienteService)
-    {
-        $this->smbClienteService = $smbClienteService;
-    }
 
 	public function index(): mixed
     {
