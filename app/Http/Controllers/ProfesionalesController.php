@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\FileHelper;
 use App\Models\Profesional;
 use App\Models\ProfesionalProv;
 use App\Models\Proveedor;
@@ -22,6 +23,8 @@ use Illuminate\Support\Facades\Auth;
 class ProfesionalesController extends Controller
 {
     use ObserverProfesionales, ObserverPacientes, CheckPermission;
+
+    protected $folder = "Prof";
 
     public function index()
     {
@@ -329,7 +332,8 @@ class ProfesionalesController extends Controller
             }
 
             $fileName = 'PROF' . $profesionale . '.' . $request->Foto->extension();
-            $request->Foto->storeAs('public/profesionales', $fileName);
+            //$request->Foto->storeAs('public/profesionales', $fileName);
+            FileHelper::uploadFile(FileHelper::getFileUrl('escritura').'/'.$this->folder.'/', $request->Foto, $fileName);
 
             $update->Foto = $fileName;
         }

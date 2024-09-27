@@ -215,7 +215,7 @@ $(document).ready(()=>{
                         preloader('off');
                         toastr.success(response.msg);
                     },
-                    error: function(xhr, status, error) {
+                    error: function(jqXHR) {
                         preloader('off');
                         let errorData = JSON.parse(jqXHR.responseText);            
                         checkError(jqXHR.status, errorData.msg);
@@ -423,10 +423,10 @@ $(document).ready(()=>{
 
     function checkRol(id) {
         $.get(checkRoles, { Id: id }, function(response) {
-
+           
             let arr = ['Efector', 'Informador', 'Evaluador', 'Combinado', 'Evaluador ART'];
             let buscados = response.map(item => item.nombre);
-            
+
             let resultados = buscados.some(e => arr.includes(e));
 
             if (resultados) {

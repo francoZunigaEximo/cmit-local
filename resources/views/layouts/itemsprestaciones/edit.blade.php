@@ -350,7 +350,7 @@
             </div>
             <div class="modal-body">
                 <form id="form-informador">
-                    @if($itemsprestacione->examenes->proveedor2->MultiE == 1 && $itemsprestacione->examenes->proveedor2->InfAdj == 1)
+                    @if($itemsprestacione->examenes->proveedor2->MultiE == 1 && $itemsprestacione->profesionales2->InfAdj == 1)
                     <div class="alert alert-info alert-border-left alert-dismissible fade show mb-2" role="alert">
                         Exámen con multi adjunto habilitado. Elija el reporte que quiere asociar.
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -395,8 +395,8 @@
     const updateItemExamen = "{{ route('updateItemExamen') }}";
     const volver = "{{ route('prestaciones.edit', ['prestacione' => $itemsprestacione->IdPrestacion]) }}";
     const fileUpload = "{{ route('uploadAdjunto') }}";
-    const descargaE = "{{ asset('storage/ArchivosEfectores') }}";
-    const descargaI = "{{ asset('storage/ArchivosInformadores') }}";
+    const descargaE = "@fileUrl('lectura')/AdjuntosEfector";
+    const descargaI = "@fileUrl('lectura')/AdjuntosInformador";
     const deleteIdAdjunto = "{{ route('deleteIdAdjunto') }}";
     const replaceIdAdjunto = "{{ route('replaceIdAdjunto') }}";
     const getBloqueoItemPrestacion = "{{ route('getBloqueoItemPrestacion') }}";

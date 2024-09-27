@@ -61,17 +61,7 @@ class NoticiasController extends Controller
             }
 
             $fileName = 'NOTICIA_.' . $request->Ruta->extension();
-            $path = FileHelper::getFileUrl('escritura')."/Noticias/".$fileName;
-            $local = $request->Ruta->getPathName();
-
-            if (config('filesystems.default') !== 'smb') {
-                $request->Ruta->move($path, $fileName);
-            }else{
-                
-                //$this->smbClienteService->createFile($path, $local);
-                //echo $this->smbClienteService->listFiles(FileHelper::getFileUrl('escritura'));
-                copy($local, $path);
-            }
+            FileHelper::uploadFile(FileHelper::getFileUrl('escritura')."/Noticias/",$request->Ruta,$fileName);
             
             $noticia->Ruta = $fileName;
         }

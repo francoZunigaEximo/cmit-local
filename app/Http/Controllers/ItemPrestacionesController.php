@@ -16,6 +16,7 @@ use App\Models\Examen;
 use App\Models\ExamenCuentaIt;
 use App\Models\ExamenPrecioProveedor;
 use App\Traits\CheckPermission;
+use App\Helpers\FileHelper;
 
 class ItemPrestacionesController extends Controller
 {
@@ -23,8 +24,8 @@ class ItemPrestacionesController extends Controller
 
     const RUTA = '/var/IMPORTARPDF/SALIDA/';
     const RUTAINF = '/var/IMPORTARPDF/SALIDAINFORMADOR/';
-    const RUTAINTERNAEFECTORES = 'public/ArchivosEfectores';
-    const RUTAINTERNAINFO = 'public/ArchivosInformadores';
+    const RUTAINTERNAEFECTORES = 'AdjuntosEfector';
+    const RUTAINTERNAINFO = 'AdjuntosInformador';
     
 
     public function edit(ItemPrestacion $itemsprestacione): mixed
@@ -47,12 +48,13 @@ class ItemPrestacionesController extends Controller
 
         $multiInformador = ItemPrestacion::join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
         ->join('proveedores', 'examenes.IdProveedor2', '=', 'proveedores.Id')
+        ->join('profesionales', 'itemsprestaciones.IdProfesional2', '=', 'profesionales.Id')
         ->select('itemsprestaciones.*', DB::raw('(SELECT COUNT(*) FROM archivosinformador WHERE archivosinformador.IdEntidad = itemsprestaciones.Id) as archivos_count'))
         ->where('itemsprestaciones.IdPrestacion', $itemsprestacione->IdPrestacion)
         ->whereIn('itemsprestaciones.IdProfesional2', [$itemsprestacione->IdProfesional2, 0])
         ->where('examenes.IdProveedor2', $itemsprestacione->examenes->IdProveedor)
         ->where('proveedores.MultiE', 1)
-        ->where('proveedores.InfAdj', 1)
+        ->where('profesionales.InfAdj', 1)
         ->whereNot('itemsprestaciones.Anulado', 1)
         ->orderBy('proveedores.Nombre', 'DESC')
         ->get();
@@ -353,7 +355,7 @@ class ItemPrestacionesController extends Controller
 
         if($request->hasFile('archivo')) {
             $fileName = $arr[$who][1].$arr[$who][0]. '_P'. $request->IdPrestacion .'.' . $request->archivo->extension();
-            $request->archivo->storeAs($arr[$who][2], $fileName);
+            FileHelper::uploadFile(FileHelper::getFileUrl('escritura').'/'.$arr[$who][2].'/', $request->archivo, $fileName);
         }
         
         if(in_array($who, ['efector', 'informador'])){
@@ -537,7 +539,7 @@ class ItemPrestacionesController extends Controller
 
                     $nuevoId = ArchivoEfector::max('Id') + 1;
                     $nuevoNombre = 'AEF'.$nuevoId.'_P'.$item->IdPrestacion.'.pdf';
-                    $nuevaRuta = storage_path('app/public/ArchivosInformadores/'.$nuevoNombre);
+                    $nuevaRuta = FileHelper::getFileUrl('lectura').'/'.SELF::RUTAINTERNAEFECTORES.'/'.$nuevoNombre;
 
                     $this->registarArchivo($nuevoId, $examen, "Cargado por automático", $nuevoNombre, $item->IdPrestacion, "efector");
 
@@ -578,7 +580,7 @@ class ItemPrestacionesController extends Controller
 
                                 $nuevoId = ArchivoInformador::max('Id') + 1;
                                 $nuevoNombre = 'AINF'.$nuevoId.'_P'.$prestacion->IdPrestacion.'.pdf';
-                                $nuevaRuta = storage_path('app/public/ArchivosInformador/'.$nuevoNombre);
+                                $nuevaRuta = FileHelper::getFileUrl('lectura').'/'.SELF::RUTAINTERNAINFO.'/'.$nuevoNombre;
 
                                 $actualizarItem = ItemPrestacion::where('IdPrestacion', $prestacion->IdPrestacion)->first();
                             
@@ -623,7 +625,7 @@ class ItemPrestacionesController extends Controller
 
                     $nuevoId = ArchivoEfector::max('Id') + 1;
                     $nuevoNombre = 'AINF'.$nuevoId.'_P'.$item->IdPrestacion.'.pdf';
-                    $nuevaRuta = storage_path('app/public/ArchivosInformadores/'.$nuevoNombre);
+                    $nuevaRuta = FileHelper::getFileUrl('lectura').'/'.SELF::RUTAINTERNAINFO.'/'.$nuevoNombre;
 
                     $this->registarArchivo($nuevoId, $examen, "Cargado por automático", $nuevoNombre, $item->IdPrestacion, "efector");
 
@@ -667,7 +669,7 @@ class ItemPrestacionesController extends Controller
 
                     $nuevoId = ArchivoInformador::max('Id') + 1;
                     $nuevoNombre = 'AINF'.$nuevoId.'_P'.$item->IdPrestacion.'.pdf';
-                    $dirStorage = storage_path('app/public/ArchivosInformadores/'.$nuevoNombre);
+                    $dirStorage = FileHelper::getFileUrl('lectura').'/'.SELF::RUTAINTERNAINFO.'/'.$nuevoNombre;
 
                     $cat = ItemPrestacion::with(['examenes.proveedor2:Id'])->where('Id', $request->Ids)->first();
     
@@ -739,7 +741,7 @@ class ItemPrestacionesController extends Controller
             }
             
             $filename = pathinfo($query->Ruta, PATHINFO_FILENAME). '.' . $request->archivo->extension();
-            $request->archivo->storeAs($arr[$request->who][1],  $filename);
+            FileHelper::uploadFile(FileHelper::getFileUrl('escritura').'/'.$arr[$request->who][1].'/', $request->archivo, $filename);
 
             $query->update(['Ruta' => $filename]);
 

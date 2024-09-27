@@ -52,7 +52,7 @@ $(document).ready(function(){
         $(obj[who][1]).each(function() {
             ids.push($(this).val());
         });
-        debugger;
+
         if(ids.length === 0 && multi == "success"){
             toastr.warning('No hay examenes seleccionados');
             return;
@@ -94,7 +94,7 @@ $(document).ready(function(){
                         location.reload();
                     }, 3000);
                 },
-                error: function (xhr) {
+                error: function (jqXHR) {
                     preloader('off');
                     let errorData = JSON.parse(jqXHR.responseText);            
                     checkError(jqXHR.status, errorData.msg);

@@ -86,16 +86,9 @@ trait ObserverPacientes
     public function addFoto($foto, $id, $tipo)
     {
         if ($foto && ($tipo === 'update' || $tipo === 'create')) {
-            $img = $foto;
-            $folderPath = FileHelper::getFileUrl('escritura').'/Fotos/';
-
-            $image_parts = explode(';base64,', $img);
-            $image_base64 = base64_decode($image_parts[1]);
             $fileName = 'P'.$id.'.jpg';
 
-            $filePath = $folderPath.$fileName;
-            file_put_contents($filePath, $image_base64);
-            chmod($filePath, 0755);
+            FileHelper::uploadFile(FileHelper::getFileUrl('escritura').'/Fotos/', $foto, $fileName);
 
             return $fileName;
 

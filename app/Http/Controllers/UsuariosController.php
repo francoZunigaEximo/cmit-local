@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\FileHelper;
 use App\Models\Profesional;
 use App\Models\Proveedor;
 use App\Models\Provincia;
@@ -19,6 +20,7 @@ use Illuminate\Support\Facades\Storage;
 class UsuariosController extends Controller
 {
     const password = "cmit1234";
+    const folder = "Prof";
     use CheckPermission;
 
     public function index()
@@ -347,14 +349,13 @@ class UsuariosController extends Controller
 
             if ($request->hasFile('Foto')) {
    
-                $fotoExistente = 'public/profesionales/' . $request->Foto;
+                $fotoExistente = FileHelper::getFileUrl('lectura').'/'.SELF::folder.'/'. $request->Foto;
                 if (Storage::exists($fotoExistente)) {
                     Storage::delete($fotoExistente);
                 }
     
                 $fileName = 'PROF' . $request->Id . '.' . $request->Foto->extension();
-                $request->Foto->storeAs('public/profesionales', $fileName);
-    
+                FileHelper::uploadFile(FileHelper::getFileUrl('escritura').'/'.SELF::folder.'/', $request->Foto, $fileName);
                 $query->Foto = $fileName;
             }
 

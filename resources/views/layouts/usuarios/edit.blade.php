@@ -221,7 +221,7 @@
                     <button type="button" class="previsualizar btn btn-soft-info waves-effect waves-light" data-bs-toggle="modal" data-bs-target="#z">Vista Previa Firma</button>
 
                     <div class="d-flex justify-content-center">
-                        <img id="vistaPrevia" src="{{ asset('storage/profesionales/'.$query->Foto ?? 'foto-default.png') }}" alt="Previsualización de imagen" style="{{ $query->Foto ? '' : 'display: none;' }} max-width: 150px; max-height: 150px;">
+                        <img id="vistaPrevia" src="@fileUrl('lectura')/Prof/{{$query->Foto ?? 'foto-default.png' }}?v={{ time() }}" alt="Previsualización de imagen" style="{{ $query->Foto ? '' : 'display: none;' }} max-width: 150px; max-height: 150px;">
                     </div>
                     
                     <input type="hidden" name="wImage" id="wImage" value="{{ $query->wImage ?? ''}}">
