@@ -11,7 +11,7 @@ class FileHelper
         // Configuración basada en el disco
         $config = [
             'smb' => [
-                'lectura' => '/media/nas/',
+                'lectura' => config('filesystems.link_smb'),
                 'escritura' => '/media/nas/',
             ],
             'local' => [
