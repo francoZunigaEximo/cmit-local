@@ -668,31 +668,31 @@ tr.shown td.details-control {
 }
 
 .input-group-sm>.btn, .input-group-sm>.form-control, .input-group-sm>.form-select, .input-group-sm>.input-group-text {
-    font-size: .65rem !important;
+    font-size: .7rem !important;
 }
 
 .form-control {
-    font-size: .6rem !important;
+    font-size: .7rem !important;
 }
 
 .form-control select{
-    font-size: .6rem !important;
+    font-size: .7rem !important;
 }
 
 .input-group-text {
-    font-size: .6rem !important;
+    font-size: .7rem !important;
 }
 
 .form-label {
-	font-size: .6rem !important;
+	font-size: .7rem !important;
 }
 
 .select2-container--default .select2-selection--single .select2-selection__rendered {
-    font-size: 0.6rem !important;
+    font-size: 0.7rem !important;
 }
 
 .select2-container--default .select2-results__option {
-    font-size: 0.6rem !important;
+    font-size: 0.7rem !important;
 }
 
 .select2-container--default .select2-selection--single {
