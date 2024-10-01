@@ -257,10 +257,10 @@
                                 <span class="input-group-text">Evaluación</span>
                                 <select class="form-select" id="Evaluacion" name="Evaluacion">
                                     <option value="{{ $prestacione->Evaluacion ? $prestacione->Evaluacion : ''}}" selected>{{ $prestacione->Evaluacion ? substr($prestacione->Evaluacion, 2) : 'Elija una opción...'}}</option>
-                                    <option value="1.APTO SANO">Apto Sano</option>
-                                    <option value="2.APTO CON PRE-EXISTENCIA(Sin interferencia en el desempeño laboral)">Apto con pre-existencia(Sin interferencia en el desempeño laboral)</option>
-                                    <option value="3.APTO CON PRE-EXISTENCIA(Solo condiciones especiales de trabajo)">Apto con pre-existencia (Solo condiciones especiales de trabajo)</option>
-                                    <option value="4.NO APTO">No apto</option>
+                                    <option value="1.APTO SANO">1.Apto Sano</option>
+                                    <option value="2.APTO CON PRE-EXISTENCIA(Sin interferencia en el desempeño laboral)">2.Apto con pre-existencia(Sin interferencia en el desempeño laboral)</option>
+                                    <option value="3.APTO CON PRE-EXISTENCIA(Solo condiciones especiales de trabajo)">3.Apto con pre-existencia (Solo condiciones especiales de trabajo)</option>
+                                    <option value="4.NO APTO">4.No apto</option>
                                 </select>
                             </div>
                         </div>
