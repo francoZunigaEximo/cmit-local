@@ -293,8 +293,8 @@
                     <div class="list-group">
                          @foreach($multiEfector as $examen)
                         <label class="list-group-item">
-                            <input class="form-check-input me-1" type="checkbox" id="Id_multiAdj_{{ $examen->Id }}" value="{{ $examen->Id}}" {{ $examen->archivos_count > 0 ? 'disabled' : '' }}> 
-                            {!! $examen->archivos_count > 0 ? '<s>'.$examen->examenes->Nombre.'</s>' : $examen->examenes->Nombre !!}
+                            <input class="form-check-input me-1" type="checkbox" id="Id_multiAdj_{{ $examen->Id }}" value="{{ $examen->Id}}" {{ $examen->archivos_count > 0 ? 'disabled' : 'checked' }}> 
+                            {!! $examen->archivos_count > 0 ? $examen->examenes->Nombre . ' <i title="Con archivo adjunto" class="ri-attachment-line verde"></i>' : $examen->examenes->Nombre  !!}
                         </label>
                         @endforeach
                     </div>
@@ -359,8 +359,8 @@
                     <div class="list-group">
                          @foreach($multiInformador as $informe)
                         <label class="list-group-item">
-                            <input class="form-check-input me-1" type="checkbox" id="Id_multiAdjInf_{{ $informe->Id }}" value="{{ $informe->Id}}" {{ $informe->archivos_count > 0 ? 'disabled' : '' }}> 
-                            {!! $informe->archivos_count > 0 ? '<s>'.$informe->examenes->Nombre.'</s> ('.$informe->examenes->proveedor2->Nombre.')' : $informe->examenes->Nombre .' ('.$informe->examenes->proveedor2->Nombre.')' !!}
+                            <input class="form-check-input me-1" type="checkbox" id="Id_multiAdjInf_{{ $informe->Id }}" value="{{ $informe->Id}}" {{ $informe->archivos_count > 0 ? 'disabled' : 'checked' }}> 
+                            {!! $informe->archivos_count > 0 ? $informe->examenes->Nombre.' ('.$informe->examenes->proveedor2->Nombre.') <i title="Con archivo adjunto" class="ri-attachment-line verde"></i>' : $informe->examenes->Nombre .' ('.$informe->examenes->proveedor2->Nombre.')' !!}
                         </label>
                         @endforeach
                     </div>

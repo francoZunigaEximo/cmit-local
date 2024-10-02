@@ -540,131 +540,122 @@ $(document).ready(()=>{
         });
     }
 
-    function cargarExamen(){
+    async function cargarExamen() {
         preloader('on');
-        $.ajax({
-
-            url: checkItemExamen, 
-            method: 'GET',
-            data: { 
-                Id: ID,
-            },
-            success: function(result) {
-                preloader('off');
-                let estado = result.respuesta;
-                let examenes = result.examenes;
-            
-                if(estado === true){
-
-                    $.ajax({
-                        
-                        url: getItemExamenes,
-                        type: 'post',
-                        data: {
-                            _token: TOKEN,
-                            IdExamen: examenes,
-                            Id: ID,
-                            tipo: 'listado'
-                        },
-                        success: function(response){
-                            
-                            preloader('off');
-                            let registros = response.examenes;
-                            checkExamenes(ID);
-
-                            registros.forEach(function(examen) {
-                                let examenId = examen.IdExamen;
-
-                                let url = editUrl.replace('__examen__', examen.IdItem);
-
-                                let fila = `
-                                        <tr ${examen.Anulado === 1 ? 'class="filaBaja"' : ''}>
-                                            <td><input type="checkbox" name="Id_examenes" value="${examen.IdItem}" checked data-adjunto="${examen.ExaAdj}" data-archivo="${examen.archivos}"></td>
-                                            <td data-idexam="${examenId}" id="${examen.IdItem}" style="text-align:left">${examen.Nombre} ${examen.Anulado === 1 ? '<span class="custom-badge rojo">Bloqueado</span>' : ''}</td>
-                                            <td>
-                                                <span id="incompleto" class="${(examen.Incompleto === 0 ||  examen.Incompleto === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
-                                                    <i class="ri-flag-2-line ${examen.Anulado === 0 ? 'incompleto' : ''}"></i>
-                                                </span>
-                                            </td>  <!-- este botón marca o desmarca el campo incompleto - debe ser rojo si es que el valor del campo es 1 -->
-                                            <td>
-                                                <span id="ausente" class="${(examen.Ausente === 0 || examen.Ausente === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
-                                                    <i class=" ri-flag-2-line ${examen.Anulado === 0 ? 'ausente' : '' }"></i>
-                                                </span>
-                                            </td><!-- este botón marca o desmarca el campo ausente - debe ser rojo si es que el valor del campo es 1 -->
-                                            <td>
-                                                <span id="forma" class="${(examen.Forma === 0 || examen.Forma === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
-                                                    <i class=" ri-flag-2-line ${examen.Anulado === 0 ? 'forma' : ''}"></i>
-                                                </span>
-                                            </td><!-- este botón marca o desmarca el campo fomra - debe ser rojo si es que el valor del campo es 1 -->
-                                            <td>
-                                                <span id="sinesc" class="${(examen.SinEsc === 0 || examen.SinEsc === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
-                                                    <i class=" ri-flag-2-line ${examen.Anulado === 0 ? 'sinesc' : '' }"></i>
-                                                </span>
-                                            </td><!-- este botón marca o desmarca el campo sinesc - debe ser rojo si es que el valor del campo es 1 -->
-                                            <td>
-                                                <span id="devol" id="${examen.IdItem}" class="${(examen.Devol === 0 || examen.Devol === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
-                                                    <i class=" ri-flag-2-line ${examen.Anulado === 0 ? 'devol' : '' }"></i>
-                                                </span>
-                                            </td><!-- este botón marca o desmarca el campo devolucion - debe ser rojo si es que el valor del campo es 1 -->
-        
-                                            <td class="date text-center" title="${examen.ApellidoE} ${examen.NombreE}">${examen.ApellidoE}
-                                                <span class="badge badge-soft-${([0,1,2].includes(examen.CAdj) ? 'danger': ([3,4,5].includes(examen.CAdj) ? 'success' : ''))}">
-                                                    ${([0,1,2].includes(examen.CAdj) ? 'Abierto': ([3,4,5].includes(examen.CAdj) ? 'Cerrado' : ''))}
-                                                </span>
-                                                ${examen.ExaAdj === 1 ? `<i class="ri-attachment-line ${examen.archivos > 0 ? 'verde' : 'gris'}"></i>`: ``}    
-                                            </td>
-                                            <td class="date text-center" title="${examen.Informe === 0 ? examen.ApellidoI : ''} ${examen.Informe === 1 ? examen.NombreI : ''}">${examen.Informe === 1 ? examen.ApellidoI : ''}
-                                                <span class="badge badge-soft-${(examen.CInfo === 0 ? 'dark' :(examen.CInfo === 3 ? 'success' : ([0,1,2].includes(examen.CInfo)) ? 'danger' : ''))}">${(examen.CInfo === 0 ? 'Sin informador' : (examen.CInfo === 3 ? 'Cerrado' : (examen.CInfo == 2 ? 'Borrador' : ([0,1].includes(examen.CInfo) ? 'Pendiente': ''))))}</span>
-                                                ${examen.CInfo !== 0 ? `<i class="ri-attachment-line ${examen.archivosI > 0 ? 'verde' : 'gris'}"></i>`: ``}   
-                                            </td>
-                                    <!-- muestra el apellido + nombre del informador y debajo el estado (campo CInfo - Cerrado = 3, Borrador = 2 o pendiente = 0 y 1)   -->
-                                    <td class="phone"><span class="${examen.Facturado === 1 ? 'badge badge-soft-success' : 'custom-badge rojo'}"><i class="ri-check-line"></i></span></td> <!-- > campo Facturado gris si el campo tiene valor 0 verde si el campo tiene valor 1</!-->
-                                    <td>
-                                        <div class="d-flex gap-2">
-                                            <div class="edit">
-                                                <a href="${url}" id="editLink">
-                                                    <button type="button" class="btn btn-sm iconGeneral" title="Ver"><i class="ri-search-eye-line"></i></button>
-                                                </a>
-                                            </div>
-                                            ${examen.Anulado === 0 ? `
-                                                <div class="bloquear">
-                                                    <button data-bloquear="${examen.IdItem}" class="btn btn-sm iconGeneral bloquearExamen" title="Baja">
-                                                        <i class="ri-forbid-2-line"></i>
-                                                    </button>
-                                                </div>
-                                                ` : ''}
-                                                <div class="remove">
-                                                    <button data-delete="${examen.IdItem}"  class="btn btn-sm iconGeneral deleteExamen" title="Eliminar">
-                                                        <i class="ri-delete-bin-2-line"></i>
-                                                    </button>
-                                                </div>  
-                                            
+    
+        try {
+            const result = await $.ajax({
+                url: checkItemExamen,
+                method: 'GET',
+                data: { Id: ID },
+            });
+    
+            preloader('off');
+            let estado = result.respuesta;
+            let examenes = result.examenes;
+    
+            if (estado) {
+                const response = await $.ajax({
+                    url: getItemExamenes,
+                    type: 'POST',
+                    data: {
+                        _token: TOKEN,
+                        IdExamen: examenes,
+                        Id: ID,
+                        tipo: 'listado'
+                    },
+                });
+    
+                let registros = response.examenes;
+                checkExamenes(ID);
+    
+                let filas = '';
+                for (let i = 0; i < registros.length; i++) {
+                    const examen = registros[i];
+                    let examenId = examen.IdExamen;
+                    let url = editUrl.replace('__examen__', examen.IdItem);
+    
+                    filas += `
+                        <tr ${examen.Anulado === 1 ? 'class="filaBaja"' : ''}>
+                            <td><input type="checkbox" name="Id_examenes" value="${examen.IdItem}" checked data-adjunto="${examen.ExaAdj}" data-archivo="${examen.archivos}"></td>
+                            <td data-idexam="${examenId}" id="${examen.IdItem}" style="text-align:left">${examen.Nombre} ${examen.Anulado === 1 ? '<span class="custom-badge rojo">Bloqueado</span>' : ''}</td>
+                            <td>
+                                <span id="incompleto" class="${(examen.Incompleto === 0 || examen.Incompleto === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
+                                    <i class="ri-flag-2-line ${examen.Anulado === 0 ? 'incompleto' : ''}"></i>
+                                </span>
+                            </td>
+                            <td>
+                                <span id="ausente" class="${(examen.Ausente === 0 || examen.Ausente === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
+                                    <i class="ri-flag-2-line ${examen.Anulado === 0 ? 'ausente' : ''}"></i>
+                                </span>
+                            </td>
+                            <td>
+                                <span id="forma" class="${(examen.Forma === 0 || examen.Forma === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
+                                    <i class="ri-flag-2-line ${examen.Anulado === 0 ? 'forma' : ''}"></i>
+                                </span>
+                            </td>
+                            <td>
+                                <span id="sinesc" class="${(examen.SinEsc === 0 || examen.SinEsc === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
+                                    <i class="ri-flag-2-line ${examen.Anulado === 0 ? 'sinesc' : ''}"></i>
+                                </span>
+                            </td>
+                            <td>
+                                <span id="devol" class="${(examen.Devol === 0 || examen.Devol === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
+                                    <i class="ri-flag-2-line ${examen.Anulado === 0 ? 'devol' : ''}"></i>
+                                </span>
+                            </td>
+                            <td class="date text-center" title="${examen.ApellidoE} ${examen.NombreE}">${examen.ApellidoE}
+                                <span class="badge badge-soft-${([0,1,2].includes(examen.CAdj) ? 'danger': ([3,4,5].includes(examen.CAdj) ? 'success' : ''))}">
+                                    ${([0,1,2].includes(examen.CAdj) ? 'Abierto': ([3,4,5].includes(examen.CAdj) ? 'Cerrado' : ''))}
+                                </span>
+                                ${examen.ExaAdj === 1 ? `<i class="ri-attachment-line ${examen.archivos > 0 ? 'verde' : 'gris'}"></i>`: ``}    
+                            </td>
+                            <td class="date text-center" title="${examen.Informe === 0 ? examen.ApellidoI : ''} ${examen.Informe === 1 ? examen.NombreI : ''}">${examen.Informe === 1 ? examen.ApellidoI : ''}
+                                <span class="badge badge-soft-${(examen.CInfo === 0 ? 'dark' :(examen.CInfo === 3 ? 'success' : ([0,1,2].includes(examen.CInfo)) ? 'danger' : ''))}">${(examen.CInfo === 0 ? 'Sin informador' : (examen.CInfo === 3 ? 'Cerrado' : (examen.CInfo == 2 ? 'Borrador' : ([0,1].includes(examen.CInfo) ? 'Pendiente': ''))))}</span>
+                                ${examen.CInfo !== 0 ? `<i class="ri-attachment-line ${examen.archivosI > 0 ? 'verde' : 'gris'}"></i>`: ``}   
+                            </td>
+                            <td class="phone"><span class="${examen.Facturado === 1 ? 'badge badge-soft-success' : 'custom-badge rojo'}"><i class="ri-check-line"></i></span></td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    <div class="edit">
+                                        <a href="${url}" id="editLink">
+                                            <button type="button" class="btn btn-sm iconGeneral" title="Ver"><i class="ri-search-eye-line"></i></button>
+                                        </a>
+                                    </div>
+                                    ${examen.Anulado === 0 ? `
+                                        <div class="bloquear">
+                                            <button data-bloquear="${examen.IdItem}" class="btn btn-sm iconGeneral bloquearExamen" title="Baja">
+                                                <i class="ri-forbid-2-line"></i>
+                                            </button>
                                         </div>
-                                    </td>
-                                    </tr>`;
-            
-                                $('#listaExamenes').append(fila);
-                            });
-
-                            $("#listado").fancyTable({
-                                pagination: true,
-                                perPage: 50,
-                                searchable: false,
-                                globalSearch: false,
-                                sortable: false, 
-                            });
-                        }
-                    });
+                                    ` : ''}
+                                    <div class="remove">
+                                        <button data-delete="${examen.IdItem}" class="btn btn-sm iconGeneral deleteExamen" title="Eliminar">
+                                            <i class="ri-delete-bin-2-line"></i>
+                                        </button>
+                                    </div>  
+                                </div>
+                            </td>
+                        </tr>`;
                 }
-            },
-            error: function(jqXHR){
-                preloader('off');
-                let errorData = JSON.parse(jqXHR.responseText);            
-                checkError(jqXHR.status, errorData.msg);
-                return;  
+    
+                $('#listaExamenes').append(filas);
+    
+                $("#listado").fancyTable({
+                    pagination: true,
+                    perPage: 50,
+                    searchable: false,
+                    globalSearch: false,
+                    sortable: false, 
+                });
             }
-        });
+        } catch (jqXHR) {
+            preloader('off');
+            let errorData = JSON.parse(jqXHR.responseText);            
+            checkError(jqXHR.status, errorData.msg);
+        }
     }
+    
 
     async function checkExamenes(id) {
 
