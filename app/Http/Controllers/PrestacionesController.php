@@ -31,23 +31,17 @@ class PrestacionesController extends Controller
 
     use ObserverPrestaciones, ObserverFacturasVenta, CheckPermission;
 
-    public function index(): mixed
+    public function index(Request $request): mixed
     {
         if (!$this->hasPermission("prestaciones_show")) {
             abort(403);
         }
 
-        return view('layouts.prestaciones.index');
-    }
-
-
-    public function search(Request $request): mixed
-    {
         if ($request->ajax()) {
             $query = $this->buildQuery($request);
             return Datatables::of($query)->make(true);
         }
-    
+
         return view('layouts.prestaciones.index');
     }
     
@@ -85,8 +79,8 @@ class PrestacionesController extends Controller
                 'prestaciones.Entregado as Entregado'
             )
             ->where('prestaciones.Estado', 1)
-            ->groupBy('prestaciones.Id')
-            ->orderBy('prestaciones.Fecha', 'ASC');
+            ->groupBy('prestaciones.Id');
+            //->orderBy('prestaciones.Fecha', 'ASC');
     
         if (!empty($request->nroprestacion)) {
             $query->where('prestaciones.Id', '=', $request->nroprestacion);

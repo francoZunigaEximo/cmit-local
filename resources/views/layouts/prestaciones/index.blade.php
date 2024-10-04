@@ -258,15 +258,15 @@
 const getPacientes = "{{ route('getPacientes') }}";
 const getComentarioPres = "{{ route('getComentarioPres') }}";
 const setComentarioPres = "{{ route('setComentarioPres') }}";
-const searchPrestaciones = "{{ route('searchPrestaciones') }}";
+const searchPrestaciones = "{{ route('prestaciones.index') }}";
 
 //Extras
 const TOKEN = "{{ csrf_token() }}";
 const GOPACIENTES = "{{ route('pacientes.edit', ['paciente' => '__paciente__']) }}";
 const downPrestaActiva = "{{ route('downPrestaActiva') }}";
 const blockPrestacion = "{{ route('blockPrestacion') }}";
-const ROUTE = "{{ route('prestaciones.index') }}";
-const SEARCH = "{{ route('searchPrestaciones') }}";
+const SEARCH = "{{ route('prestaciones.index') }}";
+//const SEARCH = "{{ route('searchPrestaciones') }}";
 const porcentajeExamen = "{{ route('porcentajeExamen') }}";
 const getClientes = "{{ route('getClientes') }}";
 

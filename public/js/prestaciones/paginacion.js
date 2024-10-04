@@ -44,7 +44,7 @@ $(document).ready(()=>{
         new DataTable("#listaPrestaciones", {
             searching: false,
             ordering: true,
-            order: [[0, 'desc'], [1, 'desc'], [2, 'desc'], [3, 'desc'], [4, 'desc'], [5, 'desc'], [6, 'desc'], [7, 'desc'], [8, 'desc'], [9, 'desc'], [10, 'desc'], [11, 'desc'], [12, 'desc'], [13, 'desc'], [14, 'desc'], [15, 'desc'], [16, 'desc']],
+            order: [[0, 'asc']],
             processing: true,
             lengthChange: false,
             pageLength: 150,
@@ -167,15 +167,27 @@ $(document).ready(()=>{
                     targets: 8,
                     render: function(data){
 
-                        return (data.Cerrado === 1 && data.Finalizado === 0 && data.Entregado === 0)
-                                ? "Cerrado"
-                                : (data.Cerrado === 1 && data.Finalizado === 1 && data.Entregado === 0)
-                                    ? "Finalizado"
-                                    : (data.Cerrado === 1 && data.Finalizado === 1 && data.Entregado === 1)
-                                        ? "Entregado"
-                                        : (data.Cerrado === 0 && data.Finalizado === 0 && data.Entregado === 0)
-                                            ? "Abierto"
-                                            : "-";
+                        let resultado = '';
+
+                        switch(true) {
+                            case (data.Cerrado === 1 && data.Finalizado === 0 && data.Entregado === 0):
+                                resultado = "Cerrado";
+                                break;
+                            case (data.Cerrado === 1 && data.Finalizado === 1 && data.Entregado === 0):
+                                resultado = "Finalizado";
+                                break;
+                            case (data.Cerrado === 1 && data.Finalizado === 1 && data.Entregado === 1):
+                                resultado = "Entregado";
+                                break;
+                            case (data.Cerrado === 0 && data.Finalizado === 0 && data.Entregado === 0):
+                                resultado = "Abierta";
+                                break;
+                            default:
+                                resultado = "-";
+                                break;
+                        }
+
+                        return resultado;
                     }
                 },
                 {
@@ -280,7 +292,54 @@ $(document).ready(()=>{
                     }
                 },
                 info: "Mostrando _START_ a _END_ de _TOTAL_ de prestaciones",
-            }
+            },
+            stateLoadCallback: function(settings, callback) {
+                $.ajax({
+                    url: SEARCH,
+                    dataType: 'json',
+                    success: function(json) {
+                        // Cargar valores guardados en los campos
+                        $('#fechaDesde').val(json.fechaDesde || '');
+                        $('#fechaHasta').val(json.fechaHasta || '');
+                        $('#nroprestacion').val(json.nroprestacion || '');
+                        $('#pacienteSearch').val(json.pacienteSearch || '');
+                        $('#empresaSearch').val(json.empresaSearch || '');
+                        $('#artSearch').val(json.artSearch || '');
+                        $('#empresaSelect2').val(json.empresaSelect2 || '');
+                        $('#pacienteSelect2').val(json.pacienteSelect2 || '');
+                        $('#artSelect2').val(json.artSelect2 || '');
+                        $('#TipoPrestacion').val(json.TipoPrestacion || '');
+                        $('#Estado').val(json.Estado || '');
+    
+                        // Pasar el objeto json a callback
+                        callback(json);
+                    }
+                });
+            },
+            stateSaveCallback: function(settings, data) {
+                $.ajax({
+                    url: SEARCH,
+                    type: 'POST',
+                    data: {
+                        fechaDesde: $('#fechaDesde').val(),
+                        fechaHasta: $('#fechaHasta').val(),
+                        nroprestacion: $('#nroprestacion').val(),
+                        pacienteSearch: $('#pacienteSearch').val(),
+                        empresaSearch: $('#empresaSearch').val(),
+                        artSearch: $('#artSearch').val(),
+                        empresaSelect2: $('#empresaSelect2').val(),
+                        pacienteSelect2: $('#pacienteSelect2').val(),
+                        artSelect2: $('#artSelect2').val(),
+                        tipoPrestacion: $('#TipoPrestacion').val(),
+                        estado: $('#Estado').val()
+                    },
+                    dataType: "json",
+                    success: function(response) {},
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.error("Error: ", textStatus, errorThrown);
+                    }
+                });
+            },
         });
 
         $('#checkAll').on('change', function() {
@@ -305,17 +364,23 @@ function indicador(data) {
         total = data.Total || 1,
         calculo = parseFloat(((cerradoAdjunto / total) * 100).toFixed(2));
 
-        return (calculo === 100) 
-                ? 'fondo-blanco'
-                : (data.Anulado === 0 && calculo >= 86 && calculo <= 99)
-                    ? 'fondo-verde'
-                    : (data.Anulado === 0 && calculo >= 51 && calculo <= 85)
-                        ? 'fondo-amarillo'
-                        : (data.Anulado === 0 && calculo >= 1 && calculo <= 50)
-                            ? 'fondo-naranja'
-                            : (data.Anulado === 0)
-                                ? 'fondo-rojo'
-                                : (data.Anulado === 1)
-                                    ? 'rojo negrita'
-                                    : '';
+        if (calculo === 100) {
+            return 'fondo-blanco';
+        }
+          
+        if (data.Anulado === 1) {
+            return 'rojo negrita';
+        }
+
+        switch(true) {
+            case (data.Anulado === 0 && calculo >= 86 && calculo <= 99):
+                return 'fondo-verde';
+            case (data.Anulado === 0 && calculo >= 51 && calculo <= 85):
+                return 'fondo-amarillo';
+            case (data.Anulado === 0 && calculo >= 1 && calculo <= 50):
+                return 'fondo-naranja';
+            case (data.Anulado === 0):
+                return 'fondo-rojo';
+        }
+
 }
