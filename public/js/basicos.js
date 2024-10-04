@@ -226,3 +226,10 @@ function fechaCompleta(fecha) {
 
     return formatoCompleto;
 }
+
+function getDias(fecha){
+
+    let fechaActual = new Date(), fechaLimiteAdmision = new Date(fecha), diff = fechaLimiteAdmision.getTime() - fechaActual.getTime();
+   
+    return (Math.round(diff/(1000*60*60*24)));
+}

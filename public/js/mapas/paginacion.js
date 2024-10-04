@@ -1,11 +1,14 @@
 $(document).ready(()=>{
 
         //Botón de busqueda de Mapas
-        $(document).on('click', '#buscar', function() {
+        $(document).on('click', '#buscar', function(e) {
+            e.preventDefault();
 
-            $('#listaMapas').DataTable().clear().destroy();
+            let table = $('#listaMapas');
+
+            table.DataTable().clear().destroy();
     
-            new DataTable("#listaMapas", {
+            new DataTable(table, {
 
                 searching: false,
                 ordering: false,
@@ -15,6 +18,7 @@ $(document).ready(()=>{
                 deferRender: true,
                 responsive: false,
                 serverSide: true,
+                stateSave: true,
                 ajax: {
                     url: SEARCH,
                     data: function(d){
@@ -163,50 +167,68 @@ $(document).ready(()=>{
                     let totalDias = getDias(data.FechaE);
                     let resultado;
 
-                    if (totalDias >= 11 && totalDias <= 15 && data.eEnviado === 0) {
-                        resultado = $(row).addClass('fondo-amarillo');
-                    } else if (totalDias >= 1 && totalDias <= 10 && data.eEnviado === 0) {
-                        resultado = $(row).addClass('fondo-naranja');
-                    } else if (totalDias <= 0 && data.eEnviado === 0) {
-                        resultado = $(row).addClass('fondo-rojo');
-                    } else if (data.contadorPrestaciones > 0 && data.contadorPrestaciones === data.cdorEEnviados) {
-                        resultado = $(row).addClass('fondo-verde');
+                    switch(true) {
+                        case (totalDias >= 11 && totalDias <= 15 && data.eEnviado === 0):
+                            resultado = $(row).addClass('fondo-amarillo');
+                            break;
+                        case (totalDias >= 1 && totalDias <= 10 && data.eEnviado === 0):
+                            resultado = $(row).addClass('fondo-naranja');
+                            break;
+                        case (totalDias <= 0 && data.eEnviado === 0):
+                            resultado = $(row).addClass('fondo-rojo');
+                            break;
+                        case (data.contadorPrestaciones > 0 && data.contadorPrestaciones === data.cdorEEnviados):
+                            resultado = $(row).addClass('fondo-verde');
+                            break;
                     }
                 
                     return resultado;
+                },
+                stateLoadCallback: function(settings, callback) {
+                    $.ajax({
+                        url: SEARCH,
+                        dataType: 'json',
+                        success: function(json){
+                            $('#Nro').val(json.Nro || '');
+                            $('#ART').val(json.Art || '');
+                            $('#Empresa').val(json.Empresa || '');
+                            $('#Estado').val(json.Estado || '');
+                            $('#corteDesde').val(json.corteDesde || '');
+                            $('#corteHasta').val(json.corteHasta || '');
+                            $('#entregaDesde').val(json.entregaDesde || '');
+                            $('#entregaHasta').val(json.entregaHasta || '');
+                            $('#Vencimiento').val(json.Vencimiento || '');
+                            $('#Ver').val(json.Ver || '');
+
+                            callback(json);
+                        }
+                    });
+                },
+                stateSaveCallback: function(settings, data){
+                    $.ajax({
+                        url: SEARCH,
+                        type: 'POST',
+                        data: {
+                            Nro: $('#Nro').val(),
+                            Art: $('#ART').val(),
+                            Empresa: $('#Empresa').val(),
+                            Estado: $('#Estado').val(),
+                            corteDesde: $('#corteDesde').val(),
+                            corteHasta: $('#corteHasta').val(),
+                            entregaDesde: $('#entregaDesde').val(),
+                            entregaHasta: $('#entregaHasta').val(),
+                            Vencimiento: $('#Vencimiento').val(),
+                            Ver: $('#Ver').val()
+                        },
+                        dataType: 'json',
+                        success: function(response){},
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            console.error('Error: ', textStatus, errorThrown);
+                        }
+                    });
                 }
             });
     
-        });
-
-        function getDias(fecha){
-
-            let fechaActual = new Date();
-            let fechaLimiteAdmision = new Date(fecha);
-            let diff = fechaLimiteAdmision.getTime() - fechaActual.getTime();
-           
-            return (Math.round(diff/(1000*60*60*24)));
-        }
+        });    
         
-        
-        function fechaNow(fechaAformatear, divider, format) {
-            let dia, mes, anio; 
-        
-            if (fechaAformatear === null) {
-                let fechaHoy = new Date();
-        
-                dia = fechaHoy.getDate().toString().padStart(2, '0');
-                mes = (fechaHoy.getMonth() + 1).toString().padStart(2, '0');
-                anio = fechaHoy.getFullYear();
-            } else {
-                let nuevaFecha = fechaAformatear.split("-"); 
-                dia = nuevaFecha[0]; 
-                mes = nuevaFecha[1]; 
-                anio = nuevaFecha[2];
-            }
-        
-            return (format === '0') ? `${dia}${divider}${mes}${divider}${anio}` : `${anio}${divider}${mes}${divider}${dia}`;
-        }
-
-
 });
