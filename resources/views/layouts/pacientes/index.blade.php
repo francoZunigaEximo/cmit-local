@@ -46,11 +46,9 @@
                             </div>
                         </div>
                         <div class="col-sm-4">
-                            <div class="" style="width: 100%;">
-                                <div class="search-box ms-2">
-                                    <input type="text" id="buscar" name="buscar" class="form-control search" placeholder="Buscar por Nombre, Apellido o Documento">
-                                    <p id="search-instructions" style="font-size: 10px; color: #888;">ENTER para buscar | ESC para limpiar la busqueda</p>
-                                </div>
+                            <div class="d-flex" style="width: 100%;">
+                                <input type="text" id="buscar" name="buscar" class="form-control me-2" placeholder="Buscar por Nombre, Apellido o Documento">
+                                <button class="btn botonGeneral btnBuscar"><i class="ri-zoom-in-line"></i>&nbsp;Buscar</button>
                             </div>
                         </div>
                     </div>
@@ -90,7 +88,6 @@ const getNombre = "{{ route('getNombre') }}";
 const TOKEN = "{{ csrf_token() }}";
 const GOINDEX = "{{ route('pacientes.index') }}";
 const ROUTE = "{{ route('pacientes.index') }}";
-const SEARCH = "{{ route('search') }}";
 
 </script>
 

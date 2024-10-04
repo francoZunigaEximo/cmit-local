@@ -298,7 +298,7 @@ $(document).ready(()=>{
                     url: SEARCH,
                     dataType: 'json',
                     success: function(json) {
-                        // Cargar valores guardados en los campos
+
                         $('#fechaDesde').val(json.fechaDesde || '');
                         $('#fechaHasta').val(json.fechaHasta || '');
                         $('#nroprestacion').val(json.nroprestacion || '');

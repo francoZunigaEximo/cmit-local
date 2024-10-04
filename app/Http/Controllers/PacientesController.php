@@ -16,7 +16,6 @@ use Yajra\DataTables\DataTables;
 use App\Traits\CheckPermission;
 use App\Traits\ReporteExcel;
 
-use Illuminate\Support\Facades\Storage;
 
 class PacientesController extends Controller
 {
@@ -25,19 +24,11 @@ class PacientesController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): mixed
+    public function index(Request $request): mixed
     {
         if(!$this->hasPermission("pacientes_show")){abort(403);}
-        return view('layouts.pacientes.index');
-    }
 
-    public function search(Request $request)
-    {
-        if(!$this->hasPermission("pacientes_show")) {
-            return response()->json(['msg' => 'No tiene permisos'], 403);
-        }
-
-        $buscar = trim($request->buscar);
+        $buscar = $request->buscar;
 
         if ($request->ajax()) {
 
@@ -68,6 +59,7 @@ class PacientesController extends Controller
                 
             return Datatables::of($query)->make(true);
         }
+
         return view('layouts.pacientes.index');
     }
 

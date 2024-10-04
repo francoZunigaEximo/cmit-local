@@ -1,11 +1,4 @@
 $(document).ready(function(){
-    
-    $(document).on('keydown', function(event) {
-        if (event.keyCode === 27) {
-
-            window.location.href = GOINDEX;
-        }
-    });
 
     $('#btnBajaMultiple').click(function(e) {
         e.preventDefault();

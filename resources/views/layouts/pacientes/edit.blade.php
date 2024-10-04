@@ -136,7 +136,7 @@
                 </div>
 
                 <div class="col-12 box-information mt-2 text-center">
-                    <a  href="{{ route('pacientes.index') }}" class="btn btn-sm botonGeneral">Ir listado</a>
+                    <a onclick="window.history.back();" class="btn btn-sm botonGeneral">Ir listado</a>
                     <button type="submit" class="btn btn-sm botonGeneral">Actualizar</button>
                 </div>
             </div> 
