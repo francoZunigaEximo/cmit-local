@@ -112,10 +112,11 @@
             </div>
 
             <div class="row">
-                <div class="col-md-2">
+                <div class="col-md-3">
                     <div class="input-group input-group-sm mb-2">
                         <span class="input-group-text">Adjunto</span>
                         <input type="text" style="{{ ($itemsprestacione->examenes->Adjunto === 1 && $adjuntoEfector === 0 ? 'color: red' : ($itemsprestacione->examenes->Adjunto === 1 && $adjuntoEfector === 1 ? 'color: green' : '')) }}" class="form-control" id="Estado" name="Estado" value="{{ ($itemsprestacione->examenes->Adjunto === 0 ? 'No lleva Adjuntos' : ($itemsprestacione->examenes->Adjunto === 1 && $adjuntoEfector === 0 ? 'Pendiente' : ($itemsprestacione->examenes->Adjunto === 1 && $adjuntoEfector === 1 ? 'Adjuntado' : '-'))) }}" @readonly(true)>
+                        <button type="button" class="btn botonGeneral adjuntarEfector" data-bs-toggle="modal" data-bs-target="#modalEfector">Adjuntar archivo</button>
                     </div>
                 </div>
             </div>
@@ -129,17 +130,12 @@
             <div class="row">
                 <div class="col-md-4">
                     <div class="input-group input-group-sm mb-2">
+                        @if($itemsprestacione->CInfo !== 0)
                         <span class="input-group-text">Informador</span>
-                            @if($itemsprestacione->CInfo === 0)
-
-                                <input type="text" class="form-control" value="Sin informador requerido" @disabled(true)>
-
-                            @else
-                                <select name="informadores" id="informadores" class="form-control">
-                                    <option value="{{ $itemsprestacione->profesionales2->Id ?? '' }}" selected>{{ $itemsprestacione->profesionales2->Apellido ?? '' }} {{ $itemsprestacione->profesionales2->Nombre ?? '' }}</option>
-                                </select>
-                            @endif
-                        
+                            <select name="informadores" id="informadores" class="form-control">
+                                <option value="{{ $itemsprestacione->profesionales2->Id ?? '' }}" selected>{{ $itemsprestacione->profesionales2->Apellido ?? '' }} {{ $itemsprestacione->profesionales2->Nombre ?? '' }}</option>
+                            </select>
+                        @endif
                     </div>
                 </div>
 
@@ -176,11 +172,12 @@
             </div>
             @if($itemsprestacione->CInfo !== 0)
             <div class="row">
-                <div class="col-md-2">
+                <div class="col-md-3">
                     <div class="input-group input-group-sm mb-2">
 
                         <span class="input-group-text">Adjunto</span>
                         <input type="text" style="{{ ($itemsprestacione->profesionales2->InfAdj === 1 && $adjuntoInformador === 0 ? 'color: red' : ($itemsprestacione->profesionales2->InfAdj === 1 && $adjuntoInformador === 1 ? 'color: green' : '')) }}" class="form-control" id="EstadoInf" name="EstadoInf" value="{{ ($itemsprestacione->profesionales2->InfAdj === 0 ? 'No lleva Adjuntos' : ($itemsprestacione->profesionales2->InfAdj === 1 && $adjuntoInformador === 0 ? 'Pendiente' : ($itemsprestacione->profesionales2->InfAdj === 1 && $adjuntoInformador === 1 ? 'Adjuntado' : '-'))) }}" @readonly(true)>
+                        <button type="button" class="btn botonGeneral adjuntarInformador"  data-bs-toggle="modal" data-bs-target="#modalInformador">Adjuntar archivo</button>
                     </div>
                 </div>
             </div>
@@ -248,7 +245,7 @@
                             <th>Descripción</th>
                             <th>Adjuntar</th>
                             <th>Multi</th>
-                            <th>Acciones <button type="button" class="btn botonGeneral adjuntarEfector" data-bs-toggle="modal" data-bs-target="#modalEfector">Adjuntar archivo</button></th>
+                            <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody id="listaefectores" class="list form-check-all">
@@ -261,7 +258,7 @@
                         <thead class="table-light">
                             <th class="sort" title="Adjunto Informador">Adjunto Informador</th>
                             <th>Descripción</th>
-                            <th>Acciones <button type="button" class="btn botonGeneral adjuntarInformador"  data-bs-toggle="modal" data-bs-target="#modalInformador">Adjuntar archivo</button></th>
+                            <th>Acciones</th>
                         </thead>
                         <tbody id="listainformadores" class="list form-check-all">
                 

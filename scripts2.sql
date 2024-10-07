@@ -831,3 +831,12 @@ BEGIN
     LIMIT 5000;
 END
 
+/*********** Cambio en Informador de columna Informador *******************/
+(CASE
+	        WHEN i.CInfo = 0 THEN ''
+            WHEN i.CInfo = 1 THEN 'Pendiente' 
+            WHEN i.CInfo = 2 THEN 'Borrador' 
+            WHEN i.CInfo = 3 THEN 'Cerrado' 
+            ELSE '-' 
+        END) AS EstadoInformador
+#Aplicar a Test y PreProduccion

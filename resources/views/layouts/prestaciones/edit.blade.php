@@ -85,11 +85,11 @@
                         <div class="col-10 mt-2">
                             <div class="input-group input-group-sm">
                                 <span class="input-group-text">Estado</span>
-                                <input type="text" class="form-control {{ $prestacione->Incompleto === 1 ? 'grisFuerte' : 'grisClaro'}}" id="Incompleto" name="Incompleto" value="INC">
-                                <input type="text" class="form-control {{ $prestacione->Ausente === 1 ? 'grisFuerte' : 'grisClaro'}}" id="Ausente" name="Ausente" value="AUS">
-                                <input type="text" class="form-control {{ $prestacione->Forma === 1 ? 'grisFuerte' : 'grisClaro'}}" id="Forma" name="Forma" value="FOR">
+                                <input type="text" class="form-control {{ $prestacione->Incompleto === 1 ? 'rojo' : 'grisClaro'}}" id="Incompleto" name="Incompleto" value="INC">
+                                <input type="text" class="form-control {{ $prestacione->Ausente === 1 ? 'rojo' : 'grisClaro'}}" id="Ausente" name="Ausente" value="AUS">
+                                <input type="text" class="form-control {{ $prestacione->Forma === 1 ? 'rojo' : 'grisClaro'}}" id="Forma" name="Forma" value="FOR">
                                 <input type="text" class="form-control grisClaro" id="SinEsc" name="SinEsc" value="ESC">
-                                <input type="text" class="form-control {{ $prestacione->Devol === 1 ? 'grisFuerte' : 'grisClaro'}}" id="Devol" name="Devol" value="DEV">
+                                <input type="text" class="form-control {{ $prestacione->Devol === 1 ? 'rojo' : 'grisClaro'}}" id="Devol" name="Devol" value="DEV">
                             </div>
                         </div>
 
@@ -277,20 +277,18 @@
                                 </select>
                             </div>
                         </div>
-
-                        
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="input-group input-group mt-2">
-                                    <span class="input-group-text">Obs evaluación</span>
-                                     <input type="text" class="form-control" placeholder="Observaciones de evaluación" id="Observaciones" value="{{ $prestacione->Observaciones ?? ''}}">
-                                </div>
-                            </div>
-                        </div>
-                        
                     </div>
 
-                    <div class="col-6">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="input-group input-group mt-2 mb-2">
+                                <span class="input-group-text">Obs evaluación</span>
+                                 <textarea class="form-control" id="Observaciones" rows="4">{{ $prestacione->Observaciones ?? ''}}</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
                         <div class="col-10">
                             <div class="form-check mb-3">
                                 <label class="form-check-label" for="RxPreliminar">RX preliminar</label>
@@ -313,12 +311,12 @@
             <div class="col-12 box-information mb-2">
                 <div class="input-group input-group">
                     <span class="input-group-text">Obs exámenes</span>
-                    <input type="text" class="form-control" placeholder="Observaciones" id="ObsExamenes" name="ObsExamenes" value="{{ $prestacione->ObsExamenes ?? ''}}">
+                    <textarea class="form-control" id="ObsExamenes" name="ObsExamenes" rows="4">{{ $prestacione->ObsExamenes ?? ''}}</textarea>
                 </div>
 
                 <div class="input-group input-group mt-2">
                     <span class="input-group-text">Obs estado</span>
-                    <input type="text" class="form-control" placeholder="Observaciones" id="Obs" name="Obs" value="{{ $prestacione->prestacionComentario->Obs ?? ''}}">
+                    <textarea class="form-control" id="Obs" name="Obs" rows="4">{{ $prestacione->prestacionComentario->Obs ?? ''}}</textarea>
                 </div>
 
             </div>

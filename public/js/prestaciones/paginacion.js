@@ -180,7 +180,7 @@ $(document).ready(()=>{
                                 resultado = "Entregado";
                                 break;
                             case (data.Cerrado === 0 && data.Finalizado === 0 && data.Entregado === 0):
-                                resultado = "Abierta";
+                                resultado = "";
                                 break;
                             default:
                                 resultado = "-";
@@ -196,7 +196,7 @@ $(document).ready(()=>{
                     orderable: false,
                     targets: 9,
                     render: function(data){
-                        return `<div class="text-center"><i class="${data.eEnviado === 1 ? `ri-checkbox-circle-fill verde` : ``}"></i></div>`;
+                        return `<div class="text-center ${data.eEnviado === 1 ? `verde` : ``}">${data.eEnviado === 1 ? 'eEnv' : ''}</div>`;
                     }
                 },
                 {
@@ -205,7 +205,8 @@ $(document).ready(()=>{
                     orderable: false, 
                     targets: 10,
                     render: function(data){
-                        return data.Incompleto === 1 ? `<div class="text-center"><i class="ri-check-line"></i></div>` : `-`;
+                        let color = data.Incompleto === 1 ? 'fondo-gris' : 'fondo-rojo';
+                        return `<div class="text-center ${color}">&nbsp;</div>`;
                     }
                 },
                 {
@@ -214,7 +215,8 @@ $(document).ready(()=>{
                     orderable: false, 
                     targets: 11,
                     render: function(data){
-                        return data.Ausente === 1 ? `<div class="text-center"><i class="ri-check-line"></i></div>` : `-`;
+                        let color = data.Ausente === 1 ? 'fondo-gris' : 'fondo-rojo';
+                        return `<div class="text-center ${color}">&nbsp;</div>`;
                     }
                 },
                 {
@@ -223,7 +225,8 @@ $(document).ready(()=>{
                     orderable: false, 
                     targets: 12,
                     render: function(data){
-                        return data.Forma === 1 ? `<div class="text-center"><i class="ri-check-line"></i></div>` : `-`;
+                        let color = data.Forma === 1 ? 'fondo-gris' : 'fondo-rojo';
+                        return `<div class="text-center ${color}">&nbsp;</div>`;
                     }
                 },
                 {
@@ -232,7 +235,8 @@ $(document).ready(()=>{
                     orderable: false, 
                     targets: 13,
                     render: function(data){
-                        return data.Devol === 1 ? `<div class="text-center"><i class="ri-check-line"></i></div>` : `-`;
+                        let color = data.Devol === 1 ? 'fondo-gris' : 'fondo-rojo';
+                        return `<div class="text-center ${color}">&nbsp;</div>`;
                     }
                 },
                 {
@@ -253,8 +257,8 @@ $(document).ready(()=>{
                     targets: 15,
                     render: function(data){
                         return data.Facturado === 1 
-                                ? `<div class="text-center"><i class="ri-check-line"></i></div>` 
-                                : `-`;
+                                ? `<div class="text-center verde">Fac</div>` 
+                                : ``;
                     }
                 },
                 {
