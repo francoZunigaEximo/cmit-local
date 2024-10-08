@@ -5,9 +5,8 @@ $(document).ready(()=>{
     quitarDuplicados('#ProvEfector');
     quitarDuplicados('#ProvInformador');
 
-    $(document).on('click', '#volver', function(e){
-        e.preventDefault();
-        history.back();
+    $(document).on('click', '.multiVolver', function(e) {
+        window.history.back();
     });
 
     $(document).on('click', '#guardar', function(){

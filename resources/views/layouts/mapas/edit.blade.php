@@ -4,6 +4,12 @@
 
 @section('content')
 
+<div class="row mb-4">
+    <div class="col-12 text-end">
+        <button class="btn btn-warning multiVolver"><i class="ri-arrow-left-line"></i>&nbsp;Volver</button>
+    </div>
+</div>
+
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
     <h4 class="mb-sm-0">Mapas</h4>
 

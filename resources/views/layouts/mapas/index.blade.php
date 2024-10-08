@@ -143,7 +143,7 @@
 </div>
 <script>
     //Rutas
-    const SEARCH = "{{ route('searchMapas') }}"
+    const SEARCH = "{{ route('mapas.index') }}"
     const routeMapas = "{{ route('deleteMapa', ['mapa' => '']) }}";
     const fileExport = "{{ route('mapas.exportar') }}";
     const deleteMapa = "{{ route('deleteMapa') }}";

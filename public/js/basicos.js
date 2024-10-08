@@ -129,19 +129,15 @@ function tipoPagoPrestacion(tipo) {
     switch (tipo) {
         case "C":
             return "Cuenta Corriente";
-            break;
         
         case "P":
             return "Examen a Cuenta";
-            breack;
 
         case "B":
             return "Contado";
-            break;
 
         default:
             return "-";
-            break;
     }
 }
 
@@ -149,28 +145,20 @@ function tipoSPagoPrestacion(tipo) {
     switch (tipo) {
         case "A":
             return "Efectivo";
-            break;
         case "B":
             return "Débito";
-            break;
         case "C":
             return "Crédito";
-            break;
         case "D":
             return "Cheque";
-            break;
         case "G":
             return "Sin cargo";
-            break;
         case "F":
             return "Transferencia";
-            break;
         case "E":
             return "Otro";
-            break;
         default:
             return "-";
-            break;
     }
 }
 
@@ -182,32 +170,6 @@ function correoValido(correo) {
 function verificarUsuario(usuario) {
     let validar = /^[A-Za-z0-9]{1,25}$/;
     return validar.test(usuario);
-}
-
-function formatoCeldaDataTable(texto, maxCaracteres) {
-    let resultado = "";
-    let palabras = texto.split(/\s+/); // Divide el texto en palabras
-    let lineaActual = "";
-
-    palabras.forEach(palabra => {
-        // Si la longitud de la línea actual más la nueva palabra excede maxCaracteres
-        if ((lineaActual.length + palabra.length + 1) > maxCaracteres) {
-            // Añadir la línea actual al resultado con un salto de línea
-            resultado += (lineaActual.trim() + '<br>');
-            // Comenzar una nueva línea con la palabra actual
-            lineaActual = palabra + ' ';
-        } else {
-            // Añadir la palabra a la línea actual
-            lineaActual += palabra + ' ';
-        }
-    });
-
-    // Añadir la última línea (si no está vacía)
-    if (lineaActual.trim().length > 0) {
-        resultado += lineaActual.trim();
-    }
-
-    return resultado;
 }
 
 function fechaCompleta(fecha) {

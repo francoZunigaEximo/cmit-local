@@ -4,6 +4,12 @@
 
 @section('content')
 
+<div class="row mb-4">
+    <div class="col-12 text-end">
+        <button class="btn btn-warning multiVolver"><i class="ri-arrow-left-line"></i>&nbsp;Volver</button>
+    </div>
+</div>
+
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
     <h4 class="mb-sm-0">Examen&nbsp;<span class="custom-badge original">{{ $examene->Id }}</span> {!! ($examene->Inactivo === 3) ? '<span class="custom-badge rojo">Deshabilitado</span>' : '' !!}</h4>
 
@@ -179,7 +185,6 @@
                 </div>
 
                 <div class="col-12 box-information mt-2 text-center mt-3">
-                    <button type="button" id="volver" class="btn botonGeneral">Volver</button>
                     <button type="button" {!! $examene->Inactivo === 3 ? 'disabled' : 'id="guardar"' !!} class="btn botonGeneral">Guardar</button>
                 </div>
 

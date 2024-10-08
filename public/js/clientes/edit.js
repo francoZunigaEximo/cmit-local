@@ -440,6 +440,10 @@ $(document).ready(()=> {
         verTelefono(telefonoId);
     });
 
+    $(document).on('click', '.multiVolver', function(e) {
+        window.history.back();
+    });
+
     $(document).on('click', '#saveCambiosEdit', function(e){
         e.preventDefault();
         let Id = $('#Id').val(), CodigoArea = $('#nuevoPrefijo').val(), NumeroTelefono = $('#nuevoNumero').val(), Observaciones = $('#nuevaObservacion').val();

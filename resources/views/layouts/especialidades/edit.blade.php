@@ -4,6 +4,12 @@
 
 @section('content')
 
+<div class="row mb-4">
+    <div class="col-12 text-end">
+        <button class="btn btn-warning multiVolver"><i class="ri-arrow-left-line"></i>&nbsp;Volver</button>
+    </div>
+</div>
+
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
     <h4 class="mb-sm-0">Especialidad <span class="badge text-bg-primary">{{ $especialidade->Id }}</span></h4>
 </div>
@@ -89,7 +95,6 @@
                 <div class="col-lg-12 pt-4">
                     <div class="hstack gap-2 justify-content-end">
                         
-                        <a href="{{ route('especialidades.index') }}" class="btn botonGeneral">Volver</a>
                         <button type="button" id="updateBasico" class="btn botonGeneral">Guardar</button>
                     </div>
                 </div>

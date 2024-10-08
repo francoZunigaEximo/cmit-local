@@ -4,6 +4,12 @@
 
 @section('content')
 
+<div class="row mb-4">
+    <div class="col-12 text-end">
+        <button class="btn btn-warning multiVolver"><i class="ri-arrow-left-line"></i>&nbsp;Volver</button>
+    </div>
+</div>
+
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
     <h4 class="mb-sm-0">Paciente <span class="custom-badge original">Nro. {{ $paciente->Id }}</span></h4>
 
@@ -136,7 +142,6 @@
                 </div>
 
                 <div class="col-12 box-information mt-2 text-center">
-                    <a onclick="window.history.back();" class="btn btn-sm botonGeneral">Ir listado</a>
                     <button type="submit" class="btn btn-sm botonGeneral">Actualizar</button>
                 </div>
             </div> 

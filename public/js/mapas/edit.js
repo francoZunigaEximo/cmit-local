@@ -815,7 +815,11 @@ $(document).ready(()=>{
         preloader('on');
         getPrestaMapas();
         preloader('off');
-    })
+    });
+
+    $(document).on('click', '.multiVolver', function(e) {
+        window.history.back();
+    });
 
     function updateContador() {
         let longitud = $('#remitoObs').val();

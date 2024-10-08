@@ -61,8 +61,8 @@ $(document).ready(function(){
         changeProvincia(provincia);
     });
 
-    $('#btnVolverEspe').click(function(){
-        window.location.href = GOINDEX;
+    $(document).on('click', '.multiVolver', function(e) {
+        window.history.back();
     });
     
     function changeProvincia(id){

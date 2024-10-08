@@ -46,6 +46,10 @@ $(document).ready(function(){
         });
     });
 
+    $(document).on('click', '.multiVolver', function(e) {
+        window.history.back();
+    });
+
     function checkProvincia(){
 
         let provincia = $('#provincia').val();

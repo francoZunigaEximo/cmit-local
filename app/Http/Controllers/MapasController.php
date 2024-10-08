@@ -27,16 +27,7 @@ class MapasController extends Controller
 
     use ObserverMapas, CheckPermission, ReporteExcel;
 
-    public function index()
-    {
-        if (!$this->hasPermission('mapas_show')) {
-            abort(403);
-        }
-
-        return view('layouts.mapas.index');
-    }
-
-    public function search(Request $request): mixed
+    public function index(Request $request): mixed
     {
         if (!$this->hasPermission('mapas_show')) {
             return response()->json(['msg' => 'No tiene permisos'], 403);

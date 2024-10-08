@@ -4,6 +4,12 @@
 
 @section('content')
 
+<div class="row mb-4">
+    <div class="col-12 text-end">
+        <button class="btn btn-warning multiVolver"><i class="ri-arrow-left-line"></i>&nbsp;Volver</button>
+    </div>
+</div>
+
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
     <h4 class="mb-sm-0">Prestación <span class="custom-badge original">N° {{ $prestacione->Id }}</span>&nbsp;<span class="custom-badge verde">Financiador {{ ($prestacione->TipoPrestacion === 'ART' ? 'ART' : 'EMPRESA') }}</span> {!! ($prestacione->Anulado === 1) ? '<span class="custom-badge rojo">Bloqueado</span>' : '' !!}</h4>
 
@@ -324,7 +330,6 @@
             <div class="row">
                 <div class="col-12 text-center mt-2">
                     <hr class="mt-2 mb-2 d-block">
-                    <a onclick="window.history.back();" class="btn btn-sm botonGeneral">Ir a Listado</a>
                     <button type="button" class="btn btn-sm botonGeneral" id="actualizarPrestacion">Guardar</button>
                     <hr class="mt-2 mb-2 d-block">
                 </div>

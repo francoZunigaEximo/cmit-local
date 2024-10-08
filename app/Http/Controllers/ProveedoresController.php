@@ -17,13 +17,56 @@ class ProveedoresController extends Controller
 
     use ReporteExcel, CheckPermission;
 
-    public function index()
+    public function index(Request $request)
     {
-        if(!$this->hasPermission('especialidades_show')) {
+        if (!$this->hasPermission('especialidades_show')) {
             abort(403);
         }
 
+        if ($request->ajax()) {
+
+            $query = Proveedor::select(
+            'Id as IdEspecialidad',
+            'Nombre',
+            'Telefono',
+            'Direccion',
+            DB::raw('(SELECT Nombre FROM localidades WHERE IdLocalidad = localidades.Id) AS NombreLocalidad'),
+            'Multi as Adjunto',
+            'MultiE as Examen',
+            'InfAdj as Informe',
+            'Externo as Ubicacion'
+            );
+
+            $query->when(!empty($request->especialidad), function($query) use ($request){
+                $query->where('Nombre', 'LIKE', '%' . $request->especialidad . '%');
+            });
+            
+            $query->when($request->opciones === 'Interno', function($query){
+                $query->where('Externo', 0);
+            });
+
+            $query->when($request->opciones === 'Externo', function($query){
+                $query->where('Externo', 1);
+            });
+
+            $query->when($request->opciones === 'Todo', function($query){
+                $query->whereIn('Externo', [0,1]);
+            });
+
+            $query->when($request->opciones === 'Multi', function($query){
+                $query->where('Multi', 1);
+            });
+
+            $query->when($request->opciones === 'MultiE', function($query){
+                $query->where('MultiE', 1);
+            });
+        
+            $result = $query->where('Inactivo', 0)->get();
+            return Datatables::of($result)->make(true);
+        }
+
         return view('layouts.especialidades.index');
+
     }
 
     public function edit(Proveedor $especialidade)
@@ -212,43 +255,6 @@ class ProveedoresController extends Controller
         }else{
             return response()->json(['msg' => 'No se ha podido generar el archivo'], 409);
         }
-
-    }
-
-    public function search(Request $request)
-    {
-
-        $especialidad = $request->especialidad;
-        $opciones = $request->opciones ?? '0';
-        
-        if($request->ajax())
-        {
-            $query = Proveedor::where('Nombre', 'LIKE', '%' . $especialidad . '%')
-            ->where('Inactivo', 0)
-            ->select(
-            'Id as IdEspecialidad',
-            'Nombre',
-            'Telefono',
-            'Direccion',
-            DB::raw('(SELECT Nombre FROM localidades WHERE IdLocalidad = localidades.Id) AS NombreLocalidad'),
-            'Multi as Adjunto',
-            'MultiE as Examen',
-            'InfAdj as Informe',
-            'Externo as Ubicacion'
-            );
-            if ($opciones !== '0' && $opciones !== 'Interno' && $opciones !== 'Todo') {
-                $query->where($opciones, 1);
-            
-            }elseif($opciones === 'Interno'){
-                $query->where('Externo', 0);
-
-            }
-        
-            $result = $query->get();
-            return Datatables::of($result)->make(true);
-        }
-
-        return view('layouts.especialidades.index');
 
     }
 

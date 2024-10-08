@@ -469,6 +469,10 @@ $(document).ready(()=> {
             })
     });
 
+    $(document).on('click', '.multiVolver', function(e) {
+        window.history.back();
+    });
+
     function precargaMapa(empresa, art){
         
         let val = $('#TipoPrestacion').val(), val2 = $('#art').val();
