@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bf4dcbcf1014f3f63e83577dcd0f6a01",
+    "content-hash": "47c140d302c1700ed9fd492520bab2b8",
     "packages": [
         {
             "name": "barryvdh/laravel-dompdf",
@@ -4227,57 +4227,6 @@
                 }
             ],
             "time": "2023-04-15T23:01:58+00:00"
-        },
-        {
-            "name": "robgridley/flysystem-smb",
-            "version": "3.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/robgridley/flysystem-smb.git",
-                "reference": "0b2b1ad34b555fcd063ff4007ac02cff796ecd6f"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/robgridley/flysystem-smb/zipball/0b2b1ad34b555fcd063ff4007ac02cff796ecd6f",
-                "reference": "0b2b1ad34b555fcd063ff4007ac02cff796ecd6f",
-                "shasum": ""
-            },
-            "require": {
-                "icewind/smb": "^3.0",
-                "league/flysystem": "^3.0",
-                "php": "^8.1"
-            },
-            "require-dev": {
-                "league/flysystem-adapter-test-utilities": "^3.15",
-                "phpunit/phpunit": "^9.6"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "RobGridley\\Flysystem\\Smb\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Rob Gridley",
-                    "email": "me@robgridley.com"
-                }
-            ],
-            "description": "Flysystem adapter for Icewind SMB.",
-            "keywords": [
-                "Flysystem",
-                "samba",
-                "smb"
-            ],
-            "support": {
-                "issues": "https://github.com/robgridley/flysystem-smb/issues",
-                "source": "https://github.com/robgridley/flysystem-smb/tree/3.0.0"
-            },
-            "time": "2023-05-18T13:34:36+00:00"
         },
         {
             "name": "sabberworm/php-css-parser",
