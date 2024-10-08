@@ -316,7 +316,9 @@ public function searchPrestacion(Request $request)
                                     ? 'Cerrado'
                                     : '-');
 
-            $adjunto = $item->NoImprime === 1 ? 'ADJ_D' : 'ADJ_F';
+            $arr = [0 => '', 1 => 'Abierto/Pdte', 2 => 'Abierto/Adjunto', 3 => '', 4 => 'Cerrado/Pdte', 5 => 'Cerrado/Adjunto'];
+
+            $adjunto = $arr[$item->Efector];
             
             $estadoInformador = ($item->Informador === 1) 
                                     ? "Pendiente"
