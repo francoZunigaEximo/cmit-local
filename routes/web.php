@@ -29,6 +29,7 @@ use App\Http\Controllers\PaqueteFacturacionController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\UsuariosController;
 use App\Models\FacturaDeVenta;
+use App\Models\ItemPrestacion;
 //use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Hash;
@@ -211,6 +212,7 @@ Route::group(['middleware' => 'auth'], function () {
     //Rutas de ItemsPrestaciones
     Route::post('itemsprestaciones/lista-examenes', [ItemPrestacionesController::class, 'getExamenes'])->name('itemsprestaciones.listadoexamenes');
     Route::get('itemsprestaciones/check-adjuntos', [ItemPrestacionesController::class, 'checkAdjunto'])->name('itemsprestaciones.checkAdjuntos');
+    Route::get('itemsprestaciones/checkid', [ItemPrestacionesController::class, 'checkPrimeraCarga'])->name('itemsprestaciones.checkId');
     Route::resource('itemsprestaciones', ItemPrestacionesController::class);
     Route::post('updateItem', [ItemPrestacionesController::class, 'updateItem'])->name('updateItem');
     Route::post('updateAsignado', [ItemPrestacionesController::class, 'updateAsignado'])->name('updateAsignado');
@@ -234,6 +236,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('marcarExamenAdjunto', [ItemPrestacionesController::class, 'marcarExamenAdjunto'])->name('marcarExamenAdjunto');
     Route::get('lstExamenes', [ItemPrestacionesController::class, 'lstExamenes'])->name('lstExamenes');
     Route::get('preExamenes', [ItemPrestacionesController::class, 'preExamenes'])->name('preExamenes');
+   
 
     //Rutas de FacturasdeVenta
     Route::get('getFactura', [FacturasVentaController::class, 'getFactura'])->name('getFactura');

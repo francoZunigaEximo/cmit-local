@@ -491,6 +491,14 @@ $(document).ready(()=>{
     
     });
 
+    $(document).on('click', '.verExamen', function(e){
+        e.preventDefault();
+
+        let id = $(this).data('id');
+
+        console.log(id);
+    });
+
     function opcionesExamenes(item, opcion){
         preloader('on');
         $.ajax({
@@ -570,15 +578,18 @@ $(document).ready(()=>{
                 checkExamenes(ID);
     
                 let filas = '';
+                const responseEfector = await checkMultiId(ID, "efector");
+                const responseInformador = await checkMultiId(ID, "informador");
+                const firstE = responseEfector !== undefined ? responseEfector : null;
+                const firstI = responseInformador !== undefined ? responseInformador : null;
+
                 for (let i = 0; i < registros.length; i++) {
                     const examen = registros[i];
-                    let examenId = examen.IdExamen;
-                    let url = editUrl.replace('__examen__', examen.IdItem);
-    
+
                     filas += `
                         <tr ${examen.Anulado === 1 ? 'class="filaBaja"' : ''}>
                             <td><input type="checkbox" name="Id_examenes" value="${examen.IdItem}" checked data-adjunto="${examen.ExaAdj}" data-archivo="${examen.archivos}"></td>
-                            <td data-idexam="${examenId}" id="${examen.IdItem}" style="text-align:left">${examen.Nombre} ${examen.Anulado === 1 ? '<span class="custom-badge rojo">Bloqueado</span>' : ''}</td>
+                            <td data-idexam="${examen.IdExamen}" id="${examen.IdItem}" style="text-align:left">${examen.Nombre} ${examen.Anulado === 1 ? '<span class="custom-badge rojo">Bloqueado</span>' : ''} ${firstE.IdEntidad === examen.IdItem ? '<i title="Carga multiple, efector, desde este exámen" class="ri-file-mark-line verde"></i>' : ''} ${firstI.IdEntidad === examen.IdItem ? '<i title="Carga multiple, informador, desde este exámen" class="ri-file-mark-line naranja"></i>' : ''}</td>
                             <td>
                                 <span id="incompleto" class="${(examen.Incompleto === 0 || examen.Incompleto === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
                                     <i class="ri-flag-2-line ${examen.Anulado === 0 ? 'incompleto' : ''}"></i>
@@ -618,9 +629,7 @@ $(document).ready(()=>{
                             <td>
                                 <div class="d-flex gap-2">
                                     <div class="edit">
-                                        <a href="${url}" id="editLink">
-                                            <button type="button" class="btn btn-sm iconGeneral" title="Ver"><i class="ri-search-eye-line"></i></button>
-                                        </a>
+                                        <button data-id="${examen.IdItem}" type="button" class="btn btn-sm iconGeneral verExamen" title="Ver" data-bs-toggle="modal" data-bs-target="#modalExamen"><i class="ri-search-eye-line"></i></button>
                                     </div>
                                     ${examen.Anulado === 0 ? `
                                         <div class="bloquear">
@@ -667,5 +676,17 @@ $(document).ready(()=>{
         })
     }
 
+    async function checkMultiId(idPrestacion, tipo) {
+    
+        return new Promise((resolve, reject) => {
+            $.get(checkFirst, { Id: idPrestacion, who: tipo })
+                .done(function(response) { 
+                    resolve(response);      
+                })
+                .fail(function(error) {
+                    reject(error);
+                });
+        });
+    }
 
 });

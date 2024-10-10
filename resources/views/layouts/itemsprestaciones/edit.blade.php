@@ -380,6 +380,8 @@
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+
+
 <script>
     const TOKEN = '{{ csrf_token() }}';
 

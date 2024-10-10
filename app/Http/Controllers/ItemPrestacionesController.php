@@ -18,6 +18,8 @@ use App\Models\ExamenPrecioProveedor;
 use App\Traits\CheckPermission;
 use App\Helpers\FileHelper;
 
+use function PHPUnit\Framework\isEmpty;
+
 class ItemPrestacionesController extends Controller
 {
     use ObserverItemsPrestaciones, CheckPermission;
@@ -34,6 +36,7 @@ class ItemPrestacionesController extends Controller
         $qrTexto = $this->generarQR('A', $itemsprestacione->IdPrestacion, $itemsprestacione->IdExamen, $paciente->Id, 'texto');
         $adjuntoEfector = $this->adjuntoEfector($itemsprestacione->Id);
         $adjuntoInformador = $this->adjuntoInformador($itemsprestacione->Id);
+        
         
         $multiEfector = ItemPrestacion::join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
         ->join('proveedores', 'examenes.IdProveedor', '=', 'proveedores.Id')
@@ -1070,6 +1073,27 @@ class ItemPrestacionesController extends Controller
 
        return response()->json($resultado);
     }
+
+    public function checkPrimeraCarga(Request $request)
+    {
+        $query = $request->who === 'efector' 
+            ? ArchivoEfector::where('IdPrestacion', $request->Id)->get() 
+            : ArchivoInformador::where('IdPrestacion', $request->Id)->get();
+    
+
+        if (!$query->isEmpty()) {
+
+            $id = $query->first()->Id; 
+
+            $result = $request->who === 'efector' 
+                ? ArchivoEfector::find($id, ['IdEntidad']) 
+                : ArchivoInformador::find($id, ['IdEntidad']);
+
+            return response()->json($result);
+        }
+
+    }
+
 
     private function generarCodigo(int $idprest, int $idex, int $idpac)
     {

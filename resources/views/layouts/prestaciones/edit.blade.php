@@ -377,6 +377,13 @@
                         </div>
                     </div>
 
+                    <div class="row mt-2 mb-2 text-left">
+                        <div class="col-auto">
+                            <span><i class="ri-file-mark-line verde"></i>&nbsp;Marca desde donde se cargo el archivo efector</span>
+                            <span><i class="ri-file-mark-line naranja"></i>&nbsp;Marca desde donde se cargo el archivo informador</span>
+                        </div>
+                    </div>
+
                     <div class="table mt-3 mb-1">
                         
                         <table class="table table-bordered" id="listado">
@@ -743,15 +750,15 @@
                             </div>
                         </div>
                 
-                            <hr class="mt-1 mb-1">
-                
-                            <div class="row">
-                                <div class="col-12 text-center mt-2">
-                                    <button type="button" id="guardarFicha" class="btn botonGeneral">Actualizar</button>
-                                </div>
+                        <hr class="mt-1 mb-1">
+            
+                        <div class="row">
+                            <div class="col-12 text-center mt-2">
+                                <button type="button" id="guardarFicha" class="btn botonGeneral">Actualizar</button>
                             </div>
-                            
                         </div>
+                            
+                        
                     </div>
                 </div>
             </div>
@@ -951,6 +958,37 @@
     </div>
 </div>
 
+<div id="modalExamen" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                            <h4 class="mb-sm-0">Exámen prestación <span class="custom-badge original"></span> | Paciente <span class="custom-badge original"></span> </h4>
+                            <input type="hidden" value="" id="Id">
+                            <div class="page-title-right d-inline">
+                                <p><strong>QR:</strong> </p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn botonGeneral" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn botonGeneral ">Guardar adjunto</button>
+            </div>
+
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 <script>
 //Rutas
 const updatePrestacion = "{{ route('updatePrestacion') }}";
@@ -986,6 +1024,7 @@ const lstExDisponibles = "{{ route('lstExDisponibles') }}";
 const buscarEx = "{{ route('buscarEx')}}";
 const saveFichaAlta = "{{ route('saveFichaAlta') }}";
 const checkInc = "{{ route('prestaciones.checkIncompleto') }}";
+const checkFirst = "{{ route('itemsprestaciones.checkId') }}";
 
 //Extras
 const TOKEN = "{{ csrf_token() }}";
@@ -1004,7 +1043,7 @@ const selectTipoPrestacion = "{{ $prestacione->TipoPrestacion }}";
 @push('styles')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 <link rel="stylesheet" href="{{ asset('css/hacks.css')}}?v={{ time() }}">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
+<link rel="stylesheet" href="{{ asset('css/select2.min.css') }}" />
 <link rel="stylesheet" href="{{ asset('css/fixSelect2.css') }}">
 @endpush
 

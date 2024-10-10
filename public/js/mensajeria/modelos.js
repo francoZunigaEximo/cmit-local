@@ -25,7 +25,7 @@ $(document).ready(function(){
             title: "¿Está seguro que desea eliminar el modelo?",
             icon: "warning",
             buttons: ["Cancelar", "Aceptar"]
-        }).then((confimar) => {
+        }).then((confirmar) => {
             if(confirmar) {
 
                 preloader('on');
