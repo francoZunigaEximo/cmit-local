@@ -283,10 +283,9 @@
                                     <thead class="table-light">
                                         <tr class="text-center">
 
-                                            <th class="sort" data-sort="action">Especialidad</th>
-                                            <th class="sort" data-sort="email">Perfiles</th>
-
-                                            <th>Acciones</th>
+                                            <th class="sort text-center">Especialidad</th>
+                                            <th class="sort text-center">Perfiles</th>
+                                            <th class="text-center">Acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody class="list form-check-all" id="listaProfesionales">
