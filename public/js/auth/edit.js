@@ -327,23 +327,31 @@ $(document).ready(()=>{
     
     function listadoRoles() {
         preloader('on');
+
         $.get(lstRolAsignados, {Id: ID})
             .done(function(response){
                 preloader('off');
                 $('#lstRolesAsignados').empty();
 
                 $.each(response, function(index, r){
-                    let arr = (r.Descripcion).split(', ');
+                    let descripcion = r.Descripcion || '',
+                        arr = descripcion ? descripcion.split(', ') : [];
     
                     let badges = '';
                     // Crea un badge para cada descripción
-                    arr.forEach((descripcion, i) => {
-                        badges += `<span class="badge bg-primary">${descripcion}</span> `;
-                        if ((i + 1) % 7 === 0) {
-                            badges += '<br>';  // Inserta un salto de línea cada 7 badges
-                        }
-                    });
-                
+                    if (arr.lenght < 1) {
+                        badges = '';
+                    } else {
+
+                        arr.forEach((descripcion, i) => {
+                            badges += `<span class="badge bg-primary">${descripcion}</span> `;
+                            if ((i + 1) % 7 === 0) {
+                                badges += '<br>';  // Inserta un salto de línea cada 7 badges
+                            }
+                        });
+
+                    }
+
                     let contenido = `
                     <tr>
                         <td>${r.Nombre}</td>
@@ -402,22 +410,9 @@ $(document).ready(()=>{
         $.get(choisePerfil, {Id: id})
             .done(function(response){
 
-                const perfiles = new Map([
-                    ['T1', 'Efector'],
-                    ['T2', 'Informador'],
-                    ['T3', 'Evaluador'],
-                    ['T4', 'Combinado'],
-                    ['T5', 'Evaluador ART']
-                ]);
-
-                let select = $("#perfiles");
-                
-                perfiles.forEach((descripcion, clave) => {
-                    if (response[clave] === 1) {
-                        select.append(`<option value="${clave.toLowerCase()}">${descripcion}</option>`);
-                    }
-                });
-              
+                $.each(response, function(index, data){
+                    $('#perfiles').append(`<option value="${data.Id}">${data.Nombre}</option>`);
+                });              
             });
     }
 
@@ -455,43 +450,24 @@ $(document).ready(()=>{
                 preloader('off')
                 let data = response.data;
                 data.forEach(function (d) {
-
-                    if(d.Tipos) {
-                        let arr = d.Tipos.split(',');
+                    let contenido = `
+                        <tr style="text-align: center">
+                            <td>${d.especialidad}</td>
+                            <td style="margin-right: 3px;">
+                                <span class="badge custom-badge pequeno text-uppercase" style="margin-right: 3px; display:inline-block">${d.Tipos}</span>
+                            </td>
+                            <td>
+                                <div class="remove">
+                                    <button data-prof="${d.IdProf}" data-prov="${d.IdProv}" class="btn btn-sm iconGeneral eliminarPerfil" title="Dar de baja"><i class="ri-delete-bin-2-line"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                
+                    $('#listaProfesionales').append(contenido);
+                    $('#perfiles').val(''),
+                    $('#listaEspecialidad').val('');
                     
-                        const perfiles = {
-                            't1': ['Efector'],
-                            't2': ['Informador'],
-                            't3': ['Evaluador'],
-                            't4': ['Combinado'],
-                            't5': ['Evaluador ART']
-                        }
-                    
-                        let imprimir = arr.map(e => {
-                            if (perfiles[e]) {
-                                return `<span class="badge custom-badge pequeno text-uppercase" style="margin-right: 3px; display:inline-block">${perfiles[e][0]}</span><br>`;
-                            }
-                            return ''; 
-                        }).join(''); 
-                    
-                        let contenido = `
-                            <tr style="text-align: center">
-                                <td>${d.especialidad}</td>
-                                <td style="margin-right: 3px;">
-                                    ${imprimir}
-                                </td>
-                                <td>
-                                    <div class="remove">
-                                        <button data-prof="${d.IdProf}" data-prov="${d.IdProv}" class="btn btn-sm iconGeneral eliminarPerfil" title="Dar de baja"><i class="ri-delete-bin-2-line"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                        `;
-                    
-                        $('#listaProfesionales').append(contenido);
-                        $('#perfiles').val(''),
-                        $('#listaEspecialidad').val('');
-                    }
                 });
             })
             .fail(function(jqXHR){

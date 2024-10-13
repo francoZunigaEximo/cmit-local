@@ -839,4 +839,6 @@ END
             WHEN i.CInfo = 3 THEN 'Cerrado' 
             ELSE '-' 
         END) AS EstadoInformador
+
+ALTER TABLE profesionales_prov MODIFY COLUMN IdRol VARCHAR(10) DEFAULT '0' NULL;
 #Aplicar a Test y PreProduccion

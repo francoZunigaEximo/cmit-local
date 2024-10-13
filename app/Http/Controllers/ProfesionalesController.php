@@ -8,6 +8,7 @@ use App\Models\ProfesionalProv;
 use App\Models\Proveedor;
 use App\Models\Provincia;
 use App\Models\User;
+use App\Models\Rol;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use App\Traits\ObserverProfesionales;
@@ -214,32 +215,25 @@ class ProfesionalesController extends Controller
     public function setPerfil(Request $request)
     {
 
-        $query = Profesional::where('Id', $request->Id)->first();
-        if($query->IdProveedor === null || $query->IdProveedor === 0){
+        $query = Profesional::find($request->Id);
+        if(in_array($query->IdProveedor,[null,0])){
 
             $query->IdProveedor = $request->especialidad;
             $query->save();
         }
-
+        $rol = Rol::find($request->perfil);
         $consulta = ProfesionalProv::where('IdProf', $request->Id)
             ->where('IdProv', $request->especialidad)
-            ->where('Tipo', $request->perfil)
+            ->where('IdRol', $rol->nombre)
             ->first();
 
-        if(!$consulta){
-
-            $id = in_array(Auth::user()->role->first()->nombre, ["Efector", "Informador", "Combinado", "Evaluador", "EvaluadorART"]) 
-                ? (count(Auth::user()->role->first()->nombre) === 1 
-                    ? Auth::user()->role->first()->Id
-                    : 0)
-                : 0;
+        if (!$consulta) {
 
             ProfesionalProv::create([
                 'Id' => ProfesionalProv::max('Id') + 1,
                 'IdProf' => $request->Id,
                 'IdProv' => $request->especialidad,
-                'IdRol' => $id,
-                'Tipo' => $request->perfil ?? ''
+                'IdRol' => $rol->nombre,
             ]);
 
             return response()->json(['msg' => 'Se ha añadido el perfil de manera correcta'], 201);
@@ -258,10 +252,9 @@ class ProfesionalesController extends Controller
                 'profesionales_prov.IdProf as IdProf',
                 'profesionales_prov.IdProv as IdProv',
                 'proveedores.Nombre as especialidad',
-                DB::raw('GROUP_CONCAT(profesionales_prov.Tipo) as Tipos')
+                'profesionales_prov.IdRol as Tipos'
             )
             ->where('IdProf', $request->Id)
-            ->groupBy('IdProf', 'IdProv')
             ->get();
 
         if($query){
@@ -365,12 +358,8 @@ class ProfesionalesController extends Controller
 
         if($prof)
         {
-            $prof->T1 = $request->T1 === 'true' ? 1 : 0;
-            $prof->T2 = $request->T2 === 'true' ? 1 : 0;
-            $prof->T3 = $request->T3 === 'true' ? 1 : 0;
-            $prof->T4 = $request->T4 === 'true' ? 1 : 0;
-            $prof->Pago = $request->Pago === 'true' ? 1 : '';
-            $prof->InfAdj = $request->InfAdj === 'true' ? 1 : 0;
+            $prof->Pago = $request->Pago == 'true' ? 1 : '';
+            $prof->InfAdj = $request->InfAdj == 'true' ? 1 : 0;
             $prof->TMP = $request->TMP;
             $prof->TLP = $request->TLP;
 
@@ -402,8 +391,21 @@ class ProfesionalesController extends Controller
     public function choisePerfil(Request $request)
     {
         
-        $profesionales = Profesional::find($request->Id);
-        return response()->json($profesionales);
+        //$profesionales = Profesional::find($request->Id);
+        //return response()->json($profesionales);
+
+        return Rol::join('user_rol', 'roles.Id', '=', 'user_rol.rol_id')
+            ->leftJoin('users', 'user_rol.user_id', '=', 'users.Id')
+            ->leftJoin('rol_permisos', 'roles.Id', '=', 'rol_permisos.rol_id')
+            ->leftJoin('permisos', 'rol_permisos.permiso_id', '=', 'permisos.Id')
+            ->select(
+                'roles.nombre as Nombre',
+                'roles.Id as Id'
+            )
+            ->where('users.profesional_id', $request->Id)
+            ->whereIn('roles.nombre', ["Efector", "Informador", "Evaluador", "Combinado", "Evaluador ART"])
+            ->groupBy('roles.nombre')
+            ->get(); 
     }
 
     public function choiseEspecialidad(Request $request)

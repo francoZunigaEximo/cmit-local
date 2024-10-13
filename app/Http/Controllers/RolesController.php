@@ -9,10 +9,22 @@ use Illuminate\Support\Facades\Cache;
 use App\Models\Rol;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class RolesController extends Controller
 {
-    const lstRoles = ["Efector" => "T1", "Informador" => "T2", "Evaluador" => "T3", "Combinado" => "T4", "Evaluador ART" => "T5"];
+    private array $lstRoles;
+
+    public function __construct()
+    {
+        $this->lstRoles = [
+            "Efector" => "T1", 
+            "Informador" => "T2", 
+            "Evaluador" => "T3", 
+            "Combinado" => "T4", 
+            "Evaluador ART" => "T5"
+        ];
+    }
 
     public function listado(Request $request)
     {
@@ -41,9 +53,9 @@ class RolesController extends Controller
     public function asignados(Request $request)
     {
         return Rol::join('user_rol', 'roles.Id', '=', 'user_rol.rol_id')
-            ->join('users', 'user_rol.user_id', '=', 'users.Id')
-            ->join('rol_permisos', 'roles.Id', '=', 'rol_permisos.rol_id')
-            ->join('permisos', 'rol_permisos.permiso_id', '=', 'permisos.Id')
+            ->leftJoin('users', 'user_rol.user_id', '=', 'users.Id')
+            ->leftJoin('rol_permisos', 'roles.Id', '=', 'rol_permisos.rol_id')
+            ->leftJoin('permisos', 'rol_permisos.permiso_id', '=', 'permisos.Id')
             ->select(
                 'roles.nombre as Nombre',
                 DB::raw('GROUP_CONCAT(permisos.Descripcion SEPARATOR ", ") as Descripcion'),
@@ -60,9 +72,8 @@ class RolesController extends Controller
     {
         $user = User::find($request->user); 
         $role = Rol::find($request->role);
-        $contadorPermiso = $role->permiso->count();
-
-        if($contadorPermiso === 0) {
+        
+        if(!Auth::user()->role->contains('nombre', 'Administrador')) {
             return response()->json(['msg' => 'No se puede asignar el rol porque no tiene permisos asociados'], 409);
         }
 
@@ -74,6 +85,7 @@ class RolesController extends Controller
 
             $user->role()->attach($role);
             $this->addRolProfesionales($role, $user);
+
 
             return response()->json(['msg' => 'Se ha asignado el rol al usuario correctamente', 'estado' => 'true']);
 
@@ -123,7 +135,7 @@ class RolesController extends Controller
         
         }elseif(count($buscar) === 1 && $user->profesional_id !== 0) {
 
-            foreach (SELF::lstRoles as $key => $value) {
+            foreach ($this->lstRoles as $key => $value) {
                 $user->profesional->$value = in_array($key, $buscar) ? 1 : 0;
             }
             $user->profesional->save();
@@ -134,7 +146,7 @@ class RolesController extends Controller
     {
         $buscar = $this->listadoRoles($roles->nombre);
 
-        foreach (SELF::lstRoles as $key => $value) {
+        foreach ($this->lstRoles as $key => $value) {
             $user->profesional->$value = in_array($key, $buscar) === true ? 0 : $user->profesional->$value;
         }
         $user->profesional->save();
@@ -144,7 +156,7 @@ class RolesController extends Controller
     private function listadoRoles($rol)
     {
         $arrList = explode(',', trim($rol));
-        $arrKey = array_keys(SELF::lstRoles);
+        $arrKey = array_keys($this->lstRoles);
         return array_intersect($arrList, $arrKey);
     }
 
