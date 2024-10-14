@@ -546,8 +546,6 @@ $(document).ready(()=> {
             })
     }
 
-
-
     function getFact(){
 
         $.get(getFactura, {Id: ID})

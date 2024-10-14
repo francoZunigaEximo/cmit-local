@@ -960,29 +960,268 @@
 
 <div id="modalExamen" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none">
     <div class="modal-dialog modal-fullscreen">
-        <div class="modal-content">
+        <div class="modal-content ">
             <div class="modal-header">
                 <h5 class="modal-title" id="myModalLabel"></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-md-12">
+                    <div class="col-md-11 mx-auto">
 
                         <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                            <h4 class="mb-sm-0">Exámen prestación <span class="custom-badge original"></span> | Paciente <span class="custom-badge original"></span> </h4>
+                            <h4 class="mb-sm-0">Exámen prestación <span id="ex-prestacion" class="custom-badge original"></span> | Paciente <span id="ex-paciente" class="custom-badge original"></span> <span id="ex-anulado"></span></h4>
                             <input type="hidden" value="" id="Id">
                             <div class="page-title-right d-inline">
-                                <p><strong>QR:</strong> </p>
+                                <p><strong>QR: </strong><span id="ex-qr"></span></p>
                             </div>
+                        </div>
+
+
+                        <div class="container-fluid">
+
+                            <div class="row mb-3">
+                                <div class="col-12 mx-auto box-information">
+                                    <div class="messageExamen"></div>
+
+                                    <div class="row">
+                                        <input type="hidden" id="ex-identificacion">
+                                        <input type="hidden" id="ex-prestacion">
+                        
+                                        <div class="col-6">
+                                            <div class="input-group input-group-sm mb-2 size50porcent">
+                                                <span class="input-group-text">Fecha Estudio</span>
+                                                <input type="date" name="ex-fecha" id="ex-fecha" class="form-control">
+                                            </div>
+                        
+                                            <div class="input-group input-group-sm mb-2">
+                                                <span class="input-group-text">Exámen</span>
+                                                <input type="text" name="ex-examen" id="ex-examen" class="form-control" @readonly(true)>
+                                            </div>
+                                        </div>
+                                        <div class="col-6"></div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="input-group input-group-sm mb-2">
+                                                <span class="input-group-text">Especialidad Efector</span>
+                                                <input type="text" class="form-control" name="ex-provEfector" id="ex-provEfector" @readonly(true)>
+                                                <input type="hidden" id="ex-IdEfector">
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="input-group input-group-sm mb-2">
+                                                <span class="input-group-text">Especialidad Informador</span>
+                                                <input type="text" class="form-control" name="ex-provInformador" id="ex-provInformador" @readonly(true)>
+                                                <input type="hidden" id="ex-IdInformador">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="input-group input-group-sm mb-2">
+                                                <span class="input-group-text">Observaciones</span>
+                                                <textarea class="form-control" style="height: 80px" id="ex-ObsExamen" name="ex-ObsExamen"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-12 mx-auto box-information">
+                                    
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="input-group input-group-sm mb-2">
+                                                <span class="input-group-text">Efector</span>
+                                                <select name="efectores" id="efectores" class="form-control efector">
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <div class="input-group input-group-sm mb-2">
+                                                <span class="input-group-text">Fecha asig.</span>
+                                                <input type="date" class="form-control" id="ex-FechaAsignado" name="ex-FechaAsignado" @readonly(true)>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <div class="input-group input-group-sm mb-2">
+                                                <span class="input-group-text">Estado</span>
+                                                <input type="text" class="form-control" id="ex-EstadoEx" name="ex-EstadoEx" @readonly(true)>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <div class="input-group input-group-sm mb-2">
+                                                <span class="input-group-text">Fecha Pago</span>
+                                                <input type="date" class="form-control" id="ex-FechaPagado" name="ex-FechaPagado" @readonly(true)>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <button type="button" id="ex-asignar" class="btn botonGeneral btn-sm asignar">Asignar</button>
+                                            <button type="button" id="ex-liberar" class="btn botonGeneral btn-sm liberar">Liberar</button>
+                                            <button type="button" id="ex-abrir" class="btn botonGeneral btn-sm abrir">Abrir</button>
+                                            <button type="button" id="ex-cerrar" class="btn botonGeneral btn-sm cerrar">Cerrar</button>
+                                           <input type="hidden" id="ex-CAdj">
+                                        </div>
+                        
+
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="input-group input-group-sm mb-2">
+                                                <span class="input-group-text">Adjunto</span>
+                                                <input type="text" class="form-control" id="ex-Estado" name="ex-Estado" @readonly(true)>
+                                                <button type="button" class="btn botonGeneral adjuntarEfector" data-bs-toggle="modal" data-bs-target="#modalEfector">Adjuntar archivo</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-12 mx-auto box-information">
+                        
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="input-group input-group-sm mb-2 visualizarInformador">
+                                                <span class="input-group-text">Informador</span>
+                                                    <select name="ex-informadores" id="ex-informadores" class="form-control">
+                                                        <option value="" selected></option>
+                                                    </select>
+                                            </div>
+                                        </div>
+                        
+                                        <div class="col-md-2">
+                                            <div class="input-group input-group-sm mb-2 visualizarInformador">     
+                                                <span class="input-group-text">Estado</span>
+                                                <input type="text" class="form-control" id="ex-EstadoI" name="ex-EstadoI" @readonly(true)>
+                                            </div>
+                                        </div>
+                        
+                                        <div class="col-md-2 visualizarInformador">
+                                            <div class="input-group input-group-sm mb-2">
+                                                <span class="input-group-text">Fecha Pago</span>
+                                                <input type="date" id="ex-FechaPagado2" name="ex-FechaPagado2" class="form-control" @readonly(true)>
+                                            </div>
+                                        </div>
+                        
+                                        <div class="col-md-2 visualizarInformador">
+                                            <button type="button" id="ex-asignarI" class="btn botonGeneral btn-sm asignarI">Asignar</button>
+                                            <button type="button" id="ex-liberarI" class="btn botonGeneral btn-sm liberarI">Liberar</button>
+                                            <button type="button" id="ex-cerrarI" class="btn botonGeneral btn-sm cerrarI">Cerrar</button>
+                                            <input type="hidden" id="ex-CInfo">
+                                        </div>
+                        
+                                    </div>
+
+                                    <div class="row visualizarInformador">
+                                        <div class="col-md-3">
+                                            <div class="input-group input-group-sm mb-2 ">
+                                                <span class="input-group-text">Adjunto</span>
+                                                <input type="text" class="form-control" id="EstadoInf" name="EstadoInf" @readonly(true)>
+                                                <button type="button" class="btn botonGeneral adjuntarInformador"  data-bs-toggle="modal" data-bs-target="#modalInformador">Adjuntar archivo</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3 visualizarInformador">
+                                <div class="col-12 mx-auto box-information">
+                                    <div class="input-group input-group-sm mb-2">
+                                        <span class="input-group-text">Observaciones Informador</span>
+                                        <textarea class="form-control" style="height: 80px" name="ex-Obs" id="ex-Obs" disabled></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-12 mx-auto box-information">
+                        
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="input-group input-group-sm mb-2">
+                                                <span class="input-group-text">Fecha Factura</span>
+                                                <input type="date" class="form-control" id="ex-FechaFacturaVta" name="ex-FechaFacturaVta" @readonly(true)>
+                                            </div>
+                                            <div class="input-group input-group-sm mb-2">
+                                                <span class="input-group-text">Nro Factura</span>
+                                                <input type="text" class="form-control" id="ex-NroFacturaVta" name=" ex-NroFacturaVta"  @readonly(true)>
+                                            </div>
+                                        </div>
+                        
+                                        <div class="col-md-4">
+                                            <div class="input-group input-group-sm mb-2">
+                                                <span class="input-group-text">Fecha NC</span>
+                                                <input type="date" class="form-control" id="ex-FechaNC" name="ex-FechaNC" @readonly(true)>
+                                            </div>
+                                            <div class="input-group input-group-sm mb-2">
+                                                <span class="input-group-text">Número NC</span>
+                                                <input type="text" class="form-control" id="ex-NumeroNC" name="ex-NumeroNC" @readonly(true)>
+                                            </div>
+                                        </div>
+                        
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-12 box-information text-center">
+                                    <button type="button" class="btn botonGeneral" id="actualizarExamen">Guardar</button>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-12 box-information text-center">
+                        
+                                    <div class="table-responsive table-card mt-3 mb-1">
+                        
+                                        <table class="display table table-bordered mb-4" style="width:100%"  id="listadoEfector">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th class="sort" title="Adjunto Efector">Adjunto Efector</th>
+                                                    <th>Descripción</th>
+                                                    <th>Adjuntar</th>
+                                                    <th>Multi</th>
+                                                    <th>Acciones</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="listaefectores" class="list form-check-all">
+                                    
+                                            </tbody>
+                                        </table>
+                        
+                                        <table class="display table table-bordered mt-4 visualizarInformador" style="width:100%"  id="listadoInformador">
+                                            <thead class="table-light">
+                                                <th class="sort" title="Adjunto Informador">Adjunto Informador</th>
+                                                <th>Descripción</th>
+                                                <th>Acciones</th>
+                                            </thead>
+                                            <tbody id="listainformadores" class="list form-check-all">
+                                    
+                                            </tbody>
+                                        </table>
+                                    </div>
+                        
+                                </div>
+                            </div>
+
                         </div>
 
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn botonGeneral" data-bs-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn botonGeneral ">Guardar adjunto</button>
             </div>
 
         </div><!-- /.modal-content -->
@@ -1025,6 +1264,7 @@ const buscarEx = "{{ route('buscarEx')}}";
 const saveFichaAlta = "{{ route('saveFichaAlta') }}";
 const checkInc = "{{ route('prestaciones.checkIncompleto') }}";
 const checkFirst = "{{ route('itemsprestaciones.checkId') }}";
+const editModal = " {{ route('itemsprestaciones.editModal') }}";
 
 //Extras
 const TOKEN = "{{ csrf_token() }}";
@@ -1052,6 +1292,7 @@ const selectTipoPrestacion = "{{ $prestacione->TipoPrestacion }}";
 <script src="{{ asset('js/prestaciones/utils.js') }}?v={{ time() }}"></script>
 <script src="{{ asset('js/prestaciones/examenes.js') }}?v={{ time() }}"></script>
 <script src="{{ asset('js/fichalaboral/edit.js')}}?v={{ time() }}"></script>
+<script src="{{ asset('js/prestaciones/modalEdit.js')}}?v={{ time() }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="{{ asset('js/fancyTable.js') }}"></script>
 @endpush

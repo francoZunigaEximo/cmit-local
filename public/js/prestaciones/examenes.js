@@ -1,6 +1,9 @@
 $(document).ready(()=>{
 
-    let idExamen = []; 
+    let idExamen = [];
+
+    $('#efectores option[value=""]').text('Elija una opción...');
+    $('#informadores option[value=""]').text('Elija una opción...');
  
     cargarExamen();
 
@@ -491,14 +494,6 @@ $(document).ready(()=>{
     
     });
 
-    $(document).on('click', '.verExamen', function(e){
-        e.preventDefault();
-
-        let id = $(this).data('id');
-
-        console.log(id);
-    });
-
     function opcionesExamenes(item, opcion){
         preloader('on');
         $.ajax({
@@ -563,6 +558,7 @@ $(document).ready(()=>{
             let examenes = result.examenes;
     
             if (estado) {
+                preloader('on');
                 const response = await $.ajax({
                     url: getItemExamenes,
                     type: 'POST',
@@ -582,7 +578,7 @@ $(document).ready(()=>{
                 const responseInformador = await checkMultiId(ID, "informador");
                 const firstE = responseEfector !== undefined ? responseEfector : null;
                 const firstI = responseInformador !== undefined ? responseInformador : null;
-
+                preloader('off');
                 for (let i = 0; i < registros.length; i++) {
                     const examen = registros[i];
 
