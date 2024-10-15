@@ -1038,7 +1038,7 @@
                                         <div class="col-md-4">
                                             <div class="input-group input-group-sm mb-2">
                                                 <span class="input-group-text">Efector</span>
-                                                <select name="efectores" id="efectores" class="form-control efector">
+                                                <select name="ex-efectores" id="ex-efectores" class="form-control ex-efector">
                                                 </select>
                                             </div>
                                         </div>
@@ -1064,11 +1064,11 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-md-2">
-                                            <button type="button" id="ex-asignar" class="btn botonGeneral btn-sm asignar">Asignar</button>
-                                            <button type="button" id="ex-liberar" class="btn botonGeneral btn-sm liberar">Liberar</button>
-                                            <button type="button" id="ex-abrir" class="btn botonGeneral btn-sm abrir">Abrir</button>
-                                            <button type="button" id="ex-cerrar" class="btn botonGeneral btn-sm cerrar">Cerrar</button>
+                                        <div class="col-md-2 text-end">
+                                            <button type="button" id="ex-asignar" class="btn botonGeneral btn-sm ex-asignar">Asignar</button>
+                                            <button type="button" id="ex-liberar" class="btn botonGeneral btn-sm ex-liberar">Liberar</button>
+                                            <button type="button" id="ex-abrir" class="btn botonGeneral btn-sm ex-abrir">Abrir</button>
+                                            <button type="button" id="ex-cerrar" class="btn botonGeneral btn-sm ex-cerrar">Cerrar</button>
                                            <input type="hidden" id="ex-CAdj">
                                         </div>
                         
@@ -1080,8 +1080,11 @@
                                             <div class="input-group input-group-sm mb-2">
                                                 <span class="input-group-text">Adjunto</span>
                                                 <input type="text" class="form-control" id="ex-Estado" name="ex-Estado" @readonly(true)>
-                                                <button type="button" class="btn botonGeneral adjuntarEfector" data-bs-toggle="modal" data-bs-target="#modalEfector">Adjuntar archivo</button>
                                             </div>
+                                        </div>
+
+                                        <div class="col-md-9 text-end">
+                                            <button type="button" class="btn botonGeneral ex-adjuntarEfector" data-bs-toggle="modal" data-bs-target="#modalEfector">Adjuntar archivo</button>
                                         </div>
                                     </div>
 
@@ -1115,10 +1118,10 @@
                                             </div>
                                         </div>
                         
-                                        <div class="col-md-2 visualizarInformador">
-                                            <button type="button" id="ex-asignarI" class="btn botonGeneral btn-sm asignarI">Asignar</button>
-                                            <button type="button" id="ex-liberarI" class="btn botonGeneral btn-sm liberarI">Liberar</button>
-                                            <button type="button" id="ex-cerrarI" class="btn botonGeneral btn-sm cerrarI">Cerrar</button>
+                                        <div class="col-md-4 text-end visualizarInformador ">
+                                            <button type="button" id="ex-asignarI" class="btn botonGeneral btn-sm ex-asignarI">Asignar</button>
+                                            <button type="button" id="ex-liberarI" class="btn botonGeneral btn-sm ex-liberarI">Liberar</button>
+                                            <button type="button" id="ex-cerrarI" class="btn botonGeneral btn-sm ex-cerrarI">Cerrar</button>
                                             <input type="hidden" id="ex-CInfo">
                                         </div>
                         
@@ -1128,9 +1131,12 @@
                                         <div class="col-md-3">
                                             <div class="input-group input-group-sm mb-2 ">
                                                 <span class="input-group-text">Adjunto</span>
-                                                <input type="text" class="form-control" id="EstadoInf" name="EstadoInf" @readonly(true)>
-                                                <button type="button" class="btn botonGeneral adjuntarInformador"  data-bs-toggle="modal" data-bs-target="#modalInformador">Adjuntar archivo</button>
+                                                <input type="text" class="form-control" id="ex-EstadoInf" name="ex-EstadoInf" @readonly(true)>
                                             </div>
+                                        </div>
+
+                                        <div class="col-md-9 text-end">
+                                            <button type="button" class="btn botonGeneral ex-adjuntarInformador"  data-bs-toggle="modal" data-bs-target="#modalInformador">Adjuntar archivo</button>
                                         </div>
                                     </div>
                                 </div>
@@ -1175,9 +1181,9 @@
                                 </div>
                             </div>
 
-                            <div class="row mb-3">
+                            <div class="row mb-3"> <!-- actualizarExamen -->
                                 <div class="col-12 box-information text-center">
-                                    <button type="button" class="btn botonGeneral" id="actualizarExamen">Guardar</button>
+                                    <button type="button" class="btn botonGeneral" id="actExamenModal">Guardar</button>
                                 </div>
                             </div>
 
@@ -1265,6 +1271,15 @@ const saveFichaAlta = "{{ route('saveFichaAlta') }}";
 const checkInc = "{{ route('prestaciones.checkIncompleto') }}";
 const checkFirst = "{{ route('itemsprestaciones.checkId') }}";
 const editModal = " {{ route('itemsprestaciones.editModal') }}";
+const checkAdj = "{{ route('itemsprestaciones.checkAdjuntos') }}";
+const paginacionGeneral = "{{ route('paginacionGeneral') }}";
+const listGeneral = "{{ route('listGeneral') }}";
+
+const fileUpload = "{{ route('uploadAdjunto') }}";
+const descargaE = "@fileUrl('lectura')/AdjuntosEfector";
+const descargaI = "@fileUrl('lectura')/AdjuntosInformador";
+const deleteIdAdjunto = "{{ route('deleteIdAdjunto') }}";
+const replaceIdAdjunto = "{{ route('replaceIdAdjunto') }}";
 
 //Extras
 const TOKEN = "{{ csrf_token() }}";

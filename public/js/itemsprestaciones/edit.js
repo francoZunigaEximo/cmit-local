@@ -655,19 +655,18 @@ $(document).ready(function(){
             });
     }
    
-
     async function checkAdjunto(id, tipo) {
-    if (['', 0, null].includes(id)) return;
+        if (['', 0, null].includes(id)) return;
 
-    return new Promise((resolve, reject) => {
-        $.get(checkAdj, { Id: id, Tipo: tipo })
-            .done(function(response) { 
-                resolve(response);      
-            })
-            .fail(function(error) {
-                console.error("Error:", error);
-                reject(error);
-            });
-    });
-}
+        return new Promise((resolve, reject) => {
+            $.get(checkAdj, { Id: id, Tipo: tipo })
+                .done(function(response) { 
+                    resolve(response);      
+                })
+                .fail(function(error) {
+                    console.error("Error:", error);
+                    reject(error);
+                });
+        });
+    }
 });

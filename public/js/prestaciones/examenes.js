@@ -2,9 +2,12 @@ $(document).ready(()=>{
 
     let idExamen = [];
 
-    $('#efectores option[value=""]').text('Elija una opción...');
-    $('#informadores option[value=""]').text('Elija una opción...');
- 
+    const valAbrir = ['3','4','5'], valCerrar = ['0','1','2'], valCerrarI = 3;
+
+    let cadj = $('#ex-CAdj').val(), CInfo = $('#ex-CInfo').val(), efector = $('#ex-efectores').val(), informador = $('#ex-informadores').val(), provEfector = $('#IdEfector').val(), provInformador = $('#IdInformador').val(), Estado = $('#ex-Estado').val(), EstadoI = $('#ex-EstadoI').val();
+
+    $('.ex-abrir, .ex-cerrar, .ex-asignar, .ex-liberar, .ex-asignarI, .ex-liberarI, .ex-cerrarI, .ex-adjuntarEfector, .ex-adjuntarInformador').hide();
+
     cargarExamen();
 
     $('#exam').select2({
@@ -430,49 +433,7 @@ $(document).ready(()=>{
 
         $('input[type="checkbox"][name="Id_examenes"]:not(#checkAllExamenes)').prop('checked', this.checked);
     });
-
-    function saveExamen(id){
-
-        idExamen = [];
-        if (Array.isArray(id)) {
-            $.each(id, function(index, item) {
-                idExamen.push(item);
-              });
-        }else{
-            idExamen.push(id);
-        }
-
-        if (idExamen.length === 0) {
-            toastr.warning("No existe el exámen o el paquete no contiene examenes");
-            return;
-        }
-        preloader('on');
-        $.ajax({
-
-            url: saveItemExamenes,
-            type: 'post',
-            data: {
-                _token: TOKEN,
-                idPrestacion: ID,
-                idExamen: idExamen
-            },
-            success: function(){
-                preloader('off');
-                $('#listaExamenes').empty();
-                $('#exam').val([]).trigger('change.select2');
-                $('#addPaquete').val([]).trigger('change.select2');
-                cargarExamen();
-        },
-            error: function(jqXHR){
-                preloader('off');
-                let errorData = JSON.parse(jqXHR.responseText);            
-                checkError(jqXHR.status, errorData.msg);
-                return;  
-            }
-        });
-
-    }
-    
+  
     $(document).on('click', '.incompleto, .ausente, .forma, .sinesc, .devol', function() {
         let classes = $(this).attr('class').split(' '),
             //item = $(this).closest('tr').find('td:first').attr('id');
@@ -503,7 +464,7 @@ $(document).ready(()=>{
 
     $('#modalExamen').on('hidden.bs.modal', function () {
         $('#listaExamenes').empty();
-        cargarExamen();
+        cargarExamen(ID);
     });
 
     function loadModalExamen(id, idPrestacion) {
@@ -525,10 +486,10 @@ $(document).ready(()=>{
                     estado = estadoAbierto.includes(itemprestaciones.CAdj) ? 'Abierto' : estadoCerrado.includes(itemprestaciones.CAdj) ? 'Cerrado' : '';
                     estadoColor = estadoAbierto.includes(itemprestaciones.CAdj) ? {'color': 'red'} : estadoCerrado.includes(itemprestaciones.CAdj) ? {'color' : 'green'} : '{}',
                     estadoAdjEfector = null,
-                    colorAdjEfector = examenes.Adjunto === 1 && response.adjuntoEfector === 0 ? {"color" : 'red'} : examenes.Adjunto === 1 && response.adjuntoEfector === 0 ? {"color" : "green"} : '{}',
+                    colorAdjEfector = examenes.Adjunto === 1 && response.adjuntoEfector === 0 ? {"color" : 'red'} : examenes.Adjunto === 1 && response.adjuntoEfector === 1 ? {"color" : "green"} : '{}',
                     estadoColorI = [0,1,2].includes(itemprestaciones.CInfo) ? {"color": "red"} : itemprestaciones.CInfo === 3 ? {"color": "green"} : '{}',
                     estadoI = itemprestaciones.CInfo === 1 ? 'Pendiente' : itemprestaciones.CInfo === 1 ? 'Borrador' : itemprestaciones.CInfo === 3 ? 'Cerrado' : '',
-                    colorAdjInformador = itemprestaciones.profesionales2.InfAdj === 1 && response.adjuntoInformador === 0 ? {"color": "red"} : itemprestaciones.profesionales2.InfAdj === 1 && response.adjuntoInformador === 0 ? {"color": "green"} : '{}',
+                    colorAdjInformador = itemprestaciones.profesionales2.InfAdj === 1 && response.adjuntoInformador === 0 ? {"color": "red"} : itemprestaciones.profesionales2.InfAdj === 1 && response.adjuntoInformador === 1 ? {"color": "green"} : '{}',
                     estadoAdjInformador = null,
                     tipo = factura.Tipo || '',
                     sucursal = factura.Sucursal || '',
@@ -558,16 +519,32 @@ $(document).ready(()=>{
                     case (itemprestaciones.profesionales2.InfAdj === 0):
                         estadoAdjInformador = 'No lleva Adjuntos';
                         break;
-                    case (itemprestaciones.profesionales2.InfAdj === 1 && itemprestaciones.adjuntoInformador === 0):
+                    case (itemprestaciones.profesionales2.InfAdj === 1 && response.adjuntoInformador === 0):
                         estadoAdjInformador = 'Pendiente';
                         break;
-                    case (itemprestaciones.profesionales2.InfAdj === 1 && itemprestaciones.adjuntoInformador === 1):
+                    case (itemprestaciones.profesionales2.InfAdj === 1 && response.adjuntoInformador === 1):
                         estadoAdjInformador = 'Adjuntado';
                         break;
                     default:
                         estadoAdjInformador = '';
                         break;
                 }
+
+                checkAdjunto(itemprestaciones.Id, 'informador').then(response => {
+                    if (response === true) {
+                        $('.ex-adjuntarInformador').show();
+                    } else {
+                        $('.ex-adjuntarInformador').hide();
+                    }
+                });
+            
+                checkAdjunto(itemprestaciones.Id, 'efector').then(response => {
+                    if (response === true) {
+                        $('.ex-adjuntarEfector').show();
+                    } else {
+                        $('.ex-adjuntarEfector').hide();
+                    }
+                });
                 
                 $('#ex-prestacion').empty().text(idPrestacion);
                 $('#ex-qr').empty().text(response.qrTexto);
@@ -614,6 +591,25 @@ $(document).ready(()=>{
                 $('#ex-FechaNC').val(notaCreditoEx?.Fecha);
                 $('#ex-NumeroNC').val(notaCEx);
 
+                $('#ex-efectores').empty().append('<option selected value="' + itemprestaciones.IdProfesional + '">' + itemprestaciones.profesionales1.Apellido + ' ' + itemprestaciones.profesionales1.Nombre + '</option>');
+
+                $('#ex-informadores').empty().append('<option selected value="' + itemprestaciones.IdProfesional2 + '">' + itemprestaciones.profesionales2.Apellido + ' ' + itemprestaciones.profesionales2.Nombre + '</option>');
+
+                asignar(efector, 'efector');
+                asignar(informador, 'informador');
+                liberar(cadj, efector, 'efector');
+                liberar(CInfo, informador, 'informador');
+                abrir(cadj);
+                cerrar(cadj, efector, 'efector');
+                cerrar(cadj, informador, 'informador');
+                optionsGeneral(examenes.proveedor1.Id, 'efector');
+                optionsGeneral(examenes.proveedor2.Id, 'informador');
+                listadoE(itemprestaciones.Id);
+                listadoI(itemprestaciones.Id);
+
+                eventoAbrir(itemprestaciones.Id);
+                eventoCerrar(itemprestaciones.Id);
+                eventoAsignar(itemprestaciones.Id);
 
             })
             .fail(function(jqXHR){
@@ -622,6 +618,48 @@ $(document).ready(()=>{
                 checkError(jqXHR.status, errorData.msg);
                 return;  
             });
+    }
+
+    function saveExamen(id){
+
+        idExamen = [];
+        if (Array.isArray(id)) {
+            $.each(id, function(index, item) {
+                idExamen.push(item);
+              });
+        }else{
+            idExamen.push(id);
+        }
+
+        if (idExamen.length === 0) {
+            toastr.warning("No existe el exámen o el paquete no contiene examenes");
+            return;
+        }
+        preloader('on');
+        $.ajax({
+
+            url: saveItemExamenes,
+            type: 'post',
+            data: {
+                _token: TOKEN,
+                idPrestacion: ID,
+                idExamen: idExamen
+            },
+            success: function(){
+                preloader('off');
+                $('#listaExamenes').empty();
+                $('#exam').val([]).trigger('change.select2');
+                $('#addPaquete').val([]).trigger('change.select2');
+                cargarExamen();
+        },
+            error: function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;  
+            }
+        });
+
     }
 
     function opcionesExamenes(item, opcion){
@@ -813,6 +851,365 @@ $(document).ready(()=>{
                     reject(error);
                 });
         });
+    }
+
+    async function checkAdjunto(id, tipo) {
+        if (['', 0, null].includes(id)) return;
+
+        return new Promise((resolve, reject) => {
+            $.get(checkAdj, { Id: id, Tipo: tipo })
+                .done(function(response) { 
+                    resolve(response);      
+                })
+                .fail(function(error) {
+                    console.error("Error:", error);
+                    reject(error);
+                });
+        });
+    }
+
+    /*******************************Modal Examen ************************************/
+
+    function eventoAbrir(id) {
+        $(document).on('click', '#ex-abrir', function(e){
+            e.preventDefault();
+            let lista = {3: 0, 4: 1, 5: 2};
+    
+            if(cadj in lista){
+                preloader('on');
+                $.post(updateItem, {Id : id, _token: TOKEN, CAdj: lista[cadj], Para: 'abrir' })
+                    .done(function(){
+                        preloader('off');
+                        toastr.success('Se ha realizado la acción correctamente');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 3000);
+                        
+                    })
+                    .fail(function(jqXHR){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
+                    });
+            }
+        });
+    }
+
+    function eventoCerrar(id) {
+        $(document).on('click', '#ex-cerrar, #ex-cerrarI', function(){
+            let who = $(this).hasClass('ex-cerrar') ? 'cerrar' : 'cerrarI',
+                listaE = {0: 3, 2: 5, 1: 4},
+                listaI = ['0', '1', '2', '3'];
+    
+            if(who === 'cerrar' && cadj in listaE){
+                preloader('on');
+                $.post(updateItem, {Id : id, _token: TOKEN, CAdj: listaE[cadj], Para: who })
+                    .done(function(){
+                        preloader('off');
+                        toastr.success('Se ha cerrado al efector correctamente');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 3000);
+                        
+                    })
+                    .fail(function(jqXHR){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
+                    });
+    
+            }else if(who === 'cerrarI' && listaI.includes(CInfo)){
+                preloader('on');
+                $.post(updateItem, {Id : id, _token: TOKEN, CInfo: 3, Para: who })
+                    .done(function(){
+                        preloader('off');
+                        toastr.success('Se ha cerrado al informador correctamente');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 3000);
+                        
+                    })
+                    .fail(function(jqXHR){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
+                    });
+            }
+        });
+    }
+
+    function eventoAsignar(id) {
+        $(document).on('click', '#asignar, #asignarI', function(e) {
+            e.preventDefault();
+    
+            let who = $(this).hasClass('asignar') ? 'asignar' : 'asignarI',
+                check = (who === 'asignar') ? $('#efectores').val() : $('#informadores').val();
+    
+            if(['', null, 0, '0'].includes(check)) {
+                toastr.warning("Debe seleccionar un Efector/Informador para poder asignar uno");
+                return;
+            }
+    
+            swal({
+                title: "¿Esta seguro que desea asignar?",
+                icon: "warning",
+                buttons: ["Cancelar", "Aceptar"]
+            }).then((confirmar) => {
+                if(confirmar) {
+    
+                    preloader('on');
+                    $.post(updateAsignado, { Id: id, _token: TOKEN, IdProfesional: check, fecha: 1, Para: who})
+                        .done(function(){
+                            preloader('off');
+                            toastr.success('Se ha actualizado la información de manera correcta');
+                            setTimeout(() => {
+                                location.reload();             
+                            }, 3000); 
+                        })
+                        .fail(function(jqXHR){
+                            preloader('off');
+                            let errorData = JSON.parse(jqXHR.responseText);            
+                            checkError(jqXHR.status, errorData.msg);
+                            return;
+                        });
+                }
+            });
+        });
+    } 
+    
+
+    async function asignar(e, tipo){
+
+        if (tipo === 'efector') {
+
+            let resultado = await (e === '0' || e === null || e === '');
+
+            if (resultado) {
+
+                $('.ex-asignar').show();
+                $('#ex-informadores').prop('disabled', true);
+                $('.ex-adjuntarInformador').hide();
+            }
+        
+        } else if (tipo === 'informador') {
+
+            let resultado = await (e === '0' || e === null || e === '') && (efector !== '0');
+            
+            if (resultado) {
+                $('.ex-asignarI').show();
+                $('.ex-liberarI').hide();
+                $('.ex-abrir').show();
+            }
+        }
+    }
+
+    async function liberar(val, e, tipo){
+        
+        if(tipo === 'efector') {
+
+            let resultado = await (!['',null,'0'].includes(e) && valCerrar.includes(val));
+            
+            if (resultado) {
+                $('.ex-liberar').show();
+                $('.ex-asignarI').hide();
+                $('.ex-adjuntarEfector').show();
+            } 
+        }else if(tipo === 'informador') {
+
+            let resultado = await (!['',null,'0'].includes(e) && valCerrarI !== val);
+        
+            if (resultado) {
+                $('.ex-liberarI').show();
+                $('.ex-asignarI').hide();
+                $('.ex-adjuntarInformador').show();
+            }  
+
+        }
+    }
+
+    async function abrir(val){
+        let resultado = await (valAbrir.includes(val));
+        
+        if (resultado) {
+
+            $('.ex-abrir').show();
+            $('#ex-informadores').prop('disabled', false);
+        
+        } else {
+
+            $('.ex-abrir').hide();  
+        }
+    }
+
+    async function cerrar(val, e, tipo){  
+
+        if (tipo === 'efector') {
+
+            let resultado = await (valCerrar.includes(val) && e !== '0');
+            
+            if(resultado){
+                $('.ex-cerrar').show();
+                $('#ex-informadores').prop('disabled', true);
+
+            }
+        } else if (tipo === 'informador') {
+
+            let resultado = await (efector !== '0' && informador !== '0') && (CInfo !== '3'),
+                final = await (efector !== '0' && informador !== '0') && (Estado === 'Cerrado' && EstadoI === 'Cerrado');
+
+            if(resultado){
+   
+                $('.ex-cerrarI').show();
+                $('.ex-abrir').hide();
+                $('.ex-adjuntarInformador').show();
+
+            }else if(final){
+
+                $('.ex-cerrarI').hide();
+                $('.ex-abrir').hide();
+                $('.ex-liberarI').hide();
+                $('.ex-adjuntarInformador').hide();
+            }
+        }
+    }
+
+    async function optionsGeneral(id, tipo) {
+        
+        let etiqueta, valor;
+
+        if (tipo === 'efector') {
+            etiqueta = $('#ex-efectores');
+            valor = etiqueta.val();
+
+        } else if (tipo === 'informador') {
+            etiqueta = $('#ex-informadores');
+            valor = etiqueta.val();
+        }
+
+        if (valor === '0') {
+
+            $.get(await listGeneral, { proveedor: id, tipo: tipo })
+                .done(function (response) {
+                    let data = response.resultados;
+
+                    etiqueta.empty().append('<option value="">Elija una opción</option>');
+
+                    $.each(data, function (index, d) {
+                        let contenido = `<option value="${d.Id}">${d.NombreCompleto}</option>`;
+                        etiqueta.append(contenido);
+                    });
+                });
+        }
+    }
+
+    async function listadoE(id){
+
+        $('#listaefectores').empty();
+
+        preloader('on');
+        $.get(await paginacionGeneral, {Id: id, tipo: 'efector'})
+            .done(function(response){
+                preloader('off');
+                let data = response.resultado;
+   
+                $.each(data, function(index, d){
+
+                    let contenido = `
+                        <tr>
+                            <td>${d.Nombre}</td>
+                            <td>${(d.DescripcionE !== null && d.DescripcionE !== undefined  && d.DescripcionE !== '' ? d.DescripcionE : ' ')}</td>
+                            <td>${(d.Adjunto === 0 ? 'Físico' : 'Digital')}</td>
+                            <td>${(d.MultiE === 0 ? 'Simple' : 'Multi')}</td>
+                            <td>
+                                <div class="d-flex justify-content-center align-items-center gap-2">
+                                    <div class="edit">
+                                        <a href="${descargaE}/${d.RutaE}" target="_blank">
+                                            <button type="button" class="btn btn-sm iconGeneral" title="Ver"><i class="ri-search-eye-line"></i></button>
+                                        </a>
+                                    </div>
+                                    <div class="download">
+                                        <a href="${descargaE}/${d.RutaE}" target="_blank" download>
+                                            <button type="button" class="btn btn-sm iconGeneral" title="Descargar"><i class="ri-download-2-line"></i></button>
+                                        </a>
+                                    </div>
+                                    ${(Estado === 'Cerrado') ? `
+                                    <div class="replace">
+                                        <button data-id="${d.IdE}" data-tipo="efector" class="btn btn-sm iconGeneral replaceAdjunto" data-bs-toggle="modal" data-bs-target="#replaceAdjunto" title="Reemplazar archivo">
+                                            <i class="ri-file-edit-line"></i>
+                                        </button>
+                                    </div>
+                                    ` : ``}
+                                    ${(Estado === 'Cerrado') || (d.Anulado === 1) ? `
+                                    <div class="remove">
+                                        <button data-id="${d.IdE}" data-tipo="efector" class="btn btn-sm iconGeneral deleteAdjunto" title="Eliminar">
+                                            <i class="ri-delete-bin-2-line"></i>
+                                        </button>
+                                    </div>
+                                    ` : ``}
+                                    
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+
+                    $('#listaefectores').append(contenido);
+                });
+            })
+    }
+
+    async function listadoI(id){
+
+        $('#listainformadores').empty();
+
+        preloader('on');
+        $.get(await paginacionGeneral, {Id: id, tipo: 'informador'})
+            .done(function(response){
+                preloader('off');
+                let data = response.resultado;
+
+                $.each(data, function(index, d){
+
+                    let contenido = `
+                        <tr>
+                            <td>${d.Nombre}</td>
+                            <td>${(d.DescripcionI !== null && d.DescripcionI !== undefined && d.DescripcionI !== '' ? d.DescripcionI : '')}</td>
+                            <td>
+                                <div class="d-flex justify-content-center align-items-center gap-2">
+                                    <div class="edit">
+                                        <a href="${descargaI}/${d.RutaI}" target="_blank">
+                                            <button type="button" class="btn btn-sm iconGeneral" title="Ver"><i class="ri-search-eye-line"></i></button>
+                                        </a>
+                                    </div>
+                                    <div class="download">
+                                        <a href="${descargaI}/${d.RutaI}" target="_blank" download>
+                                            <button type="button" class="btn btn-sm iconGeneral" title="Descargar"><i class="ri-download-2-line"></i></button>
+                                        </a>
+                                    </div>
+                                    ${(EstadoI === 'Cerrado') ? `
+                                    <div class="replace">
+                                        <button data-id="${d.IdI}" data-tipo="informador" data-bs-toggle="modal" data-bs-target="#replaceAdjunto" class="btn btn-sm iconGeneral replaceAdjunto" title="Reemplazar archivo">
+                                            <i class="ri-file-edit-line"></i>
+                                        </button> 
+                                    </div>
+                                        `:``}
+                                    ${(EstadoI === 'Cerrado') ? `
+                                    <div class="remove">
+                                        <button data-id="${d.IdI}" data-tipo="informador" class="btn btn-sm iconGeneral deleteAdjunto" title="Eliminar">
+                                            <i class="ri-delete-bin-2-line"></i>
+                                        </button>
+                                    </div>
+                                    ` : ''}
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+
+                    $('#listainformadores').append(contenido);
+                });
+            })
     }
 
 });
