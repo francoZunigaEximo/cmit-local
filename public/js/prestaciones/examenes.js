@@ -731,7 +731,7 @@ $(document).ready(()=>{
                 $('#ex-anulado').empty().html(anulado);
                 $('#ex-identificacion').val(itemprestaciones.Id || '');
                 $('#ex-prestacion').val(itemprestaciones.IdPrestacion || '');
-                $('#ex-prestacionTitulo').empty().text(idPrestacion);
+                $('#ex-prestacionTitulo').empty().text(itemprestaciones.IdPrestacion || '');
                 $('#ex-fecha').val(itemprestaciones.prestaciones.Fecha || '');
                 $('#ex-examen').val(examenes.Nombre || '');
                 $('#ex-provEfector').val(examenes.proveedor1.Nombre || '');
