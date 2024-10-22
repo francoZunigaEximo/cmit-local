@@ -971,7 +971,7 @@
                     <div class="col-md-11 mx-auto">
 
                         <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                            <h4 class="mb-sm-0">Exámen prestación <span id="ex-prestacion" class="custom-badge original"></span> | Paciente <span id="ex-paciente" class="custom-badge original"></span> <span id="ex-anulado"></span></h4>
+                            <h4 class="mb-sm-0">Exámen prestación <span id="ex-prestacionT" class="custom-badge original"></span> | Paciente <span id="ex-paciente" class="custom-badge original"></span> <span id="ex-anulado"></span></h4>
                             <input type="hidden" value="" id="Id">
                             <div class="page-title-right d-inline">
                                 <p><strong>QR: </strong><span id="ex-qr"></span></p>

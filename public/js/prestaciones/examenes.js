@@ -698,6 +698,16 @@ $(document).ready(()=>{
                       factura = itemprestaciones.facturadeventa,
                       notaCreditoEx = itemprestaciones?.notaCreditoIt?.notaCredito;
 
+                const eventos = [
+                    eventoAbrir,
+                    eventoCerrar,
+                    eventoAsignar,
+                    eventoLiberar,
+                    eventoAdjuntar,
+                    eventoEliminar,
+                    eventoActualizar
+                ];
+
                 preloader('off');
                 let paciente = pacientes.Nombre + ' ' + pacientes.Apellido,
                     anulado = itemprestaciones.Anulado === 1 ? '<span class="custom-badge rojo">Bloqueado</span>' : '',
@@ -721,6 +731,7 @@ $(document).ready(()=>{
                 $('#ex-anulado').empty().html(anulado);
                 $('#ex-identificacion').val(itemprestaciones.Id || '');
                 $('#ex-prestacion').val(itemprestaciones.IdPrestacion || '');
+                $('#ex-prestacionTitulo').empty().text(idPrestacion);
                 $('#ex-fecha').val(itemprestaciones.prestaciones.Fecha || '');
                 $('#ex-examen').val(examenes.Nombre || '');
                 $('#ex-provEfector').val(examenes.proveedor1.Nombre || '');
@@ -783,12 +794,9 @@ $(document).ready(()=>{
                 listadoIModal(itemprestaciones.Id);
 
                 ocultarCampos();
-                eventoAbrir(itemprestaciones.Id);
-                eventoCerrar(itemprestaciones.Id);
-                eventoAsignar(itemprestaciones.Id);
-                eventoLiberar(itemprestaciones.Id);
-                eventoAdjuntar(itemprestaciones.Id);
-                eventoEliminar(itemprestaciones.Id);
+                $.each(eventos, function(index, evento) {
+                    evento(itemprestaciones.Id);
+                });
 
                 multiExEfector(itemprestaciones); //Activa el multiefector en el listado de Archivos
                 listaExEfector(response.multiEfector); // Listado de los examenes MultiEfector
@@ -799,6 +807,8 @@ $(document).ready(()=>{
                 listaExInformador(response.multiInformador); // Listado de los examenes MultiInformador
 
                 $('#ex-multiE').val(itemprestaciones.examenes.proveedor2.MultiE == 1 && itemprestaciones.profesionales2.InfAdj === 1 ? 'success' : 'fail');
+
+                checkBloq(itemprestaciones.Id);
 
             })
             .fail(function(jqXHR){
@@ -1030,6 +1040,7 @@ $(document).ready(()=>{
                         borrarCache();
                         ocultarCampos();
                         $('#modalEfector, #modalInformador').removeClass('show');
+                        $('.fileA').val('');
                         loadModalExamen(identificacion, prestacion);
                     },
                     error: function (jqXHR) {
@@ -1044,7 +1055,7 @@ $(document).ready(()=>{
     
     }
 
-    function eventoEliminar(idItem) {
+    function eventoEliminar(idItem, multi) {
         $(document).on('click', '.deleteAdjunto', function(e){
             e.preventDefault();
             let id = $(this).data('id'), tipo = $(this).data('tipo');
@@ -1057,7 +1068,30 @@ $(document).ready(()=>{
             swal({
                 title: "¿Está seguro que desea eliminar?",
                 icon: "warning",
-                buttons: ["Cancelar", "Aceptar"]
+                buttons: {
+                    cancel: {
+                        text: "Cancelar",
+                        value: null,
+                        visible: true,
+                        className: "",
+                        closeModal: true
+                    },
+                    aceptar: {
+                        text: "Aceptar",
+                        value: true,
+                        visible: true,
+                        className: "",
+                        closeModal: true
+                    },
+                    custom: {
+                        text: "Eliminación multiple",
+                        value: "multiple",
+                        //visible: multi === 1, // solo visible si multi es 1
+                        visible:true,
+                        className: "",
+                        closeModal: true
+                    }
+                }
             }).then((confirmar) =>{
                 if(confirmar){
                     preloader('on');
@@ -1067,9 +1101,7 @@ $(document).ready(()=>{
                             listadoEModal(idItem);
                             listadoIModal(idItem);
                             preloader('off');
-                            toastr.success(response.msg);
-                            
-                            
+                            toastr.success(response.msg);  
                         })
                         .fail(function(jqXHR){
                             preloader('off');
@@ -1077,8 +1109,35 @@ $(document).ready(()=>{
                             checkError(jqXHR.status, errorData.msg);
                             return;
                         })
+                }else if(confirmar === 'multiple') {
+
                 }
             });
+        });
+    }
+
+    function eventoActualizar(id) {
+        $(document).on('click', '#actExamenModal', function(e){
+            e.preventDefault();
+    
+            let ObsExamen = $('#ex-ObsExamen').val(), Profesionales2 = $('#ex-informadores').val(), Obs = $('#ex-Obs').val(), Fecha = $('#ex-Fecha').val();
+            
+            preloader('on');
+            $.post(updateItemExamen, {Id: ID, _token: TOKEN, ObsExamen: ObsExamen, Profesionales2: Profesionales2, Obs: Obs, Fecha: Fecha})
+                
+                .done(function(response) {
+    
+                    borrarCache();
+                    loadModalExamen(identificacion, prestacion);
+                    preloader('off');
+                    toastr.success(response.msg);
+                })
+                .fail(function(jqXHR) {
+                    preloader('off');
+                    let errorData = JSON.parse(jqXHR.responseText);            
+                    checkError(jqXHR.status, errorData.msg);
+                    return;
+                });
         });
     }
 
@@ -1511,6 +1570,27 @@ $(document).ready(()=>{
                     reject(error);
                 });
         });
+    }
+
+    function checkBloq(id) {
+
+        $.get(getBloqueoItemPrestacion, {Id: id})
+            .done(async function(response){
+
+                if(await response.prestacion === true){
+
+                    $('#ex-Fecha, #ex-ObsExamen, #ex-efectores, #ex-informadores').prop('disabled', true);
+                    $('button').removeClass('ex-asignar ex-abrir ex-cerrar ex-asignarI ex-cerrarI');
+                    //p$('button').removeAttr('id');
+                    $('#ex-liberarI, #ex-liberar').show();
+                    }
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            });
     }
 
 });
