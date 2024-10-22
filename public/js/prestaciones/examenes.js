@@ -716,7 +716,6 @@ $(document).ready(()=>{
                     nroNc = notaCreditoEx?.Nro || '',
                     notaCEx = tipoNc + sucursalNc + nroNc;
                 
-                $('#ex-prestacion').empty().text(idPrestacion);
                 $('#ex-qr').empty().text(response.qrTexto);
                 $('#ex-paciente').empty().text(paciente);
                 $('#ex-anulado').empty().html(anulado);
