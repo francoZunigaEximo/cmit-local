@@ -62,8 +62,12 @@ class ItemPrestacionesController extends Controller
                     'examenes' => function ($examenesQuery) use ($query) {
                         $examenesQuery->where('IdProveedor', $query->examenes->IdProveedor);
                     },
-                    'examenes.proveedor1',
-                    'examenes.proveedor2',
+                    'examenes.proveedor1' => function ($proveedorQuery) use ($query) {
+                        $proveedorQuery->where('Multi', 1);
+                    },
+                    'examenes.proveedor2' => function ($proveedorQuery) use ($query) {
+                        $proveedorQuery->where('Multi', 1);
+                    },
                     'profesionales1',
                     'profesionales2',
                     'itemsInfo',
@@ -72,6 +76,8 @@ class ItemPrestacionesController extends Controller
                 ])
                 ->where('itemsprestaciones.IdPrestacion', $query->IdPrestacion)
                 ->whereIn('itemsprestaciones.IdProfesional', [$query->IdProfesional, 0])
+                
+                ->whereNot('itemsprestaciones.Anulado', 1)
                 ->get(),
                 'multiInformador' => ItemPrestacion::with([
                     'prestaciones',

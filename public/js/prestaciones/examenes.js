@@ -1472,17 +1472,21 @@ $(document).ready(()=>{
 
         if([null, undefined, ''].includes(data)) return;
         $('.listaGrupoEfector').empty();
+
         $.each(data, function(index, examen) {
-            
+
+        if (examen.examenes !== null) {
             let contenido = `
                 <label class="list-group-item">
                     <input class="form-check-input me-1" type="checkbox" id="Id_multiAdj_${ examen.Id }" value="${examen.Id}" ${ examen.archivos_count > 0 ? 'disabled' : 'checked' }> 
-                    ${ examen.archivos_count > 0 ? examen.examenes?.Nombre + ' <i title="Con archivo adjunto" class="ri-attachment-line verde"></i>' : examen.examenes?.Nombre}
+                    ${ examen.archivos_count > 0 ? examen.examenes.Nombre + ' <i title="Con archivo adjunto" class="ri-attachment-line verde"></i>' : examen.examenes.Nombre}
                 </label>
             `;
 
             $('.listaGrupoEfector').append(contenido);
-        });
+        }
+    });
+
     }
 
     function multiExInformador(data) {
