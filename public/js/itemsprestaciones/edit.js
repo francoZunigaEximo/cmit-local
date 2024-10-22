@@ -368,7 +368,7 @@ $(document).ready(function(){
                     setTimeout(() => {
                         listadoE();
                         listadoI();
-                        $('#replaceAdjunto').modal('hide');
+                        $('#replaceAdjunto').removeClass('show');
                     }, 3000);
                 },
                 error: function (jqXHR) {
@@ -608,29 +608,6 @@ $(document).ready(function(){
                     $('#listainformadores').append(contenido);
                 });
             })
-    }
-
-    function verificarArchivo(archivo){
-
-        if (!archivo || archivo.size === 0) {
-            toastr.warning("Debe seleccionar un archivo", "Atención");
-            return false;
-        }
-
-        if (!archivo.name.includes('.')) {
-            toastr.warning("El archivo no tiene extensión o la misma es invalida", "Atención");
-            return false;
-        }
-
-        let tipoArchivo = archivo.type.toLowerCase();
-
-        if(tipoArchivo !== 'application/pdf' && !tipoArchivo.startsWith('image/')) {
-            toastr.warning("Los archivos permitidos son imágenes o PDF", "Atención");
-            return false;
-        }
-
-        return true
-
     }
 
     function checkBloq(){

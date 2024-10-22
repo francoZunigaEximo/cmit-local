@@ -1,7 +1,9 @@
 {
   "private": true,
   "dependencies": {
-    "n": "^9.1.0"
+    "n": "^9.1.0",
+    "sweetalert": "^2.1.2",
+    "toastr": "^2.1.4"
   },
   "name": "cmit",
   "description": "![Badge en Desarollo](https://img.shields.io/badge/STATUS-EN%20DESAROLLO-green)",
@@ -22,6 +24,7 @@
     "postcss": "^8.4.31",
     "tailwindcss": "^3.3.3",
     "vite": "^4.4.11",
+    "vite-plugin-inspect": "^0.8.7",
     "vite-plugin-laravel": "^0.3.1"
   }
 }

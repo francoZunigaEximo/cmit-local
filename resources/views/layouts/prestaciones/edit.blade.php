@@ -546,6 +546,7 @@
     </div>
 </div>
 
+
 <div id="fichaLaboral" class="modal fadeInUp" tabindex="-1" aria-labelledby="myModalLabel" aria-hidde="true" style="display: none">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
@@ -958,7 +959,7 @@
     </div>
 </div>
 
-<div id="modalExamen" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none">
+<div id="modalExamen" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" style="display: none; z-index: 9998">
     <div class="modal-dialog modal-fullscreen">
         <div class="modal-content ">
             <div class="modal-header">
@@ -1084,7 +1085,7 @@
                                         </div>
 
                                         <div class="col-md-9 text-end">
-                                            <button type="button" class="btn botonGeneral ex-adjuntarEfector" data-bs-toggle="modal" data-bs-target="#modalEfector">Adjuntar archivo</button>
+                                            <button type="button" class="btn botonGeneral ex-adjuntarEfector" data-bs-toggle="offcanvas" data-bs-target="#modalEfector">Adjuntar archivo</button>
                                         </div>
                                     </div>
 
@@ -1136,7 +1137,7 @@
                                         </div>
 
                                         <div class="col-md-9 text-end">
-                                            <button type="button" class="btn botonGeneral ex-adjuntarInformador"  data-bs-toggle="modal" data-bs-target="#modalInformador">Adjuntar archivo</button>
+                                            <button type="button" class="btn botonGeneral ex-adjuntarInformador"  data-bs-toggle="offcanvas" data-bs-target="#modalInformador">Adjuntar archivo</button>
                                         </div>
                                     </div>
                                 </div>
@@ -1234,6 +1235,95 @@
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+<div class="offcanvas offcanvas-end" tabindex="-1" id="replaceAdjunto" aria-labelledby="offcanvasRightLabel" style="z-index: 9999">
+    <div class="offcanvas-header">
+        <h5 id="offcanvasRightLabel">Reemplazar archivo</h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body text-center">
+        <form id="form-replace">
+            <input type="file" class="form-control" name="fileReplace"/>
+            <input type="hidden" name="replaceId" id="replaceId" value="">
+            <input type="hidden" name="replaceTipo" id="replaceTipo" value="">
+            <div class="mt-2 text-center">
+                <button type="button" class="btn botonGeneral btnReplaceAdj">Guardar adjunto</button>
+            </div>
+        </form> 
+    </div>
+</div>
+
+
+<div class="offcanvas offcanvas-end" tabindex="-1" id="modalEfector" aria-labelledby="offcanvasRightLabel" style="z-index: 9999">
+    <div class="offcanvas-header">
+        <h5 id="offcanvasRightLabel">Adjuntar archivo Efector</h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body text-center">
+        <form id="form-efector">
+
+            <div class="multiEf">
+                <div class="alert alert-info alert-border-left alert-dismissible fade show mb-2" role="alert">
+                    Exámen con multi adjunto habilitado. Elija a que exámen quiere asociar el reporte.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+               
+                <div class="list-group listaGrupoEfector">
+                </div>
+            </div>
+            <input type="file" class="form-control fileA" name="fileEfector"/>
+        
+            <div class="mt-3">
+                <label for="Descripcion" class="form-label">Descripción</label>
+                <textarea class="form-control" name="DescripcionE" id="DescripcionE" rows="5"></textarea>
+                <input type="hidden" id="ex-multi">
+            </div>
+        </form> 
+        <div class="mt-2 text-center">
+            <button type="button" class="btn botonGeneral ex-btnAdjEfector">Guardar adjunto</button>
+        </div>
+        
+        
+    </div>
+</div>
+
+<div class="offcanvas offcanvas-end" tabindex="-1" id="modalInformador" aria-labelledby="offcanvasRightLabel" style="z-index: 9999">
+    <div class="offcanvas-header">
+        <h5 id="offcanvasRightLabel">Adjuntar archivo Informador</h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body text-center">
+       
+        <form id="form-informador">
+                    
+            <div class="multiInf">
+                <div class="alert alert-info alert-border-left alert-dismissible fade show mb-2" role="alert">
+                    Exámen con multi adjunto habilitado. Elija el reporte que quiere asociar.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+           
+                <div class="list-group listaGrupoInformador">
+                </div>
+            
+            </div>
+            <input type="file" class="form-control fileA" name="fileInformador"/>
+        
+            <div class="mt-3">
+                <label for="Descripcion" class="form-label">Descripción</label>
+                <textarea class="form-control" name="DescripcionI" id="DescripcionI" rows="5"></textarea>
+                <input type="hidden" id="ex-multiE">
+            </div>
+        </form> 
+        <div class="mt-2 text-center">
+            <button type="button" class="btn botonGeneral ex-btnAdjInformador">Guardar adjunto</button>
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
 <script>
 //Rutas
 const updatePrestacion = "{{ route('updatePrestacion') }}";
@@ -1280,6 +1370,8 @@ const descargaE = "@fileUrl('lectura')/AdjuntosEfector";
 const descargaI = "@fileUrl('lectura')/AdjuntosInformador";
 const deleteIdAdjunto = "{{ route('deleteIdAdjunto') }}";
 const replaceIdAdjunto = "{{ route('replaceIdAdjunto') }}";
+const updateAsignado = "{{ route('updateAsignado') }}";
+const updateItem = "{{ route('updateItem') }}";
 
 //Extras
 const TOKEN = "{{ csrf_token() }}";
@@ -1287,6 +1379,7 @@ const UBICACION = "{{ request()->query('location') }}";
 const ID = "{{ $prestacione->Id }}";
 const IDEMPRESA = "{{ $prestacione->empresa->Id }}";
 const editUrl = "{{ route('itemsprestaciones.edit', ['itemsprestacione' => '__examen__'])}}";
+const cacheDelete = "{{ route('prestaciones.cacheDelete') }}";
 
 
 //Select
@@ -1305,7 +1398,7 @@ const selectTipoPrestacion = "{{ $prestacione->TipoPrestacion }}";
 @push('scripts')
 <script src="{{ asset('js/prestaciones/edit.js') }}?v={{ time() }}"></script>
 <script src="{{ asset('js/prestaciones/utils.js') }}?v={{ time() }}"></script>
-<script src="{{ asset('js/prestaciones/examenes.js') }}?v={{ time() }}"></script>
+<script src="{{ asset('js/prestaciones/examenes.js')}}?v= {{ time() }}"></script>
 <script src="{{ asset('js/fichalaboral/edit.js')}}?v={{ time() }}"></script>
 <script src="{{ asset('js/prestaciones/modalEdit.js')}}?v={{ time() }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>

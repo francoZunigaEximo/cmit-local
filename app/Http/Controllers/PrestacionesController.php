@@ -25,6 +25,8 @@ use Maatwebsite\Excel\Facades\Excel;
 use stdClass;
 use Illuminate\Support\Facades\Auth;
 use App\Traits\CheckPermission;
+use Illuminate\Support\Facades\Artisan;
+
 
 class PrestacionesController extends Controller
 {
@@ -665,6 +667,12 @@ class PrestacionesController extends Controller
         } else {
             return response()->json(['msg' => 'No se ha podido actualizar la información.'], 500);
         }
+    }
+
+    public function cacheDelete():void
+    {
+        Artisan::call('view:clear');
+        Artisan::call('cache:clear');
     }
 
     private function verificarEstados(int $id)

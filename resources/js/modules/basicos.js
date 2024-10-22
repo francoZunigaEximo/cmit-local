@@ -1,19 +1,11 @@
-$(document).ready(function() {
-    toastr.options = {
-        closeButton: true,   
-        progressBar: true,    
-        timeOut: 3000,        
-    };
-});
-
-function preloader(opcion) {
+export function preloader(opcion) {
     $('#preloader').css({
         opacity: '0.3',
         visibility: opcion === 'on' ? 'visible' : 'hidden'
     });
 }
 
-function verificarCorreos(emails) {
+export function verificarCorreos(emails) {
         
     let emailRegex = /^[\w.-]+(\.[\w.-]+)*@[\w.-]+\.[A-Za-z]{2,}$/;
     let correosInvalidos = [];
@@ -35,11 +27,11 @@ function verificarCorreos(emails) {
     return true; 
 }
 
-function acortadorTexto(cadena, nroCaracteres = 10) {
+export function acortadorTexto(cadena, nroCaracteres = 10) {
     return cadena.length <= nroCaracteres ? cadena : cadena.substring(0,nroCaracteres);
 }
 
-function saltoLinea(cadena, caracteres = 110) {
+export function saltoLinea(cadena, caracteres = 110) {
     let textoConSaltos = '';
     for (var i = 0; i < cadena.length; i++) {
         textoConSaltos += cadena[i];
@@ -50,12 +42,12 @@ function saltoLinea(cadena, caracteres = 110) {
     return textoConSaltos;
 }
 
-function ajustarFecha(fecha) {
+export function ajustarFecha(fecha) {
     let fechaArray = fecha.split(' '), cortar = fechaArray[0].split('-'), nuevaFecha = `${cortar[2]}/${cortar[1]}/${cortar[0]}`;
     return `${nuevaFecha} ${fechaArray[1]} `;
 }
 
-function fechaNow(fechaAformatear, divider, format) {
+export function fechaNow(fechaAformatear, divider, format) {
     let dia, mes, anio; 
 
     if (fechaAformatear === null) {
@@ -74,7 +66,7 @@ function fechaNow(fechaAformatear, divider, format) {
     return (format === 1) ? `${dia}${divider}${mes}${divider}${anio}` : `${anio}${divider}${mes}${divider}${dia}`;
 }
 
-function quitarDuplicados(selector) {
+export function quitarDuplicados(selector) {
     let seleccion = $(selector).val();
     let countSeleccion = $(selector + " option[value='" + seleccion + "']").length;
 
@@ -83,7 +75,7 @@ function quitarDuplicados(selector) {
     }
 }
 
-function createFile(tipo, array, name){
+export function createFile(tipo, array, name){
     let filePath = array,
         pattern = /storage(.*)/,
         match = filePath.match(pattern),
@@ -119,13 +111,13 @@ function createFile(tipo, array, name){
     }, 100);
 }
 
-function generarCodigoAleatorio() {
+export function generarCodigoAleatorio() {
 
     let codigo = Math.floor(Math.random() * 9000000) + 1000000;
     return codigo.toString(); 
 }
 
-function tipoPagoPrestacion(tipo) {
+export function tipoPagoPrestacion(tipo) {
     switch (tipo) {
         case "C":
             return "Cuenta Corriente";
@@ -141,7 +133,7 @@ function tipoPagoPrestacion(tipo) {
     }
 }
 
-function tipoSPagoPrestacion(tipo) {
+export function tipoSPagoPrestacion(tipo) {
     switch (tipo) {
         case "A":
             return "Efectivo";
@@ -162,17 +154,17 @@ function tipoSPagoPrestacion(tipo) {
     }
 }
 
-function correoValido(correo) {
+export function correoValido(correo) {
     let comprobar = /^[\w.-]+(\.[\w.-]+)*@[\w.-]+\.[A-Za-z]{2,}$/;
     return comprobar.test(correo);
 }
 
-function verificarUsuario(usuario) {
+export function verificarUsuario(usuario) {
     let validar = /^[A-Za-z0-9]{1,25}$/;
     return validar.test(usuario);
 }
 
-function fechaCompleta(fecha) {
+export function fechaCompleta(fecha) {
     const date = new Date(fecha.replace(' ', 'T'));
 
     // Obtén el día, mes y año
@@ -189,7 +181,7 @@ function fechaCompleta(fecha) {
     return formatoCompleto;
 }
 
-function getDias(fecha){
+export function getDias(fecha){
 
     let fechaActual = new Date(), fechaLimiteAdmision = new Date(fecha), diff = fechaLimiteAdmision.getTime() - fechaActual.getTime();
    
@@ -197,32 +189,9 @@ function getDias(fecha){
 }
 
 
-function stripTags(html) {
+export function stripTags(html) {
     if (html === null || html === undefined) {
         return;
     }
     return html.replace(/<\/?[^>]+(>|$)/g, "");
-}
-
-function verificarArchivo(archivo){
-
-    if (!archivo || archivo.size === 0) {
-        toastr.warning("Debe seleccionar un archivo", "Atención");
-        return false;
-    }
-
-    if (!archivo.name.includes('.')) {
-        toastr.warning("El archivo no tiene extensión o la misma es invalida", "Atención");
-        return false;
-    }
-
-    let tipoArchivo = archivo.type.toLowerCase();
-
-    if(tipoArchivo !== 'application/pdf' && !tipoArchivo.startsWith('image/')) {
-        toastr.warning("Los archivos permitidos son imágenes o PDF", "Atención");
-        return false;
-    }
-
-    return true
-
 }

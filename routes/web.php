@@ -116,6 +116,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('buscarEx', [PrestacionesController::class, 'buscarEx'])->name('buscarEx');
     Route::get('/prestaciones/check-incompleto', [PrestacionesController::class, 'checkIncompleto'])->name('prestaciones.checkIncompleto');
     Route::post('/prestaciones/nueva-observacion', [PrestacionesController::class, 'obsNuevaPrestacion'])->name('obsNuevaPrestacion');
+    Route::post('/prestaciones/borrar-cache', [PrestacionesController::class, 'cacheDelete'])->name('prestaciones.cacheDelete');
     Route::resource('prestaciones', PrestacionesController::class);
 
     //Ruta Ficha Laboral

@@ -57,8 +57,38 @@ class ItemPrestacionesController extends Controller
                 'qrTexto' => $this->generarQR('A', $query->IdPrestacion, $query->IdExamen, $paciente->Id, 'texto'),
                 'adjuntoEfector' => $this->adjuntoEfector($query->Id),
                 'adjuntoInformador' => $this->adjuntoInformador($query->Id),
-                'multiEfector' => $this->multiEfector($query->IdPrestacion, $query->IdProfesional, $query->examenes->IdProveedor),
-                'multiInformador' => $this->multiInformador($query->IdPrestacion, $query->IdProfesional2, $query->examenes->IdProveedor),
+                'multiEfector' => ItemPrestacion::with([
+                    'prestaciones',
+                    'examenes' => function ($examenesQuery) use ($query) {
+                        $examenesQuery->where('IdProveedor', $query->examenes->IdProveedor);
+                    },
+                    'examenes.proveedor1',
+                    'examenes.proveedor2',
+                    'profesionales1',
+                    'profesionales2',
+                    'itemsInfo',
+                    'notaCreditoIt.notaCredito',
+                    'facturadeventa'
+                ])
+                ->where('itemsprestaciones.IdPrestacion', $query->IdPrestacion)
+                ->whereIn('itemsprestaciones.IdProfesional', [$query->IdProfesional, 0])
+                ->get(),
+                'multiInformador' => ItemPrestacion::with([
+                    'prestaciones',
+                    'examenes' => function ($examenesQuery) use ($query) {
+                        $examenesQuery->where('IdProveedor2', $query->examenes->IdProveedor);
+                    },
+                    'examenes.proveedor1', 
+                    'examenes.proveedor2', 
+                    'profesionales1', 
+                    'profesionales2', 
+                    'itemsInfo', 
+                    'notaCreditoIt.notaCredito', 
+                    'facturadeventa'
+                ])
+                ->where('itemsprestaciones.IdPrestacion', $query->IdPrestacion)
+                ->whereIn('itemsprestaciones.IdProfesional2', [$query->IdProfesional2, 0])
+                ->get(),
                 'efectores' => $this->getProfesional($query->IdProfesional, "Efector", $query->IdProveedor)
             ];
 
@@ -81,14 +111,14 @@ class ItemPrestacionesController extends Controller
         }
 
         foreach ($examenes as $examen) {
-            $item = ItemPrestacion::with(['examenes','profesionales2'])->find($examen);
+            $item = ItemPrestacion::with(['examenes.proveedor1','examenes.proveedor2','profesionales2'])->find($examen);
 
             if ($item) 
             {   
                 if ($request->Para === 'abrir')
                 {  
                     $item->CAdj = $lstAbrir[$item->CAdj] ?? $request->CAdj;
-                   
+
                 } elseif ($request->Para === 'cerrar' ) {
 
                     $item->CAdj = $lstCerrar[$item->CAdj] ?? $request->CAdj;
@@ -100,7 +130,15 @@ class ItemPrestacionesController extends Controller
                 
                 }
                 $item->save();
+                $item->refresh();
+            
             }
+
+            $adjuntoEfector = $this->adjuntoEfector($item->Id);
+            $adjuntoInformador = $this->adjuntoInformador($item->Id);
+
+            return response()->json(['data' => $item, 'adjuntoEfector' => $adjuntoEfector, 'adjuntoInformador' => $adjuntoInformador]);
+
         }
 
     }
@@ -221,7 +259,7 @@ class ItemPrestacionesController extends Controller
     public function updateAsignado(Request $request)
     {
 
-        $item = ItemPrestacion::with(['profesionales2', 'proveedores'])->find($request->Id);
+        $item = ItemPrestacion::with(['examenes','examenes.proveedor1', 'examenes.proveedor2','profesionales1', 'profesionales2'])->find($request->Id);
 
         $asignado = $request->Para === 'asignar' ? 'efector' : 'informador';
 
@@ -249,8 +287,9 @@ class ItemPrestacionesController extends Controller
             }
             
             $item->save();
+            $item->refresh();
             
-            return response()->json(['msg' => 'Se ha actualizado el '. $asignado .' de manera correcta'], 200);
+            return response()->json(['msg' => 'Se ha actualizado el '. $asignado .' de manera correcta', 'data' => $item], 200);
         }else{
             return response()->json(['msg' => 'No se ha podido actualizar el '. $asignado], 500);
         }
@@ -343,6 +382,8 @@ class ItemPrestacionesController extends Controller
 
     public function uploadAdjunto(Request $request)
     {
+        $result = null;
+
         $who = $request->who;
         if ($request->who === 'efector' && $request->multi === 'success') {
             $who = 'multiefector';
@@ -370,8 +411,7 @@ class ItemPrestacionesController extends Controller
             $this->registarArchivo(null, $request->IdEntidad, $request->Descripcion, $fileName, $request->IdPrestacion, $who);
             $this->updateEstado($who, $request->IdEntidad, $who === 'efector' ? $arr[$who][0] : null, $who === 'informador' ? $arr[$who][0] : null, null, null);
             Auditor::setAuditoria($request->IdPrestacion, 1, $who === 'efector' ? 36 : 37, Auth::user()->name);
-
-            
+        
         }elseif(in_array($who, ['multiefector', 'multiInformador'])){
             
             if($request->multi !== 'success'){
@@ -751,8 +791,9 @@ class ItemPrestacionesController extends Controller
             FileHelper::uploadFile(FileHelper::getFileUrl('escritura').'/'.$arr[$request->who][1].'/', $request->archivo, $filename);
 
             $query->update(['Ruta' => $filename]);
+            $data = ItemPrestacion::find($query->IdEntidad, ['Id', 'IdPrestacion']);
 
-            return response()->json(['msg' => 'Se ha reemplazado el archivo de manera correcta. Se actualizará el contenido en unos segundos'], 200);
+            return response()->json(['msg' => 'Se ha reemplazado el archivo de manera correcta. Se actualizará el contenido en unos segundos', 'data' => $data], 200);
 
         }else{
             return response()->json(['msg' => 'No se ha encontrado el archivo para reemplazar'], 500);
@@ -1069,10 +1110,10 @@ class ItemPrestacionesController extends Controller
 
        if ($request->Tipo === 'efector') 
        {
-            $resultado = $this->adjuntoEfector($request->Id) === 0 && $query->examenes->Adjunto === 1 ? true : false; //true es que falta adjuntar el archivo
+            $resultado = $this->adjuntoEfector($request->Id) === 0 && $query->examenes->Adjunto === 1; //true es que falta adjuntar el archivo
 
        }else{
-            $resultado = $this->adjuntoInformador($request->Id) === 0 && $query->profesionales2->InfAdj === 1 ? true :  false;
+            $resultado = $this->adjuntoInformador($request->Id) === 0 && $query->profesionales2->InfAdj === 1;
        }
 
        return response()->json($resultado);

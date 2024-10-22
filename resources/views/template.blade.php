@@ -35,6 +35,8 @@
 
     <script src="{{ asset('js/jquery.min.js') }}"></script>
     <script src="{{ asset('js/basicos.js') }}?v={{ time() }}"></script>
+
+    @vite('default')
 </head>
 
 <body>
