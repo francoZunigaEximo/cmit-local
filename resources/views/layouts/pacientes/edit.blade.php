@@ -6,7 +6,7 @@
 
 <div class="row mb-4">
     <div class="col-12 text-end">
-        <button class="btn btn-warning multiVolver"><i class="ri-arrow-left-line"></i>&nbsp;Volver</button>
+        <button onclick="window.history.back()" class="btn btn-warning"><i class="ri-arrow-left-line"></i>&nbsp;Volver</button>
     </div>
 </div>
 
