@@ -685,10 +685,11 @@ $(document).ready(()=>{
     }
 
 
-    function loadModalExamen(id, idPrestacion) {
+    function loadModalExamen(id) {
         preloader('on');
         $.get(editModal, {Id: id})
             .done(function(response){
+
                
                 const estadoAbierto = [0, 1, 2], 
                       estadoCerrado = [3, 4, 5], 
@@ -704,8 +705,14 @@ $(document).ready(()=>{
                     eventoAsignar,
                     eventoLiberar,
                     eventoAdjuntar,
-                    eventoEliminar,
                     eventoActualizar
+                ];
+
+                const reactivarEstilos = [
+                    '#ex-Fecha', 
+                    '#ex-ObsExamen', 
+                    '#ex-efectores', 
+                    '#ex-informadores'
                 ];
 
                 preloader('off');
@@ -798,6 +805,9 @@ $(document).ready(()=>{
                     evento(itemprestaciones.Id);
                 });
 
+                // pasamos el id de la prestacion, multi efector y multi informador para contemplar la eliminación multiple de los 2 casos
+                eventoEliminar(itemprestaciones.Id, itemprestaciones.examenes.proveedor1.Multi, itemprestaciones.examenes.proveedor2.MultiE);
+
                 multiExEfector(itemprestaciones); //Activa el multiefector en el listado de Archivos
                 listaExEfector(response.multiEfector); // Listado de los examenes MultiEfector
                 
@@ -808,8 +818,7 @@ $(document).ready(()=>{
 
                 $('#ex-multiE').val(itemprestaciones.examenes.proveedor2.MultiE == 1 && itemprestaciones.profesionales2.InfAdj === 1 ? 'success' : 'fail');
 
-                checkBloq(itemprestaciones.Id);
-
+                checkBloq(itemprestaciones.Anulado);
             })
             .fail(function(jqXHR){
                 preloader('off');
@@ -834,7 +843,7 @@ $(document).ready(()=>{
                     .done(function(response){
                         preloader('off');
                         toastr.success('Se ha realizado la acción correctamente');
-                        loadModalExamen(response.data.Id, response.data.IdPrestacion);
+                        loadModalExamen(response.data.Id);
                         
                     })
                     .fail(function(jqXHR){
@@ -858,39 +867,54 @@ $(document).ready(()=>{
 
             if(who === 'cerrar' && parseInt(cadj, 10) in listaE) {
                 
-                preloader('on');
-                $.post(updateItem, {Id : id, _token: TOKEN, CAdj: listaE[cadj], Para: who })
-                    .done(function(response){
-                        preloader('off');
-                        toastr.success('Se ha cerrado al efector correctamente');
-                        loadModalExamen(response.data.Id, response.data.IdPrestacion);
-                    })
-                    .fail(function(jqXHR){
-                        preloader('off');
-                        let errorData = JSON.parse(jqXHR.responseText);            
-                        checkError(jqXHR.status, errorData.msg);
-                        return;
-                    });
-    
-            }
+                swal({
+                    title: "¿Esta seguro que desea cerrar el exámen efector?",
+                    icon: "warning",
+                    buttons: ["Cancelar", "Aceptar"]
+                }).then((confirmar) => {
+                    if(confirmar) {
+                        preloader('on');
+                        $.post(updateItem, {Id : id, _token: TOKEN, CAdj: listaE[cadj], Para: who })
+                            .done(function(response){
+                                preloader('off');
+                                toastr.success('Se ha cerrado al efector correctamente');
+                                loadModalExamen(response.data.Id);
+                            })
+                            .fail(function(jqXHR){
+                                preloader('off');
+                                let errorData = JSON.parse(jqXHR.responseText);            
+                                checkError(jqXHR.status, errorData.msg);
+                                return;
+                            });
+                    }
+                });
+            }    
             
             if(who === 'cerrarI' && listaI.includes(CInfo)) {
-                preloader('on');
-                $.post(updateItem, {Id : id, _token: TOKEN, CInfo: 3, Para: who })
-                    .done(function(response){
-                        preloader('off');
-                        let query = response.data;
+                swal({
+                    title: "¿Esta seguro que desea cerrar el examen informador?",
+                    icon: "warning",
+                    buttons: ["Cancelar", "Aceptar"]
+                }).then((confirmar) => {
+                    if(confirmar) {
+                        preloader('on');
+                        $.post(updateItem, {Id : id, _token: TOKEN, CInfo: 3, Para: who })
+                            .done(function(response){
+                                preloader('off');
+                                let query = response.data;
 
-                        toastr.success('Se ha cerrado al informador correctamente');
-                        loadModalExamen(query.Id, query.IdPrestacion);
-                        
-                    })
-                    .fail(function(jqXHR){
-                        preloader('off');
-                        let errorData = JSON.parse(jqXHR.responseText);            W
-                        checkError(jqXHR.status, errorData.msg);
-                        return;
-                    });
+                                toastr.success('Se ha cerrado al informador correctamente');
+                                loadModalExamen(query.Id);
+                                
+                            })
+                            .fail(function(jqXHR){
+                                preloader('off');
+                                let errorData = JSON.parse(jqXHR.responseText);            W
+                                checkError(jqXHR.status, errorData.msg);
+                                return;
+                            });
+                    }
+                });
             }
         });
     }
@@ -924,14 +948,14 @@ $(document).ready(()=>{
                             if (who === 'asignar') {
 
                                 preloader('on');
-                                loadModalExamen(itemprestaciones.Id, itemprestaciones.IdPrestacion);
+                                loadModalExamen(itemprestaciones.Id);
                                 preloader('off');
 
 
                             }else if(who === 'asignarI') {
 
                                 preloader('on');
-                                loadModalExamen(itemprestaciones.Id, itemprestaciones.IdPrestacion);
+                                loadModalExamen(itemprestaciones.Id);
                                 preloader('off');
                             }     
                         })
@@ -966,7 +990,7 @@ $(document).ready(()=>{
                         .done(function(response){
                             preloader('off');
                             toastr.success(response.msg);
-                            loadModalExamen(response.data.Id, response.data.IdPrestacion);
+                            loadModalExamen(response.data.Id);
                             
                         })
                         .fail(function(jqXHR){
@@ -986,7 +1010,7 @@ $(document).ready(()=>{
             e.preventDefault();
             
             let who = $(this).hasClass('ex-btnAdjEfector') ? 'efector' : 'informador';
-    
+            debugger;
             let obj = {
                 efector: ['input[name="fileEfector"]', '[id^="Id_multiAdj_"]:checked', '#DescripcionE', '#ex-efectores'],
                 informador: ['input[name="fileInformador"]', '[id^="Id_multiAdjInf_"]:checked', '#DescripcionI', '#ex-informadores']
@@ -994,12 +1018,12 @@ $(document).ready(()=>{
             
             let archivo = $(obj[who][0])[0].files[0];
     
-            let multi = who === 'efector' ? $('#multi').val() : $('#multiE').val(), ids = [], anexoProfesional = $(obj[who][3]).val();
+            let multi = who === 'efector' ? $('#ex-multi').val() : $('#ex-multiE').val(), ids = [], anexoProfesional = $(obj[who][3]).val();
     
             $(obj[who][1]).each(function() {
                 ids.push($(this).val());
             });
-    
+
             if(ids.length === 0 && multi == "success"){
                 toastr.warning('No hay examenes seleccionados');
                 return;
@@ -1015,6 +1039,7 @@ $(document).ready(()=>{
                         ? 'multiInformador'
                         : who);
             
+
             if(verificarArchivo(archivo)){
                 preloader('on');
                 let formData = new FormData();
@@ -1035,13 +1060,14 @@ $(document).ready(()=>{
                     processData: false,
                     contentType: false,
                     success: function() {
-                        preloader('off');
-                        toastr.success("Se ha cargado el reporte de manera correcta.");
+                        
                         borrarCache();
                         ocultarCampos();
                         $('#modalEfector, #modalInformador').removeClass('show');
                         $('.fileA').val('');
-                        loadModalExamen(identificacion, prestacion);
+                        loadModalExamen(id);
+                        preloader('off');
+                        toastr.success("Se ha cargado el reporte de manera correcta.");
                     },
                     error: function (jqXHR) {
                         preloader('off');
@@ -1055,10 +1081,12 @@ $(document).ready(()=>{
     
     }
 
-    function eventoEliminar(idItem, multi) {
+    function eventoEliminar(idItem, multiE, multiI) {
         $(document).on('click', '.deleteAdjunto', function(e){
             e.preventDefault();
-            let id = $(this).data('id'), tipo = $(this).data('tipo');
+            let id = $(this).data('id'), 
+                tipo = $(this).data('tipo'),
+                idExOriginal = $('#ex-identificacion').val();
     
             if(id === '' || tipo === ''){
                 toastr.warning("Hay un problema porque no podemos identificar el tipo o la id a eliminar");
@@ -1077,58 +1105,52 @@ $(document).ready(()=>{
                         closeModal: true
                     },
                     aceptar: {
-                        text: "Aceptar",
+                        text: "Eliminar Único",
                         value: true,
                         visible: true,
                         className: "",
                         closeModal: true
                     },
                     custom: {
-                        text: "Eliminación multiple",
+                        text: "Eliminar Multi",
                         value: "multiple",
-                        //visible: multi === 1, // solo visible si multi es 1
-                        visible:true,
-                        className: "",
+                        visible: tipo === 'efector' ? multiE === 1 : tipo === 'informador' ? multiI === 1 : false, // solo visible si multi es 1
+                        className: "fondo-rojo",
                         closeModal: true
                     }
                 }
             }).then((confirmar) =>{
-                if(confirmar){
-                    preloader('on');
-                    $.get(deleteIdAdjunto, {Id: id, Tipo: tipo, ItemP: idItem})
-                        .done(function(response){
-                            borrarCache();
-                            listadoEModal(idItem);
-                            listadoIModal(idItem);
-                            preloader('off');
-                            toastr.success(response.msg);  
-                        })
-                        .fail(function(jqXHR){
-                            preloader('off');
-                            let errorData = JSON.parse(jqXHR.responseText);            
-                            checkError(jqXHR.status, errorData.msg);
-                            return;
-                        })
-                }else if(confirmar === 'multiple') {
-
-                }
+                preloader('on');
+                console.log("Id del examen: " + id);
+                $.get(deleteIdAdjunto, {Id: id, Tipo: tipo, ItemP: idItem, multi: confirmar === 'multiple'})
+                    .done(function(response){
+                        borrarCache();
+                        loadModalExamen(idExOriginal);
+                        preloader('off');
+                        toastr.success(response.msg);  
+                    })
+                    .fail(function(jqXHR){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
+                    })
             });
         });
     }
 
     function eventoActualizar(id) {
-        $(document).on('click', '#actExamenModal', function(e){
+        $(document).off('click', '#actExamenModal').on('click', '#actExamenModal', function(e){
             e.preventDefault();
     
             let ObsExamen = $('#ex-ObsExamen').val(), Profesionales2 = $('#ex-informadores').val(), Obs = $('#ex-Obs').val(), Fecha = $('#ex-Fecha').val();
             
             preloader('on');
-            $.post(updateItemExamen, {Id: ID, _token: TOKEN, ObsExamen: ObsExamen, Profesionales2: Profesionales2, Obs: Obs, Fecha: Fecha})
-                
+            $.post(updateItemExamen, {Id: id, _token: TOKEN, ObsExamen: ObsExamen, Profesionales2: Profesionales2, Obs: Obs, Fecha: Fecha})
                 .done(function(response) {
     
                     borrarCache();
-                    loadModalExamen(identificacion, prestacion);
+                    loadModalExamen(response.data.Id);
                     preloader('off');
                     toastr.success(response.msg);
                 })
@@ -1176,7 +1198,7 @@ $(document).ready(()=>{
                     listadoEModal(response.data.Id);
                     listadoIModal(response.data.Id);
                     $('#replaceAdjunto').removeClass('show');
-                    loadModalExamen(response.data.Id, response.data.IdPrestacion);
+                    loadModalExamen(response.data.Id);
                     preloader('off');
                     toastr.success(response.msg);
 
@@ -1472,7 +1494,7 @@ $(document).ready(()=>{
 
         if([null, undefined, ''].includes(data)) return;
         $('.listaGrupoEfector').empty();
-
+        console.log(data);
         $.each(data, function(index, examen) {
 
         if (examen.examenes !== null) {
@@ -1576,25 +1598,20 @@ $(document).ready(()=>{
         });
     }
 
-    function checkBloq(id) {
-
-        $.get(getBloqueoItemPrestacion, {Id: id})
-            .done(async function(response){
-
-                if(await response.prestacion === true){
-
-                    $('#ex-Fecha, #ex-ObsExamen, #ex-efectores, #ex-informadores').prop('disabled', true);
-                    $('button').removeClass('ex-asignar ex-abrir ex-cerrar ex-asignarI ex-cerrarI');
-                    //p$('button').removeAttr('id');
-                    $('#ex-liberarI, #ex-liberar').show();
-                    }
+    function checkBloq(anulado) {
+        
+        if(anulado === 1) {
+            $('#ex-Fecha, #ex-ObsExamen, #ex-efectores, #ex-informadores, #actExamenModal').prop('disabled', true);
+            $('button').removeClass('ex-asignar ex-abrir ex-cerrar ex-asignarI ex-cerrarI');
+            //p$('button').removeAttr('id');
+            $('#ex-liberarI, #ex-liberar').show();
+        }else{
+            $('#ex-Fecha, #ex-ObsExamen, #ex-efectores, #ex-informadores, #actExamenModal').prop('disabled', false);
+            $.each(reactivarEstilos, function(index, estilo){
+                let clase = estilo.replace('#', '');
+                $(estilo).hasClass(clase) ? $(estilo).addClass(clase) : '';
             })
-            .fail(function(jqXHR){
-                preloader('off');
-                let errorData = JSON.parse(jqXHR.responseText);            
-                checkError(jqXHR.status, errorData.msg);
-                return;
-            });
+        }
     }
 
 });

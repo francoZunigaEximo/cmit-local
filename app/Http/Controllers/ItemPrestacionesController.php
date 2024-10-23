@@ -62,18 +62,17 @@ class ItemPrestacionesController extends Controller
                     'examenes' => function ($examenesQuery) use ($query) {
                         $examenesQuery->where('IdProveedor', $query->examenes->IdProveedor);
                     },
-                    'examenes.proveedor1' => function ($proveedorQuery) use ($query) {
+                    'examenes.proveedor1' => function ($proveedorQuery) {
                         $proveedorQuery->where('Multi', 1);
                     },
-                    'examenes.proveedor2' => function ($proveedorQuery) use ($query) {
-                        $proveedorQuery->where('Multi', 1);
-                    },
+                    'examenes.proveedor2',
                     'profesionales1',
                     'profesionales2',
                     'itemsInfo',
                     'notaCreditoIt.notaCredito',
                     'facturadeventa'
                 ])
+                ->select('itemsprestaciones.*', DB::raw('(SELECT COUNT(*) FROM archivosefector WHERE archivosefector.IdEntidad = itemsprestaciones.Id) as archivos_count'))
                 ->where('itemsprestaciones.IdPrestacion', $query->IdPrestacion)
                 ->whereIn('itemsprestaciones.IdProfesional', [$query->IdProfesional, 0])
                 
@@ -85,13 +84,18 @@ class ItemPrestacionesController extends Controller
                         $examenesQuery->where('IdProveedor2', $query->examenes->IdProveedor);
                     },
                     'examenes.proveedor1', 
-                    'examenes.proveedor2', 
+                    'examenes.proveedor2'  => function($proveedoresQuery) {
+                        $proveedoresQuery->where('MultiE', 1);
+                    }, 
                     'profesionales1', 
-                    'profesionales2', 
+                    'profesionales2' => function($profesionalesQuery) {
+                        $profesionalesQuery->where('InfAdj', 1);
+                    }, 
                     'itemsInfo', 
                     'notaCreditoIt.notaCredito', 
                     'facturadeventa'
                 ])
+                ->select('itemsprestaciones.*', DB::raw('(SELECT COUNT(*) FROM archivosinformador WHERE archivosinformador.IdEntidad = itemsprestaciones.Id) as archivos_count'))
                 ->where('itemsprestaciones.IdPrestacion', $query->IdPrestacion)
                 ->whereIn('itemsprestaciones.IdProfesional2', [$query->IdProfesional2, 0])
                 ->get(),
@@ -379,7 +383,8 @@ class ItemPrestacionesController extends Controller
             }
 
             $query->save();
-            return response()->json(['msg' => 'Se han actualizado los datos correctamente'], 200);
+            $query->refresh();
+            return response()->json(['msg' => 'Se han actualizado los datos correctamente', 'data' => $query], 200);
 
         }else{
             return response()->json(['msg' => 'No se han actualizado los datos. No se encuentra el identificador'], 500);
@@ -761,20 +766,51 @@ class ItemPrestacionesController extends Controller
     }
 
     public function deleteIdAdjunto(Request $request): mixed
-    {
-            $adjunto = $request->Tipo === 'efector' ? ArchivoEfector::find($request->Id) : ArchivoInformador::find($request->Id);
+    {    
+        $examenes = $request->Id;
 
-            if ($adjunto) {
-                $adjunto->delete();
-                
-                $this->updateEstado($request->Tipo, $request->ItemP, $request->Tipo === 'efector' ? $request->Id : null, $request->Tipo === 'informador' ? $request->Id : null, null, null);
-            
-                return response()->json(['msg' => 'Se ha eliminado el adjunto de manera correcta'], 200);
-            }else{
-                return response()->json(['msg' => 'No se ha podido eliminar el adjunto'], 500);
+        if (!is_array($examenes)) {
+            $examenes = [$examenes]; 
+        }
+
+        if ($request->multi === 'true') {
+
+            $preExamen = $request->Tipo === 'efector' 
+                ? ArchivoEfector::find($request->Id, ['Ruta']) 
+                : ArchivoInformador::find($request->Id, ['Ruta']);
+
+            if ($preExamen) {
+                $examenes = $request->Tipo === 'efector' 
+                    ? ArchivoEfector::where('Ruta', $preExamen->Ruta)->pluck('Id') 
+                    : ArchivoInformador::where('Ruta', $preExamen->Ruta)->pluck('Id');
+            } else {
+                return response()->json(['msg' => 'No se encontró el registro para eliminar.'], 404);
             }
-            
+        }
+
+        foreach ($examenes as $examen) {
+            $adjunto = $request->Tipo === 'efector' 
+                ? ArchivoEfector::find($examen) 
+                : ArchivoInformador::find($examen);
+
+            if ($adjunto instanceof \Illuminate\Database\Eloquent\Model) {
+                try {
+                    $adjunto->delete();
+                    $this->updateEstado($request->Tipo, $request->ItemP, 
+                        $request->Tipo === 'efector' ? $request->Id : null, 
+                        $request->Tipo === 'informador' ? $examen : null, 
+                        null, null);
+                } catch (\Exception $e) {
+                    return response()->json(['msg' => "Error al eliminar el adjunto: " . $e->getMessage()], 500);
+                }
+            } else {
+                return response()->json(['msg' => "No se encontró el adjunto para ID: $examen"], 404);
+            }
+        }
+
+        return response()->json(['msg' => 'Adjunto/s eliminados correctamente.'], 200);
     }
+
 
     public function replaceIdAdjunto(Request $request): mixed
     {
