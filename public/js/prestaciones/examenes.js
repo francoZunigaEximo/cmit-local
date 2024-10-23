@@ -45,7 +45,7 @@ $(document).ready(()=>{
         document.querySelector(".select2-container--open .select2-search__field").focus()
     });
 
-    $(document).on('click', '.addPaquete', function(e){
+    $(document).off('click', '.adPaquete').on('click', '.addPaquete', function(e){
         e.preventDefault();
         
         let paquete = $('#paquetes').val();
