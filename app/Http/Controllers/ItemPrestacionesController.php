@@ -18,7 +18,6 @@ use App\Models\ExamenPrecioProveedor;
 use App\Traits\CheckPermission;
 use App\Helpers\FileHelper;
 use App\Models\Profesional;
-use App\Models\ProfesionalProv;
 use App\Models\User;
 
 class ItemPrestacionesController extends Controller
