@@ -818,7 +818,7 @@ $(document).ready(()=>{
 
                 $('#ex-multiE').val(itemprestaciones.examenes.proveedor2.MultiE == 1 && itemprestaciones.profesionales2.InfAdj === 1 ? 'success' : 'fail');
 
-                checkBloq(itemprestaciones.Anulado);
+                checkBloq(itemprestaciones.Anulado, reactivarEstilos);
             })
             .fail(function(jqXHR){
                 preloader('off');
@@ -1598,7 +1598,7 @@ $(document).ready(()=>{
         });
     }
 
-    function checkBloq(anulado) {
+    function checkBloq(anulado, estilos) {
         
         if(anulado === 1) {
             $('#ex-Fecha, #ex-ObsExamen, #ex-efectores, #ex-informadores, #actExamenModal').prop('disabled', true);
@@ -1607,7 +1607,7 @@ $(document).ready(()=>{
             $('#ex-liberarI, #ex-liberar').show();
         }else{
             $('#ex-Fecha, #ex-ObsExamen, #ex-efectores, #ex-informadores, #actExamenModal').prop('disabled', false);
-            $.each(reactivarEstilos, function(index, estilo){
+            $.each(estilos, function(index, estilo){
                 let clase = estilo.replace('#', '');
                 $(estilo).hasClass(clase) ? $(estilo).addClass(clase) : '';
             })
