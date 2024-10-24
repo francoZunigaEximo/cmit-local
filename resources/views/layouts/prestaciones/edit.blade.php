@@ -1252,7 +1252,6 @@
     </div>
 </div>
 
-
 <div class="offcanvas offcanvas-end" tabindex="-1" id="modalEfector" aria-labelledby="offcanvasRightLabel" style="z-index: 9999">
     <div class="offcanvas-header">
         <h5 id="offcanvasRightLabel">Adjuntar archivo Efector</h5>

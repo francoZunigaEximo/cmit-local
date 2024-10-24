@@ -56,48 +56,8 @@ class ItemPrestacionesController extends Controller
                 'qrTexto' => $this->generarQR('A', $query->IdPrestacion, $query->IdExamen, $paciente->Id, 'texto'),
                 'adjuntoEfector' => $this->adjuntoEfector($query->Id),
                 'adjuntoInformador' => $this->adjuntoInformador($query->Id),
-                'multiEfector' => ItemPrestacion::with([
-                    'prestaciones',
-                    'examenes' => function ($examenesQuery) use ($query) {
-                        $examenesQuery->where('IdProveedor', $query->examenes->IdProveedor);
-                    },
-                    'examenes.proveedor1' => function ($proveedorQuery) {
-                        $proveedorQuery->where('Multi', 1);
-                    },
-                    'examenes.proveedor2',
-                    'profesionales1',
-                    'profesionales2',
-                    'itemsInfo',
-                    'notaCreditoIt.notaCredito',
-                    'facturadeventa'
-                ])
-                ->select('itemsprestaciones.*', DB::raw('(SELECT COUNT(*) FROM archivosefector WHERE archivosefector.IdEntidad = itemsprestaciones.Id) as archivos_count'))
-                ->where('itemsprestaciones.IdPrestacion', $query->IdPrestacion)
-                ->whereIn('itemsprestaciones.IdProfesional', [$query->IdProfesional, 0])
-                
-                ->whereNot('itemsprestaciones.Anulado', 1)
-                ->get(),
-                'multiInformador' => ItemPrestacion::with([
-                    'prestaciones',
-                    'examenes' => function ($examenesQuery) use ($query) {
-                        $examenesQuery->where('IdProveedor2', $query->examenes->IdProveedor);
-                    },
-                    'examenes.proveedor1', 
-                    'examenes.proveedor2'  => function($proveedoresQuery) {
-                        $proveedoresQuery->where('MultiE', 1);
-                    }, 
-                    'profesionales1', 
-                    'profesionales2' => function($profesionalesQuery) {
-                        $profesionalesQuery->where('InfAdj', 1);
-                    }, 
-                    'itemsInfo', 
-                    'notaCreditoIt.notaCredito', 
-                    'facturadeventa'
-                ])
-                ->select('itemsprestaciones.*', DB::raw('(SELECT COUNT(*) FROM archivosinformador WHERE archivosinformador.IdEntidad = itemsprestaciones.Id) as archivos_count'))
-                ->where('itemsprestaciones.IdPrestacion', $query->IdPrestacion)
-                ->whereIn('itemsprestaciones.IdProfesional2', [$query->IdProfesional2, 0])
-                ->get(),
+                'multiEfector' => $this->multiEfector($query->IdPrestacion, $query->IdProfesional, $query->examenes->IdProveedor),
+                'multiInformador' => $this->multiInformador($query->IdPrestacion, $query->IdProfesional2, $query->examenes->IdProveedor2),
                 'efectores' => $this->getProfesional($query->IdProfesional, "Efector", $query->IdProveedor)
             ];
 
@@ -1163,17 +1123,16 @@ class ItemPrestacionesController extends Controller
     public function checkPrimeraCarga(Request $request)
     {
         $query = $request->who === 'efector' 
-            ? ArchivoEfector::where('IdPrestacion', $request->Id)->get() 
-            : ArchivoInformador::where('IdPrestacion', $request->Id)->get();
-    
+            ? ArchivoEfector::join('itemsprestaciones', 'archivosefector.IdEntidad', '=', 'itemsprestaciones.Id')->join('proveedores', 'itemsprestaciones.IdProveedor', '=', 'proveedores.Id')->where('archivosefector.IdPrestacion', $request->Id)->where('proveedores.Multi', 1)->get()
+            : ArchivoInformador::join('itemsprestaciones', 'archivosinformador.IdEntidad', '=', 'itemsprestaciones.Id')->join('proveedores', 'itemsprestaciones.IdProveedor', '=', 'proveedores.Id')->where('itemsprestaciones.IdPrestacion', $request->Id)->where('proveedores.MultiE', 1)->get();
 
         if (!$query->isEmpty()) {
 
-            $id = $query->first()->Id; 
+            $ruta = $query->first()->Ruta; 
 
             $result = $request->who === 'efector' 
-                ? ArchivoEfector::find($id, ['IdEntidad']) 
-                : ArchivoInformador::find($id, ['IdEntidad']);
+                ? ArchivoEfector::where('Ruta', $ruta)->first(['IdEntidad']) 
+                : ArchivoInformador::where('Ruta', $ruta)->first(['IdEntidad']);
 
             return response()->json($result);
         }
@@ -1218,7 +1177,11 @@ class ItemPrestacionesController extends Controller
         //$itemsprestacione->examenes->IdProveedor
         return ItemPrestacion::join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
         ->join('proveedores', 'examenes.IdProveedor', '=', 'proveedores.Id')
-        ->select('itemsprestaciones.*', DB::raw('(SELECT COUNT(*) FROM archivosefector WHERE archivosefector.IdEntidad = itemsprestaciones.Id) as archivos_count'))
+        ->select(
+            'itemsprestaciones.Id as Id',
+            DB::raw('(SELECT COUNT(*) FROM archivosefector WHERE archivosefector.IdEntidad = itemsprestaciones.Id) as archivos_count'),
+            'examenes.Nombre as NombreExamen'
+            )
         ->where('itemsprestaciones.IdPrestacion', $idPrestacion)
         ->whereIn('itemsprestaciones.IdProfesional', [$idProfesional, 0])
         ->where('examenes.IdProveedor', $idProveedor)
@@ -1233,7 +1196,11 @@ class ItemPrestacionesController extends Controller
         return ItemPrestacion::join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
         ->join('proveedores', 'examenes.IdProveedor2', '=', 'proveedores.Id')
         ->join('profesionales', 'itemsprestaciones.IdProfesional2', '=', 'profesionales.Id')
-        ->select('itemsprestaciones.*', DB::raw('(SELECT COUNT(*) FROM archivosinformador WHERE archivosinformador.IdEntidad = itemsprestaciones.Id) as archivos_count'))
+        ->select('itemsprestaciones.Id', 
+            DB::raw('(SELECT COUNT(*) FROM archivosinformador WHERE archivosinformador.IdEntidad = itemsprestaciones.Id) as archivos_count'),
+            'examenes.Nombre as NombreExamen',
+            'proveedores.Nombre as NombreProveedor'
+        )
         ->where('itemsprestaciones.IdPrestacion', $idPrestacion)
         ->whereIn('itemsprestaciones.IdProfesional2', [$idProfesional, 0])
         ->where('examenes.IdProveedor2', $idProveedor)

@@ -421,7 +421,7 @@ $(document).ready(()=>{
         saveExamen(id);
     });
 
-    $(window).on('popstate', function(event) {
+    $(window).on('popstate', function() {
         location.reload();
     });
 
@@ -813,10 +813,18 @@ $(document).ready(()=>{
                 
                 $('#ex-multi').val(itemprestaciones.examenes.proveedor1.Multi === 1 ? 'success' : 'fail');
 
-                multiExInformador(response.multiEfector); //Activa el multiinformador en el listado de Archivos
+                multiExInformador(itemprestaciones); //Activa el multiinformador en el listado de Archivos
                 listaExInformador(response.multiInformador); // Listado de los examenes MultiInformador
 
                 $('#ex-multiE').val(itemprestaciones.examenes.proveedor2.MultiE == 1 && itemprestaciones.profesionales2.InfAdj === 1 ? 'success' : 'fail');
+
+                if(itemprestaciones.CAdj === 5 && adjuntosEfector(examenes, response) === 'Pendiente' && itemprestaciones.Anulado === 0) {
+                    $('.ex-adjuntarEfector').show();
+                }
+
+                if(itemprestaciones.CInfo === 3 && adjuntosInformador(itemprestaciones, response) === 'Pendiente' && itemprestaciones.Anulado === 0) {
+                    $('.ex-adjuntarInformador').show();
+                }
 
                 checkBloq(itemprestaciones.Anulado, reactivarEstilos);
             })
@@ -827,8 +835,6 @@ $(document).ready(()=>{
                 return;  
             });
     }
-
-
 
     /*******************************Modal Examen ************************************/
     function eventoAbrir(id) {
@@ -1494,40 +1500,40 @@ $(document).ready(()=>{
 
         if([null, undefined, ''].includes(data)) return;
         $('.listaGrupoEfector').empty();
-        console.log(data);
+
         $.each(data, function(index, examen) {
 
-        if (examen.examenes !== null) {
             let contenido = `
                 <label class="list-group-item">
                     <input class="form-check-input me-1" type="checkbox" id="Id_multiAdj_${ examen.Id }" value="${examen.Id}" ${ examen.archivos_count > 0 ? 'disabled' : 'checked' }> 
-                    ${ examen.archivos_count > 0 ? examen.examenes.Nombre + ' <i title="Con archivo adjunto" class="ri-attachment-line verde"></i>' : examen.examenes.Nombre}
+                    ${ examen.archivos_count > 0 ? examen.NombreExamen + ' <i title="Con archivo adjunto" class="ri-attachment-line verde"></i>' : examen.NombreExamen}
                 </label>
             `;
 
             $('.listaGrupoEfector').append(contenido);
-        }
     });
 
     }
 
     function multiExInformador(data) {
-        return data.examenes?.proveedor2.MultiE === 1 && data.profesionales2.InfAdj === 1 ? $('.multiInf').show() : $('.multiInf').hide();
+        return data.examenes.proveedor2.MultiE === 1 && data.profesionales2.InfAdj === 1 ? $('.multiInf').show() : $('.multiInf').hide();
     }
 
     function listaExInformador(data) {
         if([null, undefined, ''].includes(data)) return;
-
+        
         $('.listaGrupoInformador').empty();
-        $.each(data, function(index, examen) {
-            let contenido = `
-                <label class="list-group-item">
-                    <input class="form-check-input me-1" type="checkbox" id="Id_multiAdjInf_${ examen.Id }" value="${ examen.Id}" ${ examen.archivos_count > 0 ? 'disabled' : 'checked' }> 
-                    ${ examen.archivos_count > 0 ? examen.examenes?.Nombre + ' (' + examen.examenes?.proveedor2.Nombre + ') <i title="Con archivo adjunto" class="ri-attachment-line verde"></i>' : examen.examenes?.Nombre + ' (' + examen.examenes?.proveedor2?.Nombre + ')'}
-                </label>
-            `;
-            $('.listaGrupoInformador').append(contenido);
-        });
+            $.each(data, function(index, examen) {
+
+                let contenido = `
+                    <label class="list-group-item">
+                        <input class="form-check-input me-1" type="checkbox" id="Id_multiAdjInf_${ examen.Id }" value="${ examen.Id}" ${ examen.archivos_count > 0 ? 'disabled' : 'checked' }> 
+                        ${ examen.archivos_count > 0 ? examen.NombreExamen + ' (' + examen.NombreProveedor + ') <i title="Con archivo adjunto" class="ri-attachment-line verde"></i>' : examen.NombreExamen + ' (' + examen.NombreProveedor + ')'}
+                    </label>
+                `;
+                $('.listaGrupoInformador').append(contenido);
+            });
+        
     }
 
     function adjuntosEfector(examenes, data) {
