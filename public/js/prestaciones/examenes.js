@@ -800,6 +800,13 @@ $(document).ready(()=>{
                 listadoEModal(itemprestaciones.Id);
                 listadoIModal(itemprestaciones.Id);
 
+                
+
+                if (itemprestaciones.CInfo === 3 && adjuntosInformador(itemprestaciones, response) === 'Pendiente' && itemprestaciones.Anulado === 0) {
+                    borrarCache();
+                    $('.ex-adjuntarInformador').show();
+                }
+
                 ocultarCampos();
                 $.each(eventos, function(index, evento) {
                     evento(itemprestaciones.Id);
@@ -818,13 +825,7 @@ $(document).ready(()=>{
 
                 $('#ex-multiE').val(itemprestaciones.examenes.proveedor2.MultiE == 1 && itemprestaciones.profesionales2.InfAdj === 1 ? 'success' : 'fail');
 
-                if(itemprestaciones.CAdj === 5 && adjuntosEfector(examenes, response) === 'Pendiente' && itemprestaciones.Anulado === 0) {
-                    $('.ex-adjuntarEfector').show();
-                }
-
-                if(itemprestaciones.CInfo === 3 && adjuntosInformador(itemprestaciones, response) === 'Pendiente' && itemprestaciones.Anulado === 0) {
-                    $('.ex-adjuntarInformador').show();
-                }
+                
 
                 checkBloq(itemprestaciones.Anulado, reactivarEstilos);
             })
@@ -1302,6 +1303,8 @@ $(document).ready(()=>{
             CInfo = parseInt($('#ex-CInfo').val(), 10),
             Estado = $('#ex-EstadoEx').val(),
             EstadoI = $('#ex-EstadoI').val(),
+            AdjEfector = $('#ex-Estado').val(),
+            AdjInformador = $('#ex-EstadoInf').val(),
             num = parseInt(e, 10);
         
         if (tipo === 'efector') {
@@ -1319,12 +1322,12 @@ $(document).ready(()=>{
                         $('.ex-adjuntarEfector').hide();
                     }
                 });
-
-
             }
         } else if (tipo === 'informador') {
 
             let resultado = await (efector !== 0 && informador !== 0) && (CInfo !== 3),
+                errorEfector = await (efector !== 0) && (AdjEfector === 'Pendiente'),
+                errorInformador = await (informador !== 0) && (AdjInformador === 'Pendiente'),
                 final = await (efector !== 0 && informador !== 0) && (Estado === 'Cerrado' && EstadoI === 'Cerrado');
 
             if(resultado){
@@ -1342,6 +1345,14 @@ $(document).ready(()=>{
                     }
                 });
 
+            }else if(errorEfector) {
+                await borrarCache();
+                $('.ex-adjuntarEfector').show();
+                
+            }else if(errorInformador) {
+                await borrarCache();
+                $('.ex-adjuntarInformador').show();
+
             }else if(final){
 
                 await borrarCache();
@@ -1349,6 +1360,10 @@ $(document).ready(()=>{
                 $('.ex-abrir').hide();
                 $('.ex-liberarI').hide();
                 $('.ex-adjuntarInformador').hide();
+
+                if (CInfo === 3 && EstadoI === 'Pendiente' && anulado === 1) {
+                    $('.ex-adjuntarInformador').show();
+                }
             }
         }
     }
