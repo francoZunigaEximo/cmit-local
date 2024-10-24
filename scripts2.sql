@@ -841,4 +841,16 @@ END
         END) AS EstadoInformador
 
 ALTER TABLE profesionales_prov MODIFY COLUMN IdRol VARCHAR(10) DEFAULT '0' NULL;
-#Aplicar a Test y PreProduccion
+#Aplicar a PreProduccion
+
+CREATE TABLE aliasExamenes(
+	Id int AUTO_INCREMENT NOT NULL,
+	UNIQUE(Id),
+	Nombre VARCHAR(30) NOT NULL,
+	Descripcion VARCHAR(225) NULL,
+	PRIMARY KEY(Id)
+);
+
+INSERT INTO ()
+
+ALTER TABLE examenes ADD COLUMN aliasexamen_id INT DEFAULT 0 NOT NULL;

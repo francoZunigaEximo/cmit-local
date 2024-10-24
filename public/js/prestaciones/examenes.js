@@ -1126,8 +1126,13 @@ $(document).ready(()=>{
                     }
                 }
             }).then((confirmar) =>{
+
+                if (confirmar === null || (typeof confirmar === 'object' && Object.keys(confirmar).length === 0)) {
+                    return; 
+                }
+
                 preloader('on');
-                console.log("Id del examen: " + id);
+
                 $.get(deleteIdAdjunto, {Id: id, Tipo: tipo, ItemP: idItem, multi: confirmar === 'multiple'})
                     .done(function(response){
                         borrarCache();
