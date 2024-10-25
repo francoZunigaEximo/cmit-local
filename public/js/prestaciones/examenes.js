@@ -704,7 +704,6 @@ $(document).ready(()=>{
                     eventoCerrar,
                     eventoAsignar,
                     eventoLiberar,
-                    eventoAdjuntar,
                     eventoActualizar
                 ];
 
@@ -811,6 +810,8 @@ $(document).ready(()=>{
                 $.each(eventos, function(index, evento) {
                     evento(itemprestaciones.Id);
                 });
+
+                eventoAdjuntar(itemprestaciones.Id, "editExamen");
 
                 // pasamos el id de la prestacion, multi efector y multi informador para contemplar la eliminación multiple de los 2 casos
                 eventoEliminar(itemprestaciones.Id, itemprestaciones.examenes.proveedor1.Multi, itemprestaciones.examenes.proveedor2.MultiE);
@@ -1012,12 +1013,12 @@ $(document).ready(()=>{
         });
     }
 
-    function eventoAdjuntar(id) {
+    function eventoAdjuntar(id, web = null) {
         $(document).off('click', '.ex-btnAdjEfector, .ex-btnAdjInformador').on('click', '.ex-btnAdjEfector, .ex-btnAdjInformador', function (e){
             e.preventDefault();
             
             let who = $(this).hasClass('ex-btnAdjEfector') ? 'efector' : 'informador';
-            debugger;
+
             let obj = {
                 efector: ['input[name="fileEfector"]', '[id^="Id_multiAdj_"]:checked', '#DescripcionE', '#ex-efectores'],
                 informador: ['input[name="fileInformador"]', '[id^="Id_multiAdjInf_"]:checked', '#DescripcionI', '#ex-informadores']
@@ -1045,7 +1046,6 @@ $(document).ready(()=>{
                     : (multi === 'success' && who === 'informador'
                         ? 'multiInformador'
                         : who);
-            
 
             if(verificarArchivo(archivo)){
                 preloader('on');
@@ -1058,6 +1058,7 @@ $(document).ready(()=>{
                 formData.append('who', who);
                 formData.append('anexoProfesional', anexoProfesional);
                 formData.append('multi', multi);
+                formData.append('web', web)
                 formData.append('_token', TOKEN);
        
                 $.ajax({

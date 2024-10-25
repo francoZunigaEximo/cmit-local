@@ -421,7 +421,13 @@ class ItemPrestacionesController extends Controller
 
                     $item = ItemPrestacion::find($examen);
                     $this->registarArchivo(null, $examen, $request->Descripcion, $fileName, $item->IdPrestacion, $who);
-                    $this->updateEstado($who, $examen, $who === 'multiefector' ? $arr[$who][0] : null, $who === 'multiInformador' ? $arr[$who][0] : null, 'multi', $who === 'multiInformador' ? $request->anexoProfesional : ($who === 'multiefector'? $request->anexoProfesional : null)) ;
+                    $this->updateEstado(
+                        $who, 
+                        $examen, 
+                        $who === 'multiefector' ? $arr[$who][0] : null, 
+                        $who === 'multiInformador' ? $arr[$who][0] : null, 
+                        'multi', 
+                        $who === 'multiInformador' && $request->web !== 'editExamen' ? $request->anexoProfesional : ($who === 'multiefector'  && $request->web !== 'editExamen' ? $request->anexoProfesional : null)) ;
                     Auditor::setAuditoria($item->IdPrestacion, 1, $who === 'efector' ? 36 : 37, Auth::user()->name);
                 }
                    
