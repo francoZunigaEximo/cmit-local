@@ -419,7 +419,10 @@ class ItemPrestacionesController extends Controller
                     Auditor::setAuditoria($item->IdPrestacion, 1, $who === 'efector' ? 36 : 37, Auth::user()->name); 
                 }
 
-                $this->marcarPrimeraCarga($request->Id, $request->who);
+                if(count($examenes) > 1) {
+                    $this->marcarPrimeraCarga($request->Id, $request->who);
+                }
+                
                    
             }
         }
