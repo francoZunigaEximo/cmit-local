@@ -18,7 +18,8 @@ class ArchivoInformador extends Model
         'IdEntidad',
         'Descripcion',
         'Ruta',
-        'IdPrestacion'
+        'IdPrestacion',
+        'PuntoCarga'
     ];
 
     public $timestamps = false;

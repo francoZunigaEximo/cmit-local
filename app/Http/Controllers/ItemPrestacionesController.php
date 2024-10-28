@@ -31,42 +31,26 @@ class ItemPrestacionesController extends Controller
     
     public function edit(ItemPrestacion $itemsprestacione): mixed
     {
-        $paciente = $this->getPaciente($itemsprestacione->IdPrestacion);
-        $qrTexto = $this->generarQR('A', $itemsprestacione->IdPrestacion, $itemsprestacione->IdExamen, $paciente->Id, 'texto');
-        $adjuntoEfector = $this->adjuntoEfector($itemsprestacione->Id);
-        $adjuntoInformador = $this->adjuntoInformador($itemsprestacione->Id);
-        $multiEfector = $this->multiEfector($itemsprestacione->IdPrestacion, $itemsprestacione->IdProfesional, $itemsprestacione->examenes->IdProveedor);
-        $multiInformador = $this->multiInformador($itemsprestacione->IdPrestacion, $itemsprestacione->IdProfesional2, $itemsprestacione->examenes->IdProveedor);
-
-        return view('layouts.itemsprestaciones.edit', compact(['itemsprestacione', 'qrTexto', 'paciente', 'adjuntoEfector','multiEfector', 'multiInformador', 'adjuntoInformador']));
+        $data = $this->obtenerDatosItemPrestacion($itemsprestacione->Id);
+        
+        if (!$data) {
+            return abort(404, 'No se encuentra la información solicitada');
+        }
+    
+        return view('layouts.itemsprestaciones.edit', compact(['itemsprestacione'] + $data));
     }
-
+    
     public function editModal(Request $request)
     {
-        $query = ItemPrestacion::with(['prestaciones','examenes', 'examenes.proveedor1', 'examenes.proveedor2', 'profesionales1', 'profesionales2', 'itemsInfo', 'notaCreditoIt.notaCredito', 'facturadeventa'])->find($request->Id);
-        $data = null;
-
-        if ($query)
-        {
-            $paciente = $this->getPaciente($query->IdPrestacion);
-
-            $data = [
-                'itemprestacion' => $query,
-                'paciente' => $paciente,
-                'qrTexto' => $this->generarQR('A', $query->IdPrestacion, $query->IdExamen, $paciente->Id, 'texto'),
-                'adjuntoEfector' => $this->adjuntoEfector($query->Id),
-                'adjuntoInformador' => $this->adjuntoInformador($query->Id),
-                'multiEfector' => $this->multiEfector($query->IdPrestacion, $query->IdProfesional, $query->examenes->IdProveedor),
-                'multiInformador' => $this->multiInformador($query->IdPrestacion, $query->IdProfesional2, $query->examenes->IdProveedor2),
-                'efectores' => $this->getProfesional($query->IdProfesional, "Efector", $query->IdProveedor)
-            ];
-
-        } else {
+        $data = $this->obtenerDatosItemPrestacion($request->Id);
+    
+        if (!$data) {
             return response()->json(['msg' => 'No se encuentra la información solicitada'], 400);
         }
-
+    
         return response()->json($data, 200);
     }
+    
 
     public function updateItem(Request $request)
     {
@@ -427,9 +411,15 @@ class ItemPrestacionesController extends Controller
                         $who === 'multiefector' ? $arr[$who][0] : null, 
                         $who === 'multiInformador' ? $arr[$who][0] : null, 
                         'multi', 
-                        $who === 'multiInformador' && $request->web !== 'editExamen' ? $request->anexoProfesional : ($who === 'multiefector'  && $request->web !== 'editExamen' ? $request->anexoProfesional : null)) ;
-                    Auditor::setAuditoria($item->IdPrestacion, 1, $who === 'efector' ? 36 : 37, Auth::user()->name);
+                        $who === 'multiInformador' 
+                            ? $request->anexoProfesional 
+                            : ($who === 'multiefector' 
+                                ? $request->anexoProfesional 
+                                : null)) ;
+                    Auditor::setAuditoria($item->IdPrestacion, 1, $who === 'efector' ? 36 : 37, Auth::user()->name); 
                 }
+
+                $this->marcarPrimeraCarga($request->Id, $request->who);
                    
             }
         }
@@ -875,7 +865,7 @@ class ItemPrestacionesController extends Controller
             return response()->json(['msg' => 'No tienes permisos'], 403);
         }
 
-        $resultados = Cache::remember('itemsprestaciones', 5, function () use ($request) {
+        //$resultados = Cache::remember('itemsprestaciones', 5, function () use ($request) {
 
             $query = ItemPrestacion::join('profesionales as efector', 'itemsprestaciones.IdProfesional', '=','efector.Id')
                 ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
@@ -905,7 +895,7 @@ class ItemPrestacionesController extends Controller
                     'itemsprestaciones.Id as IdItem',
                     'itemsprestaciones.Anulado as Anulado',
                     DB::raw('(SELECT COUNT(*) FROM archivosefector WHERE IdEntidad = itemsprestaciones.Id) as archivos'),
-                    DB::raw('(SELECT COUNT(*) FROM archivosinformador WHERE IdEntidad = itemsprestaciones.Id) as archivosI')
+                    DB::raw('(SELECT COUNT(*) FROM archivosinformador WHERE IdEntidad = itemsprestaciones.Id) as archivosI'),
                 );                
 
             if ($request->tipo === 'listado' && is_array($request->IdExamen)) {
@@ -919,7 +909,7 @@ class ItemPrestacionesController extends Controller
                          //->orderBy('itemsprestaciones.Fecha', 'ASC')
                          //->groupBy('itemsprestaciones.Id')
                 ->get();
-        });
+        //});
  
         return response()->json(['examenes' => $resultados]);
     }
@@ -1067,11 +1057,7 @@ class ItemPrestacionesController extends Controller
     public function getBloqueo(Request $request)
     {
         $item = ItemPrestacion::where('Id', $request->Id)->first(['Anulado']);
-        
-        if($item->Anulado === 1)
-        {
-            return response()->json(['prestacion' => true]);
-        }
+        return $item->Anulado === 1 ? response()->json(['prestacion' => true]) : null;
     }
 
     public function lstExamenes(Request $request)
@@ -1128,20 +1114,11 @@ class ItemPrestacionesController extends Controller
 
     public function checkPrimeraCarga(Request $request)
     {
-        $query = $request->who === 'efector' 
-            ? ArchivoEfector::join('itemsprestaciones', 'archivosefector.IdEntidad', '=', 'itemsprestaciones.Id')->join('proveedores', 'itemsprestaciones.IdProveedor', '=', 'proveedores.Id')->where('archivosefector.IdPrestacion', $request->Id)->where('proveedores.Multi', 1)->get()
-            : ArchivoInformador::join('itemsprestaciones', 'archivosinformador.IdEntidad', '=', 'itemsprestaciones.Id')->join('proveedores', 'itemsprestaciones.IdProveedor', '=', 'proveedores.Id')->where('itemsprestaciones.IdPrestacion', $request->Id)->where('proveedores.MultiE', 1)->get();
+        $query = $request->who === 'efector'
+            ? ArchivoEfector::join('itemsprestaciones', 'archivosefector.IdEntidad', '=', 'itemsprestaciones.Id')->join('proveedores', 'itemsprestaciones.IdProveedor', '=', 'proveedores.Id')->where('archivosefector.IdPrestacion', $request->Id)->where('proveedores.Multi', 1)->where('archivosefector.PuntoCarga', 1)->pluck('itemsprestaciones.Id')
+            : ArchivoInformador::join('itemsprestaciones', 'archivosinformador.IdEntidad', '=', 'itemsprestaciones.Id')->join('proveedores', 'itemsprestaciones.IdProveedor', '=', 'proveedores.Id')->where('itemsprestaciones.IdPrestacion', $request->Id)->where('proveedores.MultiE', 1)->where('archivosinformador.PuntoCarga', 1)->pluck('itemsprestaciones.Id');
 
-        if (!$query->isEmpty()) {
-
-            $ruta = $query->first()->Ruta; 
-
-            $result = $request->who === 'efector' 
-                ? ArchivoEfector::where('Ruta', $ruta)->first(['IdEntidad']) 
-                : ArchivoInformador::where('Ruta', $ruta)->first(['IdEntidad']);
-
-            return response()->json($result);
-        }
+        return response()->json($query);
 
     }
 
@@ -1244,5 +1221,50 @@ class ItemPrestacionesController extends Controller
 
         return response()->json($result);
     }
+
+    private function marcarPrimeraCarga(int $id, string $who): void
+    {
+        if($who === 'multiefector'){
+            
+            $query = ArchivoEfector::where('IdEntidad', $id)->first(); 
+            if ($query) {
+                $query->PuntoCarga = 1;
+                $query->save();
+            }
+        }
+
+        if($who === 'multiInformador') {
+            $query = ArchivoInformador::where('IdEntidad', $id)->first();
+
+            if ($query) {
+                $query->PuntoCarga = 1;
+                $query->save();
+            }
+        }
+    }
+
+    private function obtenerDatosItemPrestacion($id)
+    {
+        $query = ItemPrestacion::with(['prestaciones', 'examenes', 'examenes.proveedor1', 'examenes.proveedor2', 'profesionales1', 'profesionales2', 'itemsInfo', 'notaCreditoIt.notaCredito', 'facturadeventa'])->find($id);
+        $data = null;
+
+        if ($query) {
+            $paciente = $this->getPaciente($query->IdPrestacion);
+            
+            $data = [
+                'itemprestacion' => $query,
+                'paciente' => $paciente,
+                'qrTexto' => $this->generarQR('A', $query->IdPrestacion, $query->IdExamen, $paciente->Id, 'texto'),
+                'adjuntoEfector' => $this->adjuntoEfector($query->Id),
+                'adjuntoInformador' => $this->adjuntoInformador($query->Id),
+                'multiEfector' => $this->multiEfector($query->IdPrestacion, $query->IdProfesional, $query->examenes->IdProveedor),
+                'multiInformador' => $this->multiInformador($query->IdPrestacion, $query->IdProfesional2, $query->examenes->IdProveedor2),
+                'efectores' => $this->getProfesional($query->IdProfesional, "Efector", $query->IdProveedor),
+            ];
+        }
+
+        return $data;
+    }
+
 
 }

@@ -581,15 +581,15 @@ $(document).ready(()=>{
                         tipo: 'listado'
                     },
                 });
-    
-                let registros = response.examenes;
+
+                const cargaEfector = await primeraCarga(ID, "efector");
+                const cargaInformador = await primeraCarga(ID, "informador");
+                
+                let registros = response;
                 checkExamenes(ID);
-    
+                
                 let filas = '';
-                const responseEfector = await checkMultiId(ID, "efector");
-                const responseInformador = await checkMultiId(ID, "informador");
-                const firstE = responseEfector !== undefined ? responseEfector : null;
-                const firstI = responseInformador !== undefined ? responseInformador : null;
+
                 preloader('off');
                 for (let i = 0; i < registros.length; i++) {
                     const examen = registros[i];
@@ -597,7 +597,7 @@ $(document).ready(()=>{
                     filas += `
                         <tr ${examen.Anulado === 1 ? 'class="filaBaja"' : ''}>
                             <td><input type="checkbox" name="Id_examenes" value="${examen.IdItem}" checked data-adjunto="${examen.ExaAdj}" data-archivo="${examen.archivos}"></td>
-                            <td data-idexam="${examen.IdExamen}" id="${examen.IdItem}" style="text-align:left">${examen.Nombre} ${examen.Anulado === 1 ? '<span class="custom-badge rojo">Bloqueado</span>' : ''} ${firstE.IdEntidad === examen.IdItem ? '<i title="Carga multiple, efector, desde este exámen" class="ri-file-mark-line verde"></i>' : ''} ${firstI.IdEntidad === examen.IdItem ? '<i title="Carga multiple, informador, desde este exámen" class="ri-file-mark-line naranja"></i>' : ''}</td>
+                            <td data-idexam="${examen.IdExamen}" id="${examen.IdItem}" style="text-align:left">${examen.Nombre} ${examen.Anulado === 1 ? '<span class="custom-badge rojo">Bloqueado</span>' : ''} ${cargaEfector.includes(examen.IdItem) ? '<i title="Carga multiple, efector, desde este exámen" class="ri-file-mark-line verde"></i>' : ''} ${cargaInformador.includes(examen.IdItem) ? '<i title="Carga multiple, informador, desde este exámen" class="ri-file-mark-line naranja"></i>' : ''}</td>
                             <td>
                                 <span id="incompleto" class="${(examen.Incompleto === 0 || examen.Incompleto === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
                                     <i class="ri-flag-2-line ${examen.Anulado === 0 ? 'incompleto' : ''}"></i>
@@ -656,22 +656,23 @@ $(document).ready(()=>{
                         </tr>`;
                 }
     
-                $('#listaExamenes').append(filas);
-    
-                $("#listado").fancyTable({
-                    pagination: true,
-                    perPage: 50,
-                    searchable: false,
-                    globalSearch: false,
-                    sortable: false, 
-                });
-            }
-        } catch (jqXHR) {
+                        $('#listaExamenes').append(filas);
+                        $("#listado").fancyTable({
+                            pagination: true,
+                            perPage: 50,
+                            searchable: false,
+                            globalSearch: false,
+                            sortable: false,
+                        });
+                    } else {
+                        console.warn('No hay registros disponibles');
+                    }
+                } catch (error) {
             preloader('off');
-            let errorData = JSON.parse(jqXHR.responseText);            
-            checkError(jqXHR.status, errorData.msg);
+            console.error('Error en la carga del examen:', error);
         }
     }
+    
     
 
     async function checkExamenes(id) {
@@ -1013,7 +1014,7 @@ $(document).ready(()=>{
         });
     }
 
-    function eventoAdjuntar(id, web = null) {
+    function eventoAdjuntar(id) {
         $(document).off('click', '.ex-btnAdjEfector, .ex-btnAdjInformador').on('click', '.ex-btnAdjEfector, .ex-btnAdjInformador', function (e){
             e.preventDefault();
             
@@ -1058,7 +1059,6 @@ $(document).ready(()=>{
                 formData.append('who', who);
                 formData.append('anexoProfesional', anexoProfesional);
                 formData.append('multi', multi);
-                formData.append('web', web)
                 formData.append('_token', TOKEN);
        
                 $.ajax({
@@ -1597,18 +1597,7 @@ $(document).ready(()=>{
         })
     }
 
-    async function checkMultiId(idPrestacion, tipo) {
-    
-        return new Promise((resolve, reject) => {
-            $.get(checkFirst, { Id: idPrestacion, who: tipo })
-                .done(function(response) { 
-                    resolve(response);      
-                })
-                .fail(function(error) {
-                    reject(error);
-                });
-        });
-    }
+
 
     async function checkAdjunto(id, tipo) {
         if (['', 0, null].includes(id)) return;
@@ -1640,5 +1629,19 @@ $(document).ready(()=>{
             })
         }
     }
+
+    async function primeraCarga(id, who) {
+        let resultado = await $.ajax({
+            url: checkFirst,
+            type: 'GET',
+            data: {
+                Id: id, 
+                who: who
+            }
+        });
+
+        return resultado;
+    }
+
 
 });

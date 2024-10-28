@@ -19,7 +19,8 @@ class ArchivoEfector extends Model
         'Descripcion',
         'Ruta',
         'IdPrestacion',
-        'Tipo'
+        'Tipo',
+        'PuntoCarga'
     ];
 
     public $timestamps = false;
