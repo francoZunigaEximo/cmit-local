@@ -31,7 +31,7 @@ $(document).ready(()=>{
             EvalExclusivo = $('#EvalExclusivo').prop('checked'),
             ExpAnexo = $('#ExpAnexo').prop('checked'),
             aliasexamen_id = $('#aliasexamenes').val();
-
+        
             if($('#form-update').valid()) {
 
                 swal({

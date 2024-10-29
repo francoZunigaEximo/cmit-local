@@ -265,7 +265,7 @@ class ExamenesController extends Controller
             $examen->PI = ($request->PI === 'true' ? '1' : '0');
             $examen->Evaluador = ($request->Evaluador === 'true' ? '1' : '0');
             $examen->EvalCopia = ($request->EvalCopia === 'true' ? '1' : '0');
-            $examen->aliasexamen_id = $request->aliasexamenes ?? 0;
+            $examen->aliasexamen_id = $request->aliasexamen_id ?? 0;
             $examen->save();
 
             return response()->json(['msg' => 'Se ha actualizado el exámen correctamente'], 200);

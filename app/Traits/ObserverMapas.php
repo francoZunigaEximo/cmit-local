@@ -3,10 +3,7 @@
 namespace App\Traits;
 
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
-use App\Models\Constanciase;
 use App\Models\Prestacion;
-use App\Models\Mapa;
 trait ObserverMapas
 {
     
@@ -77,9 +74,6 @@ trait ObserverMapas
             ->select('prestaciones.Id') // Seleccionamos explícitamente la columna Id de prestaciones
             ->count();
     }
-
-
-
 
     public function contadorEnProceso(int $id): int
     {

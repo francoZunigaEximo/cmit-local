@@ -46,13 +46,12 @@ class AliasExamenesController extends Controller
         }
 
         if(empty($request->Id)) {
-            return response()->json(['msg' => 'El Id no puede encontrarse vacío'], 406);
+            return response()->json(['msg' => 'El Id no puede encontrarse vacío'], 409);
         }
         
-        $check = Examen::where('aliasexamen_id', $request->Id)->exists();
-
+        $check = Examen::where('aliasexamen_id', $request->Id)->first();
         if($check) {
-            return response()->json(['msg' => 'No se puede eliminar el alias porque se encuentra asociado a un exámen'], 406);
+            return response()->json(['msg' => 'No se puede eliminar el alias porque se encuentra asociado a un exámen'], 409);
         }
 
         $delete = AliasExamen::find($request->Id);

@@ -75,6 +75,7 @@ $(document).ready(function(){
                         toastr.success(response.msg);
                     })
                     .fail(function(jqXHR) {
+                        preloader('off');
                         let errorData = JSON.parse(jqXHR.responseText);
                         checkError(jqXHR.status, errorData.msg);
                         return;
@@ -141,12 +142,11 @@ $(document).ready(function(){
     
         try {
             const response = await $.get(optionEx, { Id: id });
-            console.log(response); // Muestra el resultado
-            return response; // Devuelve el resultado
+            return response;
         } catch (jqXHR) {
             let errorData = JSON.parse(jqXHR.responseText);
             checkError(jqXHR.status, errorData.msg);
-            return null; // Maneja el error adecuadamente
+            return null;
         }
     }
     
