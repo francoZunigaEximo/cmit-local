@@ -268,6 +268,9 @@ class ExamenesController extends Controller
             $examen->aliasexamen_id = $request->aliasexamenes ?? 0;
             $examen->save();
 
+            return response()->json(['msg' => 'Se ha actualizado el exámen correctamente'], 200);
+        }else{
+            return response()->json(['msg' => 'No se ha podido actualizar el examen'], 406);
         }
         
     }

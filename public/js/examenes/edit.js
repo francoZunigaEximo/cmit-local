@@ -29,20 +29,21 @@ $(document).ready(()=>{
             Ausente = $('#Ausente').prop('checked'),
             Devolucion = $('#Devolucion').prop('checked'),
             EvalExclusivo = $('#EvalExclusivo').prop('checked'),
-            ExpAnexo = $('#ExpAnexo').prop('checked');
+            ExpAnexo = $('#ExpAnexo').prop('checked'),
+            aliasexamen_id = $('#aliasexamenes').val();
 
             if($('#form-update').valid()) {
 
                 swal({
-                    title: "¿Esta seguro que desea guardar",
+                    title: "¿Esta seguro que desea guardar?",
                     icon: "warning",
                     buttons: ["Cancelar", "Aceptar"]
                 }).then((confirmar) => {
                     if(confirmar) {
 
-                        $.post(updateExamen, {_token: TOKEN, Id: ID, Examen:Examen, IdEstudio: Estudio, Descripcion: Descripcion, IdReporte: Reporte, Cod: CodigoEx, Cod2: CodigoE, IdForm: Formulario, DiasVencimiento: DiasVencimiento, Inactivo: Inactivo, PI: priImpresion, IdProveedor: ProvEfector, IdProveedor2: ProvInformador, Informe: Informe, NoImprime: Fisico, Adjunto: Adjunto, Ausente: Ausente, Devol: Devolucion, Evaluador: EvalExclusivo, EvalCopia: ExpAnexo})
-                        .done(function(){
-                            toastr.success('Se ha actualizado el exámen correctamente');
+                        $.post(updateExamen, {_token: TOKEN, Id: ID, Examen:Examen, IdEstudio: Estudio, Descripcion: Descripcion, IdReporte: Reporte, Cod: CodigoEx, Cod2: CodigoE, IdForm: Formulario, DiasVencimiento: DiasVencimiento, Inactivo: Inactivo, PI: priImpresion, IdProveedor: ProvEfector, IdProveedor2: ProvInformador, Informe: Informe, NoImprime: Fisico, Adjunto: Adjunto, Ausente: Ausente, Devol: Devolucion, Evaluador: EvalExclusivo, EvalCopia: ExpAnexo, aliasexamen_id: aliasexamen_id})
+                        .done(function(response){
+                            toastr.success(response.msg);
                             setTimeout(() => {
                                 location.reload();
                             }, 3000);
@@ -79,7 +80,8 @@ $(document).ready(()=>{
             Ausente = $('#Ausente').prop('checked'),
             Devolucion = $('#Devolucion').prop('checked'),
             EvalExclusivo = $('#EvalExclusivo').prop('checked'),
-            ExpAnexo = $('#ExpAnexo').prop('checked');
+            ExpAnexo = $('#ExpAnexo').prop('checked'),
+            AliasExamen = $('#aliasexamenes').val();
 
         swal({
             title: "¿Esta seguro que desea clonar la infomación?",
@@ -97,14 +99,15 @@ $(document).ready(()=>{
                 localStorage.setItem('clon_Inactivo', Inactivo);
                 localStorage.setItem('clon_priImpresion', priImpresion);
                 localStorage.setItem('clon_ProvEfector', ProvEfector);
-                localStorage.setItem('clon_ProvInformador', ProvInformador)
-                localStorage.setItem('clon_Informe', Informe)
-                localStorage.setItem('clon_Fisico', Fisico)
-                localStorage.setItem('clon_Adjunto', Adjunto)
-                localStorage.setItem('clon_Ausente', Ausente)
-                localStorage.setItem('clon:Devolucion', Devolucion)
-                localStorage.setItem('clon_EvalExclusivo', EvalExclusivo)
-                localStorage.setItem('clon_ExpAnexo', ExpAnexo)
+                localStorage.setItem('clon_ProvInformador', ProvInformador);
+                localStorage.setItem('clon_Informe', Informe);
+                localStorage.setItem('clon_Fisico', Fisico);
+                localStorage.setItem('clon_Adjunto', Adjunto);
+                localStorage.setItem('clon_Ausente', Ausente);
+                localStorage.setItem('clon:Devolucion', Devolucion);
+                localStorage.setItem('clon_EvalExclusivo', EvalExclusivo);
+                localStorage.setItem('clon_ExpAnexo', ExpAnexo);
+                localStorage.setItem('clon_AliasExamen', AliasExamen);
 
                 window.location.href = GOCREATE;
             }
