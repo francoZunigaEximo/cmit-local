@@ -1484,7 +1484,7 @@ $(document).ready(()=>{
                                         </button> 
                                     </div>
                                         `:``}
-                                    ${(EstadoI === 'Cerrado') ? `
+                                    ${(EstadoI === 'Cerrado' || d.Anulado === 1) ? `
                                     <div class="remove">
                                         <button data-id="${d.IdI}" data-tipo="informador" class="btn btn-sm iconGeneral deleteAdjunto" title="Eliminar">
                                             <i class="ri-delete-bin-2-line"></i>
