@@ -18,7 +18,6 @@ $(document).ready(()=>{
                 deferRender: true,
                 responsive: false,
                 serverSide: true,
-                stateSave: true,
                 ajax: {
                     url: SEARCH,
                     data: function(d){
@@ -184,49 +183,6 @@ $(document).ready(()=>{
                 
                     return resultado;
                 },
-                stateLoadCallback: function(settings, callback) {
-                    $.ajax({
-                        url: SEARCH,
-                        dataType: 'json',
-                        success: function(json){
-                            $('#Nro').val(json.Nro || '');
-                            $('#ART').val(json.Art || '');
-                            $('#Empresa').val(json.Empresa || '');
-                            $('#Estado').val(json.Estado || '');
-                            $('#corteDesde').val(json.corteDesde || '');
-                            $('#corteHasta').val(json.corteHasta || '');
-                            $('#entregaDesde').val(json.entregaDesde || '');
-                            $('#entregaHasta').val(json.entregaHasta || '');
-                            $('#Vencimiento').val(json.Vencimiento || '');
-                            $('#Ver').val(json.Ver || '');
-
-                            callback(json);
-                        }
-                    });
-                },
-                stateSaveCallback: function(settings, data){
-                    $.ajax({
-                        url: SEARCH,
-                        type: 'POST',
-                        data: {
-                            Nro: $('#Nro').val(),
-                            Art: $('#ART').val(),
-                            Empresa: $('#Empresa').val(),
-                            Estado: $('#Estado').val(),
-                            corteDesde: $('#corteDesde').val(),
-                            corteHasta: $('#corteHasta').val(),
-                            entregaDesde: $('#entregaDesde').val(),
-                            entregaHasta: $('#entregaHasta').val(),
-                            Vencimiento: $('#Vencimiento').val(),
-                            Ver: $('#Ver').val()
-                        },
-                        dataType: 'json',
-                        success: function(response){},
-                        error: function(jqXHR, textStatus, errorThrown) {
-                            console.error('Error: ', textStatus, errorThrown);
-                        }
-                    });
-                }
             });
     
         });    
