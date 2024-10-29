@@ -1193,6 +1193,7 @@ class ItemPrestacionesController extends Controller
         ->where('proveedores.MultiE', 1)
         ->where('profesionales.InfAdj', 1)
         ->whereNot('itemsprestaciones.Anulado', 1)
+        ->whereNot('itemsprestaciones.CInfo', 0)
         ->orderBy('proveedores.Nombre', 'DESC')
         ->get();
     }
