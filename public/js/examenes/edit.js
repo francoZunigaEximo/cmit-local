@@ -84,7 +84,7 @@ $(document).ready(()=>{
         swal({
             title: "¿Esta seguro que desea clonar la infomación?",
             icon: "warning",
-            button: ["Cancelar", "Aceptar"]
+            buttons: ["Cancelar", "Aceptar"]
         }).then((confirmar) => {
             if(confirmar) {
                 localStorage.setItem('clon_Examen', Examen);
