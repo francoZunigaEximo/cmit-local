@@ -860,3 +860,5 @@ ALTER TABLE examenes ADD CONSTRAINT fk_aliasexamenes FOREIGN KEY (aliasexamen_id
 
 ALTER TABLE archivosefector ADD PuntoCarga INT DEFAULT 0 NOT NULL;
 ALTER TABLE archivosinformador ADD PuntoCarga INT DEFAULT 0 NOT NULL;
+
+CASCADE en fk_archivosefector y fk_archivosinformador
