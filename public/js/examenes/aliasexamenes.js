@@ -115,7 +115,8 @@ $(document).ready(function(){
 
     async function cargarOptions() {
         
-        const opcion = await optionExamen(ID);
+
+        const opcion = typeof ID === 'undefined' ? false : await optionExamen(ID);
 
         if (opcion && opcion.alias_examen && opcion.alias_examen.Id) {
             $('#aliasexamenes').empty().append(`<option selected value="${opcion.alias_examen.Id}">${opcion.alias_examen.Nombre}</option>`);
