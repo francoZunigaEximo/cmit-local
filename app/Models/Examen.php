@@ -37,6 +37,7 @@ class Examen extends Model
         'EvalCopia',
         'PI',
         'IdForm',
+        'aliasexamen_id'
     ];
 
     public $timestamps = false;
@@ -79,5 +80,10 @@ class Examen extends Model
     public function paqueteFacturacion()
     {
         return $this->belongsToMany(PaqueteEstudio::class, 'relpaqfact', 'IdExamen', 'IdPaquete');
+    }
+
+    public function aliasExamen()
+    {
+        return $this->hasOne(AliasExamen::class, 'Id', 'aliasexamen_id');
     }
 }

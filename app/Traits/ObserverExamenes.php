@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use App\Models\AliasExamen;
 use App\Models\PaqueteEstudio;
 use App\Models\Relpaqest;
 use App\Models\Estudio;
@@ -35,5 +36,10 @@ trait ObserverExamenes
     {
         return ItemPrestacion::where('IdExamen', $id)->get();
 
+    }
+
+    public function getAliasExamenes(): mixed
+    {
+        return AliasExamen::where('Id', '<>', 0)->get(['Id', 'Nombre']);
     }
 }

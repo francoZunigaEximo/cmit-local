@@ -31,8 +31,9 @@ class ExamenesController extends Controller
         $estudios = $this->getEstudios();
         $reportes = $this->getReportes();
         $proveedores = $this->getProveedor();
+        $aliasexamenes = $this->getAliasExamenes();
 
-        return view("layouts.examenes.create", compact(['estudios', 'reportes', 'proveedores']));
+        return view("layouts.examenes.create", compact(['estudios', 'reportes', 'proveedores','aliasexamenes']));
     }
 
     public function store(Request $request)
@@ -51,7 +52,7 @@ class ExamenesController extends Controller
             'IdProveedor2' => $request->ProvInformador ?? 0,
             'DiasVencimiento' => $request->DiasVencimiento ?? 0,
             'Inactivo' => ($request->Inactivo === 'on' ? '1' : '0'),
-            'IdForm' => $request->Formulario,
+            'IdForm' => $request->Formulario ?? '',
             'Cod' => $request->CodigoEx ?? '',
             'Cod2' => $request->CodigoE ?? '',
             'Ausente' => $request->Ausente ?? 0,
@@ -61,7 +62,8 @@ class ExamenesController extends Controller
             'NoImprime' => ($request->Fisico === 'on' ? '1' : '0'),
             'PI' => ($request->priImpresion === 'on' ? '1' : '0'),
             'Evaluador' => ($request->EvalExclusivo === 'on' ? '1' : '0'),
-            'EvalCopia' => ($request->ExpAnexo === 'on' ? '1' : '0')
+            'EvalCopia' => ($request->ExpAnexo === 'on' ? '1' : '0'),
+            'aliasexamen_id' => $request->aliasexamenes ?? 0
         ]);
 
         return redirect()->route('examenes.index');
@@ -76,8 +78,9 @@ class ExamenesController extends Controller
         $estudios = $this->getEstudios();
         $reportes = $this->getReportes();
         $proveedores = $this->getProveedor();
+        $aliasexamenes = $this->getAliasExamenes();
 
-        return view("layouts.examenes.edit", compact(['examene', 'estudios', 'reportes', 'proveedores']));
+        return view("layouts.examenes.edit", compact(['examene', 'estudios', 'reportes', 'proveedores', 'aliasexamenes']));
     }
 
     public function search(Request $request): mixed
@@ -262,6 +265,7 @@ class ExamenesController extends Controller
             $examen->PI = ($request->PI === 'true' ? '1' : '0');
             $examen->Evaluador = ($request->Evaluador === 'true' ? '1' : '0');
             $examen->EvalCopia = ($request->EvalCopia === 'true' ? '1' : '0');
+            $examen->aliasexamen_id = $request->aliasexamenes ?? 0;
             $examen->save();
 
         }

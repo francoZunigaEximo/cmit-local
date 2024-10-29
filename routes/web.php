@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AliasExamenesController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AutorizadoController;
 use App\Http\Controllers\ClientesController;
@@ -352,5 +353,12 @@ Route::group(['middleware' => 'auth'], function () {
 
     //Rutas de Notas de Crédito
     Route::get('nota-de-credito/check', [NotasCreditoController::class, 'checkNotaCredito'])->name('nota-de-credito.check');
+
+    //Rutas de Alias de Examenes
+    Route::post('alias-examenes/add', [AliasExamenesController::class, 'saveAlias'])->name('aliasExamenes.add');
+    Route::get('alias-examenes/getList', [AliasExamenesController::class, 'getListadoExamenes'])->name('aliasExamenes.getList');
+    Route::get('alias-examenes/delete', [AliasExamenesController::class, 'deleteAlias'])->name('aliasExamenes.del');
+    Route::get('alias-examenes/getExamenSelect', [AliasExamenesController::class, 'getAliasSelect'])->name('aliasExamenes.getExamenSelect');
+
 });
 

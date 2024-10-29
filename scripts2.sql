@@ -852,8 +852,11 @@ CREATE TABLE aliasExamenes(
 );
 
 ALTER TABLE examenes ADD COLUMN aliasexamen_id INT DEFAULT 0 NOT NULL;
-ALTER TABLE examenes FOREIGN KEY ('aliasexamen_id') REFERENCES aliasExamenes('Id');
+INSERT INTO aliasExamenes(Id, Nombre, Descripcion) VALUES(0, 'Sin datos', 'Sin datos');
+ALTER TABLE examenes ADD CONSTRAINT fk_aliasexamenes FOREIGN KEY (aliasexamen_id) REFERENCES aliasExamenes(Id);
 
+
+#Verificar el Id 0 de alias para evitar problemas
 
 ALTER TABLE archivosefector ADD PuntoCarga INT DEFAULT 0 NOT NULL;
 ALTER TABLE archivosinformador ADD PuntoCarga INT DEFAULT 0 NOT NULL;

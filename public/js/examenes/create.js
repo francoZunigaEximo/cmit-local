@@ -18,6 +18,7 @@ $(document).ready(function(){
     clonDevolucion = (localStorage.getItem('clon_Devolucion') === 'true'),
     clonEvalExclusivo = (localStorage.getItem('clon_EvalExclusivo') === 'true'),
     clonExpAnexo = (localStorage.getItem('clon_ExpAnexo') === 'true');
+    clonAliasExamen = (localStorage.getItem('clon_AliasExamen') === 'true');
 
     $(document).on('click', '#volver', function(){
         history.back();
@@ -41,6 +42,7 @@ $(document).ready(function(){
     $('#Devolucion').prop('checked', clonDevolucion);
     $('#EvalExclusivo').prop('checked', clonEvalExclusivo);
     $('#ExpAnexo').prop('checked', clonExpAnexo);
+    $('#aliasexamenes').val(clonAliasExamen);
 
     localStorage.clear(); 
 
