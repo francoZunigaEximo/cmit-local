@@ -87,27 +87,19 @@ $(document).ready(()=>{
 
         e.preventDefault();
 
-        let ids = [], tieneAdjunto = false, id = $(this).data('delete'), adjunto, archivos;
-        var checkAll ='';
+        let ids = [], id = $(this).data('delete'), checkAll ='';
 
         if ($(this).hasClass('deleteExamenes')) {
 
             $('input[name="Id_examenes"]:checked').each(function() {
-                adjunto = $(this).data('adjunto'), archivos = $(this).data('archivo');
-                adjunto == 1 && archivos > 0 ? tieneAdjunto = true : ids.push($(this).val());
+               ids.push($(this).val());
             });
     
             checkAll = $('#checkAllExamenes').prop('checked');
 
         } else if($(this).hasClass('deleteExamen')) {
 
-            adjunto = $(this).data('adjunto'), archivos = $(this).data('archivo');
-            adjunto == 1 && archivos > 0 ? tieneAdjunto = true : ids.push(id);
-        }
-
-        if (tieneAdjunto) {
-            toastr.warning('El o los examenes seleccionados tienen un reporte adjuntado. El mismo no se podrá eliminar.');
-            return;
+            ids.push(id);
         }
 
         if(ids.length === 0 && checkAll === false){
@@ -153,6 +145,12 @@ $(document).ready(()=>{
                             checkExamenes(ID);
                         }
 
+                    },
+                    error: function(jqXHR){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return; 
                     }
                 });
             }
@@ -596,7 +594,7 @@ $(document).ready(()=>{
 
                     filas += `
                         <tr ${examen.Anulado === 1 ? 'class="filaBaja"' : ''}>
-                            <td><input type="checkbox" name="Id_examenes" value="${examen.IdItem}" checked data-adjunto="${examen.ExaAdj}" data-archivo="${examen.archivos}"></td>
+                            <td><input type="checkbox" name="Id_examenes" value="${examen.IdItem}" checked></td>
                             <td data-idexam="${examen.IdExamen}" id="${examen.IdItem}" style="text-align:left">${examen.Nombre} ${examen.Anulado === 1 ? '<span class="custom-badge rojo">Bloqueado</span>' : ''} ${cargaEfector.includes(examen.IdItem) ? '<i title="Carga multiple, efector, desde este exámen" class="ri-file-mark-line verde"></i>' : ''} ${cargaInformador.includes(examen.IdItem) ? '<i title="Carga multiple, informador, desde este exámen" class="ri-file-mark-line naranja"></i>' : ''}</td>
                             <td>
                                 <span id="incompleto" class="${(examen.Incompleto === 0 || examen.Incompleto === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">

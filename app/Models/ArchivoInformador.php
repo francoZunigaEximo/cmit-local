@@ -23,4 +23,9 @@ class ArchivoInformador extends Model
     ];
 
     public $timestamps = false;
+
+    public function itemPrestacion()
+    {
+        return $this->hasMany(ItemPrestacion::class, 'Id', 'IdEntidad');
+    }
 }

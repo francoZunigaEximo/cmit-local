@@ -122,6 +122,11 @@ class ItemPrestacion extends Model
         return $this->hasMany(ArchivoEfector::class, 'IdEntidad', 'Id');
     }
 
+    public function archivoInformador()
+    {
+        return $this->hasMany(ArchivoInformador::class, 'IdEntidad', 'Id');
+    }
+
     public function proveedores()
     {
         return $this->hasOne(Proveedor::class, 'Id', 'IdProveedor');
