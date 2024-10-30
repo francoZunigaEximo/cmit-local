@@ -85,11 +85,12 @@ $(document).ready(()=>{
                             let totalDias = getDias(data.FechaE),
                                 fecha = fechaNow(data.FechaE,'/',0);
 
-                            let contenido = `<div class="text-center">
-                                                <span>${(fecha === 'NaN/NaN/NaN'? 'Sin fecha' : fecha) }</span>
-                                                <span class="custom-badge generalNegro">${(totalDias === NaN || totalDias < 0 ? 0 : totalDias)}</span>
-                                            </div>`;
-                            return contenido;
+                            let contenido = `
+                                <div class="text-center">
+                                    <span>${(fecha === 'NaN/NaN/NaN'? 'Sin fecha' : fecha) }</span>
+                                    <span class="custom-badge generalNegro">${(totalDias === NaN || totalDias < 0 ? 0 : totalDias)}</span>
+                                </div>`;
+                                return contenido;
                         }
                     },
                     {
@@ -113,20 +114,21 @@ $(document).ready(()=>{
                                 terminado = data.contadorPrestaciones > 0 && data.contadorPrestaciones === data.cdorCerrados && data.contadorPrestaciones ===data.cdorEEnviados;
 
                                 let conteo = '(Total Prestaciones: ' + data.contadorPrestaciones + ') (Total Cerrados: ' + data.cdorCerrados + ') (Total Finalizados: ' + data.cdorFinalizados + ') (Total eEnviados:' + data.cdorEEnviados + ')';
-
-                            if(enviados){
-                                return '<span title="' + conteo + '" class="custom-badge generalNegro">eEnviado</span>';
-                            }else if(abierto){
-                                return '<span title="' + conteo + '" class="custom-badge generalNegro">Abierto</span>';
-                            }else if(terminado){
-                                return '<span title="' + conteo + '" class="custom-badge generalNegro">Terminado</span>';
-                            }else if(cerrado){
-                                return '<span title="' + conteo + '" class="custom-badge generalNegro">Cerrado</span>';
-                            }else if(noEnviados){
-                                return '<span title="' + conteo + '" class="custom-badge generalNegro">No eEnviado</span>';
-                            }else if(data.contadorPrestaciones === 0){
-                                return '<span title="' + conteo + '" class="custom-badge generalNegro">Vacío</span>';
-                            }       
+                            
+                            switch (true) {
+                                case enviados:
+                                    return '<span title="' + conteo + '" class="custom-badge generalNegro">eEnviado</span>';
+                                case abierto:
+                                    return '<span title="' + conteo + '" class="custom-badge generalNegro">Abierto</span>';
+                                case terminado:
+                                    return '<span title="' + conteo + '" class="custom-badge generalNegro">Terminado</span>';
+                                case cerrado:
+                                    return '<span title="' + conteo + '" class="custom-badge generalNegro">Cerrado</span>';
+                                case noEnviados:
+                                    return '<span title="' + conteo + '" class="custom-badge generalNegro">No eEnviado</span>';
+                                case (data.contadorPrestaciones === 0):
+                                    return '<span title="' + conteo + '" class="custom-badge generalNegro">Vacío</span>';
+                            }
                         }
                     },
                     {

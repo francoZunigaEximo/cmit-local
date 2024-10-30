@@ -9,8 +9,7 @@ class AutorizadoController extends Controller
 {
     public function alta(Request $request)
     {
-
-        $autorizado = Autorizado::create([
+        Autorizado::create([
             'Id' => Autorizado::max('Id') + 1,
             'Nombre' => $request->Nombre,
             'Apellido' => $request->Apellido,
@@ -19,8 +18,6 @@ class AutorizadoController extends Controller
             'TipoEntidad' => $request->TipoEntidad,
             'IdEntidad' => $request->Id,
         ]);
-
-        $autorizado->save();
     }
 
     public function getAut(Request $request)
