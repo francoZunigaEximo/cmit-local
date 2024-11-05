@@ -140,9 +140,7 @@
                             <div class="col-6">
                                 <span class="input-group input-group-sm size80porcent mx-auto">
                                     <span class="input-group-text">Alias PDF&nbsp;</span>
-                                    <select class="form-control" name="aliasexamenes" id="aliasexamenes">
-                                    </select>
-                                    <button type="button" class="btn btn-sm botonGeneral" title="Administrar alias" data-bs-toggle="modal" data-bs-target="#editarAlias"><i class="ri-file-edit-line"></i></button>
+                                    <input type="text" class="form-control" id="aliasexamen" name="aliasexamen" value="{{ $examene->aliasexamen ?? '' }}">
                                 </span>
                             </div>
                             <div class="col-6">
@@ -206,46 +204,6 @@
     </form>
 </div>
 
-<div id="editarAlias" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="myModalLabel">Administrar alias</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>
-            </div>
-            
-            <div class="modal-body text-center">
-                <div class="row fondo-grisClaro pt-2 pb-2">
-                    <div class="col-12 text-end d-flex align-items-center content-aligns-end">
-                        <span class="me-2 fw-bolder">Nombre:</span>
-                        <input type="text" class="form-control me-2" id="nombreAlias" placeholder="Escriba el nombre del alias" style="flex: 1;">
-                        <span class="me-2 fw-bolder">Descripción:</span>
-                        <input type="text" class="form-control me-2" id="descripcionAlias" placeholder="Escriba una breve descripción" style="flex: 1;">
-                        <button class="btn botonGeneral agregarItem" type="button">Agregar</button>
-                    </div>       
-                </div>
-
-                <div class="table-card table-responsive mt-3 mb-1 mx-auto">
-                    <table id="listadoAliasExamenes" class="display table table-bordered ">
-                        <thead class="table-light">
-                            <tr>
-                                <th class="sort">Nombre</th>
-                                <th>Descripción</th>
-                                <th style="width: 70px">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody class="list form-check-all" id="lstAliasExamenes">
-                        </tbody>
-                    </table>
-                </div>
-
-            </div>
-            
-            <div class="modal-footer">
-            </div>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
 
 <script>
     const TOKEN = "{{ @csrf_token() }}";
@@ -270,7 +228,6 @@
 <script src="{{ asset('js/fancyTable.js') }}"></script>
 <script src="{{ asset('js/examenes/edit.js') }}?v={{ time() }}"></script>
 <script src="{{ asset('js/examenes/validaciones.js')}}?v={{ time() }}"></script>
-<script src="{{ asset('js/examenes/aliasexamenes.js')}}?v={{ time() }}"></script>
 @endpush
 
 @endsection

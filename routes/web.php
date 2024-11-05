@@ -137,6 +137,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('porcentajeExamen', [ExamenesController::class, 'porcentajeExamen'])->name('porcentajeExamen');
     Route::get('searchExamenes', [ExamenesController::class, 'searchExamenes'])->name('searchExamenes');
     Route::post('updateExamen', [ExamenesController::class, 'updateExamen'])->name('updateExamen');
+    Route::get('examenes/exportar/excel', [ExamenesController::class, 'excel'])->name('examenes.excel');
 
     //Ruta de Comentarios de Prestaciones
     Route::post('setComentarioPres', [ComentariosPrestacionesController::class, 'setComentarioPres'])->name('setComentarioPres');

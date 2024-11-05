@@ -95,26 +95,12 @@ function createFile(tipo, array, name){
 
     let link = document.createElement('a');
     link.href = fullPath;
-    link.download = tipo === 'pdf' ? name+".pdf" : name+".xlsx";
+    link.download = tipo === 'pdf' ? name : name + ".xlsx";
     link.style.display = 'none';
 
     document.body.appendChild(link);
     link.click();
     setTimeout(function() {
-
-        fetch(fullPath, {
-            method: 'DELETE'
-        }).then(response => {
-
-            if (response.ok) {
-                console.log('Archivo eliminado correctamente.');
-            } else {
-                console.error('Error al intentar eliminar el archivo.');
-            }
-        }).catch(error => {
-            console.error('Error en la solicitud de eliminación:', error);
-        });
-
         document.body.removeChild(link);
     }, 100);
 }
@@ -224,5 +210,11 @@ function verificarArchivo(archivo){
     }
 
     return true
+}
+
+function calculoAvance(data) {
+
+    let cerradoAdjunto = data.CerradoAdjunto || 0, total = data.Total || 1;
+    return data.Anulado === 0 ? ((cerradoAdjunto/total)*100).toFixed(0) : '0';
 
 }

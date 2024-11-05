@@ -106,6 +106,9 @@
                                     <i class="ri-add-line align-bottom me-1"></i> Nuevo
                                 </button>
                             </a>  
+                            <button type="button" class="btn botonGeneral add-btn" id="exportar">
+                                <i class="ri-file-excel-line align-bottom me-1"></i> Exportar
+                            </button>
                         </div>
                     </div>
                     <div class="col-sm-9 mt-2">
@@ -143,6 +146,7 @@
     const lstProveedores = "{{ route('lstProveedores') }}";
     const searchExamen = "{{ route('searchExamen') }}";
     const SEARCH = "{{ route('searchExamenes') }}";
+    const exportarExcel = "{{ route('examenes.excel') }}"
 </script>
 
 @push('styles')

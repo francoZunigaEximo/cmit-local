@@ -106,6 +106,11 @@ $(document).ready(()=>{
             }
         });
 
+        $('#listaExamenes tbody').on('change', '.row-select', function() {
+            let allChecked = $('#listaExamenes .row-select').length === $('#listaExamenes .row-select:checked').length;
+            $('#checkAll').prop('checked', allChecked);
+        });
+
     });
 
 

@@ -409,7 +409,7 @@ $(document).ready(function(){
             buttons: ['Cancelar', 'Aceptar'],
         }).then((confirmar)=>{
             if(confirmar){
-
+                preloader('on')
                 $.ajax({
                     url: tipo === 'excel' ? exportExcel : exportPDF,
                     type: "GET",
@@ -417,8 +417,23 @@ $(document).ready(function(){
                         Id: id
                     },
                     success: function(response) {
-                        createFile(tipo, response.filePath);
-                        toastr.success('Se ha generado el reporte ' + tipo);
+                        preloader('off');
+                        const jsonPattern = /{.*}/s;
+                        const match = response.match(jsonPattern);
+
+                        if(match) {
+                            const jsonResponse = match[0];
+                            const data = JSON.parse(jsonResponse);
+
+                            createFile(tipo, data.filePath, data.name);
+                            toastr.success(data.msg);
+                        }
+                    },
+                    error: function(jqXHR) {
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return;  
                     }
                 });
     

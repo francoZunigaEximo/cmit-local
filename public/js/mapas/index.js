@@ -47,8 +47,8 @@ $(document).ready(()=>{
                         archivo: 'csv'
                     },
                     success: function(response) {
-                        preloader('off');
                         createFile("excel", response.filePath, generarCodigoAleatorio() + "_reporte");
+                        preloader('off');
                         toastr.success(response.msg);
                         return;
                     },

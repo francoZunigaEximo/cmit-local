@@ -251,11 +251,11 @@ label {
 }
 
 .rojo {
-	color: red;
+	color: red !important;
 }
 
 .blanco {
-	color: white;
+	color: white !important;
 }
 
 .gris {

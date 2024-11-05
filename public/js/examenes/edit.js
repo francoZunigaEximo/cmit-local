@@ -30,19 +30,19 @@ $(document).ready(()=>{
             Devolucion = $('#Devolucion').prop('checked'),
             EvalExclusivo = $('#EvalExclusivo').prop('checked'),
             ExpAnexo = $('#ExpAnexo').prop('checked'),
-            aliasexamen_id = $('#aliasexamenes').val();
+            aliasexamen = $('#aliasexamen').val();
         
             if($('#form-update').valid()) {
-
                 swal({
                     title: "¿Esta seguro que desea guardar?",
                     icon: "warning",
                     buttons: ["Cancelar", "Aceptar"]
                 }).then((confirmar) => {
                     if(confirmar) {
-
-                        $.post(updateExamen, {_token: TOKEN, Id: ID, Examen:Examen, IdEstudio: Estudio, Descripcion: Descripcion, IdReporte: Reporte, Cod: CodigoEx, Cod2: CodigoE, IdForm: Formulario, DiasVencimiento: DiasVencimiento, Inactivo: Inactivo, PI: priImpresion, IdProveedor: ProvEfector, IdProveedor2: ProvInformador, Informe: Informe, NoImprime: Fisico, Adjunto: Adjunto, Ausente: Ausente, Devol: Devolucion, Evaluador: EvalExclusivo, EvalCopia: ExpAnexo, aliasexamen_id: aliasexamen_id})
+                        preloader('on');
+                        $.post(updateExamen, {_token: TOKEN, Id: ID, Examen:Examen, IdEstudio: Estudio, Descripcion: Descripcion, IdReporte: Reporte, Cod: CodigoEx, Cod2: CodigoE, IdForm: Formulario, DiasVencimiento: DiasVencimiento, Inactivo: Inactivo, PI: priImpresion, IdProveedor: ProvEfector, IdProveedor2: ProvInformador, Informe: Informe, NoImprime: Fisico, Adjunto: Adjunto, Ausente: Ausente, Devol: Devolucion, Evaluador: EvalExclusivo, EvalCopia: ExpAnexo, aliasexamen: aliasexamen})
                         .done(function(response){
+                            preloader('off')
                             toastr.success(response.msg);
                             setTimeout(() => {
                                 location.reload();
@@ -81,7 +81,7 @@ $(document).ready(()=>{
             Devolucion = $('#Devolucion').prop('checked'),
             EvalExclusivo = $('#EvalExclusivo').prop('checked'),
             ExpAnexo = $('#ExpAnexo').prop('checked'),
-            AliasExamen = $('#aliasexamenes').val();
+            aliasexamen = $('#aliasexamen').val();
 
         swal({
             title: "¿Esta seguro que desea clonar la infomación?",
@@ -107,7 +107,7 @@ $(document).ready(()=>{
                 localStorage.setItem('clon:Devolucion', Devolucion);
                 localStorage.setItem('clon_EvalExclusivo', EvalExclusivo);
                 localStorage.setItem('clon_ExpAnexo', ExpAnexo);
-                localStorage.setItem('clon_AliasExamen', AliasExamen);
+                localStorage.setItem('clon_AliasExamen', aliasexamen);
 
                 window.location.href = GOCREATE;
             }

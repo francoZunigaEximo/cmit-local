@@ -8,10 +8,11 @@ use Illuminate\Support\Facades\Cache;
 use Yajra\DataTables\DataTables;
 use App\Traits\ObserverExamenes;
 use App\Traits\CheckPermission;
+use App\Traits\ReporteExcel;
 
 class ExamenesController extends Controller
 {
-    use ObserverExamenes, CheckPermission;
+    use ObserverExamenes, CheckPermission, ReporteExcel;
 
     public function index()
     {
@@ -63,7 +64,7 @@ class ExamenesController extends Controller
             'PI' => ($request->priImpresion === 'on' ? '1' : '0'),
             'Evaluador' => ($request->EvalExclusivo === 'on' ? '1' : '0'),
             'EvalCopia' => ($request->ExpAnexo === 'on' ? '1' : '0'),
-            'aliasexamen_id' => $request->aliasexamenes ?? 0
+            'aliasexamen' => $request->aliasexam ?? ''
         ]);
 
         return redirect()->route('examenes.index');
@@ -265,7 +266,7 @@ class ExamenesController extends Controller
             $examen->PI = ($request->PI === 'true' ? '1' : '0');
             $examen->Evaluador = ($request->Evaluador === 'true' ? '1' : '0');
             $examen->EvalCopia = ($request->EvalCopia === 'true' ? '1' : '0');
-            $examen->aliasexamen_id = $request->aliasexamen_id ?? 0;
+            $examen->aliasexamen = $request->aliasexamen ?? '';
             $examen->save();
 
             return response()->json(['msg' => 'Se ha actualizado el exámen correctamente'], 200);
@@ -273,6 +274,22 @@ class ExamenesController extends Controller
             return response()->json(['msg' => 'No se ha podido actualizar el examen'], 406);
         }
         
+    }
+
+    public function excel(Request $request)
+    {
+        $ids = $request->input('Ids');
+        if (! is_array($ids)) {
+            $ids = [$ids];
+        }
+
+        $examenes = Examen::with(['estudios','proveedor1', 'proveedor2', 'reportes'])->whereIn('Id', $ids)->get();
+
+        if($examenes) {
+            return $this->listadoExamen($examenes);
+        }else{
+            return response()->json(['msg' => 'No se ha podido generar el archivo'], 409);
+        }
     }
 
 }

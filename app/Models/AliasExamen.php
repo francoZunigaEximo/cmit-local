@@ -20,9 +20,5 @@ class AliasExamen extends Model
 
     public $timestamps = false;
 
-    public function examenes()
-    {
-        return $this->hasOne(Examen::class, 'aliasexamen_id', 'Id');
-    }
     
 }

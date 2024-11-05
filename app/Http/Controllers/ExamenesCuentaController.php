@@ -14,16 +14,24 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use FPDF;
+
 use App\Traits\CheckPermission;
+
+use App\Services\Reportes\ReporteService;
+use App\Services\Reportes\Titulos\Basico;
+use App\Services\Reportes\Titulos\Empresa;
+use App\Services\Reportes\Cuerpos\ExamenCuenta as ExCuenta;
 
 class ExamenesCuentaController extends Controller
 {
     use ObserverExamenesCuenta, CheckPermission;
 
-    const LOGO = "/archivos/reportes/LogoEmpresa.jpg";
-    const NOMBRE ="CMIT | SALUD OCUPACIONAL SRL";
-    const DIRECCION ="Juan B. Justo 825 - Neuquen Cap. - 0299 4474371 /4474686 - www.cmit.com.ar";
+    protected $reporteService;
+
+    public function __construct(ReporteService $reporteService)
+    {
+        $this->reporteService = $reporteService;
+    }
 
     public function index(Request $request)
     {
@@ -686,112 +694,28 @@ class ExamenesCuentaController extends Controller
         return response()->json(['filePath' => $filePath, 'Factura' => $factura]);   
     }
 
-    public function pdf(Request $request)
+    public function pdf(Request $request) 
     {
-        if(!$this->hasPermission("examenCta_report")) {
-            return response()->json(['msg' => 'No tiene permisos'], 403);
-        }
+        $examen = ExamenCuenta::with(['empresa', 'examen', 'empresa.localidad'])->find($request->Id);
+        $paramsTitulo = [
+            'detalles' => 'DETALLE DE EXAMENES A CUENTA',
+            'fecha' => $examen->Fecha,
+            'comprobante' => $examen->Tipo . '-' . sprintf('%04d', $examen->Suc) . '-' . sprintf('%08d', $examen->Nro)
+        ];
+        $paramsSubtitulo = ['cliente' => $examen];
+        $paramsCuerpo = ['id' =>$examen->Id];
 
-        $examen = $this->tituloReporte($request->Id);
-        $filePath = storage_path('app/public/archivo.pdf');
-
-        $factura = $examen->Tipo . '-' . sprintf('%04d', $examen->Suc) . '-' . sprintf('%08d', $examen->Nro);
-        $cliente = sprintf('%05d', $examen->IdEmpresa) . ' ' . $examen->Empresa;
-
-        $pdf = new FPDF('P','mm','A4');
-        $pdf->AddPage();
-        $pdf->Image(url('/').self::LOGO,10,6,20);
-        $pdf->SetY(19);
-        $pdf->SetFont('Arial','B',7);
-        $pdf->SetX(10);
-        $pdf->Cell(100,3,self::NOMBRE,0,0,'L');
-        $pdf->Ln();
-        $pdf->SetFont('Arial','',7);
-        $pdf->SetX(10);
-        $pdf->Cell(0,3, self::DIRECCION,0,0,'L');
-        $pdf->Ln();
-        $pdf->Line(10,26,200,26);
-        $pdf->SetFont('Arial','B',14);
-        $pdf->SetXY(10,9);
-        $pdf->Cell(200,15,'DETALLE DE EXAMENES A CUENTA',0,0,'C');
-        $pdf->SetFont('Arial','',9);
-        $pdf->SetXY(10,28);
-        $pdf->Cell(190,5,'FECHA: '.Carbon::parse($examen->Fecha)->format('d/m/Y'),0,0,'R');
-		$pdf->SetXY(10,33);$pdf->Cell(190,5,'NRO: '.$factura,0,0,'R');
-        $pdf->Ln(6);
-
-        //rectangulo
-        $pdf->Rect(10,40,195,30);
-        $pdf->SetY(43);
-        $pdf->SetFont('Arial','B',8);
-        $pdf->Cell(18,5,'CLIENTE: ',0,0,'L');
-        $pdf->SetFont('Arial','',8);
-        $pdf->Cell(0,5,$cliente,0,0,'L');
-        $pdf->Ln();
-        $pdf->SetFont('Arial','B',8);
-        $pdf->Cell(18,5,'EMPRESA: ',0,0,'L');
-        $pdf->SetFont('Arial','',8);
-        $pdf->Cell(0,5,$examen->ParaEmpresa,0,0,'L');
-        $pdf->Ln();	
-        $pdf->SetFont('Arial','B',8);
-        $pdf->Cell(18,5,'DATOS: ',0,0,'L');
-        $pdf->SetFont('Arial','',8);
-        $pdf->Cell(100,5,"DOM: ".substr($examen->Direccion,0,40),0,0,'L');
-        $pdf->Cell(80,5,"CUIT: ".substr($examen->Cuit,0,45),0,0,'L');
-        $pdf->Ln();	
-        $pdf->SetFont('Arial','B',8);
-        $pdf->Cell(18,5,'',0,0,'L');
-        $pdf->SetFont('Arial','',8);
-        $pdf->Cell(100,5,"LOC: ".substr($examen->NombreLocalidad,0,40),0,0,'L');
-        $pdf->Cell(80,5,"CP: ".substr($examen->CodigoPostal,0,45),0,0,'L');
-        $pdf->Ln();		
-        $pdf->SetFont('Arial','B',8);
-        $pdf->Cell(18,5,'',0,0,'L');
-        $pdf->SetFont('Arial','',8);
-        $pdf->Cell(0,5,"TEL: ".substr($examen->Telefono,0,40),0,0,'L');
-        $pdf->Ln(15);	
-        
-        //titulos columnas
-        $pdf->Cell(31,5,'ESTUDIO',0,0,'L');
-        $pdf->Cell(75,5,'EXAMEN',0,0,'L');
-        $pdf->Cell(20,5,'PRESTACION',0,0,'R');
-        $pdf->Cell(60,5,'PACIENTE',0,0,'L');
-        $pdf->Ln();
-        $pdf->Line(10,82,205,82);
-        $pdf->SetFont('Arial','',7);
-
-        $examenes = $this->examenesReporte($examen->Id);
-
-        foreach($examenes as $reporte) {
-            $pdf->Cell(31,3,substr($reporte->NombreEstudio,0,10),0,0,'L');
-			$pdf->Cell(75,3,substr($reporte->NombreExamen,0,40),0,0,'L');
-			$pdf->Cell(20,3,$reporte->IdPrestacion === 0 ? '-' : $reporte->IdPrestacion,0,0,'R');
-			$pdf->Cell(60,3,substr($reporte->Apellido . " " . $reporte->Nombre,0,30),0,0,'L');$pdf->Ln();
-        }
-
-        $listado = $this->totalReporte($examen->Id);
-
-        $pdf->Ln(6);$pdf->SetFont('Arial','BU',10);	
-        $pdf->Cell(0,5,'TOTAL EXAMENES DEL PAGO:',0,0,'L');
-        $pdf->Ln();
-		$pdf->SetFont('Arial','',7);
-
-        foreach($listado as $item) {
-            $pdf->Cell(20,3,$item->Cantidad,0,0,'R');
-            $pdf->Cell(0,3,$item->NombreExamen,0,0,'L');
-            $pdf->Ln();
-        }
-        
-        $pdf->Ln(5);
-        $pdf->SetFont('Arial','B',8);	
-        $pdf->Cell(0,5,'Examenes: '.$this->totalExamenes($examen->Id).', Disponibles: '.$this->totalDisponibles($examen->Id),0,0,'L');
-        $pdf->Ln();				
-		$pdf->SetY(0);
-
-        $pdf->Output($filePath, "F");
-
-        return response()->json(['filePath' => $filePath]);   
-
+        return $this->reporteService->generarReporte(
+            Basico::class,
+            Empresa::class,
+            ExCuenta::class,
+            "imprimir",
+            storage_path('app/public/archivo.pdf'),
+            $examen->Id,
+            $paramsTitulo, 
+            $paramsSubtitulo,
+            $paramsCuerpo
+        );
     }
 
     public function reporteGeneral(Request $request)

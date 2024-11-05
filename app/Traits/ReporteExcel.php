@@ -285,6 +285,66 @@ trait ReporteExcel
         return $this->generarArchivo($spreadsheet, $name);
     }
 
+    public function listadoExamen($examenes)
+    {
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+
+        $columnas = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S'];
+
+        foreach($columnas as $columna){
+            $sheet->getColumnDimension($columna)->setAutoSize(true);
+        }
+
+        $sheet->setCellValue('A1', 'Estudio');
+        $sheet->setCellValue('B1', 'Examen');
+        $sheet->setCellValue('C1', 'Alias PDF');
+        $sheet->setCellValue('D1', 'Descripción');
+        $sheet->setCellValue('E1', 'Código del Exámen');
+        $sheet->setCellValue('F1', 'Código Efector');
+        $sheet->setCellValue('G1', 'Día de Vencimiento');
+        $sheet->setCellValue('H1', 'Especialidad Efector');
+        $sheet->setCellValue('I1', 'Especialidad Informador');
+        $sheet->setCellValue('J1', 'Inactivo');
+        $sheet->setCellValue('K1', 'Prioridad de Impresión');
+        $sheet->setCellValue('L1', 'Informe');
+        $sheet->setCellValue('M1', 'Cerrado');
+        $sheet->setCellValue('N1', 'Físico');
+        $sheet->setCellValue('O1', 'Adjunto');
+        $sheet->setCellValue('P1', 'Ausente');
+        $sheet->setCellValue('Q1', 'Devolución');
+        $sheet->setCellValue('R1', 'Evaluador Exclusivo');
+        $sheet->setCellValue('S1', 'Exportar Anexo');
+
+        $fila = 2;
+        foreach($examenes as $examen){
+            $sheet->setCellValue('A'.$fila, $examen->estudios->Nombre ?? '-');
+            $sheet->setCellValue('B'.$fila, $examen->Nombre ?? '-');
+            $sheet->setCellValue('C'.$fila, $examen->aliasexamen ?? '-');
+            $sheet->setCellValue('D'.$fila, $examen->Descripcion ?? '-');
+            $sheet->setCellValue('E'.$fila, $examen->Cod ?? '-');
+            $sheet->setCellValue('F'.$fila, $examen->Cod2 ?? '-');
+            $sheet->setCellValue('G'.$fila, $examen->DiasVencimiento ?? '-');
+            $sheet->setCellValue('H'.$fila, $examen->proveedor1->Nombre ?? '-');
+            $sheet->setCellValue('I'.$fila, $examen->proveedor2->Nombre ?? '-');
+            $sheet->setCellValue('J'.$fila, $examen->Inactivo ?? '-');
+            $sheet->setCellValue('K'.$fila, $examen->PI ?? '-');
+            $sheet->setCellValue('L'.$fila, $examen->Informe ?? '-');
+            $sheet->setCellValue('M'.$fila, $examen->Cerrado ?? '-');
+            $sheet->setCellValue('N'.$fila, $examen->NoImprime ?? '-');
+            $sheet->setCellValue('O'.$fila, $examen->Adjunto ?? '-');
+            $sheet->setCellValue('P'.$fila, $examen->Ausente ?? '-');
+            $sheet->setCellValue('Q'.$fila, $examen->Devol ?? '-');
+            $sheet->setCellValue('R'.$fila, $examen->Evaluador ?? '-');
+            $sheet->setCellValue('S'.$fila, $examen->EvalCopia ?? '-');
+            $fila++;
+        }
+
+        $name = 'mapas'.Str::random(6).'.xlsx';
+        return $this->generarArchivo($spreadsheet, $name);
+    }
+
     private function generarArchivo($excel, $nombre)
     {
           // Guardar el archivo en la carpeta de almacenamiento

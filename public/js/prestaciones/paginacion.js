@@ -82,12 +82,7 @@ $(document).ready(()=>{
                     targets: 0,
                     render: function(data){
 
-                        let cerradoAdjunto = data.CerradoAdjunto || 0,
-                            total = data.Total || 1;
-
-                        let resultado = data.Anulado === 0 
-                            ? ((cerradoAdjunto/total)*100).toFixed(0)
-                            : '0';
+                        let resultado = calculoAvance(data);
 
                         return `<div class="text-center ${indicador(data)}">${resultado}</div>`;
                     }
@@ -205,7 +200,7 @@ $(document).ready(()=>{
                     orderable: false, 
                     targets: 10,
                     render: function(data){
-                        let color = data.Incompleto === 1 ? 'fondo-gris' : 'fondo-rojo';
+                        let color = data.Incompleto === 1 ? 'fondo-rojo' : '';
                         return `<div class="text-center ${color}">&nbsp;</div>`;
                     }
                 },
@@ -215,7 +210,7 @@ $(document).ready(()=>{
                     orderable: false, 
                     targets: 11,
                     render: function(data){
-                        let color = data.Ausente === 1 ? 'fondo-gris' : 'fondo-rojo';
+                        let color = data.Ausente === 1 ? 'fondo-rojo' : '';
                         return `<div class="text-center ${color}">&nbsp;</div>`;
                     }
                 },
@@ -225,7 +220,7 @@ $(document).ready(()=>{
                     orderable: false, 
                     targets: 12,
                     render: function(data){
-                        let color = data.Forma === 1 ? 'fondo-gris' : 'fondo-rojo';
+                        let color = data.Forma === 1 ? 'fondo-rojo' : '';
                         return `<div class="text-center ${color}">&nbsp;</div>`;
                     }
                 },
@@ -235,7 +230,7 @@ $(document).ready(()=>{
                     orderable: false, 
                     targets: 13,
                     render: function(data){
-                        let color = data.Devol === 1 ? 'fondo-gris' : 'fondo-rojo';
+                        let color = data.Devol === 1 ? 'fondo-rojo' : '';
                         return `<div class="text-center ${color}">&nbsp;</div>`;
                     }
                 },

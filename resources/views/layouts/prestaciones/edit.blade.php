@@ -91,11 +91,11 @@
                         <div class="col-10 mt-2">
                             <div class="input-group input-group-sm">
                                 <span class="input-group-text">Estado</span>
-                                <input type="text" class="form-control {{ $prestacione->Incompleto === 1 ? 'rojo' : 'grisClaro'}}" id="Incompleto" name="Incompleto" value="INC">
-                                <input type="text" class="form-control {{ $prestacione->Ausente === 1 ? 'rojo' : 'grisClaro'}}" id="Ausente" name="Ausente" value="AUS">
-                                <input type="text" class="form-control {{ $prestacione->Forma === 1 ? 'rojo' : 'grisClaro'}}" id="Forma" name="Forma" value="FOR">
+                                <input type="text" class="form-control {{ $prestacione->Incompleto === 1 ? 'rojo' : 'blanco'}}" id="Incompleto" name="Incompleto" value="INC">
+                                <input type="text" class="form-control {{ $prestacione->Ausente === 1 ? 'rojo' : 'blanco'}}" id="Ausente" name="Ausente" value="AUS">
+                                <input type="text" class="form-control {{ $prestacione->Forma === 1 ? 'rojo' : 'blanco'}}" id="Forma" name="Forma" value="FOR">
                                 <input type="text" class="form-control grisClaro" id="SinEsc" name="SinEsc" value="ESC">
-                                <input type="text" class="form-control {{ $prestacione->Devol === 1 ? 'rojo' : 'grisClaro'}}" id="Devol" name="Devol" value="DEV">
+                                <input type="text" class="form-control {{ $prestacione->Devol === 1 ? 'rojo' : 'blanco'}}" id="Devol" name="Devol" value="DEV">
                             </div>
                         </div>
 

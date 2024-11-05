@@ -10,7 +10,8 @@ $(document).ready(function(){
         estado = $('#estado'),
         estadoClass = $('.estado'),
         examen = $('#examen'),
-        reset = $('#reset');
+        reset = $('#reset'),
+        grilla = $('#listaExamenes');
 
     listaProveedores();
     opcionesClass.hide();
@@ -93,6 +94,36 @@ $(document).ready(function(){
         },
         minimumInputLength: 2
     });
+
+    $(document).on('click', '#exportar', function(e){
+        e.preventDefault();
+
+        let table = grilla.DataTable();
+    
+        if (!table.data().any() ) {
+            table.destroy();
+            toastr.warning('No existen registros para exportar');
+            return;
+        }
+
+        let data = table.rows({ page: 'current' }).data().toArray();
+        let ids = data.map(function(row) {
+            return row.IdExamen;
+        });
+        preloader('on')
+        $.get(exportarExcel, {Ids: ids})
+            .done(function(response){
+                createFile("excel", response.filePath, generarCodigoAleatorio() + "_reporte");
+                preloader('off')
+                toastr.success(response.msg)
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;  
+            })
+        });
 
     function listaProveedores(){
 

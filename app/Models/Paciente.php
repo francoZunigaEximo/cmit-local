@@ -63,4 +63,9 @@ class Paciente extends Model
     {
         return $this->hasOne(Fichalaboral::class, 'IdPaciente', 'Id');
     }
+
+    public function datoPaciente()
+    {
+        return $this->belongsToMany(DatoPaciente::class, 'IdPaciente', 'Id');
+    }
 }

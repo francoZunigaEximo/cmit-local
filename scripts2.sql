@@ -851,9 +851,10 @@ CREATE TABLE aliasExamenes(
 	PRIMARY KEY(Id)
 );
 
-ALTER TABLE examenes ADD COLUMN aliasexamen_id INT DEFAULT 0 NOT NULL;
-INSERT INTO aliasExamenes(Id, Nombre, Descripcion) VALUES(0, 'Sin datos', 'Sin datos');
-ALTER TABLE examenes ADD CONSTRAINT fk_aliasexamenes FOREIGN KEY (aliasexamen_id) REFERENCES aliasExamenes(Id);
+/*** No va en Pre Produccion ***/
+#ALTER TABLE examenes ADD COLUMN aliasexamen_id INT DEFAULT 0 NOT NULL;
+#INSERT INTO aliasExamenes(Id, Nombre, Descripcion) VALUES(0, 'Sin datos', 'Sin datos');
+#ALTER TABLE examenes ADD CONSTRAINT fk_aliasexamenes FOREIGN KEY (aliasexamen_id) REFERENCES aliasExamenes(Id);
 
 
 #Verificar el Id 0 de alias para evitar problemas
@@ -861,4 +862,9 @@ ALTER TABLE examenes ADD CONSTRAINT fk_aliasexamenes FOREIGN KEY (aliasexamen_id
 ALTER TABLE archivosefector ADD PuntoCarga INT DEFAULT 0 NOT NULL;
 ALTER TABLE archivosinformador ADD PuntoCarga INT DEFAULT 0 NOT NULL;
 
-CASCADE en fk_archivosefector y fk_archivosinformador
+#CASCADE en fk_archivosefector y fk_archivosinformador (NO VA)
+ALTER TABLE examenes DROP FOREIGN KEY fk_aliasexamenes;
+ALTER TABLE examenes CHANGE aliasexamen_id aliasexamen VARCHAR(50) NULL;
+ALTER TABLE examenes MODIFY COLUMN aliasexamen VARCHAR(50) NULL;
+
+UPDATE examenes SET aliasexamen = NULL;
