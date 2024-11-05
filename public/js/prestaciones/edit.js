@@ -472,6 +472,12 @@ $(document).ready(()=> {
     $(document).on('click', '.multiVolver', function(e) {
         window.history.back();
     });
+    
+    $(document).on('click', '.imprimirReporte', function(e){
+        e.preventDefault();
+
+        
+    })
 
     function precargaMapa(empresa, art){
         

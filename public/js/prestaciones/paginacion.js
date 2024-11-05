@@ -200,8 +200,9 @@ $(document).ready(()=>{
                     orderable: false, 
                     targets: 10,
                     render: function(data){
-                        let color = data.Incompleto === 1 ? 'fondo-rojo' : '';
-                        return `<div class="text-center ${color}">&nbsp;</div>`;
+                        let color = data.Incompleto === 1 ? 'rojo' : '',
+                            texto = data.Incompleto === 1 ? 'INC' : '&nbsp;';
+                        return `<div class="text-center ${color}">${texto}</div>`;
                     }
                 },
                 {
@@ -210,8 +211,9 @@ $(document).ready(()=>{
                     orderable: false, 
                     targets: 11,
                     render: function(data){
-                        let color = data.Ausente === 1 ? 'fondo-rojo' : '';
-                        return `<div class="text-center ${color}">&nbsp;</div>`;
+                        let color = data.Ausente === 1 ? 'rojo' : '',
+                            texto = data.Ausente === 1 ? 'AUS' : '&nbsp;';
+                        return `<div class="text-center ${color}">${texto}</div>`;
                     }
                 },
                 {
@@ -220,8 +222,9 @@ $(document).ready(()=>{
                     orderable: false, 
                     targets: 12,
                     render: function(data){
-                        let color = data.Forma === 1 ? 'fondo-rojo' : '';
-                        return `<div class="text-center ${color}">&nbsp;</div>`;
+                        let color = data.Forma === 1 ? 'rojo' : '',
+                            texto = data.Forma === 1 ? 'FOR' : '&nbsp;';
+                        return `<div class="text-center ${color}">${texto}</div>`;
                     }
                 },
                 {
@@ -230,8 +233,9 @@ $(document).ready(()=>{
                     orderable: false, 
                     targets: 13,
                     render: function(data){
-                        let color = data.Devol === 1 ? 'fondo-rojo' : '';
-                        return `<div class="text-center ${color}">&nbsp;</div>`;
+                        let color = data.Devol === 1 ? 'rojo' : '',
+                            texto = data.Devol === 1 ? 'DEV' : '&nbsp;';
+                        return `<div class="text-center ${color}">${texto}</div>`;
                     }
                 },
                 {

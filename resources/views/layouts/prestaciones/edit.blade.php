@@ -919,7 +919,7 @@
 
                     <div class="mb-3 text-end">
                         <button type="button" class="btn btn-sm botonGeneral" id="reset" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-sm botonGeneral">Imprimir</button>
+                        <button type="button" class="btn btn-sm botonGeneral imprimirReporte">Imprimir</button>
                     </div>
                 </form>
             </div>
