@@ -25,6 +25,7 @@ class EvaluacionResumen extends Reporte
 
         $texto= "El Sr/a, ".$query->paciente->Apellido." ".$query->paciente->Nombre.", ".$query->paciente->TipoDocumento." ".$query->paciente->Documento." derivado a nuestro servicio con el fin de efectuar examen ".$tipoPrestacion['tipoExamen']." para la tarea ".$tipoPrestacion['tipoPuesto']." segun los estudios detallados, ha presentado la siguiente calificacion.";
 
+        $pdf->SetFont('Arial','',8);$pdf->SetXY(182,4);$pdf->Cell(0,3,$datos['id'],0,0,'L');
         $pdf->SetFont('Arial','B',10);$pdf->SetXY(10,32);$pdf->Cell(200,4,$tipoPrestacion['titulo'],0,0,'C');
 		$pdf->SetFont('Arial','',10);$pdf->SetXY(190,36);$pdf->Cell(0,3,'Neuquen '.Carbon::parse($query->Fecha)->format("d/m/Y"),0,0,'R');
 		$pdf->SetFont('Arial','B',10);$pdf->SetXY(10,41);$pdf->Cell(0,3,'Sres.: '.$query->empresa->ParaEmpresa,0,0,'L');

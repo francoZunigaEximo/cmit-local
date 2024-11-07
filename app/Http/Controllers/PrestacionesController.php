@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
 use App\Exports\PrestacionesExport;
+use App\Helpers\Tools;
 use App\Models\ArchivoEfector;
 use App\Models\ArchivoInformador;
 use App\Models\ExamenCuentaIt;
@@ -31,6 +32,7 @@ use App\Services\Reportes\ReporteService;
 use App\Services\Reportes\Titulos\NroPrestacion;
 use App\Services\Reportes\Titulos\Reducido;
 use App\Services\Reportes\Cuerpos\EvaluacionResumen;
+use App\Services\Reportes\Titulos\CaratulaInterna;
 
 class PrestacionesController extends Controller
 {
@@ -512,7 +514,10 @@ class PrestacionesController extends Controller
     {
         $listado = [];
 
-        $request->evaluacion == 'true' ? array_push($listado, $this->resumenEvaluacion($request->Id)) : null;
+        if ($request->evaluacion) {
+            array_push($listado, $this->caratula($request->Id));
+            array_push($listado, $this->resumenEvaluacion($request->Id));
+        }
 
         $this->reporteService->fusionarPDFs($listado, $this->outputPath);
 
@@ -579,18 +584,33 @@ class PrestacionesController extends Controller
         return Prestacion::where('IdPaciente', $paciente)->where('IdMapa', $mapa)->count();
     }
 
-    private function resumenEvaluacion(int $idPrestacion):mixed
+    private function resumenEvaluacion(int $idPrestacion): mixed
     {
         return $this->reporteService->generarReporte(
             Reducido::class,
-            NroPrestacion::class,
+            null,
             EvaluacionResumen::class,
             'guardar',
-            storage_path('app/public/temp/file-'.now()->format('d-m-Y').'-'.Auth::user()->name.'.pdf'),
+            storage_path('app/public/temp/file-'.Tools::randomCode(15).'-'.Auth::user()->name.'.pdf'),
+            null,
+            [],
+            [],
+            ['id' => $idPrestacion, 'firmaeval' => 0]
+        );
+    }
+
+    private function caratula(int $idPrestacion): mixed
+    {
+        return $this->reporteService->generarReporte(
+            Reducido::class,
+            CaratulaInterna::class,
+            null,
+            'guardar',
+            storage_path('app/public/temp/file-'.Tools::randomCode(15).'-'.Auth::user()->name.'.pdf'),
             null,
             [],
             ['id' => $idPrestacion],
-            ['id' => $idPrestacion, 'firmaeval' => 0]
+            []
         );
     }
 

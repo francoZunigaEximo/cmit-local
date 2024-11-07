@@ -15,38 +15,49 @@ use setasign\Fpdi\Fpdi;
 
 class ReporteService
 {
-    public function generarReporte(string $tituloClass, ?string $subtituloClass, string $cuerpoClass, string $tipo, string $filePath, ?int $id, $paramsTitulo, $paramsSubtitulo = [], $paramsCuerpo): string
+    public function generarReporte(
+        string $tituloClass,        // Siempre debe ser una clase
+        ?string $subtituloClass,    // Puede ser null
+        ?string $cuerpoClass,        // Siempre debe ser una clase
+        string $tipo,               // Tipo de reporte
+        string $filePath,           // Ruta del archivo PDF
+        ?int $id,                   // ID de la prestación
+        $paramsTitulo, 
+        $paramsSubtitulo = [], 
+        $paramsCuerpo = [],
+    ): string
     {
         $pdf = new FPDF('P', 'mm', 'A4');
         $pdf->AddPage();
-
-        // Instancia del título
+    
         $titulo = new $tituloClass();
         $titulo->render($pdf, $paramsTitulo);
-
-        // Instancia del Subtitulo
-        $subtitulo = new $subtituloClass();
-        $subtitulo->render($pdf, $paramsSubtitulo);
-
-        // Instancia del cuerpo
-        $cuerpo = new $cuerpoClass();
-        $cuerpo->render($pdf, $paramsCuerpo);
-
-        $pdf->Output($filePath, "F");
-
-        // Generar el PDF y guardarlo
-        if($tipo === 'imprimir'){
-            return response()->json([
-                    'filePath' => $filePath, 
-                    'name' => 'X'.$id.'_'.now()->format('d-m-Y').'.pdf', 
-                    'msg' => 'Reporte generado correctamente', 
-                    'icon' => 'success'
-                ]);
-        }else{
-            return $filePath;
+    
+        if ($subtituloClass !== null) {
+            $subtitulo = new $subtituloClass();
+            $subtitulo->render($pdf, $paramsSubtitulo);
         }
-
+    
+        if ($cuerpoClass !== null) {
+            $cuerpo = new $cuerpoClass();
+            $cuerpo->render($pdf, $paramsCuerpo);
+        }
+        
+        // Genera el PDF y lo guarda
+        $pdf->Output($filePath, "F");
+    
+        if ($tipo === 'imprimir') {
+            return response()->json([
+                'filePath' => $filePath, 
+                'name' => 'X'.$id.'_'.now()->format('d-m-Y').'.pdf', 
+                'msg' => 'Reporte generado correctamente', 
+                'icon' => 'success'
+            ]);
+        } else {
+            return $filePath; 
+        }
     }
+    
 
     public function fusionarPDFs(array $filePaths, string $outputPath): string
     {

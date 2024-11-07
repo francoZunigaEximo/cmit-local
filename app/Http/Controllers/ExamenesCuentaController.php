@@ -696,14 +696,14 @@ class ExamenesCuentaController extends Controller
 
     public function pdf(Request $request) 
     {
-        $examen = ExamenCuenta::with(['empresa', 'examen', 'empresa.localidad'])->find($request->Id);
+        $cliente = ExamenCuenta::with(['empresa', 'examen', 'empresa.localidad'])->find($request->Id);
+
         $paramsTitulo = [
             'detalles' => 'DETALLE DE EXAMENES A CUENTA',
-            'fecha' => $examen->Fecha,
-            'comprobante' => $examen->Tipo . '-' . sprintf('%04d', $examen->Suc) . '-' . sprintf('%08d', $examen->Nro)
+            'id' => $request->Id
         ];
-        $paramsSubtitulo = ['cliente' => $examen];
-        $paramsCuerpo = ['id' =>$examen->Id];
+        $paramsSubtitulo = ['cliente' => $cliente];
+        $paramsCuerpo = ['id' =>$request->Id];
 
         return $this->reporteService->generarReporte(
             Basico::class,
@@ -711,7 +711,7 @@ class ExamenesCuentaController extends Controller
             ExCuenta::class,
             "imprimir",
             storage_path('app/public/archivo.pdf'),
-            $examen->Id,
+            $request->Id,
             $paramsTitulo, 
             $paramsSubtitulo,
             $paramsCuerpo

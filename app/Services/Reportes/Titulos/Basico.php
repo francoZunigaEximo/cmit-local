@@ -2,6 +2,7 @@
 
 namespace App\Services\Reportes\Titulos;
 
+use App\Models\ExamenCuenta;
 use FPDF;
 use App\Services\Reportes\Reporte;
 use App\Services\Reportes\ReporteConfig;
@@ -9,8 +10,10 @@ use Carbon\Carbon;
 
 class Basico extends Reporte
 {
-    public function render(FPDF $pdf, $datos = ['detalles','fecha','comprobante']): void
+    public function render(FPDF $pdf, $datos = ['detalles','id']): void
     {
+        $examen = $this->examen($datos['id']);
+
         $pdf->Image(public_path(ReporteConfig::$LOGO),10,6,20);
         $pdf->SetY(19);
         $pdf->SetFont('Arial','B',7);
@@ -27,8 +30,13 @@ class Basico extends Reporte
         $pdf->Cell(200,15, $datos['detalles'],0,0,'C');
         $pdf->SetFont('Arial','',9);
         $pdf->SetXY(10,28);
-        $pdf->Cell(190,5,'FECHA: '.Carbon::parse($datos['fecha'])->format('d/m/Y'),0,0,'R');
-        $pdf->SetXY(10,33);$pdf->Cell(190,5,'NRO: '.$datos['comprobante'],0,0,'R');
+        $pdf->Cell(190,5,'FECHA: '.Carbon::parse($examen->Fecha)->format('d/m/Y'),0,0,'R');
+        $pdf->SetXY(10,33);$pdf->Cell(190,5,'NRO: '.$examen->Tipo . '-' . sprintf('%04d', $examen->Suc) . '-' . sprintf('%08d', $examen->Nro),0,0,'R');
         $pdf->Ln(6);
+    }
+
+    private function examen(int $id):ExamenCuenta
+    {
+        return ExamenCuenta::find($id, ['Tipo','Suc','Nro', 'Fecha']);
     }
 }
