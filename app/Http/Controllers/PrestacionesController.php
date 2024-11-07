@@ -46,7 +46,7 @@ class PrestacionesController extends Controller
     {
         $this->reporteService = $reporteService;
         $this->outputPath = storage_path('app/public/fusionar.pdf');
-        $this->fileNameExport = 'reporte-'.now()->format('d-m-Y');
+        $this->fileNameExport = 'reporte-'.Tools::randomCode(15);
     }
 
     public function index(Request $request): mixed
