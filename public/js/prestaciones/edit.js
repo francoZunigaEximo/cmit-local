@@ -476,6 +476,53 @@ $(document).ready(()=> {
     $(document).on('click', '.imprimirReporte', function(e){
         e.preventDefault();
 
+        let evaluacion = $('#evaluacion').prop('checked'),
+            adjDigitales = $('#adjDigitales').prop('checked'),
+            adjFisicosDigitales = $('#adjFisicosDigitales').prop('checked'),
+            adjGenerales = $('#adjGenerales').prop('checked'),
+            adjAnexos = $('#adjAnexos').prop('checked'),
+            infInternos = $('#infInternos').prop('checked'),
+            pedProveedores = $('#pedProveedores').prop('checked'),
+            conPaciente = $('#conPaciente').prop('checked'),
+            resAdmin = $('#resAdmin').prop('checked'),
+            consEstDetallado = $('#consEstDetallado').prop('checked'),
+            consEstSimple = $('#consEstSimple').prop('checked'),
+            audioCmit = $('#audioCmit').prop('checked');
+
+        let verificar = [
+            evaluacion,
+            adjDigitales,
+            adjFisicosDigitales,
+            adjGenerales,
+            adjAnexos,
+            infInternos,
+            pedProveedores,
+            conPaciente,
+            resAdmin,
+            consEstDetallado,
+            consEstSimple,
+            audioCmit
+        ];
+            
+        if (verificar.every(val => !val)) {
+            toastr.warning('Debe seleccionar algun check para obtener el reporte');
+            return;
+        }
+        
+        preloader('on');
+        $.get(exportPdf, {Id: ID, evaluacion: evaluacion, adjDigitales: adjDigitales, adjFisicosDigitales: adjFisicosDigitales, adjGenerales: adjGenerales, adjAnexos: adjAnexos, infInternos: infInternos, pedProveedores: pedProveedores, conPaciente: conPaciente, resAdmin: resAdmin, consEstDetallado: consEstDetallado, consEstSimple: consEstSimple, audioCmit: audioCmit})
+            .done(function(response){
+                createFile("pdf", response.filePath, response.name);
+                preloader('off')
+                toastr.success(response.msg)
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            })
+
         
     })
 

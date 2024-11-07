@@ -27,11 +27,25 @@ use Illuminate\Support\Facades\Auth;
 use App\Traits\CheckPermission;
 use Illuminate\Support\Facades\Artisan;
 
+use App\Services\Reportes\ReporteService;
+use App\Services\Reportes\Titulos\NroPrestacion;
+use App\Services\Reportes\Titulos\Reducido;
+use App\Services\Reportes\Cuerpos\EvaluacionResumen;
 
 class PrestacionesController extends Controller
 {
-
     use ObserverPrestaciones, ObserverFacturasVenta, CheckPermission;
+
+    protected $reporteService;
+    protected $outputPath;
+    protected $fileNameExport;
+
+    public function __construct(ReporteService $reporteService)
+    {
+        $this->reporteService = $reporteService;
+        $this->outputPath = storage_path('app/public/fusionar.pdf');
+        $this->fileNameExport = 'reporte-'.now()->format('d-m-Y');
+    }
 
     public function index(Request $request): mixed
     {
@@ -45,187 +59,6 @@ class PrestacionesController extends Controller
         }
 
         return view('layouts.prestaciones.index');
-    }
-    
-    private function buildQuery(Request $request)
-    {
-        $query = Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-            ->join('clientes as emp', 'prestaciones.IdEmpresa', '=', 'emp.Id')
-            ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
-            ->leftJoin('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
-            ->select(
-                DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdART) AS Art'),
-                DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdEmpresa) AS Empresa'),
-                DB::raw('COALESCE(COUNT(itemsprestaciones.IdPrestacion), 0) as Total'),
-                DB::raw('COALESCE(COUNT(CASE WHEN (itemsprestaciones.CAdj = 5 OR itemsprestaciones.CAdj = 3) AND (itemsprestaciones.CInfo = 3 OR itemsprestaciones.CInfo = 0) THEN itemsprestaciones.IdPrestacion END), 0) as CerradoAdjunto'),
-                'emp.ParaEmpresa as ParaEmpresa',
-                'emp.Identificacion as Identificacion',
-                'prestaciones.Fecha as FechaAlta',
-                'prestaciones.Id as Id',
-                'pacientes.Nombre as Nombre',
-                'pacientes.Apellido as Apellido',
-                'prestaciones.Anulado as Anulado',
-                'prestaciones.Pago as Pago',
-                'prestaciones.FechaVto as FechaVencimiento',
-                'prestaciones.Ausente as Ausente',
-                'prestaciones.Incompleto as Incompleto',
-                'prestaciones.Devol as Devol',
-                'prestaciones.Forma as Forma',
-                'prestaciones.SinEsc as SinEsc',
-                'prestaciones.TipoPrestacion as Tipo',
-                'prestaciones.eEnviado as eEnviado',
-                'prestaciones.Estado as Estado',
-                'prestaciones.Facturado as Facturado',
-                'prestaciones.Cerrado as Cerrado',
-                'prestaciones.Finalizado as Finalizado',
-                'prestaciones.Entregado as Entregado'
-            )
-            ->where('prestaciones.Estado', 1)
-            ->groupBy('prestaciones.Id');
-            //->orderBy('prestaciones.Fecha', 'ASC');
-    
-        if (!empty($request->nroprestacion)) {
-            $query->where('prestaciones.Id', '=', $request->nroprestacion);
-        } else {
-            $query = $this->applyFilters($query, $request);
-        }
-    
-        return $query;
-    }
-    
-    private function applyFilters($query, $request)
-    {
-        if(!empty($request->pacienteSearch)) {
-            $query->where(function ($query) use ($request) {
-                $query->orWhere('pacientes.Nombre', 'LIKE', '%'. $request->pacienteSearch .'%')
-                    ->orWhere('pacientes.Apellido', 'LIKE', '%'. $request->pacienteSearch .'%')
-                    ->orWhere('pacientes.Documento', 'LIKE', '%'. $request->pacienteSearch .'%')
-                    ->orWhere('pacientes.Identificacion', 'LIKE', '%'. $request->pacienteSearch .'%');
-            });
-        }
-
-        if(!empty($request->empresaSearch)) {
-            $query->where(function($query) use ($request) {
-                $query->orWhere('emp.Identificacion', 'LIKE', '%'. $request->empresaSearch .'%')
-                    ->orWhere('emp.ParaEmpresa', 'LIKE', '%'. $request->empresaSearch .'%')
-                    ->orWhere('emp.NombreFantasia', 'LIKE', '%'. $request->empresaSearch .'%')
-                    ->orWhere('emp.RazonSocial', 'LIKE', '%'. $request->empresaSearch .'%');
-            });
-        }
-
-        if(!empty($request->artSearch)) {
-            $query->where(function($query) use ($request) {
-                $query->orwhere('art.RazonSocial', 'LIKE', '%'. $request->artSearch .'%')
-                    ->orWhere('art.Identificacion', 'LIKE', '%'. $request->artSearch .'%')
-                    ->orWhere('art.ParaEmpresa', 'LIKE', '%'. $request->artSearch .'%')
-                    ->orWhere('art.NombreFantasia', 'LIKE', '%'. $request->artSearch .'%');
-            });
-        }
-
-        if(!empty($request->pacienteSelect2)) {
-            $query->where(function($query) use ($request) {
-                $query->where('pacientes.Id', $request->pacienteSelect2);
-            });
-        }
-
-        if(!empty($request->empresaSelect2)) {
-            $query->where(function($query) use ($request) {
-                $query->where('emp.Id', $request->empresaSelect2);
-            });
-        }
-
-        if(!empty($request->artSelect2)) {
-            $query->where(function($query) use ($request) {
-                $query->where('art.Id', $request->artSelect2);
-            });
-        }
-
-        if (!empty($request->tipoPrestacion)) {
-            $query->where('prestaciones.TipoPrestacion', $request->tipoPrestacion);
-        }
-
-        if (!empty($request->fechaDesde) && (!empty($request->fechaHasta))) {
-            $query->whereBetween('prestaciones.Fecha', [$request->fechaDesde, $request->fechaHasta]);
-        }
-
-        if (is_array($request->estado) && in_array('Incompleto', $request->estado)) {
-            $query->where('prestaciones.Incompleto', '1');
-        }
-
-        if (is_array($request->estado) && in_array('Anulado', $request->estado)) {
-            $query->where('prestaciones.Anulado', '1');
-        }
-
-        if (is_array($request->estado) && in_array('Ausente', $request->estado)) {
-            $query->where('prestaciones.Ausente', '1');
-        }
-
-        if (is_array($request->estado) && in_array('Forma', $request->estado)) {
-            $query->where('prestaciones.Forma', '1');
-        }
-
-        if (is_array($request->estado) && in_array('SinEsc', $request->estado)) {
-            $query->where('prestaciones.SinEsc', '1');
-        }
-
-        if (is_array($request->estado) && in_array('Devol', $request->estado)) {
-            $query->where('prestaciones.Devol', '1');
-        }
-    
-        if (is_array($request->estado) && in_array('RxPreliminar', $request->estado)) {
-            $query->where('prestaciones.RxPreliminar', '1');
-        }
-
-        if (is_array($request->estado) && in_array('Cerrado', $request->estado)) {
-            $query->where('prestaciones.Cerrado', '1');
-        }
-
-        if (is_array($request->estado) && in_array('Abierto', $request->estado)) {
-            $query->where('prestaciones.Cerrado', '0')
-                ->where('prestaciones.Finalizado', '0');
-        }
-
-        if (is_array($request->estado) && in_array('Finalizado', $request->estado)) {
-            $query->where('prestaciones.Finalizado', '1');
-        }
-
-        if (is_array($request->estado) && in_array('Entregado', $request->estado)) {
-            $query->where('prestaciones.Entregado', '1');
-        }
-
-        if (is_array($request->estado) && in_array('eEnviado', $request->estado)) {
-            $query->where('prestaciones.eEnviado', '1');
-        }
-
-        if (is_array($request->estado) && in_array('Facturado', $request->estado)) {
-            $query->where('prestaciones.Facturado', '1');
-        }
-
-        if (is_array($request->estado) && in_array('Pago-C', $request->estado)) {
-            $query->where('prestaciones.Pago', 'C');
-        }
-
-        if (is_array($request->estado) && in_array('Pago-P', $request->estado)) {
-            $query->where('prestaciones.Pago', 'P');
-        }
-
-        if (is_array($request->estado) && in_array('Pago-B', $request->estado)) {
-            $query->where('prestaciones.Pago', 'B');
-        }
-
-        if (is_array($request->estado) && in_array('SPago-G', $request->estado)) {
-            $query->where('prestaciones.SPago', 'G');
-        }
-
-        if (is_array($request->estado) && in_array('SPago-F', $request->estado)) {
-            $query->where('prestaciones.SPago', 'F');
-        }
-
-        if (is_array($request->estado) && in_array('SPago-E', $request->estado)) {
-            $query->where('prestaciones.SPago', 'E');
-        }
-    
-        return $query;
     }
     
     public function create()
@@ -675,6 +508,22 @@ class PrestacionesController extends Controller
         Artisan::call('cache:clear');
     }
 
+    public function pdf(Request $request)
+    {
+        $listado = [];
+
+        $request->evaluacion == 'true' ? array_push($listado, $this->resumenEvaluacion($request->Id)) : null;
+
+        $this->reporteService->fusionarPDFs($listado, $this->outputPath);
+
+        return response()->json([
+            'filePath' => $this->outputPath,
+            'name' => $this->fileNameExport.'.pdf',
+            'msg' => 'Reporte generado correctamente',
+            'icon' => 'success' 
+        ]);
+    }
+
     private function verificarEstados(int $id)
     {
         return Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
@@ -728,6 +577,202 @@ class PrestacionesController extends Controller
     private function checkPacientePresMapa(int $paciente, int $mapa)
     {
         return Prestacion::where('IdPaciente', $paciente)->where('IdMapa', $mapa)->count();
+    }
+
+    private function resumenEvaluacion(int $idPrestacion):mixed
+    {
+        return $this->reporteService->generarReporte(
+            Reducido::class,
+            NroPrestacion::class,
+            EvaluacionResumen::class,
+            'guardar',
+            storage_path('app/public/temp/file-'.now()->format('d-m-Y').'-'.Auth::user()->name.'.pdf'),
+            null,
+            [],
+            ['id' => $idPrestacion],
+            ['id' => $idPrestacion, 'firmaeval' => 0]
+        );
+    }
+
+    private function buildQuery(Request $request)
+    {
+        $query = Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+            ->join('clientes as emp', 'prestaciones.IdEmpresa', '=', 'emp.Id')
+            ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
+            ->leftJoin('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
+            ->select(
+                DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdART) AS Art'),
+                DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdEmpresa) AS Empresa'),
+                DB::raw('COALESCE(COUNT(itemsprestaciones.IdPrestacion), 0) as Total'),
+                DB::raw('COALESCE(COUNT(CASE WHEN (itemsprestaciones.CAdj = 5 OR itemsprestaciones.CAdj = 3) AND (itemsprestaciones.CInfo = 3 OR itemsprestaciones.CInfo = 0) THEN itemsprestaciones.IdPrestacion END), 0) as CerradoAdjunto'),
+                'emp.ParaEmpresa as ParaEmpresa',
+                'emp.Identificacion as Identificacion',
+                'prestaciones.Fecha as FechaAlta',
+                'prestaciones.Id as Id',
+                'pacientes.Nombre as Nombre',
+                'pacientes.Apellido as Apellido',
+                'prestaciones.Anulado as Anulado',
+                'prestaciones.Pago as Pago',
+                'prestaciones.FechaVto as FechaVencimiento',
+                'prestaciones.Ausente as Ausente',
+                'prestaciones.Incompleto as Incompleto',
+                'prestaciones.Devol as Devol',
+                'prestaciones.Forma as Forma',
+                'prestaciones.SinEsc as SinEsc',
+                'prestaciones.TipoPrestacion as Tipo',
+                'prestaciones.eEnviado as eEnviado',
+                'prestaciones.Estado as Estado',
+                'prestaciones.Facturado as Facturado',
+                'prestaciones.Cerrado as Cerrado',
+                'prestaciones.Finalizado as Finalizado',
+                'prestaciones.Entregado as Entregado'
+            )
+            ->where('prestaciones.Estado', 1)
+            ->groupBy('prestaciones.Id');
+            //->orderBy('prestaciones.Fecha', 'ASC');
+    
+        if (!empty($request->nroprestacion)) {
+            $query->where('prestaciones.Id', '=', $request->nroprestacion);
+        } else {
+            $query = $this->applyFilters($query, $request);
+        }
+    
+        return $query;
+    }
+    
+    private function applyFilters($query, $request)
+    {
+        if(!empty($request->pacienteSearch)) {
+            $query->where(function ($query) use ($request) {
+                $query->orWhere('pacientes.Nombre', 'LIKE', '%'. $request->pacienteSearch .'%')
+                    ->orWhere('pacientes.Apellido', 'LIKE', '%'. $request->pacienteSearch .'%')
+                    ->orWhere('pacientes.Documento', 'LIKE', '%'. $request->pacienteSearch .'%')
+                    ->orWhere('pacientes.Identificacion', 'LIKE', '%'. $request->pacienteSearch .'%');
+            });
+        }
+
+        if(!empty($request->empresaSearch)) {
+            $query->where(function($query) use ($request) {
+                $query->orWhere('emp.Identificacion', 'LIKE', '%'. $request->empresaSearch .'%')
+                    ->orWhere('emp.ParaEmpresa', 'LIKE', '%'. $request->empresaSearch .'%')
+                    ->orWhere('emp.NombreFantasia', 'LIKE', '%'. $request->empresaSearch .'%')
+                    ->orWhere('emp.RazonSocial', 'LIKE', '%'. $request->empresaSearch .'%');
+            });
+        }
+
+        if(!empty($request->artSearch)) {
+            $query->where(function($query) use ($request) {
+                $query->orwhere('art.RazonSocial', 'LIKE', '%'. $request->artSearch .'%')
+                    ->orWhere('art.Identificacion', 'LIKE', '%'. $request->artSearch .'%')
+                    ->orWhere('art.ParaEmpresa', 'LIKE', '%'. $request->artSearch .'%')
+                    ->orWhere('art.NombreFantasia', 'LIKE', '%'. $request->artSearch .'%');
+            });
+        }
+
+        if(!empty($request->pacienteSelect2)) {
+            $query->where(function($query) use ($request) {
+                $query->where('pacientes.Id', $request->pacienteSelect2);
+            });
+        }
+
+        if(!empty($request->empresaSelect2)) {
+            $query->where(function($query) use ($request) {
+                $query->where('emp.Id', $request->empresaSelect2);
+            });
+        }
+
+        if(!empty($request->artSelect2)) {
+            $query->where(function($query) use ($request) {
+                $query->where('art.Id', $request->artSelect2);
+            });
+        }
+
+        if (!empty($request->tipoPrestacion)) {
+            $query->where('prestaciones.TipoPrestacion', $request->tipoPrestacion);
+        }
+
+        if (!empty($request->fechaDesde) && (!empty($request->fechaHasta))) {
+            $query->whereBetween('prestaciones.Fecha', [$request->fechaDesde, $request->fechaHasta]);
+        }
+
+        if (is_array($request->estado) && in_array('Incompleto', $request->estado)) {
+            $query->where('prestaciones.Incompleto', '1');
+        }
+
+        if (is_array($request->estado) && in_array('Anulado', $request->estado)) {
+            $query->where('prestaciones.Anulado', '1');
+        }
+
+        if (is_array($request->estado) && in_array('Ausente', $request->estado)) {
+            $query->where('prestaciones.Ausente', '1');
+        }
+
+        if (is_array($request->estado) && in_array('Forma', $request->estado)) {
+            $query->where('prestaciones.Forma', '1');
+        }
+
+        if (is_array($request->estado) && in_array('SinEsc', $request->estado)) {
+            $query->where('prestaciones.SinEsc', '1');
+        }
+
+        if (is_array($request->estado) && in_array('Devol', $request->estado)) {
+            $query->where('prestaciones.Devol', '1');
+        }
+    
+        if (is_array($request->estado) && in_array('RxPreliminar', $request->estado)) {
+            $query->where('prestaciones.RxPreliminar', '1');
+        }
+
+        if (is_array($request->estado) && in_array('Cerrado', $request->estado)) {
+            $query->where('prestaciones.Cerrado', '1');
+        }
+
+        if (is_array($request->estado) && in_array('Abierto', $request->estado)) {
+            $query->where('prestaciones.Cerrado', '0')
+                ->where('prestaciones.Finalizado', '0');
+        }
+
+        if (is_array($request->estado) && in_array('Finalizado', $request->estado)) {
+            $query->where('prestaciones.Finalizado', '1');
+        }
+
+        if (is_array($request->estado) && in_array('Entregado', $request->estado)) {
+            $query->where('prestaciones.Entregado', '1');
+        }
+
+        if (is_array($request->estado) && in_array('eEnviado', $request->estado)) {
+            $query->where('prestaciones.eEnviado', '1');
+        }
+
+        if (is_array($request->estado) && in_array('Facturado', $request->estado)) {
+            $query->where('prestaciones.Facturado', '1');
+        }
+
+        if (is_array($request->estado) && in_array('Pago-C', $request->estado)) {
+            $query->where('prestaciones.Pago', 'C');
+        }
+
+        if (is_array($request->estado) && in_array('Pago-P', $request->estado)) {
+            $query->where('prestaciones.Pago', 'P');
+        }
+
+        if (is_array($request->estado) && in_array('Pago-B', $request->estado)) {
+            $query->where('prestaciones.Pago', 'B');
+        }
+
+        if (is_array($request->estado) && in_array('SPago-G', $request->estado)) {
+            $query->where('prestaciones.SPago', 'G');
+        }
+
+        if (is_array($request->estado) && in_array('SPago-F', $request->estado)) {
+            $query->where('prestaciones.SPago', 'F');
+        }
+
+        if (is_array($request->estado) && in_array('SPago-E', $request->estado)) {
+            $query->where('prestaciones.SPago', 'E');
+        }
+    
+        return $query;
     }
 
 }

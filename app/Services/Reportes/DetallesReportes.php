@@ -62,7 +62,7 @@ trait DetallesReportes
     // Campos Calificaciones y Evaluacion de la entidad Prestaciones
     public function calificacionMedica(string $calificacion, string $query): string
     {
-        return substr($query, 0, 1) === $calificacion ? "X" : null;     
+        return substr($query, 0, 1) === $calificacion ? "X" : "";     
     }
 
     //Obtiene la firma y la Foto del profesional
@@ -73,6 +73,7 @@ trait DetallesReportes
 
     public function firmasPdf($ruta, $xf, $yf, $pdf)
     {
+        chmod($ruta, 666);
         $imagensize = getimagesize($ruta);
         $ancho = $imagensize[0];
         $alto = $imagensize[1]; 

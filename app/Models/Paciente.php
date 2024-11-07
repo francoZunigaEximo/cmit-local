@@ -66,6 +66,6 @@ class Paciente extends Model
 
     public function datoPaciente()
     {
-        return $this->belongsToMany(DatoPaciente::class, 'IdPaciente', 'Id');
+        return $this->hasMany(DatoPaciente::class, 'IdPaciente', 'Id');
     }
 }

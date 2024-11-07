@@ -11,10 +11,11 @@
 namespace App\Services\Reportes;
 
 use FPDF;
+use setasign\Fpdi\Fpdi;
 
 class ReporteService
 {
-    public function generarReporte(string $tituloClass, ?string $subtituloClass, string $cuerpoClass, string $tipo, string $filePath, int $id, $paramsTitulo, $paramsSubtitulo = [], $paramsCuerpo): string
+    public function generarReporte(string $tituloClass, ?string $subtituloClass, string $cuerpoClass, string $tipo, string $filePath, ?int $id, $paramsTitulo, $paramsSubtitulo = [], $paramsCuerpo): string
     {
         $pdf = new FPDF('P', 'mm', 'A4');
         $pdf->AddPage();
@@ -45,5 +46,27 @@ class ReporteService
             return $filePath;
         }
 
+    }
+
+    public function fusionarPDFs(array $filePaths, string $outputPath): string
+    {
+        $pdf = new FPDI();
+        
+        // Iterar sobre los archivos a fusionar
+        foreach ($filePaths as $filePath) {
+            $pageCount = $pdf->setSourceFile($filePath);
+            
+            // Iterar por todas las páginas de cada archivo PDF y añadirlas
+            for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
+                $tplIdx = $pdf->importPage($pageNo);
+                $pdf->addPage();
+                $pdf->useTemplate($tplIdx);
+            }
+        }
+
+        // Guardar el PDF combinado
+        $pdf->Output('F', $outputPath);
+
+        return $outputPath;
     }
 }

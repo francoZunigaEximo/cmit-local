@@ -98,7 +98,7 @@ Route::group(['middleware' => 'auth'], function () {
     route::get('getBloqueo', [ClientesController::class, 'getBloqueo'])->name('getBloqueo');
 
     //Rutas de Prestaciones
-    Route::get('/prestaciones/baja', [PrestacionesController::class, 'down'])->name('downPrestaActiva');
+    Route::get('/prestaciones/baja', [PrestacionesController::class, 'down'])->name('prestaciones.baja');
     Route::get('prestaciones/block', [PrestacionesController::class, 'blockPrestacion'])->name('blockPrestacion');
     Route::get('/prestaciones/buscar', [PrestacionesController::class, 'search'])->name('searchPrestaciones');
     Route::post('/prestaciones/guardar', [PrestacionesController::class, 'savePrestacion'])->name('savePrestacion');
@@ -111,13 +111,14 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/prestaciones/actualizar-vencimiento', [PrestacionesController::class, 'vencimiento'])->name('actualizarVto');
     Route::post('/prestaciones/guardar/evaluador', [PrestacionesController::class, 'setEvaluador'])->name('setEvaluador');
     Route::get('/prestaciones/wizard', [PrestacionesController::class, 'verifyWizard'])->name('verifyWizard');
-    Route::get('/prestaciones/excel', [PrestacionesController::class, 'exportExcel'])->name('excelPrestaciones');
+    Route::get('/prestaciones/excel', [PrestacionesController::class, 'exportExcel'])->name('prestaciones.excel');
     Route::get('/prestaciones/obtener-bloqueo', [PrestacionesController::class, 'getBloqueo'])->name('getBloqueoPrestacion');
     Route::get('lstTipoPrestacion', [PrestacionesController::class, 'lstTipoPrestacion'])->name('lstTipoPrestacion');
     Route::get('buscarEx', [PrestacionesController::class, 'buscarEx'])->name('buscarEx');
     Route::get('/prestaciones/check-incompleto', [PrestacionesController::class, 'checkIncompleto'])->name('prestaciones.checkIncompleto');
     Route::post('/prestaciones/nueva-observacion', [PrestacionesController::class, 'obsNuevaPrestacion'])->name('obsNuevaPrestacion');
     Route::post('/prestaciones/borrar-cache', [PrestacionesController::class, 'cacheDelete'])->name('prestaciones.cacheDelete');
+    Route::get('/prestaciones/pdf', [PrestacionesController::class, 'pdf'])->name('prestaciones.pdf');
     Route::resource('prestaciones', PrestacionesController::class);
 
     //Ruta Ficha Laboral

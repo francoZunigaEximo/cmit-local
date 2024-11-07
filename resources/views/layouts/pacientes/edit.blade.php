@@ -1002,7 +1002,7 @@ const getClientes = "{{ route('getClientes') }}";
 const verificarAlta = "{{ route('verificarAlta') }}";
 const savePrestacion = "{{ route('savePrestacion') }}";
 const blockPrestacion = "{{ route('blockPrestacion') }}";
-const downPrestaActiva = "{{ route('downPrestaActiva') }}";
+const downPrestaActiva = "{{ route('prestaciones.baja') }}";
 const getComentarioPres = "{{ route('getComentarioPres') }}";
 const setComentarioPres = "{{ route('setComentarioPres') }}";
 const searchPrestPacientes = "{{ route('searchPrestPacientes') }}";
@@ -1045,7 +1045,7 @@ const getTipoPrestacion = "{{ route('getTipoPrestacion') }}";
 const TOKEN = "{{ csrf_token() }}";
 
 const checkObs = "{{ route('checkObs') }}";
-const excelPrestaciones = "{{ route('excelPrestaciones') }}";
+const excelPrestaciones = "{{ route('prestaciones.excel') }}";
 
 $('#excel').click(function(e) {
     e.preventDefault();
@@ -1076,7 +1076,7 @@ $('#excel').click(function(e) {
     }).then((confirmar) => {
         if(confirmar) {
 
-            var exportExcel = "{{ route('excelPrestaciones', ['ids' =>  'idsContent', 'filters' => 'filtersContent', 'tipo' => 'tipoContent']) }}";
+            var exportExcel = "{{ route('prestaciones.excel', ['ids' =>  'idsContent', 'filters' => 'filtersContent', 'tipo' => 'tipoContent']) }}";
             exportExcel     = exportExcel.replace('idsContent', ids);
             exportExcel     = exportExcel.replace('filtersContent', filters);
             exportExcel     = exportExcel.replace('tipoContent', "basico");

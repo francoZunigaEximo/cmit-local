@@ -1373,6 +1373,7 @@ const updateAsignado = "{{ route('updateAsignado') }}";
 const updateItem = "{{ route('updateItem') }}";
 const updateItemExamen = "{{ route('updateItemExamen') }}";
 const getBloqueoItemPrestacion = "{{ route('getBloqueoItemPrestacion') }}";
+const exportPdf = "{{ route('prestaciones.pdf') }}";
 
 //Extras
 const TOKEN = "{{ csrf_token() }}";

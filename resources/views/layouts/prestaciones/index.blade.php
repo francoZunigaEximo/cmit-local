@@ -263,7 +263,7 @@ const searchPrestaciones = "{{ route('prestaciones.index') }}";
 //Extras
 const TOKEN = "{{ csrf_token() }}";
 const GOPACIENTES = "{{ route('pacientes.edit', ['paciente' => '__paciente__']) }}";
-const downPrestaActiva = "{{ route('downPrestaActiva') }}";
+const downPrestaActiva = "{{ route('prestaciones.baja') }}";
 const blockPrestacion = "{{ route('blockPrestacion') }}";
 const SEARCH = "{{ route('prestaciones.index') }}";
 //const SEARCH = "{{ route('searchPrestaciones') }}";
@@ -305,7 +305,7 @@ function exportExcel(tipo) {
         }
     }
 
-    var exportExcel = "{{ route('excelPrestaciones', ['ids' =>  'idsContent', 'filters' => 'filtersContent', 'tipo' => 'tipoContent']) }}";
+    var exportExcel = "{{ route('prestaciones.excel', ['ids' =>  'idsContent', 'filters' => 'filtersContent', 'tipo' => 'tipoContent']) }}";
     exportExcel     = exportExcel.replace('idsContent', ids);
     exportExcel     = exportExcel.replace('filtersContent', filters);
     exportExcel     = exportExcel.replace('tipoContent', tipo);

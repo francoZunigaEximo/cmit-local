@@ -11,7 +11,7 @@ class Basico extends Reporte
 {
     public function render(FPDF $pdf, $datos = ['detalles','fecha','comprobante']): void
     {
-        $pdf->Image(url('/').ReporteConfig::$LOGO,10,6,20);
+        $pdf->Image(public_path(ReporteConfig::$LOGO),10,6,20);
         $pdf->SetY(19);
         $pdf->SetFont('Arial','B',7);
         $pdf->SetX(10);
