@@ -34,25 +34,6 @@ trait ObserverItemsPrestaciones
 
     }
 
-    public function generarQR($tipo, $prestacionId, $examenId, $pacienteId, $out): mixed
-    {
-        if($out === 'texto')
-        {
-            //Tipo: A:efector,B:informador,C:evaluador (1 caracter)
-            $prestacionId = str_pad($prestacionId, 9, "0", STR_PAD_LEFT);
-	        $examenId = str_pad($examenId, 5, "0", STR_PAD_LEFT);
-	        $pacienteId = str_pad($pacienteId, 7, "0", STR_PAD_LEFT);
-
-            $code = strtoupper($tipo).$prestacionId.$examenId.$pacienteId;
-
-            return $code;
-
-        }elseif($out === 'qr'){
-
-            //Codigo
-        }
-    }
-
     public function getPaciente(int $id): mixed
     {
         return Prestacion::where('Id', $id)->with('paciente')->first();

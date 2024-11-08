@@ -17,6 +17,7 @@ use App\Models\ExamenCuentaIt;
 use App\Models\ExamenPrecioProveedor;
 use App\Traits\CheckPermission;
 use App\Helpers\FileHelper;
+use App\Helpers\Tools;
 use App\Models\Profesional;
 use App\Models\User;
 
@@ -1264,7 +1265,7 @@ class ItemPrestacionesController extends Controller
             $data = [
                 'itemprestacion' => $query,
                 'paciente' => $paciente,
-                'qrTexto' => $this->generarQR('A', $query->IdPrestacion, $query->IdExamen, $paciente->Id, 'texto'),
+                'qrTexto' => Tools::generarQR('A', $query->IdPrestacion, $query->IdExamen, $paciente->Id, 'texto'),
                 'adjuntoEfector' => $this->adjuntoEfector($query->Id),
                 'adjuntoInformador' => $this->adjuntoInformador($query->Id),
                 'multiEfector' => $this->multiEfector($query->IdPrestacion, $query->IdProfesional, $query->examenes->IdProveedor),
