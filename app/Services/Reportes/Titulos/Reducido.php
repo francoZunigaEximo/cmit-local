@@ -16,6 +16,6 @@ class Reducido extends Reporte
         $pdf->Image(public_path(ReporteConfig::$LOGO),10,6,20);$pdf->SetY(19);
         $pdf->SetFont('Arial','B',7);$pdf->SetX(10);$pdf->Cell(100,3,ReporteConfig::$TITULO,0,0,'L');$pdf->Ln();
         $pdf->SetFont('Arial','',7);$pdf->SetX(10);$pdf->Cell(0,3,ReporteConfig::$DIRECCION,0,0,'L');$pdf->Ln();
-        $pdf->Line(10,26,287,26);
+        $pdf->Line(10,26,200,26);
     }
 }

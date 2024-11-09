@@ -204,8 +204,8 @@ function verificarArchivo(archivo){
 
     let tipoArchivo = archivo.type.toLowerCase();
 
-    if(tipoArchivo !== 'application/pdf' && !tipoArchivo.startsWith('image/')) {
-        toastr.warning("Los archivos permitidos son imágenes o PDF", "Atención");
+    if(tipoArchivo !== 'application/pdf') {
+        toastr.warning("Solo se admite archivos PDF", "Atención");
         return false;
     }
 

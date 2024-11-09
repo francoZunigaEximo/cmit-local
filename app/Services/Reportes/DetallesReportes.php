@@ -3,6 +3,7 @@
 namespace App\Services\Reportes;
 
 use App\Models\Profesional;
+use setasign\Fpdi\Fpdi;
 
 trait DetallesReportes
 {
@@ -83,5 +84,62 @@ trait DetallesReportes
 		$x = $xf+(24-$proporcion);
 		return $pdf->Image($ruta,$x,$yf-33,0,28);//ancho sin especificar, alto 20
     }
+
+    public function mergePDFs(int $idPrestacion, array $files)
+    {
+        $fpdi = new Fpdi();
+        $idp = str_pad($idPrestacion, 8, "0", STR_PAD_LEFT);
+        
+        foreach ($files as $file) {
+            // Si el archivo es una URL, descárgalo primero a una ubicación temporal
+            if (filter_var($file, FILTER_VALIDATE_URL)) {
+                // Definir la ruta temporal
+                $tempFile = storage_path('app/public/temp/' . basename($file));
+
+                // Descargar el archivo a la ruta temporal
+                file_put_contents($tempFile, file_get_contents($file));
+
+                // Usar la ruta temporal en lugar de la URL
+                $file = $tempFile;
+            }
+
+            $pageCount = $fpdi->setSourceFile($file);
+
+            for ($i = 1; $i <= $pageCount; $i++) {
+                $template = $fpdi->importPage($i);
+                $size = $fpdi->getTemplateSize($template);
+
+                // Añadir página con las dimensiones correctas
+                $fpdi->AddPage();
+                $fpdi->useTemplate($template);
+
+                // Asegurarse de que la orientación y el tamaño sean correctos
+                $orientation = ($size['w'] > $size['h']) ? 'L' : 'P';
+                if ($orientation == 'L') {
+                    $fpdi->AddPage('L', [$size['w'], $size['h']]);
+                } else {
+                    $fpdi->AddPage('P', [$size['w'], $size['h']]);
+                }
+
+                // Reemplazar página en el PDF
+                $fpdi->useTemplate($template);
+                $fpdi->SetFont('Arial', '', 8);
+
+                if ($orientation == 'P') {
+                    $fpdi->SetXY(182, 4);
+                } else {
+                    $fpdi->SetXY(280, 4);
+                }
+
+                // Agregar ID al pie de página
+                $fpdi->Cell(0, 3, $idp, 0, 0, 'L');
+            }
+        }
+
+        // Guardar el archivo fusionado
+        $outputPath = storage_path('app/public/temp/final_output.pdf');
+        $fpdi->Output('F', $outputPath);
+    }
+
     
 }

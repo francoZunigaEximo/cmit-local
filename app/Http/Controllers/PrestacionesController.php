@@ -29,10 +29,10 @@ use App\Traits\CheckPermission;
 use Illuminate\Support\Facades\Artisan;
 
 use App\Services\Reportes\ReporteService;
-use App\Services\Reportes\Titulos\NroPrestacion;
 use App\Services\Reportes\Titulos\Reducido;
 use App\Services\Reportes\Cuerpos\EvaluacionResumen;
 use App\Services\Reportes\Titulos\CaratulaInterna;
+use App\Services\Reportes\Cuerpos\AdjuntosDigitales;
 
 class PrestacionesController extends Controller
 {
@@ -41,12 +41,14 @@ class PrestacionesController extends Controller
     protected $reporteService;
     protected $outputPath;
     protected $fileNameExport;
+    private $tempFile;
 
     public function __construct(ReporteService $reporteService)
     {
         $this->reporteService = $reporteService;
         $this->outputPath = storage_path('app/public/fusionar.pdf');
         $this->fileNameExport = 'reporte-'.Tools::randomCode(15);
+        $this->tempFile = 'app/public/temp/file-';
     }
 
     public function index(Request $request): mixed
@@ -519,6 +521,14 @@ class PrestacionesController extends Controller
             array_push($listado, $this->resumenEvaluacion($request->Id));
         }
 
+        if ($request->adjDigitales) {
+            array_push($listado, $this->adjDigitalFisico($request->Id, 1));
+        }
+
+        if ($request->adjFisicosDigitales) {
+            array_push($listado, $this->adjDigitalFisico($request->Id, 2));
+        }
+
         $this->reporteService->fusionarPDFs($listado, $this->outputPath);
 
         return response()->json([
@@ -591,7 +601,7 @@ class PrestacionesController extends Controller
             null,
             EvaluacionResumen::class,
             'guardar',
-            storage_path('app/public/temp/file-'.Tools::randomCode(15).'-'.Auth::user()->name.'.pdf'),
+            storage_path($this->tempFile.Tools::randomCode(15).'-'.Auth::user()->name.'.pdf'),
             null,
             [],
             [],
@@ -606,10 +616,25 @@ class PrestacionesController extends Controller
             CaratulaInterna::class,
             null,
             'guardar',
-            storage_path('app/public/temp/file-'.Tools::randomCode(15).'-'.Auth::user()->name.'.pdf'),
+            storage_path($this->tempFile.Tools::randomCode(15).'-'.Auth::user()->name.'.pdf'),
             null,
             [],
             ['id' => $idPrestacion],
+            []
+        );
+    }
+
+    private function adjDigitalFisico(int $idPrestacion, int $tipo): mixed // 1 es Digital, 2 es Fisico,Digital
+    {
+        return $this->reporteService->generarReporte(
+            AdjuntosDigitales::class,
+            null,
+            null,
+            'guardar',
+            storage_path($this->tempFile.Tools::randomCode(15).'-'.Auth::user()->name.'.pdf'),
+            null,
+            ['id' => $idPrestacion, 'tipo' => $tipo],
+            [],
             []
         );
     }

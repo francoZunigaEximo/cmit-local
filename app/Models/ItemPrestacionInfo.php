@@ -24,8 +24,10 @@ class ItemPrestacionInfo extends Model
         'C2'
     ];
 
-    public function itemsPrestacion()
+    public function itemsprestacion()
     {
         return $this->hasOne(ItemPrestacion::class, 'Id', 'IdIP');
     }
+
+
 }
