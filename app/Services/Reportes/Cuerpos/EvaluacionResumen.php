@@ -118,7 +118,7 @@ class EvaluacionResumen extends Reporte
         
         //la prestacion debe estar cerrada para mostrar evaluacion y calificacion
         //si la prest no lleva evaluacion, solo foto y obs
-        if($query->Cerrado === 1 and ($prestacionAtributo->SinEval === 0 || $prestacionAtributo === null)){	
+        if($query->Cerrado === 1 and ($prestacionAtributo !== null && $prestacionAtributo->SinEval === 0)){	
             $pdf->SetXY(22,$y+6);$pdf->Cell(0,3,$this->calificacionMedica("1", $query->Calificacion),0,0,'L');//Reporte:evaluacion medica, Campo bd: Calificacion
             $pdf->SetXY(107,$y+6);$pdf->Cell(0,3,$this->calificacionMedica("2", $query->Calificacion),0,0,'L');
             $pdf->SetXY(192,$y+6);$pdf->Cell(0,3,$this->calificacionMedica("3", $query->Calificacion),0,0,'L');

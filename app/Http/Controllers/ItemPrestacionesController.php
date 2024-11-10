@@ -875,53 +875,49 @@ class ItemPrestacionesController extends Controller
             return response()->json(['msg' => 'No tienes permisos'], 403);
         }
 
-        $resultados = Cache::remember('itemsprestaciones', 5, function () use ($request) {
+        $query = ItemPrestacion::join('profesionales as efector', 'itemsprestaciones.IdProfesional', '=','efector.Id')
+            ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
+            ->join('proveedores as proveedor2', 'examenes.IdProveedor', '=', 'proveedor2.Id')
+            ->join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
+            ->join('profesionales as informador', 'itemsprestaciones.IdProfesional2', '=', 'informador.Id')
+            ->leftJoin('archivosefector', 'itemsprestaciones.Id', '=', 'archivosefector.IdEntidad')
+            ->leftJoin('archivosinformador', 'itemsprestaciones.Id', '=', 'archivosinformador.IdEntidad')
+            ->select(
+                'examenes.Nombre as Nombre',
+                'examenes.Id as IdExamen',
+                'examenes.Adjunto as ExaAdj',
+                'examenes.Informe as Informe',
+                'informador.InfAdj as InfAdj',
+                'examenes.NoImprime as ExaNI',
+                'efector.Nombre as NombreE',
+                'efector.Apellido as ApellidoE',
+                'informador.Nombre as NombreI',
+                'informador.Apellido as ApellidoI',
+                'itemsprestaciones.Ausente as Ausente',
+                'itemsprestaciones.Forma as Forma',
+                'itemsprestaciones.Incompleto as Incompleto',
+                'itemsprestaciones.SinEsc as SinEsc',
+                'itemsprestaciones.Devol as Devol',
+                'itemsprestaciones.CAdj as CAdj',
+                'itemsprestaciones.CInfo as CInfo',
+                'itemsprestaciones.Id as IdItem',
+                'itemsprestaciones.Anulado as Anulado',
+                DB::raw('(SELECT COUNT(*) FROM archivosefector WHERE IdEntidad = itemsprestaciones.Id) as archivos'),
+                DB::raw('(SELECT COUNT(*) FROM archivosinformador WHERE IdEntidad = itemsprestaciones.Id) as archivosI'),
+            );                
 
-            $query = ItemPrestacion::join('profesionales as efector', 'itemsprestaciones.IdProfesional', '=','efector.Id')
-                ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
-                ->join('proveedores as proveedor2', 'examenes.IdProveedor', '=', 'proveedor2.Id')
-                ->join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
-                ->join('profesionales as informador', 'itemsprestaciones.IdProfesional2', '=', 'informador.Id')
-                ->leftJoin('archivosefector', 'itemsprestaciones.Id', '=', 'archivosefector.IdEntidad')
-                ->leftJoin('archivosinformador', 'itemsprestaciones.Id', '=', 'archivosinformador.IdEntidad')
-                ->select(
-                    'examenes.Nombre as Nombre',
-                    'examenes.Id as IdExamen',
-                    'examenes.Adjunto as ExaAdj',
-                    'examenes.Informe as Informe',
-                    'informador.InfAdj as InfAdj',
-                    'examenes.NoImprime as ExaNI',
-                    'efector.Nombre as NombreE',
-                    'efector.Apellido as ApellidoE',
-                    'informador.Nombre as NombreI',
-                    'informador.Apellido as ApellidoI',
-                    'itemsprestaciones.Ausente as Ausente',
-                    'itemsprestaciones.Forma as Forma',
-                    'itemsprestaciones.Incompleto as Incompleto',
-                    'itemsprestaciones.SinEsc as SinEsc',
-                    'itemsprestaciones.Devol as Devol',
-                    'itemsprestaciones.CAdj as CAdj',
-                    'itemsprestaciones.CInfo as CInfo',
-                    'itemsprestaciones.Id as IdItem',
-                    'itemsprestaciones.Anulado as Anulado',
-                    DB::raw('(SELECT COUNT(*) FROM archivosefector WHERE IdEntidad = itemsprestaciones.Id) as archivos'),
-                    DB::raw('(SELECT COUNT(*) FROM archivosinformador WHERE IdEntidad = itemsprestaciones.Id) as archivosI'),
-                );                
+        if ($request->tipo === 'listado' && is_array($request->IdExamen)) {
 
-            if ($request->tipo === 'listado' && is_array($request->IdExamen)) {
+                $query->whereIn('examenes.Id', $request->IdExamen)
+                        ->where('itemsprestaciones.IdPrestacion', $request->Id);
+        } 
 
-                    $query->whereIn('examenes.Id', $request->IdExamen)
-                            ->where('itemsprestaciones.IdPrestacion', $request->Id);
-            } 
-
-            return $query->orderBy('efector.IdProveedor', 'ASC')
-                         ->orderBy('examenes.Nombre', 'ASC')
-                         ->orderBy('itemsprestaciones.Fecha', 'ASC')
-                         ->groupBy('itemsprestaciones.Id')
-                ->get();
-        });
+        return $query->orderBy('efector.IdProveedor', 'ASC')
+            ->orderBy('examenes.Nombre', 'ASC')
+            ->orderBy('itemsprestaciones.Fecha', 'ASC')
+            ->groupBy('itemsprestaciones.Id')->get();
  
-        return response()->json(['examenes' => $resultados]);
+        //return response()->json(['examenes' => $query]);
     }
 
     public function show(){}
