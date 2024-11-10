@@ -875,7 +875,7 @@ class ItemPrestacionesController extends Controller
             return response()->json(['msg' => 'No tienes permisos'], 403);
         }
 
-        //$resultados = Cache::remember('itemsprestaciones', 5, function () use ($request) {
+        $resultados = Cache::remember('itemsprestaciones', 5, function () use ($request) {
 
             $query = ItemPrestacion::join('profesionales as efector', 'itemsprestaciones.IdProfesional', '=','efector.Id')
                 ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
@@ -916,10 +916,10 @@ class ItemPrestacionesController extends Controller
 
             return $query->orderBy('efector.IdProveedor', 'ASC')
                          ->orderBy('examenes.Nombre', 'ASC')
-                         //->orderBy('itemsprestaciones.Fecha', 'ASC')
-                         //->groupBy('itemsprestaciones.Id')
+                         ->orderBy('itemsprestaciones.Fecha', 'ASC')
+                         ->groupBy('itemsprestaciones.Id')
                 ->get();
-        //});
+        });
  
         return response()->json(['examenes' => $resultados]);
     }
