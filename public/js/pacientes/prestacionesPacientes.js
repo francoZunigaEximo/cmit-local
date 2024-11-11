@@ -1118,16 +1118,16 @@ $(document).ready(()=>{
     async function cargarExamen(id) {
         try {
             preloader('on');
-    
+
             let result = await $.ajax({
                 url: checkItemExamen,
                 method: 'GET',
                 data: { Id: id }
             });
-    
+
             let estado = result.respuesta;
             let examenes = result.examenes;
-    
+            
             if (estado === true) {
                 // Segunda llamada AJAX para obtener los exámenes
                 let response = await $.ajax({
@@ -1142,7 +1142,7 @@ $(document).ready(()=>{
                 });
     
                 preloader('off');
-                let registros = response.examenes;
+                let registros = response;
 
                 registros.forEach(function(examen) {
                     let examenId = examen.IdExamen;
