@@ -516,16 +516,16 @@ class PrestacionesController extends Controller
     {
         $listado = [];
 
-        if ($request->evaluacion) {
+        if ($request->evaluacion == 'true') {
             array_push($listado, $this->caratula($request->Id));
             array_push($listado, $this->resumenEvaluacion($request->Id));
         }
 
-        if ($request->adjDigitales) {
+        if ($request->adjDigitales == 'true') {
             array_push($listado, $this->adjDigitalFisico($request->Id, 1));
         }
 
-        if ($request->adjFisicosDigitales) {
+        if ($request->adjFisicosDigitales == 'true') {
             array_push($listado, $this->adjDigitalFisico($request->Id, 2));
         }
 
