@@ -85,7 +85,7 @@ trait DetallesReportes
 		return $pdf->Image($ruta,$x,$yf-33,0,28);//ancho sin especificar, alto 20
     }
 
-    public function mergePDFs(int $idPrestacion, array $files)
+    public function mergePDFs(int $idPrestacion, array $files, string $nombre = 'sin_nombre')
     {
         $fpdi = new Fpdi();
         $idp = str_pad($idPrestacion, 8, "0", STR_PAD_LEFT);
@@ -107,29 +107,16 @@ trait DetallesReportes
 
             for ($i = 1; $i <= $pageCount; $i++) {
                 $template = $fpdi->importPage($i);
-                $size = $fpdi->getTemplateSize($template);
+                $fpdi->getTemplateSize($template);
 
                 // Añadir página con las dimensiones correctas
                 $fpdi->AddPage();
                 $fpdi->useTemplate($template);
 
-                // Asegurarse de que la orientación y el tamaño sean correctos
-                $orientation = ($size['w'] > $size['h']) ? 'L' : 'P';
-                if ($orientation == 'L') {
-                    $fpdi->AddPage('L', [$size['w'], $size['h']]);
-                } else {
-                    $fpdi->AddPage('P', [$size['w'], $size['h']]);
-                }
 
                 // Reemplazar página en el PDF
                 $fpdi->useTemplate($template);
                 $fpdi->SetFont('Arial', '', 8);
-
-                if ($orientation == 'P') {
-                    $fpdi->SetXY(182, 4);
-                } else {
-                    $fpdi->SetXY(280, 4);
-                }
 
                 // Agregar ID al pie de página
                 $fpdi->Cell(0, 3, $idp, 0, 0, 'L');
@@ -137,7 +124,7 @@ trait DetallesReportes
         }
 
         // Guardar el archivo fusionado
-        $outputPath = storage_path('app/public/temp/final_output.pdf');
+        $outputPath = storage_path('app/public/temp/merge_'.$nombre.'.pdf');
         $fpdi->Output('F', $outputPath);
     }
 

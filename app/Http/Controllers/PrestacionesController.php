@@ -33,6 +33,9 @@ use App\Services\Reportes\Titulos\Reducido;
 use App\Services\Reportes\Cuerpos\EvaluacionResumen;
 use App\Services\Reportes\Titulos\CaratulaInterna;
 use App\Services\Reportes\Cuerpos\AdjuntosDigitales;
+use App\Services\Reportes\Cuerpos\AdjuntosGenerales;
+
+use FPDF; //Test
 
 class PrestacionesController extends Controller
 {
@@ -527,6 +530,12 @@ class PrestacionesController extends Controller
 
         if ($request->adjFisicosDigitales == 'true') {
             array_push($listado, $this->adjDigitalFisico($request->Id, 2));
+            //$this->testAdjuntosDigitales($request->Id, 2);
+            //$this->testGenerarReporte($request->Id, 2);
+        }
+
+        if ($request->adjGenerales == 'true') {
+            array_push($listado, $this->adjGenerales($request->Id));
         }
 
         $this->reporteService->fusionarPDFs($listado, $this->outputPath);
@@ -605,7 +614,8 @@ class PrestacionesController extends Controller
             null,
             [],
             [],
-            ['id' => $idPrestacion, 'firmaeval' => 0]
+            ['id' => $idPrestacion, 'firmaeval' => 0],
+            null
         );
     }
 
@@ -620,7 +630,8 @@ class PrestacionesController extends Controller
             null,
             [],
             ['id' => $idPrestacion],
-            []
+            [],
+            null
         );
     }
 
@@ -631,11 +642,28 @@ class PrestacionesController extends Controller
             null,
             null,
             'guardar',
-            storage_path($this->tempFile.Tools::randomCode(15).'-'.Auth::user()->name.'.pdf'),
+            null,
             null,
             ['id' => $idPrestacion, 'tipo' => $tipo],
             [],
-            []
+            [],
+            storage_path('app/public/temp/merge_adjDigitales.pdf')
+        );
+    }
+
+    private function adjGenerales(int $idPrestacion): mixed
+    {
+        return $this->reporteService->generarReporte(
+            AdjuntosGenerales::class,
+            null,
+            null,
+            'guardar',
+            storage_path($this->tempFile.Tools::randomCode(15).'-'.Auth::user()->name.'.pdf'),
+            null,
+            ['id' => $idPrestacion],
+            [],
+            [],
+            storage_path('app/public/temp/merge_adjGenerales.pdf')
         );
     }
 

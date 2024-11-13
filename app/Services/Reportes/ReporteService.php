@@ -10,7 +10,6 @@
 
 namespace App\Services\Reportes;
 
-use FPDF;
 use setasign\Fpdi\Fpdi;
 
 class ReporteService
@@ -20,14 +19,16 @@ class ReporteService
         ?string $subtituloClass,    // Puede ser null
         ?string $cuerpoClass,        // Siempre debe ser una clase
         string $tipo,               // Tipo de reporte
-        string $filePath,           // Ruta del archivo PDF
+        ?string $filePath,           // Ruta del archivo PDF
         ?int $id,                   // ID de la prestación
         $paramsTitulo, 
         $paramsSubtitulo = [], 
         $paramsCuerpo = [],
+        ?string $newPath
     ): string
     {
-        $pdf = new FPDF('P', 'mm', 'A4');
+
+        $pdf = new Fpdi('P', 'mm', 'A4');
         $pdf->AddPage();
     
         $titulo = new $tituloClass();
@@ -43,8 +44,13 @@ class ReporteService
             $cuerpo->render($pdf, $paramsCuerpo);
         }
         
+        if($filePath !== null) {
+          $pdf->Output($filePath, "F");
+        }else{
+            $filePath = $newPath;
+        }
         // Genera el PDF y lo guarda
-        $pdf->Output($filePath, "F");
+        
     
         if ($tipo === 'imprimir') {
             return response()->json([
@@ -80,4 +86,5 @@ class ReporteService
 
         return $outputPath;
     }
+
 }

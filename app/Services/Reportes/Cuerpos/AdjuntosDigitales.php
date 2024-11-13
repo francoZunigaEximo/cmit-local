@@ -22,6 +22,8 @@ class AdjuntosDigitales extends Reporte
     protected $rutainternainfo;
     private $tempFile;
 
+    const NOMBRE = 'adjDigitales';
+
     public function __construct()
     {
         $this->outputPath = storage_path('app/public/fusionar.pdf');
@@ -34,7 +36,7 @@ class AdjuntosDigitales extends Reporte
     //Tipo: 1 digital, 2 fisico y digital
     public function render(FPDF $fpdf, $datos = ['id', 'tipo']):void
     {
-        $querys = $this->queryCombinado($datos['id']);
+        $querys = $this->queryCombinado($datos['id']);      
         $files = [];
 
         foreach($querys as $query) {
@@ -51,7 +53,8 @@ class AdjuntosDigitales extends Reporte
                     null,
                     ['idItemprestacion' => $query->IdEntidad, 'idPrestacion' => $datos['idPrestacion']],
                     [],
-                    []
+                    [],
+                    null
                 );
             }
             
@@ -83,7 +86,8 @@ class AdjuntosDigitales extends Reporte
         }
 
         //$this->mergePDFs($datos['idPrestacion'], $files);
-        $this->mergePDFs($datos['id'], $files);
+       $this->mergePDFs($datos['id'], $files, SELF::NOMBRE);
+        //dd($test);
     }
 
     private function queryCombinado(int $id):mixed
