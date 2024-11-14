@@ -22,6 +22,7 @@ use App\Models\ArchivoInformador;
 use App\Models\ExamenCuentaIt;
 use App\Models\Fichalaboral;
 use App\Models\ItemPrestacion;
+use App\Services\Reportes\Cuerpos\AdjuntosAnexos;
 use Maatwebsite\Excel\Facades\Excel;
 use stdClass;
 use Illuminate\Support\Facades\Auth;
@@ -34,8 +35,6 @@ use App\Services\Reportes\Cuerpos\EvaluacionResumen;
 use App\Services\Reportes\Titulos\CaratulaInterna;
 use App\Services\Reportes\Cuerpos\AdjuntosDigitales;
 use App\Services\Reportes\Cuerpos\AdjuntosGenerales;
-
-use FPDF; //Test
 
 class PrestacionesController extends Controller
 {
@@ -530,12 +529,14 @@ class PrestacionesController extends Controller
 
         if ($request->adjFisicosDigitales == 'true') {
             array_push($listado, $this->adjDigitalFisico($request->Id, 2));
-            //$this->testAdjuntosDigitales($request->Id, 2);
-            //$this->testGenerarReporte($request->Id, 2);
         }
 
         if ($request->adjGenerales == 'true') {
             array_push($listado, $this->adjGenerales($request->Id));
+        }
+
+        if ($request->adjAnexos == 'true') {
+            array_push($listado, $this->adjAnexos($request->Id));
         }
 
         $this->reporteService->fusionarPDFs($listado, $this->outputPath);
@@ -658,12 +659,28 @@ class PrestacionesController extends Controller
             null,
             null,
             'guardar',
-            storage_path($this->tempFile.Tools::randomCode(15).'-'.Auth::user()->name.'.pdf'),
+            null,
             null,
             ['id' => $idPrestacion],
             [],
             [],
             storage_path('app/public/temp/merge_adjGenerales.pdf')
+        );
+    }
+
+    private function adjAnexos(int $idPrestacion): mixed
+    {
+        return $this->reporteService->generarReporte(
+            AdjuntosAnexos::class,
+            null,
+            null,
+            'guardar',
+            null,
+            null,
+            ['id' => $idPrestacion],
+            [],
+            [],
+            storage_path('app/public/temp/merge_adjAnexos.pdf')
         );
     }
 

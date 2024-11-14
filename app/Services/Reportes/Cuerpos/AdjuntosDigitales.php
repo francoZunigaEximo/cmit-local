@@ -44,7 +44,7 @@ class AdjuntosDigitales extends Reporte
             if ($query->Tipo === 1) {
                 $reporteService = new \App\Services\Reportes\ReporteService();
 
-                $reporteService->generarReporte(
+                $file1 = $reporteService->generarReporte(
                     InformeEtapaInformador::class,
                     null,
                     null,
@@ -56,6 +56,8 @@ class AdjuntosDigitales extends Reporte
                     [],
                     null
                 );
+
+                array_push($files, $file1);
             }
             
 
