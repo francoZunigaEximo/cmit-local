@@ -16,7 +16,7 @@ class DatoPaciente extends Model
     protected $fillable = [
         'Id',
         'IdPaciente',
-        'Prestacion',
+        'IdPrestacion',
         'Edad',
         'EstadoCivil',
         'ObsEC',
@@ -27,8 +27,8 @@ class DatoPaciente extends Model
         'TareasEmpAnterior',
         'Puesto',
         'Sector',
-        'FechaIngreso','
-        FechaEgreso',
+        'FechaIngreso',
+        'FechaEgreso',
         'AntigPuesto',
         'AntigEmpresa',
         'TipoJornada',
@@ -42,5 +42,10 @@ class DatoPaciente extends Model
     public function paciente()
     {
         return $this->hasOne(Paciente::class, 'Id', 'IdPaciente');
+    }
+
+    public function prestacion()
+    {
+        return $this->hasOne(Prestacion::class, 'Id', 'IdPrestacion');
     }
 }

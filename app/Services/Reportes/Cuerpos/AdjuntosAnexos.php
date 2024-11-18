@@ -34,12 +34,12 @@ class AdjuntosAnexos extends Reporte
 
     private function archivosEfector(int $id): mixed
     {
-        return DB::table('archivosefector')->join('itemprestaciones', 'archivosefector.IdEntidad','=','itemprestaciones.Id')
-            ->join('examenes', 'itemprestaciones.IdExamen', '=', 'examenes.Id')
+        return DB::table('archivosefector')->join('itemsprestaciones', 'archivosefector.IdEntidad','=','itemsprestaciones.Id')
+            ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
             ->select(
                 'archivosefector.Id as Id',
                 'archivosefector.IdEntidad as IdEntidad',
-                'itemprestaciones.IdProveedor as IdProveedor',
+                'itemsprestaciones.IdProveedor as IdProveedor',
                 'examenes.NoImprime as NoImprime'
             )->where('examenes.Evaluador', 1)
             ->where(function($query) {

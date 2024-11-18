@@ -35,7 +35,7 @@ class Localidad extends Model
 
     public function provincia()
     {
-        return $this->hasOne(Provincia::class, 'Id', 'IdProv');
+        return $this->hasOne(Provincia::class, 'Id', 'IdPcia');
     }
 
 

@@ -35,6 +35,12 @@ use App\Services\Reportes\Cuerpos\EvaluacionResumen;
 use App\Services\Reportes\Titulos\CaratulaInterna;
 use App\Services\Reportes\Cuerpos\AdjuntosDigitales;
 use App\Services\Reportes\Cuerpos\AdjuntosGenerales;
+use App\Services\Reportes\Cuerpos\ConstEstCompDetallado;
+use App\Services\Reportes\Cuerpos\ConstEstCompSimple;
+use App\Services\Reportes\Cuerpos\PedidoProveedores;
+use App\Services\Reportes\Cuerpos\ResumenAdministrativo;
+use App\Services\Reportes\Cuerpos\ControlPaciente;
+use App\Services\Reportes\Titulos\NroPrestacion;
 
 class PrestacionesController extends Controller
 {
@@ -539,6 +545,26 @@ class PrestacionesController extends Controller
             array_push($listado, $this->adjAnexos($request->Id));
         }
 
+        if ($request->infInternos == 'true') {
+            array_push($listado, $this->infInternos($request->Id));
+        }
+
+        if ($request->pedProveedores == 'true') {
+            array_push($listado, $this->pedProveedores($request->Id));
+        }
+
+        if ($request->conPaciente == 'true') {
+            array_push($listado, $this->conPaciente($request->Id));
+        }
+
+        if ($request->consEstDetallado == 'true') {
+            array_push($listado, $this->consEstDetallado($request->Id));
+        }
+
+        if ($request->consEstSimple == 'true') {
+            array_push($listado, $this->consEstSimple($request->Id));
+        }
+
         $this->reporteService->fusionarPDFs($listado, $this->outputPath);
 
         return response()->json([
@@ -681,6 +707,102 @@ class PrestacionesController extends Controller
             [],
             [],
             storage_path('app/public/temp/merge_adjAnexos.pdf')
+        );
+    }
+
+    private function infInternos(int $idPrestacion): mixed
+    {
+        return $this->reporteService->generarReporte(
+            PedidoProveedores::class,
+            ControlPaciente::class,
+            ResumenAdministrativo::class,
+            'guardar',
+            storage_path($this->tempFile.Tools::randomCode(15).'-'.Auth::user()->name.'.pdf'),
+            null,
+            ['id' => $idPrestacion],
+            ['id' => $idPrestacion, 'controlCorte' => 1],
+            ['id' => $idPrestacion, 'controlCorte' => 1],
+            null
+        );
+    }
+
+    private function pedProveedores(int $idPrestacion): mixed
+    {
+        return $this->reporteService->generarReporte(
+            PedidoProveedores::class,
+            null,
+            null,
+            'guardar',
+            storage_path($this->tempFile.Tools::randomCode(15).'-'.Auth::user()->name.'.pdf'),
+            null,
+            ['id' => $idPrestacion],
+            [],
+            [],
+            null
+        );
+    }
+
+    private function conPaciente(int $idPrestacion): mixed
+    {
+        return $this->reporteService->generarReporte(
+            ControlPaciente::class,
+            null,
+            null,
+            'guardar',
+            storage_path($this->tempFile.Tools::randomCode(15).'-'.Auth::user()->name.'.pdf'),
+            null,
+            ['id' => $idPrestacion, 'controlCorte' => 1],
+            [],
+            [],
+            null
+        );
+    }
+
+    private function resAdmin(int $idPrestacion): mixed
+    {
+        return $this->reporteService->generarReporte(
+            ResumenAdministrativo::class,
+            null,
+            null,
+            'guardar',
+            storage_path($this->tempFile.Tools::randomCode(15).'-'.Auth::user()->name.'.pdf'),
+            null,
+            ['id' => $idPrestacion, 'controlCorte' => 1],
+            [],
+            [],
+            null
+        );
+    }
+
+    private function consEstDetallado(int $idPrestacion): mixed
+    {
+        return $this->reporteService->generarReporte(
+            Reducido::class,
+            NroPrestacion::class,
+            ConstEstCompDetallado::class,
+            'guardar',
+            storage_path($this->tempFile.Tools::randomCode(15).'-'.Auth::user()->name.'.pdf'),
+            null,
+            [],
+            ['id' => $idPrestacion],
+            ['id' => $idPrestacion],
+            null
+        );
+    }
+
+    private function consEstSimple(int $idPrestacion): mixed
+    {
+        return $this->reporteService->generarReporte(
+            Reducido::class,
+            NroPrestacion::class,
+            ConstEstCompSimple::class,
+            'guardar',
+            storage_path($this->tempFile.Tools::randomCode(15).'-'.Auth::user()->name.'.pdf'),
+            null,
+            [],
+            ['id' => $idPrestacion],
+            ['id' => $idPrestacion],
+            null
         );
     }
 

@@ -15,6 +15,6 @@ class Provincia extends Model
 
     public function localidad()
     {
-        return $this->hasMany(Localidad::class, 'IdProv', 'Id');
+        return $this->belongsToMany(Localidad::class, 'IdPcia', 'Id');
     }
 }
