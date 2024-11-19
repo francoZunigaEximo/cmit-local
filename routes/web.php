@@ -119,6 +119,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/prestaciones/nueva-observacion', [PrestacionesController::class, 'obsNuevaPrestacion'])->name('obsNuevaPrestacion');
     Route::post('/prestaciones/borrar-cache', [PrestacionesController::class, 'cacheDelete'])->name('prestaciones.cacheDelete');
     Route::get('/prestaciones/pdf', [PrestacionesController::class, 'pdf'])->name('prestaciones.pdf');
+    Route::get('/prestaciones/opciones', [PrestacionesController::class, 'opcionesPdf'])->name('prestaciones.opciones');
     Route::resource('prestaciones', PrestacionesController::class);
 
     //Ruta Ficha Laboral

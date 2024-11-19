@@ -521,10 +521,67 @@ $(document).ready(()=> {
                 let errorData = JSON.parse(jqXHR.responseText);            
                 checkError(jqXHR.status, errorData.msg);
                 return;
-            })
+            });    
+    });
 
-        
-    })
+    $(document).on('click', '.imprimirReporte2', function(e){
+        e.preventDefault();
+
+        let evaluacion = $('#evaluacion2').prop('checked'),
+            eEstudio = $('#eEstudio').prop('checked'),
+            eAnexo = $('#eAnexo').prop('checked'),
+            eEnvio = $('#eEnvio').prop('checked'),
+            adjAnexos = $('#adjAnexos').prop('checked'),
+            adjDigitales = $('#adjDigitales2').prop('checked'),
+            adjFisicos = $('#adjFisicos2').prop('checked'),
+            adjPrestacion = $('#adjPrestacion').prop('checked'),
+            adjFisicosDigitales = $('#adjFisicosDigitales2').prop('checked'),
+            infInternos = $('#infInternos2').prop('checked'),
+            pedProveedores = $('#pedProveedores2').prop('checked'),
+            conPaciente = $('#conPaciente2').prop('checked'),
+            resAdmin = $('#resAdmin2').prop('checked'),
+            caratula = $('#caratula').prop('checked'),
+            consEstDetallado = $('#consEstDetallado2').prop('checked'),
+            consEstSimple = $('#consEstSimple2').prop('checked');
+
+            let verificar = [
+                evaluacion,
+                eEstudio,
+                eAnexo,
+                eEnvio,
+                adjAnexos,
+                adjDigitales,
+                adjFisicos,
+                adjPrestacion,
+                adjFisicosDigitales,
+                infInternos,
+                pedProveedores,
+                conPaciente,
+                resAdmin,
+                caratula,
+                consEstDetallado,
+                consEstSimple
+            ];
+                
+            if (verificar.every(val => !val)) {
+                toastr.warning('Debe seleccionar algun check para obtener el reporte');
+                return;
+            }
+
+            preloader('on');
+            $.get(exportPdfOpciones, {Id: ID, evaluacion: evaluacion, eEstudio: eEstudio, eAnexo: eAnexo, eEnvio: eEnvio, adjAnexos: adjAnexos, adjDigitales: adjDigitales, adjFisicos: adjFisicos, adjPrestacion: adjPrestacion, adjFisicosDigitales: adjFisicosDigitales, infInternos: infInternos, pedProveedores: pedProveedores, conPaciente: conPaciente, resAdmin: resAdmin, caratula: caratula, consEstDetallado: consEstDetallado, consEstSimple: consEstSimple})
+                .done(function(response){
+                    createFile("pdf", response.filePath, response.name);
+                    preloader('off')
+                    toastr.success(response.msg)
+                })
+                .fail(function(jqXHR){
+                    preloader('off');
+                    let errorData = JSON.parse(jqXHR.responseText);            
+                    checkError(jqXHR.status, errorData.msg);
+                    return;
+                });  
+    });
 
     function precargaMapa(empresa, art){
         
@@ -536,8 +593,7 @@ $(document).ready(()=> {
         } else {
             $('#mapas').empty();
             $('.mapas').hide();
-        }
-             
+        }    
     }
 
     function cambiosVencimiento(actual){

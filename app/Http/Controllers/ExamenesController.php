@@ -63,7 +63,7 @@ class ExamenesController extends Controller
             'NoImprime' => ($request->Fisico === 'on' ? '1' : '0'),
             'PI' => ($request->priImpresion === 'on' ? '1' : '0'),
             'Evaluador' => ($request->EvalExclusivo === 'on' ? '1' : '0'),
-            'EvalCopia' => ($request->ExpAnexo === 'on' ? '1' : '0'),
+            'git' => ($request->ExpAnexo === 'on' ? '1' : '0'),
             'aliasexamen' => $request->aliasexam ?? ''
         ]);
 

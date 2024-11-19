@@ -575,6 +575,25 @@ class PrestacionesController extends Controller
         ]);
     }
 
+    public function opcionesPdf(Request $request)
+    {
+        $listado = [];
+
+        if ($request->evaluacion == 'true') {
+            array_push($listado, $this->caratula($request->Id));
+            array_push($listado, $this->resumenEvaluacion($request->Id));
+        }
+
+        $this->reporteService->fusionarPDFs($listado, $this->outputPath);
+
+        return response()->json([
+            'filePath' => $this->outputPath,
+            'name' => $this->fileNameExport.'.pdf',
+            'msg' => 'Reporte generado correctamente',
+            'icon' => 'success' 
+        ]);
+    }
+
     private function verificarEstados(int $id)
     {
         return Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
@@ -641,7 +660,7 @@ class PrestacionesController extends Controller
             null,
             [],
             [],
-            ['id' => $idPrestacion, 'firmaeval' => 0],
+            ['id' => $idPrestacion, 'firmaeval' => 0, 'opciones' => 'no'],
             null
         );
     }

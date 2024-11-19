@@ -17,9 +17,11 @@ class EvaluacionResumen extends Reporte
 {
     use DetallesReportes;
 
-    public function render(FPDF $pdf, $datos = ['id', 'firmaeval']): void
+    public function render(FPDF $pdf, $datos = ['id', 'firmaeval', 'opciones']): void
     {
         $query = $this->prestacion($datos['id']);
+
+        $tiposAutorizados = ['OTRO', 'CARNET', 'REDMED', 'S/C_OCUPACIO'];
 
         $tipoPrestacion = $this->TipoReportePrestacion($query->TipoPrestacion, $query->paciente->Tareas, $query->paciente->Puesto);
 
@@ -72,32 +74,40 @@ class EvaluacionResumen extends Reporte
         //calificacion (es el campo Calificacion en la bd)
         $pdf->Rect(10,$y,190,10);
         if($prestacionAtributo !== null && $prestacionAtributo->SinEval === 0){//si la prest no lleva evaluacion, solo foto y obs
-            $pdf->SetFont('Arial','B',9);$y=$y+1;
-            $pdf->SetXY(11,$y);$pdf->Cell(0,3,'EVALUACION MEDICA:',0,0,'L');
-            $pdf->SetFont('Arial','',8);$y=$y+5;
-            $pdf->SetXY(11,$y);$pdf->Cell(0,3,'SANO',0,0,'L');$pdf->Rect(22,$y-1,4,4);
-            $pdf->SetXY(45,$y);$pdf->Cell(0,3,'CON AFECCION CONOCIDA PREVIAMENTE',0,0,'L');$pdf->Rect(107,$y-1,4,4);
-            $pdf->SetXY(124,$y);$pdf->Cell(0,3,'CON AFECCION DETECTADA EN ESTE EXAMEN',0,0,'L');$pdf->Rect(192,$y-1,4,4);
+            if(in_array($query->TipoPrestacion, $tiposAutorizados) && $prestacionAtributo->SinEval === 1 && $datos['opciones'] === 'si') {
+                $y=$y+6;
+            }else{
+                $pdf->SetFont('Arial','B',9);$y=$y+1;
+                $pdf->SetXY(11,$y);$pdf->Cell(0,3,'EVALUACION MEDICA:',0,0,'L');
+                $pdf->SetFont('Arial','',8);$y=$y+5;
+                $pdf->SetXY(11,$y);$pdf->Cell(0,3,'SANO',0,0,'L');$pdf->Rect(22,$y-1,4,4);
+                $pdf->SetXY(45,$y);$pdf->Cell(0,3,'CON AFECCION CONOCIDA PREVIAMENTE',0,0,'L');$pdf->Rect(107,$y-1,4,4);
+                $pdf->SetXY(124,$y);$pdf->Cell(0,3,'CON AFECCION DETECTADA EN ESTE EXAMEN',0,0,'L');$pdf->Rect(192,$y-1,4,4);
+            } 
         }else{$y=$y+6;}
 
         //evaluacion (es el campo Evaluacion en la bd)
         $y=$y+5;
         $pdf->Rect(10,$y,190,40);
         if($prestacionAtributo !== null && $prestacionAtributo->SinEval === 0){//si la prest no lleva evaluacion, solo foto y obs
-            $pdf->SetFont('Arial','B',9);$y=$y+1;
-            $pdf->SetXY(11,$y);$pdf->Cell(0,3,'CALIFICACION FINAL DE APTITUD LABORAL:',0,0,'L');
-            $pdf->SetFont('Arial','',8);$y=$y+5;
-            $pdf->Rect(11,$y-1,4,4);$pdf->SetXY(15,$y);$pdf->Cell(0,3,'APTO',0,0,'L');
-            $pdf->SetXY(31,$y);$pdf->MultiCell(125,3,'SANO SIN PRE-EXISTENCIA: Salud Ocupacional Normal',0,'L',0,3);
-            $y=$y+7;
-            $pdf->Rect(11,$y-1,4,4);$pdf->SetXY(15,$y);$pdf->Cell(0,3,'APTO',0,0,'L');
-            $pdf->SetXY(31,$y);$pdf->MultiCell(125,3,'CON PRE-EXISTENCIA: Existen alteraciones organicas y/o funcionales permanentes, pero que por el momento no interfieren en el adecuado '.utf8_decode('desempeño').' laboral del interesado en sus tareas especificas',0,'L',0,3);
-            $y=$y+11;
-            $pdf->Rect(11,$y-1,4,4);$pdf->SetXY(15,$y);$pdf->Cell(0,3,'APTO',0,0,'L');
-            $pdf->SetXY(31,$y);$pdf->MultiCell(125,3,'CON PRE-EXISTENCIA: Solo puede cumplir con las tareas en condiciones especiales de trabajo',0,'L',0,3);
-            $y=$y+7;
-            $pdf->Rect(11,$y-1,4,4);$pdf->SetXY(15,$y);$pdf->Cell(0,3,'NO APTO',0,0,'L');
-            $pdf->SetXY(31,$y);$pdf->MultiCell(125,3,'Existen alteraciones organicas y/o funcionales INCOMPATIBLES con un adecuado y saludable '.utf8_decode('desempeño').' del postulante en las tareas para las que fuera propuesto',0,'L',0,3);
+            if(in_array($query->TipoPrestacion, $tiposAutorizados) && $prestacionAtributo->SinEval === 1 && $datos['opciones'] === 'si') {
+                $y=$y+31;
+            }else{
+                $pdf->SetFont('Arial','B',9);$y=$y+1;
+                $pdf->SetXY(11,$y);$pdf->Cell(0,3,'CALIFICACION FINAL DE APTITUD LABORAL:',0,0,'L');
+                $pdf->SetFont('Arial','',8);$y=$y+5;
+                $pdf->Rect(11,$y-1,4,4);$pdf->SetXY(15,$y);$pdf->Cell(0,3,'APTO',0,0,'L');
+                $pdf->SetXY(31,$y);$pdf->MultiCell(125,3,'SANO SIN PRE-EXISTENCIA: Salud Ocupacional Normal',0,'L',0,3);
+                $y=$y+7;
+                $pdf->Rect(11,$y-1,4,4);$pdf->SetXY(15,$y);$pdf->Cell(0,3,'APTO',0,0,'L');
+                $pdf->SetXY(31,$y);$pdf->MultiCell(125,3,'CON PRE-EXISTENCIA: Existen alteraciones organicas y/o funcionales permanentes, pero que por el momento no interfieren en el adecuado '.utf8_decode('desempeño').' laboral del interesado en sus tareas especificas',0,'L',0,3);
+                $y=$y+11;
+                $pdf->Rect(11,$y-1,4,4);$pdf->SetXY(15,$y);$pdf->Cell(0,3,'APTO',0,0,'L');
+                $pdf->SetXY(31,$y);$pdf->MultiCell(125,3,'CON PRE-EXISTENCIA: Solo puede cumplir con las tareas en condiciones especiales de trabajo',0,'L',0,3);
+                $y=$y+7;
+                $pdf->Rect(11,$y-1,4,4);$pdf->SetXY(15,$y);$pdf->Cell(0,3,'NO APTO',0,0,'L');
+                $pdf->SetXY(31,$y);$pdf->MultiCell(125,3,'Existen alteraciones organicas y/o funcionales INCOMPATIBLES con un adecuado y saludable '.utf8_decode('desempeño').' del postulante en las tareas para las que fuera propuesto',0,'L',0,3);
+            }
         }else{$y=$y+31;}
 
         //observaciones

@@ -410,7 +410,7 @@
                     <div class="row mb-3">
                         <div class="col-sm-12 text-end ">
                             <button type="button" class="btn btn-sm botonGeneral" data-bs-toggle="modal" data-bs-target="#imprimir" ><i class="bx bxs-file-pdf"></i>&nbsp;Imprimir</button>
-                            <button type="button" class="btn btn-sm botonGeneral"><i class="ri-send-plane-line"></i>&nbsp;Opciones</button>
+                            <button type="button" class="btn btn-sm botonGeneral" data-bs-toggle="modal" data-bs-target="#opciones"><i class="ri-send-plane-line"></i>&nbsp;Opciones</button>
                             @can('prestaciones_eEnviar')
                             <button type="button" class="btn btn-sm botonGeneral"><i class="ri-send-plane-line"></i>&nbsp;Enviar</button>
                             @endcan
@@ -797,8 +797,7 @@
 
 <div id="imprimir" class="modal fadeInUp" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
     <div class="modal-dialog">
-        <div class="modal-content">
-            
+        <div class="modal-content"> 
             <div class="modal-header">
                 <h5 class="modal-title" id="myModalLabel">Reportes</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>   
@@ -929,6 +928,221 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+
+<div id="opciones" class="modal fadeInUp" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-lg">
+       <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel">Opciones</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>  
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-3">
+                        <div class="input-group input-group mt-2">
+                            <span class="input-group-text">Prestación</span>
+                            <input type="text" class="form-control" value="{{ $prestacione->Id ?? 0}}" readonly="true">
+                        </div>
+                    </div>
+
+                    <div class="col-3">
+                        <div class="input-group input-group mt-2">
+                            <span class="input-group-text">Fecha</span>
+                            <input type="text" class="form-control" value="{{ \Carbon\Carbon::parse($prestacione->Fecha)->format('d/m/Y') ?? '' }}" readonly="true">
+                        </div>
+                    </div>
+
+                    <div class="col-6">
+                        <div class="input-group input-group mt-2">
+                            <span class="input-group-text">Tipo de Prestación</span>
+                            <input type="text" class="form-control" value="{{ $prestacione->TipoPrestacion ?? '' }}" readonly="true">
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row">
+                    <div class="col-9">
+                        <div class="input-group input-group mt-2">
+                            <span class="input-group-text">Paciente</span>
+                            <input type="text" class="form-control" value="{{ $prestacione->paciente->Apellido ?? ''}} {{ $prestacione->paciente->Nombre ?? ''}}" readonly="true">
+                        </div>
+                    </div>
+
+                    <div class="col-3">
+                        <div class="input-group input-group mt-2">
+                            <span class="input-group-text">Documento</span>
+                            <input type="text" class="form-control" value="{{ $prestacione->paciente->Documento ?? 0}}" readonly="true">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-4">
+                        <div class="input-group input-group mt-2">
+                            <span class="input-group-text">Empresa</span>
+                            <input title="{{ $prestacione->empresa->RazonSocial ?? ''}}" type="text" class="form-control" value="{{ $prestacione->empresa->RazonSocial ?? ''}}" readonly="true">
+                        </div>
+                    </div>
+
+                    <div class="col-4">
+                        <div class="input-group input-group mt-2">
+                            <span class="input-group-text">Para Empresa</span>
+                            <input title="{{ $prestacione->empresa->ParaEmpresa ?? ''}}" type="text" class="form-control" value="{{ $prestacione->empresa->ParaEmpresa ?? ''}}" readonly="true">
+                        </div>
+                    </div>
+
+                    <div class="col-4">
+                        <div class="input-group input-group mt-2">
+                            <span class="input-group-text">ART</span>
+                            <input title="{{ $prestacione->art->RazonSocial ?? ''}}" type="text" class="form-control" value="{{ $prestacione->art->RazonSocial ?? ''}}" readonly="true">
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="input-group input-group mt-2">
+                            <span class="input-group-text">Email</span>
+                            <input title="{{ $prestacione->empresa->EMailInformes ?? ''}}" type="text" class="form-control" value="{{ $prestacione->empresa->EMailInformes ?? ''}}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-3">
+                    <form>
+
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="evaluacion2">
+                            <label class="form-check-label" for="evaluacion2">
+                                Evaluación resumen
+                            </label>
+                        </div>
+                        
+                        <hr class="mt-2 mb-2">
+
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="eEstudio">
+                            <label class="form-check-label" for="eEstudio">
+                                eEstudios
+                            </label>
+                        </div>
+
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="eAnexo">
+                            <label class="form-check-label" for="eAnexo">
+                                eAnexos
+                            </label>
+                        </div>
+
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="eEnvio">
+                            <label class="form-check-label" for="eEnvio">
+                                eEnvio
+                            </label>
+                        </div>
+
+                        <hr class="mt-2 mb-2">
+    
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="adjDigitales2">
+                            <label class="form-check-label" for="adjDigitales2">
+                                Adjuntos digitales
+                            </label>
+                        </div>
+
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="adjFisicos2">
+                            <label class="form-check-label" for="adjFisicos2">
+                                Adjuntos físicos
+                            </label>
+                        </div>
+
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="adjPrestacion">
+                            <label class="form-check-label" for="adjPrestacion">
+                                Adjuntos prestación
+                            </label>
+                        </div>
+    
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="adjFisicosDigitales2">
+                            <label class="form-check-label" for="adjFisicosDigitales2">
+                                Adjuntos fisicos y digitales
+                            </label>
+                        </div>
+
+                        <hr class="mt-2 mb-2">
+
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="infInternos2">
+                            <label class="form-check-label" for="infInternos2">
+                                Informes internos
+                            </label>
+                        </div>
+    
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="pedProveedores2">
+                            <label class="form-check-label" for="pedProveedores2">
+                                Pedido a proveedores
+                            </label>
+                        </div>
+
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="conPaciente2">
+                            <label class="form-check-label" for="conPaciente2">
+                                Control paciente
+                            </label>
+                        </div>
+
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="resAdmin2">
+                            <label class="form-check-label" for="resAdmin2">
+                                Resumen administrativo
+                            </label>
+                        </div>
+    
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="caratula">
+                            <label class="form-check-label" for="caratula">
+                                Caratula
+                            </label>
+                        </div>
+
+                        <hr class="mt-2 mb-2">
+    
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="consEstDetallado2">
+                            <label class="form-check-label" for="consEstDetallado2">
+                                Constancia de estudio completo (Detallado)
+                            </label>
+                        </div>
+    
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="consEstSimple2">
+                            <label class="form-check-label" for="consEstSimple2">
+                                Constancia de estudio completo (Simple)
+                            </label>
+                        </div>
+    
+                        <hr class="mt-2 mb-2">
+    
+                        <p class="fw-bold">Estudios:</p>
+
+    
+                        <div class="mb-3 text-end">
+                            <button type="button" class="btn btn-sm botonGeneral enviarReporte2">Enviar</button>
+                            <button type="button" class="btn btn-sm botonGeneral imprimirReporte2">Imprimir</button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+            <div class="modal-footer"></div>
+            </div>
+    </div>
+</div>
 
 <div id="exaCuenta" class="modal fadeInUp" tabindex="-1" aria-labelledby="myModalLabel" aria-hidde="true" style="display: none">
     <div class="modal-dialog">
@@ -1374,6 +1588,7 @@ const updateItem = "{{ route('updateItem') }}";
 const updateItemExamen = "{{ route('updateItemExamen') }}";
 const getBloqueoItemPrestacion = "{{ route('getBloqueoItemPrestacion') }}";
 const exportPdf = "{{ route('prestaciones.pdf') }}";
+const exportPdfOpciones = "{{ route('prestaciones.opciones') }}";
 
 //Extras
 const TOKEN = "{{ csrf_token() }}";
