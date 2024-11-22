@@ -81,6 +81,12 @@ class AdjuntosDigitales extends Reporte
                             $file3 = FileHelper::getFileUrl('lectura') . '/' . $this->rutainternaefectores . '/' . $query->Ruta;
                             array_push($files, $file3);
                         }
+                    } elseif($datos['tipo'] === 3){
+                        //Para Tipo 3, agregar si NoImprime es 1
+                        if ($query->NoImprime === 1) {
+                            $file3 = FileHelper::getFileUrl('lectura') . '/' . $this->rutainternaefectores . '/' . $query->Ruta;
+                            array_push($files, $file3);
+                        }
                     }
                 } 
             }

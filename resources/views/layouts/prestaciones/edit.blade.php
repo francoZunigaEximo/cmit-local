@@ -1027,6 +1027,7 @@
                             <label class="form-check-label" for="eEstudio">
                                 eEstudios
                             </label>
+                            <p class="text-muted small">Solo disponible para impresión</p>
                         </div>
 
                         <div class="form-check mb-2">
@@ -1041,6 +1042,7 @@
                             <label class="form-check-label" for="eEnvio">
                                 eEnvio
                             </label>
+                            <p class="text-muted small">Solo disponible para impresión</p>
                         </div>
 
                         <hr class="mt-2 mb-2">
@@ -1071,6 +1073,7 @@
                             <label class="form-check-label" for="adjFisicosDigitales2">
                                 Adjuntos fisicos y digitales
                             </label>
+                            <p class="text-muted small">Solo disponible para impresión</p>
                         </div>
 
                         <hr class="mt-2 mb-2">
@@ -1080,6 +1083,7 @@
                             <label class="form-check-label" for="infInternos2">
                                 Informes internos
                             </label>
+                            <p class="text-muted small">Solo disponible para impresión</p>
                         </div>
     
                         <div class="form-check mb-2">
@@ -1087,6 +1091,7 @@
                             <label class="form-check-label" for="pedProveedores2">
                                 Pedido a proveedores
                             </label>
+                            <p class="text-muted small">Solo disponible para impresión</p>
                         </div>
 
                         <div class="form-check mb-2">
@@ -1094,6 +1099,7 @@
                             <label class="form-check-label" for="conPaciente2">
                                 Control paciente
                             </label>
+                            <p class="text-muted small">Solo disponible para impresión</p>
                         </div>
 
                         <div class="form-check mb-2">
@@ -1108,6 +1114,7 @@
                             <label class="form-check-label" for="caratula">
                                 Caratula
                             </label>
+                            <p class="text-muted small">Solo disponible para impresión</p>
                         </div>
 
                         <hr class="mt-2 mb-2">
@@ -1128,12 +1135,11 @@
     
                         <hr class="mt-2 mb-2">
     
-                        <p class="fw-bold">Estudios:</p>
-
+                        <p class="fw-bold">Estudios: <small>(Solo disponible para impresión)<small></p>
     
                         <div class="mb-3 text-end">
-                            <button type="button" class="btn btn-sm botonGeneral enviarReporte2">Enviar</button>
-                            <button type="button" class="btn btn-sm botonGeneral imprimirReporte2">Imprimir</button>
+                            <button type="button" class="btn btn-sm botonGeneral enviarReporte2"><i class="ri-send-plane-line"></i>Enviar</button>
+                            <button type="button" class="btn btn-sm botonGeneral imprimirReporte2"><i class="bx bxs-file-pdf"></i>Imprimir</button>
                         </div>
                     </form>
                 </div>

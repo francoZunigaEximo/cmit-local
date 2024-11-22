@@ -41,6 +41,7 @@ use App\Services\Reportes\Cuerpos\PedidoProveedores;
 use App\Services\Reportes\Cuerpos\ResumenAdministrativo;
 use App\Services\Reportes\Cuerpos\ControlPaciente;
 use App\Services\Reportes\Titulos\NroPrestacion;
+use App\Services\Reportes\Cuerpos\EnviarOpciones;
 
 class PrestacionesController extends Controller
 {
@@ -584,6 +585,30 @@ class PrestacionesController extends Controller
             array_push($listado, $this->resumenEvaluacion($request->Id));
         }
 
+        // if ($request->eEstudio == 'true') {
+        //     array_push($listado, $this->eEstudio($request->Id, 1));
+        // }
+
+        // if ($request->eAnexo == 'true') {
+        //     array_push($listado, $this->eAnexo($request->Id));
+        // }
+
+        // if ($request->eEnvio == 'true') {
+        //     array_push($listado, $this->eEnvio($request->Id));
+        // }
+
+        if ($request->adjDigitales2 == 'true') {
+            array_push($listado, $this->adjDigitalFisico($request->Id, 1));
+        }
+
+        if ($request->adjFisicos2 == 'true') {
+            array_push($listado, $this->adjDigitalFisico($request->Id, 3));
+        }
+
+        if ($request->adjPrestacion == 'true') {
+            array_push($listado, $this->adjDigitalFisico($request->Id, 3));
+        }
+
         $this->reporteService->fusionarPDFs($listado, $this->outputPath);
 
         return response()->json([
@@ -825,6 +850,24 @@ class PrestacionesController extends Controller
         );
     }
 
+    private function enviarOpciones(int $idPrestacion): mixed
+    {
+        return $this->reporteService->generarReporte(
+            EnviarOpciones::class,
+            null,
+            null,
+            'guardar',
+            null,
+            null,
+            ['id' => $idPrestacion],
+            [],
+            [],
+            storage_path('app/public/temp/merge_eAdjuntos.pdf')
+        );
+    }
+
+    
+
     private function buildQuery(Request $request)
     {
         $query = Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
@@ -1004,6 +1047,13 @@ class PrestacionesController extends Controller
         }
     
         return $query;
+    }
+
+    private function checkExCtaImpago(int $idPrestacion)
+    {
+        return ExamenCuentaIt::join('prestaciones', 'pagosacuenta_it.IdPrestacion', '=', 'prestaciones.Id')
+            ->join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
+            ->where('pagosacuenta_it.IdPrestacion', $idPrestacion)->count();
     }
 
 }
