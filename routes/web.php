@@ -22,7 +22,6 @@ use App\Http\Controllers\NoticiasController;
 use App\Http\Controllers\PrestacionesObsFasesController;
 use App\Http\Controllers\OrdenesExamenController;
 use App\Http\Controllers\ExamenesCuentaController;
-use App\Http\Controllers\FileController;
 use App\Http\Controllers\MensajesController;
 use App\Http\Controllers\NotasCreditoController;
 use App\Http\Controllers\PaqueteEstudioController;
@@ -51,6 +50,12 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('checkPassword', [AuthController::class, 'checkPassword'])->name('checkPassword');
     Route::get('/passw', function (){
         return Hash::make('cmit1234');
+    });
+    Route::get('/test', function () {
+        ob_start();  // Inicia el almacenamiento en buffer de salida
+        phpinfo();   // Ejecuta phpinfo()
+        $phpinfo = ob_get_clean();  // Obtiene el contenido del buffer y limpia el buffer
+        return $phpinfo;  // Devuelve el contenido del phpinfo() como respuesta
     });
 
     /*Route::get('/test-redis', function () {
@@ -119,7 +124,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/prestaciones/nueva-observacion', [PrestacionesController::class, 'obsNuevaPrestacion'])->name('obsNuevaPrestacion');
     Route::post('/prestaciones/borrar-cache', [PrestacionesController::class, 'cacheDelete'])->name('prestaciones.cacheDelete');
     Route::get('/prestaciones/pdf', [PrestacionesController::class, 'pdf'])->name('prestaciones.pdf');
-    Route::get('/prestaciones/opciones', [PrestacionesController::class, 'opcionesPdf'])->name('prestaciones.opciones');
+    Route::get('/prestaciones/estudios-listado', [PrestacionesController::class, 'getEstudiosReporte'])->name('prestaciones.estudioReporte');
     Route::resource('prestaciones', PrestacionesController::class);
 
     //Ruta Ficha Laboral

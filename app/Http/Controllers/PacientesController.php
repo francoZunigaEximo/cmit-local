@@ -144,7 +144,7 @@ class PacientesController extends Controller
 
         if($request->NumeroTelefono)
         {
-            $this->addTelefono($request->NumeroTelefono, $nuevoIdPaciente, 'create');
+            $this->addTelefono($request->NumeroTelefono, $nuevoIdPaciente);
         }
 
         return redirect()->route('pacientes.edit', ['paciente' => $nuevoIdPaciente]);
@@ -214,7 +214,7 @@ class PacientesController extends Controller
 
         if($request->NumeroTelefono)
         {
-            $this->addTelefono($request->NumeroTelefono, $paciente->Id, 'update');
+            $this->addTelefono($request->NumeroTelefono, $paciente->Id);
         }
 
         return back();

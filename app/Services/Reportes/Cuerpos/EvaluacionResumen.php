@@ -7,6 +7,7 @@ use App\Models\Prestacion;
 use App\Models\PrestacionAtributo;
 use App\Services\Reportes\DetallesReportes;
 use App\Services\Reportes\Reporte;
+use App\Services\Reportes\Titulos\Reducido;
 use Carbon\Carbon;
 use FPDF;
 use Illuminate\Support\Facades\DB;
@@ -17,7 +18,7 @@ class EvaluacionResumen extends Reporte
 {
     use DetallesReportes;
 
-    public function render(FPDF $pdf, $datos = ['id', 'firmaeval', 'opciones']): void
+    public function render(FPDF $pdf, $datos = ['id', 'firmaeval', 'opciones', 'eEstudio']): void
     {
         $query = $this->prestacion($datos['id']);
 
@@ -26,6 +27,12 @@ class EvaluacionResumen extends Reporte
         $tipoPrestacion = $this->TipoReportePrestacion($query->TipoPrestacion, $query->paciente->Tareas, $query->paciente->Puesto);
 
         $texto= "El Sr/a, ".$query->paciente->Apellido." ".$query->paciente->Nombre.", ".$query->paciente->TipoDocumento." ".$query->paciente->Documento." derivado a nuestro servicio con el fin de efectuar examen ".$tipoPrestacion['tipoExamen']." para la tarea ".$tipoPrestacion['tipoPuesto']." segun los estudios detallados, ha presentado la siguiente calificacion.";
+
+        $datos['eEstudio'] === 'si' ? $pdf->AddPage() : '';
+
+        //Agrego el titulo reducido directamente
+        $reducido = new Reducido;
+        $reducido->render($pdf, []);
 
         $pdf->SetFont('Arial','',8);$pdf->SetXY(182,4);$pdf->Cell(0,3,$datos['id'],0,0,'L');
         $pdf->SetFont('Arial','B',10);$pdf->SetXY(10,32);$pdf->Cell(200,4,$tipoPrestacion['titulo'],0,0,'C');

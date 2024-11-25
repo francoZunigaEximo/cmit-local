@@ -15,6 +15,10 @@ class CaratulaInterna extends Reporte
 
         $paciente = $prestacion->paciente->Apellido." ".$prestacion->paciente->Nombre;
 
+        //Llamamos directamente a
+        $reducido = new Reducido;
+        $reducido->render($pdf, []);
+
         $y=35;$pdf->Rect(10,$y,170,44); $pdf->SetFont('Arial','',14);$y=$y+5;
         $pdf->SetXY(11,$y);$pdf->Cell(0,3,'Paciente:',0,0,'L');
         $pdf->SetXY(38,$y);$pdf->Cell(0,3,substr($paciente,0,40),0,0,'L');$y=$y+8;

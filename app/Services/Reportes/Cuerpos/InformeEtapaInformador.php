@@ -22,8 +22,10 @@ class InformeEtapaInformador extends Reporte
 
         if ($itemPrestacionInfo && $prestacion) {
 
-            $pdf->SetFont('Arial','',8);$pdf->SetXY(182,4);$pdf->Cell(0,3,$itemPrestacionInfo->itemprestacion->examenes->Id,0,0,'L');
-            $pdf->Image(Tools::generarQR('A', $prestacion->Id, $itemPrestacionInfo->itemprestacion->examenes->Id, $prestacion->paciente->Id, "qr"), 180, 7, 20, 20, "png");
+            Tools::generarQR('A', $prestacion->Id, $itemPrestacionInfo->itemsprestacion->examenes->Id, $prestacion->paciente->Id, "qr");
+
+            $pdf->SetFont('Arial','',8);$pdf->SetXY(182,4);$pdf->Cell(0,3,$itemPrestacionInfo->itemsprestacion->examenes->Id,0,0,'L');
+            $pdf->Image(storage_path('app/public/temp/qr_image.png'), 180, 7, 20, 20, "png");
             $pdf->Rect(20,30,170,18);
             $pdf->SetFont('Arial','B',9);
             $pdf->SetXY(20,32);$pdf->Cell(0,3,"Paciente: ",0,0,'L');$pdf->SetXY(150,32);$pdf->Cell(0,3,"Fecha: ",0,0,'L');
@@ -36,7 +38,7 @@ class InformeEtapaInformador extends Reporte
             //titulo
             if($itemPrestacionInfo->C2 === 0){//multiexamen lleva titulo en el cuerpo
                 $pdf->SetFont('Arial','BU',9);
-                $pdf->SetXY(20,55);$pdf->Cell(0,3,'INFORME DE ESTUDIO: '.$itemPrestacionInfo->itemprestacion->examenes->Nombre,0,0,'L');
+                $pdf->SetXY(20,55);$pdf->Cell(0,3,'INFORME DE ESTUDIO: '.$itemPrestacionInfo->itemsprestacion->examenes->Nombre,0,0,'L');
                 $y=65;
             }else{$y=55;}
             //informe
@@ -44,12 +46,11 @@ class InformeEtapaInformador extends Reporte
             $pdf->SetLeftMargin(20);
             $pdf->SetXY(20,$y);$pdf->WriteHTML($itemPrestacionInfo->Obs);$pdf->Ln();
             //firma
-            $firmaYsello = $this->getFirmas($itemPrestacionInfo->itemprestacion->IdProfesional);
-            if($firmaYsello->Foto !== '' or $firmaYsello->Firma !== ''){
+            if(!empty($itemPrestacionInfo->itemsprestacion->Foto) or !empty($itemPrestacionInfo->itemsprestacion->Firma)){
                 $y=$pdf->GetY();$y=$y+70;
                 if($y>=290){$pdf->AddPage();$y=90;}//el alto de la pag es 290 
 
-                $this->firmasPdf(FileHelper::getFileUrl('lectura').'/Prof/'.$firmaYsello->Foto,20,$y-19,$pdf);
+                $this->firmasPdf(FileHelper::getFileUrl('lectura').'/Prof/'.$itemPrestacionInfo->itemsprestacion->Foto,20,$y-19,$pdf);
                 $pdf->Line(20,$y-27,70,$y-27);
                 $pdf->SetFont('Arial','',8);$pdf->SetXY(20,$y-25);$pdf->WriteHTMLNonthue($firmaYsello->Firma);
             } 
@@ -59,11 +60,11 @@ class InformeEtapaInformador extends Reporte
 
     private function itemPrestacionInfo(int $id): mixed
     {
-        return ItemPrestacionInfo::with(['itemsprestacion', 'itemsprestacion.examenes'])->where('IdIP', $id)->get();
+        return ItemPrestacionInfo::with(['itemsprestacion', 'itemsprestacion.examenes'])->where('IdIP', $id)->first();
     }
 
     private function prestacion(int $id): mixed
     {
-        return Prestacion::with(['pacientes', 'empresa'])->find($id);
+        return Prestacion::with(['paciente', 'empresa'])->find($id);
     }
 }

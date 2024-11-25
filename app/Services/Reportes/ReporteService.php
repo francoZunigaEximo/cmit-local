@@ -17,13 +17,15 @@ class ReporteService
     public function generarReporte(
         string $tituloClass,        // Siempre debe ser una clase
         ?string $subtituloClass,    // Puede ser null
-        ?string $cuerpoClass,        // Siempre debe ser una clase
+        ?string $cuerpoClass,   // Siempre debe ser una clase
+        ?string $subcuerpoClass,     //Anexo armados grandes como eEstudio
         string $tipo,               // Tipo de reporte
         ?string $filePath,           // Ruta del archivo PDF
         ?int $id,                   // ID de la prestación
         $paramsTitulo, 
         $paramsSubtitulo = [], 
         $paramsCuerpo = [],
+        $paramsSubCuerpo = [],
         ?string $newPath
     ): string
     {
@@ -42,6 +44,11 @@ class ReporteService
         if ($cuerpoClass !== null) {
             $cuerpo = new $cuerpoClass();
             $cuerpo->render($pdf, $paramsCuerpo);
+        }
+
+        if ($subcuerpoClass !== null) {
+            $subcuerpo = new $subcuerpoClass();
+            $subcuerpo->render($pdf, $paramsSubCuerpo);
         }
         
         if($filePath !== null) {

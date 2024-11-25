@@ -42,6 +42,7 @@ use App\Services\Reportes\Cuerpos\ResumenAdministrativo;
 use App\Services\Reportes\Cuerpos\ControlPaciente;
 use App\Services\Reportes\Titulos\NroPrestacion;
 use App\Services\Reportes\Cuerpos\EnviarOpciones;
+use App\Services\Reportes\Titulos\EEstudio;
 
 class PrestacionesController extends Controller
 {
@@ -530,11 +531,19 @@ class PrestacionesController extends Controller
             array_push($listado, $this->resumenEvaluacion($request->Id));
         }
 
+        if ($request->eEstudio == 'true') {
+            array_push($listado, $this->eEstudio($request->Id));
+        }
+
+        if ($request->adjAnexos == 'true') {
+            array_push($listado, $this->adjAnexos($request->Id));
+        }
+
         if ($request->adjDigitales == 'true') {
             array_push($listado, $this->adjDigitalFisico($request->Id, 1));
         }
 
-        if ($request->adjFisicosDigitales == 'true') {
+        if ($request->adjFisicos == 'true') {
             array_push($listado, $this->adjDigitalFisico($request->Id, 2));
         }
 
@@ -542,8 +551,8 @@ class PrestacionesController extends Controller
             array_push($listado, $this->adjGenerales($request->Id));
         }
 
-        if ($request->adjAnexos == 'true') {
-            array_push($listado, $this->adjAnexos($request->Id));
+        if ($request->adjFisicosDigitales == 'true') {
+            array_push($listado, $this->adjDigitalFisico($request->Id, 3));
         }
 
         if ($request->infInternos == 'true') {
@@ -576,47 +585,21 @@ class PrestacionesController extends Controller
         ]);
     }
 
-    public function opcionesPdf(Request $request)
+    public function getEstudiosReporte(Request $request): mixed
     {
-        $listado = [];
+        // $query="Select e.Id,e.Nombre,e.IdReporte,e.Evaluador From itemsprestaciones ip,examenes e Where e.Id=ip.IdExamen and e.IdReporte <> 0 and ip.Anulado=0 and ip.IdPrestacion=$idprestacion order by e.Nombre"
 
-        if ($request->evaluacion == 'true') {
-            array_push($listado, $this->caratula($request->Id));
-            array_push($listado, $this->resumenEvaluacion($request->Id));
-        }
-
-        // if ($request->eEstudio == 'true') {
-        //     array_push($listado, $this->eEstudio($request->Id, 1));
-        // }
-
-        // if ($request->eAnexo == 'true') {
-        //     array_push($listado, $this->eAnexo($request->Id));
-        // }
-
-        // if ($request->eEnvio == 'true') {
-        //     array_push($listado, $this->eEnvio($request->Id));
-        // }
-
-        if ($request->adjDigitales2 == 'true') {
-            array_push($listado, $this->adjDigitalFisico($request->Id, 1));
-        }
-
-        if ($request->adjFisicos2 == 'true') {
-            array_push($listado, $this->adjDigitalFisico($request->Id, 3));
-        }
-
-        if ($request->adjPrestacion == 'true') {
-            array_push($listado, $this->adjDigitalFisico($request->Id, 3));
-        }
-
-        $this->reporteService->fusionarPDFs($listado, $this->outputPath);
-
-        return response()->json([
-            'filePath' => $this->outputPath,
-            'name' => $this->fileNameExport.'.pdf',
-            'msg' => 'Reporte generado correctamente',
-            'icon' => 'success' 
-        ]);
+        return ItemPrestacion::join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
+                ->select(
+                    'examenes.Id as IdExamen',
+                    'examenes.Nombre as NombreExamen',
+                    'examenes.IdReporte as IdReporte',
+                    'examenes.Evaluador as Evaluador'
+                )->whereNot('examenes.IdReporte', 0)
+                ->where('itemsprestaciones.Anulado', 0)
+                ->where('itemsprestaciones.IdPrestacion', $request->Id)
+                ->orderBy('examenes.Nombre')
+                ->get();
     }
 
     private function verificarEstados(int $id)
@@ -680,12 +663,14 @@ class PrestacionesController extends Controller
             Reducido::class,
             null,
             EvaluacionResumen::class,
+            null,
             'guardar',
             storage_path($this->tempFile.Tools::randomCode(15).'-'.Auth::user()->name.'.pdf'),
             null,
             [],
             [],
-            ['id' => $idPrestacion, 'firmaeval' => 0, 'opciones' => 'no'],
+            ['id' => $idPrestacion, 'firmaeval' => 0, 'opciones' => 'no', 'eEstudio' => 'no'],
+            [],
             null
         );
     }
@@ -696,11 +681,13 @@ class PrestacionesController extends Controller
             Reducido::class,
             CaratulaInterna::class,
             null,
+            null,
             'guardar',
             storage_path($this->tempFile.Tools::randomCode(15).'-'.Auth::user()->name.'.pdf'),
             null,
             [],
             ['id' => $idPrestacion],
+            [],
             [],
             null
         );
@@ -712,10 +699,12 @@ class PrestacionesController extends Controller
             AdjuntosDigitales::class,
             null,
             null,
+            null,
             'guardar',
             null,
             null,
             ['id' => $idPrestacion, 'tipo' => $tipo],
+            [],
             [],
             [],
             storage_path('app/public/temp/merge_adjDigitales.pdf')
@@ -728,10 +717,12 @@ class PrestacionesController extends Controller
             AdjuntosGenerales::class,
             null,
             null,
+            null,
             'guardar',
             null,
             null,
             ['id' => $idPrestacion],
+            [],
             [],
             [],
             storage_path('app/public/temp/merge_adjGenerales.pdf')
@@ -744,10 +735,12 @@ class PrestacionesController extends Controller
             AdjuntosAnexos::class,
             null,
             null,
+            null,
             'guardar',
             null,
             null,
             ['id' => $idPrestacion],
+            [],
             [],
             [],
             storage_path('app/public/temp/merge_adjAnexos.pdf')
@@ -760,12 +753,14 @@ class PrestacionesController extends Controller
             PedidoProveedores::class,
             ControlPaciente::class,
             ResumenAdministrativo::class,
+            null,
             'guardar',
             storage_path($this->tempFile.Tools::randomCode(15).'-'.Auth::user()->name.'.pdf'),
             null,
             ['id' => $idPrestacion],
             ['id' => $idPrestacion, 'controlCorte' => 1],
             ['id' => $idPrestacion, 'controlCorte' => 1],
+            [],
             null
         );
     }
@@ -776,10 +771,12 @@ class PrestacionesController extends Controller
             PedidoProveedores::class,
             null,
             null,
+            null,
             'guardar',
             storage_path($this->tempFile.Tools::randomCode(15).'-'.Auth::user()->name.'.pdf'),
             null,
             ['id' => $idPrestacion],
+            [],
             [],
             [],
             null
@@ -792,10 +789,12 @@ class PrestacionesController extends Controller
             ControlPaciente::class,
             null,
             null,
+            null,
             'guardar',
             storage_path($this->tempFile.Tools::randomCode(15).'-'.Auth::user()->name.'.pdf'),
             null,
             ['id' => $idPrestacion, 'controlCorte' => 1],
+            [],
             [],
             [],
             null
@@ -808,10 +807,12 @@ class PrestacionesController extends Controller
             ResumenAdministrativo::class,
             null,
             null,
+            null,
             'guardar',
             storage_path($this->tempFile.Tools::randomCode(15).'-'.Auth::user()->name.'.pdf'),
             null,
             ['id' => $idPrestacion, 'controlCorte' => 1],
+            [],
             [],
             [],
             null
@@ -824,12 +825,14 @@ class PrestacionesController extends Controller
             Reducido::class,
             NroPrestacion::class,
             ConstEstCompDetallado::class,
+            null,
             'guardar',
             storage_path($this->tempFile.Tools::randomCode(15).'-'.Auth::user()->name.'.pdf'),
             null,
             [],
             ['id' => $idPrestacion],
             ['id' => $idPrestacion],
+            [],
             null
         );
     }
@@ -840,12 +843,14 @@ class PrestacionesController extends Controller
             Reducido::class,
             NroPrestacion::class,
             ConstEstCompSimple::class,
+            null,
             'guardar',
             storage_path($this->tempFile.Tools::randomCode(15).'-'.Auth::user()->name.'.pdf'),
             null,
             [],
             ['id' => $idPrestacion],
             ['id' => $idPrestacion],
+            [],
             null
         );
     }
@@ -856,17 +861,35 @@ class PrestacionesController extends Controller
             EnviarOpciones::class,
             null,
             null,
+            null,
             'guardar',
             null,
             null,
             ['id' => $idPrestacion],
             [],
             [],
+            [],
             storage_path('app/public/temp/merge_eAdjuntos.pdf')
         );
     }
 
-    
+    private function eEstudio(int $idPrestacion): mixed
+    {
+        return $this->reporteService->generarReporte(
+            EEstudio::class,
+            EvaluacionResumen::class,
+            AdjuntosDigitales::class,
+            null,
+            'guardar',
+            storage_path($this->tempFile.Tools::randomCode(15).'-'.Auth::user()->name.'.pdf'),
+            null,
+            ['id' => $idPrestacion],
+            ['id' => $idPrestacion, 'firmaeval' => 0, 'opciones' => 'no', 'eEstudio' => 'si'],
+            ['id' => $idPrestacion, 'tipo' => 3],
+            [],
+            null
+        );
+    }
 
     private function buildQuery(Request $request)
     {
@@ -1055,5 +1078,6 @@ class PrestacionesController extends Controller
             ->join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
             ->where('pagosacuenta_it.IdPrestacion', $idPrestacion)->count();
     }
+
 
 }

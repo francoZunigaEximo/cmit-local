@@ -99,35 +99,37 @@ trait ObserverPacientes
         }
     }
 
-    public function addTelefono($telefono, $id, $tipo)
+    public function addTelefono($telefono, $id)
     {
+        $codigoArea = null;
+        $numeroTelefono = null;
+
         $telefonoClean = str_replace(['-', '(', ')'], '', $telefono);
 
         if (strlen($telefonoClean) >= 10) {
-            $CodigoArea = substr($telefonoClean, 0, 3);
-            $NumeroTelefono = substr($telefonoClean, 3);
+            $codigoArea = substr($telefonoClean, 0, 3);
+            $numeroTelefono = substr($telefonoClean, 3);
         } else {
-            $NumeroTelefono = $telefonoClean;
+            $numeroTelefono = $telefonoClean;
         }
 
-        if($tipo === 'create')
-        {
+        $telefono = Telefono::where('IdEntidad', $id)->first();
+
+        if($telefono) {
+
+            $telefono->CodigoArea = $codigoArea ?? '';
+            $telefono->NumeroTelefono = $numeroTelefono;
+            $telefono->save();
+
+        }else{
             Telefono::create([
                 'Id' => Telefono::max('Id') + 1,
                 'IdEntidad' => $id,
-                'CodigoArea' => $CodigoArea ?? '',
-                'NumeroTelefono' => $NumeroTelefono,
+                'CodigoArea' => $codigoArea ?? '',
+                'NumeroTelefono' => $numeroTelefono,
             ]);
-
-        }elseif($tipo === 'update'){
-
-            $telefono = Telefono::where('IdEntidad', $id)->first();
-
-            $telefono->CodigoArea = $CodigoArea ?? '';
-            $telefono->NumeroTelefono = $NumeroTelefono;
-            $telefono->save();
-
         }
+
     }
 
 }

@@ -66,15 +66,10 @@ trait DetallesReportes
         return substr($query, 0, 1) === $calificacion ? "X" : "";     
     }
 
-    //Obtiene la firma y la Foto del profesional
-    public function getFirmas(int $id): Profesional
-    {
-        return Profesional::find($id, ['Firma', 'Foto']);
-    }
-
     public function firmasPdf($ruta, $xf, $yf, $pdf)
     {
-        chmod($ruta, 666);
+        //chmod($ruta, 666);
+        dd($ruta);
         $imagensize = getimagesize($ruta);
         $ancho = $imagensize[0];
         $alto = $imagensize[1]; 

@@ -409,7 +409,7 @@
 
                     <div class="row mb-3">
                         <div class="col-sm-12 text-end ">
-                            <button type="button" class="btn btn-sm botonGeneral" data-bs-toggle="modal" data-bs-target="#imprimir" ><i class="bx bxs-file-pdf"></i>&nbsp;Imprimir</button>
+                            {{-- <button type="button" class="btn btn-sm botonGeneral" data-bs-toggle="modal" data-bs-target="#imprimir" ><i class="bx bxs-file-pdf"></i>&nbsp;Imprimir</button> --}}
                             <button type="button" class="btn btn-sm botonGeneral" data-bs-toggle="modal" data-bs-target="#opciones"><i class="ri-send-plane-line"></i>&nbsp;Opciones</button>
                             @can('prestaciones_eEnviar')
                             <button type="button" class="btn btn-sm botonGeneral"><i class="ri-send-plane-line"></i>&nbsp;Enviar</button>
@@ -795,7 +795,7 @@
     </div>
 </div>
 
-<div id="imprimir" class="modal fadeInUp" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+{{-- <div id="imprimir" class="modal fadeInUp" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
     <div class="modal-dialog">
         <div class="modal-content"> 
             <div class="modal-header">
@@ -927,7 +927,7 @@
 
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+</div><!-- /.modal --> --}}
 
 <div id="opciones" class="modal fadeInUp" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
     <div class="modal-dialog modal-lg">
@@ -1014,8 +1014,8 @@
                     <form>
 
                         <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" id="evaluacion2">
-                            <label class="form-check-label" for="evaluacion2">
+                            <input class="form-check-input" type="checkbox" id="evaluacion">
+                            <label class="form-check-label" for="evaluacion">
                                 Evaluación resumen
                             </label>
                         </div>
@@ -1048,15 +1048,15 @@
                         <hr class="mt-2 mb-2">
     
                         <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" id="adjDigitales2">
-                            <label class="form-check-label" for="adjDigitales2">
+                            <input class="form-check-input" type="checkbox" id="adjDigitales">
+                            <label class="form-check-label" for="adjDigitales">
                                 Adjuntos digitales
                             </label>
                         </div>
 
                         <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" id="adjFisicos2">
-                            <label class="form-check-label" for="adjFisicos2">
+                            <input class="form-check-input" type="checkbox" id="adjFisicos">
+                            <label class="form-check-label" for="adjFisicos">
                                 Adjuntos físicos
                             </label>
                         </div>
@@ -1069,8 +1069,8 @@
                         </div>
     
                         <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" id="adjFisicosDigitales2">
-                            <label class="form-check-label" for="adjFisicosDigitales2">
+                            <input class="form-check-input" type="checkbox" id="adjFisicosDigitales">
+                            <label class="form-check-label" for="adjFisicosDigitales">
                                 Adjuntos fisicos y digitales
                             </label>
                             <p class="text-muted small">Solo disponible para impresión</p>
@@ -1079,32 +1079,32 @@
                         <hr class="mt-2 mb-2">
 
                         <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" id="infInternos2">
-                            <label class="form-check-label" for="infInternos2">
+                            <input class="form-check-input" type="checkbox" id="infInternos">
+                            <label class="form-check-label" for="infInternos">
                                 Informes internos
                             </label>
                             <p class="text-muted small">Solo disponible para impresión</p>
                         </div>
     
                         <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" id="pedProveedores2">
-                            <label class="form-check-label" for="pedProveedores2">
+                            <input class="form-check-input" type="checkbox" id="pedProveedores">
+                            <label class="form-check-label" for="pedProveedores">
                                 Pedido a proveedores
                             </label>
                             <p class="text-muted small">Solo disponible para impresión</p>
                         </div>
 
                         <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" id="conPaciente2">
-                            <label class="form-check-label" for="conPaciente2">
+                            <input class="form-check-input" type="checkbox" id="conPaciente">
+                            <label class="form-check-label" for="conPaciente">
                                 Control paciente
                             </label>
                             <p class="text-muted small">Solo disponible para impresión</p>
                         </div>
 
                         <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" id="resAdmin2">
-                            <label class="form-check-label" for="resAdmin2">
+                            <input class="form-check-input" type="checkbox" id="resAdmin">
+                            <label class="form-check-label" for="resAdmin">
                                 Resumen administrativo
                             </label>
                         </div>
@@ -1120,26 +1120,30 @@
                         <hr class="mt-2 mb-2">
     
                         <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" id="consEstDetallado2">
-                            <label class="form-check-label" for="consEstDetallado2">
+                            <input class="form-check-input" type="checkbox" id="consEstDetallado">
+                            <label class="form-check-label" for="consEstDetallado">
                                 Constancia de estudio completo (Detallado)
                             </label>
                         </div>
     
                         <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" id="consEstSimple2">
-                            <label class="form-check-label" for="consEstSimple2">
+                            <input class="form-check-input" type="checkbox" id="consEstSimple">
+                            <label class="form-check-label" for="consEstSimple">
                                 Constancia de estudio completo (Simple)
                             </label>
                         </div>
     
                         <hr class="mt-2 mb-2">
     
-                        <p class="fw-bold">Estudios: <small>(Solo disponible para impresión)<small></p>
+                        <p class="fw-bold">Estudios: <small>(Solo disponible para impresión)</small></p>
+
+                        <div id="estudios">
+
+                        </div>
     
-                        <div class="mb-3 text-end">
-                            <button type="button" class="btn btn-sm botonGeneral enviarReporte2"><i class="ri-send-plane-line"></i>Enviar</button>
-                            <button type="button" class="btn btn-sm botonGeneral imprimirReporte2"><i class="bx bxs-file-pdf"></i>Imprimir</button>
+                        <div class="mb-3 text-center">
+                            <button type="button" class="btn btn-sm botonGeneral imprimirReporte"><i class="bx bxs-file-pdf"></i>Imprimir</button>
+                            <button type="button" class="btn btn-sm botonGeneral enviarReporte"><i class="ri-send-plane-line"></i>Enviar</button>
                         </div>
                     </form>
                 </div>
@@ -1594,7 +1598,7 @@ const updateItem = "{{ route('updateItem') }}";
 const updateItemExamen = "{{ route('updateItemExamen') }}";
 const getBloqueoItemPrestacion = "{{ route('getBloqueoItemPrestacion') }}";
 const exportPdf = "{{ route('prestaciones.pdf') }}";
-const exportPdfOpciones = "{{ route('prestaciones.opciones') }}";
+const listadoEstudiosImp = "{{ route('prestaciones.estudioReporte') }}";
 
 //Extras
 const TOKEN = "{{ csrf_token() }}";

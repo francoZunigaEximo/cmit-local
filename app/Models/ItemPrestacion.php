@@ -104,7 +104,7 @@ class ItemPrestacion extends Model
 
     public function itemsInfo()
     {
-        return $this->hasOne(ItemPrestacionInfo::class, 'IdIP', 'Id');
+        return $this->belongsTo(ItemPrestacionInfo::class, 'IdIP', 'Id');
     }
 
     public function facturadeventa()

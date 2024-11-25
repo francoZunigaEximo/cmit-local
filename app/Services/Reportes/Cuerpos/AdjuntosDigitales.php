@@ -48,10 +48,12 @@ class AdjuntosDigitales extends Reporte
                     InformeEtapaInformador::class,
                     null,
                     null,
+                    null,
                     'guardar',
                     storage_path($this->tempFile.Tools::randomCode(15).'-'.Auth::user()->name.'.pdf'),
                     null,
-                    ['idItemprestacion' => $query->IdEntidad, 'idPrestacion' => $datos['idPrestacion']],
+                    ['idItemprestacion' => $query->IdEntidad, 'idPrestacion' => $datos['id']],
+                    [],
                     [],
                     [],
                     null

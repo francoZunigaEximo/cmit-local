@@ -477,20 +477,24 @@ $(document).ready(()=> {
         e.preventDefault();
 
         let evaluacion = $('#evaluacion').prop('checked'),
+            eEstudio = $('#eEstudio').prop('checked'),
             adjDigitales = $('#adjDigitales').prop('checked'),
+            adjFisicos = $('#adjFisicos').prop('checked'),
             adjFisicosDigitales = $('#adjFisicosDigitales').prop('checked'),
             adjGenerales = $('#adjGenerales').prop('checked'),
-            adjAnexos = $('#adjAnexos').prop('checked'),
+            adjAnexos = $('#eAnexo').prop('checked'),
             infInternos = $('#infInternos').prop('checked'),
             pedProveedores = $('#pedProveedores').prop('checked'),
             conPaciente = $('#conPaciente').prop('checked'),
             resAdmin = $('#resAdmin').prop('checked'),
+            caratula = $('#caratula').prop('checked'),
             consEstDetallado = $('#consEstDetallado').prop('checked'),
             consEstSimple = $('#consEstSimple').prop('checked'),
             audioCmit = $('#audioCmit').prop('checked');
 
         let verificar = [
             evaluacion,
+            eEstudio,
             adjDigitales,
             adjFisicosDigitales,
             adjGenerales,
@@ -499,9 +503,11 @@ $(document).ready(()=> {
             pedProveedores,
             conPaciente,
             resAdmin,
+            caratula,
             consEstDetallado,
             consEstSimple,
-            audioCmit
+            audioCmit,
+            adjFisicos
         ];
             
         if (verificar.every(val => !val)) {
@@ -510,7 +516,7 @@ $(document).ready(()=> {
         }
         
         preloader('on');
-        $.get(exportPdf, {Id: ID, evaluacion: evaluacion, adjDigitales: adjDigitales, adjFisicosDigitales: adjFisicosDigitales, adjGenerales: adjGenerales, adjAnexos: adjAnexos, infInternos: infInternos, pedProveedores: pedProveedores, conPaciente: conPaciente, resAdmin: resAdmin, consEstDetallado: consEstDetallado, consEstSimple: consEstSimple, audioCmit: audioCmit})
+        $.get(exportPdf, {Id: ID, evaluacion: evaluacion, eEstudio: eEstudio, adjDigitales: adjDigitales, adjFisicos: adjFisicos, adjFisicosDigitales: adjFisicosDigitales, adjGenerales: adjGenerales, adjAnexos: adjAnexos, infInternos: infInternos, pedProveedores: pedProveedores, conPaciente: conPaciente, resAdmin: resAdmin, caratula: caratula, consEstDetallado: consEstDetallado, consEstSimple: consEstSimple, audioCmit: audioCmit})
             .done(function(response){
                 createFile("pdf", response.filePath, response.name);
                 preloader('off')
@@ -524,64 +530,71 @@ $(document).ready(()=> {
             });    
     });
 
-    $(document).on('click', '.imprimirReporte2', function(e){
+    $(document).on('click', '.enviarReporte', function(e){
         e.preventDefault();
 
-        let evaluacion = $('#evaluacion2').prop('checked'),
-            eEstudio = $('#eEstudio').prop('checked'),
-            eAnexo = $('#eAnexo').prop('checked'),
+        let eEstudio = $('#eEstudio').prop('checked'),
             eEnvio = $('#eEnvio').prop('checked'),
-            adjAnexos = $('#adjAnexos').prop('checked'),
-            adjDigitales = $('#adjDigitales2').prop('checked'),
-            adjFisicos = $('#adjFisicos2').prop('checked'),
-            adjPrestacion = $('#adjPrestacion').prop('checked'),
-            adjFisicosDigitales = $('#adjFisicosDigitales2').prop('checked'),
-            infInternos = $('#infInternos2').prop('checked'),
-            pedProveedores = $('#pedProveedores2').prop('checked'),
-            conPaciente = $('#conPaciente2').prop('checked'),
-            resAdmin = $('#resAdmin2').prop('checked'),
-            caratula = $('#caratula').prop('checked'),
-            consEstDetallado = $('#consEstDetallado2').prop('checked'),
-            consEstSimple = $('#consEstSimple2').prop('checked');
+            adjFisicosDigitales = $('#adjFisicosDigitales').prop('checked'),
+            infInternos = $('#infInternos').prop('checked'),
+            pedProveedores = $('#pedProveedores').prop('checked'),
+            conPaciente = $('#conPaciente').prop('checked'),
+            caratula = $('#caratula').prop('checked');
+        
+        let checkboxesNoPrint = $('input[data-noprint="x"]').map(function() {
+            return $(this).prop('checked');
+        }).get();
 
-            let verificar = [
-                evaluacion,
-                eEstudio,
-                eAnexo,
-                eEnvio,
-                adjAnexos,
-                adjDigitales,
-                adjFisicos,
-                adjPrestacion,
-                adjFisicosDigitales,
-                infInternos,
-                pedProveedores,
-                conPaciente,
-                resAdmin,
-                caratula,
-                consEstDetallado,
-                consEstSimple
-            ];
-                
-            if (verificar.every(val => !val)) {
-                toastr.warning('Debe seleccionar algun check para obtener el reporte');
-                return;
-            }
+        let verificar = [
+            eEstudio,
+            eEnvio,
+            adjFisicosDigitales,
+            infInternos,
+            pedProveedores,
+            conPaciente,
+            caratula,
+            ...checkboxesNoPrint
+        ];
 
-            preloader('on');
-            $.get(exportPdfOpciones, {Id: ID, evaluacion: evaluacion, eEstudio: eEstudio, eAnexo: eAnexo, eEnvio: eEnvio, adjAnexos: adjAnexos, adjDigitales: adjDigitales, adjFisicos: adjFisicos, adjPrestacion: adjPrestacion, adjFisicosDigitales: adjFisicosDigitales, infInternos: infInternos, pedProveedores: pedProveedores, conPaciente: conPaciente, resAdmin: resAdmin, caratula: caratula, consEstDetallado: consEstDetallado, consEstSimple: consEstSimple})
-                .done(function(response){
-                    createFile("pdf", response.filePath, response.name);
-                    preloader('off')
-                    toastr.success(response.msg)
-                })
-                .fail(function(jqXHR){
-                    preloader('off');
-                    let errorData = JSON.parse(jqXHR.responseText);            
-                    checkError(jqXHR.status, errorData.msg);
-                    return;
-                });  
+        if (verificar.some(val => val)) {
+            toastr.warning('Alguno de los reportes seleccionados no es apto para enviar');
+            return;
+        }
+
+        alert(1);
+
     });
+
+    $('#opciones').on('show.bs.modal', function () {
+        cargarEstudiosImp(ID);
+    });
+
+    function cargarEstudiosImp(idPrestacion)
+    {
+        $('#estudios').empty();
+
+        if([null, 0, ''].includes(idPrestacion)) return;
+        
+        preloader('on');
+        $.get(listadoEstudiosImp, {Id: idPrestacion})
+            .done(function(response){
+                $.each(response, function(index, data){
+                    preloader('off');
+                    let forNombre = (data.NombreExamen).replace(" ", "-");
+                    let contenido = `
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="${data.IdReporte}" data-noprint="x">
+                            <label class="form-check-label" for="${forNombre}">
+                                ${data.NombreExamen}
+                            </label>
+                        </div>
+                    `;
+
+                    $('#estudios').append(contenido);
+                });
+            })
+
+    }
 
     function precargaMapa(empresa, art){
         

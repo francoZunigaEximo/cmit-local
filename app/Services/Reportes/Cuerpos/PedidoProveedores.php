@@ -19,20 +19,21 @@ class PedidoProveedores extends Reporte
         $prestaciones = $this->prestaciones($datos['id']);
         $itemsprestaciones = $this->itemsprestaciones($datos['id']);
 
-         //encabezado clte
-         $pdf->SetY($y);
-         $pdf->Rect(10,$y+20,112,17); $pdf->SetFont('Arial','B',8);
-         $pdf->SetXY(11,$y+21);$pdf->Cell(0,3,'Paciente: '.$prestaciones->paciente->Apellido." ".$prestaciones->paciente->Nombre,0,0,'L');
-         $pdf->SetXY(11,$y+25);$pdf->Cell(0,3,'Fecha: '.Carbon::parse($prestaciones->Fecha)->format("d/m/Y").'     '.$prestaciones->paciente->TipoDocumento.": ".$prestaciones->paciente->Documento.'     Edad: '.Carbon::parse($prestaciones->paciente->FechaNacimiento)->age.'     '.Carbon::parse($prestaciones->paciente->FechaNacimiento)->format("d/m/Y"),0,0,'L');
-         $pdf->SetXY(11,$y+29);$pdf->Cell(0,3,'Direccion: '.substr($prestaciones->paciente->Direccion,0,50).' -  '.$prestaciones->paciente->localidad->Nombre ?? ''.' -  '.$prestaciones->paciente->localidad->Provincia->Nombre,0,0,'L');
-         $pdf->SetXY(11,$y+33);$pdf->Cell(0,3,'Empresa: '.$prestaciones->empresa->ParaEmpresa,0,0,'L');
-
-         //titulo
-         $pdf->SetFont('Arial','B',12);$pdf->SetXY(135,$y+20);$pdf->Cell(0,4,'SOLICITUD DE EXAMENES',0,0,'L');
-         $pdf->SetFont('Arial','',8);$pdf->SetXY(177,$y+25);$pdf->Cell(0,3,$idp,0,0,'L');
-         $pdf->SetFont('Arial','B',8);$pdf->SetXY(171,$y+30);$pdf->Cell(20,3,$prestaciones->TipoPrestacion,0,0,'R');
-
         foreach($itemsprestaciones as $item) {
+
+            //encabezado clte
+            $pdf->SetY($y);
+            $pdf->Rect(10,$y+20,112,17); $pdf->SetFont('Arial','B',8);
+            $pdf->SetXY(11,$y+21);$pdf->Cell(0,3,'Paciente: '.$prestaciones->paciente->Apellido." ".$prestaciones->paciente->Nombre,0,0,'L');
+            $pdf->SetXY(11,$y+25);$pdf->Cell(0,3,'Fecha: '.Carbon::parse($prestaciones->Fecha)->format("d/m/Y").'     '.$prestaciones->paciente->TipoDocumento.": ".$prestaciones->paciente->Documento.'     Edad: '.Carbon::parse($prestaciones->paciente->FechaNacimiento)->age.'     '.Carbon::parse($prestaciones->paciente->FechaNacimiento)->format("d/m/Y"),0,0,'L');
+            $pdf->SetXY(11,$y+29);$pdf->Cell(0,3,'Direccion: '.substr($prestaciones->paciente->Direccion,0,50).' -  '.$prestaciones->paciente->localidad->Nombre ?? ''.' -  '.$prestaciones->paciente->localidad->Provincia->Nombre,0,0,'L');
+            $pdf->SetXY(11,$y+33);$pdf->Cell(0,3,'Empresa: '.$prestaciones->empresa->ParaEmpresa,0,0,'L');
+
+            //titulo
+            $pdf->SetFont('Arial','B',12);$pdf->SetXY(135,$y+20);$pdf->Cell(0,4,'SOLICITUD DE EXAMENES',0,0,'L');
+            $pdf->SetFont('Arial','',8);$pdf->SetXY(177,$y+25);$pdf->Cell(0,3,$idp,0,0,'L');
+            $pdf->SetFont('Arial','B',8);$pdf->SetXY(171,$y+30);$pdf->Cell(20,3,$prestaciones->TipoPrestacion,0,0,'R');
+
 
             $examenes = $this->examenes($item->IdProveedor, $datos['id']);
 
