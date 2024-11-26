@@ -533,6 +533,8 @@ $(document).ready(()=> {
     $(document).on('click', '.enviarReporte', function(e){
         e.preventDefault();
 
+        let arrSend = [];
+
         let eEstudio = $('#eEstudio').prop('checked'),
             eEnvio = $('#eEnvio').prop('checked'),
             adjFisicosDigitales = $('#adjFisicosDigitales').prop('checked'),
@@ -540,6 +542,15 @@ $(document).ready(()=> {
             pedProveedores = $('#pedProveedores').prop('checked'),
             conPaciente = $('#conPaciente').prop('checked'),
             caratula = $('#caratula').prop('checked');
+
+        let evaluacion = $('#evaluacion').prop('checked'),
+            eAnexo = $('#eAnexo').prop('checked'),
+            adjDigitales = $('#adjDigitales').prop('checked'),
+            adjFisicos = $('#adjFisicos').prop('checked'),
+            adjPrestacion = $('#adjPrestacion').prop('checked'),
+            resAdmin = $('#resAdmin').prop('checked'),
+            consEstDetallado = $('#consEstDetallado').prop('checked'),
+            consEstSimple = $('#consEstSimple').prop('checked');
         
         let checkboxesNoPrint = $('input[data-noprint="x"]').map(function() {
             return $(this).prop('checked');
@@ -561,7 +572,30 @@ $(document).ready(()=> {
             return;
         }
 
-        alert(1);
+        $('input[data-send]:checked').each(function() {
+            arrSend.push($(this).attr('id'));
+        });
+
+        let envios = [
+            evaluacion,
+            eAnexo,
+            adjDigitales,
+            adjFisicos,
+            adjPrestacion,
+            resAdmin,
+            consEstDetallado,
+            consEstSimple,
+            arrSend
+        ];
+
+        console.log(envios)
+
+        if (envios.some(val => val)) {
+            alert(arrSend); 
+        } else {
+            toastr.warning('Debes seleccionar al menos un reporte para enviar');
+            return;
+        }
 
     });
 
@@ -583,7 +617,7 @@ $(document).ready(()=> {
                     let forNombre = (data.NombreExamen).replace(" ", "-");
                     let contenido = `
                         <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" id="${data.IdReporte}" data-noprint="x">
+                            <input class="form-check-input" type="checkbox" id="${data.IdReporte}" data-noprint="x" data-send>
                             <label class="form-check-label" for="${forNombre}">
                                 ${data.NombreExamen}
                             </label>
