@@ -478,6 +478,7 @@ $(document).ready(()=> {
 
         let evaluacion = $('#evaluacion').prop('checked'),
             eEstudio = $('#eEstudio').prop('checked'),
+            eEnvio = $('#eEnvio').prop('checked'),
             adjDigitales = $('#adjDigitales').prop('checked'),
             adjFisicos = $('#adjFisicos').prop('checked'),
             adjFisicosDigitales = $('#adjFisicosDigitales').prop('checked'),
@@ -495,6 +496,7 @@ $(document).ready(()=> {
         let verificar = [
             evaluacion,
             eEstudio,
+            eEnvio,
             adjDigitales,
             adjFisicosDigitales,
             adjGenerales,
@@ -516,7 +518,60 @@ $(document).ready(()=> {
         }
         
         preloader('on');
-        $.get(exportPdf, {Id: ID, evaluacion: evaluacion, eEstudio: eEstudio, adjDigitales: adjDigitales, adjFisicos: adjFisicos, adjFisicosDigitales: adjFisicosDigitales, adjGenerales: adjGenerales, adjAnexos: adjAnexos, infInternos: infInternos, pedProveedores: pedProveedores, conPaciente: conPaciente, resAdmin: resAdmin, caratula: caratula, consEstDetallado: consEstDetallado, consEstSimple: consEstSimple, audioCmit: audioCmit})
+        $.get(exportPdf, {Id: ID, evaluacion: evaluacion, eEstudio: eEstudio, eEnvio: eEnvio, adjDigitales: adjDigitales, adjFisicos: adjFisicos, adjFisicosDigitales: adjFisicosDigitales, adjGenerales: adjGenerales, adjAnexos: adjAnexos, infInternos: infInternos, pedProveedores: pedProveedores, conPaciente: conPaciente, resAdmin: resAdmin, caratula: caratula, consEstDetallado: consEstDetallado, consEstSimple: consEstSimple, audioCmit: audioCmit})
+            .done(function(response){
+                createFile("pdf", response.filePath, response.name);
+                preloader('off')
+                toastr.success(response.msg)
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            });    
+    });
+
+    $(document).on('click', '.eAnexo', function(e){
+        e.preventDefault();
+        
+        preloader('on');
+        $.get(exportPdf, {Id: ID, adjAnexos: 'true'})
+            .done(function(response){
+                createFile("pdf", response.filePath, response.name);
+                preloader('off')
+                toastr.success(response.msg)
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            });    
+    });
+
+    $(document).on('click', '.eEnviar', function(e){
+        e.preventDefault();
+
+        preloader('on');
+        $.get(eEnviarAviso, {Id: ID})
+            .done(function(response){
+                preloader('off');
+                toastr.success(response.msg);
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            })
+    })
+
+    $(document).on('click', '.eEstudio', function(e){
+        e.preventDefault();
+        
+        preloader('on');
+        $.get(exportPdf, {Id: ID, eEstudio: 'true'})
             .done(function(response){
                 createFile("pdf", response.filePath, response.name);
                 preloader('off')
@@ -533,8 +588,6 @@ $(document).ready(()=> {
     $(document).on('click', '.enviarReporte', function(e){
         e.preventDefault();
 
-        let arrSend = [];
-
         let eEstudio = $('#eEstudio').prop('checked'),
             eEnvio = $('#eEnvio').prop('checked'),
             adjFisicosDigitales = $('#adjFisicosDigitales').prop('checked'),
@@ -550,11 +603,12 @@ $(document).ready(()=> {
             adjPrestacion = $('#adjPrestacion').prop('checked'),
             resAdmin = $('#resAdmin').prop('checked'),
             consEstDetallado = $('#consEstDetallado').prop('checked'),
-            consEstSimple = $('#consEstSimple').prop('checked');
+            consEstSimple = $('#consEstSimple').prop('checked'),
+            EMailInformes = $('#EMailInformes').val();
         
-        let checkboxesNoPrint = $('input[data-noprint="x"]').map(function() {
+        let checkboxesNoPrint = $('input[data-noprint]:checked').map(function() {
             return $(this).prop('checked');
-        }).get();
+        });
 
         let verificar = [
             eEstudio,
@@ -572,30 +626,23 @@ $(document).ready(()=> {
             return;
         }
 
-        $('input[data-send]:checked').each(function() {
-            arrSend.push($(this).attr('id'));
-        });
-
-        let envios = [
-            evaluacion,
-            eAnexo,
-            adjDigitales,
-            adjFisicos,
-            adjPrestacion,
-            resAdmin,
-            consEstDetallado,
-            consEstSimple,
-            arrSend
-        ];
-
-        console.log(envios)
-
-        if (envios.some(val => val)) {
-            alert(arrSend); 
-        } else {
-            toastr.warning('Debes seleccionar al menos un reporte para enviar');
+        if (verificarCorreos(EMailInformes) === false) {
+            toastr.warning('Alguno de los correos no es válido o el mismo se encuentra vacío');
             return;
         }
+
+        preloader('on');
+        $.get(enviarReporte, {evaluacion: evaluacion, eAnexo: eAnexo, adjDigitales: adjDigitales, adjFisicos: adjFisicos, adjPrestacion: adjPrestacion, resAdmin: resAdmin, consEstDetallado: consEstDetallado, consEstSimple: consEstSimple, EMailInformes: EMailInformes, Id: ID})
+            .done(function(response){
+                preloader('off');
+                toastr.success(response.msg);
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return; 
+            });
 
     });
 

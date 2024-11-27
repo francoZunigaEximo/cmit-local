@@ -412,14 +412,14 @@
                             {{-- <button type="button" class="btn btn-sm botonGeneral" data-bs-toggle="modal" data-bs-target="#imprimir" ><i class="bx bxs-file-pdf"></i>&nbsp;Imprimir</button> --}}
                             <button type="button" class="btn btn-sm botonGeneral" data-bs-toggle="modal" data-bs-target="#opciones"><i class="ri-send-plane-line"></i>&nbsp;Opciones</button>
                             @can('prestaciones_eEnviar')
-                            <button type="button" class="btn btn-sm botonGeneral"><i class="ri-send-plane-line"></i>&nbsp;Enviar</button>
+                            <button type="button" class="btn btn-sm botonGeneral eEnviar"><i class="ri-send-plane-line"></i>&nbsp;Enviar</button>
                             @endcan
                             @can('boton_todo')
                             <button type="button" class="btn btn-sm botonGeneral"><i class="ri-stack-fill"></i>&nbsp;Todo</button>
                             @endcan
                             <button type="button" class="btn btn-sm botonGeneral"><i class="ri-file-excel-line"></i>&nbsp;Resumen</button>
-                            <button type="button" class="btn btn-sm botonGeneral"><i class="bx bxs-file-pdf"></i>&nbsp;e-Estudio</button>
-                            <button type="button" class="btn btn-sm botonGeneral"><i class="bx bxs-file-pdf"></i>&nbsp;e-Anexos</button>
+                            <button type="button" class="btn btn-sm botonGeneral eEstudio"><i class="bx bxs-file-pdf"></i>&nbsp;e-Estudio</button>
+                            <button type="button" class="btn btn-sm botonGeneral eAnexo"><i class="bx bxs-file-pdf"></i>&nbsp;e-Anexos</button>
                         </div>
                     </div>
                     
@@ -1005,7 +1005,7 @@
                     <div class="col-12">
                         <div class="input-group input-group mt-2">
                             <span class="input-group-text">Email</span>
-                            <input title="{{ $prestacione->empresa->EMailInformes ?? ''}}" type="text" class="form-control" value="{{ $prestacione->empresa->EMailInformes ?? ''}}">
+                            <input id="EMailInformes" title="{{ $prestacione->empresa->EMailInformes ?? ''}}" type="text" class="form-control" value="{{ $prestacione->empresa->EMailInformes ?? ''}}">
                         </div>
                     </div>
                 </div>
@@ -1599,6 +1599,8 @@ const updateItemExamen = "{{ route('updateItemExamen') }}";
 const getBloqueoItemPrestacion = "{{ route('getBloqueoItemPrestacion') }}";
 const exportPdf = "{{ route('prestaciones.pdf') }}";
 const listadoEstudiosImp = "{{ route('prestaciones.estudioReporte') }}";
+const enviarReporte = "{{ route('prestaciones.enviar') }}";
+const eEnviarAviso = "{{ route('prestaciones.aviso') }}";
 
 //Extras
 const TOKEN = "{{ csrf_token() }}";

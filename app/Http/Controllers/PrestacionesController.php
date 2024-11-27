@@ -44,12 +44,16 @@ use App\Services\Reportes\Titulos\NroPrestacion;
 use App\Services\Reportes\Cuerpos\EnviarOpciones;
 use App\Services\Reportes\Titulos\EEstudio;
 
+use App\Jobs\EnviarReporteJob;
+use App\Jobs\ExamenesImpagosJob;
+
 class PrestacionesController extends Controller
 {
     use ObserverPrestaciones, ObserverFacturasVenta, CheckPermission;
 
     protected $reporteService;
     protected $outputPath;
+    protected $sendPath;
     protected $fileNameExport;
     private $tempFile;
 
@@ -57,6 +61,7 @@ class PrestacionesController extends Controller
     {
         $this->reporteService = $reporteService;
         $this->outputPath = storage_path('app/public/fusionar.pdf');
+        $this->sendPath = storage_path('app/public/send_fusionar.pdf');
         $this->fileNameExport = 'reporte-'.Tools::randomCode(15);
         $this->tempFile = 'app/public/temp/file-';
     }
@@ -539,6 +544,12 @@ class PrestacionesController extends Controller
             array_push($listado, $this->adjAnexos($request->Id));
         }
 
+        if ($request->eEnvio == 'true') {
+            array_push($listado, $this->eEstudio($request->Id));
+            array_push($listado, $this->adjAnexos($request->Id));
+            array_push($listado, $this->adjGenerales($request->Id));
+        }
+
         if ($request->adjDigitales == 'true') {
             array_push($listado, $this->adjDigitalFisico($request->Id, 1));
         }
@@ -567,6 +578,10 @@ class PrestacionesController extends Controller
             array_push($listado, $this->conPaciente($request->Id));
         }
 
+        if ($request->resAdmin == 'true') {
+            array_push($listado, $this->resAdmin($request->Id));
+        }
+
         if ($request->consEstDetallado == 'true') {
             array_push($listado, $this->consEstDetallado($request->Id));
         }
@@ -583,6 +598,101 @@ class PrestacionesController extends Controller
             'msg' => 'Reporte generado correctamente',
             'icon' => 'success' 
         ]);
+    }
+
+    public function enviarReporte(Request $request)
+    {
+        $listado = [];
+
+        $prestacion = Prestacion::with('paciente', 'empresa')->find($request->Id);
+
+        $emails = $this->getEmailsReportes($request->EMailInformes);
+
+        if ($request->evaluacion == 'true') {
+            array_push($listado, $this->caratula($request->Id));
+            array_push($listado, $this->resumenEvaluacion($request->Id));
+        }
+
+        if ($request->adjAnexos == 'true') {
+            array_push($listado, $this->adjAnexos($request->Id));
+        }
+
+        if ($request->adjDigitales == 'true') {
+            array_push($listado, $this->adjDigitalFisico($request->Id, 1));
+        }
+
+        if ($request->adjFisicos == 'true') {
+            array_push($listado, $this->adjDigitalFisico($request->Id, 2));
+        }
+
+        if ($request->adjGenerales == 'true') {
+            array_push($listado, $this->adjGenerales($request->Id));
+        }
+
+        if ($request->resAdmin == 'true') {
+            array_push($listado, $this->resAdmin($request->Id));
+        }
+
+        if ($request->consEstDetallado == 'true') {
+            array_push($listado, $this->consEstDetallado($request->Id));
+        }
+
+        if ($request->consEstSimple == 'true') {
+            array_push($listado, $this->consEstSimple($request->Id));
+        }
+
+        $this->reporteService->fusionarPDFs($listado, $this->sendPath);
+
+        $paciente = $prestacion->paciente->Apellido." ".$prestacion->paciente->Nombre;
+        $doc = $prestacion->paciente->TipoDocumento. " - ".$prestacion->paciente->Documento; 
+        
+        $asunto = 'Estudios '.substr($paciente,0,20).' '.$doc;
+        $cuerpo = [
+            'ParaEmpresa' => $prestacion->empresa->ParaEmpresa,
+            'paciente' => $paciente,
+            'Fecha' => $prestacion->Fecha,
+            'TipoDocumento' => $prestacion->paciente->TipoDocumento,
+            'Documento' => $prestacion->paciente->Documento,
+            'RazonSocial' => $prestacion->empresa->RazonSocial,
+            'idPrestacion' => $prestacion->Id
+        ];
+
+        foreach ($emails as $email) {
+            EnviarReporteJob::dispatch($email, $asunto, $cuerpo, $this->sendPath);
+        }
+
+        return response()->json(['msg' => 'Se ha enviado el/los reportes de manera correcta'], 200);
+    }
+
+    public function avisoReporte(Request $request)
+    {
+        $prestacion = Prestacion::with(['paciente', 'empresa'])->find($request->Id);
+        $examenes = ItemPrestacion::with('prestacion')->where('IdPrestacion', $request->Id)->get();
+
+        $emails = $this->getEmailsReporte($prestacion->empresa->EMailInformes);
+
+        if ($this->checkExCtaImpago($request->Id) > 0) {
+            
+            $nombreCompleto = $prestacion->paciente->Apellido.' '.$prestacion->paciente->Nombre;
+
+            $asunto = 'Solicitud de pago de exámen de  '.$nombreCompleto;
+            $cuerpo = [
+                'paciente' => $nombreCompleto,
+                'Fecha' => $prestacion->Fecha,
+                'TipoDocumento' => $prestacion->paciente->TipoDocumento,
+                'Documento' => $prestacion->paciente->Documento,
+                'RazonSocial' => $prestacion->empresa->RazonSocial,
+                'examenes' => $examenes
+            ];
+
+            foreach ($emails as $email) {
+                ExamenesImpagosJob::dispatch($email, $asunto, $cuerpo);
+            }
+
+            return response()->json(['msg' => 'El cliente presenta examenes a cuenta impagos. Se ha enviado el email correspondiente'], 409);
+        }
+
+
     }
 
     public function getEstudiosReporte(Request $request): mixed
@@ -1079,5 +1189,12 @@ class PrestacionesController extends Controller
             ->where('pagosacuenta_it.IdPrestacion', $idPrestacion)->count();
     }
 
+    private function getEmailsReporte(string $correos): array
+    {
+        $emails = explode(",", $correos);
+        $emails = array_map('trim', $emails);
+
+        return $emails;
+    }
 
 }

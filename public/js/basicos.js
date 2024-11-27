@@ -14,6 +14,8 @@ function preloader(opcion) {
 }
 
 function verificarCorreos(emails) {
+
+    if(emails.length === 0) return false;
         
     let emailRegex = /^[\w.-]+(\.[\w.-]+)*@[\w.-]+\.[A-Za-z]{2,}$/;
     let correosInvalidos = [];

@@ -48,15 +48,15 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('actualizarPass', [AuthController::class, 'updatePass'])->name('actualizarPass');
     Route::post('register', [AuthController::class, 'register'])->name('register');
     Route::get('checkPassword', [AuthController::class, 'checkPassword'])->name('checkPassword');
-    Route::get('/passw', function (){
-        return Hash::make('cmit1234');
-    });
-    Route::get('/test', function () {
-        ob_start();  // Inicia el almacenamiento en buffer de salida
-        phpinfo();   // Ejecuta phpinfo()
-        $phpinfo = ob_get_clean();  // Obtiene el contenido del buffer y limpia el buffer
-        return $phpinfo;  // Devuelve el contenido del phpinfo() como respuesta
-    });
+    // Route::get('/passw', function (){
+    //     return Hash::make('cmit1234');
+    // });
+    // Route::get('/test', function () {
+    //     ob_start();  // Inicia el almacenamiento en buffer de salida
+    //     phpinfo();   // Ejecuta phpinfo()
+    //     $phpinfo = ob_get_clean();  // Obtiene el contenido del buffer y limpia el buffer
+    //     return $phpinfo;  // Devuelve el contenido del phpinfo() como respuesta
+    // });
 
     /*Route::get('/test-redis', function () {
         Redis::set('prueba', 'Test de Redis!');
@@ -125,6 +125,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/prestaciones/borrar-cache', [PrestacionesController::class, 'cacheDelete'])->name('prestaciones.cacheDelete');
     Route::get('/prestaciones/pdf', [PrestacionesController::class, 'pdf'])->name('prestaciones.pdf');
     Route::get('/prestaciones/estudios-listado', [PrestacionesController::class, 'getEstudiosReporte'])->name('prestaciones.estudioReporte');
+    Route::get('/prestaciones/enviar-reporte', [PrestacionesController::class, 'enviarReporte'])->name('prestaciones.enviar');
+    Route::get('/prestaciones/aviso-reporte', [PrestacionesController::class, 'avisoReporte'])->name('prestaciones.aviso');
     Route::resource('prestaciones', PrestacionesController::class);
 
     //Ruta Ficha Laboral

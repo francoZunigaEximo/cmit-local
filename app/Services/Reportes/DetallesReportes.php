@@ -80,6 +80,11 @@ trait DetallesReportes
 		return $pdf->Image($ruta,$x,$yf-33,0,28);//ancho sin especificar, alto 20
     }
 
+    public function getFirmas(int $id): mixed
+    {
+        return Profesional::find($id);
+    }
+
     public function mergePDFs(int $idPrestacion, array $files, string $nombre = 'sin_nombre')
     {
         $fpdi = new Fpdi();
