@@ -606,7 +606,7 @@ class PrestacionesController extends Controller
 
         $prestacion = Prestacion::with('paciente', 'empresa')->find($request->Id);
 
-        $emails = $this->getEmailsReportes($request->EMailInformes);
+        $emails = $this->getEmailsReporte($request->EMailInformes);
 
         if ($request->evaluacion == 'true') {
             array_push($listado, $this->caratula($request->Id));
