@@ -550,7 +550,7 @@ $(document).ready(()=> {
             });    
     });
 
-    $(document).on('click', '.eEnviar', function(e){
+    $(document).on('click', '.eEnviarReporte', function(e){
         e.preventDefault();
 
         preloader('on');

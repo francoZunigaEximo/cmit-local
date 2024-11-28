@@ -8,7 +8,7 @@ $cuerpo='<BODY><FONT FACE="arial"><P>Sres.: '.$paraempresa.'
     <p>Adjuntamos estudios</p>
     <p>Paciente: {{ $content['paciente'] }}
         <br />Fecha: {{ $content['Fecha'] }}
-        <br />{{ $content['TipoDocumento']}}: {{ $conten['Documento']}}
+        <br />{{ $content['TipoDocumento']}}: {{ $content['Documento']}}
         <br />Cliente: {{ $content['RazonSocial']}}
         <br />Empresa: {{ $content['ParaEmpresa']}}
         <br />Prestación: {{ $content['idPrestacion']}}

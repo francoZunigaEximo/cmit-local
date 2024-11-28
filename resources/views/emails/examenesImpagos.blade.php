@@ -5,9 +5,7 @@
     <p class="mt-3"><strong><u>Detalle de Estudios:</u></strong></p>
 
     @foreach ($content['examenes'] as $examen)
-    
-        <p>{{ $examen->Nombre }}</p>
-    
+        - {{ $examen->examenes->Nombre }}<br>
     @endforeach
 
     <p class="mt-3">HA SIDO CALIFICADO</p>

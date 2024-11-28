@@ -28,6 +28,7 @@ use stdClass;
 use Illuminate\Support\Facades\Auth;
 use App\Traits\CheckPermission;
 use Illuminate\Support\Facades\Artisan;
+use Carbon\Carbon;
 
 use App\Services\Reportes\ReporteService;
 use App\Services\Reportes\Titulos\Reducido;
@@ -46,6 +47,11 @@ use App\Services\Reportes\Titulos\EEstudio;
 
 use App\Jobs\EnviarReporteJob;
 use App\Jobs\ExamenesImpagosJob;
+use App\Jobs\ExamenesResultadosJob;
+
+use Illuminate\Support\Facades\Mail;
+use App\Mail\EnviarReporte;
+use App\Mail\ExamenesResultadosMail;
 
 class PrestacionesController extends Controller
 {
@@ -61,7 +67,7 @@ class PrestacionesController extends Controller
     {
         $this->reporteService = $reporteService;
         $this->outputPath = storage_path('app/public/fusionar.pdf');
-        $this->sendPath = storage_path('app/public/send_fusionar.pdf');
+        $this->sendPath = storage_path('app/public/cmit-'.Tools::randomCode(15).'-informe.pdf');
         $this->fileNameExport = 'reporte-'.Tools::randomCode(15);
         $this->tempFile = 'app/public/temp/file-';
     }
@@ -659,6 +665,9 @@ class PrestacionesController extends Controller
 
         foreach ($emails as $email) {
             EnviarReporteJob::dispatch($email, $asunto, $cuerpo, $this->sendPath);
+
+            // $info = new EnviarReporte(['subject' => $asunto, 'content' => $cuerpo]);
+            //         Mail::to($email)->send($info);
         }
 
         return response()->json(['msg' => 'Se ha enviado el/los reportes de manera correcta'], 200);
@@ -666,33 +675,64 @@ class PrestacionesController extends Controller
 
     public function avisoReporte(Request $request)
     {
-        $prestacion = Prestacion::with(['paciente', 'empresa'])->find($request->Id);
-        $examenes = ItemPrestacion::with('prestacion')->where('IdPrestacion', $request->Id)->get();
+        $listado = [];
+
+        $prestacion = Prestacion::with(['paciente', 'empresa','paciente.fichalaboral'])->find($request->Id);
+        $examenes = ItemPrestacion::with('examenes')->where('IdPrestacion', $request->Id)->get();
+
+        if ($prestacion->empresa->SEMail === 1) {
+            return response()->json(['msg' => 'El cliente no acepta envio de correos electrónicos'], 409);
+        }
 
         $emails = $this->getEmailsReporte($prestacion->empresa->EMailInformes);
 
+        $nombreCompleto = $prestacion->paciente->Apellido.' '.$prestacion->paciente->Nombre;
+
+        $cuerpo = [
+            'paciente' => $nombreCompleto,
+            'Fecha' => Carbon::parse($prestacion->Fecha)->format("d/m/Y"),
+            'TipoDocumento' => $prestacion->paciente->TipoDocumento,
+            'Documento' => $prestacion->paciente->Documento,
+            'RazonSocial' => $prestacion->empresa->RazonSocial,
+            'examenes' => $examenes
+        ];
+
         if ($this->checkExCtaImpago($request->Id) > 0) {
             
-            $nombreCompleto = $prestacion->paciente->Apellido.' '.$prestacion->paciente->Nombre;
-
             $asunto = 'Solicitud de pago de exámen de  '.$nombreCompleto;
-            $cuerpo = [
-                'paciente' => $nombreCompleto,
-                'Fecha' => $prestacion->Fecha,
-                'TipoDocumento' => $prestacion->paciente->TipoDocumento,
-                'Documento' => $prestacion->paciente->Documento,
-                'RazonSocial' => $prestacion->empresa->RazonSocial,
-                'examenes' => $examenes
-            ];
 
             foreach ($emails as $email) {
-                ExamenesImpagosJob::dispatch($email, $asunto, $cuerpo);
+                ExamenesImpagosJob::dispatch("nmaximowicz@eximo.com.ar", $asunto, $cuerpo);
             }
 
             return response()->json(['msg' => 'El cliente presenta examenes a cuenta impagos. Se ha enviado el email correspondiente'], 409);
+        
+        } elseif ($this->checkExCtaImpago($request->Id) === 0) {
+
+            $cuerpo['tarea'] = $prestacion->paciente->fichaLaboral->first()->Tareas;
+            $cuerpo['tipoPrestacion'] = ucwords($prestacion->TipoPrestacion);
+            $cuerpo['calificacion'] = substr($prestacion->Calificacion, 2) ?? '';
+            $cuerpo['evaluacion'] = substr($prestacion->Evaluacion, 2) ?? '';
+            $cuerpo['obsEvaluacion'] = $prestacion->Observaciones ?? '';
+
+            //Creando eEnvio para adjuntar
+            array_push($listado, $this->eEstudio($request->Id));
+            array_push($listado, $this->adjAnexos($request->Id));
+            array_push($listado, $this->adjGenerales($request->Id));
+
+            $this->reporteService->fusionarPDFs($listado, $this->sendPath);
+
+            $asunto = 'Estudios '.$nombreCompleto.' - '.$prestacion->paciente->TipoDocumento.' '.$prestacion->paciente->Documento;
+
+            foreach ($emails as $email) {
+                ExamenesResultadosJob::dispatch("nmaximowicz@eximo.com.ar", $asunto, $cuerpo, $this->sendPath);
+
+                // $info = new ExamenesResultadosMail(['subject' => $asunto, 'content' => $cuerpo, 'attachment' => $this->sendPath]);
+                //     Mail::to("nmaximowicz@eximo.com.ar")->send($info);
+            }
+
+            return response()->json(['msg' => 'Se ha enviado el resultado al cliente de manera correcta.'], 200);
         }
-
-
     }
 
     public function getEstudiosReporte(Request $request): mixed

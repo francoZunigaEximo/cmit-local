@@ -2,7 +2,6 @@
 
 namespace App\Mail;
 
-use DebugBar\Bridge\SwiftMailer\SwiftMailCollector;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -11,12 +10,11 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Mail\Mailables\Attachment;
 
-class EnvioResultadosMail extends Mailable
+class ExamenesResultadosMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public array $data;
-
+    protected array $data;
     /**
      * Create a new message instance.
      */
@@ -41,7 +39,7 @@ class EnvioResultadosMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.modelo',
+            view: 'emails.examenesResultados',
             with: ['content' => $this->data['content']],
         );
     }
