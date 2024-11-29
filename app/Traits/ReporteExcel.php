@@ -380,22 +380,30 @@ trait ReporteExcel
             ? '('.$telefono->CodigoArea ?? '000'.')'.$telefono->NumeroTelefono ?? '0000000'
             : '(000)000000';
 
+        $fechaVencimiento = $this->formatearFecha($prestacion->FechaVto);
+        $fechaCierre =  $this->formatearFecha($prestacion->FechaCierre);
+        $fechaFinalizado = $this->formatearFecha($prestacion->FechaFinalizado);
+        $fechaEntrega =  $this->formatearFecha($prestacion->FechaEntrega);
+        $fechaAnulado = $this->formatearFecha($prestacion->FechaAnul);
+        $fechaIngreso =  $this->formatearFecha($prestacion->paciente->fichaLaboral->first()->FechaIngreso);
+        $fechaEgreso = $this->formatearFecha($prestacion->paciente->fichaLaboral->first()->FechaEgreso);
+
         $sheet->setCellValue('A1', 'Prestación: '.$prestacion->Id)->getStyle('A19')->getFont()->setBold(true);
         $sheet->setCellValue('B1', 'Alta: '.Carbon::parse($prestacion->Fecha)->format('d/m/Y') ?? '');
         $sheet->setCellValue('B2', 'Paciente: '.$prestacion->paciente->Id.' '.$nombreCompleto);
-        $sheet->setCellValue('C1', 'Vencimiento: '.$prestacion->FechaVto !== null ? Carbon::parse($prestacion->FechaVto)->format('d/m/Y') : '');
+        $sheet->setCellValue('C1', 'Vencimiento: '.$fechaVencimiento);
         $sheet->setCellValue('C2', 'Empresa: '.$prestacion->empresa->RazonSocial ?? '');
         $sheet->setCellValue('D1', 'Tipo: '.$prestacion->TipoPrestacion ?? '');
         $sheet->setCellValue('D2', 'ART: '. $prestacion->art->RazonSocial ?? '');
 
         $sheet->setCellValue('A4', 'Estado')->getStyle('A19')->getFont()->setBold(true);
-        $sheet->setCellValue('A5', 'Cerrado: '.Carbon::parse($prestacion->FechaCierre)->format('d/m/Y') ?? '');
-        $sheet->setCellValue('A6', 'Finalizado: '.Carbon::parse($prestacion->FechaFinalizado)->format('d/m/Y') ?? '');
+        $sheet->setCellValue('A5', 'Cerrado: '.$fechaCierre);
+        $sheet->setCellValue('A6', 'Finalizado: '.$fechaFinalizado);
         $sheet->setCellValue('B6', 'Nro Constancia')->getStyle('A19')->getFont()->setBold(true);
         $sheet->setCellValue('B7', 'Entrega: '. $prestacion->NroCEE ?? '');
-        $sheet->setCellValue('A8', 'Entregado: '.Carbon::parse($prestacion->FechaEntrega)->format('d/m/Y') ?? '');
+        $sheet->setCellValue('A8', 'Entregado: '. $fechaEntrega);
         $sheet->setCellValue('A9', 'Facturado: '.$nroFactura);
-        $sheet->setCellValue('A10', 'Anulado: '.$prestacion->FechaAnul ?? '');
+        $sheet->setCellValue('A10', 'Anulado: '.$fechaAnulado);
 
         $sheet->setCellValue('A12', 'Resultados')->getStyle('A12')->getFont()->setBold(true);
         $sheet->setCellValue('A13', 'Evaluación: '.substr($prestacion->Evaluacion, 2) ?? '');
@@ -408,7 +416,7 @@ trait ReporteExcel
         $sheet->setCellValue('A20', $prestacion->paciente->TipoDocumento.': '.$prestacion->paciente->Documento.' - Edad: '.Carbon::parse($prestacion->paciente->FechaNacimiento)->age.' - '.$prestacion->paciente->EstadoCivil ?? '');
         $sheet->setCellValue('A21', 'Dirección: '.$prestacion->paciente->Direccion ?? '');
         $sheet->setCellValue('A22', 'Tareas: '.$prestacion->paciente->fichaLaboral->first()->Tareas.' - Ultima Empresa: '.$prestacion->paciente->fichaLaboral->first()->TareasTareasEmpAnterior ?? ''.'C.Costos: '.$prestacion->paciente->fichaLaboral->first()->CCosto ?? '');
-        $sheet->setCellValue('A23', 'Puesto: '.$prestacion->paciente->fichaLaboral->first()->Puesto ?? ''.' - Sector: '.$prestacion->paciente->fichaLaboral->first()->Sector ?? ''.' - Jornada: '.$prestacion->paciente->fichaLaboral->first()->Jornada ?? ''.' - F. Ingreso: '.$prestacion->paciente->fichaLaboral->first()->FechaIngreso ?? ''.' - F. Egreso: '.$prestacion->paciente->fichaLaboral->first()->FechaEgreso ?? '');
+        $sheet->setCellValue('A23', 'Puesto: '.$prestacion->paciente->fichaLaboral->first()->Puesto ?? ''.' - Sector: '.$prestacion->paciente->fichaLaboral->first()->Sector ?? ''.' - Jornada: '.$prestacion->paciente->fichaLaboral->first()->Jornada ?? ''.' - F. Ingreso: '.$fechaIngreso.' - F. Egreso: '.$fechaEgreso);
         $sheet->setCellValue('A24', 'Tel: '.$telefonoPaciente);
 
         $sheet->setCellValue('A26', 'Examenes')->getStyle('A26')->getFont()->setBold(true);
@@ -435,7 +443,7 @@ trait ReporteExcel
             $sheet->setCellValue('B'.$fila, $examen->proveedores->Nombre ?? '-');
             $sheet->setCellValue('C'.$fila, $examen->examenes->Nombre ?? '-');
             $sheet->setCellValue('D'.$fila, '-');
-            $sheet->setCellValue('E'.$fila, $examen->FechaAsignado ?? ''.' '.$nombreProfesional);
+            $sheet->setCellValue('E'.$fila, $this->formatearFecha($examen->FechaAsignado).' '.$nombreProfesional);
             $sheet->setCellValue('F'.$fila, $examen->Facturado === 1 ? 'SI' : 'NO');
             $sheet->setCellValue('G'.$fila, $examen->Anulado === 1 ? 'SI' : 'NO');
             $fila++;
@@ -478,6 +486,11 @@ trait ReporteExcel
           chmod($filePath, 0777);
  
           return response()->json(['filePath' => $filePath, 'msg' => 'Se ha generado correctamente el reporte ', 'estado' => 'success']);
+    }
+
+    private function formatearFecha($fecha)
+    {
+        return $fecha === '0000-00-00' ? '' : Carbon::parse($fecha)->format('d/m/Y');
     }
     
 
