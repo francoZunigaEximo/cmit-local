@@ -49,7 +49,7 @@ class TelefonosController extends Controller
                 'CodigoArea' => $request->prefijo,
                 'NumeroTelefono' => $request->numero,
                 'Observaciones' => $request->observacion,
-                'TipoEntiedad' => 'i',
+                'TipoEntidad' => 'i',
             ]);
 
         }

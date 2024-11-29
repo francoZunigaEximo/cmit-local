@@ -417,7 +417,7 @@
                             @can('boton_todo')
                             <button type="button" class="btn btn-sm botonGeneral"><i class="ri-stack-fill"></i>&nbsp;Todo</button>
                             @endcan
-                            <button type="button" class="btn btn-sm botonGeneral"><i class="ri-file-excel-line"></i>&nbsp;Resumen</button>
+                            <button type="button" class="btn btn-sm botonGeneral resumenTotal"><i class="ri-file-excel-line"></i>&nbsp;Resumen</button>
                             <button type="button" class="btn btn-sm botonGeneral eEstudio"><i class="bx bxs-file-pdf"></i>&nbsp;e-Estudio</button>
                             <button type="button" class="btn btn-sm botonGeneral eAnexo"><i class="bx bxs-file-pdf"></i>&nbsp;e-Anexos</button>
                         </div>
@@ -1601,6 +1601,7 @@ const exportPdf = "{{ route('prestaciones.pdf') }}";
 const listadoEstudiosImp = "{{ route('prestaciones.estudioReporte') }}";
 const enviarReporte = "{{ route('prestaciones.enviar') }}";
 const eEnviarAviso = "{{ route('prestaciones.aviso') }}";
+const exportXls = "{{ route('prestaciones.excelResumen') }}";
 
 //Extras
 const TOKEN = "{{ csrf_token() }}";

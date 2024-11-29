@@ -709,12 +709,15 @@ class ExamenesCuentaController extends Controller
             Basico::class,
             Empresa::class,
             ExCuenta::class,
+            null,
             "imprimir",
             storage_path('app/public/archivo.pdf'),
             $request->Id,
             $paramsTitulo, 
             $paramsSubtitulo,
-            $paramsCuerpo
+            $paramsCuerpo,
+            [],
+            null
         );
     }
 

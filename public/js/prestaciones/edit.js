@@ -532,6 +532,24 @@ $(document).ready(()=> {
             });    
     });
 
+    $(document).on('click', '.resumenTotal', function(e){
+        e.preventDefault();
+
+        preloader('on');
+        $.get(exportXls, {Id: ID})
+            .done(function(response){
+                preloader('off');
+                createFile("excel", response.filePath, generarCodigoAleatorio() + '_reporte');
+                toastr.success(response.msg);
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            });
+    });
+
     $(document).on('click', '.eAnexo', function(e){
         e.preventDefault();
         

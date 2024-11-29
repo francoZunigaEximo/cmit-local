@@ -2,10 +2,15 @@
 
 namespace App\Traits;
 
+use App\Models\Auditor;
 use App\Models\Cliente;
+use App\Models\ExamenCuentaIt;
 use App\Models\FacturaDeVenta;
+use App\Models\ItemPrestacion;
 use App\Models\PrecioPorCodigo;
 use App\Models\ReporteFinneg;
+use App\Models\Telefono;
+use Carbon\Carbon;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use illuminate\Support\Str;
@@ -343,6 +348,124 @@ trait ReporteExcel
 
         $name = 'mapas'.Str::random(6).'.xlsx';
         return $this->generarArchivo($spreadsheet, $name);
+    }
+
+    public function resumenPrestacion($prestacion)
+    {
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+
+        $nombreCompleto = $prestacion->paciente->Apellido.' '.$prestacion->paciente->Nombre;
+
+        $factura = ExamenCuentaIt::join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
+            ->select(
+                'pagosacuenta.Tipo as Tipo',
+                'pagosacuenta.Suc as Suc',
+                'pagosacuenta.Nro as Nro'
+            )
+            ->where('pagosacuenta_it.IdPrestacion', $prestacion->Id)->first();
+
+        $telefono = Telefono::join('pacientes', 'telefonos.IdEntidad', '=', 'pacientes.Id')->where('telefonos.IdEntidad', $prestacion->paciente->Id)->where('telefonos.TipoEntidad', 'i')->first();
+        
+        $examenes = ItemPrestacion::with(['examenes', 'proveedores', 'profesionales1', 'profesionales2'])->where('itemsprestaciones.IdPrestacion', $prestacion->Id)->get();
+
+        $auditorias = Auditor::with('auditarAccion')->where('IdRegistro', $prestacion->Id)->orderBy('Id', 'Asc')->get();
+
+        $nroFactura = $factura !== null 
+            ? 'EXAMEN A CUENTA NRO '.$factura->Tipo ?? 'X'.str_pad($factura->Suc, 4, '0', STR_PAD_LEFT) ?? '0000'.'-'.str_pad($factura->Nro, 8, '0', STR_PAD_LEFT) ?? '00000000'
+            : '';
+
+        $telefonoPaciente = $telefono !== null 
+            ? '('.$telefono->CodigoArea ?? '000'.')'.$telefono->NumeroTelefono ?? '0000000'
+            : '(000)000000';
+
+        $sheet->setCellValue('A1', 'Prestación: '.$prestacion->Id)->getStyle('A19')->getFont()->setBold(true);
+        $sheet->setCellValue('B1', 'Alta: '.Carbon::parse($prestacion->Fecha)->format('d/m/Y') ?? '');
+        $sheet->setCellValue('B2', 'Paciente: '.$prestacion->paciente->Id.' '.$nombreCompleto);
+        $sheet->setCellValue('C1', 'Vencimiento: '.$prestacion->FechaVto !== null ? Carbon::parse($prestacion->FechaVto)->format('d/m/Y') : '');
+        $sheet->setCellValue('C2', 'Empresa: '.$prestacion->empresa->RazonSocial ?? '');
+        $sheet->setCellValue('D1', 'Tipo: '.$prestacion->TipoPrestacion ?? '');
+        $sheet->setCellValue('D2', 'ART: '. $prestacion->art->RazonSocial ?? '');
+
+        $sheet->setCellValue('A4', 'Estado')->getStyle('A19')->getFont()->setBold(true);
+        $sheet->setCellValue('A5', 'Cerrado: '.Carbon::parse($prestacion->FechaCierre)->format('d/m/Y') ?? '');
+        $sheet->setCellValue('A6', 'Finalizado: '.Carbon::parse($prestacion->FechaFinalizado)->format('d/m/Y') ?? '');
+        $sheet->setCellValue('B6', 'Nro Constancia')->getStyle('A19')->getFont()->setBold(true);
+        $sheet->setCellValue('B7', 'Entrega: '. $prestacion->NroCEE ?? '');
+        $sheet->setCellValue('A8', 'Entregado: '.Carbon::parse($prestacion->FechaEntrega)->format('d/m/Y') ?? '');
+        $sheet->setCellValue('A9', 'Facturado: '.$nroFactura);
+        $sheet->setCellValue('A10', 'Anulado: '.$prestacion->FechaAnul ?? '');
+
+        $sheet->setCellValue('A12', 'Resultados')->getStyle('A12')->getFont()->setBold(true);
+        $sheet->setCellValue('A13', 'Evaluación: '.substr($prestacion->Evaluacion, 2) ?? '');
+        $sheet->setCellValue('A14', 'Calificación: '.substr($prestacion->Calificacion, 2) ?? '');
+        $sheet->setCellValue('A15', 'Observación: '.$prestacion->Observaciones ?? '');
+        $sheet->setCellValue('A16', 'Comentarios Examenes');
+        $sheet->setCellValue('A17', $prestacion->ObsExamenes);
+
+        $sheet->setCellValue('A19', 'Datos del Paciente')->getStyle('A19')->getFont()->setBold(true);
+        $sheet->setCellValue('A20', $prestacion->paciente->TipoDocumento.': '.$prestacion->paciente->Documento.' - Edad: '.Carbon::parse($prestacion->paciente->FechaNacimiento)->age.' - '.$prestacion->paciente->EstadoCivil ?? '');
+        $sheet->setCellValue('A21', 'Dirección: '.$prestacion->paciente->Direccion ?? '');
+        $sheet->setCellValue('A22', 'Tareas: '.$prestacion->paciente->fichaLaboral->first()->Tareas.' - Ultima Empresa: '.$prestacion->paciente->fichaLaboral->first()->TareasTareasEmpAnterior ?? ''.'C.Costos: '.$prestacion->paciente->fichaLaboral->first()->CCosto ?? '');
+        $sheet->setCellValue('A23', 'Puesto: '.$prestacion->paciente->fichaLaboral->first()->Puesto ?? ''.' - Sector: '.$prestacion->paciente->fichaLaboral->first()->Sector ?? ''.' - Jornada: '.$prestacion->paciente->fichaLaboral->first()->Jornada ?? ''.' - F. Ingreso: '.$prestacion->paciente->fichaLaboral->first()->FechaIngreso ?? ''.' - F. Egreso: '.$prestacion->paciente->fichaLaboral->first()->FechaEgreso ?? '');
+        $sheet->setCellValue('A24', 'Tel: '.$telefonoPaciente);
+
+        $sheet->setCellValue('A26', 'Examenes')->getStyle('A26')->getFont()->setBold(true);
+
+        $sheet->setCellValue('A27', 'Examen');
+        $sheet->setCellValue('B27', 'Proveedor');
+        $sheet->setCellValue('C27', 'Observaciones');
+        $sheet->setCellValue('D27', 'Asignado');
+        $sheet->setCellValue('E27', 'Pagado');
+        $sheet->setCellValue('F27', 'Facturado');
+        $sheet->setCellValue('G27', 'Anulado');
+
+        $fila = 28;
+
+        $nuevaFila = $fila + count($examenes) + 5;
+
+        foreach($examenes as $examen) {
+
+            $nombreProfesional = $examen->profesionales1->RegHis === 1 
+                ? $examen->profesionales1->Apellido ?? ''.' '.$examen->profesionales1->Nombre ?? ''
+                : $examen->profesionales1->user->personal->Apellido ?? ''.' '.$examen->profesionales1->user->personal->Nombre ?? '';
+
+            $sheet->setCellValue('A'.$fila, $examen->examenes->Nombre ?? '-');
+            $sheet->setCellValue('B'.$fila, $examen->proveedores->Nombre ?? '-');
+            $sheet->setCellValue('C'.$fila, $examen->examenes->Nombre ?? '-');
+            $sheet->setCellValue('D'.$fila, '-');
+            $sheet->setCellValue('E'.$fila, $examen->FechaAsignado ?? ''.' '.$nombreProfesional);
+            $sheet->setCellValue('F'.$fila, $examen->Facturado === 1 ? 'SI' : 'NO');
+            $sheet->setCellValue('G'.$fila, $examen->Anulado === 1 ? 'SI' : 'NO');
+            $fila++;
+        }
+
+        $sheet->setCellValue('A'.$nuevaFila - 2, 'Auditoria de Cambios')->getStyle('A'.$nuevaFila - 2)->getFont()->setBold(true);
+
+        $sheet->setCellValue('A'.$nuevaFila, 'Usuario');
+        $sheet->setCellValue('B'.$nuevaFila, 'Acción');
+        $sheet->setCellValue('C'.$nuevaFila, 'Fecha');
+
+        $tablaFila = $nuevaFila + 1;
+
+        foreach ($auditorias as $auditoria) {
+            $sheet->setCellValue('A'.$tablaFila, $auditoria->IdUsuario ?? '-');
+            $sheet->setCellValue('B'.$tablaFila, $auditoria->auditarAccion->Nombre ?? '-');
+            $sheet->setCellValue('C'.$tablaFila, Carbon::parse($auditoria->Fecha)->format('d/m/Y h:i:s'));
+        }
+
+        $name = 'mapas'.Str::random(6).'.xlsx';
+        return $this->generarArchivo($spreadsheet, $name);
+    }
+
+    private function Inicializar(): mixed
+    {
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+
+        return $sheet;
     }
 
     private function generarArchivo($excel, $nombre)

@@ -53,9 +53,11 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\EnviarReporte;
 use App\Mail\ExamenesResultadosMail;
 
+use App\Traits\ReporteExcel;
+
 class PrestacionesController extends Controller
 {
-    use ObserverPrestaciones, ObserverFacturasVenta, CheckPermission;
+    use ObserverPrestaciones, ObserverFacturasVenta, CheckPermission, ReporteExcel;
 
     protected $reporteService;
     protected $outputPath;
@@ -732,6 +734,21 @@ class PrestacionesController extends Controller
             }
 
             return response()->json(['msg' => 'Se ha enviado el resultado al cliente de manera correcta.'], 200);
+        }
+    }
+
+    public function resumenExcel(Request $request)
+    {
+        if (!isset($request->Id) || empty($request->Id) || $request->Id === 0) {
+            return response()->json(['msg' => 'No se ha podido generar el archivo'], 409);
+        }
+
+        $prestacion = Prestacion::find($request->Id);
+
+        if($prestacion) {
+            return $this->resumenPrestacion($prestacion);
+        }else{
+            return response()->json(['msg' => 'No se ha podido generar el archivo'], 409);
         }
     }
 
