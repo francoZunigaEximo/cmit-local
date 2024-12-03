@@ -133,7 +133,7 @@ $(document).ready(()=>{
                     },
                     {
                         data: null,
-                        width: 80,
+                        width: 100,
                         render: function(data){
                             
                             let editar = '<a title="Editar" href="'+ location.href + '/' + data.Id + '/edit">' + '<button type="button" class="btn btn-sm iconGeneral edit-item-btn"><i class="ri-edit-line"></i></button>' + '</a>';
