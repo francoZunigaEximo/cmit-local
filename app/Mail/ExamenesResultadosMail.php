@@ -51,12 +51,15 @@ class ExamenesResultadosMail extends Mailable
      */
     public function attachments(): array
     {
-        if(!empty($this->data['attachment'])) {
-            return [
-                Attachment::fromPath($this->data['attachment'])
-            ];
+        $attachments = [];
+
+        // Si existen archivos adjuntos, los agregamos al array
+        if (!empty($this->data['attachments'])) {
+            foreach ($this->data['attachments'] as $attachmentPath) {
+                $attachments[] = Attachment::fromPath($attachmentPath);
+            }
         }
         
-        return [];
+        return $attachments;
     }
 }

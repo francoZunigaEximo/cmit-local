@@ -6,6 +6,7 @@ $(document).ready(()=> {
     examenesCta(empresa);
     checkExamenes(ID);
     checkerIncompletos(ID);
+    checkEstadoEnviar(ID);
     
     $(document).on('change', '#empresa, #art, #TipoPrestacion', function(){
         let emp = $('#empresa').val(), art = $('#art').val();
@@ -554,7 +555,7 @@ $(document).ready(()=> {
         e.preventDefault();
         
         preloader('on');
-        $.get(exportPdf, {Id: ID, adjAnexos: 'true'})
+        $.get(exportPdf, {Id: ID, adjAnexos: 'true', buttonEA: 'true'})
             .done(function(response){
                 createFile("pdf", response.filePath, response.name);
                 preloader('off')
@@ -589,7 +590,7 @@ $(document).ready(()=> {
         e.preventDefault();
         
         preloader('on');
-        $.get(exportPdf, {Id: ID, eEstudio: 'true'})
+        $.get(exportPdf, {Id: ID, eEstudio: 'true', buttonEE: 'true'})
             .done(function(response){
                 createFile("pdf", response.filePath, response.name);
                 preloader('off')
@@ -929,6 +930,19 @@ $(document).ready(()=> {
         $.get(await checkInc, {Id: idPrestacion}, function(){
             console.log("Actualizados los estados");
         });
+    }
+
+    function checkEstadoEnviar(id) {
+        
+        if([0, null, ''].includes(id)) return;
+
+        $.get(btnVisibleEnviar, {Id: id})
+            .done(function(response){
+                let arr = ['pagado', 'completos', 'evaluado', 'pagado'],
+                    allTrue = arr.every(key => response[key] === true);
+
+                return allTrue === true ? $('#eEnviarReporte').show() : $('#eEnviarReporte').hide();
+            });
     }
 
 });

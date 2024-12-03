@@ -412,7 +412,7 @@
                             {{-- <button type="button" class="btn btn-sm botonGeneral" data-bs-toggle="modal" data-bs-target="#imprimir" ><i class="bx bxs-file-pdf"></i>&nbsp;Imprimir</button> --}}
                             <button type="button" class="btn btn-sm botonGeneral" data-bs-toggle="modal" data-bs-target="#opciones"><i class="ri-send-plane-line"></i>&nbsp;Opciones</button>
                             @can('prestaciones_eEnviar')
-                            <button type="button" class="btn btn-sm botonGeneral eEnviarReporte"><i class="ri-send-plane-line"></i>&nbsp;Enviar</button>
+                            <button type="button" id="eEnviarReporte" class="btn btn-sm botonGeneral eEnviarReporte"><i class="ri-send-plane-line"></i>&nbsp;Enviar</button>
                             @endcan
                             @can('boton_todo')
                             <button type="button" class="btn btn-sm botonGeneral"><i class="ri-stack-fill"></i>&nbsp;Todo</button>
@@ -1602,6 +1602,7 @@ const listadoEstudiosImp = "{{ route('prestaciones.estudioReporte') }}";
 const enviarReporte = "{{ route('prestaciones.enviar') }}";
 const eEnviarAviso = "{{ route('prestaciones.aviso') }}";
 const exportXls = "{{ route('prestaciones.excelResumen') }}";
+const btnVisibleEnviar = "{{ route('prestaciones.visibleEnviar') }}";
 
 //Extras
 const TOKEN = "{{ csrf_token() }}";

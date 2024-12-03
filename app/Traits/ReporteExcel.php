@@ -461,19 +461,11 @@ trait ReporteExcel
             $sheet->setCellValue('A'.$tablaFila, $auditoria->IdUsuario ?? '-');
             $sheet->setCellValue('B'.$tablaFila, $auditoria->auditarAccion->Nombre ?? '-');
             $sheet->setCellValue('C'.$tablaFila, Carbon::parse($auditoria->Fecha)->format('d/m/Y h:i:s'));
+            $tablaFila++; 
         }
 
         $name = 'mapas'.Str::random(6).'.xlsx';
         return $this->generarArchivo($spreadsheet, $name);
-    }
-
-    private function Inicializar(): mixed
-    {
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-        $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
-
-        return $sheet;
     }
 
     private function generarArchivo($excel, $nombre)

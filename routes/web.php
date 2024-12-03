@@ -128,6 +128,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/prestaciones/enviar-reporte', [PrestacionesController::class, 'enviarReporte'])->name('prestaciones.enviar');
     Route::get('/prestaciones/aviso-reporte', [PrestacionesController::class, 'avisoReporte'])->name('prestaciones.aviso');
     Route::get('/prestaciones/resumen-export-excel', [PrestacionesController::class, 'resumenExcel'])->name('prestaciones.excelResumen');
+    Route::get('/prestaciones/visible-eEnviar', [PrestacionesController::class, 'visibleButtonEnviar'])->name('prestaciones.visibleEnviar');
     Route::resource('prestaciones', PrestacionesController::class);
 
     //Ruta Ficha Laboral

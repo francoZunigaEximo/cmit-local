@@ -18,18 +18,18 @@ class ExamenesResultadosJob implements ShouldQueue
     protected $correo;
     protected $subject;
     protected $content;
-    protected $attachment;
+    protected $attachments;
     /**
 
     /**
      * Create a new job instance.
      */
-    public function __construct($correo, $subject, $content, $attachment)
+    public function __construct($correo, $subject, $content, $attachments)
     {
         $this->correo = $correo;
         $this->subject = $subject;
         $this->content = $content;
-        $this->attachment = $attachment;
+        $this->attachments = $attachments;
     }
 
     /**
@@ -40,7 +40,7 @@ class ExamenesResultadosJob implements ShouldQueue
         $data = [
             'subject' => $this->subject,
             'content' => $this->content,
-            'attachment' => $this->attachment,
+            'attachments' => $this->attachments,
         ];
 
         $email = new ExamenesResultadosMail($data);

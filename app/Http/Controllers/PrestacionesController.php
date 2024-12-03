@@ -65,6 +65,11 @@ class PrestacionesController extends Controller
     protected $fileNameExport;
     private $tempFile;
 
+    protected $sendFile1;
+    protected $sendFile2;
+    protected $sendFile3;
+
+
     public function __construct(ReporteService $reporteService)
     {
         $this->reporteService = $reporteService;
@@ -539,6 +544,8 @@ class PrestacionesController extends Controller
     {
         $listado = [];
 
+        $prestacion = Prestacion::with(['empresa', 'paciente'])->find($request->Id);
+
         if ($request->evaluacion == 'true') {
             array_push($listado, $this->caratula($request->Id));
             array_push($listado, $this->resumenEvaluacion($request->Id));
@@ -600,9 +607,16 @@ class PrestacionesController extends Controller
 
         $this->reporteService->fusionarPDFs($listado, $this->outputPath);
 
+        $name = ($request->buttonEE == 'true' 
+            ? 'eEstudio'.$prestacion->Id.'.pdf' 
+            : ($request->buttonEA == 'true' 
+                ? 'eAdjuntos_'.$prestacion->paciente->Apellido.'_'.$prestacion->paciente->Nombre.'_'.$prestacion->paciente->Documento.'_'.Carbon::parse($prestacion->Fecha)->format('d-m-Y').'.pdf'
+                : $this->fileNameExport.'.pdf'));
+
+
         return response()->json([
             'filePath' => $this->outputPath,
-            'name' => $this->fileNameExport.'.pdf',
+            'name' => $name,
             'msg' => 'Reporte generado correctamente',
             'icon' => 'success' 
         ]);
@@ -675,9 +689,20 @@ class PrestacionesController extends Controller
         return response()->json(['msg' => 'Se ha enviado el/los reportes de manera correcta'], 200);
     }
 
+    public function visibleButtonEnviar(Request $request)
+    {   
+        $prestacion = Prestacion::find($request->Id);
+
+        $completos = $this->checkPrestacionesCompletas($request->Id);
+        $cerrado = $prestacion->Cerrado === 1;
+        $evaluado = $prestacion->IdEvaluador !== 0;
+        $pagado = $prestacion->FechaFact !== null;
+
+        return response()->json(['completos' => $completos, 'cerrado' => $cerrado, 'evaluado' => $evaluado, 'pagado' => $pagado], 200);
+    }
+
     public function avisoReporte(Request $request)
     {
-        $listado = [];
 
         $prestacion = Prestacion::with(['paciente', 'empresa','paciente.fichalaboral'])->find($request->Id);
         $examenes = ItemPrestacion::with('examenes')->where('IdPrestacion', $request->Id)->get();
@@ -718,18 +743,29 @@ class PrestacionesController extends Controller
             $cuerpo['obsEvaluacion'] = $prestacion->Observaciones ?? '';
 
             //Creando eEnvio para adjuntar
-            array_push($listado, $this->eEstudio($request->Id));
-            array_push($listado, $this->adjAnexos($request->Id));
-            array_push($listado, $this->adjGenerales($request->Id));
+            $file1 = [];
+            $file2 = [];
+            $file3 = [];
 
-            $this->reporteService->fusionarPDFs($listado, $this->sendPath);
+            array_push($file1, $this->eEstudio($request->Id));
+            array_push($file2, $this->adjAnexos($request->Id));
+            array_push($file3, $this->adjGenerales($request->Id));
+
+            $eEstudioSend = storage_path('app/public/eEstudio'.$prestacion->Id.'.pdf');
+            $eAdjuntoSend = storage_path('app/public/temp/eAdjuntos_'.$prestacion->paciente->Apellido.'_'.$prestacion->paciente->Nombre.'_'.$prestacion->paciente->Documento.'_'.Carbon::parse($prestacion->Fecha)->format('d-m-Y').'.pdf');
+            $eGeneralSend = storage_path('app/public/eAdjGeneral'.$prestacion->Id.'.pdf');
+
+            $this->reporteService->fusionarPDFs($file1, $eEstudioSend);
+            $this->reporteService->fusionarPDFs($file2, $eAdjuntoSend);
+            $this->reporteService->fusionarPDFs($file3, $eGeneralSend);
 
             $asunto = 'Estudios '.$nombreCompleto.' - '.$prestacion->paciente->TipoDocumento.' '.$prestacion->paciente->Documento;
 
             foreach ($emails as $email) {
-                ExamenesResultadosJob::dispatch("nmaximowicz@eximo.com.ar", $asunto, $cuerpo, $this->sendPath);
+                // ExamenesResultadosJob::dispatch("nmaximowicz@eximo.com.ar", $asunto, $cuerpo, $this->sendPath);
+                ExamenesResultadosJob::dispatch("nmaximowicz@eximo.com.ar", $asunto, $cuerpo, [$eEstudioSend, $eAdjuntoSend, $eGeneralSend]);
 
-                // $info = new ExamenesResultadosMail(['subject' => $asunto, 'content' => $cuerpo, 'attachment' => $this->sendPath]);
+                // $info = new ExamenesResultadosMail(['subject' => $asunto, 'content' => $cuerpo, 'attachments' => $attachments]);
                 //     Mail::to("nmaximowicz@eximo.com.ar")->send($info);
             }
 
@@ -1252,6 +1288,14 @@ class PrestacionesController extends Controller
         $emails = array_map('trim', $emails);
 
         return $emails;
+    }
+
+    private function checkPrestacionesCompletas(int $id): mixed
+    {
+        return ItemPrestacion::whereIn('CAdj', [3,5])
+            ->whereIn('CInfo', [3,0])
+            ->where('IdPrestacion', $id)
+            ->count() == ItemPrestacion::where('IdPrestacion', $id)->count();
     }
 
 }
