@@ -71,7 +71,7 @@ class Cliente extends Model
 
     public function mapa()
     {
-        return $this->hasMany(Mapa::class, ['IdART', 'IdEMpresa'], 'Id');
+        return $this->hasMany(Mapa::class, ['IdART', 'IdEmpresa'], 'Id');
     }
 
     public function localidad()

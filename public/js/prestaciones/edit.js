@@ -19,7 +19,6 @@ $(document).ready(()=> {
     quitarDuplicados("#SPago");
     quitarDuplicados("#Evaluacion");
     quitarDuplicados("#Calificacion");
-    quitarDuplicados("#RxPreliminar");
     quitarDuplicados("#TipoPrestacion");
     quitarDuplicados("#mapas");
 
@@ -66,7 +65,6 @@ $(document).ready(()=> {
             Evaluacion = $('#Evaluacion').val(),
             Calificacion = $('#Calificacion').val(),
             SinEval =$('#SinEval').prop('checked');
-            RxPreliminar = $('#RxPreliminar').prop('checked'),
             ObsExamenes = $('#ObsExamenes').val(),
             FechaAnul = $('#FechaAnul').val(),
             Obs = $('#Obs').val();
@@ -132,7 +130,6 @@ $(document).ready(()=> {
                 IdEvaluador: IdEvaluador,
                 Evaluacion: Evaluacion,
                 Calificacion: Calificacion,
-                RxPreliminar: RxPreliminar,
                 SinEval: SinEval,
                 ObsExamenes: ObsExamenes,
                 tipo: tipo,
@@ -665,6 +662,58 @@ $(document).ready(()=> {
 
     });
 
+    $(document).on('click', '.btnTodo', function(e){
+        e.preventDefault();
+
+        let tipoPrestacion = $('#TipoPrestacion').val(),
+            pago = $('#pago').val(),
+            fecha = $('#Fecha').val();
+            empresa = $('#empresa').val(),
+            art = $('#art').val(),
+            IdPaciente = $('#IdPaciente').val();
+            spago = $('#SPago').val(),
+            observaciones = $('#Observaciones').val(),
+            tipo = $('#Tipo').val(),
+            sucursal = $('#Sucursal').val(),
+            nroFactura = $('#NroFactura').val(),
+            mapas = $('#mapas').val(),
+            autorizado = $('#Autorizado').val();
+            IdEvaluador = $('#IdEvaluador').val(),
+            Evaluacion = $('#Evaluacion').val(),
+            Calificacion = $('#Calificacion').val(),
+            SinEval =$('#SinEval').prop('checked');
+            ObsExamenes = $('#ObsExamenes').val(),
+            FechaAnul = $('#FechaAnul').val(),
+            Obs = $('#Obs').val();
+            NroFactProv = $('#NroFactProv').val();
+
+       swal({
+        title: "¿Desea enviar el Informe, grabar, cerrar e imprimir?",
+        icon: "warning",
+        buttons: ["Cancelar", "Aceptar"]
+       }).then((confirmar) => {
+            if(confirmar) {
+
+                preloader('on');
+                $.post(updatePrestacion, {Id: ID, TipoPrestacion: tipoPrestacion, Pago: pago, Fecha: fecha, SPago: spago, Mapas: mapas, Observaciones: observaciones, Empresa: empresa, IdPaciente: IdPaciente, Art: art, IdEvaluador: IdEvaluador,Evaluacion: Evaluacion, Calificacion: Calificacion, SinEval: SinEval, ObsExamenes: ObsExamenes, tipo: tipo, sucursal: sucursal, nroFactura: nroFactura, FechaAnul: FechaAnul, Obs: Obs, NroFactProv: NroFactProv, _token: TOKEN})
+                    .done(function(){
+                        preloader('off');
+                        toastr.success("Se ha actualizado la prestación");
+                    });
+                
+                $.get(CmdTodo, {Id: ID})
+                    .done(function(response){
+                        preloader('off');
+                        toastr.success(response.msg);
+                    });
+
+            }
+       });
+
+
+        
+    });
+
     $('#opciones').on('show.bs.modal', function () {
         cargarEstudiosImp(ID);
     });
@@ -794,7 +843,7 @@ $(document).ready(()=> {
                 preloader('off');
                 if(await response.prestacion === true){
 
-                    $('#art, #empresa, #paraEmpresa, #Fecha, #TipoPrestacion, #mapas, #cerrar, #finalizar, #entregar, #eEnviar, #pago, #SPago, #Tipo, #Autorizado, #IdEvaluador, #Evaluacion, #Calificacion, #Observaciones, #RxPreliminar, #SinEval, #ObsExamenes, #Obs, #actualizarPrestacion, #paquetes, #exam, #Sucursal, #NroFactura').prop('disabled', true);
+                    $('#art, #empresa, #paraEmpresa, #Fecha, #TipoPrestacion, #mapas, #cerrar, #finalizar, #entregar, #eEnviar, #pago, #SPago, #Tipo, #Autorizado, #IdEvaluador, #Evaluacion, #Calificacion, #Observaciones, #SinEval, #ObsExamenes, #Obs, #actualizarPrestacion, #paquetes, #exam, #Sucursal, #NroFactura').prop('disabled', true);
                     $('span.input-group-text').removeClass('cerrar finalizar entregar eEnviar');
                     $('i.ri-add-circle-line').removeClass('addExamen');
                     $('i.ri-play-list-add-line').removeClass('addPaquete');

@@ -868,3 +868,5 @@ ALTER TABLE examenes CHANGE aliasexamen_id aliasexamen VARCHAR(50) NULL;
 ALTER TABLE examenes MODIFY COLUMN aliasexamen VARCHAR(50) NULL;
 
 UPDATE examenes SET aliasexamen = NULL;
+
+ALTER TABLE mapas CHANGE IdEMpresa IdEmpresa int(11) NOT NULL

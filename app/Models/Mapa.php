@@ -18,7 +18,7 @@ class Mapa extends Model
         'Nro',
         'Fecha',
         'IdART',
-        'IdEMpresa',
+        'IdEmpresa',
         'Obs',
         'Inactivo',
         'Cpacientes',
@@ -40,6 +40,6 @@ class Mapa extends Model
 
     public function empresaMapa()
     {
-        return $this->hasOne(Cliente::class, 'Id', 'IdEMpresa');
+        return $this->hasOne(Cliente::class, 'Id', 'IdEmpresa');
     }
 }

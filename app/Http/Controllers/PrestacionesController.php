@@ -54,6 +54,7 @@ use App\Mail\EnviarReporte;
 use App\Mail\ExamenesResultadosMail;
 
 use App\Traits\ReporteExcel;
+use PhpOffice\PhpSpreadsheet\Calculation\Logical\Boolean;
 
 class PrestacionesController extends Controller
 {
@@ -311,49 +312,7 @@ class PrestacionesController extends Controller
 
         $prestacion = Prestacion::find($request->Id);
 
-        if($prestacion) {
-
-            $mapa = $request->Mapas ?? 0;
-            
-            // nuevo registro de mapa
-            if (($mapa != "0" || $mapa != 'null' || $mapa != '') && $prestacion->IdMapa == "0") {
-                $this->updateMapeados($mapa, "quitar");
-            }
-
-            // agrego un nuevo cupo al registro de mapa
-            if (($mapa == '0' || $mapa == '') && ($prestacion->IdMapa != 'null' || $prestacion->IdMapa != '0' || $prestacion->IdMapa != '' )) {
-
-                $this->updateMapeados($prestacion->IdMapa, "agregar");
-            } 
-        
-            $prestacion->IdEmpresa = $request->Empresa ?? 0;
-            $prestacion->IdART = $request->Art ?? 0;
-            $prestacion->Fecha = $request->Fecha ?? '';
-            $prestacion->TipoPrestacion = $request->TipoPrestacion ?? '';
-            $prestacion->IdMapa = $mapa;
-            $prestacion->Pago = $request->Pago ?? '';
-            $prestacion->SPago = $request->SPago ?? '';
-            $prestacion->Financiador = ($request->TipoPrestacion == 'ART' ? $request->Art : $request->Empresa) ?? 0;
-            $prestacion->Observaciones = $request->Observaciones ?? '';
-            $prestacion->NumeroFacturaVta = $request->NumeroFacturaVta ?? 0;
-            $prestacion->IdEvaluador = $request->IdEvaluador ?? 0;
-            $prestacion->Evaluacion = $request->Evaluacion ?? 0;
-            $prestacion->Calificacion = $request->Calificacion ?? 0;
-            $prestacion->RxPreliminar = $request->RxPreliminar === 'true' ? 1 : 0;
-            $prestacion->ObsExamenes = $request->ObsExamenes ?? '';
-            $prestacion->FechaAnul = $request->FechaAnul ?? '0000-00-00';
-            $prestacion->NroFactProv = $request->NroFactProv ?? '';
-            $prestacion->save();
-            
-            $request->SinEval && $this->setPrestacionAtributo($request->Id, $request->SinEval);
-            $request->Obs && $this->setPrestacionComentario($request->Id, $request->Obs);
-            $empresa = ($request->tipoPrestacion === 'ART' ? $request->ART : $request->Empresa);
-            ItemPrestacion::InsertarVtoPrestacion($request->Id);
-
-            $this->updateFichaLaboral($request->IdPaciente, $request->Art, $request->Empresa);
-            $this->addFactura($request->tipo, $request->sucursal, $request->nroFactura, $empresa, $request->tipoPrestacion, $request->Id);
-            Auditor::setAuditoria($request->Id, 1, 2, Auth::user()->name);
-
+        if($this->updateSegundoPlano($prestacion, $request)) {
             return response()->json(['msg' => 'Se ha actualizado la prestación'], 200);
         }
 
@@ -761,9 +720,11 @@ class PrestacionesController extends Controller
 
             $asunto = 'Estudios '.$nombreCompleto.' - '.$prestacion->paciente->TipoDocumento.' '.$prestacion->paciente->Documento;
 
+            $attachments = [$eEstudioSend, $eAdjuntoSend, $eGeneralSend];
+
             foreach ($emails as $email) {
                 // ExamenesResultadosJob::dispatch("nmaximowicz@eximo.com.ar", $asunto, $cuerpo, $this->sendPath);
-                ExamenesResultadosJob::dispatch("nmaximowicz@eximo.com.ar", $asunto, $cuerpo, [$eEstudioSend, $eAdjuntoSend, $eGeneralSend]);
+                ExamenesResultadosJob::dispatch("nmaximowicz@eximo.com.ar", $asunto, $cuerpo, $attachments);
 
                 // $info = new ExamenesResultadosMail(['subject' => $asunto, 'content' => $cuerpo, 'attachments' => $attachments]);
                 //     Mail::to("nmaximowicz@eximo.com.ar")->send($info);
@@ -803,6 +764,63 @@ class PrestacionesController extends Controller
                 ->where('itemsprestaciones.IdPrestacion', $request->Id)
                 ->orderBy('examenes.Nombre')
                 ->get();
+    }
+
+    public function cmdTodo(Request $request)
+    {   
+
+        $resultados = [];
+
+        $prestacion = Prestacion::with(['paciente', 'empresa'])->find($request->Id);
+        $examenes = ItemPrestacion::join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')->select('exanemes.Nombre as Nombre')->where('itemsprestaciones.Anulado', 0)->distinct()->orderBy('examenes.Nombre')->get();
+
+        //Actualizamos la prestacion (grabar)
+        $this->updateSegundoPlano($prestacion, $request);
+
+        //Cerramos la prestacion
+        $prestacion->FechaCierre = now()->format('Y-m-d');
+        $prestacion->Cerrado = 1;
+        $prestacion->save();
+        $prestacion->refresh();
+
+        //Evaluador Exclusivo
+
+
+        //Verificamos si acepta envio de emails
+        if ($prestacion->empresa->SEMail === 1) {
+            $resultado = ['msg' => 'El cliente no acepta envio de correos electrónicos'];
+            $resultados [] = $resultado;
+        }
+
+        $emails = $this->getEmailsReporte($prestacion->empresa->EMailInformes);
+
+        $nombreCompleto = $prestacion->paciente->Apellido.' '.$prestacion->paciente->Nombre;
+
+        $cuerpo = [
+            'paciente' => $nombreCompleto,
+            'Fecha' => Carbon::parse($prestacion->Fecha)->format("d/m/Y"),
+            'TipoDocumento' => $prestacion->paciente->TipoDocumento,
+            'Documento' => $prestacion->paciente->Documento,
+            'RazonSocial' => $prestacion->empresa->RazonSocial,
+            'examenes' => $examenes
+        ];
+
+        if ($this->checkExCtaImpago($request->Id) > 0) {
+            
+            $asunto = 'Solicitud de pago de exámen de  '.$nombreCompleto;
+
+            foreach ($emails as $email) {
+                ExamenesImpagosJob::dispatch("nmaximowicz@eximo.com.ar", $asunto, $cuerpo);
+            }
+
+            return response()->json(['msg' => 'El cliente presenta examenes a cuenta impagos. Se ha enviado el email correspondiente'], 409);
+        
+        } elseif ($this->checkExCtaImpago($request->Id) === 0) {
+
+
+
+        }
+
     }
 
     private function verificarEstados(int $id)
@@ -1218,10 +1236,6 @@ class PrestacionesController extends Controller
         if (is_array($request->estado) && in_array('Devol', $request->estado)) {
             $query->where('prestaciones.Devol', '1');
         }
-    
-        if (is_array($request->estado) && in_array('RxPreliminar', $request->estado)) {
-            $query->where('prestaciones.RxPreliminar', '1');
-        }
 
         if (is_array($request->estado) && in_array('Cerrado', $request->estado)) {
             $query->where('prestaciones.Cerrado', '1');
@@ -1296,6 +1310,69 @@ class PrestacionesController extends Controller
             ->whereIn('CInfo', [3,0])
             ->where('IdPrestacion', $id)
             ->count() == ItemPrestacion::where('IdPrestacion', $id)->count();
+    }
+
+    private function updateSegundoPlano($prestacion, $request): void
+    {
+
+        if($prestacion && !empty($request)) {
+
+            $mapa = $request->Mapas ?? 0;
+            
+            // nuevo registro de mapa
+            if (($mapa != "0" || $mapa != 'null' || $mapa != '') && $prestacion->IdMapa == "0") {
+                $this->updateMapeados($mapa, "quitar");
+            }
+
+            // agrego un nuevo cupo al registro de mapa
+            if (($mapa == '0' || $mapa == '') && ($prestacion->IdMapa != 'null' || $prestacion->IdMapa != '0' || $prestacion->IdMapa != '' )) {
+
+                $this->updateMapeados($prestacion->IdMapa, "agregar");
+            } 
+        
+            $prestacion->IdEmpresa = $request->Empresa ?? 0;
+            $prestacion->IdART = $request->Art ?? 0;
+            $prestacion->Fecha = $request->Fecha ?? '';
+            $prestacion->TipoPrestacion = $request->TipoPrestacion ?? '';
+            $prestacion->IdMapa = $mapa;
+            $prestacion->Pago = $request->Pago ?? '';
+            $prestacion->SPago = $request->SPago ?? '';
+            $prestacion->Financiador = ($request->TipoPrestacion == 'ART' ? $request->Art : $request->Empresa) ?? 0;
+            $prestacion->Observaciones = $request->Observaciones ?? '';
+            $prestacion->NumeroFacturaVta = $request->NumeroFacturaVta ?? 0;
+            $prestacion->IdEvaluador = $request->IdEvaluador ?? 0;
+            $prestacion->Evaluacion = $request->Evaluacion ?? 0;
+            $prestacion->Calificacion = $request->Calificacion ?? 0;
+            $prestacion->ObsExamenes = $request->ObsExamenes ?? '';
+            $prestacion->FechaAnul = $request->FechaAnul ?? '0000-00-00';
+            $prestacion->NroFactProv = $request->NroFactProv ?? '';
+            $prestacion->save();
+            
+            $request->SinEval && $this->setPrestacionAtributo($request->Id, $request->SinEval);
+            $request->Obs && $this->setPrestacionComentario($request->Id, $request->Obs);
+            $empresa = ($request->tipoPrestacion === 'ART' ? $request->ART : $request->Empresa);
+            ItemPrestacion::InsertarVtoPrestacion($request->Id);
+
+            $this->updateFichaLaboral($request->IdPaciente, $request->Art, $request->Empresa);
+            $this->addFactura($request->tipo, $request->sucursal, $request->nroFactura, $empresa, $request->tipoPrestacion, $request->Id);
+            Auditor::setAuditoria($request->Id, 1, 2, Auth::user()->name);
+        }
+
+    }
+
+    
+    private function AnexosFormulariosPrint(int $id)
+    {
+        //verifico si hay anexos con formularios a imprimir
+	    // $query="Select e.Id From itemsprestaciones ip,examenes e Where e.Id=ip.IdExamen and e.IdReporte <> 0 and ip.Anulado=0 and e.Evaluador=1 and  ip.IdPrestacion=$idprest LIMIT 1";	$rs=mysql_query($query,$conn);
+
+        return ItemPrestacion::join('examenes', 'itemsprestacones.IdExamen', '=', 'examenes.Id')
+                ->select('examenes.Id as Id')
+                ->whereNot('examenes.IdReporte', 0)
+                ->where('itemsprestaciones.Anulado', 0)
+                ->where('examenes.Evaluador', 1)
+                ->where('itemsprestaciones.IdPrestacion', $id)
+                ->first();
     }
 
 }

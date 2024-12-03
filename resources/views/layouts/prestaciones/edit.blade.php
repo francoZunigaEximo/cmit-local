@@ -295,12 +295,6 @@
                     </div>
 
                     <div class="col-12">
-                        <div class="col-10">
-                            <div class="form-check mb-3">
-                                <label class="form-check-label" for="RxPreliminar">RX preliminar</label>
-                                <input class="form-check-input" type="checkbox" id="RxPreliminar" {{ $prestacione->RxPreliminar == 'null' || $prestacione->RxPreliminar == 0 ? '' : 'checked'}}>
-                            </div>
-                        </div>
 
                         <div class="col-10">
                             <div class="form-check mb-3">
@@ -415,7 +409,7 @@
                             <button type="button" id="eEnviarReporte" class="btn btn-sm botonGeneral eEnviarReporte"><i class="ri-send-plane-line"></i>&nbsp;Enviar</button>
                             @endcan
                             @can('boton_todo')
-                            <button type="button" class="btn btn-sm botonGeneral"><i class="ri-stack-fill"></i>&nbsp;Todo</button>
+                            <button type="button" class="btn btn-sm botonGeneral btnTodo"><i class="ri-stack-fill"></i>&nbsp;Todo</button>
                             @endcan
                             <button type="button" class="btn btn-sm botonGeneral resumenTotal"><i class="ri-file-excel-line"></i>&nbsp;Resumen</button>
                             <button type="button" class="btn btn-sm botonGeneral eEstudio"><i class="bx bxs-file-pdf"></i>&nbsp;e-Estudio</button>
@@ -1603,6 +1597,7 @@ const enviarReporte = "{{ route('prestaciones.enviar') }}";
 const eEnviarAviso = "{{ route('prestaciones.aviso') }}";
 const exportXls = "{{ route('prestaciones.excelResumen') }}";
 const btnVisibleEnviar = "{{ route('prestaciones.visibleEnviar') }}";
+const CmdTodo = "{{ route('prestaciones.btnTodo') }}";
 
 //Extras
 const TOKEN = "{{ csrf_token() }}";

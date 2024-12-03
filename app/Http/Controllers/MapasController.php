@@ -49,7 +49,7 @@ class MapasController extends Controller
             $query = Mapa::leftJoin('prestaciones', 'mapas.Id', '=', 'prestaciones.IdMapa')
             ->leftJoin('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
             ->join('clientes', 'mapas.IdART', '=', 'clientes.Id')
-            ->join('clientes AS clientes2', 'mapas.IdEMpresa', '=', 'clientes2.Id')
+            ->join('clientes AS clientes2', 'mapas.IdEmpresa', '=', 'clientes2.Id')
             ->select(
                     'mapas.Id AS Id', 
                     'mapas.Nro AS Nro',
@@ -234,7 +234,7 @@ class MapasController extends Controller
             'Id' => $nuevoId,
             'Nro' => $request->Nro,
             'IdART' => $request->IdART,
-            'IdEMpresa' => $request->IdEmpresa,
+            'IdEmpresa' => $request->IdEmpresa,
             'Fecha' => $request->Fecha ?? '0000-00-00',
             'FechaE' => $request->FechaE ?? '0000-00-00',
             'Estado' => $request->Estado,
@@ -271,7 +271,7 @@ class MapasController extends Controller
         {
             $mapa->Nro = $request->Nro;
             $mapa->IdART = $request->IdART;
-            $mapa->IdEMpresa = $request->IdEmpresa;
+            $mapa->IdEmpresa = $request->IdEmpresa;
             $mapa->Fecha = $request->FechaEdicion;
             $mapa->FechaE = $request->FechaEEdicion;
             $mapa->Inactivo = $request->Estado;
@@ -437,14 +437,14 @@ class MapasController extends Controller
         $art = $request->art;
 
         $mapas = Mapa::join('clientes as Art', 'mapas.IdART', '=', 'Art.Id')
-            ->join('clientes as Empresa', 'mapas.IdEMpresa', '=', 'Empresa.Id')
+            ->join('clientes as Empresa', 'mapas.IdEmpresa', '=', 'Empresa.Id')
             ->select(
                 'mapas.Id as Id',
                 'mapas.Nro as Nro',
                 'Art.RazonSocial as RSArt',
                 'Empresa.RazonSocial as RSE')
             ->where('mapas.IdART', $art)
-            ->where('mapas.IdEMpresa', $empresa)
+            ->where('mapas.IdEmpresa', $empresa)
             ->where('mapas.Cmapeados', '>=', 1)
             ->whereDate('mapas.Fecha', '>', now())
             ->whereNot('mapas.Inactivo', 1)
@@ -875,7 +875,7 @@ class MapasController extends Controller
             'mapas.Id as Id',
             'mapas.Nro as Nro',
             DB::raw('(Select RazonSocial from clientes where Id = mapas.IdART) AS Art'),
-            DB::raw('(Select RazonSocial from clientes where Id = mapas.IdEMpresa) AS Empresa'),
+            DB::raw('(Select RazonSocial from clientes where Id = mapas.IdEmpresa) AS Empresa'),
             'mapas.Fecha as Fecha',
             'mapas.FechaE as FechaE',
             'mapas.Inactivo as Inactivo',

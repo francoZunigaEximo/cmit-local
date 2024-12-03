@@ -18,7 +18,7 @@
     </div>
 </div>
 
-<h4 class="mb-4 mt-3 d-flex align-items-center"></span> {{ $mapa->artMapa->RazonSocial }} | {{ $mapa->empresaMapa->RazonSocial }} &nbsp; <span class="custom-badge original">Para empresa: {{ $mapa->empresaMapa->ParaEmpresa}}</span>&nbsp;<span class="custom-badge original">Cod Mapa:  {{$mapa->Nro }}</h4>
+<h4 class="mb-4 mt-3 d-flex align-items-center"></span> {{ $mapa->artMapa->RazonSocial ?? ''}} | {{ $mapa->empresaMapa->RazonSocial ?? ''}} &nbsp; <span class="custom-badge original">Para empresa: {{ $mapa->empresaMapa->ParaEmpresa ?? ''}}</span>&nbsp;<span class="custom-badge original">Cod Mapa:  {{$mapa->Nro ?? ''}}</h4>
 
 <div class="card-header">
     <ul class="nav nav-tabs-custom rounded card-header-tabs border-bottom-0" role="tablist">
@@ -98,8 +98,8 @@
                         <div class="input-group input-group-sm mb-2 selectSize">
                             <span class="input-group-text">Empresa&nbsp;<span class="required">(*)</span></span>
                             <select class="form-select" id="IdEmpresa" name="IdEmpresa">
-                                @if(!empty($mapa->IdEMpresa))
-                                    <option value="{{ $mapa->IdEMpresa}}">{{ $mapa->empresaMapa->RazonSocial }}</option>
+                                @if(!empty($mapa->IdEmpresa))
+                                    <option value="{{ $mapa->IdEmpresa}}">{{ $mapa->empresaMapa->RazonSocial }}</option>
                                 @endif
                             </select>
                         </div>
