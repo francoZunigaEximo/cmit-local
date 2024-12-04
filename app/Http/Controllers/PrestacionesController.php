@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
 use App\Exports\PrestacionesExport;
+use App\Helpers\FileHelper;
 use App\Helpers\Tools;
 use App\Models\ArchivoEfector;
 use App\Models\ArchivoInformador;
@@ -52,9 +53,12 @@ use App\Jobs\ExamenesResultadosJob;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\EnviarReporte;
 use App\Mail\ExamenesResultadosMail;
-
+use App\Models\ArchivoPrestacion;
+use App\Models\PrestacionObsFase;
 use App\Traits\ReporteExcel;
 use PhpOffice\PhpSpreadsheet\Calculation\Logical\Boolean;
+
+use Illuminate\Support\Facades\File;
 
 class PrestacionesController extends Controller
 {
@@ -768,7 +772,6 @@ class PrestacionesController extends Controller
 
     public function cmdTodo(Request $request)
     {   
-
         $resultados = [];
 
         $prestacion = Prestacion::with(['paciente', 'empresa'])->find($request->Id);
@@ -784,7 +787,7 @@ class PrestacionesController extends Controller
         $prestacion->refresh();
 
         //Evaluador Exclusivo
-
+        $estudios = $this->AnexosFormulariosPrint($request->Id);
 
         //Verificamos si acepta envio de emails
         if ($prestacion->empresa->SEMail === 1) {
@@ -821,6 +824,49 @@ class PrestacionesController extends Controller
 
         }
 
+    }
+
+    public function uploadAdjuntoPrestacion(Request $request)
+    {
+        $id = ArchivoPrestacion::max('Id') + 1;
+
+        if(!empty($request->hasFile('archivo'))) {
+            $fileName = 'APRE'.$id.'_P'.$request->IdEntidad.'.pdf';
+            FileHelper::uploadFile(FileHelper::getFileUrl('escritura').'/AdjuntosPrestacion/', $request->archivo, $fileName);
+        }
+        
+        ArchivoPrestacion::create([
+            'Id' => $id,
+            'IdEntidad' => $request->IdEntidad,
+            'Descripcion' => $request->Descripcion,
+            'Ruta' => $fileName,
+
+        ]);
+    }
+
+    public function deleteAdjPrest(Request $request)
+    {
+        $query = ArchivoPrestacion::where('Id', $request->Id)->first();
+        
+ 
+        if ($query) {
+            $ruta = FileHelper::getFileUrl('escritura').'/AdjuntosPrestacion/'.$query->Ruta;
+            
+            if(File::exists($ruta)) {
+                File::delete($ruta);
+            }
+            
+            $query->delete();
+
+            return response()->json(['msg' => 'Se ha eliminado el registro y el archivo correctamente'], 200);
+        }
+
+        return response()->json(['msg' => 'No se ha encontrado el registro para eliminar'], 409);
+    }
+
+    public function getListadoAdjPres(Request $request)
+    {
+        return ArchivoPrestacion::where('IdEntidad', $request->Id)->get();
     }
 
     private function verificarEstados(int $id)

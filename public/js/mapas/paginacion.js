@@ -133,6 +133,7 @@ $(document).ready(()=>{
                     },
                     {
                         data: null,
+                        
                         width: 100,
                         render: function(data){
                             

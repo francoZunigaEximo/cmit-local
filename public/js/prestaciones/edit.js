@@ -7,6 +7,7 @@ $(document).ready(()=> {
     checkExamenes(ID);
     checkerIncompletos(ID);
     checkEstadoEnviar(ID);
+    loadListAdjPrestacion();
     
     $(document).on('change', '#empresa, #art, #TipoPrestacion', function(){
         let emp = $('#empresa').val(), art = $('#art').val();
@@ -452,10 +453,10 @@ $(document).ready(()=> {
             toastr.warning('La observación no puede estar vacía', 'Atención');
             return;
         }
-
+        preloader('on');
         $.post(savePrivComent, {_token: TOKEN, Comentario: comentario, IdEntidad: ID, obsfasesid: 2})
             .done(function(){
-
+                preloader('off');
                 toastr.success('Perfecto', 'Se ha generado la observación correctamente');
 
                 setTimeout(() => {
@@ -715,17 +716,126 @@ $(document).ready(()=> {
     });
 
     $('#opciones').on('show.bs.modal', function () {
-        cargarEstudiosImp(ID);
+        cargarEstudiosImp();
     });
 
-    function cargarEstudiosImp(idPrestacion)
+    $(document).on('click', '.btnAdjFilePres', function(e){
+        e.preventDefault();
+
+        let archivo = $('input[name="fileAdjPrestacion"]')[0].files[0],
+            descripcion = $('#DescripcionAdjPrestacion').val();
+
+        if(verificarArchivo(archivo)){
+        
+            preloader('on');
+            let formData = new FormData();
+            formData.append('archivo', archivo);
+            formData.append('Descripcion', descripcion);
+            formData.append('IdEntidad', ID);
+            formData.append('_token', TOKEN);
+
+            $.ajax({
+                type: 'POST',
+                url: fileUploadPres,
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function() {
+                    loadListAdjPrestacion();
+                    $('#adjPrestacion').modal(hide);
+                    $('#DescripcionAdjPrestacion, input[name="fileAdjPrestacion"]').val('');
+                    preloader('off');
+                    toastr.success("Se ha cargado el adjunto de manera correcta.");
+                },
+                error: function (jqXHR) {
+                    preloader('off');
+                    let errorData = JSON.parse(jqXHR.responseText);            
+                    checkError(jqXHR.status, errorData.msg);
+                    return;
+                }
+            });
+        }
+
+    });
+
+    $(document).on('click', '.deleteAdjuntoPres', function(e){
+        e.preventDefault();
+
+        let id = $(this).data('id');
+        
+        if([null, 0, ''].includes(id)) return;
+
+        swal({
+            title: "¿Estás seguro que deseas eliminar?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar) {
+                preloader('on');
+                $.get(deleteAdjPrest, {Id: id})
+                    .done(function(response){
+                        loadListAdjPrestacion();
+                        preloader('off');
+                        toastr.success(response.msg);
+                    })
+                    .fail(function(jqXHR){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
+                    });
+            }
+        });
+    });
+
+    function loadListAdjPrestacion() {
+
+        $('#adjPrestacion').empty();
+
+        $.get(loadlistadoAdjPres, {Id: ID})
+            .done(function(response){
+
+                $.each(response, function(index, r){
+                    let contenido = `
+                        <tr>
+                            <td>${r.Descripcion}</td>
+                            <td>
+                                 <div class="d-flex justify-content-center align-items-center gap-2">
+                                     <div class="edit">
+                                        <a href="${descarga}/${r.Ruta}" target="_blank">
+                                            <button type="button" class="btn btn-sm iconGeneral" title="Ver"><i class="ri-search-eye-line"></i></button>
+                                        </a>
+                                    </div>
+                                    <div class="remove">
+                                        <button data-id="${r.Id}" class="btn btn-sm iconGeneral deleteAdjuntoPres" title="Eliminar">
+                                            <i class="ri-delete-bin-2-line"></i>
+                                        </button>
+                                    </div>
+                                 </div>
+                            </td>
+                        </tr>
+                    `;
+
+                    $('#adjPrestacion').append(contenido);
+                });
+                
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            });
+    }
+
+    async function cargarEstudiosImp()
     {
         $('#estudios').empty();
 
-        if([null, 0, ''].includes(idPrestacion)) return;
+        if([null, 0, ''].includes(ID)) return;
         
         preloader('on');
-        $.get(listadoEstudiosImp, {Id: idPrestacion})
+        $.get(await listadoEstudiosImp, {Id: ID})
             .done(function(response){
                 $.each(response, function(index, data){
                     preloader('off');
@@ -742,6 +852,12 @@ $(document).ready(()=> {
                     $('#estudios').append(contenido);
                 });
             })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            });
 
     }
 

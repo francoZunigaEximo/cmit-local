@@ -119,7 +119,7 @@ class PacientesController extends Controller
             $foto = $this->addFoto($request->hasFile('Foto'), $nuevoIdPaciente, 'create');
         }
         
-        $paciente = Paciente::create([
+        Paciente::create([
             'Id' => $nuevoIdPaciente,
             'Nombre' => $request->Nombre,
             'Apellido' => $request->Apellido,
@@ -140,7 +140,6 @@ class PacientesController extends Controller
             'Observaciones' => $request->Observaciones,
         ]);
 
-        $paciente->save();
 
         if($request->NumeroTelefono)
         {

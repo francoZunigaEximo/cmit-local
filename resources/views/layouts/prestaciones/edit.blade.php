@@ -468,6 +468,31 @@
                         </div>
                     </div>
 
+                    <div class="row mt-2 adjPrestacion">
+                        <div class="col-lg-12">
+                            <div class="card titulo-tabla">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h4 class="card-title mb-0">Adjuntos Generales de la Prestación</h4><button type="button" class="btn bt-sm botonGeneral" data-bs-toggle="modal" data-bs-target="#addAdjPres">Añadir</button>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table mb-1">
+                                        <table id="lstAuditorias" class="table table-bordered" style="100%">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Descripción</th>
+                                                    <th>Archivo</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="list form-check-all" id="adjPrestacion">
+                      
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="row mt-2 auditoria">
                         <div class="col-lg-12">
                             <div class="card titulo-tabla">
@@ -789,139 +814,31 @@
     </div>
 </div>
 
-{{-- <div id="imprimir" class="modal fadeInUp" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+<div id="addAdjPres" class="modal fadeInUp" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
     <div class="modal-dialog">
         <div class="modal-content"> 
             <div class="modal-header">
-                <h5 class="modal-title" id="myModalLabel">Reportes</h5>
+                <h5 class="modal-title" id="myModalLabel">Adjuntar archivos prestación</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>   
             </div>
             <div class="modal-body">
-                <form>
-
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="evaluacion">
-                        <label class="form-check-label" for="evaluacion">
-                            Evaluación resumen
-                        </label>
+                <form id="form-efector">    
+                    <input type="file" class="form-control" name="fileAdjPrestacion"/>
+                
+                    <div class="mt-3">
+                        <label for="Descripcion" class="form-label">Descripción</label>
+                        <textarea class="form-control" name="DescripcionAdjPrestacion" id="DescripcionAdjPrestacion" rows="5"></textarea>
                     </div>
-
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="adjDigitales">
-                        <label class="form-check-label" for="adjDigitales">
-                            Adjuntos digitales
-                        </label>
-                    </div>
-
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="adjFisicosDigitales">
-                        <label class="form-check-label" for="adjFisicosDigitales">
-                            Adjuntos fisicos y digitales
-                        </label>
-                    </div>
-
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="adjGenerales">
-                        <label class="form-check-label" for="adjGenerales">
-                            Adjuntos generales
-                        </label>
-                    </div>
-
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="adjAnexos">
-                        <label class="form-check-label" for="adjAnexos">
-                            Adjuntos anexos
-                        </label>
-                    </div>
-
-                    <hr class="mt-2 mb-2">
-
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="infInternos">
-                        <label class="form-check-label" for="infInternos">
-                            Informes internos
-                        </label>
-                    </div>
-
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="pedProveedores">
-                        <label class="form-check-label" for="pedProveedores">
-                            Pedido a proveedores
-                        </label>
-                    </div>
-
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="conPaciente">
-                        <label class="form-check-label" for="conPaciente">
-                            Control paciente
-                        </label>
-                    </div>
-
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="resAdmin">
-                        <label class="form-check-label" for="resAdmin">
-                            Resumen administrativo
-                        </label>
-                    </div>
-
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="consEstDetallado">
-                        <label class="form-check-label" for="consEstDetallado">
-                            Constancia de estudio completo (Detallado)
-                        </label>
-                    </div>
-
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="consEstSimple">
-                        <label class="form-check-label" for="consEstSimple">
-                            Constancia de estudio completo (Simple)
-                        </label>
-                    </div>
-
-                    <hr class="mt-2 mb-2">
-
-                    <p class="fw-bold">Estudios:</p>
-
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="audioCmit">
-                        <label class="form-check-label" for="audioCmit">
-                            Audiometria CMIT
-                        </label>
-                    </div>
-
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="certYpf">
-                        <label class="form-check-label" for="certYpf">
-                            Certificado y visado YPF
-                        </label>
-                    </div>
-
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="periodCmit">
-                        <label class="form-check-label" for="periodCmit">
-                            CMIT clinico periodico
-                        </label>
-                    </div>
-
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="testRapido">
-                        <label class="form-check-label" for="testRapido">
-                            Test rapido de screening en orina 2 drogas (cm)
-                        </label>
-                    </div>
-
-                    <div class="mb-3 text-end">
-                        <button type="button" class="btn btn-sm botonGeneral" id="reset" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-sm botonGeneral imprimirReporte">Imprimir</button>
-                    </div>
-                </form>
+                </form> 
             </div>
             <div class="modal-footer">
+                <button type="button" class="btn botonGeneral" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn botonGeneral btnAdjFilePres">Guardar adjunto</button>
             </div>
 
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
-</div><!-- /.modal --> --}}
+</div><!-- /.modal -->
 
 <div id="opciones" class="modal fadeInUp" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
     <div class="modal-dialog modal-lg">
@@ -1598,6 +1515,9 @@ const eEnviarAviso = "{{ route('prestaciones.aviso') }}";
 const exportXls = "{{ route('prestaciones.excelResumen') }}";
 const btnVisibleEnviar = "{{ route('prestaciones.visibleEnviar') }}";
 const CmdTodo = "{{ route('prestaciones.btnTodo') }}";
+const fileUploadPres = "{{ route('prestaciones.uploadAdjPres') }}";
+const loadlistadoAdjPres = "{{ route('prestaciones.listaAdjPres') }}";
+
 
 //Extras
 const TOKEN = "{{ csrf_token() }}";
@@ -1606,7 +1526,8 @@ const ID = "{{ $prestacione->Id }}";
 const IDEMPRESA = "{{ $prestacione->empresa->Id }}";
 const editUrl = "{{ route('itemsprestaciones.edit', ['itemsprestacione' => '__examen__'])}}";
 const cacheDelete = "{{ route('prestaciones.cacheDelete') }}";
-
+const descarga = "@fileUrl('lectura')/AdjuntosPrestacion";
+const deleteAdjPrest = "{{ route('prestaciones.deleteAdjPres') }}";
 
 //Select
 const selectTipoPrestacion = "{{ $prestacione->TipoPrestacion }}";

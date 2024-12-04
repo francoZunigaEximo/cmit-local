@@ -727,7 +727,8 @@ $(document).ready(()=>{
     });
 
 
-    $(document).on('click', '.confirmarComentarioPriv', function(){
+    $(document).on('click', '.confirmarComentarioPriv', function(e){
+        e.preventDefault();
 
         let comentario = $('#Comentario').val(), idprest = $('#mostrarIdPrestacion').text(), fase = $('#fase').text();
 

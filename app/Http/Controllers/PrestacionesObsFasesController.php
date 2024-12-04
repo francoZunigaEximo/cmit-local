@@ -52,12 +52,10 @@ class PrestacionesObsFasesController extends Controller
 
     private function queryBasic()
     {
-        $query = PrestacionObsFase::join('prestaciones', 'prestaciones_obsfases.IdEntidad', '=', 'prestaciones.Id')
+        return PrestacionObsFase::join('prestaciones', 'prestaciones_obsfases.IdEntidad', '=', 'prestaciones.Id')
         ->join('mapas', 'prestaciones.IdMapa', '=', 'mapas.Id')
         ->join('users', 'prestaciones_obsfases.IdUsuario', '=', 'users.name')
         ->select('prestaciones_obsfases.*', 'prestaciones_obsfases.Rol as nombre_perfil')
         ->orderBy('prestaciones_obsfases.Id', 'DESC');
-
-        return $query;
     }
 }

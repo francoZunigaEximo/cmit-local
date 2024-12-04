@@ -30,6 +30,7 @@ use App\Http\Controllers\RolesController;
 use App\Http\Controllers\UsuariosController;
 use App\Models\FacturaDeVenta;
 use App\Models\ItemPrestacion;
+use App\Models\PrestacionComentario;
 //use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Hash;
@@ -130,6 +131,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/prestaciones/resumen-export-excel', [PrestacionesController::class, 'resumenExcel'])->name('prestaciones.excelResumen');
     Route::get('/prestaciones/visible-eEnviar', [PrestacionesController::class, 'visibleButtonEnviar'])->name('prestaciones.visibleEnviar');
     Route::get('/prestaciones/boton-todo', [PrestacionesController::class, 'cmdTodo'])->name('prestaciones.btnTodo');
+    Route::post('/prestaciones/archivo-adjunto-prestacion', [PrestacionesController::class, 'uploadAdjuntoPrestacion'])->name('prestaciones.uploadAdjPres');
+    Route::get('/prestaciones/listado-adjunto-prestacion', [PrestacionesController::class, 'getListadoAdjPres'])->name('prestaciones.listaAdjPres');
+    Route::get('/prestaciones/eliminar-adjunto-prestacion', [PrestacionesController::class, 'deleteAdjPrest'])->name('prestaciones.deleteAdjPres');
     Route::resource('prestaciones', PrestacionesController::class);
 
     //Ruta Ficha Laboral
