@@ -836,9 +836,10 @@ $(document).ready(()=> {
         
         preloader('on');
         $.get(await listadoEstudiosImp, {Id: ID})
-            .done(function(response){
+
+          .done(function(response){
+                preloader('off');
                 $.each(response, function(index, data){
-                    preloader('off');
                     let forNombre = (data.NombreExamen).replace(" ", "-");
                     let contenido = `
                         <div class="form-check mb-2">
