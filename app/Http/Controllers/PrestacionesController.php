@@ -692,7 +692,7 @@ class PrestacionesController extends Controller
             $asunto = 'Solicitud de pago de exámen de  '.$nombreCompleto;
 
             foreach ($emails as $email) {
-                ExamenesImpagosJob::dispatch("nmaximowicz@eximo.com.ar", $asunto, $cuerpo);
+                ExamenesImpagosJob::dispatch("noliva@eximo.com.ar", $asunto, $cuerpo);
             }
 
             return response()->json(['msg' => 'El cliente presenta examenes a cuenta impagos. Se ha enviado el email correspondiente'], 409);
@@ -728,7 +728,7 @@ class PrestacionesController extends Controller
 
             foreach ($emails as $email) {
                 // ExamenesResultadosJob::dispatch("nmaximowicz@eximo.com.ar", $asunto, $cuerpo, $this->sendPath);
-                ExamenesResultadosJob::dispatch("nmaximowicz@eximo.com.ar", $asunto, $cuerpo, $attachments);
+                ExamenesResultadosJob::dispatch("noliva@eximo.com.ar", $asunto, $cuerpo, $attachments);
 
                 // $info = new ExamenesResultadosMail(['subject' => $asunto, 'content' => $cuerpo, 'attachments' => $attachments]);
                 //     Mail::to("nmaximowicz@eximo.com.ar")->send($info);
@@ -813,7 +813,7 @@ class PrestacionesController extends Controller
             $asunto = 'Solicitud de pago de exámen de  '.$nombreCompleto;
 
             foreach ($emails as $email) {
-                ExamenesImpagosJob::dispatch("nmaximowicz@eximo.com.ar", $asunto, $cuerpo);
+                ExamenesImpagosJob::dispatch("noliva@eximo.com.ar", $asunto, $cuerpo);
             }
 
             return response()->json(['msg' => 'El cliente presenta examenes a cuenta impagos. Se ha enviado el email correspondiente'], 409);
