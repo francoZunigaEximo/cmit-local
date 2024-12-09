@@ -61,6 +61,7 @@ use PhpOffice\PhpSpreadsheet\Calculation\Logical\Boolean;
 
 use Illuminate\Support\Facades\File;
 
+use FPDF;
 
 class PrestacionesController extends Controller
 {
@@ -519,8 +520,8 @@ class PrestacionesController extends Controller
             'eEnvio' => ['eEstudio', 'adjAnexos', 'adjGenerales'],
             'adjDigitales' => ['adjDigitalFisico' => 1],
             'adjFisicos' => ['adjDigitalFisico' => 2],
-            'adjGenerales' => 'adjGenerales',
             'adjFisicosDigitales' => ['adjDigitalFisico' => 3],
+            'adjGenerales' => 'adjGenerales',
             'infInternos' => 'infInternos',
             'pedProveedores' => 'pedProveedores',
             'conPaciente' => 'conPaciente',
@@ -548,7 +549,7 @@ class PrestacionesController extends Controller
                 }
             }
         }
-
+       
         if (!empty($request->estudios)) {
 
             foreach($request->estudios as $examen) {
@@ -565,14 +566,22 @@ class PrestacionesController extends Controller
                 ? 'eAdjuntos_'.$prestacion->paciente->Apellido.'_'.$prestacion->paciente->Nombre.'_'.$prestacion->paciente->Documento.'_'.Carbon::parse($prestacion->Fecha)->format('d-m-Y').'.pdf'
                 : $this->fileNameExport.'.pdf'));
 
+        if(!empty($listado)) {
 
-        return response()->json([
-            'filePath' => $this->outputPath,
-            'name' => $name,
-            'msg' => 'Reporte generado correctamente',
-            'icon' => 'success' 
-        ]);
+            return response()->json([
+                'filePath' => $this->outputPath,
+                'name' => $name,
+                'msg' => 'Reporte generado correctamente',
+                'icon' => 'success' 
+            ]);
+        }else{
+
+            return response()->json(['msg' => 'Hay reportes para imprimir en la selección'], 409);
+        }
+
     }
+
+        
 
     public function enviarReporte(Request $request)
     {
@@ -600,7 +609,10 @@ class PrestacionesController extends Controller
         }
 
         if ($request->adjGenerales == 'true') {
-            array_push($listado, $this->adjGenerales($request->Id));
+            $pdf = new FPDF;
+            $archivo = new AdjuntosGenerales();
+            $archivo->render($pdf, ['id' => $request->Id]);
+            array_push($listado, storage_path('app/public/temp/merge_adjGenerales.pdf'));
         }
 
         if ($request->resAdmin == 'true') {
@@ -701,7 +713,7 @@ class PrestacionesController extends Controller
 
             array_push($file1, $this->eEstudio($request->Id));
             array_push($file2, $this->adjAnexos($request->Id));
-            array_push($file3, $this->adjGenerales($request->Id));
+            array_push($file3, $this->AdjuntosGenerales($request->Id));
 
             $eEstudioSend = storage_path('app/public/eEstudio'.$prestacion->Id.'.pdf');
             $eAdjuntoSend = storage_path('app/public/temp/eAdjuntos_'.$prestacion->paciente->Apellido.'_'.$prestacion->paciente->Nombre.'_'.$prestacion->paciente->Documento.'_'.Carbon::parse($prestacion->Fecha)->format('d-m-Y').'.pdf');
@@ -761,7 +773,7 @@ class PrestacionesController extends Controller
 
     public function cmdTodo(Request $request)
     {   
-        $resultados = [];
+        $listado = [];
 
         $prestacion = Prestacion::with(['paciente', 'empresa'])->find($request->Id);
         $examenes = ItemPrestacion::join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')->select('exanemes.Nombre as Nombre')->where('itemsprestaciones.Anulado', 0)->distinct()->orderBy('examenes.Nombre')->get();
@@ -780,12 +792,25 @@ class PrestacionesController extends Controller
 
         //Verificamos si acepta envio de emails
         if ($prestacion->empresa->SEMail === 1) {
-            $resultado = ['msg' => 'El cliente no acepta envio de correos electrónicos'];
-            $resultados [] = $resultado;
+
+            array_push($listado, $this->eEstudio($request->Id));
+            array_push($listado, $this->adjAnexos($request->Id));
+            array_push($listado, $this->AdjuntosGenerales($request->Id));
+
+            foreach($estudios as $examen) {
+                $estudio = $this->addEstudioExamen($request->Id, $examen);
+                array_push($listado, $estudio);
+            }
+
+            return response()->json([
+                'filePath' => $this->outputPath,
+                'name' => $this->fileNameExport.'.pdf',
+                'msg' => 'El cliente no acepta envio de correos electrónicos. Se imprime todo.',
+                'icon' => 'success' 
+            ]); 
         }
 
         $emails = $this->getEmailsReporte($prestacion->empresa->EMailInformes);
-
         $nombreCompleto = $prestacion->paciente->Apellido.' '.$prestacion->paciente->Nombre;
 
         $cuerpo = [
@@ -809,7 +834,42 @@ class PrestacionesController extends Controller
         
         } elseif ($this->checkExCtaImpago($request->Id) === 0) {
 
+            $cuerpo['tarea'] = $prestacion->paciente->fichaLaboral->first()->Tareas;
+            $cuerpo['tipoPrestacion'] = ucwords($prestacion->TipoPrestacion);
+            $cuerpo['calificacion'] = substr($prestacion->Calificacion, 2) ?? '';
+            $cuerpo['evaluacion'] = substr($prestacion->Evaluacion, 2) ?? '';
+            $cuerpo['obsEvaluacion'] = $prestacion->Observaciones ?? '';
 
+            //Creando eEnvio para adjuntar
+            $file1 = [];
+            $file2 = [];
+            $file3 = [];
+
+            array_push($file1, $this->eEstudio($request->Id));
+            array_push($file2, $this->adjAnexos($request->Id));
+            array_push($file3, $this->AdjuntosGenerales($request->Id));
+
+            $eEstudioSend = storage_path('app/public/eEstudio'.$prestacion->Id.'.pdf');
+            $eAdjuntoSend = storage_path('app/public/temp/eAdjuntos_'.$prestacion->paciente->Apellido.'_'.$prestacion->paciente->Nombre.'_'.$prestacion->paciente->Documento.'_'.Carbon::parse($prestacion->Fecha)->format('d-m-Y').'.pdf');
+            $eGeneralSend = storage_path('app/public/eAdjGeneral'.$prestacion->Id.'.pdf');
+
+            $this->reporteService->fusionarPDFs($file1, $eEstudioSend);
+            $this->reporteService->fusionarPDFs($file2, $eAdjuntoSend);
+            $this->reporteService->fusionarPDFs($file3, $eGeneralSend);
+
+            $asunto = 'Estudios '.$nombreCompleto.' - '.$prestacion->paciente->TipoDocumento.' '.$prestacion->paciente->Documento;
+
+            $attachments = [$eEstudioSend, $eAdjuntoSend, $eGeneralSend];
+
+            foreach ($emails as $email) {
+                // ExamenesResultadosJob::dispatch("nmaximowicz@eximo.com.ar", $asunto, $cuerpo, $this->sendPath);
+                ExamenesResultadosJob::dispatch("noliva@eximo.com.ar", $asunto, $cuerpo, $attachments);
+
+                // $info = new ExamenesResultadosMail(['subject' => $asunto, 'content' => $cuerpo, 'attachments' => $attachments]);
+                //     Mail::to("nmaximowicz@eximo.com.ar")->send($info);
+            }
+
+            return response()->json(['msg' => 'Se ha cerrado la prestación. Se han guardado todos los cambios y se ha enviado el resultado al cliente de manera correcta.'], 200);
 
         }
 
@@ -827,7 +887,7 @@ class PrestacionesController extends Controller
         ArchivoPrestacion::create([
             'Id' => $id,
             'IdEntidad' => $request->IdEntidad,
-            'Descripcion' => $request->Descripcion,
+            'Descripcion' => $request->Descripcion ?? '',
             'Ruta' => $fileName,
 
         ]);
@@ -983,6 +1043,7 @@ class PrestacionesController extends Controller
             [],
             storage_path('app/public/temp/merge_adjGenerales.pdf')
         );
+
     }
 
     private function adjAnexos(int $idPrestacion): mixed

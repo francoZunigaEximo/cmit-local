@@ -10,6 +10,7 @@ use App\Services\Reportes\Reporte;
 
 class AdjuntosGenerales extends Reporte
 {
+
     const FOLDERNAME = "AdjuntosPrestacion";
     const NOMBRE = "adjGenerales";
 
@@ -19,7 +20,7 @@ class AdjuntosGenerales extends Reporte
     {
         $archivoPrestacion = $this->archivoPrestacion($datos['id']);
         $files = [];
-        
+
         if ($archivoPrestacion) {
             foreach ($archivoPrestacion as $archivo) {
                 $file = FileHelper::getFileUrl('lectura').'/'.SELF::FOLDERNAME.'/'.$archivo->Ruta;

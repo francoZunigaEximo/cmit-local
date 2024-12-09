@@ -475,6 +475,7 @@ $(document).ready(()=> {
     $(document).on('click', '.imprimirReporte', function(e){
         e.preventDefault();
 
+
         let evaluacion = $('#evaluacion').prop('checked'),
             eEstudio = $('#eEstudio').prop('checked'),
             eEnvio = $('#eEnvio').prop('checked'),
@@ -711,7 +712,13 @@ $(document).ready(()=> {
                 $.get(CmdTodo, {Id: ID})
                     .done(function(response){
                         preloader('off');
-                        toastr.success(response.msg);
+                        
+                        if(response.icon === 'success') {
+                            createFile("pdf", response.filePath, response.name);
+                            toastr.success(response.msg);
+                        }else{
+                            toastr.success(response.msg);
+                        }
                     });
 
             }
@@ -748,7 +755,7 @@ $(document).ready(()=> {
                 contentType: false,
                 success: function() {
                     loadListAdjPrestacion();
-                    $('#adjPrestacion').modal(hide);
+                    $('#adjPrestacion').modal('hide');
                     $('#DescripcionAdjPrestacion, input[name="fileAdjPrestacion"]').val('');
                     preloader('off');
                     toastr.success("Se ha cargado el adjunto de manera correcta.");

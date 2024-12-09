@@ -8,8 +8,6 @@ use Illuminate\Support\Facades\DB;
 use App\Helpers\FileHelper;
 use App\Services\Reportes\DetallesReportes;
 
-
-
 class AdjuntosAnexos extends Reporte
 {
     use DetallesReportes;
@@ -17,11 +15,10 @@ class AdjuntosAnexos extends Reporte
     const FOLDERNAME = 'AdjuntosEfector';
     const NOMBRE = 'adjAnexos';
 
-    public function render(FPDF $pdf, $datos = []): void
+    public function render(FPDF $pdf, $datos = ['id']): void
     {
         $archivoEfector = $this->archivosEfector($datos['id']);
         $files = [];
-        
         if ($archivoEfector) {
             foreach ($archivoEfector as $archivo) {
                 $file = FileHelper::getFileUrl('lectura').'/'.SELF::FOLDERNAME.'/'.$archivo->Ruta;

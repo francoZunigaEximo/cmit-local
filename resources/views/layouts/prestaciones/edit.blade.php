@@ -973,8 +973,8 @@
                         </div>
 
                         <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" id="adjPrestacion">
-                            <label class="form-check-label" for="adjPrestacion">
+                            <input class="form-check-input" type="checkbox" id="adjGenerales">
+                            <label class="form-check-label" for="adjGenerales">
                                 Adjuntos prestación
                             </label>
                         </div>
