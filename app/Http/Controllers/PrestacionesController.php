@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enum\ListadoReportes;
 use App\Models\Cliente;
 use App\Models\Mapa;
 use App\Models\Paciente;
@@ -59,6 +60,7 @@ use App\Traits\ReporteExcel;
 use PhpOffice\PhpSpreadsheet\Calculation\Logical\Boolean;
 
 use Illuminate\Support\Facades\File;
+
 
 class PrestacionesController extends Controller
 {
@@ -509,63 +511,50 @@ class PrestacionesController extends Controller
 
         $prestacion = Prestacion::with(['empresa', 'paciente'])->find($request->Id);
 
-        if ($request->evaluacion == 'true') {
-            array_push($listado, $this->caratula($request->Id));
-            array_push($listado, $this->resumenEvaluacion($request->Id));
+        // Lista de las condiciones y sus respectivas funciones
+        $acciones = [
+            'evaluacion' => ['caratula', 'resAdmin'],
+            'eEstudio' => 'eEstudio',
+            'adjAnexos' => 'adjAnexos',
+            'eEnvio' => ['eEstudio', 'adjAnexos', 'adjGenerales'],
+            'adjDigitales' => ['adjDigitalFisico' => 1],
+            'adjFisicos' => ['adjDigitalFisico' => 2],
+            'adjGenerales' => 'adjGenerales',
+            'adjFisicosDigitales' => ['adjDigitalFisico' => 3],
+            'infInternos' => 'infInternos',
+            'pedProveedores' => 'pedProveedores',
+            'conPaciente' => 'conPaciente',
+            'resAdmin' => 'resAdmin',
+            'consEstDetallado' => 'consEstDetallado',
+            'consEstSimple' => 'consEstSimple'
+        ];
+
+        // Recorrer las acciones y agregarlas a $listado si la condición es true
+        foreach ($acciones as $key => $action) {
+            if ($request->$key == 'true') {
+                // Si la acción está asociada a un array (varios métodos a llamar)
+                if (is_array($action)) {
+                    foreach ($action as $method => $param) {
+                        // Si el método tiene un parámetro extra, lo pasamos
+                        if (is_numeric($method)) {
+                            array_push($listado, $this->$param($request->Id));
+                        } else {
+                            array_push($listado, $this->$method($request->Id, $param));
+                        }
+                    }
+                } else {
+                    // Si la acción es una función simple
+                    array_push($listado, $this->$action($request->Id));
+                }
+            }
         }
 
-        if ($request->eEstudio == 'true') {
-            array_push($listado, $this->eEstudio($request->Id));
-        }
+        if (!empty($request->estudios)) {
 
-        if ($request->adjAnexos == 'true') {
-            array_push($listado, $this->adjAnexos($request->Id));
-        }
-
-        if ($request->eEnvio == 'true') {
-            array_push($listado, $this->eEstudio($request->Id));
-            array_push($listado, $this->adjAnexos($request->Id));
-            array_push($listado, $this->adjGenerales($request->Id));
-        }
-
-        if ($request->adjDigitales == 'true') {
-            array_push($listado, $this->adjDigitalFisico($request->Id, 1));
-        }
-
-        if ($request->adjFisicos == 'true') {
-            array_push($listado, $this->adjDigitalFisico($request->Id, 2));
-        }
-
-        if ($request->adjGenerales == 'true') {
-            array_push($listado, $this->adjGenerales($request->Id));
-        }
-
-        if ($request->adjFisicosDigitales == 'true') {
-            array_push($listado, $this->adjDigitalFisico($request->Id, 3));
-        }
-
-        if ($request->infInternos == 'true') {
-            array_push($listado, $this->infInternos($request->Id));
-        }
-
-        if ($request->pedProveedores == 'true') {
-            array_push($listado, $this->pedProveedores($request->Id));
-        }
-
-        if ($request->conPaciente == 'true') {
-            array_push($listado, $this->conPaciente($request->Id));
-        }
-
-        if ($request->resAdmin == 'true') {
-            array_push($listado, $this->resAdmin($request->Id));
-        }
-
-        if ($request->consEstDetallado == 'true') {
-            array_push($listado, $this->consEstDetallado($request->Id));
-        }
-
-        if ($request->consEstSimple == 'true') {
-            array_push($listado, $this->consEstSimple($request->Id));
+            foreach($request->estudios as $examen) {
+                $estudio = $this->addEstudioExamen($request->Id, $examen);
+                array_push($listado, $estudio);
+            }
         }
 
         $this->reporteService->fusionarPDFs($listado, $this->outputPath);
@@ -1406,7 +1395,6 @@ class PrestacionesController extends Controller
 
     }
 
-    
     private function AnexosFormulariosPrint(int $id)
     {
         //verifico si hay anexos con formularios a imprimir
@@ -1419,6 +1407,25 @@ class PrestacionesController extends Controller
                 ->where('examenes.Evaluador', 1)
                 ->where('itemsprestaciones.IdPrestacion', $id)
                 ->first();
+    }
+
+    private function addEstudioExamen(int $idPrestacion, int $idExamen): mixed
+    {
+
+        return $this->reporteService->generarReporte(
+            ListadoReportes::getReporte($idExamen),
+            null,
+            null,
+            null,
+            'guardar',
+            storage_path($this->tempFile.Tools::randomCode(15).'-'.Auth::user()->name.'.pdf'),
+            null,
+            ['id' => $idPrestacion, 'idExamen' => $idExamen],
+            [],
+            [],
+            [],
+            null
+        );
     }
 
 }

@@ -490,7 +490,8 @@ $(document).ready(()=> {
             caratula = $('#caratula').prop('checked'),
             consEstDetallado = $('#consEstDetallado').prop('checked'),
             consEstSimple = $('#consEstSimple').prop('checked'),
-            audioCmit = $('#audioCmit').prop('checked');
+            audioCmit = $('#audioCmit').prop('checked'),
+            estudios = [];
 
         let verificar = [
             evaluacion,
@@ -508,16 +509,21 @@ $(document).ready(()=> {
             consEstDetallado,
             consEstSimple,
             audioCmit,
-            adjFisicos
+            adjFisicos,
+            estudios
         ];
             
         if (verificar.every(val => !val)) {
             toastr.warning('Debe seleccionar algun check para obtener el reporte');
             return;
         }
+
+        $('input[data-nosend]:checked').each(function() {
+            estudios.push($(this).attr('id'));
+        });
         
         preloader('on');
-        $.get(exportPdf, {Id: ID, evaluacion: evaluacion, eEstudio: eEstudio, eEnvio: eEnvio, adjDigitales: adjDigitales, adjFisicos: adjFisicos, adjFisicosDigitales: adjFisicosDigitales, adjGenerales: adjGenerales, adjAnexos: adjAnexos, infInternos: infInternos, pedProveedores: pedProveedores, conPaciente: conPaciente, resAdmin: resAdmin, caratula: caratula, consEstDetallado: consEstDetallado, consEstSimple: consEstSimple, audioCmit: audioCmit})
+        $.get(exportPdf, {Id: ID, evaluacion: evaluacion, eEstudio: eEstudio, eEnvio: eEnvio, adjDigitales: adjDigitales, adjFisicos: adjFisicos, adjFisicosDigitales: adjFisicosDigitales, adjGenerales: adjGenerales, adjAnexos: adjAnexos, infInternos: infInternos, pedProveedores: pedProveedores, conPaciente: conPaciente, resAdmin: resAdmin, caratula: caratula, consEstDetallado: consEstDetallado, consEstSimple: consEstSimple, audioCmit: audioCmit, estudios: estudios})
             .done(function(response){
                 createFile("pdf", response.filePath, response.name);
                 preloader('off')
@@ -623,7 +629,7 @@ $(document).ready(()=> {
             consEstSimple = $('#consEstSimple').prop('checked'),
             EMailInformes = $('#EMailInformes').val();
         
-        let checkboxesNoPrint = $('input[data-noprint]:checked').map(function() {
+        let checkboxesNoSend = $('input[data-nosend]:checked').map(function() {
             return $(this).prop('checked');
         });
 
@@ -635,7 +641,7 @@ $(document).ready(()=> {
             pedProveedores,
             conPaciente,
             caratula,
-            ...checkboxesNoPrint
+            ...checkboxesNoSend
         ];
 
         if (verificar.some(val => val)) {
@@ -843,12 +849,13 @@ $(document).ready(()=> {
                     let forNombre = (data.NombreExamen).replace(" ", "-");
                     let contenido = `
                         <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" id="${data.IdReporte}" data-noprint="x" data-send>
+                            <input class="form-check-input" type="checkbox" id="${data.IdReporte}" data-examen="${data.IdExamen}" data-nosend>
                             <label class="form-check-label" for="${forNombre}">
                                 ${data.NombreExamen}
                             </label>
                         </div>
                     `;
+                    console.log(data.Id)
 
                     $('#estudios').append(contenido);
                 });
