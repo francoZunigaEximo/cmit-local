@@ -114,6 +114,7 @@ class PacientesController extends Controller
         }
 
         $nuevoIdPaciente = Paciente::max('Id') + 1;
+        $foto = 'foto-default.png';
 
         if(!empty($request->hasFile('Foto'))) {
             $foto = $this->addFoto($request->hasFile('Foto'), $nuevoIdPaciente, 'create');
