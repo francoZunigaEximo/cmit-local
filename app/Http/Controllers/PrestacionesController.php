@@ -515,12 +515,12 @@ class PrestacionesController extends Controller
         // Lista de las condiciones y sus respectivas funciones
         $acciones = [
             'evaluacion' => ['caratula', 'resAdmin'],
-            'eEstudio' => 'eEstudio',
+            'eEstudio' => ['eEstudio', 'adjDigitalFisico' => 3],
             'adjAnexos' => 'adjAnexos',
             'eEnvio' => ['eEstudio', 'adjAnexos', 'adjGenerales'],
-            'adjDigitales' => ['adjDigitalFisico' => 1],
-            'adjFisicos' => ['adjDigitalFisico' => 2],
-            'adjFisicosDigitales' => ['adjDigitalFisico' => 3],
+            'adjDigitales' => ['adjDigitalFisico' => 3],
+            'adjFisicos' => ['adjDigitalFisico' => 1],
+            'adjFisicosDigitales' => ['adjDigitalFisico' => 2],
             'adjGenerales' => 'adjGenerales',
             'infInternos' => 'infInternos',
             'pedProveedores' => 'pedProveedores',
@@ -601,18 +601,15 @@ class PrestacionesController extends Controller
         }
 
         if ($request->adjDigitales == 'true') {
-            array_push($listado, $this->adjDigitalFisico($request->Id, 1));
+            array_push($listado, $this->adjDigitalFisico($request->Id, 3));
         }
 
         if ($request->adjFisicos == 'true') {
-            array_push($listado, $this->adjDigitalFisico($request->Id, 2));
+            array_push($listado, $this->adjDigitalFisico($request->Id, 1));
         }
 
         if ($request->adjGenerales == 'true') {
-            $pdf = new FPDF;
-            $archivo = new AdjuntosGenerales();
-            $archivo->render($pdf, ['id' => $request->Id]);
-            array_push($listado, storage_path('app/public/temp/merge_adjGenerales.pdf'));
+            array_push($listado, $this->adjGenerales($request->Id));
         }
 
         if ($request->resAdmin == 'true') {
@@ -712,6 +709,7 @@ class PrestacionesController extends Controller
             $file3 = [];
 
             array_push($file1, $this->eEstudio($request->Id));
+            array_push($file1, $this->adjDigitalFisico($request->Id, 2));
             array_push($file2, $this->adjAnexos($request->Id));
             array_push($file3, $this->AdjuntosGenerales($request->Id));
 
@@ -1195,14 +1193,14 @@ class PrestacionesController extends Controller
         return $this->reporteService->generarReporte(
             EEstudio::class,
             EvaluacionResumen::class,
-            AdjuntosDigitales::class,
+            null,
             null,
             'guardar',
             storage_path($this->tempFile.Tools::randomCode(15).'-'.Auth::user()->name.'.pdf'),
             null,
             ['id' => $idPrestacion],
             ['id' => $idPrestacion, 'firmaeval' => 0, 'opciones' => 'no', 'eEstudio' => 'si'],
-            ['id' => $idPrestacion, 'tipo' => 3],
+            [],
             [],
             null
         );

@@ -69,29 +69,26 @@ class AdjuntosDigitales extends Reporte
             }
 
             if ($query->Tipo === 3) {
-
-                if ($query->Tipo === 3) {
-                    if ($datos['tipo'] === 1) {
-                        // Para Tipo 1, solo agregar si NoImprime es 0
-                        if ($query->NoImprime === 0) {
-                            $file3 = FileHelper::getFileUrl('lectura') . '/' . $this->rutainternaefectores . '/' . $query->Ruta;
-                            array_push($files, $file3);
-                        }
-                    } elseif ($datos['tipo'] === 2) {
-                        // Para Tipo 2, agregar si NoImprime es 0 o 1
-                        if (in_array($query->NoImprime, [0, 1])) {
-                            $file3 = FileHelper::getFileUrl('lectura') . '/' . $this->rutainternaefectores . '/' . $query->Ruta;
-                            array_push($files, $file3);
-                        }
-                    } elseif($datos['tipo'] === 3){
-                        //Para Tipo 3, agregar si NoImprime es 1
-                        if ($query->NoImprime === 1) {
-                            $file3 = FileHelper::getFileUrl('lectura') . '/' . $this->rutainternaefectores . '/' . $query->Ruta;
-                            array_push($files, $file3);
-                        }
+                if ($datos['tipo'] === 1) {
+                    // Para Tipo 1, solo agregar si NoImprime es 0
+                    if ($query->NoImprime === 0) {
+                        $file3 = FileHelper::getFileUrl('lectura') . '/' . $this->rutainternaefectores . '/' . $query->Ruta;
+                        array_push($files, $file3);
                     }
-                } 
-            }
+                } elseif ($datos['tipo'] === 2) {
+                    // Para Tipo 2, agregar si NoImprime es 0 o 1
+                    if (in_array($query->NoImprime, [0, 1])) {
+                        $file3 = FileHelper::getFileUrl('lectura') . '/' . $this->rutainternaefectores . '/' . $query->Ruta;
+                        array_push($files, $file3);
+                    }
+                } elseif($datos['tipo'] === 3){
+                    //Para Tipo 3, agregar si NoImprime es 1
+                    if ($query->NoImprime === 1) {
+                        $file3 = FileHelper::getFileUrl('lectura') . '/' . $this->rutainternaefectores . '/' . $query->Ruta;
+                        array_push($files, $file3);
+                    }
+                }
+            }   
             
         }
 
