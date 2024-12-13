@@ -68,4 +68,9 @@ class Paciente extends Model
     {
         return $this->hasMany(DatoPaciente::class, 'IdPaciente', 'Id');
     }
+
+    public function historialPrestacion()
+    {
+        return $this->hasMany(HistorialPrestacion::class, 'IdPaciente', 'Id');
+    }
 }

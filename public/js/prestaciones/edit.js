@@ -8,6 +8,7 @@ $(document).ready(()=> {
     checkerIncompletos(ID);
     checkEstadoEnviar(ID);
     loadListAdjPrestacion();
+    lstResultadosPrest(IDPACIENTE);
     
     $(document).on('change', '#empresa, #art, #TipoPrestacion', function(){
         let emp = $('#empresa').val(), art = $('#art').val();
@@ -801,6 +802,37 @@ $(document).ready(()=> {
         });
     });
 
+    $(document).on('click', '.verPrestacion', function(e){
+        e.preventDefault();
+
+        let link = urlPrestacion.replace('__prestacion__', $(this).data('id'));
+        window.open(link, '_blank');
+
+    });
+
+    $(document).on('click', '.exportSimple, .exportDetallado', function(e){
+        e.preventDefault();
+
+        let id = $(this).data('id'),
+            tipo = $(this).hasClass('exportSimple') ? 'exportSimple' : 'exportDetallado';
+
+        if([0, null, undefined, ''].includes(id)) return;
+
+        preloader('on');
+        $.get(exResultado, {IdPaciente: id, Tipo: tipo})
+            .done(function(response){
+                createFile("excel", response.filePath, generarCodigoAleatorio() + '_reporte');
+                preloader('off');
+                toastr.success('Se ha generado el archivo correctamente');
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            });
+    });
+
     function loadListAdjPrestacion() {
 
         $('#adjPrestacion').empty();
@@ -1124,5 +1156,56 @@ $(document).ready(()=> {
                 return allTrue === true ? $('#eEnviarReporte').show() : $('#eEnviarReporte').hide();
             });
     }
+
+    async function lstResultadosPrest(idPaciente){
+
+        if([0,null,'', undefined].includes(idPaciente)) return;
+
+        $('#lstResultadosPres').empty();
+        preloader('on');
+        $.get(await loadResultadosPres, {IdPaciente: idPaciente})
+            .done(function(response){
+                console.log(response);
+                preloader('off');
+                $.each(response, function(index, r){
+
+                    let icon = r.Evaluacion === 0 ? `<span class="custom-badge generalNegro">Antiguo</span>` : '',
+                        evaluacion = r.Evaluacion === 0 ? '' : r.Evaluacion.slice(2),
+                        calificacion = r.Calificacion ? r.Calificacion.slice(2) : '',
+                        boton = r.Evaluacion !== 0 ? `<button data-id="${r.Id}" class="btn btn-sm iconGeneral verPrestacion" title="Ver">
+                                    <i class="ri-search-eye-line"></i>
+                                </button>` : '';
+
+                    let contenido = `
+                        <tr>
+                            <td style="width: 50px">${fechaNow(r.Fecha, "/", 0)}</td>
+                            <td style="width: 50px">${r.Id} ${icon}</td>
+                            <td style="width: 160px">${r.Empresa}</td>
+                            <td style="width: 100px">${r.Tipo}</td>
+                            <td style="width: 120px">${evaluacion}</td>
+                            <td style="width: 120px">${calificacion}</td>
+                            <td>${r.Obs}</td>
+                            <td style="width: 30px">
+                                ${boton}
+                            </td>
+                        </tr>
+                    `;
+
+                    $('#lstResultadosPres').append(contenido);
+
+                });
+
+                $("#listadoResultadosPres").fancyTable({
+                    pagination: true,
+                    perPage: 15,
+                    searchable: false,
+                    globalSearch: false,
+                    sortable: false, 
+                });
+            });
+
+    }
+
+    
 
 });

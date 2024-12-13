@@ -449,6 +449,7 @@ class PrestacionesExport implements FromCollection,WithHeadings
 
         $query = DB::table('prestaciones')
         ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+        ->leftJoin('fichalaborales', 'pacientes.Id', '=', 'fichaslaborales.IdPaciente')
         ->join('clientes as emp', 'prestaciones.IdEmpresa', '=', 'emp.Id')
         ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
         ->join('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
@@ -506,7 +507,8 @@ class PrestacionesExport implements FromCollection,WithHeadings
             'facturasventa.Tipo as Tipo',
             'facturasventa.Sucursal as Sucursal',
             'facturasventa.NroFactura as NroFactura',
-            'art.RazonSocial as ArtRazonSocial'
+            'art.RazonSocial as ArtRazonSocial',
+            'fichaslaborales.CCosto as CCosto'
         )
         ->where('prestaciones.Estado', '=', '1');
 

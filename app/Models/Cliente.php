@@ -93,5 +93,10 @@ class Cliente extends Model
     {
         return $this->hasMany(FacturaDeVenta::class, 'IdEmpresa', 'Id');
     }
+
+    public function historialPrestacion()
+    {
+        return $this->hasMany(HistorialPrestacion::class, ['IdART', 'IdEmpresa'], 'Id');
+    }
 }
 

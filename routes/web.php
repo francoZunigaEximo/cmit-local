@@ -134,6 +134,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/prestaciones/archivo-adjunto-prestacion', [PrestacionesController::class, 'uploadAdjuntoPrestacion'])->name('prestaciones.uploadAdjPres');
     Route::get('/prestaciones/listado-adjunto-prestacion', [PrestacionesController::class, 'getListadoAdjPres'])->name('prestaciones.listaAdjPres');
     Route::get('/prestaciones/eliminar-adjunto-prestacion', [PrestacionesController::class, 'deleteAdjPrest'])->name('prestaciones.deleteAdjPres');
+    Route::get('/prestaciones/listado-resultados', [PrestacionesController::class, 'getResultados'])->name('prestaciones.resultados');
+    Route::get('/prestaciones/exportar-resultados', [PrestacionesController::class, 'exportResultados'])->name('prestaciones.exportarResultado');
     Route::resource('prestaciones', PrestacionesController::class);
 
     //Ruta Ficha Laboral

@@ -55,6 +55,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\EnviarReporte;
 use App\Mail\ExamenesResultadosMail;
 use App\Models\ArchivoPrestacion;
+use App\Models\HistorialPrestacion;
 use App\Models\PrestacionObsFase;
 use App\Traits\ReporteExcel;
 use PhpOffice\PhpSpreadsheet\Calculation\Logical\Boolean;
@@ -690,7 +691,7 @@ class PrestacionesController extends Controller
             $asunto = 'Solicitud de pago de exámen de  '.$nombreCompleto;
 
             foreach ($emails as $email) {
-                ExamenesImpagosJob::dispatch("noliva@eximo.com.ar", $asunto, $cuerpo);
+                ExamenesImpagosJob::dispatch($email, $asunto, $cuerpo);
             }
 
             return response()->json(['msg' => 'El cliente presenta examenes a cuenta impagos. Se ha enviado el email correspondiente'], 409);
@@ -727,7 +728,7 @@ class PrestacionesController extends Controller
 
             foreach ($emails as $email) {
                 // ExamenesResultadosJob::dispatch("nmaximowicz@eximo.com.ar", $asunto, $cuerpo, $this->sendPath);
-                ExamenesResultadosJob::dispatch("noliva@eximo.com.ar", $asunto, $cuerpo, $attachments);
+                ExamenesResultadosJob::dispatch($email, $asunto, $cuerpo, $attachments);
 
                 // $info = new ExamenesResultadosMail(['subject' => $asunto, 'content' => $cuerpo, 'attachments' => $attachments]);
                 //     Mail::to("nmaximowicz@eximo.com.ar")->send($info);
@@ -825,7 +826,7 @@ class PrestacionesController extends Controller
             $asunto = 'Solicitud de pago de exámen de  '.$nombreCompleto;
 
             foreach ($emails as $email) {
-                ExamenesImpagosJob::dispatch("noliva@eximo.com.ar", $asunto, $cuerpo);
+                ExamenesImpagosJob::dispatch($email, $asunto, $cuerpo);
             }
 
             return response()->json(['msg' => 'El cliente presenta examenes a cuenta impagos. Se ha enviado el email correspondiente'], 409);
@@ -914,6 +915,26 @@ class PrestacionesController extends Controller
     public function getListadoAdjPres(Request $request)
     {
         return ArchivoPrestacion::where('IdEntidad', $request->Id)->get();
+    }
+
+    public function getResultados(Request $request)
+    {
+        $merge = $this->mergePrestaciones($request->IdPaciente);
+
+        return response()->json($merge);
+    }
+
+    public function exportResultados(Request $request)
+    {
+        if ($request->Tipo === 'exportSimple') {
+
+            return $this->SimplePrestacion($this->querySimple($request->IdPaciente));
+            
+        }elseif($request->Tipo === 'exportDetallado') {
+            
+            return $this->detalladaPrestacion($this->queryDetallado($request->IdPaciente));  
+        }
+        return response()->json(['msg' => 'No se ha podido generar el archivo'], 409);
     }
 
     private function verificarEstados(int $id)
@@ -1485,6 +1506,129 @@ class PrestacionesController extends Controller
             [],
             null
         );
+    }
+
+    private function mergePrestaciones(int $id)
+    {
+        $antiguas = HistorialPrestacion::join('clientes', 'hist_prestaciones.IdEmpresa', '=', 'clientes.Id')
+            ->select(
+                'hist_prestaciones.Id as Id',
+                'hist_prestaciones.Fecha as Fecha',
+                'clientes.RazonSocial as Empresa',
+                'hist_prestaciones.TipoPrestacion as Tipo',
+                'hist_prestaciones.Observaciones as Obs',
+        )->where('hist_prestaciones.IdPaciente', $id)
+        ->orderBy('hist_prestaciones.Id', 'DESC')
+        ->get();
+
+        $antiguas = $antiguas->map(function ($item) {
+            $item->Evaluacion = 0;
+            return $item;
+        });
+        
+        $nuevas = Prestacion::join('clientes', 'prestaciones.IdEmpresa', '=', 'clientes.Id')
+        ->select(
+            'prestaciones.Id as Id',
+            'prestaciones.Fecha as Fecha',
+            'clientes.RazonSocial as Empresa',
+            'prestaciones.TipoPrestacion as Tipo',
+            'prestaciones.Evaluacion as Evaluacion',
+            'prestaciones.Calificacion as Calificacion',
+            'prestaciones.Observaciones as Obs',
+            'prestaciones.Financiador as Financiador'
+        )->where('prestaciones.IdPaciente', $id)
+        ->orderBy('prestaciones.Id', 'DESC')
+        ->get();
+        
+        return $nuevas->merge($antiguas);
+    }
+
+    private function queryDetallado(int $id)
+    {
+        $nuevas = DB::table('prestaciones')
+        ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+        ->leftJoin('fichaslaborales', 'pacientes.Id', '=', 'fichaslaborales.IdPaciente')
+        ->join('clientes as emp', 'prestaciones.IdEmpresa', '=', 'emp.Id')
+        ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
+        ->join('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
+        ->join('examenes', 'examenes.Id', '=', 'itemsprestaciones.IdExamen')
+        ->leftJoin('prestaciones_comentarios', 'prestaciones.Id', '=', 'prestaciones_comentarios.IdP')
+        ->select( 
+            'pacientes.Documento as DNI',
+            'pacientes.Nombre as Nombre',
+            'pacientes.Apellido as Apellido',
+            'prestaciones.NroCEE as NroCEE',
+            'prestaciones.Anulado as Anulado',
+            'prestaciones.ObsAnulado as ObsAnulado', 
+            'prestaciones.Observaciones as Observaciones', 
+            'prestaciones.Incompleto as Incompleto', 
+            'prestaciones.Ausente as Ausente',
+            'prestaciones.Forma as Forma',
+            'prestaciones.Devol as Devol',
+            'prestaciones_comentarios.Obs as ObsEstado',
+            'prestaciones.Fecha as FechaAlta',
+            'prestaciones.Id as Id',
+            'prestaciones.TipoPrestacion as TipoPrestacion',
+            'itemsprestaciones.ObsExamen as ObsExamen',
+            'itemsprestaciones.Anulado as ExaAnulado',
+            'examenes.Nombre as Examen',
+            'emp.RazonSocial as EmpresaRazonSocial',
+            'emp.ParaEmpresa as EmpresaParaEmp',
+            'emp.Identificacion as EmpresaIdentificacion',
+            'art.RazonSocial as ArtRazonSocial',
+            'fichaslaborales.CCosto as CCosto'
+        )
+            ->where('prestaciones.Estado', '=', '1')
+            ->where('prestaciones.IdPaciente', $id)
+            ->groupBy('prestaciones.Id')
+            ->orderBy('prestaciones.Id', 'DESC')
+            ->get();
+
+
+        $antiguas = DB::table('hist_prestaciones')
+            ->join('pacientes', 'hist_prestaciones.IdPaciente', '=', 'pacientes.Id')
+            ->leftJoin('fichaslaborales', 'pacientes.Id', '=', 'fichaslaborales.IdPaciente')
+            ->join('clientes as emp', 'hist_prestaciones.IdEmpresa', '=', 'emp.Id')
+            ->join('clientes as art', 'hist_prestaciones.IdART', '=', 'art.Id')
+            ->join('itemsprestaciones', 'hist_prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
+            ->join('examenes', 'examenes.Id', '=', 'itemsprestaciones.IdExamen')
+            ->leftJoin('prestaciones_comentarios', 'hist_prestaciones.Id', '=', 'prestaciones_comentarios.IdP')
+            ->select( 
+                'pacientes.Documento as DNI',
+                'pacientes.Nombre as Nombre',
+                'pacientes.Apellido as Apellido',
+                'hist_prestaciones.NroCEE as NroCEE',
+                'hist_prestaciones.Anulado as Anulado',
+                'hist_prestaciones.ObsAnulado as ObsAnulado', 
+                'hist_prestaciones.Observaciones as Observaciones', 
+                'prestaciones_comentarios.Obs as ObsEstado',
+                'hist_prestaciones.Fecha as FechaAlta',
+                'hist_prestaciones.Id as Id',
+                'hist_prestaciones.TipoPrestacion as TipoPrestacion',
+                'itemsprestaciones.ObsExamen as ObsExamen',
+                'itemsprestaciones.Anulado as ExaAnulado',
+                'examenes.Nombre as Examen',
+                'emp.RazonSocial as EmpresaRazonSocial',
+                'emp.ParaEmpresa as EmpresaParaEmp',
+                'emp.Identificacion as EmpresaIdentificacion',
+                'art.RazonSocial as ArtRazonSocial',
+                'fichaslaborales.CCosto as CCosto'
+            )
+                ->where('hist_prestaciones.IdPaciente', $id)
+                ->groupBy('hist_prestaciones.Id')
+                ->orderBy('hist_prestaciones.Id', 'DESC')
+                ->get();
+
+        return $nuevas->merge($antiguas);
+
+    }
+
+    private function querySimple(int $id)
+    {
+        $nuevas = Prestacion::with(['paciente', 'empresa', 'art', 'prestacionComentario'])->where('IdPaciente', $id)->get();
+        $antiguas = HistorialPrestacion::with(['paciente', 'empresa', 'art'])->where('IdPaciente', $id)->get();
+
+        return $nuevas->merge($antiguas);
     }
 
 }

@@ -544,6 +544,145 @@ trait ReporteExcel
         return $this->generarArchivo($spreadsheet, $name);
     }
 
+    public function SimplePrestacion($prestaciones)
+    {
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+
+        $columnas = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'AA', 'AB'];
+
+        foreach($columnas as $columna){
+            $sheet->getColumnDimension($columna)->setAutoSize(true);
+        }
+
+        $sheet->setCellValue('A1', 'Fecha');
+        $sheet->setCellValue('B1', 'Prestacion');
+        $sheet->setCellValue('C1', 'Tipo');
+        $sheet->setCellValue('D1', 'Paciente');
+        $sheet->setCellValue('E1', 'DNI');
+        $sheet->setCellValue('F1', 'Cliente');
+        $sheet->setCellValue('G1', 'Empresa');
+        $sheet->setCellValue('H1', 'ART');
+        $sheet->setCellValue('I1', 'Cerrado');
+        $sheet->setCellValue('J1', 'Finalizado');
+        $sheet->setCellValue('K1', 'Entregado');
+        $sheet->setCellValue('L1', 'eEnviado');
+        $sheet->setCellValue('M1', 'Facturado');
+        $sheet->setCellValue('N1', 'Factura');
+        $sheet->setCellValue('O1', 'Forma de Pago');
+        $sheet->setCellValue('P1', 'Vencimiento');
+        $sheet->setCellValue('Q1', 'Evaluación');
+        $sheet->setCellValue('R1', 'Calificación');
+        $sheet->setCellValue('S1', 'Obs Resultado');
+        $sheet->setCellValue('T1', 'Anulada');
+        $sheet->setCellValue('U1', 'Obs Anulada');
+        $sheet->setCellValue('V1', 'Nro CE');
+        $sheet->setCellValue('W1', 'C.Costos');
+        $sheet->setCellValue('X1', 'INC');
+        $sheet->setCellValue('Y1', 'AUS');
+        $sheet->setCellValue('Z1', 'FOR');
+        $sheet->setCellValue('AA1', 'DEV');
+        $sheet->setCellValue('AB1', 'Obs Estados');
+
+        $fila = 2;
+        foreach($prestaciones as $prestacion){
+            $sheet->setCellValue('A'.$fila, $this->formatearFecha($prestacion->FechaAlta));
+            $sheet->setCellValue('B'.$fila, $prestacion->Id ?? '');
+            $sheet->setCellValue('C'.$fila, $prestacion->TipoPrestacion ?? '');
+            $sheet->setCellValue('D'.$fila, $prestacion->paciente->Apellido." ".$prestacion->paciente->Nombre);
+            $sheet->setCellValue('E'.$fila, $prestacion->paciente->Documento ?? '');
+            $sheet->setCellValue('F'.$fila, $prestacion->empresa->RazonSocial ?? '');
+            $sheet->setCellValue('G'.$fila, $prestacion->empresa->ParaEmpresa ?? '');
+            $sheet->setCellValue('H'.$fila, $prestacion->art->RazonSocial ?? '');
+            $sheet->setCellValue('I'.$fila, $prestacion->Cerrado === 1 ? 'SI' : 'NO');
+            $sheet->setCellValue('J'.$fila, $prestacion->Finalizado === 1 ? 'SI' : 'NO');
+            $sheet->setCellValue('K'.$fila, $prestacion->Entregado === 1 ? 'SI' : 'NO');
+            $sheet->setCellValue('L'.$fila, $prestacion->eEnviado === 1 ? 'SI' : 'NO');
+            $sheet->setCellValue('M'.$fila, $this->formatearFecha($prestacion->Facturado));
+            $sheet->setCellValue('N'.$fila, $prestacion->NumeroFacturaVta ?? '0000');
+            $sheet->setCellValue('O'.$fila, $this->formaPagoPrestacion($prestacion->Pago));
+            $sheet->setCellValue('P'.$fila, $this->formatearFecha($prestacion->FechaVto));
+            $sheet->setCellValue('Q'.$fila, substr($prestacion->Evaluacion, 2));
+            $sheet->setCellValue('R'.$fila, substr($prestacion->Calificacion, 2));
+            $sheet->setCellValue('S'.$fila, $prestacion->Observaciones ?? '');
+            $sheet->setCellValue('T'.$fila, $prestacion->Anulado === 1 ? 'SI' : 'NO');
+            $sheet->setCellValue('U'.$fila, $prestacion->ObsAnulado ?? '');
+            $sheet->setCellValue('V'.$fila, $prestacion->NroCEE ?? '');
+            $sheet->setCellValue('W'.$fila, $prestacion->paciente->fichaLaboral->CCosto ?? '');
+            $sheet->setCellValue('X'.$fila, $prestacion->Incompleto === 1 ? 'SI' : 'NO');
+            $sheet->setCellValue('Y'.$fila, $prestacion->Ausente === 1 ? 'SI' : 'NO');
+            $sheet->setCellValue('Z'.$fila, $prestacion->Forma === 1 ? 'SI' : 'NO');
+            $sheet->setCellValue('AA'.$fila, $prestacion->Devol === 1 ? 'SI' : 'NO');
+            $sheet->setCellValue('AB'.$fila, $prestacion->prestacionComentario->Obs ?? '');
+            $fila++;
+            
+        }
+
+        $name = 'resultados_'.Str::random(6).'.xlsx';
+        return $this->generarArchivo($spreadsheet, $name);
+    }
+
+    public function detalladaPrestacion($prestaciones)
+    {
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+
+        $columnas = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'AA', 'AB'];
+
+        foreach($columnas as $columna){
+            $sheet->getColumnDimension($columna)->setAutoSize(true);
+        }
+
+        $sheet->setCellValue('A1', 'Fecha');
+        $sheet->setCellValue('B1', 'Prestacion');
+        $sheet->setCellValue('C1', 'Tipo');
+        $sheet->setCellValue('D1', 'Paciente');
+        $sheet->setCellValue('E1', 'DNI');
+        $sheet->setCellValue('F1', 'Cliente');
+        $sheet->setCellValue('G1', 'Empresa');
+        $sheet->setCellValue('H1', 'ART');
+        $sheet->setCellValue('I1', 'C.Costos');
+        $sheet->setCellValue('J1', 'Nro de CE');
+        $sheet->setCellValue('K1', 'Pres Anulada');
+        $sheet->setCellValue('L1', 'Obs Anulada');
+        $sheet->setCellValue('M1', 'Examen');
+        $sheet->setCellValue('N1', 'Examen Anulado');
+        $sheet->setCellValue('O1', 'INC');
+        $sheet->setCellValue('P1', 'AUS');
+        $sheet->setCellValue('Q1', 'FOR');
+        $sheet->setCellValue('R1', 'DEV');
+        $sheet->setCellValue('S1', 'Obs Estados');
+
+        $fila = 2;
+        foreach($prestaciones as $prestacion){
+            $sheet->setCellValue('A'.$fila, $this->formatearFecha($prestacion->FechaAlta));
+            $sheet->setCellValue('B'.$fila, $prestacion->Id ?? '');
+            $sheet->setCellValue('C'.$fila, $prestacion->TipoPrestacion ?? '');
+            $sheet->setCellValue('D'.$fila, $prestacion->Apellido." ".$prestacion->Nombre);
+            $sheet->setCellValue('E'.$fila, $prestacion->DNI ?? '');
+            $sheet->setCellValue('F'.$fila, $prestacion->EmpresaRazonSocial ?? '');
+            $sheet->setCellValue('G'.$fila, $prestacion->EmpresaParaEmp ?? '');
+            $sheet->setCellValue('H'.$fila, $prestacion->ArtRazonSocial ?? '');
+            $sheet->setCellValue('I'.$fila, $prestacion->CCosto ?? '');
+            $sheet->setCellValue('J'.$fila, $prestacion->NroCEE ?? '');
+            $sheet->setCellValue('K'.$fila, $prestacion->Anulado === 1 ? 'SI' : 'NO');
+            $sheet->setCellValue('L'.$fila, $prestacion->ObsAnulado ?? '');
+            $sheet->setCellValue('M'.$fila, $prestacion->Examen ?? '');
+            $sheet->setCellValue('N'.$fila, $prestacion->ObsExamen ?? '');
+            $sheet->setCellValue('O'.$fila, $prestacion->Incompleto ?? '');
+            $sheet->setCellValue('P'.$fila, $prestacion->Ausente ?? '');
+            $sheet->setCellValue('Q'.$fila, $prestacion->Forma ?? '');
+            $sheet->setCellValue('R'.$fila, $prestacion->Devol ?? '');
+            $sheet->setCellValue('S'.$fila, $prestacion->ObsEstado ?? '');
+            $fila++;
+        }
+
+        $name = 'resultados_'.Str::random(6).'.xlsx';
+        return $this->generarArchivo($spreadsheet, $name);
+    }
+
     private function generarArchivo($excel, $nombre)
     {
           // Guardar el archivo en la carpeta de almacenamiento
@@ -561,5 +700,17 @@ trait ReporteExcel
         return $fecha === '0000-00-00' ? '' : Carbon::parse($fecha)->format('d/m/Y');
     }
     
-
+    private function formaPagoPrestacion($pago)
+    {
+        switch ($pago) {
+            case "B":
+                return 'Ctdo.';
+            case "C":
+                return  'CCorriente';
+            case "P":
+                return 'ExCuenta';
+            default:
+                return 'CCorriente';
+        }
+    }
 }

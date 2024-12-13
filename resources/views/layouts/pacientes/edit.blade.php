@@ -17,6 +17,9 @@
         <button type="button" class="btn botonGeneral" data-bs-toggle="modal" data-bs-target="#altaPrestacionModal">
             <i class="ri-add-line align-bottom me-1"></i> Nueva Prestación
         </button>
+        <button type="button" class="btn botonGeneral" data-bs-toggle="modal" data-bs-target="#resultadosPaciente">
+            <i class="ri-add-line align-bottom me-1"></i> Resultados
+        </button>
     </div>
 </div>
 
@@ -257,9 +260,7 @@
 <div id="altaPrestacionModal" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
     <div class="modal-dialog modal-fullscreen">
         <div class="modal-content">
-            <div class="modal-header">
-               
-            </div>
+            <div class="modal-header"></div>
             <div class="modal-body">
                 <div class="row fichaLaboralModal">
                     <div class="row">
@@ -810,6 +811,7 @@
                     <div class="row">
                         <div class="col-9 mx-auto box-information">
                             <div class="messagePrestacion"></div>
+                            
                             <div class="row">
                                 <div class="col-6">
                                     <div class="input-group input-group-sm mb-2 selectClientes2">
@@ -854,141 +856,214 @@
                                     </div>
 
                                 </div>
-                        </div>
+                            </div>
                         
-                        <div class="row">
-                            <div class="col-12">
-                                <hr class="mt-3 mb-3">
-                                <div class="input-group input-group-sm mb-2">
-                                    <span class="input-group-text">Observaciones</span>
-                                    <input type="text" class="form-control" id="ObservacionesPresN" name="ObservacionesPresN">
-                                </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <hr class="mt-3 mb-3">
+                                    <div class="input-group input-group-sm mb-2">
+                                        <span class="input-group-text">Observaciones</span>
+                                        <input type="text" class="form-control" id="ObservacionesPresN" name="ObservacionesPresN">
+                                    </div>
 
-                                <div class="input-group input-group">
-                                    <span class="input-group-text">Obs exámenes</span>
-                                    <input type="text" class="form-control" placeholder="Observaciones" id="ObsExamenesN" name="ObsExamenesN">
-                                </div>
-                
-                                <div class="input-group input-group mt-2">
-                                    <span class="input-group-text">Obs estado</span>
-                                    <input type="text" class="form-control" placeholder="Observaciones" id="ObsN" name="ObsB">
-                                </div>
-
-                            </div>
-                        </div>
-
-                            
-
-                        <hr class="mt-3 mb-3">
-
-                        <div class="row text-left">
-                            <div class="col-auto">
-                                <button type="button" class="btn btn-sm botonGeneral" data-bs-toggle="modal" data-bs-target="#imprimir" ><i class="bx bxs-file-pdf"></i>&nbsp;Imprimir</button>
-                            </div>
-                            
-                            <div class="col-auto">
-                                <button type="button" class="btn btn-sm botonGeneral"><i class="ri-send-plane-line"></i>&nbsp;Opciones</button>
-                            </div>
-                            
-                            <div class="col-auto">
-                                <button type="button" class="btn btn-sm botonGeneral deleteExamenes"><i class="ri-delete-bin-2-line"></i>&nbsp;Eliminar</button>
-                            </div>
-                            <div class="col-auto">
-                                <button type="button" class="btn btn-sm botonGeneral bloquearExamenes"><i class="ri-forbid-2-line"></i>&nbsp;Anular</button>
-                            </div>
-                        </div>
-
-                        <div class="row mt-2">
+                                    <div class="input-group input-group">
+                                        <span class="input-group-text">Obs exámenes</span>
+                                        <input type="text" class="form-control" placeholder="Observaciones" id="ObsExamenesN" name="ObsExamenesN">
+                                    </div>
                     
-                            <div class="col-6">
-                                <label for="paquetes" class="form-label">Paquetes</label> <!-- select 2 de paquetes de exámenes -->
-                                <div class="mb-3">
-                                    <div class="cajaExamenes">
-                                        <select class="form-select" name="paquetes" id="paquetes"></select>
-                                        <i class="addPaquete ri-play-list-add-line naranja" title="Añadir paquete completo"></i>
+                                    <div class="input-group input-group mt-2">
+                                        <span class="input-group-text">Obs estado</span>
+                                        <input type="text" class="form-control" placeholder="Observaciones" id="ObsN" name="ObsB">
                                     </div>
+
                                 </div>
                             </div>
-                            <div class="col-6">
-                                <label for="examenes" class="form-label">Examen</label> <!-- select 2 de exámenes -->
-                                <div class="mb-3">
-                                    <div class="cajaExamenes">
-                                        <select class="form-select" name ="exam" id="exam"></select>
-                                        <i class="addExamen ri-add-circle-line naranja" title="Añadir examén de la busqueda"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
-                        <div class="row mt-2">
-                            <div class="table mt-3 mb-1 mx-auto col-sm-8">
-                        
-                                <table class="table table-bordered" id="listado" >
-                                    <thead class="table-light">
-                                        <th><input type="checkbox" id="checkAllExa" name="Id_examenes"></th>
-                                        <th class="sort">Exámen</th>
-                                        <th>Acciones</th>
-                                    </thead>
-                                    <tbody id="listaExamenes" class="list form-check-all">
-        
-                                    </tbody>
-                                </table>
-        
-                            </div>
-                        </div>
-
-                        <hr class="mt-3 mb-3">
-
-                        <div class="row">
-                            <div class="col-lg-12 mb-2">
-                                <p>Escriba un comentario de la cuestión o situación:</p>
-                                <textarea name="Comentario" id="Comentario" class="form-control" rows="10"></textarea>
-                                <div class="text-center mt-2">
-                                    <button type="button" class="btn botonGeneral confirmarComentarioPriv">Confirmar</button>
-                                </div>
-                            </div>
-                            
                             <hr class="mt-3 mb-3">
 
-                            <div class="col-lg-12">
-                                <div class="card titulo-tabla">
-                                    <div class="card-header d-flex justify-content-between align-items-center">
-                                        <h4 class="card-title mb-0">Observaciones privadas</h4>
+                            <div class="row text-left">
+                                <div class="col-auto">
+                                    <button type="button" class="btn btn-sm botonGeneral" data-bs-toggle="modal" data-bs-target="#imprimir" ><i class="bx bxs-file-pdf"></i>&nbsp;Imprimir</button>
+                                </div>
+                                
+                                <div class="col-auto">
+                                    <button type="button" class="btn btn-sm botonGeneral"><i class="ri-send-plane-line"></i>&nbsp;Opciones</button>
+                                </div>
+                                
+                                <div class="col-auto">
+                                    <button type="button" class="btn btn-sm botonGeneral deleteExamenes"><i class="ri-delete-bin-2-line"></i>&nbsp;Eliminar</button>
+                                </div>
+
+                                <div class="col-auto">
+                                    <button type="button" class="btn btn-sm botonGeneral bloquearExamenes"><i class="ri-forbid-2-line"></i>&nbsp;Anular</button>
+                                </div>
+
+                                <div class="col-auto">
+                                    <button type="button" class="btn btn-sm botonGeneral resulPaciente naranja"><i class="ri-add-line align-bottom me-1"></i>&nbsp;Resultados</button>
+                                </div>
+                            </div>
+
+                            <div class="row mt-2">
+                        
+                                <div class="col-6">
+                                    <label for="paquetes" class="form-label">Paquetes</label> <!-- select 2 de paquetes de exámenes -->
+                                    <div class="mb-3">
+                                        <div class="cajaExamenes">
+                                            <select class="form-select" name="paquetes" id="paquetes"></select>
+                                            <i class="addPaquete ri-play-list-add-line naranja" title="Añadir paquete completo"></i>
+                                        </div>
                                     </div>
-                                    <div class="card-body">
-                                        <div class="table-card mb-1">
-                                            <table id="lstPrivPrestaciones" class="table table-bordered">
-                                                <thead class="table-light">
-                                                    <tr>
-                                                        <th class="sort">Fecha</th>
-                                                        <th>Usuario</th>
-                                                        <th>Rol</th>
-                                                        <th>Comentario</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody class="list form-check-all" id="privadoPrestaciones">
-                                                </tbody>
-                                            </table>
+                                </div>
+
+                                <div class="col-6">
+                                    <label for="examenes" class="form-label">Examen</label> <!-- select 2 de exámenes -->
+                                    <div class="mb-3">
+                                        <div class="cajaExamenes">
+                                            <select class="form-select" name ="exam" id="exam"></select>
+                                            <i class="addExamen ri-add-circle-line naranja" title="Añadir examén de la busqueda"></i>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="row">
-                            <div class="col-12 text-center mt-2">
-                                <hr class="mt-2 mb-2 d-block">
-                                <button type="button" id="finalizarWizzard" class="btn botonGeneral"><i class="ri-save-line"></i>Guardar</button>
+                            <div class="row mt-2">
+                                <div class="table mt-3 mb-1 mx-auto col-sm-8">
+                            
+                                    <table class="table table-bordered" id="listado" >
+                                        <thead class="table-light">
+                                            <th><input type="checkbox" id="checkAllExa" name="Id_examenes"></th>
+                                            <th class="sort">Exámen</th>
+                                            <th>Acciones</th>
+                                        </thead>
+                                        <tbody id="listaExamenes" class="list form-check-all"></tbody>
+                                    </table>
+            
+                                </div>
+                            </div>
+
+                            <hr class="mt-3 mb-3">
+
+                            <div class="row">
+                                <div class="col-lg-12 mb-2">
+                                    <p>Escriba un comentario de la cuestión o situación:</p>
+                                    <textarea name="Comentario" id="Comentario" class="form-control" rows="10"></textarea>
+                                    <div class="text-center mt-2">
+                                        <button type="button" class="btn botonGeneral confirmarComentarioPriv">Confirmar</button>
+                                    </div>
+                                </div>
+                                
+                                <hr class="mt-3 mb-3">
+
+                                <div class="col-lg-12">
+                                    <div class="card titulo-tabla">
+                                        <div class="card-header d-flex justify-content-between align-items-center">
+                                            <h4 class="card-title mb-0">Observaciones privadas</h4>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="table-card mb-1">
+                                                <table id="lstPrivPrestaciones" class="table table-bordered">
+                                                    <thead class="table-light">
+                                                        <tr>
+                                                            <th class="sort">Fecha</th>
+                                                            <th>Usuario</th>
+                                                            <th>Rol</th>
+                                                            <th>Comentario</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody class="list form-check-all" id="privadoPrestaciones"></tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-12 text-center mt-2">
+                                    <hr class="mt-2 mb-2 d-block">
+                                    <button type="button" id="finalizarWizzard" class="btn botonGeneral"><i class="ri-save-line"></i>Guardar</button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <div class="row resultadosPaciente">
+                    <h3 class="ff-secondary fw-bold mt-1 text-center">Resultados</h3>
+                    <div class="col-9 mx-auto box-information">
+
+                        <button class="btn btn-sm botonGeneral exportSimple" data-id="{{ $paciente->Id ?? '' }}"><i class="ri-file-excel-line"></i> Exportar Simple</button>
+                        <button class="btn btn-sm botonGeneral exportDetallado" data-id="{{ $paciente->Id ?? '' }}"><i class="ri-file-excel-line"></i> Exportar Detallado</button>
+                        <button class="btn btn-sm botonGeneral volverPrestacionLimpia">
+                            <i class="ri-arrow-left-line"></i> Volver a la prestación
+                        </button>
+                        <div class="row auto-mx mb-3">
+                            <div class="table mt-3 mb-1 mx-auto col-sm-7">
+                                <table id="listadoResultadosPres" class="table table-bordered">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Fecha</th>
+                                            <th class="sort">Prestacion</th>
+                                            <th>Empresa</th>
+                                            <th>Tipo</th>
+                                            <th>Evaluación</th>
+                                            <th>Calificación</th>
+                                            <th>Observaciones</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="list form-check-all" id="lstResultadosPres">
+                        
+                                    </tbody>
+                                </table>
+                        
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+    </div>
+</div>
+
+<div id="resultadosPaciente" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidde="true" style="display: none">
+    <div class="modal-dialog modal-fullscreen-xxl-down">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel"> Resultados</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>
             </div>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
-
-
+            <div class="modal-body" class="text-center p-3">
+                <button class="btn btn-sm botonGeneral exportSimple" data-id="{{ $paciente->Id ?? '' }}"><i class="ri-file-excel-line"></i> Exportar Simple</button>
+                <button class="btn btn-sm botonGeneral exportDetallado" data-id="{{ $paciente->Id ?? '' }}"><i class="ri-file-excel-line"></i> Exportar Detallado</button>
+                <div class="row auto-mx mb-3">
+                    <div class="table mt-3 mb-1 mx-auto col-sm-7">
+                        <table id="listadoResultadosPres" class="table table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th class="sort">Prestacion</th>
+                                    <th>Empresa</th>
+                                    <th>Tipo</th>
+                                    <th>Evaluación</th>
+                                    <th>Calificación</th>
+                                    <th>Observaciones</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="list form-check-all" id="lstResultadosPres">
+                
+                            </tbody>
+                        </table>
+                
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
 
 <script>
 //Rutas
@@ -1089,6 +1164,9 @@ $('#excel').click(function(e) {
     
 });
 
+const loadlistadoAdjPres = "{{ route('prestaciones.listaAdjPres') }}";
+const loadResultadosPres = "{{ route('prestaciones.resultados') }}";
+const exResultado = "{{ route('prestaciones.exportarResultado') }}";
 
 </script>
 

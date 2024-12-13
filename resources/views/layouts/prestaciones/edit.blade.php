@@ -14,7 +14,7 @@
     <h4 class="mb-sm-0">Prestación <span class="custom-badge original">N° {{ $prestacione->Id }}</span>&nbsp;<span class="custom-badge verde">Financiador {{ ($prestacione->TipoPrestacion === 'ART' ? 'ART' : 'EMPRESA') }}</span> {!! ($prestacione->Anulado === 1) ? '<span class="custom-badge rojo">Bloqueado</span>' : '' !!}</h4>
 
     <div class="page-title-right">
-        <button type="button" class="btn botonGeneral">
+        <button type="button" class="btn botonGeneral" data-bs-toggle="modal" data-bs-target="#resultadosPaciente">
             <i class="ri-add-line align-bottom me-1"></i> Resultados
         </button>
 
@@ -1370,6 +1370,44 @@
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+<div id="resultadosPaciente" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidde="true" style="display: none">
+    <div class="modal-dialog modal-fullscreen-xxl-down">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel"> Resultados</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>
+            </div>
+            <div class="modal-body" class="text-center p-3">
+                <button class="btn btn-sm botonGeneral exportSimple" data-id="{{ $prestacione->IdPaciente ?? '' }}"><i class="ri-file-excel-line"></i> Exportar Simple</button>
+                <button class="btn btn-sm botonGeneral exportDetallado" data-id="{{ $prestacione->IdPaciente ?? '' }}"><i class="ri-file-excel-line"></i> Exportar Detallado</button>
+                <div class="row auto-mx mb-3">
+                    <div class="table mt-3 mb-1 mx-auto col-sm-7">
+                        <table id="listadoResultadosPres2" class="table table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th class="sort">Prestacion</th>
+                                    <th>Empresa</th>
+                                    <th>Tipo</th>
+                                    <th>Evaluación</th>
+                                    <th>Calificación</th>
+                                    <th>Observaciones</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="list form-check-all" id="lstResultadosPres2">
+                
+                            </tbody>
+                        </table>
+                
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
 <div class="offcanvas offcanvas-end" tabindex="-1" id="replaceAdjunto" aria-labelledby="offcanvasRightLabel" style="z-index: 9999">
     <div class="offcanvas-header">
         <h5 id="offcanvasRightLabel">Reemplazar archivo</h5>
@@ -1517,14 +1555,17 @@ const btnVisibleEnviar = "{{ route('prestaciones.visibleEnviar') }}";
 const CmdTodo = "{{ route('prestaciones.btnTodo') }}";
 const fileUploadPres = "{{ route('prestaciones.uploadAdjPres') }}";
 const loadlistadoAdjPres = "{{ route('prestaciones.listaAdjPres') }}";
-
+const loadResultadosPres = "{{ route('prestaciones.resultados') }}";
+const exResultado = "{{ route('prestaciones.exportarResultado') }}";
 
 //Extras
 const TOKEN = "{{ csrf_token() }}";
 const UBICACION = "{{ request()->query('location') }}";
 const ID = "{{ $prestacione->Id }}";
+const IDPACIENTE = "{{ $prestacione->IdPaciente }}";
 const IDEMPRESA = "{{ $prestacione->empresa->Id }}";
 const editUrl = "{{ route('itemsprestaciones.edit', ['itemsprestacione' => '__examen__'])}}";
+const urlPrestacion = "{{ route('prestaciones.edit', ['prestacione' => '__prestacion__'])}}";
 const cacheDelete = "{{ route('prestaciones.cacheDelete') }}";
 const descarga = "@fileUrl('lectura')/AdjuntosPrestacion";
 const deleteAdjPrest = "{{ route('prestaciones.deleteAdjPres') }}";

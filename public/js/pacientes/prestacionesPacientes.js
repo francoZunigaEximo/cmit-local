@@ -818,7 +818,7 @@ $(document).ready(()=>{
 
     /******************************Nueva pantalla de prestaciones **************************************/
     
-    $('.prestacionLimpia').hide();
+    $('.prestacionLimpia, .resultadosPaciente').hide();
 
     $(document).on('click', '.cargarExPrestacion, #guardarPrestacion', function(e){
         e.preventDefault();
@@ -826,6 +826,23 @@ $(document).ready(()=>{
         $('#listaExamenes').empty();
         
     });
+
+    $(document).on('click', '.resulPaciente', function(e){
+        e.preventDefault();
+
+        $('.prestacionLimpia').hide();
+        $('.resultadosPaciente').show();
+    });
+
+    $(document).on('click', '.volverPrestacionLimpia', function(e){
+        e.preventDefault();
+
+        $('.resultadosPaciente').hide();
+        $('.prestacionLimpia').show();
+        
+    });
+
+    
 
 
     $('#exam').select2({
