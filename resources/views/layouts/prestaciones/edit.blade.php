@@ -1382,7 +1382,7 @@
                 <button class="btn btn-sm botonGeneral exportDetallado" data-id="{{ $prestacione->IdPaciente ?? '' }}"><i class="ri-file-excel-line"></i> Exportar Detallado</button>
                 <div class="row auto-mx mb-3">
                     <div class="table mt-3 mb-1 mx-auto col-sm-7">
-                        <table id="listadoResultadosPres2" class="table table-bordered">
+                        <table id="listadoResultadosPrestacion" class="table table-bordered">
                             <thead class="table-light">
                                 <tr>
                                     <th>Fecha</th>
@@ -1395,7 +1395,7 @@
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody class="list form-check-all" id="lstResultadosPres2">
+                            <tbody class="list form-check-all" id="lstResultadosPrestacion">
                 
                             </tbody>
                         </table>

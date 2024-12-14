@@ -9,6 +9,7 @@ $(document).ready(()=> {
     checkEstadoEnviar(ID);
     loadListAdjPrestacion();
     lstResultadosPrest(IDPACIENTE);
+    console.log("Resultado: " + lstResultadosPrest(IDPACIENTE));
     
     $(document).on('change', '#empresa, #art, #TipoPrestacion', function(){
         let emp = $('#empresa').val(), art = $('#art').val();
@@ -1161,7 +1162,7 @@ $(document).ready(()=> {
 
         if([0,null,'', undefined].includes(idPaciente)) return;
 
-        $('#lstResultadosPres').empty();
+        $('#lstResultadosPrestacion').empty();
         preloader('on');
         $.get(await loadResultadosPres, {IdPaciente: idPaciente})
             .done(function(response){
@@ -1191,11 +1192,11 @@ $(document).ready(()=> {
                         </tr>
                     `;
 
-                    $('#lstResultadosPres').append(contenido);
+                    $('#lstResultadosPrestacion').append(contenido);
 
                 });
 
-                $("#listadoResultadosPres").fancyTable({
+                $("#listadoResultadosPrestacion").fancyTable({
                     pagination: true,
                     perPage: 15,
                     searchable: false,
