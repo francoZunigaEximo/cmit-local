@@ -231,7 +231,6 @@ $(document).ready(()=>{
                                 break;
                         }
 
-                        console.log(resultado);
                         return resultado;  
                         
                     }

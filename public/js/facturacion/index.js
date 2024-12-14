@@ -145,7 +145,7 @@ $(document).ready(function(){
                 $.get(eliminarFactura, {Ids: ids, Tipo: arrOpciones})
                     .done(function(response){
                         preloader('off');
-                        console.log(response); // Verificar la respuesta recibida del servidor
+                  
                         response.forEach(function(item){
                             let tipoToastr = item.tipo === 'success' ? 'success' : 'warning';
                             toastr[tipoToastr](item.msg, {timeOut: 1000});

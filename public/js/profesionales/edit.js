@@ -97,7 +97,7 @@ $(document).ready(function(){
         e.preventDefault();
         let IdProf = $(this).data('prof'),
             IdProv = $(this).data('prov');
-        console.log(IdProf, IdProv);
+
         swal({
             title: "¿Está seguro que desea eliminar?",
             icon: "warning",

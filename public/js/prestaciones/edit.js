@@ -9,7 +9,6 @@ $(document).ready(()=> {
     checkEstadoEnviar(ID);
     loadListAdjPrestacion();
     lstResultadosPrest(IDPACIENTE);
-    console.log("Resultado: " + lstResultadosPrest(IDPACIENTE));
     
     $(document).on('change', '#empresa, #art, #TipoPrestacion', function(){
         let emp = $('#empresa').val(), art = $('#art').val();
@@ -895,7 +894,6 @@ $(document).ready(()=> {
                             </label>
                         </div>
                     `;
-                    console.log(data.Id)
 
                     $('#estudios').append(contenido);
                 });
@@ -1166,7 +1164,7 @@ $(document).ready(()=> {
         preloader('on');
         $.get(await loadResultadosPres, {IdPaciente: idPaciente})
             .done(function(response){
-                console.log(response);
+                
                 preloader('off');
                 $.each(response, function(index, r){
 

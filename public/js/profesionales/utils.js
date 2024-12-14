@@ -296,7 +296,7 @@ $(document).ready(function(){
                 success: function(response){
                     
                     let provinciaNombre = response.fillProvincia;
-                        console.log(provinciaNombre);
+                     
                     let nuevoOption = $('<option>', {
                         value: provinciaNombre,
                         text: provinciaNombre,
