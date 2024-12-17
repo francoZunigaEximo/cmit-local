@@ -56,7 +56,7 @@ class MapasController extends Controller
                     'mapas.Fecha AS Fecha', 
                     'mapas.FechaE AS FechaE',
                     'mapas.Cmapeados AS Cmapeados',
-                    'mapas.Cpacientes AS contadorPacientes', 
+                    'mapas.Cpacientes AS contadorPacientes',
                     'clientes.RazonSocial AS Art',
                     'clientes.ParaEmpresa AS ParaEmpresa_Art',
                     'clientes.NombreFantasia AS NombreFantasia_Art',   
@@ -75,9 +75,8 @@ class MapasController extends Controller
                 ->selectRaw("COALESCE((SELECT COUNT(*) FROM prestaciones WHERE IdMapa = mapas.Id AND eEnviado = 1), 0) AS cdorEEnviados")
                 ->selectRaw("COALESCE((SELECT COUNT(*) FROM prestaciones WHERE IdMapa = mapas.Id AND Finalizado = 1), 0) AS cdorFinalizados")
                 ->selectRaw("COALESCE((SELECT COUNT(*) FROM prestaciones WHERE IdMapa = mapas.Id AND Cerrado = 1), 0) AS cdorCerrados")   
-                ->selectRaw("COALESCE((SELECT COUNT(*) FROM prestaciones WHERE IdMapa = mapas.Id AND Entregado = 1), 0) AS cdorEntregados")
-                ->where('mapas.Nro', '<>', '0')
-                ->orderByDesc('mapas.Id');
+                ->selectRaw("COALESCE((SELECT COUNT(*) FROM prestaciones WHERE IdMapa = mapas.Id AND Entregado = 1), 0) AS cdorEntregados");
+            
 
             $query->when($Nro, function ($query) use ($Nro) {
                 $query->where('mapas.Nro', $Nro);
@@ -94,41 +93,55 @@ class MapasController extends Controller
 
             //Terminado
             $query->when(is_array($Estado) && in_array('terminado', $Estado), function ($query) {
-                $query->addSelect(DB::raw("'Terminado' as estado"))
-                ->where('prestaciones.Entregado', 1)
-                ->where('prestaciones.Cerrado', 1)
-                ->where('prestaciones.eEnviado', 1);
+                $query->havingRaw('contadorPrestaciones > 0')
+                    ->havingRaw('contadorPrestaciones = cdorCerrados')
+                    ->havingRaw('contadorPrestaciones = cdorFinalizados')
+                    ->havingRaw('contadorPrestaciones = cdorEntregados');
             });
             
             //Abierto
             $query->when(is_array($Estado) && in_array('abierto', $Estado), function ($query) {
-                $query->addSelect(DB::raw("'Abierto' as estado"))
-                    ->where('prestaciones.Finalizado', 0)
-                    ->where('prestaciones.Cerrado', 0)
-                    ->where('prestaciones.Entregado', 0);
+                $query->having('contadorPrestaciones', '>', 0)
+                ->having('cdorCerrados', 0)
+                ->having('cdorFinalizados', 0)
+                ->having('cdorEEnviados', 0)
+                ->having('cdorEntregados', 0);
             });
 
             //Cerrado
             $query->when(is_array($Estado) && in_array('cerrado', $Estado), function ($query){
-                $query->addSelect(DB::raw("'Cerrado' as estado"))
-                ->where('prestaciones.Cerrado', 1);
+                $query->havingRaw('contadorPrestaciones > 0')
+                ->havingRaw('contadorPrestaciones = cdorCerrados')
+                ->havingRaw('cdorFinalizados = 0')
+                ->havingRaw('cdorEEnviados = 0')
+                ->havingRaw('cdorEntregados = 0');
             });
+            
 
             //eEnviado
             $query->when(is_array($Estado) && in_array('eEnviado', $Estado), function ($query){
-                $query->addSelect(DB::raw("'eEnviado' as estado"))
-                    ->where('prestaciones.eEnviado', 1);
+                $query->havingRaw('contadorPrestaciones > 0')
+                    ->havingRaw('contadorPrestaciones = cdorCerrados')
+                    ->havingRaw('cdorFinalizados = 0')
+                    ->havingRaw('contadorPrestaciones = cdorEEnviados')
+                    ->havingRaw('cdorEntregados = 0');
             });
 
             //enProceso
-            $query->when(is_array($Estado) && in_array('enProceso', $Estado), function ($query){
-                $query->addSelect(DB::raw("'en proceso' as estado"))
-                ->where('prestaciones.Finalizado', 0)
-                ->where(function ($subquery) {
-                    $subquery->where('prestaciones.Cerrado', 0)
-                        ->orWhere('prestaciones.Cerrado', 1);
+            $query->when(is_array($Estado) && in_array('enProceso', $Estado), function ($query) {
+                $query->having('contadorPrestaciones', '>', 0)
+                    ->having('cdorFinalizados', 0)
+                    ->having('cdorEEnviados', 0)
+                    ->having('cdorEntregados', 0);
+            
+                $query->where(function($query) {
+                    $query->having('cdorCerrados', 0)
+                          ->orWhere(function ($query) {
+                              $query->havingRaw('contadorPrestaciones = cdorCerrados');
+                          });
                 });
             });
+            
 
             //Todos
             $query->when(is_array($Estado) && in_array('todos', $Estado), function ($query){
@@ -137,8 +150,7 @@ class MapasController extends Controller
 
             //Vacio
             $query->when(is_array($Estado) && in_array('vacio', $Estado), function ($query){
-                $query->addSelect(DB::raw("'Vacio' as estado"))
-                    ->having('contadorPrestaciones', 0);
+                $query->having('contadorPrestaciones', 0);
                 });
 
             $query->when(! empty($corteDesde) && ! empty($corteHasta), function ($query) use ($corteDesde, $corteHasta) {
@@ -185,7 +197,11 @@ class MapasController extends Controller
                 $query->where('mapas.Inactivo', 1);
             });
 
-            $result = $query->groupBy('Nro');
+            dd($query->toSql(), $query->getBindings());
+
+            $result = $query->groupBy('mapas.Nro')
+                        ->whereNot('mapas.Nro', 0)
+                        ->orderByDesc('mapas.Id');
 
             return Datatables::of($result)->make(true);
         }

@@ -88,7 +88,7 @@ $(document).ready(()=>{
                             let contenido = `
                                 <div class="text-center">
                                     <span>${(fecha === 'NaN/NaN/NaN'? 'Sin fecha' : fecha) }</span>
-                                    <span class="custom-badge generalNegro">${(totalDias === NaN || totalDias < 0 ? 0 : totalDias)}</span>
+                                    <span class="custom-badge generalNegro">${(totalDias == 'NaN' || totalDias < 0 ? 0 : totalDias)}</span>
                                 </div>`;
                                 return contenido;
                         }
@@ -107,27 +107,29 @@ $(document).ready(()=>{
                         width: 50,
                         render: function(data) {
                             
-                            let enviados = data.contadorPrestaciones > 0 && data.contadorPrestaciones === data.cdorEEnviados, 
-                                noEnviados = data.contadorPrestaciones > 0 && data.contadorPrestaciones !== data.cdorEEnviados,
-                                cerrado = data.contadorPrestaciones > 0 && data.contadorPrestaciones === data.cdorCerrados && data.contadorPrestaciones !== data.cdorFinalizados,
-                                abierto = data.contadorPrestaciones > 0 && data.contadorPrestaciones !== data.cdorCerrado && data.contadorPrestaciones !== data.cdorFinalizados,
-                                terminado = data.contadorPrestaciones > 0 && data.contadorPrestaciones === data.cdorCerrados && data.contadorPrestaciones ===data.cdorEEnviados;
+                            let enviados = data.contadorPrestaciones > 0 && (data.contadorPrestaciones === data.cdorEEnviados) && (data.contadorPrestaciones === data.cdorCerrados) && data.cdorFinalizados === 0 && data.cdorEntregados === 0, 
+                                
+                            cerrado = data.contadorPrestaciones > 0 && data.contadorPrestaciones === data.cdorCerrados && data.cdorFinalizados === 0 &&  data.cdorEEnviados === 0 && data.cdorEntregados === 0,
+                                
+                            abierto = data.contadorPrestaciones > 0 && data.cdorCerrados === 0 && data.cdorFinalizados === 0 &&  data.cdorEEnviados === 0 && data.cdorEntregados === 0,
+                                
+                            terminado = data.contadorPrestaciones > 0 && data.contadorPrestaciones === data.cdorCerrados && data.contadorPrestaciones === data.cdorEEnviados && data.contadorPrestaciones === data.cdorFinalizados && data.contadorPrestaciones === data.cdorEntregados;
 
-                                let conteo = '(Total Prestaciones: ' + data.contadorPrestaciones + ') (Total Cerrados: ' + data.cdorCerrados + ') (Total Finalizados: ' + data.cdorFinalizados + ') (Total eEnviados:' + data.cdorEEnviados + ')';
-                            
+                            let conteo = '(Total Prestaciones: ' + data.contadorPrestaciones + ') (Total Cerrados: ' + data.cdorCerrados + ') (Total Finalizados: ' + data.cdorFinalizados + ') (Total Entregadas: ' + data.cdorEntregados + ') (Total eEnviados:' + data.cdorEEnviados + ')';
+                            console.log(terminado);
                             switch (true) {
-                                case enviados:
-                                    return '<span title="' + conteo + '" class="custom-badge generalNegro">eEnviado</span>';
-                                case abierto:
+                                case (abierto):
                                     return '<span title="' + conteo + '" class="custom-badge generalNegro">Abierto</span>';
-                                case terminado:
-                                    return '<span title="' + conteo + '" class="custom-badge generalNegro">Terminado</span>';
-                                case cerrado:
+                                case (cerrado):
                                     return '<span title="' + conteo + '" class="custom-badge generalNegro">Cerrado</span>';
-                                case noEnviados:
-                                    return '<span title="' + conteo + '" class="custom-badge generalNegro">No eEnviado</span>';
+                                case (terminado):
+                                    return '<span title="' + conteo + '" class="custom-badge generalNegro">Terminado</span>';
+                                case (enviados):
+                                    return '<span title="' + conteo + '" class="custom-badge generalNegro">eEnviado</span>';
                                 case (data.contadorPrestaciones === 0):
                                     return '<span title="' + conteo + '" class="custom-badge generalNegro">Vacío</span>';
+                                default:
+                                    return '<span title="' + conteo + '" class="custom-badge generalNegro">Abierto</span>';
                             }
                         }
                     },

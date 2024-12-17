@@ -585,7 +585,9 @@ $(document).ready(()=>{
             })
     });
 
-    $(document).on('click', '#buscarEnviar', function(){
+    $(document).on('click', '#buscarEnviar', function(e){
+
+        e.preventDefault();
 
         let fDesde = $('#fDesde').val(),
             fHasta = $('#fHasta').val(),
@@ -593,51 +595,61 @@ $(document).ready(()=>{
             eEnviadoEnviar = $('#eEnviadoEnviar').val(),
             NroPresRemito = $('#NroPresRemito').val();
 
-            $.get(searchInEnviar, {desde: fDesde, hasta: fHasta, prestacion: NroPresEnviar, eEnviado: eEnviadoEnviar, mapa: MAPA, NroRemito: NroPresRemito})
-                .done(function(response){
+        let arr = [fDesde, fHasta, NroPresEnviar, eEnviadoEnviar, NroPresRemito];
 
-                    let data = response.result;
+        if(arr.every(condicion => condicion === '')) {
+            toastr.warning("No hay un filtro seleccionado");
+            return;
+        }
+        
+        preloader('on');
+        $.get(searchInEnviar, {desde: fDesde, hasta: fHasta, prestacion: NroPresEnviar, eEnviado: eEnviadoEnviar, mapa: MAPA, NroRemito: NroPresRemito})
+            .done(function(response){
 
-                    $('#eenviarMapa').empty();
+                let data = response.result;
+                preloader('off');
+                $('#eenviarMapa').empty();
 
-                    $.each(data, function(index, en){
-                        
-                        let contenido = `
-                            <tr>
-                                <td>${en.NroRemito}</td>
-                                <td>${echa(en.Fecha)}</td>
-                                <td>${en.IdPrestacion} ${en.EmpresaSinEnvio === 1 ? `<i title="La empresa no tiene habilitado los envios de Emails" class="ri-mail-forbid-line rojo"></i>` : ``} ${en.ArtSinEnvio === 1 ? `<i title="La ART no tiene habilitado los envios de Emails" class="ri-mail-forbid-line rojo"></i>` : ``}</td>
-                                <td>${en.ApellidoPaciente} ${en.NombrePaciente}</td>
-                                <td>${en.Documento}</td>
-                                <td><span class="custom-badge pequeno">${(en.eEnviado === 1 ? 'eEnviado':'No eEnviado')}</span></td>
-                                <td><button data-id="${en.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
-                                <td>${en.eEnviado === 1 ? '' : en.eEnviado === 0 && en.Finalizado === 1 && en.Cerrado === 1 && en.Etapa === 'Completo' ? `<input type="checkbox" name="Id" value="${en.IdPrestacion}" checked>` : '<span class="custom-badge pequeno">Bloqueado</span>'}</td>     
-                            </tr>
-                        `;
-                        $('#eenviarMapa').append(contenido);
-                        
-                    });
-
-                    $("#listaeenviar").fancyTable({
-                        pagination: true,
-                        perPage: 10,
-                        searchable: false,
-                        globalSearch: false,
-                        sortable: false, 
-                    });
-
-                    $('#fDesde, #fHasta, #NroPresEnviar, #NroPresRemito').val('');
-                    $('#eEnviadoEnviar option[value=""]').prop('selected', true);
-                })
-                .fail(function(jqXHR){
-                    preloader('off');
-                    let errorData = JSON.parse(jqXHR.responseText);            
-                    checkError(jqXHR.status, errorData.msg);
-                    return;
+                $.each(data, function(index, en){
+                    
+                    let contenido = `
+                        <tr>
+                            <td>${en.NroRemito}</td>
+                            <td>${fechaNow(en.Fecha,"/",1)}</td>
+                            <td>${en.IdPrestacion} ${en.EmpresaSinEnvio === 1 ? `<i title="La empresa no tiene habilitado los envios de Emails" class="ri-mail-forbid-line rojo"></i>` : ``} ${en.ArtSinEnvio === 1 ? `<i title="La ART no tiene habilitado los envios de Emails" class="ri-mail-forbid-line rojo"></i>` : ``}</td>
+                            <td>${en.ApellidoPaciente} ${en.NombrePaciente}</td>
+                            <td>${en.Documento}</td>
+                            <td><span class="custom-badge pequeno">${(en.eEnviado === 1 ? 'eEnviado':'No eEnviado')}</span></td>
+                            <td><button data-id="${en.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
+                            <td>${en.eEnviado === 1 ? '' : en.eEnviado === 0 && en.Finalizado === 1 && en.Cerrado === 1 && en.Etapa === 'Completo' ? `<input type="checkbox" name="Id" value="${en.IdPrestacion}" checked>` : '<span class="custom-badge pequeno">Bloqueado</span>'}</td>     
+                        </tr>
+                    `;
+                    $('#eenviarMapa').append(contenido);
+                    
                 });
+
+                $("#listaeenviar").fancyTable({
+                    pagination: true,
+                    perPage: 10,
+                    searchable: false,
+                    globalSearch: false,
+                    sortable: false, 
+                });
+
+                $('#fDesde, #fHasta, #NroPresEnviar, #NroPresRemito').val('');
+                $('#eEnviadoEnviar option[value=""]').prop('selected', true);
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            });
     });
 
-    $(document).on('click', '.eArt, .eEmpresa', function(){
+    $(document).on('click', '.eArt, .eEmpresa', function(e){
+
+        e.preventDefault();
 
         $('.eTipo').val($(this).hasClass('eArt') ? "eArt" : "eEmpresa");
     });
