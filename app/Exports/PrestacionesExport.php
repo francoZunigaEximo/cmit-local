@@ -431,7 +431,7 @@ class PrestacionesExport implements FromCollection,WithHeadings
             'facturasventa.NroFactura as NroFactura',
             'fichaslaborales.CCosto as CCosto'
         )
-        ->where('prestaciones.Estado', '1')
+        ->where('prestaciones.Estado', 1)
         ->groupBy('prestaciones.Id');
 
          if (empty($this->filters)) {
@@ -449,7 +449,6 @@ class PrestacionesExport implements FromCollection,WithHeadings
 
         $query = DB::table('prestaciones')
         ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-        ->leftJoin('fichalaborales', 'pacientes.Id', '=', 'fichaslaborales.IdPaciente')
         ->join('clientes as emp', 'prestaciones.IdEmpresa', '=', 'emp.Id')
         ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
         ->join('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
@@ -508,14 +507,14 @@ class PrestacionesExport implements FromCollection,WithHeadings
             'facturasventa.Sucursal as Sucursal',
             'facturasventa.NroFactura as NroFactura',
             'art.RazonSocial as ArtRazonSocial',
-            'fichaslaborales.CCosto as CCosto'
         )
-        ->where('prestaciones.Estado', '=', '1');
+        ->where('prestaciones.Estado', 1);
 
         if (empty($this->filters)) {
             return $query->whereIn('prestaciones.Id', $this->ids)
             ->orderBy('prestaciones.Id', 'DESC')
             ->groupBy('prestaciones.Id')
+            ->groupBy('fichaslaborales.Id')
             ->get();
         }
         else {
@@ -550,15 +549,15 @@ class PrestacionesExport implements FromCollection,WithHeadings
         }
     
         if (!empty($filters->pago)) {
-            $query->where('prestaciones.Pago', '=', $filters->pago);
+            $query->where('prestaciones.Pago', $filters->pago);
         }
     
         if (!empty($filters->formaPago)) {
-            $query->where('prestaciones.SPago', '=', $filters->formaPago);
+            $query->where('prestaciones.SPago', $filters->formaPago);
         }
 
         if(!empty($filters->eEnviado)){
-            $query->where('prestaciones.eEnviado', '=', $filters->eEnviado);
+            $query->where('prestaciones.eEnviado', $filters->eEnviado);
         }
 
         if (!empty($filters->fechaDesde) && (!empty($filters->fechaHasta))) {
@@ -566,57 +565,57 @@ class PrestacionesExport implements FromCollection,WithHeadings
         }
 
         if (is_array($filters->estado) && in_array('Incompleto', $filters->estado)) {
-            $query->where('prestaciones.Incompleto', '1');
+            $query->where('prestaciones.Incompleto', 1);
         }
 
         if (is_array($filters->estado) && in_array('Anulado', $filters->estado)) {
-            $query->where('prestaciones.Anulado', '1');
+            $query->where('prestaciones.Anulado', 1);
         }
 
         if (is_array($filters->estado) && in_array('Ausente', $filters->estado)) {
-            $query->where('prestaciones.Ausente', '1');
+            $query->where('prestaciones.Ausente', 1);
         }
 
         if (is_array($filters->estado) && in_array('Forma', $filters->estado)) {
-            $query->where('prestaciones.Forma', '1');
+            $query->where('prestaciones.Forma', 1);
         }
 
         if (is_array($filters->estado) && in_array('SinEsc', $filters->estado)) {
-            $query->where('prestaciones.SinEsc', '1');
+            $query->where('prestaciones.SinEsc', 1);
         }
 
         if (is_array($filters->estado) && in_array('Devol', $filters->estado)) {
-            $query->where('prestaciones.Devol', '1');
+            $query->where('prestaciones.Devol', 1);
         }
     
         if (is_array($filters->estado) && in_array('RxPreliminar', $filters->estado)) {
-            $query->where('prestaciones.RxPreliminar', '1');
+            $query->where('prestaciones.RxPreliminar', 1);
         }
 
         if (is_array($filters->estado) && in_array('Cerrado', $filters->estado)) {
-            $query->where('prestaciones.Cerrado', '1');
+            $query->where('prestaciones.Cerrado', 1);
         }
 
         if (is_array($filters->estado) && in_array('Abierto', $filters->estado)) {
-            $query->where('prestaciones.Cerrado', '0')
-                ->where('prestaciones.Finalizado', '0');
+            $query->where('prestaciones.Cerrado', 0)
+                ->where('prestaciones.Finalizado', 0);
         }
 
         if (is_array($filters->estado) && in_array('Cerrado', $filters->estado)) {
-            $query->where('prestaciones.Cerrado', '1');
+            $query->where('prestaciones.Cerrado', 1);
         }
 
         if (!empty($filters->finalizado)) {
-            $query->where('prestaciones.Finalizado', '=', $filters->finalizado);
+            $query->where('prestaciones.Finalizado', $filters->finalizado);
             return $query;
         }
     
         if (!empty($filters->facturado)) {
-            $query->where('prestaciones.Facturado', '=', $filters->facturado);
+            $query->where('prestaciones.Facturado', $filters->facturado);
         }
     
         if (!empty($filters->entregado)) {
-            $query->where('prestaciones.Entregado', '=', $filters->entregado);
+            $query->where('prestaciones.Entregado', $filters->entregado);
         }
 
         return $query->get();
