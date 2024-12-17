@@ -197,7 +197,7 @@ class MapasController extends Controller
                 $query->where('mapas.Inactivo', 1);
             });
 
-            dd($query->toSql(), $query->getBindings());
+            // dd($query->toSql(), $query->getBindings());
 
             $result = $query->groupBy('mapas.Nro')
                         ->whereNot('mapas.Nro', 0)
