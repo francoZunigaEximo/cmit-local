@@ -5,10 +5,10 @@
 @section('content')
 
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-    <h4 class="mb-sm-0">Exámen prestación <span class="custom-badge original">N°{{ $itemsprestacione->IdPrestacion }}</span> | Paciente <span class="custom-badge original">{{ $paciente->paciente->Nombre ?? ''}} {{ $paciente->paciente->Apellido ?? '' }}</span> {!! ($itemsprestacione->Anulado === 1) ? '<span class="custom-badge rojo">Bloqueado</span>' : '' !!}</h4>
+    <h4 class="mb-sm-0">Exámen prestación <span class="custom-badge original">N°{{ $itemsprestacione->IdPrestacion }}</span> | Paciente <span class="custom-badge original">{{ $data['paciente']->paciente->Nombre ?? ''}} {{ $data['paciente']->Apellido ?? '' }}</span> {!! ($itemsprestacione->Anulado === 1) ? '<span class="custom-badge rojo">Bloqueado</span>' : '' !!}</h4>
     <input type="hidden" value="{{ $itemsprestacione->Id }}" id="Id">
     <div class="page-title-right d-inline">
-        <p><strong>QR:</strong> {{ $qrTexto ?? ''}}</p>
+        <p><strong>QR:</strong> {{ $data['qrTexto'] ?? ''}}</p>
     </div>
 </div>
 
@@ -176,7 +176,7 @@
                     <div class="input-group input-group-sm mb-2">
 
                         <span class="input-group-text">Adjunto</span>
-                        <input type="text" style="{{ ($itemsprestacione->profesionales2->InfAdj === 1 && $adjuntoInformador === 0 ? 'color: red' : ($itemsprestacione->profesionales2->InfAdj === 1 && $adjuntoInformador === 1 ? 'color: green' : '')) }}" class="form-control" id="EstadoInf" name="EstadoInf" value="{{ ($itemsprestacione->profesionales2->InfAdj === 0 ? 'No lleva Adjuntos' : ($itemsprestacione->profesionales2->InfAdj === 1 && $adjuntoInformador === 0 ? 'Pendiente' : ($itemsprestacione->profesionales2->InfAdj === 1 && $adjuntoInformador === 1 ? 'Adjuntado' : '-'))) }}" @readonly(true)>
+                        <input type="text" style="{{ ($itemsprestacione->profesionales2->InfAdj === 1 && $data['adjuntoInformador'] === 0 ? 'color: red' : ($itemsprestacione->profesionales2->InfAdj === 1 && $data['adjuntoInformador'] === 1 ? 'color: green' : '')) }}" class="form-control" id="EstadoInf" name="EstadoInf" value="{{ ($itemsprestacione->profesionales2->InfAdj === 0 ? 'No lleva Adjuntos' : ($itemsprestacione->profesionales2->InfAdj === 1 && $data['adjuntoInformador'] === 0 ? 'Pendiente' : ($itemsprestacione->profesionales2->InfAdj === 1 && $data['adjuntoInformador'] === 1 ? 'Adjuntado' : '-'))) }}" @readonly(true)>
                         <button type="button" class="btn botonGeneral adjuntarInformador"  data-bs-toggle="modal" data-bs-target="#modalInformador">Adjuntar archivo</button>
                     </div>
                 </div>
@@ -228,7 +228,6 @@
 
     <div class="row mb-3">
         <div class="col-12 box-information text-center">
-            <button type="button" class="btn botonGeneral" id="btnVolver">Volver</button>
             <button type="button" class="btn botonGeneral" id="actualizarExamen">Guardar</button>
         </div>
     </div>
@@ -354,10 +353,17 @@
                     </div>
                    
                     <div class="list-group">
-                         @foreach($multiInformador as $informe)
+                         @foreach($data['multiInformador'] as $informe)
                         <label class="list-group-item">
                             <input class="form-check-input me-1" type="checkbox" id="Id_multiAdjInf_{{ $informe->Id }}" value="{{ $informe->Id}}" {{ $informe->archivos_count > 0 ? 'disabled' : 'checked' }}> 
-                            {!! $informe->archivos_count > 0 ? $informe->examenes->Nombre.' ('.$informe->examenes->proveedor2->Nombre.') <i title="Con archivo adjunto" class="ri-attachment-line verde"></i>' : $informe->examenes->Nombre .' ('.$informe->examenes->proveedor2->Nombre.')' !!}
+                            {!! 
+                                $informe->archivos_count > 0 
+                                ? ($informe->examenes->Nombre ?? '') 
+                                    . ' (' . ($informe->examenes->proveedor2->Nombre ?? '') . ') <i title="Con archivo adjunto" class="ri-attachment-line verde"></i>' 
+                                : ($informe->examenes->Nombre ?? '') 
+                                    . ' (' . ($informe->examenes->proveedor2->Nombre ?? '') . ')'
+                            !!}
+                            
                         </label>
                         @endforeach
                     </div>

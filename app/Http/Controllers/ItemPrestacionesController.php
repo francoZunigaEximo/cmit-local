@@ -30,15 +30,15 @@ class ItemPrestacionesController extends Controller
     private $rutainternaefectores = 'AdjuntosEfector';
     private $rutainternainfo = 'AdjuntosInformador';
     
-    public function edit(ItemPrestacion $itemsprestacione): mixed
+    public function edit(ItemPrestacion $itemsprestacione)
     {
         $data = $this->obtenerDatosItemPrestacion($itemsprestacione->Id);
         
         if (!$data) {
             return abort(404, 'No se encuentra la información solicitada');
         }
-    
-        return view('layouts.itemsprestaciones.edit', compact(['itemsprestacione'] + $data));
+
+        return view('layouts.itemsprestaciones.edit', compact(['itemsprestacione', 'data']));
     }
     
     public function editModal(Request $request)
