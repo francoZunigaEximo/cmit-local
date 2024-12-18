@@ -961,12 +961,26 @@ $(document).ready(()=> {
 
         $('#mapas').empty();
 
+        $.get(await mapaPrestacion, {Id: ID})
+            .done(function(response){
+                let item = '';
+
+                if(![undefined, null].includes(response)) {
+                    item = `<option selected value="${response.IdMapa}">${response.mapa.Nro} | Empresa: ${response.mapa.empresa_mapa.RazonSocial} - ART: ${response.mapa.art_mapa.RazonSocial}</option>`;
+                    
+                }else{
+                    item = `<option selected value="">Elija una opción disponible...</option>`;
+                }
+
+                $('#mapas').append(item);
+            });
+
         $.get(await getMapas, {empresa: empresaIn, art: artIn})
             .done(function(response){
                 
                 let mapas = response.mapas;
                 
-                if(mapas.length !== 0)
+                if(![undefined, null].includes(mapas))
                 {
                     $.each(mapas, function(index, d){
 

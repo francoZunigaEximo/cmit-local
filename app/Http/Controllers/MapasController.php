@@ -190,7 +190,7 @@ class MapasController extends Controller
             // dd($query->toSql(), $query->getBindings());
 
             $result = $query->groupBy('mapas.Nro')
-                        ->whereNot('mapas.Nro', 0)
+                        ->whereNot('mapas.Id', 0)
                         ->orderByDesc('mapas.Id');
 
             return Datatables::of($result)->make(true);
@@ -457,6 +457,11 @@ class MapasController extends Controller
             ->get();
 
         return response()->json(['mapas' => $mapas]);
+    }
+
+    public function getMapaPrestacion(Request $request)
+    {
+        return Prestacion::with(['mapa', 'mapa.artMapa', 'mapa.empresaMapa'])->find($request->Id);
     }
 
     public function saveRemitos(Request $request)

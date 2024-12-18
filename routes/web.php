@@ -176,7 +176,6 @@ Route::group(['middleware' => 'auth'], function () {
 
     //Rutas de Mapas
     Route::get('/mapas/excel', [MapasController::class, 'export'])->name('mapas.exportar');
-    Route::resource('mapas', MapasController::class);
     Route::post('updateMapa', [MapasController::class, 'updateMapa'])->name('updateMapa');
     Route::post('deleteMapa', [MapasController::class, 'delete'])->name('deleteMapa');
     Route::get('getRemito', [MapasController::class, 'getRemito'])->name('getRemito');
@@ -200,7 +199,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('checkMapa', [MapasController::class, 'checker'])->name('checkMapa');
     Route::post('changeEstado', [MapasController::class, 'changeEstado'])->name('changeEstado');
     Route::get('enviarMapa', [MapasController::class, 'geteEnviar'])->name('enviarMapa');
-    Route::post('reverseRemito', [MapasController::class, 'reverseRemito'])->name('reverseRemito');
+    Route::post('/mapas/revertir-remito', [MapasController::class, 'reverseRemito'])->name('reverseRemito');
+    Route::get('/mapas/mapa-prestacion-Id', [MapasController::class, 'getMapaPrestacion'])->name('prestaciones.mapaPrestacionId');
+    Route::resource('mapas', MapasController::class);
     
     //Rutas de Profesionales
     //Route::resource('profesionales', ProfesionalesController::class);

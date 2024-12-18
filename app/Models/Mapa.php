@@ -30,7 +30,7 @@ class Mapa extends Model
 
     public function prestacion()
     {
-        return $this->hasMany(Prestacion::class, 'IdMapa', 'Id');
+        return $this->hasOne(Prestacion::class, 'IdMapa', 'Id');
     }
 
     public function artMapa()

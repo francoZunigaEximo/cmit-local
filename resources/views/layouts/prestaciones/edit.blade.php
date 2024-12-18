@@ -170,7 +170,7 @@
                             </div>
                         </div>                     
                     </div>
-
+                    
                     <div class="col-4">
                         <div class="col-10 mapas">
                             <div class="input-group input-group-sm">
@@ -1557,6 +1557,7 @@ const fileUploadPres = "{{ route('prestaciones.uploadAdjPres') }}";
 const loadlistadoAdjPres = "{{ route('prestaciones.listaAdjPres') }}";
 const loadResultadosPres = "{{ route('prestaciones.resultados') }}";
 const exResultado = "{{ route('prestaciones.exportarResultado') }}";
+const mapaPrestacion = "{{ route('prestaciones.mapaPrestacionId') }}";
 
 //Extras
 const TOKEN = "{{ csrf_token() }}";
