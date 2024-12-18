@@ -107,7 +107,7 @@ $(document).ready(()=>{
                         width: 50,
                         render: function(data) {
                             
-                            let enviados = data.contadorPrestaciones > 0 && (data.contadorPrestaciones === data.cdorEEnviados) && (data.contadorPrestaciones === data.cdorCerrados) && data.cdorFinalizados === 0 && data.cdorEntregados === 0, 
+                            let enviados = data.contadorPrestaciones > 0 && (data.contadorPrestaciones === data.cdorEEnviados) && (data.contadorPrestaciones === data.cdorCerrados) && data.cdorFinalizados === 0 && data.cdorEntregados === 0 || data.contadorPrestaciones > 0 && (data.contadorPrestaciones === data.cdorEEnviados) && (data.contadorPrestaciones === data.cdorCerrados) && (data.cdorFinalizados === data.contadorPrestaciones) && (data.cdorEntregados === data.contadorPrestaciones) || data.contadorPrestaciones > 0 && (data.contadorPrestaciones === data.cdorEEnviados) && (data.contadorPrestaciones === data.cdorCerrados) && (data.cdorFinalizados === data.contadorPrestaciones) && (data.cdorEntregados === 0), 
                                 
                             cerrado = data.contadorPrestaciones > 0 && data.contadorPrestaciones === data.cdorCerrados && data.cdorFinalizados === 0 &&  data.cdorEEnviados === 0 && data.cdorEntregados === 0,
                                 

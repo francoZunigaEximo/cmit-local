@@ -92,7 +92,7 @@ class MapasController extends Controller
             });
 
             //Terminado
-            $query->when(is_array($Estado) && in_array('terminado', $Estado), function ($query) {
+            $query->when(!empty($Estado) && $Estado === 'terminado', function ($query) {
                 $query->havingRaw('contadorPrestaciones > 0')
                     ->havingRaw('contadorPrestaciones = cdorCerrados')
                     ->havingRaw('contadorPrestaciones = cdorFinalizados')
@@ -100,7 +100,7 @@ class MapasController extends Controller
             });
             
             //Abierto
-            $query->when(is_array($Estado) && in_array('abierto', $Estado), function ($query) {
+            $query->when(!empty($Estado) && $Estado === 'abierto', function ($query) {
                 $query->having('contadorPrestaciones', '>', 0)
                 ->having('cdorCerrados', 0)
                 ->having('cdorFinalizados', 0)
@@ -109,26 +109,16 @@ class MapasController extends Controller
             });
 
             //Cerrado
-            $query->when(is_array($Estado) && in_array('cerrado', $Estado), function ($query){
+            $query->when(!empty($Estado) && $Estado === 'cerrado', function ($query){
                 $query->havingRaw('contadorPrestaciones > 0')
                 ->havingRaw('contadorPrestaciones = cdorCerrados')
                 ->havingRaw('cdorFinalizados = 0')
                 ->havingRaw('cdorEEnviados = 0')
                 ->havingRaw('cdorEntregados = 0');
             });
-            
-
-            //eEnviado
-            $query->when(is_array($Estado) && in_array('eEnviado', $Estado), function ($query){
-                $query->havingRaw('contadorPrestaciones > 0')
-                    ->havingRaw('contadorPrestaciones = cdorCerrados')
-                    ->havingRaw('cdorFinalizados = 0')
-                    ->havingRaw('contadorPrestaciones = cdorEEnviados')
-                    ->havingRaw('cdorEntregados = 0');
-            });
 
             //enProceso
-            $query->when(is_array($Estado) && in_array('enProceso', $Estado), function ($query) {
+            $query->when(!empty($Estado) && $Estado === 'enProceso', function ($query) {
                 $query->having('contadorPrestaciones', '>', 0)
                     ->having('cdorFinalizados', 0)
                     ->having('cdorEEnviados', 0)
@@ -144,20 +134,20 @@ class MapasController extends Controller
             
 
             //Todos
-            $query->when(is_array($Estado) && in_array('todos', $Estado), function ($query){
+            $query->when(empty($Estado) && $Estado === 'todos', function ($query){
                 $query->addSelect(DB::raw("'Todos' as estado"));
             });
 
             //Vacio
-            $query->when(is_array($Estado) && in_array('vacio', $Estado), function ($query){
+            $query->when(!empty($Estado) && $Estado === 'vacio', function ($query){
                 $query->having('contadorPrestaciones', 0);
                 });
 
-            $query->when(! empty($corteDesde) && ! empty($corteHasta), function ($query) use ($corteDesde, $corteHasta) {
+            $query->when(!empty($corteDesde) && ! empty($corteHasta), function ($query) use ($corteDesde, $corteHasta) {
                 $query->whereBetween('mapas.Fecha', [$corteDesde, $corteHasta]);
             });
 
-            $query->when(! empty($entregaDesde) && ! empty($entregaHasta), function ($query) use ($entregaDesde, $entregaHasta) {
+            $query->when(!empty($entregaDesde) && ! empty($entregaHasta), function ($query) use ($entregaDesde, $entregaHasta) {
                 $query->whereBetween('mapas.FechaE', [$entregaDesde, $entregaHasta]);
             });
 
@@ -787,9 +777,9 @@ class MapasController extends Controller
         return response()->json(['result' => $result]);
     }
 
-    public function saveEnviar(Request $request): void
+    public function saveEnviar(Request $request)
     {
-        
+        return $request->all();
         $ids = $request->ids;
 
         $accion = ($request->eTipo === 'eArt' 

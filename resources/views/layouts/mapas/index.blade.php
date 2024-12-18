@@ -41,7 +41,8 @@
 
                                 <div class="col-sm-3 mb-3">
                                     <label for="Estado" class="form-label font-weight-bold"><strong>Estado:</strong></label>
-                                    <select class="js-example-basic-multiple" name="Estado[]" multiple="multiple" id="Estado" data-placeholder="Elija una opción..."> 
+                                    <select class="form-control name="Estado" id="Estado"> 
+                                        <option value="" selected>Elija una opción...</option>
                                         <option value="abierto">Abierto</option>
                                         <option value="cerrado">Cerrado</option>
                                         <option value="eEnviado">E-enviado</option>
