@@ -1573,7 +1573,6 @@ class PrestacionesController extends Controller
             ->where('prestaciones.Estado', 1)
             ->where('prestaciones.IdPaciente', $id)
             ->orderBy('prestaciones.Id', 'DESC')
-            ->groupBy('prestaciones.Id')
             ->get();
 
 
@@ -1606,7 +1605,6 @@ class PrestacionesController extends Controller
             )
                 ->where('hist_prestaciones.IdPaciente', $id)
                 ->orderBy('hist_prestaciones.Id', 'DESC')
-                ->groupBy('hist_prestaciones.Id')
                 ->get();
 
         return $nuevas->merge($antiguas);
