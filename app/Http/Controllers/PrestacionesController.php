@@ -1541,7 +1541,6 @@ class PrestacionesController extends Controller
     {
         $nuevas = DB::table('prestaciones')
         ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-        ->join('hist_datospacientes', 'pacientes.Id', '=', 'hist_datospacientes.Id')
         ->join('clientes as emp', 'prestaciones.IdEmpresa', '=', 'emp.Id')
         ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
         ->leftJoin('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
@@ -1570,7 +1569,6 @@ class PrestacionesController extends Controller
             'emp.ParaEmpresa as EmpresaParaEmp',
             'emp.Identificacion as EmpresaIdentificacion',
             'art.RazonSocial as ArtRazonSocial',
-            'hist_datospacientes.CCosto as CCosto'
         )
             ->where('prestaciones.Estado', 1)
             ->where('prestaciones.IdPaciente', $id)
@@ -1580,8 +1578,7 @@ class PrestacionesController extends Controller
 
 
         $antiguas = DB::table('hist_prestaciones')
-            ->join('pacientes', 'hist_prestaciones.IdPaciente', '=', 'pacientes.Id')
-            ->join('hist_datospacientes', 'pacientes.Id', '=', 'hist_datospacientes.Id')
+            ->leftJoin('pacientes', 'hist_prestaciones.IdPaciente', '=', 'pacientes.Id')
             ->join('clientes as emp', 'hist_prestaciones.IdEmpresa', '=', 'emp.Id')
             ->join('clientes as art', 'hist_prestaciones.IdART', '=', 'art.Id')
             ->leftJoin('itemsprestaciones', 'hist_prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
@@ -1606,7 +1603,6 @@ class PrestacionesController extends Controller
                 'emp.ParaEmpresa as EmpresaParaEmp',
                 'emp.Identificacion as EmpresaIdentificacion',
                 'art.RazonSocial as ArtRazonSocial',
-                'hist_datospacientes.CCosto as CCosto'
             )
                 ->where('hist_prestaciones.IdPaciente', $id)
                 ->orderBy('hist_prestaciones.Id', 'DESC')
