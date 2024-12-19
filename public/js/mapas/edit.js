@@ -663,6 +663,8 @@ $(document).ready(()=>{
             ids.push($(this).val());
         });
 
+        console.log("Ids: " + ids);
+
         let checkAll =$('#checkAllEnviar').prop('checked');
 
         if(ids.length === 0 && checkAll === false){
@@ -690,9 +692,9 @@ $(document).ready(()=>{
         }
 
 
-        $.post(saveEnviar, { ids: ids, _token: TOKEN, eTipo: eTipo, adjunto: exportarInforme })
+        $.post(saveEnviar, { ids: ids, _token: TOKEN, eTipo: eTipo, exportarInforme: exportarInforme,  enviarMail: enviarMail})
             .done(function(){
-                toastr.success('Se han eEnviado todos los mapas seleccionados','Perfecto');
+                toastr.success('Se han eEnviado todos las prestaciones del mapa');
 
                 setTimeout(()=>{
                     $('#eenviarMapa').empty();
@@ -971,8 +973,8 @@ $(document).ready(()=>{
             
             let contenido = `
                 <tr>
-                    <td>${f.NroRemito == 0 ? '-' : f.NroRemito}</td>
                     <td>${fecha(f.Fecha)}</td>
+                    <td>${f.NroRemito == 0 ? '-' : f.NroRemito}</td>
                     <td>${f.IdPrestacion}</td>
                     <td>${f.ApellidoPaciente} ${f.NombrePaciente}</td>
                     <td>${f.Documento}</td>

@@ -18,14 +18,30 @@ use App\Traits\ObserverMapas;
 use Illuminate\Support\Facades\Auth;
 use App\Traits\CheckPermission;
 use App\Traits\ReporteExcel;
+use App\Services\Reportes\ReporteService;
+use App\Helpers\Tools;
 
 
 class MapasController extends Controller
 {
+    protected $reporteService;
+    protected $outputPath;
+    protected $sendPath;
+    protected $fileNameExport;
+    private $tempFile;
 
     const TBLMAPA = 5; // cod de Mapas en la tabla auditariatablas
 
     use ObserverMapas, CheckPermission, ReporteExcel;
+
+    public function __construct(ReporteService $reporteService)
+    {
+        $this->reporteService = $reporteService;
+        $this->outputPath = storage_path('app/public/fusionar.pdf');
+        $this->sendPath = storage_path('app/public/cmit-'.Tools::randomCode(15).'-informe.pdf');
+        $this->fileNameExport = 'reporte-'.Tools::randomCode(15);
+        $this->tempFile = 'app/public/temp/file-';
+    }
 
     public function index(Request $request): mixed
     {
@@ -655,6 +671,7 @@ class MapasController extends Controller
     public function searchInFinalizar(Request $request): mixed
     {
 
+
         $NroRemito = $request->remito;
         $NroPrestacion = $request->prestacion;
         $estadoFinalizar = $request->estadoFinalizar;
@@ -669,19 +686,19 @@ class MapasController extends Controller
             $query->where('prestaciones.NroCEE', $NroRemito);
         });
 
-        $query->when($estadoFinalizar === 'aFinalizar', function ($query) use ($estadoFinalizar) {
+        $query->when($estadoFinalizar === 'aFinalizar', function ($query) {
             $query->where('prestaciones.Cerrado', 1)
                 ->where('prestaciones.Finalizado', 0)
                 ->where('prestaciones.eEnviado', 0);
         });
 
-        $query->when($estadoFinalizar === 'finalizados', function ($query) use ($estadoFinalizar) {
+        $query->when($estadoFinalizar === 'finalizados', function ($query) {
             $query->where('prestaciones.Cerrado', 1)
                 ->where('prestaciones.Finalizado', 1)
                 ->where('prestaciones.eEnviado', 0);
         });
 
-        $query->when($estadoFinalizar === 'finalizadosTotal', function ($query) use ($estadoFinalizar) {
+        $query->when($estadoFinalizar === 'finalizadosTotal', function ($query) {
             $query->where('prestaciones.Cerrado', 1)
                 ->where('prestaciones.Finalizado', 1)
                 ->where('prestaciones.eEnviado', 1);
@@ -784,7 +801,8 @@ class MapasController extends Controller
 
     public function saveEnviar(Request $request)
     {
-        return $request->all();
+        dd($request->all());
+
         $ids = $request->ids;
 
         $accion = ($request->eTipo === 'eArt' 
@@ -795,17 +813,23 @@ class MapasController extends Controller
                 );
 
         foreach ($ids as $id) {
-            $prestacion = Prestacion::with(['art' => function($query){
-                $query->select(['SEMail']);
-            }])->where('Id', $id)->first();
+            $prestacion = Prestacion::with(['empresa','art'])->where('Id', $id)->first();
             
             if ($prestacion) {
 
-                $prestacion->eEnviado = ($request->eTipo === 'eArt' ? 1 : 0);
-                $prestacion->FechaEnviado = ($request->eTipo === 'eArt' 
-                    ? now()->format('Y-m-d') 
-                    : '0000-00-00');
-                $prestacion->save();
+                if ($request->eTipo === 'eArt' && $request->exportarInforme == 'true') {
+
+
+                } elseif ($request->eTipo === 'eArt' && $request->enviarMail == 'true') {
+
+
+                    $prestacion->eEnviado = 1;
+                    $prestacion->FechaEnviado = now()->format('Y-m-d');
+                    $prestacion->save();
+                    
+                }
+                
+
                 
                 if ($accion !== null) {
                     Auditor::setAuditoria($id, self::TBLMAPA, $accion, Auth::user()->name);
@@ -962,9 +986,9 @@ class MapasController extends Controller
         return $query;
     }
 
-    private function queryFinalizar($idmapa)
+    private function queryFinalizar(string $idmapa): mixed
     {
-        $query = Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+       return Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
         ->join('mapas', 'prestaciones.IdMapa', '=', 'mapas.Id')
         ->select(
             'prestaciones.Id as IdPrestacion',
@@ -984,7 +1008,6 @@ class MapasController extends Controller
             ->where('prestaciones.SinEsc', 0)
             ->where('mapas.Nro', $idmapa);
 
-        return $query;
     }
 
     public function queryEnviar($idmapa)
