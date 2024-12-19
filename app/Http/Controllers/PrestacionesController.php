@@ -51,6 +51,8 @@ use App\Jobs\EnviarReporteJob;
 use App\Jobs\ExamenesImpagosJob;
 use App\Jobs\ExamenesResultadosJob;
 
+use App\Helpers\ToolsEmails;
+
 use Illuminate\Support\Facades\Mail;
 use App\Mail\EnviarReporte;
 use App\Mail\ExamenesResultadosMail;
@@ -66,7 +68,7 @@ use FPDF;
 
 class PrestacionesController extends Controller
 {
-    use ObserverPrestaciones, ObserverFacturasVenta, CheckPermission, ReporteExcel;
+    use ObserverPrestaciones, ObserverFacturasVenta, CheckPermission, ReporteExcel, ToolsEmails;
 
     protected $reporteService;
     protected $outputPath;
@@ -1411,14 +1413,6 @@ class PrestacionesController extends Controller
             ->where('pagosacuenta_it.IdPrestacion', $idPrestacion)->count();
     }
 
-    private function getEmailsReporte(string $correos): array
-    {
-        $emails = explode(",", $correos);
-        $emails = array_map('trim', $emails);
-
-        return $emails;
-    }
-
     private function checkPrestacionesCompletas(int $id): mixed
     {
         return ItemPrestacion::whereIn('CAdj', [3,5])
@@ -1547,10 +1541,11 @@ class PrestacionesController extends Controller
     {
         $nuevas = DB::table('prestaciones')
         ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+        ->join('hist_datospacientes', 'pacientes.Id', '=', 'hist_datospacientes.Id')
         ->join('clientes as emp', 'prestaciones.IdEmpresa', '=', 'emp.Id')
         ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
-        ->join('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
-        ->join('examenes', 'examenes.Id', '=', 'itemsprestaciones.IdExamen')
+        ->leftJoin('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
+        ->leftJoin('examenes', 'examenes.Id', '=', 'itemsprestaciones.IdExamen')
         ->leftJoin('prestaciones_comentarios', 'prestaciones.Id', '=', 'prestaciones_comentarios.IdP')
         ->select( 
             'pacientes.Documento as DNI',
@@ -1575,20 +1570,22 @@ class PrestacionesController extends Controller
             'emp.ParaEmpresa as EmpresaParaEmp',
             'emp.Identificacion as EmpresaIdentificacion',
             'art.RazonSocial as ArtRazonSocial',
+            'hist_datospacientes.CCosto as CCosto'
         )
-            ->where('prestaciones.Estado', '=', '1')
+            ->where('prestaciones.Estado', 1)
             ->where('prestaciones.IdPaciente', $id)
-            ->groupBy('prestaciones.Id')
             ->orderBy('prestaciones.Id', 'DESC')
+            ->groupBy('prestaciones.Id')
             ->get();
 
 
         $antiguas = DB::table('hist_prestaciones')
             ->join('pacientes', 'hist_prestaciones.IdPaciente', '=', 'pacientes.Id')
+            ->join('hist_datospacientes', 'pacientes.Id', '=', 'hist_datospacientes.Id')
             ->join('clientes as emp', 'hist_prestaciones.IdEmpresa', '=', 'emp.Id')
             ->join('clientes as art', 'hist_prestaciones.IdART', '=', 'art.Id')
-            ->join('itemsprestaciones', 'hist_prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
-            ->join('examenes', 'examenes.Id', '=', 'itemsprestaciones.IdExamen')
+            ->leftJoin('itemsprestaciones', 'hist_prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
+            ->leftJoin('examenes', 'examenes.Id', '=', 'itemsprestaciones.IdExamen')
             ->leftJoin('prestaciones_comentarios', 'hist_prestaciones.Id', '=', 'prestaciones_comentarios.IdP')
             ->select( 
                 'pacientes.Documento as DNI',
@@ -1609,10 +1606,11 @@ class PrestacionesController extends Controller
                 'emp.ParaEmpresa as EmpresaParaEmp',
                 'emp.Identificacion as EmpresaIdentificacion',
                 'art.RazonSocial as ArtRazonSocial',
+                'hist_datospacientes.CCosto as CCosto'
             )
                 ->where('hist_prestaciones.IdPaciente', $id)
-                ->groupBy('hist_prestaciones.Id')
                 ->orderBy('hist_prestaciones.Id', 'DESC')
+                ->groupBy('hist_prestaciones.Id')
                 ->get();
 
         return $nuevas->merge($antiguas);

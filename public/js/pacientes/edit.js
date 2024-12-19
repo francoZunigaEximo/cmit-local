@@ -74,6 +74,14 @@ $(document).ready(function(){
             });
     });
 
+    $(document).on('click', '.verPrestacion', function(e){
+        e.preventDefault();
+
+        let link = url.replace('__prestacion__', $(this).data('id'));
+        window.open(link, '_blank');
+
+    });
+
 
     function checkProvincia(){
 
