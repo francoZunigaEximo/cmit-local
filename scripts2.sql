@@ -823,6 +823,21 @@ BEGIN
 	    	WHEN completo IS NULL THEN i.Fecha BETWEEN fechaDesde AND fechaHasta
 	    	WHEN completo = "activo" THEN i.CAdj in (3,5) AND i.CInfo = 3 AND pc.Pagado = 1
 	    END)
+	AND (CASE
+		WHEN abierto IS NULL THEN i.Fecha BETWEEN fechaDesde AND fechaHasta
+		WHEN abierto = "abierto" THEN i.CAdj in (0,1,2) AND i.CInfo = 1 AND pc.Pagado = 0
+		END)
+	AND (CASE
+		WHEN cerrado IS NULL THEN i.Fecha BETWEEN fechaDesde AND fechaHasta
+		WHEN cerrado = "cerrado" THEN i.CAdj in (3,4,5) AND i.CInfo = 3 AND pc.Pagado IN (0,1)
+		END)
+	AND NOT i.Id = 0
+	AND i.Anulado = 0
+	AND NOT (i.Fecha IS NULL OR i.Fecha = '0000-00-00')
+	GROUP BY pre.Id
+	ORDER BY i.Id DESC 
+	LIMIT 5000;
+		END)
     AND NOT i.Id = 0
     AND i.Anulado = 0
     AND NOT (i.Fecha IS NULL OR i.Fecha = '0000-00-00')

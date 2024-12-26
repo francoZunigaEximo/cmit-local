@@ -691,11 +691,23 @@ $(document).ready(()=>{
             return;
         }
 
-
+        preloader('on');
         $.post(saveEnviar, { ids: ids, _token: TOKEN, eTipo: eTipo, exportarInforme: exportarInforme,  enviarMail: enviarMail})
-            .done(function(){
-                toastr.success('Se han eEnviado todos las prestaciones del mapa');
+            .done(function(response){
+                preloader('off');
 
+                $.forEach(response, function(index, r){
+
+                    if(r.icon === 'art-impresion' || r.icon === 'empresa-impresion') {
+                        createFile("pdf", r.filePath, r.name);
+                        toastr.success(r.msg);
+                    }
+
+                    
+    
+
+                });
+               
                 setTimeout(()=>{
                     $('#eenviarMapa').empty();
                     $('#eEnviarModal').modal('hide');

@@ -52,6 +52,7 @@ use App\Jobs\ExamenesImpagosJob;
 use App\Jobs\ExamenesResultadosJob;
 
 use App\Helpers\ToolsEmails;
+use App\Helpers\ToolsReportes;
 
 use Illuminate\Support\Facades\Mail;
 use App\Mail\EnviarReporte;
@@ -68,7 +69,7 @@ use FPDF;
 
 class PrestacionesController extends Controller
 {
-    use ObserverPrestaciones, ObserverFacturasVenta, CheckPermission, ReporteExcel, ToolsEmails;
+    use ObserverPrestaciones, ObserverFacturasVenta, CheckPermission, ReporteExcel, ToolsEmails, ToolsReportes;
 
     protected $reporteService;
     protected $outputPath;
@@ -517,8 +518,6 @@ class PrestacionesController extends Controller
 
         // Lista de las condiciones y sus respectivas funciones
         $acciones = [
-            'evaluacion' => ['caratula', 'resAdmin'],
-            'eEstudio' => ['eEstudio', 'adjDigitalFisico' => 3],
             'adjAnexos' => 'adjAnexos',
             'eEnvio' => ['eEstudio', 'adjAnexos', 'adjGenerales'],
             'adjDigitales' => ['adjDigitalFisico' => 3],
@@ -533,38 +532,53 @@ class PrestacionesController extends Controller
             'consEstSimple' => 'consEstSimple'
         ];
 
+        if ($request->evaluacion == 'true') {
+            $listado[] = [$this->caratula($request->Id), $this->resumenEvaluacion($request->Id)];
+        }
+
+        if ($request->eEstudio == 'true') {
+            $eEstudio = [];
+
+            $listado[] = [$this->eEstudio($request->Id, "no"), $this->adjDigitalFisico($request->Id, 3)];
+            //Generamos un registro en EnviarOpciones
+            $eEstudio[] = [$this->eEstudio($request->Id, "si"), $this->adjDigitalFisico($request->Id, 3)];
+
+            $this->reporteService->fusionarPDFs($eEstudio, FileHelper::getFileUrl('escritura').'/EnviarOpciones/eEstudio'.$request->Id.'.pdf');
+        }
+
         // Recorrer las acciones y agregarlas a $listado si la condición es true
         foreach ($acciones as $key => $action) {
             if ($request->$key == 'true') {
                 // Si la acción está asociada a un array (varios métodos a llamar)
                 if (is_array($action)) {
                     foreach ($action as $method => $param) {
-                        // Si el método tiene un parámetro extra, lo pasamos
+                        // Verificar si el $method es un índice numérico o una clave asociativa
                         if (is_numeric($method)) {
-                            array_push($listado, $this->$param($request->Id));
+                            // Si es un índice numérico, simplemente llamamos el método
+                            $listado[] = [$this->$param($request->Id)];
                         } else {
-                            array_push($listado, $this->$method($request->Id, $param));
+                            // Si es una clave asociativa, pasamos el método y el parámetro extra
+                            $listado[] = [$this->$method($request->Id, $param)];
                         }
                     }
                 } else {
                     // Si la acción es una función simple
-                    array_push($listado, $this->$action($request->Id));
+                   $listado[] = [$this->$action($request->Id)];
                 }
             }
         }
-       
+        
         if (!empty($request->estudios)) {
-
             foreach($request->estudios as $examen) {
                 $estudio = $this->addEstudioExamen($request->Id, $examen);
-                array_push($listado, $estudio);
+                $listado[] = [$estudio];
             }
         }
 
         $this->reporteService->fusionarPDFs($listado, $this->outputPath);
 
         $name = ($request->buttonEE == 'true' 
-            ? 'eEstudio'.$prestacion->Id.'.pdf' 
+            ? 'eEstudio'.$prestacion->Id.'.pdf' && File::copy($this->adjDigitalFisico($request->Id, 3), FileHelper::getFileUrl('escritura').'/EnviarOpciones/eEstudio'.$prestacion->Id)
             : ($request->buttonEA == 'true' 
                 ? 'eAdjuntos_'.$prestacion->paciente->Apellido.'_'.$prestacion->paciente->Nombre.'_'.$prestacion->paciente->Documento.'_'.Carbon::parse($prestacion->Fecha)->format('d-m-Y').'.pdf'
                 : $this->fileNameExport.'.pdf'));
@@ -584,47 +598,53 @@ class PrestacionesController extends Controller
 
     }
 
-        
-
     public function enviarReporte(Request $request)
     {
         $listado = [];
+        $evaluacion = [];
 
         $prestacion = Prestacion::with('paciente', 'empresa')->find($request->Id);
 
         $emails = $this->getEmailsReporte($request->EMailInformes);
 
         if ($request->evaluacion == 'true') {
-            array_push($listado, $this->caratula($request->Id));
-            array_push($listado, $this->resumenEvaluacion($request->Id));
+            $listado[] = [$this->caratula($request->Id), $this->resumenEvaluacion($request->Id)];
+            // Generamos un array individual para guardar el archivo en ubicacion especial
+            $evaluacion[] = [$this->caratula($request->Id), $this->resumenEvaluacion($request->Id)];
+
+            $this->reporteService->fusionarPDFs($evaluacion, FileHelper::getFileUrl('escritura').'/EnviarOpciones/eResumen'.$request->Id.'.pdf'); // registramos el archivo de Evaluacion Resumen
         }
 
         if ($request->adjAnexos == 'true') {
-            array_push($listado, $this->adjAnexos($request->Id));
+            $listado[] = [$this->adjAnexos($request->Id)];
+            File::copy($this->adjAnexos($request->Id), FileHelper::getFileUrl('escritura').'/EnviarOpciones/eAnexos'.$request->Id.'_'.$this->getIdArchivoEfector($request->Id).'.pdf');
         }
 
         if ($request->adjDigitales == 'true') {
-            array_push($listado, $this->adjDigitalFisico($request->Id, 3));
+            $listado[] = [$this->adjDigitalFisico($request->Id, 3)];
         }
 
         if ($request->adjFisicos == 'true') {
-            array_push($listado, $this->adjDigitalFisico($request->Id, 1));
+            $listado[] = [$this->adjDigitalFisico($request->Id, 1)];
         }
 
         if ($request->adjGenerales == 'true') {
-            array_push($listado, $this->adjGenerales($request->Id));
+            $listado[] = [$this->adjGenerales($request->Id)];
+            File::copy($this->adjGenerales($request->Id), FileHelper::getFileUrl('escritura').'/EnviarOpciones/eAdjuntos'.$request->Id.'.pdf');
         }
 
         if ($request->resAdmin == 'true') {
-            array_push($listado, $this->resAdmin($request->Id));
+            $listado[] = [$this->resAdmin($request->Id)];
         }
 
         if ($request->consEstDetallado == 'true') {
-            array_push($listado, $this->consEstDetallado($request->Id));
+            $listado[] = [$this->consEstDetallado($request->Id)];
+            File::copy($this->consEstDetallado($request->Id), FileHelper::getFileUrl('escritura').'/EnviarOpciones/eConstanciaD'.$request->Id.'.pdf');
         }
 
         if ($request->consEstSimple == 'true') {
-            array_push($listado, $this->consEstSimple($request->Id));
+            $listado[] = [$this->consEstSimple($request->Id)];
+            File::copy($this->consEstDetallado($request->Id), FileHelper::getFileUrl('escritura').'/EnviarOpciones/eConstanciaS'.$request->Id.'.pdf');
         }
 
         $this->reporteService->fusionarPDFs($listado, $this->sendPath);
@@ -707,14 +727,9 @@ class PrestacionesController extends Controller
             $cuerpo['obsEvaluacion'] = $prestacion->Observaciones ?? '';
 
             //Creando eEnvio para adjuntar
-            $file1 = [];
-            $file2 = [];
-            $file3 = [];
-
-            array_push($file1, $this->eEstudio($request->Id));
-            array_push($file1, $this->adjDigitalFisico($request->Id, 2));
-            array_push($file2, $this->adjAnexos($request->Id));
-            array_push($file3, $this->AdjuntosGenerales($request->Id));
+            $file1 [] = [$this->eEstudio($request->Id, "no"), $this->adjDigitalFisico($request->Id, 2)];
+            $file2 [] = [$this->adjAnexos($request->Id)];
+            $file3 [] = [$this->adjGenerales($request->Id)];
 
             $eEstudioSend = storage_path('app/public/eEstudio'.$prestacion->Id.'.pdf');
             $eAdjuntoSend = storage_path('app/public/temp/eAdjuntos_'.$prestacion->paciente->Apellido.'_'.$prestacion->paciente->Nombre.'_'.$prestacion->paciente->Documento.'_'.Carbon::parse($prestacion->Fecha)->format('d-m-Y').'.pdf');
@@ -734,6 +749,11 @@ class PrestacionesController extends Controller
 
                 // $info = new ExamenesResultadosMail(['subject' => $asunto, 'content' => $cuerpo, 'attachments' => $attachments]);
                 //     Mail::to("nmaximowicz@eximo.com.ar")->send($info);
+
+                Auditor::setAuditoria($request->Id, 1, 40, Auth::user()->name); //1: Prestacion y 40 enviar eEstudio desde Opciones
+                File::copy($this->eEstudio($request->Id, "no"), FileHelper::getFileUrl('escritura').'/Enviar/eEstudio'.$request->Id.'.pdf');
+                File::copy($this->adjDigitalFisico($request->Id, 2), FileHelper::getFileUrl('escritura').'/Enviar/eAdjuntos'.$request->Id.'.pdf');
+                File::copy($this->adjAnexos($request->Id), FileHelper::getFileUrl('escritura').'/Enviar/eAnexos'.$request->Id.'.pdf');
             }
 
             return response()->json(['msg' => 'Se ha enviado el resultado al cliente de manera correcta.'], 200);
@@ -794,15 +814,17 @@ class PrestacionesController extends Controller
         //Verificamos si acepta envio de emails
         if ($prestacion->empresa->SEMail === 1) {
 
-            array_push($listado, $this->eEstudio($request->Id));
-            array_push($listado, $this->adjAnexos($request->Id));
-            array_push($listado, $this->AdjuntosGenerales($request->Id));
+            $listado[] = [$this->eEstudio($request->Id, "no")];
+            $listado[] = [$this->adjAnexos($request->Id)];
+            $listado[] = [$this->adjGenerales($request->Id)];
 
-            foreach($estudios as $examen) {
-                $estudio = $this->addEstudioExamen($request->Id, $examen);
-                array_push($listado, $estudio);
+            if($estudios) {
+                foreach($estudios as $examen) {
+                    $estudio = $this->addEstudioExamen($request->Id, $examen);
+                    array_push($listado, $estudio);
+                }
             }
-
+            
             return response()->json([
                 'filePath' => $this->outputPath,
                 'name' => $this->fileNameExport.'.pdf',
@@ -842,13 +864,9 @@ class PrestacionesController extends Controller
             $cuerpo['obsEvaluacion'] = $prestacion->Observaciones ?? '';
 
             //Creando eEnvio para adjuntar
-            $file1 = [];
-            $file2 = [];
-            $file3 = [];
-
-            array_push($file1, $this->eEstudio($request->Id));
-            array_push($file2, $this->adjAnexos($request->Id));
-            array_push($file3, $this->AdjuntosGenerales($request->Id));
+            $file1[] = [$this->eEstudio($request->Id, "no")];
+            $file2[] = [$this->adjAnexos($request->Id)];
+            $file3[] = [$this->adjGenerales($request->Id)];
 
             $eEstudioSend = storage_path('app/public/eEstudio'.$prestacion->Id.'.pdf');
             $eAdjuntoSend = storage_path('app/public/temp/eAdjuntos_'.$prestacion->paciente->Apellido.'_'.$prestacion->paciente->Nombre.'_'.$prestacion->paciente->Documento.'_'.Carbon::parse($prestacion->Fecha)->format('d-m-Y').'.pdf');
@@ -1211,7 +1229,7 @@ class PrestacionesController extends Controller
         );
     }
 
-    private function eEstudio(int $idPrestacion): mixed
+    private function eEstudio(int $idPrestacion, string $opciones): mixed // No - Lleva resumen aptitud
     {
         return $this->reporteService->generarReporte(
             EEstudio::class,
@@ -1222,7 +1240,7 @@ class PrestacionesController extends Controller
             storage_path($this->tempFile.Tools::randomCode(15).'-'.Auth::user()->name.'.pdf'),
             null,
             ['id' => $idPrestacion],
-            ['id' => $idPrestacion, 'firmaeval' => 0, 'opciones' => 'no', 'eEstudio' => 'si'],
+            ['id' => $idPrestacion, 'firmaeval' => 0, 'opciones' => $opciones, 'eEstudio' => 'si'],
             [],
             [],
             null
@@ -1406,13 +1424,6 @@ class PrestacionesController extends Controller
         return $query;
     }
 
-    private function checkExCtaImpago(int $idPrestacion)
-    {
-        return ExamenCuentaIt::join('prestaciones', 'pagosacuenta_it.IdPrestacion', '=', 'prestaciones.Id')
-            ->join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
-            ->where('pagosacuenta_it.IdPrestacion', $idPrestacion)->count();
-    }
-
     private function checkPrestacionesCompletas(int $id): mixed
     {
         return ItemPrestacion::whereIn('CAdj', [3,5])
@@ -1467,20 +1478,6 @@ class PrestacionesController extends Controller
             Auditor::setAuditoria($request->Id, 1, 2, Auth::user()->name);
         }
 
-    }
-
-    private function AnexosFormulariosPrint(int $id)
-    {
-        //verifico si hay anexos con formularios a imprimir
-	    // $query="Select e.Id From itemsprestaciones ip,examenes e Where e.Id=ip.IdExamen and e.IdReporte <> 0 and ip.Anulado=0 and e.Evaluador=1 and  ip.IdPrestacion=$idprest LIMIT 1";	$rs=mysql_query($query,$conn);
-
-        return ItemPrestacion::join('examenes', 'itemsprestacones.IdExamen', '=', 'examenes.Id')
-                ->select('examenes.Id as Id')
-                ->whereNot('examenes.IdReporte', 0)
-                ->where('itemsprestaciones.Anulado', 0)
-                ->where('examenes.Evaluador', 1)
-                ->where('itemsprestaciones.IdPrestacion', $id)
-                ->first();
     }
 
     private function addEstudioExamen(int $idPrestacion, int $idExamen): mixed
@@ -1617,6 +1614,16 @@ class PrestacionesController extends Controller
         $antiguas = HistorialPrestacion::with(['paciente', 'empresa', 'art'])->where('IdPaciente', $id)->get();
 
         return $nuevas->merge($antiguas);
+    }
+
+    private function getIdArchivoEfector(int $id): int
+    {
+        return ArchivoEfector::where('IdPrestacion', $id)->first(['Id']) ?? 0;
+    }
+
+    private function getIdArchivoInformador(int $id): int
+    {
+        return ArchivoInformador::where('IdPrestacion', $id)->first(['id']) ?? 0;
     }
 
 }

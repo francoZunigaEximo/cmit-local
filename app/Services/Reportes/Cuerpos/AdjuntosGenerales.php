@@ -28,6 +28,7 @@ class AdjuntosGenerales extends Reporte
             }
 
            $this->mergePDFs($datos['id'], $files, SELF::NOMBRE);
+
         }
     }
 

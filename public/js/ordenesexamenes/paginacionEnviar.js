@@ -1,18 +1,20 @@
 $(document).ready(()=>{
 
     //Botón de busqueda de Mapas
-    $(document).on('click', '#buscarEEnviar, .completo', function() {
+    $(document).on('click', '#buscarEEnviar, .completo, .abierto, .cerrado', function() {
 
         let fechaDesde = $('#fechaDesdeEEnviar').val(),
             fechaHasta = $('#fechaHastaEEnviar').val(),
             empresa = $('#empresaEEnviar').val(),
             paciente = $('#pacienteEEnviar').val(),
             enviar = $('#eEnviarEEnviar').val(),
-            completo = $(this).hasClass('completo') ? "activo" : null;
+            completo = $(this).hasClass('completo') ? "activo" : null,
+            abierto = $(this).hasClass('abierto') ? "activo" : null,
+            cerrado = $(this).hasClass('cerrado') ? "activo" : null;
 
         
 
-        if (completo !== 'activo' && (fechaDesde === '' || fechaHasta === '')) {
+        if ((completo !== 'activo' || abierto !== 'activo' || cerrado !== 'activo') && (fechaDesde === '' || fechaHasta === '')) {
             toastr.warning("Las fechas son obligatorias");
             return;
         }
@@ -38,6 +40,8 @@ $(document).ready(()=>{
                     d.paciente = paciente;
                     d.eenviar = enviar;
                     d.completo = completo;
+                    d.abierto = abierto;
+                    d.cerrado = cerrado;
                 },
             },
             dataType: 'json',
