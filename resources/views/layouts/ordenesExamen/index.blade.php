@@ -1025,8 +1025,8 @@
                                             <div class="row mb-2 mt-2">
                                                 <div class="col-sm-6 text-start">
                                                     <button type="button" class="btn btn-sm botonGeneral completo">Completo</button>
-                                                    <button type="button" class="btn btn-sm botonGeneral abierto">Abiertos</button>
-                                                    <button type="button" class="btn btn-sm botonGeneral cerrado">Cerrados</button>
+                                                    <button type="button" class="btn btn-sm botonGeneral abiertoEE">Abiertos</button>
+                                                    <button type="button" class="btn btn-sm botonGeneral cerradoEE">Cerrados</button>
                                                 </div>
                                                 <div class="col-sm-6 text-end">
                                                     <button type="button" class="btn btn-sm botonGeneral"><i class="ri-article-line"></i>&nbsp;Vista previa</button>

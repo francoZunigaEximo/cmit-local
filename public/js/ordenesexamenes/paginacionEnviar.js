@@ -1,7 +1,7 @@
 $(document).ready(()=>{
 
     //Botón de busqueda de Mapas
-    $(document).on('click', '#buscarEEnviar, .completo, .abierto, .cerrado', function() {
+    $(document).on('click', '#buscarEEnviar, .completo, .abiertoEE, .cerradoEE', function() {
 
         let fechaDesde = $('#fechaDesdeEEnviar').val(),
             fechaHasta = $('#fechaHastaEEnviar').val(),
@@ -9,8 +9,8 @@ $(document).ready(()=>{
             paciente = $('#pacienteEEnviar').val(),
             enviar = $('#eEnviarEEnviar').val(),
             completo = $(this).hasClass('completo') ? "activo" : null,
-            abierto = $(this).hasClass('abierto') ? "activo" : null,
-            cerrado = $(this).hasClass('cerrado') ? "activo" : null;
+            abierto = $(this).hasClass('abiertoEE') ? "activo" : null,
+            cerrado = $(this).hasClass('cerradoEE') ? "activo" : null;
 
         
 
@@ -139,29 +139,6 @@ $(document).ready(()=>{
                 info: "Mostrando _START_ a _END_ de _TOTAL_ de examenes",
             }
         });
-
-        function fechaNow(fechaAformatear, divider, format) {
-            let dia, mes, anio; 
-        
-            if (fechaAformatear === null) {
-                let fechaHoy = new Date();
-        
-                dia = fechaHoy.getDate().toString().padStart(2, '0');
-                mes = (fechaHoy.getMonth() + 1).toString().padStart(2, '0');
-                anio = fechaHoy.getFullYear();
-            } else {
-                let nuevaFecha = fechaAformatear.split("-"); 
-                dia = nuevaFecha[0]; 
-                mes = nuevaFecha[1]; 
-                anio = nuevaFecha[2];
-            }
-        
-            return (format === '0') ? `${dia}${divider}${mes}${divider}${anio}` : `${anio}${divider}${mes}${divider}${dia}`;
-        }
-
-        function acortadorTexto(cadena, nroCaracteres = 10) {
-            return cadena.length <= nroCaracteres ? cadena : cadena.substring(0,nroCaracteres);
-        }
 
     });
 

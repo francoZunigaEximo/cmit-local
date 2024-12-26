@@ -802,7 +802,7 @@ BEGIN
 END
 
 
-CREATE PROCEDURE getSearchEEnviar(IN fechaDesde DATE, IN fechaHasta DATE, IN empresa INT, IN paciente INT, IN completo VARCHAR, IN eenviar VARCHAR, IN aberto VARCHAR, IN cerrado VARCHAR)
+CREATE PROCEDURE getSearchEEnviar(IN fechaDesde DATE, IN fechaHasta DATE, IN empresa INT, IN paciente INT, IN completo VARCHAR, IN eenviar VARCHAR, IN abierto VARCHAR, IN cerrado VARCHAR)
 
 BEGIN
     SELECT i.Fecha AS Fecha, pre.Id AS IdPrestacion, pre.FechaEnviado AS FechaEnviado, cli.EMailInformes AS Correo, cli.RazonSocial AS Empresa, CONCAT(pa.Apellido, ' ', pa.Nombre) AS NombreCompleto, pa.Documento AS Documento, pa.Id AS IdPaciente, exa.Nombre AS Examen, pc.Pagado AS Pagado, i.Id AS IdExa
