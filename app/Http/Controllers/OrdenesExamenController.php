@@ -236,6 +236,8 @@ public function searchPrestacion(Request $request)
             ($request->empresa ? $request->empresa : "NULL").", ".
             ($request->paciente ? $request->paciente : "NULL").", ".
             ($request->completo ? "'".$request->completo."'" : "NULL").", ".
+            ($request->abierto ? "'".$request->abierto."'" : "NULL").", ".
+            ($request->cerrado ? "'".$request->cerrado."'" : "NULL").", ".
             ($request->eenviar ? "'".$request->eenviar."'" : "NULL").")");
 
             return Datatables::of($query)->make(true);   
