@@ -807,34 +807,34 @@ CREATE PROCEDURE getSearchEEnviar(IN fechaDesde DATE, IN fechaHasta DATE, IN emp
 BEGIN
     SELECT i.Fecha AS Fecha, pre.Id AS IdPrestacion, pre.FechaEnviado AS FechaEnviado, cli.EMailInformes AS Correo, cli.RazonSocial AS Empresa, CONCAT(pa.Apellido, ' ', pa.Nombre) AS NombreCompleto, pa.Documento AS Documento, pa.Id AS IdPaciente, exa.Nombre AS Examen, pc.Pagado AS Pagado, i.Id AS IdExa
     FROM itemsprestaciones i
-    INNER JOIN prestaciones pre on i.IdPrestacion = pre.Id AND (pre.Anulado = 0) 
+    INNER JOIN prestaciones pre on i.IdPrestacion = pre.Id AND (pre.Anulado = 0) AND (
+			(eenviar IS NULL) OR
+	        (eenviar = 'eenviado' AND pre.eEnviado = 1) OR
+	        (eenviar = 'noeenviado' AND pre.eEnviado = 0) OR
+	        (eenviar = 'todos' AND pre.eEnviado IN (0, 1))
+		)
     INNER JOIN examenes exa ON i.IdExamen = exa.Id AND (exa.Informe = 1)
     INNER JOIN clientes cli ON pre.IdEmpresa = cli.Id AND (empresa IS NULL OR cli.Id = empresa)
     INNER JOIN pacientes pa ON pre.IdPaciente = pa.Id AND (paciente IS NULL OR pa.Id = paciente)
     INNER JOIN pagosacuenta pc ON cli.Id = pc.IdEmpresa
     LEFT JOIN pagosacuenta_it pc2 ON pre.Id = pc2.IdPrestacion
-    WHERE (CASE
-	    	WHEN completo IS NULL THEN i.Fecha BETWEEN fechaDesde AND fechaHasta
-	    	WHEN completo = "activo" THEN i.CAdj in (3,5) AND i.CInfo = 3 AND pc.Pagado = 1
-	    END)
-	AND (CASE
-	    	WHEN abierto IS NULL THEN i.Fecha BETWEEN fechaDesde AND fechaHasta
-	    	WHEN abierto = "activo" THEN i.CAdj in (0,1,2) AND i.CInfo = 1 AND pc.Pagado = 0
-	    END)
-	AND (CASE
-	    	WHEN cerrado IS NULL THEN i.Fecha BETWEEN fechaDesde AND fechaHasta
-	    	WHEN cerrado = "activo" THEN i.CAdj in (3,4,5) AND i.CInfo = 3 AND pc.Pagado IN(0,1)
-	    END)
-	AND (CASE
-			WHEN eenviar IS NULL THEN i.Fecha BETWEEN fechaDesde AND fechaHasta
-	        WHEN eenviar = 'eenviado' THEN pre.eEnviado = 1 
-	        WHEN eenviar = 'noeenviado' THEN pre.eEnviado = 0
-	        WHEN eenviar = 'todos' THEN pre.eEnviado IN (0, 1)
-		END)
+    WHERE i.Fecha BETWEEN fechaDesde AND fechaHasta 
     AND NOT i.Id = 0
     AND i.Anulado = 0
-    AND i.Fecha BETWEEN fechaDesde AND fechaHasta 
     AND NOT (i.Fecha IS NULL OR i.Fecha = '0000-00-00')
+    AND (
+	    	(completo IS NULL) OR
+	    	(completo = "activo" AND i.CAdj in (3,5) AND i.CInfo = 3 AND pc.Pagado = 1)
+	    )
+	AND (
+	    	(abierto IS NULL) OR
+	    	(abierto = "activo" AND i.CAdj in (0,1,2) AND i.CInfo = 1 AND pc.Pagado = 0)
+	    )
+	AND (
+	    	(cerrado IS NULL) OR
+	    	(cerrado = "activo" AND i.CAdj in (3,4,5) AND i.CInfo = 3 AND pc.Pagado IN(0,1))
+	    )
+    
     GROUP BY pre.Id
     ORDER BY i.Id DESC 
     LIMIT 5000;
