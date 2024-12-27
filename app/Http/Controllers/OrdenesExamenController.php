@@ -315,7 +315,7 @@ public function searchPrestacion(Request $request)
                     ->whereNot('i.Fecha', null)
                     ->groupBy('pre.Id')
                     ->orderBy('i.Id', 'DESC')
-                    ->limit(5000);
+                    ->limit(1000);
 
             return Datatables::of($query)->make(true);   
         }
