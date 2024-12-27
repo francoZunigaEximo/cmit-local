@@ -230,15 +230,92 @@ public function searchPrestacion(Request $request)
     {
         if($request->ajax()) {
 
-            $query = $query = DB::select("CALL getSearchEEnviar(".
-            ($request->fechaDesde ? "'".$request->fechaDesde."'" : "NULL").", ".
-            ($request->fechaHasta ? "'".$request->fechaHasta."'" : "NULL").", ".
-            ($request->empresa ? $request->empresa : "NULL").", ".
-            ($request->paciente ? $request->paciente : "NULL").", ".
-            ($request->completo ? "'".$request->completo."'" : "NULL").", ".
-            ($request->abierto ? "'".$request->abierto."'" : "NULL").", ".
-            ($request->cerrado ? "'".$request->cerrado."'" : "NULL").", ".
-            ($request->eenviar ? "'".$request->eenviar."'" : "NULL").")");
+            // $query = $query = DB::select("CALL getSearchEEnviar(".
+            // ($request->fechaDesde ? "'".$request->fechaDesde."'" : "NULL").", ".
+            // ($request->fechaHasta ? "'".$request->fechaHasta."'" : "NULL").", ".
+            // ($request->empresa ? $request->empresa : "NULL").", ".
+            // ($request->paciente ? $request->paciente : "NULL").", ".
+            // ($request->completo ? "'".$request->completo."'" : "NULL").", ".
+            // ($request->abierto ? "'".$request->abierto."'" : "NULL").", ".
+            // ($request->cerrado ? "'".$request->cerrado."'" : "NULL").", ".
+            // ($request->eenviar ? "'".$request->eenviar."'" : "NULL").")");
+
+            $query = DB::table('itemsprestaciones as i')
+                ->join('prestaciones as pre', function($join) use ($request){
+                        $join->on('i.IdPrestacion', '=', 'pre.Id')
+                            ->where('pre.Anulado', 0);
+                            if (!empty($request->eenviar)) {
+                                $join->when($request->eenviar === 'eenviado', function($query) {
+                                    return $query->where('pre.eEnviado', 1);
+                                })
+                                ->when($request->eenviar === 'noeenviado', function($query) {
+                                    return $query->where('pre.eEnviado', 0);
+                                })
+                                ->when($request->eenviar === 'todos', function($query) {
+                                    return $query->whereIn('pre.eEnviado', [0, 1]);
+                                });
+                            }
+                })
+                ->join('clientes as cli', function ($join) use ($request) {
+                    $join->on('pre.IdEmpresa', '=', 'cli.Id');
+                    if (!empty($request->empresa)) {
+                        $join->where('cli.Id', $request->empresa);
+                    }
+                })
+                ->join('pacientes as pa', function ($join) use ($request) {
+                    $join->on('pre.IdPaciente', '=', 'pa.Id');
+                    if (!empty($request->paciente)) {
+                        $join->where('pa.Id', $request->paciente);
+                    }
+                })
+                ->join('examenes as exa', function($join) {
+                    $join->on('i.IdExamen', '=', 'exa.Id')
+                        ->where('exa.Informe', 1);
+                })
+                ->join('pagosacuenta as pc', 'cli.Id', '=', 'pc.IdEmpresa')
+                ->leftJoin('pagosacuenta_it as pc2', 'pre.Id', '=', 'pc2.IdPrestacion')
+                ->select(
+                    'i.Fecha AS Fecha', 
+                    'pre.Id AS IdPrestacion', 
+                    'pre.FechaEnviado AS FechaEnviado', 
+                    'cli.EMailInformes AS Correo',
+                    'cli.RazonSocial AS Empresa',
+                    DB::raw("CONCAT(pa.Apellido, ' ', pa.Nombre) AS NombreCompleto"),
+                    'pa.Documento AS Documento', 
+                    'pa.Id AS IdPaciente', 
+                    'exa.Nombre AS Examen', 
+                    'pc.Pagado AS Pagado', 
+                    'i.Id AS IdExa'
+                );
+
+                $query->when(!empty($request->fechaDesde) && !empty($request->fechaHasta), function ($query) use ($request) {
+                    $query->whereBetween('i.Fecha', [$request->fechaDesde, $request->fechaHasta]);
+                });
+
+                $query->when(!empty($request->completo) && $request->completo === 'activo', function ($query) {
+                    $query->whereIn('i.CAdj', [3, 5])
+                        ->where('i.CInfo', 3)
+                        ->where('pc.Pagado', 1);
+                });
+    
+                $query->when(!empty($request->abierto) && $request->abierto === 'activo', function ($query) {
+                    $query->whereIn('i.CAdj', [0, 1, 2])
+                        ->where('i.CInfo', 1)
+                        ->where('pc.Pagado', 0);
+                });
+
+                $query->when(!empty($request->cerrado) && $request->cerrado === 'activo', function ($query) {
+                    $query->whereIn('i.CAdj', [3, 4, 5])
+                        ->where('i.CInfo', 3)
+                        ->whereIn('pc.Pagado', [0, 1]);
+                });
+
+                $query->whereNot('i.Id', 0)
+                    ->whereNot('i.Fecha', '0000-00-00')
+                    ->whereNot('i.Fecha', null)
+                    ->groupBy('pre.Id')
+                    ->orderBy('i.Id', 'DESC')
+                    ->limit(5000);
 
             return Datatables::of($query)->make(true);   
         }
