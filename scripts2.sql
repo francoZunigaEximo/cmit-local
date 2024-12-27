@@ -820,7 +820,6 @@ BEGIN
     LEFT JOIN pagosacuenta_it pc2 ON pre.Id = pc2.IdPrestacion
     WHERE i.Fecha BETWEEN fechaDesde AND fechaHasta 
     AND NOT i.Id = 0
-    AND i.Anulado = 0
     AND NOT (i.Fecha IS NULL OR i.Fecha = '0000-00-00')
     AND (
 	    	(completo IS NULL) OR
