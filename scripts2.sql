@@ -826,6 +826,7 @@ BEGIN
 	    	WHEN cerrado = "activo" THEN i.CAdj in (3,4,5) AND i.CInfo = 3 AND pc.Pagado IN(0,1)
 	    END)
 	AND (CASE
+			WHEN eenviar IS NULL THEN i.Fecha BETWEEN fechaDesde AND fechaHasta
 	        WHEN eenviar = 'eenviado' THEN pre.eEnviado = 1 
 	        WHEN eenviar = 'noeenviado' THEN pre.eEnviado = 0
 	        WHEN eenviar = 'todos' THEN pre.eEnviado IN (0, 1)
