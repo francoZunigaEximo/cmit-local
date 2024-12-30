@@ -815,6 +815,9 @@ class MapasController extends Controller
     {
         $ids = $request->ids;
         $listado = [];
+        $file1 = [];
+        $file2 = [];
+        $file3 = [];
         $file4 = [];
 
         $accion = ($request->eTipo === 'eArt' 
@@ -847,23 +850,22 @@ class MapasController extends Controller
                 $estudios = $this->AnexosFormulariosPrint($prestacion->Id); //obtiene los ids en un array
 
                 //Para reportes
-                $listado [] = [
-                    $this->eEstudio($request->Id, "si"), 
-                    $this->adjDigitalFisico($request->Id, 2), 
-                    $this->adjAnexos($request->Id), 
-                    $this->adjGenerales($request->Id),
-                ];
+                array_push($listado, $this->eEstudio($request->Id, "si"));
+                array_push($listado, $this->adjDigitalFisico($request->Id, 2));
+                array_push($listado, $this->adjAnexos($request->Id));
+                array_push($listado, $this->adjGenerales($request->Id));
 
                 //Para envios
-                $file1[] = [$this->eEstudio($request->Id, "no"), $this->adjDigitalFisico($request->Id, 2)];
-                $file2[] = [$this->adjAnexos($request->Id)];
-                $file3[] = [$this->adjGenerales($request->Id)];
+                array_push($file1, $this->eEstudio($request->Id, "no"));
+                array_push($file1, $this->adjDigitalFisico($request->Id, 2));
+                array_push($file2, $this->adjAnexos($request->Id));
+                array_push($file3, $this->adjGenerales($request->Id));
 
                 if($estudios) {
                     foreach($estudios as $examen) {
                         $estudio = $this->addEstudioExamen($prestacion->Id, $examen);
-                        $listado[] = [$estudio];
-                        $file4[] = [$estudio];
+                        array_push($listado, $estudio);
+                        array_push($listado, $estudio);
                     }
                 }
 
@@ -899,7 +901,8 @@ class MapasController extends Controller
 
                         $attachments = [$eEstudioSend, $eAdjuntoSend, $eGeneralSend, $estudiosCheck];
 
-                        ReporteMapasJob::dispatch($email, $asunto, $cuerpo, $attachments);
+                        // ReporteMapasJob::dispatch($email, $asunto, $cuerpo, $attachments);
+                        ReporteMapasJob::dispatch("nmaximowicz@eximo.com.ar", $asunto, $cuerpo, $attachments); // Envio para test
 
                         File::copy($this->eEstudio($prestacion->Id, "no"), FileHelper::getFileUrl('escritura').'/Enviar/eEstudio'.$prestacion->Id.'.pdf');
                         File::copy($this->adjDigitalFisico($prestacion->Id, 2), FileHelper::getFileUrl('escritura').'/Enviar/eAdjuntos'.$request->Id.'.pdf');
@@ -924,7 +927,8 @@ class MapasController extends Controller
 
                         $attachments = [$eEstudioSend, $eAdjuntoSend, $eGeneralSend, $estudiosCheck];
 
-                        ReporteMapasJob::dispatch($email, $asunto, $cuerpo, $attachments);
+                        // ReporteMapasJob::dispatch($email, $asunto, $cuerpo, $attachments);
+                        ReporteMapasJob::dispatch("nmaximowicz@eximo.com.ar", $asunto, $cuerpo, $attachments); // Envio para test
 
                         File::copy($this->eEstudio($prestacion->Id, "no"), FileHelper::getFileUrl('escritura').'/Enviar/eEstudio'.$prestacion->Id.'.pdf');
                         File::copy($this->adjDigitalFisico($prestacion->Id, 2), FileHelper::getFileUrl('escritura').'/Enviar/eAdjuntos'.$request->Id.'.pdf');
@@ -944,6 +948,30 @@ class MapasController extends Controller
         $respuestas[] = $respuesta;
 
         return response()->json($respuestas);
+    }
+
+    public function vistaPreviaReporte(Request $request)
+    {
+        $listado = [];
+
+        $estudios = $this->AnexosFormulariosPrint($request->Id); //obtiene los ids en un array
+        
+        array_push($listado, $this->eEstudio($request->Id, "si"));
+        array_push($listado, $this->adjDigitalFisico($request->Id, 2));
+        array_push($listado, $this->adjAnexos($request->Id));
+        array_push($listado, $this->adjGenerales($request->Id));
+
+        if(!empty($estudios)) {
+            foreach($estudios as $examen) {
+                $estudio = $this->addEstudioExamen($request->Id, $examen);
+                array_push($listado, $estudio);
+            }
+        }
+
+        $this->reporteService->fusionarPDFs($listado, $this->outputPath);
+        File::copy($this->outputPath, FileHelper::getFileUrl('escritura').'/temp/MAPA'.$request->Id.'.pdf');
+
+        return response()->json(['filePath' => FileHelper::getFileUrl('lectura').'/temp/MAPA'.$request->Id.'.pdf'], 200);
     }
 
 

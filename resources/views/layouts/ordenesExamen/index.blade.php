@@ -1027,6 +1027,7 @@
                                                     <button type="button" class="btn btn-sm botonGeneral completo">Completo</button>
                                                     <button type="button" class="btn btn-sm botonGeneral abiertoEE">Abiertos</button>
                                                     <button type="button" class="btn btn-sm botonGeneral cerradoEE">Cerrados</button>
+                                                    <button type="button" class="btn btn-sm botonGeneral cerradoEE">Impagos</button>
                                                 </div>
                                                 <div class="col-sm-6 text-end">
                                                     <button type="button" class="btn btn-sm botonGeneral"><i class="ri-article-line"></i>&nbsp;Vista previa</button>

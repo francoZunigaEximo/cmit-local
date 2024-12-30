@@ -620,7 +620,10 @@ $(document).ready(()=>{
                             <td>${en.ApellidoPaciente} ${en.NombrePaciente}</td>
                             <td>${en.Documento}</td>
                             <td><span class="custom-badge pequeno">${(en.eEnviado === 1 ? 'eEnviado':'No eEnviado')}</span></td>
-                            <td><button data-id="${en.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
+                            <td>
+                                <button data-id="${en.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button>
+                                <button data-id="${en.IdPrestacion}" class="btn btn-sm iconGeneral vistaPreviaEnviar" title="Vista previa"><i class="ri-file-search-line"></i></button>
+                            </td>
                             <td>${en.eEnviado === 1 ? '' : en.eEnviado === 0 && en.Finalizado === 1 && en.Cerrado === 1 && en.Etapa === 'Completo' ? `<input type="checkbox" name="Id" value="${en.IdPrestacion}" checked>` : '<span class="custom-badge pequeno">Bloqueado</span>'}</td>     
                         </tr>
                     `;
@@ -703,8 +706,6 @@ $(document).ready(()=>{
                         toastr.success(r.msg);
                     }
 
-                    
-    
 
                 });
                
@@ -845,7 +846,31 @@ $(document).ready(()=>{
     });
 
     $(document).on('click', '.multiVolver', function(e) {
+        e.preventDefault();
         window.history.back();
+    });
+
+
+    $(document).on('click', '.vistaPreviaEnviar', function(e){
+        e.preventDefault();
+
+        let id = $(this).data('id');
+        if([0, null, ''].includes(id)) return;
+
+        preloader('on');
+        $.get(vistaPrevia, {Id: id})
+            .done(function(response){
+                preloader('off');
+                toastr.success('Generando la vista previa');
+                window.open(response.filePath, '_blank');
+                console.log(response.filePath);
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            });
     });
 
     function updateContador() {
@@ -1047,8 +1072,12 @@ $(document).ready(()=>{
                             <td>${en.ApellidoPaciente} ${en.NombrePaciente}</td>
                             <td>${en.Documento}</td>
                             <td><span class="custom-badge pequeno">${(en.eEnviado === 1 ? 'eEnviado':'No eEnviado')}</span></td>
-                            <td><button data-id="${en.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
-                            <td>${en.eEnviado === 1 ? '' : en.eEnviado === 0 && en.Finalizado === 1 && en.Cerrado === 1 && en.Etapa === 'Completo' ? `<input type="checkbox" name="Id_enviar" value="${en.IdPrestacion}" checked>` : `<span class="custom-badge pequeno">Bloqueado</span>`}</td> 
+                            <td>
+                                <button data-id="${en.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button>
+                                <button data-id="${en.IdPrestacion}" class="btn btn-sm iconGeneral vistaPreviaEnviar" title="Vista previa"><i class="ri-file-search-line"></i></button>
+                            </td>
+                            <td>${en.eEnviado === 1 ? '' : en.eEnviado === 0 && en.Finalizado === 1 && en.Cerrado === 1 && en.Etapa === 'Completo' ? `<input type="checkbox" name="Id_enviar" value="${en.IdPrestacion}" checked>` : `<span class="custom-badge pequeno">Bloqueado</span>`}
+                            </td> 
                         </tr>
                     `;
                     $('#eenviarMapa').append(contenido);

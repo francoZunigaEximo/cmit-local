@@ -277,7 +277,7 @@ public function searchPrestacion(Request $request)
                 ->select(
                     'i.Fecha AS Fecha', 
                     'pre.Id AS IdPrestacion', 
-                    'pre.FechaEnviado AS FechaEnviado', 
+                    'pre.FechaEnviado AS FechaEnviado',
                     'cli.EMailInformes AS Correo',
                     'cli.RazonSocial AS Empresa',
                     DB::raw("CONCAT(pa.Apellido, ' ', pa.Nombre) AS NombreCompleto"),
