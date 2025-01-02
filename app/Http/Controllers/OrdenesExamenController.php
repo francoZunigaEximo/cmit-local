@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ItemPrestacion;
+use App\Models\Prestacion;
 use App\Traits\ObserverItemsPrestaciones;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
@@ -15,9 +16,38 @@ use DateTime;
 use DateInterval;
 use App\Traits\CheckPermission;
 
+use App\Services\Reportes\ReporteService;
+use App\Helpers\Tools;
+use Illuminate\Support\Facades\Auth;
+use App\Helpers\FileHelper;
+use Illuminate\Support\Facades\File;
+
+use App\Services\Reportes\Titulos\EEstudio;
+use App\Services\Reportes\Cuerpos\EvaluacionResumen;
+use App\Enum\ListadoReportes;
+use App\Helpers\ToolsReportes;
+use App\Services\Reportes\Cuerpos\AdjuntosGenerales;
+use App\Services\Reportes\Cuerpos\AdjuntosAnexos;
+use App\Services\Reportes\Cuerpos\AdjuntosDigitales;
+
 class OrdenesExamenController extends Controller
 {
-    use ObserverItemsPrestaciones, CheckPermission;
+    use ObserverItemsPrestaciones, CheckPermission, ToolsReportes;
+
+    protected $reporteService;
+    protected $outputPath;
+    protected $sendPath;
+    protected $fileNameExport;
+    private $tempFile;
+
+    public function __construct(ReporteService $reporteService)
+    {
+        $this->reporteService = $reporteService;
+        $this->outputPath = storage_path('app/public/fusionar'.Tools::randomCode(15).'.pdf');
+        $this->sendPath = storage_path('app/public/cmit-'.Tools::randomCode(15).'-informe.pdf');
+        $this->fileNameExport = 'reporte-'.Tools::randomCode(15);
+        $this->tempFile = 'app/public/temp/file-';
+    }
 
     public function index()
     {
@@ -268,10 +298,7 @@ public function searchPrestacion(Request $request)
                         $join->where('pa.Id', $request->paciente);
                     }
                 })
-                ->join('examenes as exa', function($join) {
-                    $join->on('i.IdExamen', '=', 'exa.Id')
-                        ->where('exa.Informe', 1);
-                })
+
                 ->join('pagosacuenta as pc', 'cli.Id', '=', 'pc.IdEmpresa')
                 ->leftJoin('pagosacuenta_it as pc2', 'pre.Id', '=', 'pc2.IdPrestacion')
                 ->select(
@@ -283,9 +310,10 @@ public function searchPrestacion(Request $request)
                     DB::raw("CONCAT(pa.Apellido, ' ', pa.Nombre) AS NombreCompleto"),
                     'pa.Documento AS Documento', 
                     'pa.Id AS IdPaciente', 
-                    'exa.Nombre AS Examen', 
                     'pc.Pagado AS Pagado', 
-                    'i.Id AS IdExa'
+                    'i.Id AS IdExa',
+                   DB::raw('(SELECT COUNT(*) FROM itemsprestaciones WHERE IdPrestacion = pre.Id) AS Total'),
+                   DB::raw('(SELECT COUNT(*) FROM itemsprestaciones WHERE IdPrestacion = pre.Id AND CAdj IN (3, 5) AND CInfo IN (3, 0)) AS TotalCerrado')
                 );
 
                 $query->when(!empty($request->fechaDesde) && !empty($request->fechaHasta), function ($query) use ($request) {
@@ -310,6 +338,12 @@ public function searchPrestacion(Request $request)
                         ->whereIn('pc.Pagado', [0, 1]);
                 });
 
+                $query->when(!empty($request->impago) && $request->impago === 'activo', function ($query) {
+                    $query->where('pc.Pagado', 0);
+                });
+
+                $query->havingRaw('Total = TotalCerrado');
+
                 $query->whereNot('i.Id', 0)
                     ->whereNot('i.Fecha', '0000-00-00')
                     ->whereNot('i.Fecha', null)
@@ -321,6 +355,128 @@ public function searchPrestacion(Request $request)
         }
 
         return view('layouts.ordenesExamen.index');
+    }
+
+    public function vistaPreviaReporte(Request $request)
+    {
+        $resultados = [];
+
+        foreach($request->Ids as $Id) {
+            $listado = [];
+
+            $estudios = $this->AnexosFormulariosPrint($Id); //obtiene los ids en un array
+        
+            array_push($listado, $this->eEstudio($Id, "si"));
+            array_push($listado, $this->adjDigitalFisico($Id, 2));
+            array_push($listado, $this->adjAnexos($Id));
+            array_push($listado, $this->adjGenerales($Id));
+
+            if(!empty($estudios)) {
+                foreach($estudios as $examen) {
+                    $estudio = $this->addEstudioExamen($request->Id, $examen);
+                    array_push($listado, $estudio);
+                }
+            }
+
+            $this->reporteService->fusionarPDFs($listado, $this->outputPath);
+            File::copy($this->outputPath, FileHelper::getFileUrl('escritura').'/temp/MAPA'.$Id.'.pdf');
+
+            array_push($resultados, FileHelper::getFileUrl('lectura').'/temp/MAPA'.$Id.'.pdf');
+        }
+
+        return response()->json($resultados);
+    }
+
+    private function eEstudio(int $idPrestacion, string $opciones): mixed
+    {
+        return $this->reporteService->generarReporte(
+            EEstudio::class,
+            EvaluacionResumen::class,
+            null,
+            null,
+            'guardar',
+            storage_path($this->tempFile.Tools::randomCode(15).'-'.Auth::user()->name.'.pdf'),
+            null,
+            ['id' => $idPrestacion],
+            ['id' => $idPrestacion, 'firmaeval' => 0, 'opciones' => $opciones, 'eEstudio' => 'si'],
+            [],
+            [],
+            null
+        );
+    }
+
+    private function addEstudioExamen(int $idPrestacion, int $idExamen): mixed
+    {
+
+        return $this->reporteService->generarReporte(
+            ListadoReportes::getReporte($idExamen),
+            null,
+            null,
+            null,
+            'guardar',
+            storage_path($this->tempFile.Tools::randomCode(15).'-'.Auth::user()->name.'.pdf'),
+            null,
+            ['id' => $idPrestacion, 'idExamen' => $idExamen],
+            [],
+            [],
+            [],
+            null
+        );
+    }
+
+    private function adjGenerales(int $idPrestacion): mixed
+    {
+        return $this->reporteService->generarReporte(
+            AdjuntosGenerales::class,
+            null,
+            null,
+            null,
+            'guardar',
+            null,
+            null,
+            ['id' => $idPrestacion],
+            [],
+            [],
+            [],
+            storage_path('app/public/temp/merge_adjGenerales.pdf')
+        );
+
+    }
+
+    private function adjAnexos(int $idPrestacion): mixed
+    {
+        return $this->reporteService->generarReporte(
+            AdjuntosAnexos::class,
+            null,
+            null,
+            null,
+            'guardar',
+            null,
+            null,
+            ['id' => $idPrestacion],
+            [],
+            [],
+            [],
+            storage_path('app/public/temp/merge_adjAnexos.pdf')
+        );
+    }
+
+    private function adjDigitalFisico(int $idPrestacion, int $tipo): mixed // 1 es Digital, 2 es Fisico,Digital
+    {
+        return $this->reporteService->generarReporte(
+            AdjuntosDigitales::class,
+            null,
+            null,
+            null,
+            'guardar',
+            null,
+            null,
+            ['id' => $idPrestacion, 'tipo' => $tipo],
+            [],
+            [],
+            [],
+            storage_path('app/public/temp/merge_adjDigitales.pdf')
+        );
     }
 
     public function exportar(Request $request)

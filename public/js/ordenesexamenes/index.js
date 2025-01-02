@@ -650,6 +650,56 @@ $(document).ready(function(){
         });
     });
 
+    $(document).on('click', '.vistaPreviaEnvios', function(e){
+        e.preventDefault();
+        let ids = [];
+
+        $('input[name="Id_EEnviar"]:checked').each(function() {
+            ids.push($(this).val());
+        });
+        
+        if(ids.length === 0){
+            toastr.warning('No hay prestaciones seleccionados para visualizar');
+            return;
+        }
+
+        preloader('on');
+        $.get(vistaPreviaEnvios, { Ids: ids })
+
+            .done(function(response){
+                e.preventDefault();
+
+                $.each(response, function(index, link){
+                    window.open(link, '_blank');
+                });
+                
+                preloader('off');
+                toastr.success("Se ha generado la vista previa");
+            })
+            .fail(function(jqXHR){
+                let errorData = JSON.parse(jqXHR.responseText);
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            });
+    });
+
+    $(document).on('click', '.avisoEnvios', function(e){
+        e.preventDefault();
+
+        $('input[name="Id_EEnviar"]:checked').each(function() {
+            ids.push($(this).val());
+        });
+
+        if(ids.length === 0){
+            toastr.warning('No hay prestaciones seleccionados para visualizar');
+            return;
+        }
+
+        preloader('on');
+        
+
+    });
+
     function verificarArchivo(archivo){
 
         if (!archivo || archivo.size === 0) {

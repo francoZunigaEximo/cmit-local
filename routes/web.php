@@ -162,9 +162,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('getComentarioPres', [ComentariosPrestacionesController::class, 'getComentarioPres'])->name('getComentarioPres');
 
     //Rutas de Autorizados
-    Route::post('deleteAutorizado', [AutorizadoController::class, 'delete'])->name('deleteAutorizado');
-    Route::get('getAutorizados', [AutorizadoController::class, 'getAut'])->name('getAutorizados');
-    Route::post('/clientes/altaAutorizado', [AutorizadoController::class, 'alta'])->name('clientes.altaAutorizado');
+    Route::post('/autorizados/eliminar', [AutorizadoController::class, 'delete'])->name('deleteAutorizado');
+    Route::get('/autorizados/listado', [AutorizadoController::class, 'getAut'])->name('getAutorizados');
+    Route::post('/autorizados/alta', [AutorizadoController::class, 'alta'])->name('clientes.altaAutorizado');
 
     //Rutas de Telefonos
     Route::get('getTelefonos', [TelefonosController::class, 'getTelefonos'])->name('getTelefonos');
@@ -176,8 +176,8 @@ Route::group(['middleware' => 'auth'], function () {
 
     //Rutas de Mapas
     Route::get('/mapas/excel', [MapasController::class, 'export'])->name('mapas.exportar');
-    Route::post('updateMapa', [MapasController::class, 'updateMapa'])->name('updateMapa');
-    Route::post('deleteMapa', [MapasController::class, 'delete'])->name('deleteMapa');
+    Route::post('/mapas/actualizar', [MapasController::class, 'updateMapa'])->name('updateMapa');
+    Route::post('/mapas/eliminar', [MapasController::class, 'delete'])->name('deleteMapa');
     Route::get('/mapas/remitos', [MapasController::class, 'getRemito'])->name('getRemito');
     Route::get('/mapas/listado', [MapasController::class, 'getMapas'])->name('getMapas');
     Route::get('/mapas/pacientes', [MapasController::class, 'getPacienteMapa'])->name('getPacienteMapa');
@@ -291,6 +291,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/etapas/prestacion/buscar', [OrdenesExamenController::class, 'searchPrestacion'])->name('searchPrestacion');
     Route::get('/etapas/exportar', [OrdenesExamenController::class, 'exportar'])->name('exportarOrdExa');
     Route::get('/etapas/enviar/buscar', [OrdenesExamenController::class, 'searchEenviar'])->name('searchEenviar');
+    Route::get('/etapas/vista-previa', [OrdenesExamenController::class, 'vistaPreviaReporte'])->name('ordenesExamen.vistaPrevia');
     Route::resource('ordenesExamen', OrdenesExamenController::class);
 
     //Rutas de Examenes a Cuenta

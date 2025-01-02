@@ -863,7 +863,6 @@ $(document).ready(()=>{
                 preloader('off');
                 toastr.success('Generando la vista previa');
                 window.open(response.filePath, '_blank');
-                console.log(response.filePath);
             })
             .fail(function(jqXHR){
                 preloader('off');
