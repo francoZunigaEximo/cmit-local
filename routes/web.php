@@ -292,6 +292,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/etapas/exportar', [OrdenesExamenController::class, 'exportar'])->name('exportarOrdExa');
     Route::get('/etapas/enviar/buscar', [OrdenesExamenController::class, 'searchEenviar'])->name('searchEenviar');
     Route::get('/etapas/vista-previa', [OrdenesExamenController::class, 'vistaPreviaReporte'])->name('ordenesExamen.vistaPrevia');
+    Route::get('/etapas/envio-avisos', [OrdenesExamenController::class, 'envioAviso'])->name('ordenesExamen.aviso');
+    Route::get('/etapas/obtener-pagado', [OrdenesExamenController::class, 'getPagado'])->name('ordenesExamen.obtenerPagado');
+    Route::get('/etapas/enviar-estudio', [OrdenesExamenController::class, 'enviarEstudio'])->name('ordenesExamen.enviarEstudio');
     Route::resource('ordenesExamen', OrdenesExamenController::class);
 
     //Rutas de Examenes a Cuenta
@@ -346,11 +349,11 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('checkRoles', [UsuariosController::class, 'checkRoles'])->name('checkRoles');
 
     //Rutas de Roles
-    Route::get('searchRol', [RolesController::class, 'listado'])->name('searchRol');
-    Route::get('listadoRoles', [RolesController::class, 'paginacion'])->name('listadoRoles');
-    Route::get('lstRolAsignados', [RolesController::class, 'asignados'])->name('lstRolAsignados');
-    Route::post('addRol', [RolesController::class, 'add'])->name('addRol');
-    Route::get('deleteRol', [RolesController::class, 'delete'])->name('deleteRol');
+    Route::get('/roles/buscar', [RolesController::class, 'listado'])->name('searchRol');
+    Route::get('/roles/listado', [RolesController::class, 'paginacion'])->name('listadoRoles');
+    Route::get('/roles/listado/asignados', [RolesController::class, 'asignados'])->name('lstRolAsignados');
+    Route::post('/roles/agregar', [RolesController::class, 'add'])->name('addRol');
+    Route::get('/roles/eliminar', [RolesController::class, 'delete'])->name('deleteRol');
 
     //Rutas de Personal
     Route::post('actualizarDatos', [DatosController::class, 'save'])->name('actualizarDatos');

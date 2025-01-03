@@ -30,9 +30,13 @@ use App\Services\Reportes\Cuerpos\AdjuntosGenerales;
 use App\Services\Reportes\Cuerpos\AdjuntosAnexos;
 use App\Services\Reportes\Cuerpos\AdjuntosDigitales;
 
+use App\Jobs\ExamenesImpagosJob;
+use App\Jobs\ExamenesResultadosJob;
+use App\Helpers\ToolsEmails;
+
 class OrdenesExamenController extends Controller
 {
-    use ObserverItemsPrestaciones, CheckPermission, ToolsReportes;
+    use ObserverItemsPrestaciones, CheckPermission, ToolsReportes, ToolsEmails;
 
     protected $reporteService;
     protected $outputPath;
@@ -270,22 +274,7 @@ public function searchPrestacion(Request $request)
             // ($request->cerrado ? "'".$request->cerrado."'" : "NULL").", ".
             // ($request->eenviar ? "'".$request->eenviar."'" : "NULL").")");
 
-            $query = DB::table('itemsprestaciones as i')
-                ->join('prestaciones as pre', function($join) use ($request){
-                        $join->on('i.IdPrestacion', '=', 'pre.Id')
-                            ->where('pre.Anulado', 0);
-                            if (!empty($request->eenviar)) {
-                                $join->when($request->eenviar === 'eenviado', function($query) {
-                                    return $query->where('pre.eEnviado', 1);
-                                })
-                                ->when($request->eenviar === 'noeenviado', function($query) {
-                                    return $query->where('pre.eEnviado', 0);
-                                })
-                                ->when($request->eenviar === 'todos', function($query) {
-                                    return $query->whereIn('pre.eEnviado', [0, 1]);
-                                });
-                            }
-                })
+            $query = DB::table('prestaciones as pre')
                 ->join('clientes as cli', function ($join) use ($request) {
                     $join->on('pre.IdEmpresa', '=', 'cli.Id');
                     if (!empty($request->empresa)) {
@@ -298,26 +287,40 @@ public function searchPrestacion(Request $request)
                         $join->where('pa.Id', $request->paciente);
                     }
                 })
-
+                
                 ->join('pagosacuenta as pc', 'cli.Id', '=', 'pc.IdEmpresa')
-                ->leftJoin('pagosacuenta_it as pc2', 'pre.Id', '=', 'pc2.IdPrestacion')
+                ->leftJoin('pagosacuenta_it as pc2', 'pc.Id', '=', 'pc2.IdPago')
+                ->join('itemsprestaciones as i', 'pre.Id', '=', 'i.IdPrestacion')
                 ->select(
-                    'i.Fecha AS Fecha', 
+                    'pre.Fecha AS Fecha', 
                     'pre.Id AS IdPrestacion', 
+                    'pc2.IdPrestacion AS presta',
                     'pre.FechaEnviado AS FechaEnviado',
                     'cli.EMailInformes AS Correo',
                     'cli.RazonSocial AS Empresa',
                     DB::raw("CONCAT(pa.Apellido, ' ', pa.Nombre) AS NombreCompleto"),
                     'pa.Documento AS Documento', 
-                    'pa.Id AS IdPaciente', 
-                    'pc.Pagado AS Pagado', 
-                    'i.Id AS IdExa',
+                    'pa.Id AS IdPaciente',  
                    DB::raw('(SELECT COUNT(*) FROM itemsprestaciones WHERE IdPrestacion = pre.Id) AS Total'),
-                   DB::raw('(SELECT COUNT(*) FROM itemsprestaciones WHERE IdPrestacion = pre.Id AND CAdj IN (3, 5) AND CInfo IN (3, 0)) AS TotalCerrado')
+                   DB::raw('(SELECT COUNT(*) FROM itemsprestaciones WHERE IdPrestacion = pre.Id AND CAdj IN (3, 5) AND CInfo IN (3, 0)) AS TotalCerrado'),
                 );
 
                 $query->when(!empty($request->fechaDesde) && !empty($request->fechaHasta), function ($query) use ($request) {
                     $query->whereBetween('i.Fecha', [$request->fechaDesde, $request->fechaHasta]);
+                });
+
+                $query->havingRaw('Total = TotalCerrado');
+
+                $query->when(!empty($request->eenviar) && $request->eenviar === 'eenviado', function ($query) {
+                    $query->where('pre.eEnviado', 1);
+                });
+
+                $query->when(!empty($request->eenviar) && $request->eenviar === 'noeenviado', function ($query) {
+                    $query->where('pre.eEnviado', 0);
+                });
+
+                $query->when(!empty($request->eenviar) && $request->eenviar === 'todos', function ($query) {
+                    $query->whereIn('pre.eEnviado', [0,1]);
                 });
 
                 $query->when(!empty($request->completo) && $request->completo === 'activo', function ($query) {
@@ -342,19 +345,27 @@ public function searchPrestacion(Request $request)
                     $query->where('pc.Pagado', 0);
                 });
 
-                $query->havingRaw('Total = TotalCerrado');
-
-                $query->whereNot('i.Id', 0)
-                    ->whereNot('i.Fecha', '0000-00-00')
-                    ->whereNot('i.Fecha', null)
+                $query->whereNot('pre.Id', 0)
+                    ->whereNot('pre.Fecha', '0000-00-00')
+                    ->whereNot('pre.Fecha', null)
                     ->groupBy('pre.Id')
-                    ->orderBy('i.Id', 'DESC')
+                    ->orderBy('pre.Fecha', 'DESC')
+                    ->orderBy('cli.RazonSocial', 'DESC')
+                    ->orderBy('pa.Apellido', 'DESC')
+                    ->orderBy('pa.Nombre', 'DESC')
                     ->limit(1000);
 
             return Datatables::of($query)->make(true);   
         }
 
         return view('layouts.ordenesExamen.index');
+    }
+
+    public function getPagado(Request $request)
+    {
+        return DB::table('pagosacuenta_it')->join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
+            ->where('pagosacuenta_it.IdPrestacion', $request->Id)
+            ->first();
     }
 
     public function vistaPreviaReporte(Request $request)
@@ -382,6 +393,107 @@ public function searchPrestacion(Request $request)
             File::copy($this->outputPath, FileHelper::getFileUrl('escritura').'/temp/MAPA'.$Id.'.pdf');
 
             array_push($resultados, FileHelper::getFileUrl('lectura').'/temp/MAPA'.$Id.'.pdf');
+        }
+
+        return response()->json($resultados);
+    }
+
+    public function envioAviso(Request $request)
+    {
+        $resultados = [];
+
+        foreach($request->Ids as $Id) {
+            $resultado = [];
+
+            $prestacion = Prestacion::with(['paciente', 'empresa','paciente.fichalaboral'])->find($Id);
+            $examenes = ItemPrestacion::with('examenes')->where('IdPrestacion', $Id)->get();
+
+
+            if ($prestacion->empresa->SEMail === 1) {
+                return response()->json(['msg' => 'El cliente no acepta envio de correos electrónicos'], 409);
+            }
+
+            $emails = $this->getEmailsReporte($prestacion->empresa->EMailInformes);
+
+            $nombreCompleto = $prestacion->paciente->Apellido.' '.$prestacion->paciente->Nombre;
+
+            $cuerpo = [
+                'paciente' => $nombreCompleto,
+                'Fecha' => Carbon::parse($prestacion->Fecha)->format("d/m/Y"),
+                'TipoDocumento' => $prestacion->paciente->TipoDocumento,
+                'Documento' => $prestacion->paciente->Documento,
+                'RazonSocial' => $prestacion->empresa->RazonSocial,
+                'examenes' => $examenes
+            ];
+            if ($this->checkExCtaImpago($Id) > 0) {
+            
+                $asunto = 'Solicitud de pago de exámen de '.$nombreCompleto;
+    
+                foreach ($emails as $email) {
+                    ExamenesImpagosJob::dispatch($email, $asunto, $cuerpo);
+                }
+    
+                $resultado = ['msg' => 'El '.$prestacion->empresa->RazonSocial.' presenta examenes a cuenta impagos en la prestacion '.$Id.'. Se ha enviado el email correspondiente', 'estado' => 'success'];
+            
+            }
+            array_push($resultados, $resultado);
+        }
+
+        return response()->json($resultados);
+    }
+
+    public function enviarEstudio(Request $request)
+    {
+        $resultados = [];
+
+        foreach($request->Ids as $Id) {
+            $temp_estudio = [];
+
+            $prestacion = Prestacion::with(['paciente', 'empresa','paciente.fichalaboral'])->find($Id);
+
+            $estudios = $this->AnexosFormulariosPrint($Id); //obtiene los ids en un array
+
+            $emails = $this->getEmailsReporte($prestacion->empresa->EMailInformes);
+            $nombreCompleto = $prestacion->paciente->Apellido.' '.$prestacion->paciente->Nombre;
+            
+            $cuerpo['tarea'] = $prestacion->paciente->fichaLaboral->first()->Tareas;
+            $cuerpo['tipoPrestacion'] = ucwords($prestacion->TipoPrestacion);
+            $cuerpo['calificacion'] = substr($prestacion->Calificacion, 2) ?? '';
+            $cuerpo['evaluacion'] = substr($prestacion->Evaluacion, 2) ?? '';
+            $cuerpo['obsEvaluacion'] = $prestacion->Observaciones ?? '';
+
+            //path de los archivos a enviar y nombres personalizados cuando se fusionan
+            $eEstudioSend = storage_path('app/public/eEstudio'.$prestacion->Id.'.pdf');
+            $eAdjuntoSend = storage_path('app/public/temp/eAdjuntos_'.$prestacion->paciente->Apellido.'_'.$prestacion->paciente->Nombre.'_'.$prestacion->paciente->Documento.'_'.Carbon::parse($prestacion->Fecha)->format('d-m-Y').'.pdf');
+            $eGeneralSend = storage_path('app/public/eAdjGeneral'.$prestacion->Id.'.pdf');
+
+            //Creando eEnvio para adjuntar
+            array_push($temp_estudio, $this->eEstudio($Id, "no")); //construimos el eEstudio (caratula, resumen)
+            array_push($temp_estudio, $this->adjDigitalFisico($Id, 2)); // metemos en el eEstudio todos los adj fisicos digitales y fisicos
+            $this->reporteService->fusionarPDFs($temp_estudio, $eEstudioSend); //Fusionamos los archivos en uno solo 
+            File::copy($this->adjAnexos($Id), $eAdjuntoSend); //adjuntamos individualmente los Anexos
+            File::copy($this->adjGenerales($Id), $eGeneralSend);
+            
+            if(!empty($estudios)) {
+                foreach($estudios as $examen) {
+                    $estudio = $this->addEstudioExamen($request->Id, $examen);
+                    array_push($estudios, $estudio);
+                }
+            }
+
+            $asunto = 'Estudios '.$nombreCompleto.' - '.$prestacion->paciente->TipoDocumento.' '.$prestacion->paciente->Documento;
+
+            $attachments = [$eEstudioSend, $eAdjuntoSend, $eGeneralSend, $estudios];
+
+            foreach ($emails as $email) {
+                // ExamenesResultadosJob::dispatch("nmaximowicz@eximo.com.ar", $asunto, $cuerpo, $this->sendPath);
+                ExamenesResultadosJob::dispatch($email, $asunto, $cuerpo, $attachments);
+
+                // $info = new ExamenesResultadosMail(['subject' => $asunto, 'content' => $cuerpo, 'attachments' => $attachments]);
+                //     Mail::to("nmaximowicz@eximo.com.ar")->send($info);
+
+                array_push($resultados, ['msg' => 'Se ha enviado el email correspondiente de la prestación '.$prestacion->Id, 'estado' => 'success']);
+            }   
         }
 
         return response()->json($resultados);

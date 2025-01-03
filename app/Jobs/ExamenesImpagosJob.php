@@ -17,11 +17,11 @@ class ExamenesImpagosJob implements ShouldQueue
 
     protected string $correo;
     protected string $subject;
-    protected string $content;
+    protected array $content;
     /**
      * Create a new job instance.
      */
-    public function __construct(string $correo, string $subject, string $content)
+    public function __construct(string $correo, string $subject, array $content)
     {
         $this->correo = $correo;
         $this->subject = $subject;
