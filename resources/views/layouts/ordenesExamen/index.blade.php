@@ -1031,7 +1031,7 @@
                                                 </div>
                                                 <div class="col-sm-6 text-end">
                                                     <button type="button" class="btn btn-sm botonGeneral vistaPreviaEnvios"><i class="ri-article-line"></i>&nbsp;Vista previa</button>
-                                                    <button type="button" class="btn btn-sm botonGeneral avisoEnvios"><i class="ri-file-info-line"></i>&nbsp;Mail Impagos</button>
+                                                    <button type="button" class="btn btn-sm botonGeneral avisoEnviosEE"><i class="ri-file-info-line"></i>&nbsp;Mail Impagos</button>
                                                     <button type="button" class="btn btn-sm botonGeneral EEnviarEnvios"><i class="ri-send-plane-line"></i>&nbsp;eEnviar</button>
                                                 </div>
                                             </div>
@@ -1101,6 +1101,8 @@
 
     const exportarOrdExa = "{{ route('exportarOrdExa') }}";
     const vistaPreviaEnvios = "{{ route('ordenesExamen.vistaPrevia') }}";
+    const avisoEnvios = "{{ route('ordenesExamen.aviso') }}";
+    const getPagado = "{{ route('ordenesExamen.obtenerPagado') }}";
 </script>
 
 @push('styles')

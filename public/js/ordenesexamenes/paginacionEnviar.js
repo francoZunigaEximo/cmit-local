@@ -103,7 +103,18 @@ $(document).ready(()=>{
                     data: null,
                     targets: 7,
                     render: function(data) {
-                        return  `<div class="text-center"><span class="${data.Pagado === 0 ? 'rojo' : ''}">${data.Pagado === 0 ? 'X' : ''}</span></div>`;    
+                        let subqueryData = null;
+        
+                        $.ajax({
+                            url: getPagado,
+                            method: 'GET',
+                            data: { Id: data.IdPrestacion }, 
+                            async: false, 
+                            success: function(response) {
+                                subqueryData = response; 
+                            }
+                        });
+                        return  `<div class="text-center"><span class="${subqueryData.Pagado === 0 ? 'rojo' : ''}">${subqueryData.Pagado === 0 ? 'X' : ''}</span></div>`;    
                     }
                 },
                 {

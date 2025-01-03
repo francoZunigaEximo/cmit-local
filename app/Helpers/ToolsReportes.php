@@ -25,6 +25,6 @@ trait ToolsReportes
     {
         return ExamenCuentaIt::join('prestaciones', 'pagosacuenta_it.IdPrestacion', '=', 'prestaciones.Id')
             ->join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
-            ->where('pagosacuenta_it.IdPrestacion', $idPrestacion)->count();
+            ->where('pagosacuenta_it.IdPrestacion', $idPrestacion)->where('pagosacuenta.Pagado', 0)->count();
     }
 }
