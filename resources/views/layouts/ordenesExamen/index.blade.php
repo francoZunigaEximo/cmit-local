@@ -1103,6 +1103,7 @@
     const vistaPreviaEnvios = "{{ route('ordenesExamen.vistaPrevia') }}";
     const avisoEnvios = "{{ route('ordenesExamen.aviso') }}";
     const getPagado = "{{ route('ordenesExamen.obtenerPagado') }}";
+    const enviarEE = "{{ route('ordenesExamen.enviarEstudio') }}";
 </script>
 
 @push('styles')

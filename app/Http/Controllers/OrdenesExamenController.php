@@ -31,6 +31,7 @@ use App\Services\Reportes\Cuerpos\AdjuntosAnexos;
 use App\Services\Reportes\Cuerpos\AdjuntosDigitales;
 
 use App\Jobs\ExamenesImpagosJob;
+use App\Jobs\ExamenesResultadosJob;
 use App\Helpers\ToolsEmails;
 
 class OrdenesExamenController extends Controller
@@ -436,6 +437,63 @@ public function searchPrestacion(Request $request)
             
             }
             array_push($resultados, $resultado);
+        }
+
+        return response()->json($resultados);
+    }
+
+    public function enviarEstudio(Request $request)
+    {
+        $resultados = [];
+
+        foreach($request->Ids as $Id) {
+            $temp_estudio = [];
+
+            $prestacion = Prestacion::with(['paciente', 'empresa','paciente.fichalaboral'])->find($Id);
+
+            $estudios = $this->AnexosFormulariosPrint($Id); //obtiene los ids en un array
+
+            $emails = $this->getEmailsReporte($prestacion->empresa->EMailInformes);
+            $nombreCompleto = $prestacion->paciente->Apellido.' '.$prestacion->paciente->Nombre;
+            
+            $cuerpo['tarea'] = $prestacion->paciente->fichaLaboral->first()->Tareas;
+            $cuerpo['tipoPrestacion'] = ucwords($prestacion->TipoPrestacion);
+            $cuerpo['calificacion'] = substr($prestacion->Calificacion, 2) ?? '';
+            $cuerpo['evaluacion'] = substr($prestacion->Evaluacion, 2) ?? '';
+            $cuerpo['obsEvaluacion'] = $prestacion->Observaciones ?? '';
+
+            //path de los archivos a enviar y nombres personalizados cuando se fusionan
+            $eEstudioSend = storage_path('app/public/eEstudio'.$prestacion->Id.'.pdf');
+            $eAdjuntoSend = storage_path('app/public/temp/eAdjuntos_'.$prestacion->paciente->Apellido.'_'.$prestacion->paciente->Nombre.'_'.$prestacion->paciente->Documento.'_'.Carbon::parse($prestacion->Fecha)->format('d-m-Y').'.pdf');
+            $eGeneralSend = storage_path('app/public/eAdjGeneral'.$prestacion->Id.'.pdf');
+
+            //Creando eEnvio para adjuntar
+            array_push($temp_estudio, $this->eEstudio($Id, "no")); //construimos el eEstudio (caratula, resumen)
+            array_push($temp_estudio, $this->adjDigitalFisico($Id, 2)); // metemos en el eEstudio todos los adj fisicos digitales y fisicos
+            $this->reporteService->fusionarPDFs($temp_estudio, $eEstudioSend); //Fusionamos los archivos en uno solo 
+            File::copy($this->adjAnexos($Id), $eAdjuntoSend); //adjuntamos individualmente los Anexos
+            File::copy($this->adjGenerales($Id), $eGeneralSend);
+            
+            if(!empty($estudios)) {
+                foreach($estudios as $examen) {
+                    $estudio = $this->addEstudioExamen($request->Id, $examen);
+                    array_push($estudios, $estudio);
+                }
+            }
+
+            $asunto = 'Estudios '.$nombreCompleto.' - '.$prestacion->paciente->TipoDocumento.' '.$prestacion->paciente->Documento;
+
+            $attachments = [$eEstudioSend, $eAdjuntoSend, $eGeneralSend, $estudios];
+
+            foreach ($emails as $email) {
+                // ExamenesResultadosJob::dispatch("nmaximowicz@eximo.com.ar", $asunto, $cuerpo, $this->sendPath);
+                ExamenesResultadosJob::dispatch($email, $asunto, $cuerpo, $attachments);
+
+                // $info = new ExamenesResultadosMail(['subject' => $asunto, 'content' => $cuerpo, 'attachments' => $attachments]);
+                //     Mail::to("nmaximowicz@eximo.com.ar")->send($info);
+
+                array_push($resultados, ['msg' => 'Se ha enviado el email correspondiente de la prestación '.$prestacion->Id, 'estado' => 'success']);
+            }   
         }
 
         return response()->json($resultados);
