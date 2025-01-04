@@ -801,7 +801,7 @@ class PrestacionesController extends Controller
         $temp_estudio = [];
 
         $prestacion = Prestacion::with(['paciente', 'empresa'])->find($request->Id);
-        $examenes = ItemPrestacion::join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')->select('exanemes.Nombre as Nombre')->where('itemsprestaciones.Anulado', 0)->distinct()->orderBy('examenes.Nombre')->get();
+        $examenes = ItemPrestacion::join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')->select('examenes.Nombre as Nombre')->where('itemsprestaciones.Anulado', 0)->where('itemsprestaciones.IdPrestacion', $request->Id)->distinct()->orderBy('examenes.Nombre')->get();
 
         //Actualizamos la prestacion (grabar)
         $this->updateSegundoPlano($prestacion, $request);
