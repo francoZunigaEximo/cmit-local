@@ -333,21 +333,21 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('getPaqueteFact', [PaqueteFacturacionController::class, 'paquetes'])->name('getPaqueteFact');
 
     //Rutas de Paquete usuarios
+    Route::get('/usuarios/buscar', [UsuariosController::class, 'NombreUsuario'])->name('searchNombreUsuario');
     Route::get('usuarios/delete', [UsuariosController::class, 'baja'])->name('usuarios.delete');
+    Route::get('/usuario/buscar', [UsuariosController::class, 'Usuario'])->name('searchUsuario');
+    Route::get('/usuario/password/actualizar', [UsuariosController::class, 'cambiarPassword'])->name('cambiarPassUsuario');
+    Route::get('/usuario/checkear', [UsuariosController::class, 'checkUsuario'])->name('checkUsuario');
+    Route::get('/usuario/checkear/correo', [UsuariosController::class, 'checkCorreo'])->name('checkCorreo');
+    Route::get('/usuario/bloquear', [UsuariosController::class, 'bloquear'])->name('bloquearUsuario');
+    Route::get('/usuario/checkear/telefono', [UsuariosController::class, 'checkTelefono'])->name('checkTelefono');
+    Route::post('/usuarios/update/profesional', [UsuariosController::class, 'updateProfesional'])->name('usuarios.updateProfesional');
+    Route::get('usuarios/roles/checkear', [UsuariosController::class, 'checkRoles'])->name('checkRoles');
     Route::resource('usuarios', UsuariosController::class);
-    Route::get('searchNombreUsuario', [UsuariosController::class, 'NombreUsuario'])->name('searchNombreUsuario');
-    Route::get('searchUsuario', [UsuariosController::class, 'Usuario'])->name('searchUsuario');
     Route::get('buscarUsuario', [UsuariosController::class, 'buscar'])->name('buscarUsuario');
-    Route::get('checkUsuario', [UsuariosController::class, 'checkUsuario'])->name('checkUsuario');
-    Route::get('checkCorreo', [UsuariosController::class, 'checkCorreo'])->name('checkCorreo');
     Route::get('checkMail', [UsuariosController::class, 'checkMail'])->name('checkMail');
     Route::get('checkEmailUpdate', [UsuariosController::class, 'checkEmailUpdate'])->name('checkEmailUpdate');
-    Route::get('bloquearUsuario', [UsuariosController::class, 'bloquear'])->name('bloquearUsuario');
-    Route::get('checkTelefono', [UsuariosController::class, 'checkTelefono'])->name('checkTelefono');
-    Route::get('cambiarPassUsuario', [UsuariosController::class, 'cambiarPassword'])->name('cambiarPassUsuario');
-    Route::post('/usuarios/update/profesional', [UsuariosController::class, 'updateProfesional'])->name('usuarios.updateProfesional');
-    Route::get('checkRoles', [UsuariosController::class, 'checkRoles'])->name('checkRoles');
-
+   
     //Rutas de Roles
     Route::get('/roles/buscar', [RolesController::class, 'listado'])->name('searchRol');
     Route::get('/roles/listado', [RolesController::class, 'paginacion'])->name('listadoRoles');
@@ -356,7 +356,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/roles/eliminar', [RolesController::class, 'delete'])->name('deleteRol');
 
     //Rutas de Personal
-    Route::post('actualizarDatos', [DatosController::class, 'save'])->name('actualizarDatos');
+    Route::post('/perfil/actualizar', [DatosController::class, 'save'])->name('actualizarDatos');
    
     //Rutas de Mensajes
     Route::get('mensajes/auditoria', [MensajesController::class, 'auditoria'])->name('mensajes.auditoria');

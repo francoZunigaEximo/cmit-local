@@ -716,7 +716,7 @@ $(document).ready(function(){
                         preloader('off');
             
                         $.each(response, function(index, r){
-                            r.estado == 'success' ? toastr.success(r.message) : toastr.warning(r.message);
+                            r.estado == 'success' ? toastr.success(r.msg) : toastr.warning(r.msg);
                         });
 
                     })

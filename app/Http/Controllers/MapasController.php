@@ -910,6 +910,7 @@ class MapasController extends Controller
 
                         $prestacion->eEnviado = 1;
                         $prestacion->FechaEnviado = now()->format('Y-m-d');
+                        $prestacion->EnvioInforme = now()->format('Y-m-d');
                         $prestacion->save();
 
                         Auditor::setAuditoria($id, self::TBLMAPA, $accion, Auth::user()->name);

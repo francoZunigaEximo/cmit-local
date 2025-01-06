@@ -323,11 +323,13 @@ class PrestacionesController extends Controller
 
         $prestacion = Prestacion::find($request->Id);
 
-        if($this->updateSegundoPlano($prestacion, $request)) {
+        if($prestacion) {
+            $this->updateSegundoPlano($prestacion, $request);
             return response()->json(['msg' => 'Se ha actualizado la prestación'], 200);
         }
-
+        
         return response()->json(['msg' => 'No se ha actualizado la prestación'], 500);
+   
     }
 
     public function show(){}
@@ -801,10 +803,7 @@ class PrestacionesController extends Controller
         $temp_estudio = [];
 
         $prestacion = Prestacion::with(['paciente', 'empresa'])->find($request->Id);
-        $examenes = ItemPrestacion::join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')->select('exanemes.Nombre as Nombre')->where('itemsprestaciones.Anulado', 0)->distinct()->orderBy('examenes.Nombre')->get();
-
-        //Actualizamos la prestacion (grabar)
-        $this->updateSegundoPlano($prestacion, $request);
+        $examenes = ItemPrestacion::with('examenes')->where('IdPrestacion', $request->Id)->where('Anulado', 0)->get();
 
         //Cerramos la prestacion
         $prestacion->FechaCierre = now()->format('Y-m-d');
@@ -812,23 +811,28 @@ class PrestacionesController extends Controller
         $prestacion->save();
         $prestacion->refresh();
 
+        //Actualizamos la prestacion (grabar)
+        if(!empty($request)) {
+            $this->updateSegundoPlano($prestacion, $request);
+        }
+
         //Evaluador Exclusivo
         $estudios = $this->AnexosFormulariosPrint($request->Id);
 
+        array_push($listado, $this->eEstudio($request->Id, "no"));
+        array_push($listado, $this->adjDigitalFisico($request->Id, 2));
+        array_push($listado, $this->adjAnexos($request->Id));
+        array_push($listado, $this->adjGenerales($request->Id));
+
+        if($estudios) {
+            foreach($estudios as $examen) {
+                $estudio = $this->addEstudioExamen($request->Id, $examen);
+                array_push($listado, $estudio);
+            }
+        }
+        
         //Verificamos si acepta envio de emails
         if ($prestacion->empresa->SEMail === 1) {
-
-            array_push($listado, $this->eEstudio($request->Id, "no"));
-            array_push($listado, $this->adjDigitalFisico($request->Id, 2));
-            array_push($listado, $this->adjAnexos($request->Id));
-            array_push($listado, $this->adjGenerales($request->Id));
-
-            if($estudios) {
-                foreach($estudios as $examen) {
-                    $estudio = $this->addEstudioExamen($request->Id, $examen);
-                    array_push($listado, $estudio);
-                }
-            }
             
             return response()->json([
                 'filePath' => $this->outputPath,
@@ -836,6 +840,7 @@ class PrestacionesController extends Controller
                 'msg' => 'El cliente no acepta envio de correos electrónicos. Se imprime todo.',
                 'icon' => 'success' 
             ]); 
+    
         }
 
         $emails = $this->getEmailsReporte($prestacion->empresa->EMailInformes);
@@ -850,6 +855,7 @@ class PrestacionesController extends Controller
             'examenes' => $examenes
         ];
 
+        // cualquier valor distinto a cero significa que tiene examenes a cuenta impagos
         if ($this->checkExCtaImpago($request->Id) > 0) {
             
             $asunto = 'Solicitud de pago de exámen de  '.$nombreCompleto;
@@ -892,6 +898,9 @@ class PrestacionesController extends Controller
                 // $info = new ExamenesResultadosMail(['subject' => $asunto, 'content' => $cuerpo, 'attachments' => $attachments]);
                 //     Mail::to("nmaximowicz@eximo.com.ar")->send($info);
             }
+
+            $prestacion->EnvioInforme = now()->format('Y-m-d');
+            $prestacion->save();
 
             return response()->json(['msg' => 'Se ha cerrado la prestación. Se han guardado todos los cambios y se ha enviado el resultado al cliente de manera correcta.'], 200);
 

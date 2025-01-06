@@ -406,7 +406,7 @@ public function searchPrestacion(Request $request)
             $resultado = [];
 
             $prestacion = Prestacion::with(['paciente', 'empresa','paciente.fichalaboral'])->find($Id);
-            $examenes = ItemPrestacion::with('examenes')->where('IdPrestacion', $Id)->get();
+            $examenes = ItemPrestacion::with('examenes')->where('IdPrestacion', $Id)->where('Anulado', 0)->get();
 
 
             if ($prestacion->empresa->SEMail === 1) {
@@ -450,6 +450,7 @@ public function searchPrestacion(Request $request)
             $temp_estudio = [];
 
             $prestacion = Prestacion::with(['paciente', 'empresa','paciente.fichalaboral'])->find($Id);
+            $examenes = ItemPrestacion::with('examenes')->where('IdPrestacion', $Id)->where('Anulado', 0)->get();
 
             $estudios = $this->AnexosFormulariosPrint($Id); //obtiene los ids en un array
 
@@ -461,6 +462,12 @@ public function searchPrestacion(Request $request)
             $cuerpo['calificacion'] = substr($prestacion->Calificacion, 2) ?? '';
             $cuerpo['evaluacion'] = substr($prestacion->Evaluacion, 2) ?? '';
             $cuerpo['obsEvaluacion'] = $prestacion->Observaciones ?? '';
+            $cuerpo['RazonSocial'] = $prestacion->empresa->RazonSocial ?? '';
+            $cuerpo['paciente'] = $nombreCompleto ?? '';
+            $cuerpo['TipoDocumento'] = $prestacion->paciente->TipoDocumento ?? '';
+            $cuerpo['Documento'] = $prestacion->paciente->Documento ?? '';
+            $cuerpo['Fecha'] = Carbon::parse($prestacion->Fecha)->format("d/m/Y") ?? '';
+            $cuerpo['examenes'] = $examenes ?? '';
 
             //path de los archivos a enviar y nombres personalizados cuando se fusionan
             $eEstudioSend = storage_path('app/public/eEstudio'.$prestacion->Id.'.pdf');
@@ -483,7 +490,8 @@ public function searchPrestacion(Request $request)
 
             $asunto = 'Estudios '.$nombreCompleto.' - '.$prestacion->paciente->TipoDocumento.' '.$prestacion->paciente->Documento;
 
-            $attachments = [$eEstudioSend, $eAdjuntoSend, $eGeneralSend, $estudios];
+            $attachments = [$eEstudioSend, $eAdjuntoSend, $eGeneralSend];
+            $estudios !== null ? array_push($attachments, $estudios) : null;
 
             foreach ($emails as $email) {
                 // ExamenesResultadosJob::dispatch("nmaximowicz@eximo.com.ar", $asunto, $cuerpo, $this->sendPath);
@@ -493,7 +501,10 @@ public function searchPrestacion(Request $request)
                 //     Mail::to("nmaximowicz@eximo.com.ar")->send($info);
 
                 array_push($resultados, ['msg' => 'Se ha enviado el email correspondiente de la prestación '.$prestacion->Id, 'estado' => 'success']);
-            }   
+            }
+            
+            $prestacion->EnvioInforme = now()->format('Y-m-d');
+            $prestacion->save();
         }
 
         return response()->json($resultados);
