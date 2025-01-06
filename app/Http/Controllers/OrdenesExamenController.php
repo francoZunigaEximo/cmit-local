@@ -501,7 +501,10 @@ public function searchPrestacion(Request $request)
                 //     Mail::to("nmaximowicz@eximo.com.ar")->send($info);
 
                 array_push($resultados, ['msg' => 'Se ha enviado el email correspondiente de la prestación '.$prestacion->Id, 'estado' => 'success']);
-            }   
+            }
+            
+            $prestacion->EnvioInforme = now()->format('Y-m-d');
+            $prestacion->save();
         }
 
         return response()->json($resultados);
