@@ -9,7 +9,7 @@
     <p class="mt-3"><strong><u>Detalle de Estudios:</u></strong></p>
 
     @foreach ($content['examenes'] as $examen)
-        - {{ $examen->examenes->Nombre }}<br>
+        - {{ $examen->Nombre }}<br>
     @endforeach
 
     {{-- <p>{{ $content['examenes'] }}</p> --}}
