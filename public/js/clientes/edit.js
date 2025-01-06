@@ -187,9 +187,9 @@ $(document).ready(()=> {
     });
 
     //Chequeo de email. Carga de datos
-    $('#guardarEmail').click(function(e){
+    $(document).on('click', '#guardarEmail', function(e) {
+        console.log("prueba")
         e.preventDefault();
-        let controlEjecucion = true;
         
         // Verificación de correos
         let emailsResultados = $('#EMailResultados').val(),
@@ -197,37 +197,59 @@ $(document).ready(()=> {
             emailsFactura = $('#EMailFactura').val(),
             emailsAnexo = $('#EMailAnexo').val(),
             sinEnvio = $('#SEMail').prop('checked');
-    
-        if (!verificarCorreos(emailsResultados) || !verificarCorreos(emailsInformes) || !verificarCorreos(emailsFactura) || !verificarCorreos(emailsAnexo)) {
-            controlEjecucion = false;
-        }
-            
-        if (controlEjecucion) {
 
-            $.ajax({
-            url: checkEmail,
-            type: 'Post',
-            data: {
-                _token: TOKEN,
-                resultados: emailsResultados,
-                informes: emailsInformes,
-                facturas: emailsFactura,
-                sinEnvio: sinEnvio,
-                anexo: emailsAnexo,
-                Id: ID
-            },
-            success: function(response){
-                toastr.success(response.msg);
-                return;
-            },
-            error: function(jqXHR){
-                preloader('off');
-                let errorData = JSON.parse(jqXHR.responseText);            
-                checkError(jqXHR.status, errorData.msg);
-                return;  
-            }
-            });
+        let isValidEmails = true;
+
+        // Función para verificar si un email no está vacío y es válido
+        function checkEmailValidity(emails) {
+            return (emails && emails.trim() !== '') ? verificarCorreos(emails) : true;
         }
+
+        // Realizar las verificaciones solo si no están vacíos
+        if (!checkEmailValidity(emailsResultados)) {
+            isValidEmails = false;
+        }
+
+        if (!checkEmailValidity(emailsInformes)) {
+            isValidEmails = false;
+        }
+
+        if (!checkEmailValidity(emailsFactura)) {
+            isValidEmails = false;
+        }
+
+        if (!checkEmailValidity(emailsAnexo)) {
+            isValidEmails = false;
+        }
+
+        if (isValidEmails) {
+            preloader('on');
+            $.ajax({
+                url: checkEmail,
+                type: 'Post',
+                data: {
+                    _token: TOKEN,
+                    resultados: emailsResultados,
+                    informes: emailsInformes,
+                    facturas: emailsFactura,
+                    sinEnvio: sinEnvio,
+                    anexo: emailsAnexo,
+                    Id: ID
+                },
+                success: function(response){
+                    preloader('off');
+                    toastr.success(response.msg);
+                    return;
+                },
+                error: function(jqXHR){
+                    preloader('off');
+                    let errorData = JSON.parse(jqXHR.responseText);            
+                    checkError(jqXHR.status, errorData.msg);
+                    return;  
+                }
+            });
+        }   
+        
     });
 
 
@@ -378,8 +400,11 @@ $(document).ready(()=> {
 
                     $('#Provincia').append(nuevoOption);
                 },
-                error: function(xhr){
-                    toastr.warning('No se pudo autocompletar la provincia. Debe cargarlo manualmente.');                    
+                error: function(jqXHR){
+                    preloader('off');
+                    let errorData = JSON.parse(jqXHR.responseText);            
+                    checkError(jqXHR.status, errorData.msg);
+                    return;                  
                 }
             });
         }
