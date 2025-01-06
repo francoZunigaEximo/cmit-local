@@ -11,6 +11,10 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\EnviarReporte;
 
+use Illuminate\Support\Facades\Log;
+
+// tail -f storage/logs/laravel.log para controlar los logs
+
 class EnviarReporteJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -41,7 +45,15 @@ class EnviarReporteJob implements ShouldQueue
             'attachment' => $this->attachment,
         ];
 
-        $email = new EnviarReporte($data);
-        Mail::to($this->correo)->send($email);
+        try {
+            $email = new EnviarReporte($data);
+            Mail::to($this->correo)->send($email);
+            Log::info('Correo enviado a: ' . $this->correo);
+            
+        } catch (\Exception $e) {
+            Log::error('Error al enviar correo: ' . $e->getMessage());
+            throw $e;
+        }
+
     }
 }

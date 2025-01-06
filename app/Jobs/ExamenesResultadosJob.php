@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Mail;
 
 use Illuminate\Support\Facades\Log;
 
+// tail -f storage/logs/laravel.log para controlar los logs
+
 class ExamenesResultadosJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -49,10 +51,10 @@ class ExamenesResultadosJob implements ShouldQueue
             $email = new ExamenesResultadosMail($data);
             Mail::to($this->correo)->send($email);
             Log::info('Correo enviado a: ' . $this->correo);
+
         } catch (\Exception $e) {
             Log::error('Error al enviar correo: ' . $e->getMessage());
-        // Puedes también volver a lanzar la excepción si deseas que Laravel maneje el fallo.
-        throw $e;
+            throw $e;
         }
 
         
