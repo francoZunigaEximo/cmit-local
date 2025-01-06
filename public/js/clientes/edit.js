@@ -226,9 +226,8 @@ $(document).ready(()=> {
             preloader('on');
             $.ajax({
                 url: checkEmail,
-                type: 'Post',
+                type: 'get',
                 data: {
-                    _token: TOKEN,
                     resultados: emailsResultados,
                     informes: emailsInformes,
                     facturas: emailsFactura,

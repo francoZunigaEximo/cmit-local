@@ -96,7 +96,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/verifycuitEmpresa', [ClientesController::class, 'verifyCuitEmpresa'])->name('verifycuitEmpresa');
     Route::get('getClientes', [ClientesController::class, 'getClientes'])->name('getClientes');
     Route::post('/clientes/setObservaciones', [ClientesController::class, 'setObservaciones'])->name('clientes.setObservaciones');
-    Route::post('checkEmail', [ClientesController::class, 'checkEmail'])->name('checkEmail');
+    Route::get('checkEmail', [ClientesController::class, 'checkEmail'])->name('checkEmail');
     Route::post('checkOpciones', [ClientesController::class, 'checkOpciones'])->name('checkOpciones');
     Route::get('verifyIdentificacion', [ClientesController::class, 'verifyIdentificacion'])->name('verifyIdentificacion');
     Route::get('exportExcelClientes', [ClientesController::class, 'excel'])->name('exportExcelClientes');
