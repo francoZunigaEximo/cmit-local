@@ -28,7 +28,7 @@ class ExamenesResultadosJob implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct($correo, $subject, $content, $attachments)
+    public function __construct(string $correo, string $subject, array $content, array $attachments)
     {
         $this->correo = $correo;
         $this->subject = $subject;

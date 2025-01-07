@@ -309,6 +309,7 @@ $(document).ready(()=>{
                 $('#tipoDocPaciente').text(data.TipoDocumento);
                 $('#documentoPaciente').text(data.Documento);
                 $('.mostrarObsEstado').attr('data-id', prestacion);
+                $('.eEstudioModal').attr('data-id', prestacion);
                 getObsEstado(prestacion);
             })
             .fail(function(jqXHR) {
@@ -624,7 +625,7 @@ $(document).ready(()=>{
                                 <button data-id="${en.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button>
                                 <button data-id="${en.IdPrestacion}" class="btn btn-sm iconGeneral vistaPreviaEnviar" title="Vista previa"><i class="ri-file-search-line"></i></button>
                             </td>
-                            <td>${en.eEnviado === 1 ? '' : en.eEnviado === 0 && en.Finalizado === 1 && en.Cerrado === 1 && en.Etapa === 'Completo' ? `<input type="checkbox" name="Id" value="${en.IdPrestacion}" checked>` : '<span class="custom-badge pequeno">Bloqueado</span>'}</td>     
+                            <td>${en.eEnviado === 1 ? '' : en.eEnviado === 0 && en.Finalizado === 1 && en.Cerrado === 1 && en.Etapa === 'Completo' ? `<input type="checkbox" name="Id_enviar" value="${en.IdPrestacion}" checked>` : '<span class="custom-badge pequeno">Bloqueado</span>'}</td>     
                         </tr>
                     `;
                     $('#eenviarMapa').append(contenido);
@@ -657,40 +658,34 @@ $(document).ready(()=>{
         $('.eTipo').val($(this).hasClass('eArt') ? "eArt" : "eEmpresa");
     });
 
-    $(document).on('click', '.saveEnviar', function(event){
-
-        event.preventDefault();
+    $(document).on('click', '.saveEnviar', function(e){
+        e.preventDefault();
 
         let ids = [];
         $('input[name="Id_enviar"]:checked').each(function() {
             ids.push($(this).val());
         });
 
-        console.log("Ids: " + ids);
-
         let checkAll =$('#checkAllEnviar').prop('checked');
 
-        if(ids.length === 0 && checkAll === false){
-            toastr.warning('No hay ninguna prestación seleccionada para eEnviar', 'Atención');
+        if (ids.length === 0 && checkAll === false) {
+            toastr.warning('No hay ninguna prestación seleccionada para eEnviar');
             return;
         }
 
         let enviarMail= $('.enviarMail').prop('checked'),
             exportarInforme = $('.exportarInforme').prop('checked'),
             eTipo = $('.eTipo').val();
-            condiciones = [enviarMail, exportarInforme];
-        
-        let contarTrue = condiciones.filter(condicion => condicion === true).length;
+            condiciones = [enviarMail, exportarInforme],
+            contarTrue = condiciones.filter(condicion => condicion === true).length;
 
-        if(contarTrue !== 1){
-
-            toastr.warning("Debe seleccionar una opción", "Atención");
+        if (contarTrue !== 1){
+            toastr.warning("Debe seleccionar una opción");
             return;
         }
 
-        if(condiciones.every(condicion => condicion === false)){
-
-            toastr.warning("Debe seleccionar una de las opciones de envío", "Atención");
+        if (condiciones.every(condicion => condicion === false)) {
+            toastr.warning("Debe seleccionar una de las opciones de envío");
             return;
         }
 
@@ -698,15 +693,18 @@ $(document).ready(()=>{
         $.post(saveEnviar, { ids: ids, _token: TOKEN, eTipo: eTipo, exportarInforme: exportarInforme,  enviarMail: enviarMail})
             .done(function(response){
                 preloader('off');
-
-                $.forEach(response, function(index, r){
-
+               
+                $.each(response, function(index, r){
                     if(r.icon === 'art-impresion' || r.icon === 'empresa-impresion') {
+                        toastr.success(r.msg);
                         createFile("pdf", r.filePath, r.name);
+                    
+                    }else if(r.icon === 'art-email') {
+                        toastr.success(r.msg);
+                    
+                    }else if(r.icon === 'empresa-email') {
                         toastr.success(r.msg);
                     }
-
-
                 });
                
                 setTimeout(()=>{
@@ -753,7 +751,6 @@ $(document).ready(()=>{
         $('#fase').text(fase);
     });
 
-
     $(document).on('click', '.confirmarComentarioPriv', function(e){
         e.preventDefault();
 
@@ -789,6 +786,27 @@ $(document).ready(()=>{
                 return;
             });
 
+    });
+
+    $(document).on('click', '.eEstudioModal', function(e){
+        e.preventDefault();
+
+        let id = $(this).data('id');
+
+        if ([null, '', undefined, 0].includes(id)) return;
+        preloader('on');
+        $.get(vistaPrevia, {Id: id})
+            .done(function(response){
+                preloader('off');
+                toastr.success("Generando vista previa");
+                window.open(response, '_blank');
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            });
     });
 
     $('#comentarioPrivado').on('hidden.bs.modal', function(){
@@ -861,8 +879,8 @@ $(document).ready(()=>{
         $.get(vistaPrevia, {Id: id})
             .done(function(response){
                 preloader('off');
-                toastr.success('Generando la vista previa');
-                window.open(response.filePath, '_blank');
+                toastr.success("Generando vista previa");
+                window.open(response, '_blank');
             })
             .fail(function(jqXHR){
                 preloader('off');

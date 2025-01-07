@@ -568,7 +568,7 @@
                     </div>
                     <div class="col-sm-4" style="text-align: right;">
                         <button class="btn btn-sm botonGeneral"><i class="ri-printer-line"></i> Imprimir</button>
-                        <button class="btn btn-sm botonGeneral"><i class="ri-file-text-line"></i> eEstudio</button>
+                        <button class="btn btn-sm botonGeneral eEstudioModal" data-id=""><i class="ri-file-text-line"></i> eEstudio</button>
                         <button data-id="" title="Observación de Estado" class="btn btn-sm botonGeneral mostrarObsEstado"><i class="ri-chat-1-line"></i> Agregar Obs</button>
                     </div>
                 </div>
