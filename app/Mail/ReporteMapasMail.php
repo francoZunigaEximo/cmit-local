@@ -9,6 +9,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Mail\Mailables\Attachment;
+use Illuminate\Support\Facades\Log;
 
 class ReporteMapasMail extends Mailable
 {
@@ -48,11 +49,15 @@ class ReporteMapasMail extends Mailable
 
     public function attachments(): array
     {
-        if(!empty($this->data['attachment'])) {
-            return [
-                Attachment::fromPath($this->data['attachment'])
-            ];
+        $attachments = [];
+
+        // Si existen archivos adjuntos, los agregamos al array
+        if (!empty($this->data['attachments'])) {
+            foreach ($this->data['attachments'] as $attachmentPath) {
+                $attachments[] = Attachment::fromPath($attachmentPath);
+            }
         }
-        return [];
+        
+        return $attachments;
     }
 }

@@ -52,7 +52,7 @@ class ReporteMapasJob implements ShouldQueue
             
         } catch (\Exception $e) {
             Log::error('Error al enviar correo: ' . $e->getMessage());
-            throw $e;
+            //throw $e;
         }
 
     }

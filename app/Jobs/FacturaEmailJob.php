@@ -26,7 +26,7 @@ class FacturaEmailJob implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct($correo, $subject, $content, $attachment)
+    public function __construct(string $correo, string $subject, array $content, array $attachment)
     {
         $this->correo = $correo;
         $this->subject = $subject;
