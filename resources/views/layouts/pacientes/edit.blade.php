@@ -883,11 +883,7 @@
 
                             <div class="row text-left">
                                 <div class="col-auto">
-                                    <button type="button" class="btn btn-sm botonGeneral" data-bs-toggle="modal" data-bs-target="#imprimir" ><i class="bx bxs-file-pdf"></i>&nbsp;Imprimir</button>
-                                </div>
-                                
-                                <div class="col-auto">
-                                    <button type="button" class="btn btn-sm botonGeneral"><i class="ri-send-plane-line"></i>&nbsp;Opciones</button>
+                                    <button type="button" class="btn btn-sm botonGeneral imprimirReportes"><i class="bx bxs-file-pdf"></i>&nbsp;Imprimir</button>
                                 </div>
                                 
                                 <div class="col-auto">
@@ -1018,6 +1014,79 @@
                                 </table>
                         
                             </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="row reportesPacientes">
+                    <h3 class="ff-secondary fw-bold mt-1 text-center">Imprimir Opciones</h3>
+                    <div class="col-9 mx-auto box-information">
+                        <div class="text-end">
+                            <button class="btn btn-sm botonGeneral volverPrestacionLimpia">
+                                <i class="ri-arrow-left-line"></i> Volver a la prestación
+                            </button>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <form>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="infInternos">
+                                    <label class="form-check-label" for="infInternos">
+                                        Informes internos
+                                    </label>
+                                </div>
+            
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="pedProveedores">
+                                    <label class="form-check-label" for="pedProveedores">
+                                        Pedido a proveedores
+                                    </label>
+                                </div>
+        
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="conPaciente">
+                                    <label class="form-check-label" for="conPaciente">
+                                        Control paciente
+                                    </label>
+                                </div>
+        
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="resAdmin">
+                                    <label class="form-check-label" for="resAdmin">
+                                        Resumen administrativo
+                                    </label>
+                                </div>
+            
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="caratula">
+                                    <label class="form-check-label" for="caratula">
+                                        Caratula
+                                    </label>
+                                </div>
+        
+                                <hr class="mt-2 mb-2">
+            
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="consEstDetallado">
+                                    <label class="form-check-label" for="consEstDetallado">
+                                        Constancia de estudio completo (Detallado)
+                                    </label>
+                                </div>
+            
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="consEstSimple">
+                                    <label class="form-check-label" for="consEstSimple">
+                                        Constancia de estudio completo (Simple)
+                                    </label>
+                                </div>
+            
+                                <hr class="mt-2 mb-2">
+            
+                                <div class="mb-3 text-center">
+                                    <button type="button" data-id="" class="btn btn-sm botonGeneral imprimirRepo"><i class="bx bxs-file-pdf"></i>Imprimir</button>
+                                </div>
+                            </form>
                         </div>
 
                     </div>
@@ -1167,6 +1236,7 @@ $('#excel').click(function(e) {
 const loadlistadoAdjPres = "{{ route('prestaciones.listaAdjPres') }}";
 const loadResultadosPres = "{{ route('prestaciones.resultados') }}";
 const exResultado = "{{ route('prestaciones.exportarResultado') }}";
+const impRepo = "{{ route('prestaciones.pdf') }}";
 
 </script>
 

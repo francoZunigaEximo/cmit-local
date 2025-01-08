@@ -565,7 +565,6 @@
     </div>
 </div>
 
-
 <div id="fichaLaboral" class="modal fadeInUp" tabindex="-1" aria-labelledby="myModalLabel" aria-hidde="true" style="display: none">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
@@ -1494,8 +1493,6 @@
     </div>
 </div>
 
-
-
 <script>
 //Rutas
 const updatePrestacion = "{{ route('updatePrestacion') }}";
@@ -1573,9 +1570,7 @@ const deleteAdjPrest = "{{ route('prestaciones.deleteAdjPres') }}";
 
 //Select
 const selectTipoPrestacion = "{{ $prestacione->TipoPrestacion }}";
-
 </script>
-
 
 @push('styles')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">

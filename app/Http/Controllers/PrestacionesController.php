@@ -518,6 +518,12 @@ class PrestacionesController extends Controller
 
         $prestacion = Prestacion::with(['empresa', 'paciente'])->find($request->Id);
 
+        $verificar = ItemPrestacion::where('IdPrestacion', $request->Id)->count();
+
+        if($verificar === 0) {
+            return response()->json(['msg' => 'No se puede generar el reporte porque la prestación no posee exámenes'], 409);
+        }
+
         // Lista de las condiciones y sus respectivas funciones
         $acciones = [
             'adjAnexos' => 'adjAnexos',
@@ -531,7 +537,8 @@ class PrestacionesController extends Controller
             'conPaciente' => 'conPaciente',
             'resAdmin' => 'resAdmin',
             'consEstDetallado' => 'consEstDetallado',
-            'consEstSimple' => 'consEstSimple'
+            'consEstSimple' => 'consEstSimple',
+            'caratula' => 'caratula'
         ];
 
         if ($request->evaluacion == 'true') {
@@ -597,7 +604,7 @@ class PrestacionesController extends Controller
             ]);
         }else{
 
-            return response()->json(['msg' => 'Hay reportes para imprimir en la selección'], 409);
+            return response()->json(['msg' => 'No hay reportes para imprimir en la selección'], 409);
         }
 
     }
@@ -899,7 +906,6 @@ class PrestacionesController extends Controller
                 //     Mail::to("nmaximowicz@eximo.com.ar")->send($info);
             }
 
-            $prestacion->EnvioInforme = now()->format('Y-m-d');
             $prestacion->save();
 
             return response()->json(['msg' => 'Se ha cerrado la prestación. Se han guardado todos los cambios y se ha enviado el resultado al cliente de manera correcta.'], 200);

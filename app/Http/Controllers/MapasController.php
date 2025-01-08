@@ -900,11 +900,11 @@ class MapasController extends Controller
                     foreach($emails as $email) {
 
                         $asunto = 'Mapa '.$nombreCompleto.' - '.$prestacion->paciente->TipoDocumento.' '.$prestacion->paciente->Documento;  
-
+                        
                         $attachments = [$eEstudioSend, $eAdjuntoSend, $eGeneralSend];
                         $estudios !== null ? array_push($attachments, $estudiosCheck) : null;
-
-                        // ReporteMapasJob::dispatch("nmaximowicz@eximo.com.ar", $asunto, $cuerpo, $attachments); // Envio para test
+                        // ReporteMapasJob::dispatch("nmaximowicz@eximo.com.ar", $asunto, $cuerpo, $attachments);
+                        // Envio para test
                         ReporteMapasJob::dispatch($email, $asunto, $cuerpo, $attachments); 
 
                         File::copy($this->eEstudio($prestacion->Id, "no"), FileHelper::getFileUrl('escritura').'/Enviar/eEstudio'.$prestacion->Id.'.pdf');
