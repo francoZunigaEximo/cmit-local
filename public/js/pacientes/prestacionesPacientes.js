@@ -818,7 +818,7 @@ $(document).ready(()=>{
 
     /******************************Nueva pantalla de prestaciones **************************************/
     
-    $('.prestacionLimpia, .resultadosPaciente').hide();
+    $('.prestacionLimpia, .resultadosPaciente, .reportesPacientes').hide();
 
     $(document).on('click', '.cargarExPrestacion, #guardarPrestacion', function(e){
         e.preventDefault();
@@ -832,6 +832,7 @@ $(document).ready(()=>{
 
         $('.prestacionLimpia').hide();
         $('.resultadosPaciente').show();
+        $('.reportesPacientes').hide();
     });
 
     $(document).on('click', '.volverPrestacionLimpia', function(e){
@@ -839,10 +840,56 @@ $(document).ready(()=>{
 
         $('.resultadosPaciente').hide();
         $('.prestacionLimpia').show();
-        
+        $('.reportesPacientes').hide();
     });
 
-    
+    $(document).on('click', '.imprimirReportes', function(e){
+        e.preventDefault();
+
+        $('.resultadosPaciente').hide();
+        $('.prestacionLimpia').hide();
+        $('.reportesPacientes').show();
+    }); 
+
+    $(document).on('click', '.imprimirRepo', function(e){
+
+        let idP = $('#idPrestacion').val(),
+            infInternos = $('#infInternos').prop('checked'),
+            pedProveedores = $('#pedProveedores').prop('checked'),
+            conPaciente = $('#conPaciente').prop('checked'),
+            resAdmin = $('#resAdmin').prop('checked'),
+            caratula = $('#caratula').prop('checked'),
+            consEstDetallado = $('#consEstDetallado').prop('checked'),
+            consEstSimple = $('#consEstSimple').prop('checked');
+
+        let verificar = [
+            infInternos,
+            pedProveedores,
+            conPaciente,
+            resAdmin,
+            caratula,
+            consEstDetallado,
+            consEstSimple
+        ];
+
+        if (verificar.every(val => !val || (Array.isArray(val) && val.length === 0) || (typeof val === 'object' && Object.keys(val).length === 0))) {
+            toastr.warning('Debe seleccionar alguna opción para poder imprimir los reportes');
+            return;
+        }
+        preloader('on');
+        $.get(impRepo, {Id: idP, infInternos: infInternos, pedProveedores: pedProveedores, conPaciente: conPaciente, resAdmin: resAdmin, caratula: caratula, consEstDetallado: consEstDetallado, consEstSimple: consEstSimple})
+            .done(function(response){
+                preloader('off');
+                createFile("pdf", response.filePath, response.name);
+                toastr.success(response.msg);
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return; 
+            });
+    });
 
 
     $('#exam').select2({
@@ -1049,7 +1096,7 @@ $(document).ready(()=>{
     });
 
     $('#altaPrestacionModal').on('hidden.bs.modal', function () {
-        $('.prestacionLimpia, .observacionesModal, .nuevaPrestacion').hide();
+        $('.prestacionLimpia, .observacionesModal, .nuevaPrestacion, .reportesPacientes').hide();
         $('.fichaLaboralModal').show();
         checkExamenesCuenta(IDFICHA);
     });
