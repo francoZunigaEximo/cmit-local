@@ -20,6 +20,7 @@ use App\Traits\CheckPermission;
 use App\Traits\ReporteExcel;
 use App\Services\Reportes\ReporteService;
 use App\Helpers\Tools;
+use App\Helpers\ToolsEmails;
 use Carbon\Carbon;
 
 use App\Services\Reportes\Titulos\EEstudio;
@@ -44,7 +45,7 @@ class MapasController extends Controller
 
     const TBLMAPA = 5; // cod de Mapas en la tabla auditariatablas
 
-    use ObserverMapas, CheckPermission, ReporteExcel, ToolsReportes;
+    use ObserverMapas, CheckPermission, ReporteExcel, ToolsReportes, ToolsEmails;
 
     public function __construct(ReporteService $reporteService)
     {
@@ -815,6 +816,9 @@ class MapasController extends Controller
     {
         $ids = $request->ids;
         $listado = [];
+        $file1 = [];
+        $file2 = [];
+        $file3 = [];
         $file4 = [];
 
         $accion = ($request->eTipo === 'eArt' 
@@ -839,31 +843,31 @@ class MapasController extends Controller
                     'Documento' => $prestacion->paciente->Documento,
                     'RazonSocial' => $prestacion->empresa->RazonSocial,
                     'ParaEmpresa' => $prestacion->empresa->ParaEmpresa,
-                    'Mapa' => $prestacion->IdMapa,
-                    'Prestacion' => $prestacion->Id,
-                    'Tipo' =>$prestacion->TipoPrestacion
+                    'IdMapa' => $prestacion->IdMapa,
+                    'Id' => $prestacion->Id,
+                    'Tipo' =>$prestacion->TipoPrestacion,
+                    'TipoPrestacion' => $prestacion->TipoPrestacion,
                 ];
                 
                 $estudios = $this->AnexosFormulariosPrint($prestacion->Id); //obtiene los ids en un array
 
                 //Para reportes
-                $listado [] = [
-                    $this->eEstudio($request->Id, "si"), 
-                    $this->adjDigitalFisico($request->Id, 2), 
-                    $this->adjAnexos($request->Id), 
-                    $this->adjGenerales($request->Id),
-                ];
+                array_push($listado, $this->eEstudio($prestacion->Id, "si"));
+                array_push($listado, $this->adjDigitalFisico($prestacion->Id, 2));
+                array_push($listado, $this->adjAnexos($prestacion->Id));
+                array_push($listado, $this->adjGenerales($prestacion->Id));
 
                 //Para envios
-                $file1[] = [$this->eEstudio($request->Id, "no"), $this->adjDigitalFisico($request->Id, 2)];
-                $file2[] = [$this->adjAnexos($request->Id)];
-                $file3[] = [$this->adjGenerales($request->Id)];
+                array_push($file1, $this->eEstudio($prestacion->Id, "no"));
+                array_push($file1, $this->adjDigitalFisico($prestacion->Id, 2));
+                array_push($file2, $this->adjAnexos($prestacion->Id));
+                array_push($file3, $this->adjGenerales($prestacion->Id));
 
                 if($estudios) {
                     foreach($estudios as $examen) {
                         $estudio = $this->addEstudioExamen($prestacion->Id, $examen);
-                        $listado[] = [$estudio];
-                        $file4[] = [$estudio];
+                        array_push($listado, $estudio);
+                        array_push($file4, $estudio);
                     }
                 }
 
@@ -886,7 +890,7 @@ class MapasController extends Controller
                         'filePath' => $this->outputPath,
                         'name' => 'MAPA_'.$prestacion->paciente->Apellido.'_'.$prestacion->paciente->Nombre.'_'.$prestacion->paciente->Documento.'_PRESTACION.pdf',
                         'msg' => 'Se imprime todo el reporte art.',
-                        'icon' => 'art-impresion' 
+                        'icon' => $request->eTipo === 'eArt' ? 'art-impresion' : 'empresa-impresion'
                     ]; 
 
                 } elseif ($request->eTipo === 'eArt' && $request->enviarMail == 'true') {
@@ -895,11 +899,13 @@ class MapasController extends Controller
 
                     foreach($emails as $email) {
 
-                        $asunto = 'Mapa '.$nombreCompleto.' - '.$prestacion->paciente->TipoDocumento.' '.$prestacion->paciente->Documento;
-
-                        $attachments = [$eEstudioSend, $eAdjuntoSend, $eGeneralSend, $estudiosCheck];
-
-                        ReporteMapasJob::dispatch($email, $asunto, $cuerpo, $attachments);
+                        $asunto = 'Mapa '.$nombreCompleto.' - '.$prestacion->paciente->TipoDocumento.' '.$prestacion->paciente->Documento;  
+                        
+                        $attachments = [$eEstudioSend, $eAdjuntoSend, $eGeneralSend];
+                        $estudios !== null ? array_push($attachments, $estudiosCheck) : null;
+                        // ReporteMapasJob::dispatch("nmaximowicz@eximo.com.ar", $asunto, $cuerpo, $attachments);
+                        // Envio para test
+                        ReporteMapasJob::dispatch($email, $asunto, $cuerpo, $attachments); 
 
                         File::copy($this->eEstudio($prestacion->Id, "no"), FileHelper::getFileUrl('escritura').'/Enviar/eEstudio'.$prestacion->Id.'.pdf');
                         File::copy($this->adjDigitalFisico($prestacion->Id, 2), FileHelper::getFileUrl('escritura').'/Enviar/eAdjuntos'.$request->Id.'.pdf');
@@ -911,7 +917,7 @@ class MapasController extends Controller
 
                         Auditor::setAuditoria($id, self::TBLMAPA, $accion, Auth::user()->name);
                     
-                        $respuesta = ['msg' => 'Se ha enviado el eEstudio al cliente '.$prestacion->art->RazonSocial.' correctamente. '.$prestacion->Id, 'icon' => 'success'];
+                        $respuesta = ['msg' => 'Se ha enviado el eEstudio al cliente '.$prestacion->art->RazonSocial.' correctamente. '.$prestacion->Id, 'icon' => 'eArt'];
                     }   
                     
                 } elseif ($request->eTipo === 'eEmpresa' && $request->enviarMail == 'true') {
@@ -922,9 +928,11 @@ class MapasController extends Controller
                         
                         $asunto = 'Mapa '.$nombreCompleto.' - '.$prestacion->paciente->TipoDocumento.' '.$prestacion->paciente->Documento;
 
-                        $attachments = [$eEstudioSend, $eAdjuntoSend, $eGeneralSend, $estudiosCheck];
-
+                        $attachments = [$eEstudioSend, $eAdjuntoSend, $eGeneralSend];
+                        $estudios !== null ? array_push($attachments, $estudiosCheck) : null;
+          
                         ReporteMapasJob::dispatch($email, $asunto, $cuerpo, $attachments);
+                        //ReporteMapasJob::dispatch("nmaximowicz@eximo.com.ar", $asunto, $cuerpo, $attachments);  Envio para test
 
                         File::copy($this->eEstudio($prestacion->Id, "no"), FileHelper::getFileUrl('escritura').'/Enviar/eEstudio'.$prestacion->Id.'.pdf');
                         File::copy($this->adjDigitalFisico($prestacion->Id, 2), FileHelper::getFileUrl('escritura').'/Enviar/eAdjuntos'.$request->Id.'.pdf');
@@ -932,18 +940,42 @@ class MapasController extends Controller
 
                         Auditor::setAuditoria($id, self::TBLMAPA, $accion, Auth::user()->name);
                     
-                        $respuesta = ['msg' => 'Se ha enviado el eEstudio al cliente '.$prestacion->art->RazonSocial.' correctamente. '.$prestacion->Id, 'icon' => 'success'];
+                        $respuesta = ['msg' => 'Se ha enviado el eEstudio al cliente '.$prestacion->art->RazonSocial.' correctamente. '.$prestacion->Id, 'icon' => 'eEmpresa'];
                     }
                 }
             }else{
 
-                $respuesta = ['msg' => 'El cliente '.$prestacion->empresa->RazonSocial.' presenta examenes a cuenta impagos. Se ha enviado el email correspondiente', 'icon' => 'warning'];
+                $respuesta = ['msg' => 'El cliente '.$prestacion->empresa->RazonSocial.' presenta examenes a cuenta impagos. No se ha realizado el envio.', 'icon' => 'warning'];
             }
         }
 
         $respuestas[] = $respuesta;
 
         return response()->json($respuestas);
+    }
+
+    public function vistaPreviaReporte(Request $request)
+    {
+        $listado = [];
+
+        $estudios = $this->AnexosFormulariosPrint($request->Id); //obtiene los ids en un array
+        
+        array_push($listado, $this->eEstudio($request->Id, "si"));
+        array_push($listado, $this->adjDigitalFisico($request->Id, 2));
+        array_push($listado, $this->adjAnexos($request->Id));
+        array_push($listado, $this->adjGenerales($request->Id));
+
+        if(!empty($estudios)) {
+            foreach($estudios as $examen) {
+                $estudio = $this->addEstudioExamen($request->Id, $examen);
+                array_push($listado, $estudio);
+            }
+        }
+
+        $this->reporteService->fusionarPDFs($listado, $this->outputPath);
+        File::copy($this->outputPath, FileHelper::getFileUrl('escritura').'/temp/MAPA'.$request->Id.'.pdf');
+
+        return response()->json(FileHelper::getFileUrl('lectura').'/temp/MAPA'.$request->Id.'.pdf');
     }
 
 

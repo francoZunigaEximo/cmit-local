@@ -650,6 +650,122 @@ $(document).ready(function(){
         });
     });
 
+    $(document).on('click', '.vistaPreviaEnvios', function(e){
+        e.preventDefault();
+        let ids = [];
+
+        $('input[name="Id_EEnviar"]:checked').each(function() {
+            ids.push($(this).val());
+        });
+        
+        if(ids.length === 0){
+            toastr.warning('No hay prestaciones seleccionados para visualizar');
+            return;
+        }
+
+        swal({
+            title: "¿Esta seguro que desea generar la vista previa de los envios?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar){
+                preloader('on');
+                $.get(vistaPreviaEnvios, { Ids: ids })
+
+                    .done(function(response){
+                        e.preventDefault();
+
+                        $.each(response, function(index, link){
+                            window.open(link, '_blank');
+                        });
+                        
+                        preloader('off');
+                        toastr.success("Se ha generado la vista previa");
+                    })
+                    .fail(function(jqXHR){
+                        let errorData = JSON.parse(jqXHR.responseText);
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
+                    });
+            }
+        });
+    });
+
+    $(document).on('click', '.avisoEnviosEE', function(e){
+        e.preventDefault();
+        let ids = [];
+
+        $('input[name="Id_EEnviar"]:checked').each(function() {
+            ids.push($(this).val());
+        });
+
+        if(ids.length === 0){
+            toastr.warning('No hay prestaciones seleccionados para visualizar');
+            return;
+        }
+
+        swal({
+            title: "¿Esta seguro que desea enviar un aviso a las prestaciones seleccionadas?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar) {
+                preloader('on');
+                $.get(avisoEnvios, { Ids: ids})
+                    .done(function(response){
+                        preloader('off');
+            
+                        $.each(response, function(index, r){
+                            r.estado == 'success' ? toastr.success(r.msg) : toastr.warning(r.msg);
+                        });
+
+                    })
+                    .fail(function(jqXHR){
+                        let errorData = JSON.parse(jqXHR.responseText);
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
+                    });
+            }
+        });
+    });
+
+    $(document).on('click', '.EEnviarEnvios', function(e){
+        e.preventDefault();
+
+        let ids = [];
+
+        $('input[name="Id_EEnviar"]:checked').each(function() {
+            ids.push($(this).val());
+        });
+
+        if(ids.length === 0){
+            toastr.warning('No hay prestaciones seleccionados para visualizar');
+            return;
+        }
+
+        swal({
+            title: "¿Esta seguro que desea enviar el eEstudio de las prestaciones seleccionadas?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar) {
+                preloader('on');
+                $.get(enviarEE, { Ids: ids})
+                    .done(function(response){
+                        preloader('off');
+                        $.each(response, function(index, r){
+                            r.estado == 'success' ? toastr.success(r.msg) : toastr.warning(r.msg);
+                        });
+                    })
+                    .fail(function(jqXHR){
+                        let errorData = JSON.parse(jqXHR.responseText);
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
+                    });
+            }
+        });
+    });
+
     function verificarArchivo(archivo){
 
         if (!archivo || archivo.size === 0) {

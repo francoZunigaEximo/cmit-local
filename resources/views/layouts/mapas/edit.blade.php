@@ -443,7 +443,7 @@
 
                 <div class="col-sm-1 mb-3">
                     <label for="buscarEnviar" class="form-label font-weight-bold"><br /></label>
-                    <button id="buscarEnviar" type="button" class="btn botonGeneral"> 
+                    <button id="buscarEnviar" type="button" class="btn botonGeneral mt-4"> 
                         <i class="ri-search-2-line"></i> Buscar</button>
                 </div>   
             </div>
@@ -455,7 +455,6 @@
                     <p style="font-size: small">El icono <i class="ri-mail-forbid-line rojo"></i> anuncia que la empresa o la art no aceptan envios de emails.</p>
                 </div>
                 <div class="col-sm-4" style="text-align: right;">
-                    <button class="btn botonGeneral" type="button" id="vistaPreviaEnviar" ><i class="ri-file-text-line"></i> Vista Previa</button>
                     <button type="button" class="btn botonGeneral eArt" data-bs-toggle="modal" data-bs-target="#eEnviarModal">
                         <i class="ri-mail-send-line"></i> eEnviar ART   
                     </button>
@@ -475,7 +474,7 @@
                             <th class="sort">Paciente</th>
                             <th>DNI</th>
                             <th>Estado</th>
-                            <th>Ver</th>
+                            <th>Opciones</th>
                             <th><input type="checkbox" id="checkAllEnviar" name="Id_enviar"><th>
                         </tr>
                     </thead>
@@ -569,7 +568,7 @@
                     </div>
                     <div class="col-sm-4" style="text-align: right;">
                         <button class="btn btn-sm botonGeneral"><i class="ri-printer-line"></i> Imprimir</button>
-                        <button class="btn btn-sm botonGeneral"><i class="ri-file-text-line"></i> eEstudio</button>
+                        <button class="btn btn-sm botonGeneral eEstudioModal" data-id=""><i class="ri-file-text-line"></i> eEstudio</button>
                         <button data-id="" title="Observación de Estado" class="btn btn-sm botonGeneral mostrarObsEstado"><i class="ri-chat-1-line"></i> Agregar Obs</button>
                     </div>
                 </div>
@@ -696,6 +695,7 @@ const getRemito = "{{ route('getRemito') }}";
 const getComentarioPres = "{{ route('getComentarioPres') }}";
 const setComentarioPres = "{{ route('setComentarioPres') }}";
 const reverseRemito = "{{ route('reverseRemito') }}";
+const vistaPrevia = "{{ route('mapas.vistaPrevia') }}";
 //Extras
 const TOKEN = "{{ csrf_token() }}";
 const MAPA = "{{ $mapa->Nro }}";

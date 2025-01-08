@@ -703,25 +703,26 @@ $(document).ready(()=> {
        }).then((confirmar) => {
             if(confirmar) {
 
-                preloader('on');
-                $.post(updatePrestacion, {Id: ID, TipoPrestacion: tipoPrestacion, Pago: pago, Fecha: fecha, SPago: spago, Mapas: mapas, Observaciones: observaciones, Empresa: empresa, IdPaciente: IdPaciente, Art: art, IdEvaluador: IdEvaluador,Evaluacion: Evaluacion, Calificacion: Calificacion, SinEval: SinEval, ObsExamenes: ObsExamenes, tipo: tipo, sucursal: sucursal, nroFactura: nroFactura, FechaAnul: FechaAnul, Obs: Obs, NroFactProv: NroFactProv, _token: TOKEN})
-                    .done(function(){
-                        preloader('off');
-                        toastr.success("Se ha actualizado la prestación");
-                    });
-                
-                $.get(CmdTodo, {Id: ID})
-                    .done(function(response){
-                        preloader('off');
-                        
-                        if(response.icon === 'success') {
-                            createFile("pdf", response.filePath, response.name);
-                            toastr.success(response.msg);
-                        }else{
-                            toastr.success(response.msg);
-                        }
-                    });
+                let data = {Id: ID, TipoPrestacion: tipoPrestacion, Pago: pago, Fecha: fecha, SPago: spago, Mapas: mapas, Observaciones: observaciones, Empresa: empresa, IdPaciente: IdPaciente, Art: art, IdEvaluador: IdEvaluador,Evaluacion: Evaluacion, Calificacion: Calificacion, SinEval: SinEval, ObsExamenes: ObsExamenes, tipo: tipo, sucursal: sucursal, nroFactura: nroFactura, FechaAnul: FechaAnul, Obs: Obs, NroFactProv: NroFactProv, _token: TOKEN}
 
+                preloader('on'); 
+                $.get(CmdTodo, data)
+                .done(function(response){
+                    preloader('off');
+                    
+                    if(response.icon === 'success') {
+                        createFile("pdf", response.filePath, response.name);
+                        toastr.success(response.msg);
+                    }else{
+                        toastr.success(response.msg);
+                    }
+                })
+                .fail(function(jqXHR){
+                    preloader('off');
+                    let errorData = JSON.parse(jqXHR.responseText);            
+                    checkError(jqXHR.status, errorData.msg);
+                    return;
+                });  
             }
        });
 

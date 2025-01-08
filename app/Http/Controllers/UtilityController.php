@@ -47,11 +47,12 @@ class UtilityController extends Controller
     public function checkProvincia(Request $request)
     {
         $localidad = Localidad::where('Nombre', '=', $request->localidad)->orWhere('Id', '=', $request->localidad)->first();
+        $provincia = Provincia::where('Id', $localidad->IdPcia)->first();
 
         if ($localidad->Nombre) {
-            $provincia = Provincia::where('Id', $localidad->IdPcia)->first();
+            return response()->json(['fillProvincia' => $provincia->Nombre]);
         }
 
-        return response()->json(['fillProvincia' => $provincia->Nombre]);
+        return response()->json(['msg' => 'Debe elegir la provincia manualmente.'], 409);
     }
 }

@@ -326,10 +326,10 @@ class ClientesController extends Controller
         if($cliente)
         {
             $cliente->fill([
-                'EMailResultados' => $request->resultados,
-                'EMailInformes' => $request->informes,
-                'EMailFactura' => $request->facturas,
-                'EMailAnexo' => $request->anexo
+                'EMailResultados' => $request->resultados ?? '',
+                'EMailInformes' => $request->informes ?? '',
+                'EMailFactura' => $request->facturas ?? '',
+                'EMailAnexo' => $request->anexo ?? ''
             ]);
             $cliente->SEMail = ($request->sinEnvio === 'true') ? 1 : 0;
             $cliente->save();

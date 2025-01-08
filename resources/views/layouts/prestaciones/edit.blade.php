@@ -185,7 +185,7 @@
                             <div class="input-group input-group-sm">
                                 <span class="input-group-text">Forma de Pago</span>
                                 <select class="form-select" id="pago">
-                                    <option value="{{ $prestacione->Pago ?? '' }}" selected>{{ ($prestacione->Pago === "B" || $prestacione->Pago === "C")? 'Contado' : (($prestacione->Pago === 'A' || empty($prestacione->Pago))? 'Cuenta Corriente' : (($prestacione->Pago === 'P')? 'Examenes a cuenta' : 'Elija una opción...')) }}</option>
+                                    <option value="{{ $prestacione->Pago === '' || $prestacione->Pago === null ? 'P' : $prestacione->Pago }}" selected>{{ ($prestacione->Pago === "B" || $prestacione->Pago === "C")? 'Contado' : (($prestacione->Pago === 'A' || empty($prestacione->Pago))? 'Cuenta Corriente' : (($prestacione->Pago === 'P')? 'Examenes a cuenta' : 'Elija una opción...')) }}</option>
                                     <option value="B">Contado</option>
                                     <option value="A">Cuenta Corriente</option>
                                     <option value="P">Examen a cuenta</option>
@@ -564,7 +564,6 @@
         </div>
     </div>
 </div>
-
 
 <div id="fichaLaboral" class="modal fadeInUp" tabindex="-1" aria-labelledby="myModalLabel" aria-hidde="true" style="display: none">
     <div class="modal-dialog modal-xl">
@@ -1494,8 +1493,6 @@
     </div>
 </div>
 
-
-
 <script>
 //Rutas
 const updatePrestacion = "{{ route('updatePrestacion') }}";
@@ -1573,9 +1570,7 @@ const deleteAdjPrest = "{{ route('prestaciones.deleteAdjPres') }}";
 
 //Select
 const selectTipoPrestacion = "{{ $prestacione->TipoPrestacion }}";
-
 </script>
-
 
 @push('styles')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">

@@ -1027,11 +1027,12 @@
                                                     <button type="button" class="btn btn-sm botonGeneral completo">Completo</button>
                                                     <button type="button" class="btn btn-sm botonGeneral abiertoEE">Abiertos</button>
                                                     <button type="button" class="btn btn-sm botonGeneral cerradoEE">Cerrados</button>
+                                                    <button type="button" class="btn btn-sm botonGeneral impagoEE">Impagos</button>
                                                 </div>
                                                 <div class="col-sm-6 text-end">
-                                                    <button type="button" class="btn btn-sm botonGeneral"><i class="ri-article-line"></i>&nbsp;Vista previa</button>
-                                                    <button type="button" class="btn btn-sm botonGeneral"><i class="ri-file-info-line"></i>&nbsp;Aviso</button>
-                                                    <button type="button" class="btn btn-sm botonGeneral"><i class="ri-send-plane-line"></i>&nbsp;eEnviar</button>
+                                                    <button type="button" class="btn btn-sm botonGeneral vistaPreviaEnvios"><i class="ri-article-line"></i>&nbsp;Vista previa</button>
+                                                    <button type="button" class="btn btn-sm botonGeneral avisoEnviosEE"><i class="ri-file-info-line"></i>&nbsp;Mail Impagos</button>
+                                                    <button type="button" class="btn btn-sm botonGeneral EEnviarEnvios"><i class="ri-send-plane-line"></i>&nbsp;eEnviar</button>
                                                 </div>
                                             </div>
 
@@ -1044,7 +1045,6 @@
                                                             <th class="sort">Empresa</th>
                                                             <th class="sort">Paciente</th>
                                                             <th class="sort">DNI</th>
-                                                            <th class="sort">Examen</th>
                                                             <th>F eEnviado</th>
                                                             <th>Email</th>
                                                             <th>ExCta Imp</th>
@@ -1100,6 +1100,10 @@
     const archivosAutomaticoI = "{{ route('archivosAutomaticoI') }}";
 
     const exportarOrdExa = "{{ route('exportarOrdExa') }}";
+    const vistaPreviaEnvios = "{{ route('ordenesExamen.vistaPrevia') }}";
+    const avisoEnvios = "{{ route('ordenesExamen.aviso') }}";
+    const getPagado = "{{ route('ordenesExamen.obtenerPagado') }}";
+    const enviarEE = "{{ route('ordenesExamen.enviarEstudio') }}";
 </script>
 
 @push('styles')

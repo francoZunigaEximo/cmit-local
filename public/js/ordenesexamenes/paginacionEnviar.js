@@ -1,7 +1,7 @@
 $(document).ready(()=>{
 
     //Botón de busqueda de Mapas
-    $(document).on('click', '#buscarEEnviar, .completo, .abiertoEE, .cerradoEE', function() {
+    $(document).on('click', '#buscarEEnviar, .completo, .abiertoEE, .cerradoEE, .impagoEE', function() {
 
         let fechaDesde = $('#fechaDesdeEEnviar').val(),
             fechaHasta = $('#fechaHastaEEnviar').val(),
@@ -10,11 +10,12 @@ $(document).ready(()=>{
             enviar = $('#eEnviarEEnviar').val(),
             completo = $(this).hasClass('completo') ? "activo" : null,
             abierto = $(this).hasClass('abiertoEE') ? "activo" : null,
-            cerrado = $(this).hasClass('cerradoEE') ? "activo" : null;
+            cerrado = $(this).hasClass('cerradoEE') ? "activo" : null,
+            impago = $(this).hasClass('impagoEE') ? "activo" : null;
 
         
 
-        if ((completo !== 'activo' || abierto !== 'activo' || cerrado !== 'activo') && (fechaDesde === '' || fechaHasta === '')) {
+        if ((completo !== 'activo' || abierto !== 'activo' || cerrado !== 'activo' || impago !== 'activo') && (fechaDesde === '' || fechaHasta === '')) {
             toastr.warning("Las fechas son obligatorias");
             return;
         }
@@ -42,6 +43,7 @@ $(document).ready(()=>{
                     d.completo = completo;
                     d.abierto = abierto;
                     d.cerrado = cerrado;
+                    d.impago = impago;
                 },
             },
             dataType: 'json',
@@ -87,35 +89,39 @@ $(document).ready(()=>{
                     data: null,
                     targets: 5,
                     render: function(data) {
-                        return `<span title="${data.Examen}">${data.Examen}</span>`;
-                    }
-                },
-                {
-                    data: null,
-                    targets: 6,
-                    render: function(data) {
                         return [undefined, null, '0000-00-00'].includes(data.FechaEnviado) ? '-' : fechaNow(data.FechaEnviado, "/", 0);
                     }
                 },
                 {
                     data: null,
-                    targets: 7,
+                    targets: 6,
                     render: function(data){
                         return `<span title="${data.Correo}">${[undefined, null].includes(data.Correo) ? '-' : data.Correo}</span>`;
                     } 
                 },
                 {
                     data: null,
-                    targets: 8,
+                    targets: 7,
                     render: function(data) {
-                        return  `<div class="text-center"><span class="${data.Pagado === 0 ? 'rojo' : ''}">${data.Pagado === 0 ? 'X' : ''}</span></div>`;    
+                        let subqueryData = null;
+        
+                        $.ajax({
+                            url: getPagado,
+                            method: 'GET',
+                            data: { Id: data.IdPrestacion }, 
+                            async: false, 
+                            success: function(response) {
+                                subqueryData = response; 
+                            }
+                        });
+                        return  `<div class="text-center"><span class="${subqueryData.Pagado === 0 ? 'rojo' : ''}">${subqueryData.Pagado === 0 ? 'X' : ''}</span></div>`;    
                     }
                 },
                 {
                     data: null,
-                    targets: 9,
+                    targets: 8,
                     render: function(data) {
-                        return `<input type="checkbox" name="Id_EEnviar" value="${data.IdEx}" checked>`       
+                        return `<input type="checkbox" name="Id_EEnviar" value="${data.IdPrestacion}" checked>`       
                     }
                 },
             ],
