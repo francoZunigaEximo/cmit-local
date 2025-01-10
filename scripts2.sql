@@ -802,13 +802,12 @@ BEGIN
 END
 
 
-CREATE PROCEDURE getSearchEEnviar(IN fechaDesde DATE, IN fechaHasta DATE, IN empresa INT, IN paciente INT, IN completo VARCHAR, IN eenviar VARCHAR, IN abierto VARCHAR, IN cerrado VARCHAR)
+CREATE PROCEDURE getSearchEEnviar(IN fechaDesde DATE, IN fechaHasta DATE, IN empresa INT, IN paciente INT, IN completo VARCHAR, IN abierto VARCHAR, IN cerrado VARCHAR, IN eenviar VARCHAR, IN impago VARCHAR)
 
 BEGIN
 	SELECT 
 		pre.Fecha AS Fecha,
 		pre.Id AS IdPrestacion,
-		pc2.IdPrestacion AS presta,
 		pre.FechaEnviado AS FechaEnviado,
 		cli.EMailInformes AS Correo,
 		cli.RazonSocial AS Empresa,
@@ -839,7 +838,13 @@ BEGIN
 			(completo = 'activo' AND i.CAdj IN (3, 5) AND i.CInfo = 3 AND pc.Pagado = 1) OR
 			(abierto = 'activo' AND i.CAdj IN (0, 1, 2) AND i.CInfo = 1 AND pc.Pagado = 0) OR
 			(cerrado = 'activo' AND i.CAdj IN (3, 4, 5) AND i.CInfo = 3 AND pc.Pagado IN (0, 1)) OR
-			(impago = 'activo' AND pc.Pagado = 0) OR
+			(impago = 'activo' AND EXISTS (
+				SELECT 1 
+				FROM pagosacuenta_it AS pc_it
+				JOIN pagosacuenta AS pc_check ON pc_it.IdPago = pc_check.Id
+				WHERE pc_it.IdPrestacion = pre.Id 
+				AND pc_check.Pagado = 0
+			)) OR
 			(completo IS NULL AND abierto IS NULL AND cerrado IS NULL AND impago IS NULL)
 		)
 		AND (
