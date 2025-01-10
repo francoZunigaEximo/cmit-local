@@ -143,16 +143,17 @@ class OrdenesExamenController extends Controller
     {
         if($request->ajax())
         {
-            $query = DB::select("CALL getSearchA(".
-                ($request->fechaDesde ? "'".$request->fechaDesde."'" : "NULL").", ".
-                ($request->fechaHasta ? "'".$request->fechaHasta."'" : "NULL").", ".
-                ($request->prestacion ? $request->prestacion : "NULL").", ".
-                ($request->examen ? $request->examen : "NULL").", ".
-                ($request->paciente ? $request->paciente : "NULL").", ".
-                ($request->estados ? "'".$request->estados."'" : "NULL").", ".
-                ($request->efector ? $request->efector : "NULL").", ".
-                ($request->especialidad ? $request->especialidad : "NULL").", ".
-                ($request->empresa ? $request->empresa : "NULL").")");
+            $query = DB::select("CALL getSearchA(?,?,?,?,?,?,?,?,?)",[
+                $request->fechaDesde,
+                $request->fechaHasta,
+                $request->prestacion,
+                $request->examen,
+                $request->paciente,
+                $request->estados,
+                $request->efector,
+                $request->especialidad,
+                $request->empresa
+            ]);
         
             return Datatables::of($query)->make(true);
         }
@@ -163,13 +164,14 @@ class OrdenesExamenController extends Controller
     {
         if($request->ajax())
         {
-            $query = DB::select("CALL getSearchAdj(".
-                ($request->fechaDesde ? "'".$request->fechaDesde."'" : "NULL").", ".
-                ($request->fechaHasta ? "'".$request->fechaHasta."'" : "NULL").", ".
-                ($request->efector ? $request->efector : "NULL").", ".
-                ($request->especialidad ? $request->especialidad : "NULL").", ".
-                ($request->empresa ? $request->empresa : "NULL").", ".
-                ($request->art ? $request->art : "NULL").")");
+            $query = DB::select("CALL getSearchAdj(?,?,?,?,?,?)", [
+                $request->fechaDesde,
+                $request->fechaHasta,
+                $request->efector,
+                $request->especialidad,
+                $request->empresa,
+                $request->art
+            ]);
 
             return Datatables::of($query)->make(true);
         }
@@ -180,15 +182,16 @@ class OrdenesExamenController extends Controller
     {
         if($request->ajax())
         {
-            $query = DB::select("CALL getSearchInf(".
-            ($request->fechaDesde ? "'".$request->fechaDesde."'" : "NULL").", ".
-            ($request->fechaHasta ? "'".$request->fechaHasta."'" : "NULL").", ".
-            ($request->informador ? $request->informador : "NULL").", ".
-            ($request->especialidad ? $request->especialidad : "NULL").", ".
-            ($request->empresa ? $request->empresa : "NULL").", ".
-            ($request->prestacion ? $request->prestacion : "NULL").", ".
-            ($request->paciente ? $request->paciente : "NULL").", ".
-            ($request->examen ? $request->examen : "NULL").")");
+            $query = DB::select("CALL getSearchInf(?,?,?,?,?,?,?,?)", [
+                $request->fechaDesde,
+                $request->fechaHasta,
+                $request->informador,
+                $request->especialidad,
+                $request->empresa,
+                $request->prestacion,
+                $request->paciente,
+                $request->examen
+            ]);
 
             return Datatables::of($query)->make(true);
         }
@@ -199,15 +202,16 @@ class OrdenesExamenController extends Controller
     {
         if($request->ajax())
         {
-            $query = DB::select("CALL getSearchInfA(".
-            ($request->fechaDesde ? "'".$request->fechaDesde."'" : "NULL").", ".
-            ($request->fechaHasta ? "'".$request->fechaHasta."'" : "NULL").", ".
-            ($request->informador ? $request->informador : "NULL").", ".
-            ($request->especialidad ? $request->especialidad : "NULL").", ".
-            ($request->examen ? $request->examen : "NULL").", ".
-            ($request->prestacion ? $request->prestacion : "NULL").", ".
-            ($request->empresa ? $request->empresa : "NULL").", ".
-            ($request->paciente ? $request->paciente : "NULL").")");
+            $query = DB::select("CALL getSeachInfA(?,?,?,?,?.?,?,?)", [
+                $request->fechaDesde,
+                $request->fechaHasta,
+                $request->informador,
+                $request->especialidad,
+                $request->examen,
+                $request->prestacion,
+                $request->empresa,
+                $request->paciente
+            ]);
 
             return Datatables::of($query)->make(true);
         }
@@ -219,13 +223,14 @@ class OrdenesExamenController extends Controller
     {
         if($request->ajax())
         {
-            $query = DB::select("CALL getSearchInfAdj(".
-            ($request->fechaDesde ? "'".$request->fechaDesde."'" : "NULL").", ".
-            ($request->fechaHasta ? "'".$request->fechaHasta."'" : "NULL").", ".
-            ($request->informador ? $request->informador : "NULL").", ".
-            ($request->especialidad ? $request->especialidad : "NULL").", ".
-            ($request->art ? $request->art : "NULL").", ".
-            ($request->empresa ? $request->empresa : "NULL").")");
+            $query = DB::select("CALL getSearchInfAdj(?,?,?,?,?,?)", [
+                $request->fechaDesde ?? null,
+                $request->fechaHasta ?? null,
+                $request->informador ?? null,
+                $request->especialidad ?? null,
+                $request->art ?? null,
+                $request->empresa ?? null
+            ]);
 
         return Datatables::of($query)->make(true);
     }
@@ -237,22 +242,23 @@ public function searchPrestacion(Request $request)
 {
     if($request->ajax())
     {
-        $query = $query = DB::select("CALL getSearchPrestacion(".
-        ($request->fechaDesde ? "'".$request->fechaDesde."'" : "NULL").", ".
-        ($request->fechaHasta ? "'".$request->fechaHasta."'" : "NULL").", ".
-        ($request->estado ? "'".$request->estado."'" : "NULL").", ".
-        ($request->efector ? "'".$request->efector."'" : "NULL").", ".
-        ($request->informador ? "'".$request->informador."'" : "NULL").", ".
-        ($request->profEfector ? $request->profEfector : "NULL").", ".
-        ($request->profInformador ? $request->profInformador : "NULL").", ".
-        ($request->tipo ? "'".$request->tipo."'" : "NULL").", ".
-        ($request->adjunto ? "'".$request->adjunto."'" : "NULL").", ".
-        ($request->examen ? $request->examen : "NULL").", ".
-        ($request->pendiente ? $request->pendiente : "NULL").", ".
-        ($request->vencido ? $request->vencido : "NULL").", ".
-        ($request->especialidad ? $request->especialidad : "NULL").", ".
-        ($request->ausente ? "'".$request->ausente."'" : "NULL").", ".
-        ($request->adjuntoEfector ? $request->adjuntoEfector : "NULL").")");
+        $query = $query = DB::select("CALL getSearchPrestacion(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", [
+            $request->fechaDesde ?? null,
+            $request->fechaHasta ?? null,
+            $request->estado ?? null,
+            $request->efector ?? null,
+            $request->informador ?? null,
+            $request->profEfector ?? null,
+            $request->profInformador ?? null,
+            $request->tipo ?? null,
+            $request->adjunto ?? null,
+            $request->examen ?? null,
+            $request->pendiente ?? null,
+            $request->vencido ?? null,
+            $request->especialidad ?? null,
+            $request->ausente ?? null,
+            $request->adjuntoEfector ?? null
+        ]);
 
         return Datatables::of($query)->make(true);   
         }
@@ -263,97 +269,18 @@ public function searchPrestacion(Request $request)
     public function searchEenviar(Request $request)
     {
         if($request->ajax()) {
-
-            // $query = $query = DB::select("CALL getSearchEEnviar(".
-            // ($request->fechaDesde ? "'".$request->fechaDesde."'" : "NULL").", ".
-            // ($request->fechaHasta ? "'".$request->fechaHasta."'" : "NULL").", ".
-            // ($request->empresa ? $request->empresa : "NULL").", ".
-            // ($request->paciente ? $request->paciente : "NULL").", ".
-            // ($request->completo ? "'".$request->completo."'" : "NULL").", ".
-            // ($request->abierto ? "'".$request->abierto."'" : "NULL").", ".
-            // ($request->cerrado ? "'".$request->cerrado."'" : "NULL").", ".
-            // ($request->eenviar ? "'".$request->eenviar."'" : "NULL").")");
-
-            $query = DB::table('prestaciones as pre')
-                ->join('clientes as cli', function ($join) use ($request) {
-                    $join->on('pre.IdEmpresa', '=', 'cli.Id');
-                    if (!empty($request->empresa)) {
-                        $join->where('cli.Id', $request->empresa);
-                    }
-                })
-                ->join('pacientes as pa', function ($join) use ($request) {
-                    $join->on('pre.IdPaciente', '=', 'pa.Id');
-                    if (!empty($request->paciente)) {
-                        $join->where('pa.Id', $request->paciente);
-                    }
-                })
-                
-                ->join('pagosacuenta as pc', 'cli.Id', '=', 'pc.IdEmpresa')
-                ->leftJoin('pagosacuenta_it as pc2', 'pc.Id', '=', 'pc2.IdPago')
-                ->join('itemsprestaciones as i', 'pre.Id', '=', 'i.IdPrestacion')
-                ->select(
-                    'pre.Fecha AS Fecha', 
-                    'pre.Id AS IdPrestacion', 
-                    'pc2.IdPrestacion AS presta',
-                    'pre.FechaEnviado AS FechaEnviado',
-                    'cli.EMailInformes AS Correo',
-                    'cli.RazonSocial AS Empresa',
-                    DB::raw("CONCAT(pa.Apellido, ' ', pa.Nombre) AS NombreCompleto"),
-                    'pa.Documento AS Documento', 
-                    'pa.Id AS IdPaciente',  
-                   DB::raw('(SELECT COUNT(*) FROM itemsprestaciones WHERE IdPrestacion = pre.Id) AS Total'),
-                   DB::raw('(SELECT COUNT(*) FROM itemsprestaciones WHERE IdPrestacion = pre.Id AND CAdj IN (3, 5) AND CInfo IN (3, 0)) AS TotalCerrado'),
-                );
-
-                $query->when(!empty($request->fechaDesde) && !empty($request->fechaHasta), function ($query) use ($request) {
-                    $query->whereBetween('i.Fecha', [$request->fechaDesde, $request->fechaHasta]);
-                });
-
-                $query->havingRaw('Total = TotalCerrado');
-
-                $query->when(!empty($request->eenviar) && $request->eenviar === 'eenviado', function ($query) {
-                    $query->where('pre.eEnviado', 1);
-                });
-
-                $query->when(!empty($request->eenviar) && $request->eenviar === 'noeenviado', function ($query) {
-                    $query->where('pre.eEnviado', 0);
-                });
-
-                $query->when(!empty($request->eenviar) && $request->eenviar === 'todos', function ($query) {
-                    $query->whereIn('pre.eEnviado', [0,1]);
-                });
-
-                $query->when(!empty($request->completo) && $request->completo === 'activo', function ($query) {
-                    $query->whereIn('i.CAdj', [3, 5])
-                        ->where('i.CInfo', 3)
-                        ->where('pc.Pagado', 1);
-                });
-    
-                $query->when(!empty($request->abierto) && $request->abierto === 'activo', function ($query) {
-                    $query->whereIn('i.CAdj', [0, 1, 2])
-                        ->where('i.CInfo', 1)
-                        ->where('pc.Pagado', 0);
-                });
-
-                $query->when(!empty($request->cerrado) && $request->cerrado === 'activo', function ($query) {
-                    $query->whereIn('i.CAdj', [3, 4, 5])
-                        ->where('i.CInfo', 3)
-                        ->whereIn('pc.Pagado', [0, 1]);
-                });
-
-                $query->when(!empty($request->impago) && $request->impago === 'activo', function ($query) {
-                    $query->where('pc.Pagado', 0);
-                });
-
-                $query->whereNot('pre.Id', 0)
-                    ->whereNot('pre.Fecha', '0000-00-00')
-                    ->whereNot('pre.Fecha', null)
-                    ->groupBy('pre.Id')
-                    ->orderBy('pre.Fecha', 'DESC')
-                    ->orderBy('cli.RazonSocial', 'DESC')
-                    ->orderBy('pa.Apellido', 'DESC')
-                    ->orderBy('pa.Nombre', 'DESC')
-                    ->limit(1000);
+         
+            $query = DB::select("CALL getSearchEEnviar(?, ?, ?, ?, ?, ?, ?, ?, ?)", [
+                $request->fechaDesde ?? null,
+                $request->fechaHasta ?? null,
+                $request->empresa ?? null,
+                $request->paciente ?? null,
+                $request->completo ?? null,
+                $request->abierto ?? null,
+                $request->cerrado ?? null,
+                $request->eenviar ?? null,
+                $request->impago ?? null
+            ]);
 
             return Datatables::of($query)->make(true);   
         }
