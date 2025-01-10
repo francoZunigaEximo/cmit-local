@@ -7,19 +7,17 @@ $(document).ready(()=>{
             fechaHasta = $('#fechaHastaEEnviar').val(),
             empresa = $('#empresaEEnviar').val(),
             paciente = $('#pacienteEEnviar').val(),
-            enviar = $('#eEnviarEEnviar').val(),
+            eenviar = $('#eEnviarEEnviar').val(),
             completo = $(this).hasClass('completo') ? "activo" : null,
             abierto = $(this).hasClass('abiertoEE') ? "activo" : null,
             cerrado = $(this).hasClass('cerradoEE') ? "activo" : null,
             impago = $(this).hasClass('impagoEE') ? "activo" : null;
 
-        
-
         if ((completo !== 'activo' || abierto !== 'activo' || cerrado !== 'activo' || impago !== 'activo') && (fechaDesde === '' || fechaHasta === '')) {
             toastr.warning("Las fechas son obligatorias");
             return;
         }
-
+        console.log(eenviar)
         $('#listaOrdenesEEnviar').DataTable().clear().destroy();
 
         new DataTable("#listaOrdenesEEnviar", {
@@ -39,7 +37,7 @@ $(document).ready(()=>{
                     d.fechaHasta = fechaHasta;
                     d.empresa = empresa;
                     d.paciente = paciente;
-                    d.eenviar = enviar;
+                    d.eenviar = eenviar;
                     d.completo = completo;
                     d.abierto = abierto;
                     d.cerrado = cerrado;
@@ -54,7 +52,9 @@ $(document).ready(()=>{
                     targets: 0,
                     width: "50px",
                     render: function(data){
+                        console.log(data);
                         return fechaNow(data.Fecha,'/',0);
+                        
                     }
                 },
                 {
