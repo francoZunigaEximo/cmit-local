@@ -285,6 +285,7 @@
                         Exámen con multi adjunto habilitado. Elija a que exámen quiere asociar el reporte.
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
+                    
                     <div class="list-group">
                          @foreach($data['multiEfector'] as $examen)
                         <label class="list-group-item">
