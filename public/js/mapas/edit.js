@@ -1,4 +1,4 @@
-$(document).ready(()=>{
+$(function() { 
 
     let hoy = new Date().toLocaleDateString('en-CA'), 
         maxCaracteres = 100;
@@ -798,6 +798,7 @@ $(document).ready(()=>{
         $.get(vistaPrevia, {Id: id})
             .done(function(response){
                 preloader('off');
+                console.log(response); return;
                 toastr.success("Generando vista previa");
                 window.open(response, '_blank');
             })
