@@ -231,7 +231,6 @@
             <button type="button" class="btn botonGeneral" id="actualizarExamen">Guardar</button>
         </div>
     </div>
-
     <div class="row mb-3">
         <div class="col-12 box-information text-center">
 
@@ -280,12 +279,12 @@
             </div>
             <div class="modal-body">
                 <form id="form-efector">
+                   
                     @if($itemsprestacione->examenes->proveedor1->Multi == 1)
                     <div class="alert alert-info alert-border-left alert-dismissible fade show mb-2" role="alert">
                         Exámen con multi adjunto habilitado. Elija a que exámen quiere asociar el reporte.
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
-                   
                     <div class="list-group">
                          @foreach($data['multiEfector'] as $examen)
                         <label class="list-group-item">
