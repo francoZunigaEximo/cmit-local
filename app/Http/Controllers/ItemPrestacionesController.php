@@ -37,8 +37,7 @@ class ItemPrestacionesController extends Controller
         if (!$data) {
             return abort(404, 'No se encuentra la información solicitada');
         }
-        dd($data)
-;        return view('layouts.itemsprestaciones.edit', compact(['itemsprestacione', 'data']));
+        return view('layouts.itemsprestaciones.edit', compact(['itemsprestacione', 'data']));
     }
     
     public function editModal(Request $request)
