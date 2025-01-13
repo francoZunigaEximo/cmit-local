@@ -974,7 +974,7 @@ class MapasController extends Controller
 
         $this->reporteService->fusionarPDFs($listado, $this->outputPath);
 
-        return response()->json( File::copy($this->outputPath, storage_path('/temp/MAPA'.$request->Id.'.pdf')));
+        return response()->json( File::copy($this->outputPath, storage_path('app/public/temp/MAPA'.$request->Id.'.pdf')));
     }
 
 
