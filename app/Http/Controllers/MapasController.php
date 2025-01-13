@@ -34,6 +34,7 @@ use App\Services\Reportes\Cuerpos\AdjuntosDigitales;
 use App\Jobs\ReporteMapasJob;
 use App\Helpers\FileHelper;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class MapasController extends Controller
 {
@@ -50,8 +51,8 @@ class MapasController extends Controller
     public function __construct(ReporteService $reporteService)
     {
         $this->reporteService = $reporteService;
-        $this->outputPath = storage_path('app/public/fusionar.pdf');
-        $this->sendPath = storage_path('app/public/cmit-'.Tools::randomCode(15).'-informe.pdf');
+        $this->outputPath = storage_path('app/public/temp/fusionar-'.Tools::randomCode(15).'.pdf');
+        $this->sendPath = storage_path('app/public/temp/cmit-'.Tools::randomCode(15).'-informe.pdf');
         $this->fileNameExport = 'reporte-'.Tools::randomCode(15);
         $this->tempFile = 'app/public/temp/file-';
     }
@@ -972,10 +973,15 @@ class MapasController extends Controller
             }
         }
 
-        $this->reporteService->fusionarPDFs($listado, $this->outputPath);
-        File::copy($this->outputPath, FileHelper::getFileUrl('escritura').'/temp/MAPA'.$request->Id.'.pdf');
+        $filePath = 'temp/MAPA' . $request->Id . '.pdf';
 
-        return response()->json(FileHelper::getFileUrl('lectura').'/temp/MAPA'.$request->Id.'.pdf');
+        $this->reporteService->fusionarPDFs($listado, $this->outputPath);
+        File::copy($this->outputPath, storage_path('app/public/'.$filePath));
+
+        $fileUrl = Storage::disk('public')->url($filePath);
+        $fileUrl = str_replace('storage/', 'public/storage/', $fileUrl);
+
+        return response()->json($fileUrl);
     }
 
 
