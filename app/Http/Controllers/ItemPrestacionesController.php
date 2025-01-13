@@ -1249,7 +1249,7 @@ class ItemPrestacionesController extends Controller
         }
     }
 
-    private function obtenerDatosItemPrestacion($id)
+    private function obtenerDatosItemPrestacion(int $id): array
     {
         $query = ItemPrestacion::with(['prestaciones', 'examenes', 'examenes.proveedor1', 'examenes.proveedor2', 'profesionales1', 'profesionales2', 'itemsInfo', 'notaCreditoIt.notaCredito', 'facturadeventa'])->find($id);
         $data = null;

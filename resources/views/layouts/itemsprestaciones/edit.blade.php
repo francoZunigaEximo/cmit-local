@@ -286,10 +286,10 @@
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                     <div class="list-group">
-                         @foreach($multiEfector as $examen)
+                         @foreach($data['multiEfector'] as $examen)
                         <label class="list-group-item">
                             <input class="form-check-input me-1" type="checkbox" id="Id_multiAdj_{{ $examen->Id }}" value="{{ $examen->Id}}" {{ $examen->archivos_count > 0 ? 'disabled' : 'checked' }}> 
-                            {!! $examen->archivos_count > 0 ? $examen->examenes->Nombre . ' <i title="Con archivo adjunto" class="ri-attachment-line verde"></i>' : $examen->examenes->Nombre  !!}
+                            {!! $examen->archivos_count > 0 ? $examen->NombreExamen . ' <i title="Con archivo adjunto" class="ri-attachment-line verde"></i>' : $examen->NombreExamen  !!}
                         </label>
                         @endforeach
                     </div>
@@ -357,10 +357,10 @@
                             <input class="form-check-input me-1" type="checkbox" id="Id_multiAdjInf_{{ $informe->Id }}" value="{{ $informe->Id}}" {{ $informe->archivos_count > 0 ? 'disabled' : 'checked' }}> 
                             {!! 
                                 $informe->archivos_count > 0 
-                                ? ($informe->examenes->Nombre ?? '') 
-                                    . ' (' . ($informe->examenes->proveedor2->Nombre ?? '') . ') <i title="Con archivo adjunto" class="ri-attachment-line verde"></i>' 
+                                ? ($informe->NombreExamen ?? '') 
+                                    . ' (' . ($informe->NombreProveedor ?? '') . ') <i title="Con archivo adjunto" class="ri-attachment-line verde"></i>' 
                                 : ($informe->examenes->Nombre ?? '') 
-                                    . ' (' . ($informe->examenes->proveedor2->Nombre ?? '') . ')'
+                                    . ' (' . ($informe->NombreProveedor ?? '') . ')'
                             !!}
                             
                         </label>
