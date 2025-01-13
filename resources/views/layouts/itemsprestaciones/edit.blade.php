@@ -115,7 +115,7 @@
                 <div class="col-md-3">
                     <div class="input-group input-group-sm mb-2">
                         <span class="input-group-text">Adjunto</span>
-                        <input type="text" style="{{ ($itemsprestacione->examenes->Adjunto === 1 && $adjuntoEfector === 0 ? 'color: red' : ($itemsprestacione->examenes->Adjunto === 1 && $adjuntoEfector === 1 ? 'color: green' : '')) }}" class="form-control" id="Estado" name="Estado" value="{{ ($itemsprestacione->examenes->Adjunto === 0 ? 'No lleva Adjuntos' : ($itemsprestacione->examenes->Adjunto === 1 && $adjuntoEfector === 0 ? 'Pendiente' : ($itemsprestacione->examenes->Adjunto === 1 && $adjuntoEfector === 1 ? 'Adjuntado' : '-'))) }}" @readonly(true)>
+                        <input type="text" style="{{ ($itemsprestacione->examenes->Adjunto === 1 && !empty($adjuntoEfector) && $adjuntoEfector === 0 ? 'color: red' : ($itemsprestacione->examenes->Adjunto === 1 && !empty($adjuntoEfector) && $adjuntoEfector === 1 ? 'color: green' : '')) }}" class="form-control" id="Estado" name="Estado" value="{{ ($itemsprestacione->examenes->Adjunto === 0 ? 'No lleva Adjuntos' : ($itemsprestacione->examenes->Adjunto === 1 && !empty($adjuntoEfector) && $adjuntoEfector === 0 ? 'Pendiente' : ($itemsprestacione->examenes->Adjunto === 1 && !empty($adjuntoEfector) && $adjuntoEfector === 1 ? 'Adjuntado' : '-'))) }}" @readonly(true)>
                         <button type="button" class="btn botonGeneral adjuntarEfector" data-bs-toggle="modal" data-bs-target="#modalEfector">Adjuntar archivo</button>
                     </div>
                 </div>
