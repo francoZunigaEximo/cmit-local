@@ -1,4 +1,4 @@
-$(document).ready(function(){
+$(function() {
 
     const valAbrir = ['3','4','5'], valCerrar = ['0','1','2'], ID = $('#Id').val(), valCerrarI = 3;
     let cadj = $('#CAdj').val(), CInfo = $('#CInfo').val(), efector = $('#efectores').val(), informador = $('#informadores').val(), provEfector = $('#IdEfector').val(), provInformador = $('#IdInformador').val(), Estado = $('#Estado').val(), EstadoI = $('#EstadoI').val();

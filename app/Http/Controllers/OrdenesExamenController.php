@@ -70,6 +70,12 @@ class OrdenesExamenController extends Controller
 
         if($request->ajax())
         {
+            // $query = DB::select('CALL getPrestaciones(?,?,?,?,?,?,?,?,?,?,?,?,?)', [
+            //     $request->fechaDesde ?? null,
+            //     $request->fechaHasta ?? null,
+            //     $request->empresa ?? null,
+            // ]);
+
             $query = DB::table('itemsprestaciones')
             ->select(
                 'itemsprestaciones.Id as IdItem',
