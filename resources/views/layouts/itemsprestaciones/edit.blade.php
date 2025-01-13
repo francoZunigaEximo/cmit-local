@@ -353,7 +353,7 @@
                     </div>
                    
                     <div class="list-group">
-                         @foreach($multiInformador as $informe)
+                         @foreach($data['multiInformador'] as $informe)
                         <label class="list-group-item">
                             <input class="form-check-input me-1" type="checkbox" id="Id_multiAdjInf_{{ $informe->Id }}" value="{{ $informe->Id}}" {{ $informe->archivos_count > 0 ? 'disabled' : 'checked' }}> 
                             {!! 
