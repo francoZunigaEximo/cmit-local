@@ -1,8 +1,4 @@
-function obtenerFormato(date) {
-    return date.toISOString().slice(0, 10);
-};
-
-$(document).ready(()=>{
+$(function() {
 
     //Botón de busqueda de Mapas
     $(document).on('click', '#buscarPres, .sesentaDias, .noventaDias, .totalDias, .ausenteDias, .hoyDias, .treintaDias', function() { 

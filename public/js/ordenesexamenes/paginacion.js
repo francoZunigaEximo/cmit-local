@@ -1,4 +1,4 @@
-$(document).ready(()=>{
+$(function() {
 
     //Botón de busqueda de Mapas
     $(document).on('click', '#buscar', function(e) {

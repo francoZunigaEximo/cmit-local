@@ -220,3 +220,7 @@ function calculoAvance(data) {
     return data.Anulado === 0 ? ((cerradoAdjunto/total)*100).toFixed(0) : '0';
 
 }
+
+function obtenerFormato(date) {
+    return date.toISOString().slice(0, 10);
+};

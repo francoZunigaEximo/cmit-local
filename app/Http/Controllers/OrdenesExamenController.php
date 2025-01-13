@@ -656,8 +656,51 @@ public function searchPrestacion(Request $request)
         return $query;
     }
 
+    // SELECT 
+    //     i.Id,
+    //     i.IdPrestacion,
+    //     i.CAdj,i.CInfo,
+    //     i.IdProfesional2,
+    //     i.Incompleto,
+    //     i.Ausente,
+    //     i.Forma,
+    //     i.SinEsc,
+    //     i.Devol,
+    //     i.Anulado,
+    //     ex.Nombre as NombreExamen,
+    //     ex.NoImprime,
+    //     ex.DiasVencimiento,
+    //     e.ParaEmpresa,
+    //     pa.Nombre as NPac,
+    //     pa.Apellido as APac,
+    //     pa.Documento,p.Nombre as NombreProv,
+    //     pr.Nombre,pr.Apellido,
+    //     f.Fecha as FechaP, 
+    //     f.Cerrado,f.Finalizado,
+    //     f.Entregado,f.eEnviado,
+    //     f.FechaVto,p2.Nombre as Nombre2,
+    //     p2.Apellido as Apellido2 
+    //     From prestaciones f
+    //     ,itemsprestaciones i,
+    //     examenes ex,
+    //     clientes e,
+    //     pacientes pa,
+    //     proveedores p,
+    //     profesionales pr,
+    //     profesionales p2 
+    //     where  f.Id=i.IdPrestacion 
+    //     and i.IdExamen=ex.Id 
+    //     and   e.Id=f.IdEmpresa 
+    //     and pa.Id=f.IdPaciente 
+    //     and pr.Id=i.IdProfesional 
+    //     and p2.Id=i.IdProfesional2 
+    //     and i.IdProveedor=p.Id 
+    //     and i.Anulado=0  
+    //     $wbuscar $wfecha"
+
     private function queryPrestacion(?int $id): mixed
     {
+
         return ItemPrestacion::join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
         ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
         ->join('proveedores', 'examenes.IdProveedor2', '=', 'proveedores.Id')
