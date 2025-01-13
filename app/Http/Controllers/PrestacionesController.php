@@ -677,8 +677,8 @@ class PrestacionesController extends Controller
         ];
 
         foreach ($emails as $email) {
-            //EnviarReporteJob::dispatch($email, $asunto, $cuerpo, $this->sendPath);
-            EnviarReporteJob::dispatch("nmaximowicz@gmail.com", $asunto, $cuerpo, $this->sendPath); //Soporte para pruebas
+            //EnviarReporteJob::dispatch($email, $asunto, $cuerpo, $this->sendPath);//Soporte para pruebas
+            EnviarReporteJob::dispatch($email, $asunto, $cuerpo, $this->sendPath); 
             // $info = new EnviarReporte(['subject' => $asunto, 'content' => $cuerpo]);
             //         Mail::to($email)->send($info);
         }
@@ -756,8 +756,7 @@ class PrestacionesController extends Controller
             $attachments = [$eEstudioSend, $eAdjuntoSend, $eGeneralSend];
 
             foreach ($emails as $email) {
-                ExamenesResultadosJob::dispatch("nmaximowicz@eximo.com.ar", $asunto, $cuerpo, $attachments);
-                //ExamenesResultadosJob::dispatch($email, $asunto, $cuerpo, $attachments);
+                ExamenesResultadosJob::dispatch($email, $asunto, $cuerpo, $attachments);
 
                 // $info = new ExamenesResultadosMail(['subject' => $asunto, 'content' => $cuerpo, 'attachments' => $attachments]);
                 //     Mail::to("nmaximowicz@eximo.com.ar")->send($info);
