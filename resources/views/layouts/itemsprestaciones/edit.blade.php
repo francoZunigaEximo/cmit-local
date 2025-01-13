@@ -286,7 +286,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                     <div class="list-group">
-                         @foreach($data['multiEfector'] as $examen)
+                         @foreach($multiEfector as $examen)
                         <label class="list-group-item">
                             <input class="form-check-input me-1" type="checkbox" id="Id_multiAdj_{{ $examen->Id }}" value="{{ $examen->Id}}" {{ $examen->archivos_count > 0 ? 'disabled' : 'checked' }}> 
                             {!! $examen->archivos_count > 0 ? $examen->examenes->Nombre . ' <i title="Con archivo adjunto" class="ri-attachment-line verde"></i>' : $examen->examenes->Nombre  !!}
