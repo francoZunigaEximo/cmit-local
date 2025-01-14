@@ -792,6 +792,7 @@ $(function() {
         e.preventDefault();
 
         let id = $(this).data('id');
+        alert(id);return;
 
         if ([null, '', undefined, 0].includes(id)) return;
         preloader('on');
