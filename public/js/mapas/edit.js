@@ -792,6 +792,7 @@ $(function() {
         e.preventDefault();
 
         let id = $(this).data('id');
+        borrarCache();
         alert(id);return;
 
         if ([null, '', undefined, 0].includes(id)) return;
@@ -1250,5 +1251,12 @@ $(function() {
 
             })
     }
+
+    async function borrarCache() {
+        $.post(await cacheDelete, {_token: TOKEN}, function(){
+            console.log("Cache borrada");
+        });
+    }
+
 
 });
