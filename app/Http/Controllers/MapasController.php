@@ -244,6 +244,8 @@ class MapasController extends Controller
             abort(403);
         }
 
+        $listado = Prestacion::where('IdMapa', $mapa->Id)->pluck('Id');
+
         $cerradas = $this->contadorCerrado($mapa->Id);
         $finalizados = $this->contadorFinalizado($mapa->Id);
         $entregados = $this->contadorEntregado($mapa->Id);
@@ -252,7 +254,7 @@ class MapasController extends Controller
         $enProceso = $this->contadorEnProceso($mapa->Id);
         $presentes = Prestacion::where('IdMapa', $mapa->Id)->count();
         $ausentes = (intval($mapa->Cpacientes) ?? 0) - $presentes;
-        $auditorias = Auditor::with('auditarAccion')->where('IdTabla', 5)->where('IdRegistro', $mapa->Id)->orderBy('Id', 'Desc')->get();
+        $auditorias = Auditor::with('auditarAccion')->where('IdTabla', 5)->whereIn('IdRegistro', $listado)->orderBy('Id', 'Desc')->get();
 
         return view('layouts.mapas.edit', compact(['mapa', 'cerradas', 'finalizados', 'entregados', 'conEstado', 'presentes', 'completas', 'enProceso', 'ausentes', 'auditorias']));
     }
