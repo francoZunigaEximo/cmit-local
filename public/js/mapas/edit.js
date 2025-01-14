@@ -788,12 +788,10 @@ $(function() {
 
     });
 
-    $(document).on('click', '.eEstudioModal', function(e){
+    $(document).off('click','.eEstudioModal').on('click', '.eEstudioModal', function(e){
         e.preventDefault();
 
-        let id = $(this).data('id');
-        borrarCache();
-        alert(id);return;
+        let id = $('#IdPrestacion').text()
 
         if ([null, '', undefined, 0].includes(id)) return;
         preloader('on');
@@ -1250,12 +1248,6 @@ $(function() {
                 $('.ComObsEstado').val(rs);
 
             })
-    }
-
-    async function borrarCache() {
-        $.post(await cacheDelete, {_token: TOKEN}, function(){
-            console.log("Cache borrada");
-        });
     }
 
 

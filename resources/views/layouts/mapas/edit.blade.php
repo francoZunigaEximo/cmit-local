@@ -700,7 +700,6 @@ const vistaPrevia = "{{ route('mapas.vistaPrevia') }}";
 const TOKEN = "{{ csrf_token() }}";
 const MAPA = "{{ $mapa->Nro }}";
 const IDMAPA = "{{ $mapa->Id }}";
-const cacheDelete = "{{ route('prestaciones.cacheDelete') }}";
 </script>
 
 @push('styles')
