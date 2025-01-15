@@ -38,6 +38,7 @@ class AdjuntosAnexos extends Reporte
             ->select(
                 'archivosefector.Id as Id',
                 'archivosefector.IdEntidad as IdEntidad',
+                'srchivosefector.Ruta as Ruta',
                 'itemsprestaciones.IdProveedor as IdProveedor',
                 'examenes.NoImprime as NoImprime'
             )->where(function($query) {
