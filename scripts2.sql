@@ -805,65 +805,70 @@ END
 CREATE PROCEDURE getSearchEEnviar(IN fechaDesde DATE, IN fechaHasta DATE, IN empresa INT, IN paciente INT, IN completo VARCHAR, IN abierto VARCHAR, IN cerrado VARCHAR, IN eenviar VARCHAR, IN impago VARCHAR)
 
 BEGIN
-	SELECT 
-	    pre.Fecha AS Fecha,
-	    pre.Id AS IdPrestacion,
-	    pc2.IdPrestacion AS presta,
-	    pre.FechaEnviado AS FechaEnviado,
-	    cli.EMailInformes AS Correo,
-	    cli.RazonSocial AS Empresa,
-	    CONCAT(pa.Apellido, ' ', pa.Nombre) AS NombreCompleto,
-	    pa.Documento AS Documento,
-	    pa.Id AS IdPaciente,
-	    pre.eEnviado as eEnviado,
-	    pre.Cerrado as Cerrado
-	FROM 
-	    prestaciones AS pre
-	JOIN 
-	    clientes AS cli ON pre.IdEmpresa = cli.Id AND empresa IS NULL OR (cli.Id = empresa)
-	JOIN 
-	    pacientes AS pa ON pre.IdPaciente = pa.Id AND paciente IS NULL OR (pa.Id = paciente)
-	JOIN 
-	    pagosacuenta AS pc ON cli.Id = pc.IdEmpresa
-	LEFT JOIN 
-	    pagosacuenta_it AS pc2 ON pc.Id = pc2.IdPago
-	JOIN 
-	    itemsprestaciones AS i ON pre.Id = i.IdPrestacion
-	WHERE 
-	    pre.Id != 0
-	    AND pre.Fecha != '0000-00-00'
-	    AND pre.Fecha IS NOT NULL
-	    AND (i.Fecha BETWEEN fechaDesde AND fechaHasta)
-	    AND pre.Cerrado = 1
-	    AND (
-	        (completo = 'activo' AND i.CAdj IN (3, 5) AND i.CInfo = 3 AND pc.Pagado = 1) OR
-	        (abierto = 'activo' AND i.CAdj IN (0, 1, 2) AND i.CInfo = 1 AND pc.Pagado = 0) OR
-	        (cerrado = 'activo' AND i.CAdj IN (3, 4, 5) AND i.CInfo = 3 AND pc.Pagado IN (0, 1)) OR
-	        (impago = 'activo' AND EXISTS (
-	            SELECT 1 
-	            FROM pagosacuenta_it AS pc_it
-	            JOIN pagosacuenta AS pc_check ON pc_it.IdPago = pc_check.Id
-	            WHERE pc_it.IdPrestacion = pre.Id 
-	            AND pc_check.Pagado = 0
-	        )) OR
-	        (completo IS NULL AND abierto IS NULL AND cerrado IS NULL AND impago IS NULL)
-	    )
-	    AND (
-	        eenviar IS NULL OR eenviar = '' OR (
-	            (eenviar = 'eenviado' AND pre.eEnviado = 1) OR
-	            (eenviar = 'noeenviado' AND pre.eEnviado = 0) OR
-	            (eenviar = 'todos' AND pre.eEnviado IN (0, 1)) 
-	        )
-	    )
-	GROUP BY 
-	    pre.Id
-	ORDER BY
-	    pre.Fecha DESC,
-	    cli.RazonSocial DESC,
-	    pa.Apellido DESC,
-	    pa.Nombre DESC
-	LIMIT 1000;
+    SELECT 
+        pre.Fecha AS Fecha,
+        pre.Id AS IdPrestacion,
+        pc2.IdPrestacion AS presta,
+        pre.FechaEnviado AS FechaEnviado,
+        cli.EMailInformes AS Correo,
+        cli.RazonSocial AS Empresa,
+        CONCAT(pa.Apellido, ' ', pa.Nombre) AS NombreCompleto,
+        pa.Documento AS Documento,
+        pa.Id AS IdPaciente,
+        pre.eEnviado AS eEnviado,
+        pre.Cerrado AS Cerrado
+    FROM 
+        prestaciones AS pre
+    JOIN 
+        clientes AS cli ON pre.IdEmpresa = cli.Id AND (empresa IS NULL OR cli.Id = empresa)
+    JOIN 
+        pacientes AS pa ON pre.IdPaciente = pa.Id AND (paciente IS NULL OR pa.Id = paciente)
+    JOIN 
+        pagosacuenta AS pc ON cli.Id = pc.IdEmpresa
+    LEFT JOIN 
+        pagosacuenta_it AS pc2 ON pc.Id = pc2.IdPago
+    JOIN 
+        itemsprestaciones AS i ON pre.Id = i.IdPrestacion
+    WHERE 
+        pre.Id != 0
+        AND pre.Fecha != '0000-00-00'
+        AND pre.Fecha IS NOT NULL
+        AND i.Fecha BETWEEN fechaDesde AND fechaHasta
+        AND pre.Cerrado = 1
+        AND (
+            CASE
+                WHEN completo = 'activo' THEN i.CAdj IN (3, 5) AND i.CInfo = 3 AND pc.Pagado = 1
+                WHEN abierto = 'activo' THEN i.CAdj IN (0, 1, 2) AND i.CInfo = 1 AND pc.Pagado = 0
+                WHEN cerrado = 'activo' THEN i.CAdj IN (3, 4, 5) AND i.CInfo = 3 AND pc.Pagado IN (0, 1)
+                WHEN impago = 'activo' THEN EXISTS (
+                    SELECT 1 
+                    FROM pagosacuenta_it AS pc_it
+                    JOIN pagosacuenta AS pc_check ON pc_it.IdPago = pc_check.Id
+                    WHERE pc_it.IdPrestacion = pre.Id 
+                    AND pc_check.Pagado = 0
+                )
+                ELSE (completo IS NULL AND abierto IS NULL AND cerrado IS NULL AND impago IS NULL)
+            END
+        )
+        AND (
+            CASE
+                WHEN eenviar IS NULL OR eenviar = '' THEN TRUE
+                WHEN eenviar = 'eenviado' AND pre.eEnviado = 1 THEN TRUE
+                WHEN eenviar = 'noeenviado' AND pre.eEnviado = 0 THEN TRUE
+                WHEN eenviar = 'todos' AND pre.eEnviado IN (0, 1) THEN TRUE
+                ELSE FALSE
+            END
+        )
+    GROUP BY 
+        pre.Id
+    ORDER BY
+        pre.Fecha DESC,
+        cli.RazonSocial DESC,
+        pa.Apellido DESC,
+        pa.Nombre DESC
+    LIMIT 1000;
 END
+
 
 /*********** Cambio en Informador de columna Informador *******************/
 (CASE
