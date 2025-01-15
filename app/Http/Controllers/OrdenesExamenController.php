@@ -21,6 +21,7 @@ use App\Helpers\Tools;
 use Illuminate\Support\Facades\Auth;
 use App\Helpers\FileHelper;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 use App\Services\Reportes\Titulos\EEstudio;
 use App\Services\Reportes\Cuerpos\EvaluacionResumen;
@@ -322,10 +323,16 @@ public function searchPrestacion(Request $request)
                 }
             }
 
-            $this->reporteService->fusionarPDFs($listado, $this->outputPath);
-            File::copy($this->outputPath, FileHelper::getFileUrl('escritura').'/temp/MAPA'.$Id.'.pdf');
+            $filePath = 'temp/MAPA' . $request->Id . '.pdf';
 
-            array_push($resultados, FileHelper::getFileUrl('lectura').'/temp/MAPA'.$Id.'.pdf');
+            $this->reporteService->fusionarPDFs($listado, $this->outputPath);
+            File::copy($this->outputPath, storage_path('app/public/'.$filePath));
+
+
+            $fileUrl = Storage::disk('public')->url($filePath);
+            $fileUrl = str_replace('storage/', 'public/storage/', $fileUrl);
+
+            $resultados[] = [$fileUrl];
         }
 
         return response()->json($resultados);

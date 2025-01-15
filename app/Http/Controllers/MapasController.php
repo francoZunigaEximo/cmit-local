@@ -100,19 +100,17 @@ class MapasController extends Controller
                     'prestaciones.IdPaciente AS IdPaciente', 
                     'prestaciones.Id AS IdPrestacion'
                     )
-            ->selectRaw('COALESCE((SELECT COUNT(*) FROM prestaciones WHERE IdMapa = mapas.Id AND prestaciones.Anulado = 0), 0) AS contadorPrestaciones')
-            ->selectRaw("COALESCE((SELECT COUNT(*) FROM prestaciones WHERE IdMapa = mapas.Id AND prestaciones.Anulado = 1), 0) AS cdorPacientesAnulados")
-            ->selectRaw("COALESCE((SELECT COUNT(*) FROM prestaciones WHERE IdMapa = mapas.Id AND eEnviado = 1), 0) AS cdorEEnviados")
-            ->selectRaw("COALESCE((SELECT COUNT(*) FROM prestaciones WHERE IdMapa = mapas.Id AND Finalizado = 1), 0) AS cdorFinalizados")
-            ->selectRaw("COALESCE((SELECT COUNT(*) FROM prestaciones WHERE IdMapa = mapas.Id AND Cerrado = 1), 0) AS cdorCerrados")   
-            ->selectRaw("COALESCE((SELECT COUNT(*) FROM prestaciones WHERE IdMapa = mapas.Id AND Entregado = 1), 0) AS cdorEntregados");
+                ->selectRaw('COALESCE((SELECT COUNT(*) FROM prestaciones WHERE IdMapa = mapas.Id AND prestaciones.Anulado = 0), 0) AS contadorPrestaciones')
+                ->selectRaw("COALESCE((SELECT COUNT(*) FROM prestaciones WHERE IdMapa = mapas.Id AND prestaciones.Anulado = 1), 0) AS cdorPacientesAnulados")
+                ->selectRaw("COALESCE((SELECT COUNT(*) FROM prestaciones WHERE IdMapa = mapas.Id AND eEnviado = 1), 0) AS cdorEEnviados")
+                ->selectRaw("COALESCE((SELECT COUNT(*) FROM prestaciones WHERE IdMapa = mapas.Id AND Finalizado = 1), 0) AS cdorFinalizados")
+                ->selectRaw("COALESCE((SELECT COUNT(*) FROM prestaciones WHERE IdMapa = mapas.Id AND Cerrado = 1), 0) AS cdorCerrados")   
+                ->selectRaw("COALESCE((SELECT COUNT(*) FROM prestaciones WHERE IdMapa = mapas.Id AND Entregado = 1), 0) AS cdorEntregados");
             
-            $query->when(!empty($corteDesde) && ! empty($corteHasta), function ($query) use ($corteDesde, $corteHasta) {
-                $query->whereBetween('mapas.Fecha', [$corteDesde, $corteHasta]);
-            });
 
             $query->when($Nro, function ($query) use ($Nro) {
-                $query->where('mapas.Nro', $Nro);     
+                $query->where('mapas.Nro', $Nro);
+                    
             });
 
             $query->when($Art, function ($query) use ($Art) {
@@ -123,29 +121,43 @@ class MapasController extends Controller
                 $query->where('clientes2.Id', $Empresa);
             });
 
-            //eEnviado
-            $query->when(!empty($Estado) && $Estado === 'eEnviado', function ($query) {
-                $query->havingRaw('contadorPrestaciones > 0 AND (contadorPrestaciones = cdorEEnviados OR cdorEEnviados = 1) AND contadorPrestaciones = cdorCerrados AND contadorPrestaciones = cdorFinalizados AND cdorEntregados = 0');
-            });
-
             //Terminado
             $query->when(!empty($Estado) && $Estado === 'terminado', function ($query) {
-                $query->havingRaw('contadorPrestaciones > 0 AND contadorPrestaciones = cdorCerrados AND contadorPrestaciones = cdorFinalizados AND contadorPrestaciones = cdorEntregados AND contadorPrestaciones = cdorEEnviados');
+                $query->havingRaw('contadorPrestaciones > 0')
+                    ->havingRaw('contadorPrestaciones = cdorCerrados')
+                    ->havingRaw('contadorPrestaciones = cdorFinalizados')
+                    ->havingRaw('contadorPrestaciones = cdorEntregados');
             });
             
             //Abierto
             $query->when(!empty($Estado) && $Estado === 'abierto', function ($query) {
-                $query->havingRaw('contadorPrestaciones > 0 AND cdorCerrados = 0 AND cdorEEnviados = 0 AND cdorEntregados = 0');
+                $query->havingRaw('contadorPrestaciones > 0 && cdorCerrados = 0 && cdorEEnviados = 0 && cdorEntregados = 0');
+            });
+
+            //eEnviado
+            $query->when(!empty($Estado) && $Estado === 'eEnviado', function ($query) {
+                $query->havingRaw('contadorPrestaciones > 0')
+                    ->havingRaw('contadorPrestaciones = cdorEEnviados OR (cdorEEnviados = 1 AND contadorPrestaciones <> cdorEEnviados)')
+                    ->havingRaw('contadorPrestaciones = cdorCerrados')
+                    ->havingRaw('contadorPrestaciones = cdorFinalizados')
+                    ->havingRaw('contadorPrestaciones = cdorEntregados');
             });
 
             //Cerrado
             $query->when(!empty($Estado) && $Estado === 'cerrado', function ($query){
-                $query->havingRaw('contadorPrestaciones > 0 AND contadorPrestaciones = cdorCerrados AND cdorFinalizados = 0 AND cdorEEnviados = 0 AND cdorEntregados = 0'); 
+                $query->havingRaw('contadorPrestaciones > 0')
+                ->havingRaw('contadorPrestaciones = cdorCerrados')
+                ->havingRaw('cdorFinalizados = 0')
+                ->havingRaw('cdorEEnviados = 0')
+                ->havingRaw('cdorEntregados = 0');
             });
 
             //enProceso
             $query->when(!empty($Estado) && $Estado === 'enProceso', function ($query) {
-                $query->havingRaw('contadorPrestaciones > 0 AND cdorFinalizados = 0 AND cdorEEnviados = 0 AND cdorEntregados = 0');
+                $query->having('contadorPrestaciones', '>', 0)
+                    ->having('cdorFinalizados', 0)
+                    ->having('cdorEEnviados', 0)
+                    ->having('cdorEntregados', 0);
             
                 $query->where(function($query) {
                     $query->having('cdorCerrados', 0)
@@ -155,6 +167,8 @@ class MapasController extends Controller
                 });
             });
 
+
+
             //Todos
             $query->when(empty($Estado) && $Estado === 'todos', function ($query){
                 $query->addSelect(DB::raw("'Todos' as estado"));
@@ -162,10 +176,12 @@ class MapasController extends Controller
 
             //Vacio
             $query->when(!empty($Estado) && $Estado === 'vacio', function ($query){
-                $query->havingRaw('contadorPrestaciones = 0');
+                $query->having('contadorPrestaciones', 0);
                 });
 
-            
+            $query->when(!empty($corteDesde) && ! empty($corteHasta), function ($query) use ($corteDesde, $corteHasta) {
+                $query->whereBetween('mapas.Fecha', [$corteDesde, $corteHasta]);
+            });
 
             $query->when(!empty($entregaDesde) && ! empty($entregaHasta), function ($query) use ($entregaDesde, $entregaHasta) {
                 $query->whereBetween('mapas.FechaE', [$entregaDesde, $entregaHasta]);
@@ -998,7 +1014,7 @@ class MapasController extends Controller
         $filePath = 'temp/MAPA' . $request->Id . '.pdf';
 
         $this->reporteService->fusionarPDFs($listado, $this->outputPath);
-        File::copy($this->outputPath, storage_path('app/public/'.$filePath));
+        File::copy($this->outputPath, storage_path('app/public/temp/'.$filePath));
 
         $fileUrl = Storage::disk('public')->url($filePath);
         $fileUrl = str_replace('storage/', 'public/storage/', $fileUrl);
