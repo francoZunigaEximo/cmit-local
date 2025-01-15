@@ -333,7 +333,7 @@ public function searchPrestacion(Request $request)
             $fileUrl = Storage::disk('public')->url($filePath);
             $fileUrl = str_replace('storage/', 'public/storage/', $fileUrl);
 
-            $resultados[] = [$fileUrl];
+            $resultados[] = $fileUrl;
         }
 
         return response()->json($resultados);
