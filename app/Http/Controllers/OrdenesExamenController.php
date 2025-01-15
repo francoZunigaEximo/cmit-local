@@ -327,7 +327,7 @@ public function searchPrestacion(Request $request)
             $outputPath = storage_path('app/public/temp/fusionar'.Tools::randomCode(15).'.pdf');
 
             $this->reporteService->fusionarPDFs($listado, $outputPath);
-            File::copy($this->outputPath, storage_path('app/public/'.$filePath));
+            File::copy($outputPath, storage_path('app/public/'.$filePath));
 
 
             $fileUrl = Storage::disk('public')->url($filePath);
