@@ -62,6 +62,55 @@ class ClientesController extends Controller
                 'Id',
                 'FPago');
 
+            $query->when(!empty($filtro) && (is_array($filtro) && in_array('bloqueados', $filtro)), function ($query) {
+                $query->where('Bloqueado', 1);
+            });
+
+            $query->when(!empty($fpago) && $fpago !== 'A', function ($query) use ($fpago) {
+                $query->where('FPago', $fpago);
+            });
+
+            $query->when(!empty($fpago) && $fpago === 'A', function ($query) {
+                $query->whereIn('FPago', [null, '', 'A']);
+            });
+
+            $query->when(!empty($request->tipo), function ($query) use ($request) {
+                $query->where('TipoCliente', $request->tipo);
+            });
+
+            $query->when(is_array($filtro) && in_array('sinMailFact', $filtro), function ($query) {
+                $query->where('EmailFactura', '');
+            });
+
+            $query->when(!empty($filtro) && is_array($filtro) && in_array('entregaDomicilio', $filtro), function ($query) use ($filtro) {
+                $opciones = [5, 4, 3, 2, 1];
+                $intersectedOptions = array_intersect($opciones, $filtro);
+
+                if (! empty($intersectedOptions)) {
+                    $query->whereIn('Entrega', $intersectedOptions);
+                }
+            });
+
+            $query->when(!empty($filtro) && is_array($filtro) && in_array('sinMailInfor', $filtro), function ($query) {
+                $query->where('EMailInformes', 1);
+            });
+
+            $query->when(!empty($filtro) && is_array($filtro) && in_array('sinMailResultados', $filtro), function ($query) {
+                $query->where('EMailResultados', 1);
+            });
+
+            $query->when(!empty($filtro) && is_array($filtro) && in_array('retiraFisico', $filtro), function ($query) {
+                $query->where('RF', 1);
+            });
+
+            $query->when(!empty($filtro) && is_array($filtro) && in_array('factSinPaquetes', $filtro), function ($query) {
+                $query->where('SinPF', 1);
+            });
+
+            $query->when(!empty($filtro) && is_array($filtro) && in_array('sinEval', $filtro), function ($query) {
+                $query->where('SinEval', 1);
+            });
+
             $query->when(!empty($buscar), function ($query) use ($buscar) {
                 $query->where('ParaEmpresa', 'LIKE', '%'.$buscar.'%')
                     ->orWhere(function ($query) use ($buscar) {
@@ -102,55 +151,6 @@ class ClientesController extends Controller
                         $query->where('ParaEmpresa', 'LIKE', '%'.$buscar.'%')
                             ->where('RazonSocial', 'LIKE', '%'.$buscar.'%');
                     });
-            });
-
-            $query->when(!empty($filtro) && (is_array($filtro) && in_array('bloqueados', $filtro)), function ($query) {
-                $query->where('Bloqueado', 1);
-            });
-
-            $query->when(!empty($fpago) && $fpago !== 'A', function ($query) use ($fpago) {
-                $query->where('FPago', $fpago);
-            });
-
-            $query->when(!empty($fpago) && $fpago === 'A', function ($query) {
-                $query->whereIn('FPago', [null, '', 'A']);
-            });
-
-            $query->when(!empty($tipo), function ($query) use ($tipo) {
-                $query->where('TipoCliente', $tipo);
-            });
-
-            $query->when(is_array($filtro) && in_array('sinMailFact', $filtro), function ($query) {
-                $query->where('EmailFactura', '');
-            });
-
-            $query->when(!empty($filtro) && is_array($filtro) && in_array('entregaDomicilio', $filtro), function ($query) use ($filtro) {
-                $opciones = [5, 4, 3, 2, 1];
-                $intersectedOptions = array_intersect($opciones, $filtro);
-
-                if (! empty($intersectedOptions)) {
-                    $query->whereIn('Entrega', $intersectedOptions);
-                }
-            });
-
-            $query->when(!empty($filtro) && is_array($filtro) && in_array('sinMailInfor', $filtro), function ($query) {
-                $query->where('EMailInformes', 1);
-            });
-
-            $query->when(!empty($filtro) && is_array($filtro) && in_array('sinMailResultados', $filtro), function ($query) {
-                $query->where('EMailResultados', 1);
-            });
-
-            $query->when(!empty($filtro) && is_array($filtro) && in_array('retiraFisico', $filtro), function ($query) {
-                $query->where('RF', 1);
-            });
-
-            $query->when(!empty($filtro) && is_array($filtro) && in_array('factSinPaquetes', $filtro), function ($query) {
-                $query->where('SinPF', 1);
-            });
-
-            $query->when(!empty($filtro) && is_array($filtro) && in_array('sinEval', $filtro), function ($query) {
-                $query->where('SinEval', 1);
             });
 
             $result = $query->where('Estado', 1)->orderBy('Id', 'DESC');

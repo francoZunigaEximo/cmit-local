@@ -4,6 +4,8 @@ namespace App\Helpers;
 
 use App\Models\ExamenCuentaIt;
 use App\Models\ItemPrestacion;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 trait ToolsReportes
 {
@@ -27,4 +29,22 @@ trait ToolsReportes
             ->join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
             ->where('pagosacuenta_it.IdPrestacion', $idPrestacion)->where('pagosacuenta.Pagado', 0)->count();
     }
+
+    public function folderTempClean(): void
+{
+    $deleteFiles = ['file-', 'AINF', 'merge_']; 
+    
+    $files = Storage::disk('public')->files('temp'); 
+    
+    foreach ($files as $file) {
+        
+        foreach ($deleteFiles as $deleteFile) {
+            if (Str::startsWith(basename($file), $deleteFile)) {
+         
+                Storage::disk('public')->delete($file);
+                break; 
+            }
+        }
+    }
+}
 }

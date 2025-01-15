@@ -131,11 +131,16 @@ class MapasController extends Controller
             
             //Abierto
             $query->when(!empty($Estado) && $Estado === 'abierto', function ($query) {
-                $query->having('contadorPrestaciones', '>', 0)
-                ->having('cdorCerrados', 0)
-                ->having('cdorFinalizados', 0)
-                ->having('cdorEEnviados', 0)
-                ->having('cdorEntregados', 0);
+                $query->havingRaw('contadorPrestaciones > 0 && cdorCerrados = 0 && cdorEEnviados = 0 && cdorEntregados = 0');
+            });
+
+            //eEnviado
+            $query->when(!empty($Estado) && $Estado === 'eEnviado', function ($query) {
+                $query->havingRaw('contadorPrestaciones > 0')
+                    ->havingRaw('contadorPrestaciones = cdorEEnviados OR (cdorEEnviados = 1 AND contadorPrestaciones <> cdorEEnviados)')
+                    ->havingRaw('contadorPrestaciones = cdorCerrados')
+                    ->havingRaw('contadorPrestaciones = cdorFinalizados')
+                    ->havingRaw('contadorPrestaciones = cdorEntregados');
             });
 
             //Cerrado
@@ -161,7 +166,8 @@ class MapasController extends Controller
                           });
                 });
             });
-            
+
+
 
             //Todos
             $query->when(empty($Estado) && $Estado === 'todos', function ($query){
@@ -243,7 +249,7 @@ class MapasController extends Controller
         if (!$this->hasPermission("mapas_edit")) {
             abort(403);
         }
-
+        //listado de prestaciones que componen el mapa
         $listado = Prestacion::where('IdMapa', $mapa->Id)->pluck('Id');
 
         $cerradas = $this->contadorCerrado($mapa->Id);
@@ -535,7 +541,7 @@ class MapasController extends Controller
 
             $q = ItemPrestacion::join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
                 ->leftJoin('archivosefector', 'itemsprestaciones.Id', '=','archivosefector.IdEntidad')
-                ->leftJoin('proveedores', 'itemsprestaciones.IdProveedor', '=', 'proveedores.Id')
+                ->join('proveedores', 'examenes.IdProveedor', '=', 'proveedores.Id')
                 ->leftJoin('profesionales', 'itemsprestaciones.IdProfesional', '=', 'profesionales.Id')
                 ->select(
                     'examenes.Id AS IdExamen',
@@ -545,6 +551,7 @@ class MapasController extends Controller
                     'itemsprestaciones.CInfo AS CInfo',
                     'itemsprestaciones.Id AS IdItemPrestacion',
                     'itemsprestaciones.Incompleto AS Incompleto',
+                    'itemsprestaciones.Anulado AS Anulado',
                     'examenes.Adjunto AS ExamenAdjunto',
                     'proveedores.Nombre AS NombreProveedor',
                     'profesionales.Nombre AS NombreEfector',
@@ -686,8 +693,6 @@ class MapasController extends Controller
 
     public function searchInFinalizar(Request $request): mixed
     {
-
-
         $NroRemito = $request->remito;
         $NroPrestacion = $request->prestacion;
         $estadoFinalizar = $request->estadoFinalizar;
@@ -818,11 +823,7 @@ class MapasController extends Controller
     public function saveEnviar(Request $request)
     {
         $ids = $request->ids;
-        $listado = [];
-        $file1 = [];
-        $file2 = [];
-        $file3 = [];
-        $file4 = [];
+        $respuestas = [];
 
         $accion = ($request->eTipo === 'eArt' 
                 ? 41 
@@ -833,7 +834,6 @@ class MapasController extends Controller
 
         foreach ($ids as $id) {
             $prestacion = Prestacion::with(['empresa','art','paciente'])->where('Id', $id)->first();
-            $respuesta = '';
             
             if ($prestacion &&  $this->checkExCtaImpago($prestacion->Id) === 0){
 
@@ -851,46 +851,33 @@ class MapasController extends Controller
                     'Tipo' =>$prestacion->TipoPrestacion,
                     'TipoPrestacion' => $prestacion->TipoPrestacion,
                 ];
-                
-                $estudios = $this->AnexosFormulariosPrint($prestacion->Id); //obtiene los ids en un array
-
-                //Para reportes
-                array_push($listado, $this->eEstudio($prestacion->Id, "si"));
-                array_push($listado, $this->adjDigitalFisico($prestacion->Id, 2));
-                array_push($listado, $this->adjAnexos($prestacion->Id));
-                array_push($listado, $this->adjGenerales($prestacion->Id));
-
-                //Para envios
-                array_push($file1, $this->eEstudio($prestacion->Id, "no"));
-                array_push($file1, $this->adjDigitalFisico($prestacion->Id, 2));
-                array_push($file2, $this->adjAnexos($prestacion->Id));
-                array_push($file3, $this->adjGenerales($prestacion->Id));
-
-                if($estudios) {
-                    foreach($estudios as $examen) {
-                        $estudio = $this->addEstudioExamen($prestacion->Id, $examen);
-                        array_push($listado, $estudio);
-                        array_push($file4, $estudio);
-                    }
-                }
-
-                //Rutas de los archivos
-                $eEstudioSend = storage_path('app/public/eEstudio'.$prestacion->Id.'.pdf');
-                $eAdjuntoSend = storage_path('app/public/temp/eAdjuntos_'.$prestacion->paciente->Apellido.'_'.$prestacion->paciente->Nombre.'_'.$prestacion->paciente->Documento.'_'.Carbon::parse($prestacion->Fecha)->format('d-m-Y').'.pdf');
-                $eGeneralSend = storage_path('app/public/eAdjGeneral'.$prestacion->Id.'.pdf');
-                $estudiosCheck = storage_path('app/public/estudios'.$prestacion->Id.'.pdf');
-    
-                $this->reporteService->fusionarPDFs($file1, $eEstudioSend);
-                $this->reporteService->fusionarPDFs($file2, $eAdjuntoSend);
-                $this->reporteService->fusionarPDFs($file3, $eGeneralSend);
-                $this->reporteService->fusionarPDFs($file4, $estudiosCheck);
         
                 if (($request->eTipo === 'eArt' || $request->eTipo === 'eEmpresa') && $request->exportarInforme == 'true') {
 
-                    $this->reporteService->fusionarPDFs($listado, $this->outputPath);
+                    $listado = [];
+
+                    $estudios = $this->AnexosFormulariosPrint($prestacion->Id); //obtiene los ids en un array
+
+                    //Para reportes
+                    array_push($listado, $this->eEstudio($prestacion->Id, "si"));
+                    array_push($listado, $this->adjDigitalFisico($prestacion->Id, 2));
+                    array_push($listado, $this->adjAnexos($prestacion->Id));
+                    array_push($listado, $this->adjGenerales($prestacion->Id));
+
+                    if($estudios) {
+                        foreach($estudios as $examen) {
+                            $estudio = $this->addEstudioExamen($prestacion->Id, $examen);
+                            array_push($listado, $estudio);
+                        }
+                    }
+
+                    //Usamos una salida alternativa para poder controlar el flujo de archivos
+                    $outputPath = storage_path('app/public/temp/fusionar-'.Tools::randomCode(15).'.pdf');
+
+                    $this->reporteService->fusionarPDFs($listado, $outputPath);
                     
-                    $respuesta = [
-                        'filePath' => $this->outputPath,
+                    $respuestas[] = [
+                        'filePath' => $outputPath,
                         'name' => 'MAPA_'.$prestacion->paciente->Apellido.'_'.$prestacion->paciente->Nombre.'_'.$prestacion->paciente->Documento.'_PRESTACION.pdf',
                         'msg' => 'Se imprime todo el reporte art.',
                         'icon' => $request->eTipo === 'eArt' ? 'art-impresion' : 'empresa-impresion'
@@ -902,25 +889,49 @@ class MapasController extends Controller
 
                     foreach($emails as $email) {
 
-                        $asunto = 'Mapa '.$nombreCompleto.' - '.$prestacion->paciente->TipoDocumento.' '.$prestacion->paciente->Documento;  
+                        $estudios = $this->AnexosFormulariosPrint($prestacion->Id); //obtiene los ids en un array
+
+                        $file1 = [];
+                        $file2 = [];
+                        $file3 = [];
+                        $file4 = [];
+
+                        //Para envios
+                        array_push($file1, $this->eEstudio($prestacion->Id, "no"));
+                        array_push($file1, $this->adjDigitalFisico($prestacion->Id, 2));
+                        array_push($file3, $this->adjAnexos($prestacion->Id));
+                        array_push($file4, $this->adjGenerales($prestacion->Id));
+
+                        if($estudios) {
+                            foreach($estudios as $examen) {
+                                $estudio = $this->addEstudioExamen($prestacion->Id, $examen);
+                                array_push($file2, $estudio);
+                            }
+                        }
+
+                        //Rutas de los archivos
+                        $ruta = $this->rutasTempReportes($prestacion->Id);
+            
+                        $this->reporteService->fusionarPDFs($file1, $ruta['eEstudioSend']);
+                        $this->reporteService->fusionarPDFs($file3, $ruta['eAdjuntoSend']);
+                        $this->reporteService->fusionarPDFs($file4, $ruta['eGeneralSend']);
+                        $this->reporteService->fusionarPDFs($file2, $ruta['estudiosCheck']);
                         
-                        $attachments = [$eEstudioSend, $eAdjuntoSend, $eGeneralSend];
-                        $estudios !== null ? array_push($attachments, $estudiosCheck) : null;
-                        // ReporteMapasJob::dispatch("nmaximowicz@eximo.com.ar", $asunto, $cuerpo, $attachments);
-                        // Envio para test
-                        ReporteMapasJob::dispatch($email, $asunto, $cuerpo, $attachments); 
+                        $attachments = [$ruta['eEstudioSend'], $ruta['eAdjuntoSend'], $ruta['eGeneralSend']];
+                        $estudios !== null ? array_push($attachments, $ruta['estudiosCheck']) : null;
 
-                        File::copy($this->eEstudio($prestacion->Id, "no"), FileHelper::getFileUrl('escritura').'/Enviar/eEstudio'.$prestacion->Id.'.pdf');
-                        File::copy($this->adjDigitalFisico($prestacion->Id, 2), FileHelper::getFileUrl('escritura').'/Enviar/eAdjuntos'.$request->Id.'.pdf');
-                        File::copy($this->adjAnexos($prestacion->Id), FileHelper::getFileUrl('escritura').'/Enviar/eAnexos'.$prestacion->Id.'.pdf');
+                        $asunto = 'Mapa '.$nombreCompleto.' - '.$prestacion->paciente->TipoDocumento.' '.$prestacion->paciente->Documento;  
 
-                        $prestacion->eEnviado = 1;
-                        $prestacion->FechaEnviado = now()->format('Y-m-d');
-                        $prestacion->save();
+                        ReporteMapasJob::dispatch($email, $asunto, $cuerpo, $attachments); //Enviamos el correo al CronJob y Redis
 
-                        Auditor::setAuditoria($id, self::TBLMAPA, $accion, Auth::user()->name);
+                        $this->copiasRegistroEEnvio($prestacion->Id); //Enviamos las copias de los archivos creados a las carpetas correspondientes del sistema
+
+                        $this->registrarEEnvio($prestacion->Id); //Confirmamos el eEnvio registrando fecha y campo eEnviar
+
+                        Auditor::setAuditoria($id, self::TBLMAPA, $accion, Auth::user()->name); //Generamos auditoria
+                        $this->folderTempClean(); //Limpiamos la carpeta Temp
                     
-                        $respuesta = ['msg' => 'Se ha enviado el eEstudio al cliente '.$prestacion->art->RazonSocial.' correctamente. '.$prestacion->Id, 'icon' => 'eArt'];
+                        $respuestas[] = ['msg' => 'Se ha enviado el eEstudio al cliente '.$prestacion->art->RazonSocial.' correctamente. '.$prestacion->Id, 'icon' => 'eArt'];
                     }   
                     
                 } elseif ($request->eTipo === 'eEmpresa' && $request->enviarMail == 'true') {
@@ -928,31 +939,56 @@ class MapasController extends Controller
                     $emails = $this->getEmailsReporte($prestacion->empresa->EMailInformes);
 
                     foreach($emails as $email) {
-                        
-                        $asunto = 'Mapa '.$nombreCompleto.' - '.$prestacion->paciente->TipoDocumento.' '.$prestacion->paciente->Documento;
 
-                        $attachments = [$eEstudioSend, $eAdjuntoSend, $eGeneralSend];
-                        $estudios !== null ? array_push($attachments, $estudiosCheck) : null;
+                        $estudios = $this->AnexosFormulariosPrint($prestacion->Id); //obtiene los ids en un array
+
+                        $file1 = [];
+                        $file2 = [];
+                        $file3 = [];
+                        $file4 = [];
+
+                        //Para envios
+                        array_push($file1, $this->eEstudio($prestacion->Id, "no"));
+                        array_push($file1, $this->adjDigitalFisico($prestacion->Id, 2));
+
+                        array_push($file3, $this->adjAnexos($prestacion->Id));
+                        array_push($file4, $this->adjGenerales($prestacion->Id));
+
+                        if($estudios) {
+                            foreach($estudios as $examen) {
+                                $estudio = $this->addEstudioExamen($prestacion->Id, $examen);
+                                array_push($file2, $estudio);
+                            }
+                        }
+
+                        //Rutas de los archivos
+                        $ruta = $this->rutasTempReportes($prestacion->Id);
+            
+                        $this->reporteService->fusionarPDFs($file1, $ruta['eEstudioSend']);
+                        $this->reporteService->fusionarPDFs($file3, $ruta['eAdjuntoSend']);
+                        $this->reporteService->fusionarPDFs($file4, $ruta['eGeneralSend']);
+                        $this->reporteService->fusionarPDFs($file2, $ruta['estudiosCheck']);
+                        
+                        $attachments = [$ruta['eEstudioSend'], $ruta['eAdjuntoSend'], $ruta['eGeneralSend']];
+                        $estudios !== null ? array_push($attachments, $ruta['estudiosCheck']) : null;
+
+                        $asunto = 'Mapa '.$nombreCompleto.' - '.$prestacion->paciente->TipoDocumento.' '.$prestacion->paciente->Documento;
           
                         ReporteMapasJob::dispatch($email, $asunto, $cuerpo, $attachments);
-                        //ReporteMapasJob::dispatch("nmaximowicz@eximo.com.ar", $asunto, $cuerpo, $attachments);  Envio para test
-
-                        File::copy($this->eEstudio($prestacion->Id, "no"), FileHelper::getFileUrl('escritura').'/Enviar/eEstudio'.$prestacion->Id.'.pdf');
-                        File::copy($this->adjDigitalFisico($prestacion->Id, 2), FileHelper::getFileUrl('escritura').'/Enviar/eAdjuntos'.$request->Id.'.pdf');
-                        File::copy($this->adjAnexos($prestacion->Id), FileHelper::getFileUrl('escritura').'/Enviar/eAnexos'.$prestacion->Id.'.pdf');
+                        $this->copiasRegistroEEnvio($prestacion->Id); //Enviamos las copias de los archivos creados a las carpetas correspondientes del sistema
 
                         Auditor::setAuditoria($id, self::TBLMAPA, $accion, Auth::user()->name);
-                    
-                        $respuesta = ['msg' => 'Se ha enviado el eEstudio al cliente '.$prestacion->art->RazonSocial.' correctamente. '.$prestacion->Id, 'icon' => 'eEmpresa'];
+
+                        $respuestas[] = ['msg' => 'Se ha enviado el eEstudio al cliente '.$prestacion->art->RazonSocial.' correctamente. '.$prestacion->Id, 'icon' => 'eEmpresa'];
                     }
                 }
             }else{
 
-                $respuesta = ['msg' => 'El cliente '.$prestacion->empresa->RazonSocial.' presenta examenes a cuenta impagos. No se ha realizado el envio.', 'icon' => 'warning'];
+                $respuestas[] = ['msg' => 'El cliente '.$prestacion->empresa->RazonSocial.' presenta examenes a cuenta impagos. No se ha realizado el envio.', 'icon' => 'warning'];
             }
         }
 
-        $respuestas[] = $respuesta;
+        $this->folderTempClean(); //Limpia la carpeta temporal
 
         return response()->json($respuestas);
     }
@@ -1264,7 +1300,7 @@ class MapasController extends Controller
             [],
             [],
             [],
-            storage_path('app/public/temp/merge_adjGenerales.pdf')
+            storage_path('app/public/temp/merge_adjGenerales_'.$idPrestacion.'.pdf')
         );
 
     }
@@ -1283,7 +1319,7 @@ class MapasController extends Controller
             [],
             [],
             [],
-            storage_path('app/public/temp/merge_adjAnexos.pdf')
+            storage_path('app/public/temp/merge_adjAnexos_'.$idPrestacion.'.pdf')
         );
     }
 
@@ -1301,8 +1337,43 @@ class MapasController extends Controller
             [],
             [],
             [],
-            storage_path('app/public/temp/merge_adjDigitales.pdf')
+            storage_path('app/public/temp/merge_adjDigitales_'.$idPrestacion.'.pdf')
         );
     }
+
+    private function registrarEEnvio(int $id): void
+    {
+        $prestacion = Prestacion::find($id);
+    
+        if ($prestacion) {
+            $prestacion->update([
+                'eEnviado' => 1,
+                'FechaEnviado' => now()->format('Y-m-d')
+            ]);
+        }
+    }
+
+    private function copiasRegistroEEnvio(int $id):void
+    {
+        File::copy($this->eEstudio($id, "no"), FileHelper::getFileUrl('escritura').'/Enviar/eEstudio'.$id.'.pdf');
+        File::copy($this->adjDigitalFisico($id, 2), FileHelper::getFileUrl('escritura').'/Enviar/eAdjuntos'.$id.'.pdf');
+        File::copy($this->adjAnexos($id), FileHelper::getFileUrl('escritura').'/Enviar/eAnexos'.$id.'.pdf');
+    }
+
+    private function rutasTempReportes(int $id): array
+    {
+        $prestacion = Prestacion::with('paciente')->find($id);
+
+        if($prestacion) {
+
+            return [
+                'eEstudioSend' => storage_path('app/public/temp/eEstudio'.$prestacion->Id.'.pdf'),
+                'eAdjuntoSend' => storage_path('app/public/temp/eAdjuntos_'.$prestacion->paciente->Apellido.'_'.$prestacion->paciente->Nombre.'_'.$prestacion->paciente->Documento.'_'.Carbon::parse($prestacion->Fecha)->format('d-m-Y').'.pdf'),
+                'eGeneralSend' => storage_path('app/public/temp/eAdjGeneral'.$prestacion->Id.'.pdf'),
+                'estudiosCheck' => storage_path('app/public/temp/estudios'.$prestacion->Id.'.pdf')
+            ];
+        }
+    }
+
 } 
 

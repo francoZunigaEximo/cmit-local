@@ -181,7 +181,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/mapas/remitos', [MapasController::class, 'getRemito'])->name('getRemito');
     Route::get('/mapas/listado', [MapasController::class, 'getMapas'])->name('getMapas');
     Route::get('/mapas/pacientes', [MapasController::class, 'getPacienteMapa'])->name('getPacienteMapa');
-    Route::get('/mapas/prestaciones/examenes', [MapasController::class, 'examenes'])->name('getExamenMapa');
+    Route::get('/mapas/prestaciones/examenes', [MapasController::class, 'examenes'])->name('mapas.getExamen');
     Route::get('/mapas/prestaciones', [MapasController::class, 'prestaciones'])->name('getPrestaciones');
     Route::get('/mapas/cerrar', [MapasController::class, 'getCerrar'])->name('getCerrar');
     Route::get('/mapas/Finalizados', [MapasController::class, 'getFinalizar'])->name('getFinalizar');

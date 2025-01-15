@@ -107,11 +107,19 @@ $(document).ready(()=>{
                         width: 50,
                         render: function(data) {
                             
-                            let enviados = data.contadorPrestaciones > 0 && (data.contadorPrestaciones === data.cdorEEnviados) && (data.contadorPrestaciones === data.cdorCerrados) && data.cdorFinalizados === 0 && data.cdorEntregados === 0 || data.contadorPrestaciones > 0 && (data.contadorPrestaciones === data.cdorEEnviados) && (data.contadorPrestaciones === data.cdorCerrados) && (data.cdorFinalizados === data.contadorPrestaciones) && (data.cdorEntregados === data.contadorPrestaciones) || data.contadorPrestaciones > 0 && (data.contadorPrestaciones === data.cdorEEnviados) && (data.contadorPrestaciones === data.cdorCerrados) && (data.cdorFinalizados === data.contadorPrestaciones) && (data.cdorEntregados === 0), 
+                            let enviados = data.contadorPrestaciones > 0 
+                            && (data.contadorPrestaciones === data.cdorEEnviados || data.cdorEEnviados === 1 && data.contadorPrestaciones !== data.cdorEEnviados) 
+                            && (data.contadorPrestaciones === data.cdorCerrados) 
+                            && (data.contadorPrestaciones === data.cdorFinalizados) 
+                            && (data.contadorPrestaciones === data.cdorEntregados), 
                                 
                             cerrado = data.contadorPrestaciones > 0 && data.contadorPrestaciones === data.cdorCerrados && data.cdorFinalizados === 0 &&  data.cdorEEnviados === 0 && data.cdorEntregados === 0,
                                 
-                            abierto = data.contadorPrestaciones > 0 && data.cdorCerrados === 0 && data.cdorFinalizados === 0 &&  data.cdorEEnviados === 0 && data.cdorEntregados === 0,
+                            abierto = data.contadorPrestaciones > 0 && 
+                                data.cdorCerrados === 0 && 
+                                data.cdorFinalizados === 0 &&  
+                                data.cdorEEnviados === 0 && 
+                                data.cdorEntregados === 0,
                                 
                             terminado = data.contadorPrestaciones > 0 && data.contadorPrestaciones === data.cdorCerrados && data.contadorPrestaciones === data.cdorEEnviados && data.contadorPrestaciones === data.cdorFinalizados && data.contadorPrestaciones === data.cdorEntregados;
 

@@ -95,7 +95,7 @@ trait DetallesReportes
             if (filter_var($file, FILTER_VALIDATE_URL)) {
                 // Definir la ruta temporal
                 $tempFile = storage_path('app/public/temp/' . basename($file));
-
+               
                 // Descargar el archivo a la ruta temporal
                 file_put_contents($tempFile, file_get_contents($file));
 
@@ -124,7 +124,7 @@ trait DetallesReportes
         }
 
         // Guardar el archivo fusionado
-        $outputPath = storage_path('app/public/temp/merge_'.$nombre.'.pdf');
+        $outputPath = storage_path('app/public/temp/merge_'.$nombre.'_'.$idPrestacion.'.pdf');
         $fpdi->Output('F', $outputPath);
     }
 

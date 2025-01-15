@@ -25,7 +25,7 @@ class AdjuntosAnexos extends Reporte
                 array_push($files, $file);
             }
 
-           $this->mergePDFs($datos['id'], $files, SELF::NOMBRE);
+           $this->mergePDFs($datos['id'], $files, SELF::NOMBRE, $datos['id']);
         }
     }
 

@@ -591,12 +591,12 @@
                                 <th class="sort">Examen</th>
                                 <th class="sort">Especialidad</th>
                                 <th class="sort">Efector</th>
-                                <th style="background-color: #eeeeee"></th>
-                                <th style="background-color: #eeeeee"></th>
+                                <th style="width: 70px; background-color: #eeeeee"></th>
+                                <th style="width: 130px; background-color: #eeeeee"></th>
                                 <th class="sort">Informador</th>
-                                <th style="background-color: #eeeeee"></th>
-                                <th>INC</th>
-                                <th>Acciones</th>
+                                <th style="width: 70px; background-color: #eeeeee"></th>
+                                <th style="width: 50px">INC</th>
+                                <th style="width: 50px">Acciones</th>
                             </tr>
                         </thead>
                         <tbody class="list form-check-all" id="examenMapa">
@@ -674,7 +674,7 @@ const saveRemitos = "{{ route('saveRemitos') }}";
 const updateMapa = "{{ route('updateMapa') }}";
 const searchMapaPres = "{{ route('searchMapaPres') }}";
 const getPacienteMapa = "{{ route('getPacienteMapa') }}";
-const getExamenMapa = "{{ route('getExamenMapa') }}";
+const getExamenMapa = "{{ route('mapas.getExamen') }}";
 const serchInCerrar = "{{ route('serchInCerrar') }}";
 const searchInFinalizar = "{{ route('searchInFinalizar') }}";
 const saveEstado = "{{ route('saveEstado') }}"

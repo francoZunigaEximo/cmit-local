@@ -84,7 +84,7 @@ $(function() {
         });
     });
 
-    $('#updateMapa').click(function(e){
+    $(document).on('click', '#updateMapa', function(e) {
         e.preventDefault();
 
         let Nro = $('#Nro').val(),
@@ -165,23 +165,35 @@ $(function() {
             return;
         }
 
-        $.post(saveRemitos, {_token: TOKEN, Obs: remitoObs, FechaE: remitoFechaE, Id: nroRemito})
-            .done(function(response){
-                toastr.success(response.msg);
-                setTimeout(()=>{
-                    $('#remitoObs').val('');
-                    $('#entregarModal').modal('hide');
-                    listarRemitos(IDMAPA);
-                    
-                    $('.confirmarEntrega').prop('disabled', false);
-                }, 3000);
-            })
-            .fail(function(jqXHR){
-                preloader('off');
-                let errorData = JSON.parse(jqXHR.responseText);            
-                checkError(jqXHR.status, errorData.msg);
-                return;
-            });
+        swal({
+            title: "¿Está seguro que desea registrar la entrega?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar) {
+                preloader('on');
+                $.post(saveRemitos, {_token: TOKEN, Obs: remitoObs, FechaE: remitoFechaE, Id: nroRemito})
+                .done(function(response){
+                    preloader('off');
+                    toastr.success(response.msg);
+                    setTimeout(()=>{
+                        $('#remitoObs').val('');
+                        $('#entregarModal').modal('hide');
+                        listarRemitos(IDMAPA);
+                        
+                        $('.confirmarEntrega').prop('disabled', false);
+                    }, 3000);
+                })
+                .fail(function(jqXHR){
+                    preloader('off');
+                    let errorData = JSON.parse(jqXHR.responseText);            
+                    checkError(jqXHR.status, errorData.msg);
+                    return;
+                });
+            }
+        });
+
+        
     });
     
     
@@ -191,22 +203,32 @@ $(function() {
         let remito = $(this).data('remito');
         $(this).prop('disabled', true);
 
-        preloader('on');
-        $.post(reverseRemito, {_token: TOKEN, Id: remito})
-            .done(function(response){
-                preloader('off');   
-                toastr.success(response.msg);
-                setTimeout(()=>{
-                    listarRemitos(IDMAPA);
-                    $('.revertirEntrega').prop('disabled', false);
-                }, 3000);  
-            })
-            .fail(function(jqXHR){
-                preloader('off');            
-                let errorData = JSON.parse(jqXHR.responseText);            
-                checkError(jqXHR.status, errorData.msg);
-                return;  
-            });
+        swal({
+            title: "¿Está seguro que desea revertir la entrega?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar) {
+                preloader('on');
+                $.post(reverseRemito, {_token: TOKEN, Id: remito})
+                    .done(function(response){
+                        preloader('off');   
+                        toastr.success(response.msg);
+                        setTimeout(()=>{
+                            listarRemitos(IDMAPA);
+                            $('.revertirEntrega').prop('disabled', false);
+                        }, 3000);  
+                    })
+                    .fail(function(jqXHR){
+                        preloader('off');            
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return;  
+                    });
+            }else{
+                $(this).prop('disabled', false);
+            }
+        })
     });
 
     $(document).on('click', '.buscarPresMapa', function() {
@@ -318,6 +340,7 @@ $(function() {
                 checkError(jqXHR.status, errorData.msg);
                 return;
             });
+            
         preloader('on');
         $.get(getExamenMapa, { prestacion: prestacion})
             .done(function(response) {
@@ -334,19 +357,22 @@ $(function() {
 
                     let contenido = `
                         <tr>
-                            <td title="${e.NombreExamen}">${acortadorTexto(e.NombreExamen, 15)}</td>
-                            <td title="${e.NombreProveedor}">${acortadorTexto(e.NombreProveedor,15)}</td>
                             <td>
-                                <span>${(e.NombreEfector === null || e.ApellidoEfector == null ? '-' : acortadorTexto(efectorCompleto) )}</span>
+                                <span>${e.NombreExamen}</span>
+                                <span>${(e.Anulado === 1 ? '<span style="display:block" class="custom-badge rojo">Bloqueado</span>' : '')}</span>
+                            </td>
+                            <td title="${e.NombreProveedor}">${e.NombreProveedor}</td>
+                            <td>
+                                <span>${e.NombreEfector === null || e.ApellidoEfector == null ? '-' : efectorCompleto}</span>
                                 <span>${(cerradoOk ? '<span style="display:block" class="custom-badge verde">Completo</span>' : '')}</span>
                             </td>
                             <td><span class="custom-badge pequeno">${arrCerrado.includes(e.CAdj) ? `cerrado`:`abierto`}</span></td>
                             <td><span class="custom-badge pequeno">${e.ExamenAdjunto === 0 ? `No lleva adjuntos` : e.ExamenAdjunto === 1 && e.adjuntados === 'sadjunto' ? `pendiente` : e.ExamenAdjunto === 1 && e.adjuntados === 'adjunto' ? `Adjuntado` : `-`}</span></td>
                             <td>
-                                <span>${(e.Informe === 0 ? 'Sin informador' : e.NombreInformador === null || e.ApellidoInformador == null ? '-' : acortadorTexto(informadorCompleto)) }</span>
+                                <span>${e.Informe === 0 ? 'Sin informador' : informadorCompleto }</span>
                                 <span>${(e.Informe === 0 ? '' : e.CInfo === 3 ? '<span style="display:block" class="custom-badge verde">Completo</span>' : '')}</span>
                             </td>
-                            <td><span class="custom-badge pequeno">${e.Informe === 0 ? '' : (e.CInfo === 3 ? `cerrado`: `abierto`)}</span></td>
+                            <td>${e.Informe === 0 ? '' : `<span class="custom-badge pequeno">${e.CInfo === 3 ? `cerrado`: `abierto`}</span>`}</td>
                             <td><span data-id="${e.IdItemPrestacion}" data-estado="examen" title="${e.Incompleto === 1 ? `Incompleto` : `Completo`}" class="cambiarEstado custom-badge ${e.Incompleto === 1 ? `rojo` : `verde`}"><i class="ri-lightbulb-line"></i></span></td>
                             <td>
                                 <button type="button" data-id="${e.IdItemPrestacion}" class="btn btn-sm iconGeneral verItemPrestacion" title="Ver exámen"><i class="ri-search-eye-line"></i></button>
@@ -1164,7 +1190,7 @@ $(function() {
  
                     let contenido =  `
                         <tr>
-                            <td>${fecha(d.Fecha)}</td>
+                            <td>${d.Fecha}</td>
                             <td>${d.IdEntidad}</td>
                             <td>${d.IdUsuario}</td>
                             <td>${d.nombre_perfil}</td>
