@@ -494,7 +494,7 @@ public function searchPrestacion(Request $request)
             [],
             [],
             [],
-            storage_path('app/public/temp/merge_adjGenerales.pdf')
+            storage_path('app/public/temp/merge_adjGenerales_'.$idPrestacion.'.pdf')
         );
 
     }
@@ -513,7 +513,7 @@ public function searchPrestacion(Request $request)
             [],
             [],
             [],
-            storage_path('app/public/temp/merge_adjAnexos.pdf')
+            storage_path('app/public/temp/merge_adjAnexos_'.$idPrestacion.'.pdf')
         );
     }
 
@@ -531,7 +531,7 @@ public function searchPrestacion(Request $request)
             [],
             [],
             [],
-            storage_path('app/public/temp/merge_adjDigitales.pdf')
+            storage_path('app/public/temp/merge_adjDigitales_'.$idPrestacion.'.pdf')
         );
     }
 
