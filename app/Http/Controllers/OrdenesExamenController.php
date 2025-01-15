@@ -323,9 +323,10 @@ public function searchPrestacion(Request $request)
                 }
             }
 
-            $filePath = 'temp/MAPA' . $request->Id . '.pdf';
+            $filePath = 'temp/eEstudio' . $Id . '.pdf';
+            $outputPath = storage_path('app/public/fusionar'.Tools::randomCode(15).'.pdf');
 
-            $this->reporteService->fusionarPDFs($listado, $this->outputPath);
+            $this->reporteService->fusionarPDFs($listado, $outputPath);
             File::copy($this->outputPath, storage_path('app/public/'.$filePath));
 
 
