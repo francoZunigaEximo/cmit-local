@@ -108,12 +108,16 @@ $(document).ready(()=>{
                         render: function(data) {
                             
                             let enviados = data.contadorPrestaciones > 0 
-                            && (data.contadorPrestaciones === data.cdorEEnviados || data.cdorEEnviados === 1 && data.contadorPrestaciones !== data.cdorEEnviados) 
-                            && (data.contadorPrestaciones === data.cdorCerrados) 
-                            && (data.contadorPrestaciones === data.cdorFinalizados) 
-                            && (data.contadorPrestaciones === data.cdorEntregados), 
+                                && (data.contadorPrestaciones === data.cdorEEnviados ) 
+                                && (data.contadorPrestaciones === data.cdorCerrados) 
+                                && (data.contadorPrestaciones === data.cdorFinalizados) 
+                                && (data.cdorEntregados === 0), 
                                 
-                            cerrado = data.contadorPrestaciones > 0 && data.contadorPrestaciones === data.cdorCerrados && data.cdorFinalizados === 0 &&  data.cdorEEnviados === 0 && data.cdorEntregados === 0,
+                            cerrado = data.contadorPrestaciones > 0 && 
+                                      data.contadorPrestaciones === data.cdorCerrados && 
+                                      data.cdorFinalizados === 0 &&  
+                                      data.cdorEEnviados === 0 && 
+                                      data.cdorEntregados === 0,
                                 
                             abierto = data.contadorPrestaciones > 0 && 
                                 data.cdorCerrados === 0 && 
@@ -121,10 +125,14 @@ $(document).ready(()=>{
                                 data.cdorEEnviados === 0 && 
                                 data.cdorEntregados === 0,
                                 
-                            terminado = data.contadorPrestaciones > 0 && data.contadorPrestaciones === data.cdorCerrados && data.contadorPrestaciones === data.cdorEEnviados && data.contadorPrestaciones === data.cdorFinalizados && data.contadorPrestaciones === data.cdorEntregados;
+                            terminado = data.contadorPrestaciones > 0 && 
+                                        data.contadorPrestaciones === data.cdorCerrados && 
+                                        data.contadorPrestaciones === data.cdorEEnviados && 
+                                        data.contadorPrestaciones === data.cdorFinalizados && 
+                                        data.contadorPrestaciones === data.cdorEntregados;
 
                             let conteo = '(Total Prestaciones: ' + data.contadorPrestaciones + ') (Total Cerrados: ' + data.cdorCerrados + ') (Total Finalizados: ' + data.cdorFinalizados + ') (Total Entregadas: ' + data.cdorEntregados + ') (Total eEnviados:' + data.cdorEEnviados + ')';
-                            console.log(terminado);
+                            
                             switch (true) {
                                 case (abierto):
                                     return '<span title="' + conteo + '" class="custom-badge generalNegro">Abierto</span>';
