@@ -833,6 +833,7 @@ BEGIN
         pre.Id != 0
         AND pre.Fecha != '0000-00-00'
         AND pre.Fecha IS NOT NULL
+		AND NOT cli.SEMail = 1
         AND i.Fecha BETWEEN fechaDesde AND fechaHasta
         AND pre.Cerrado = 1
         AND (

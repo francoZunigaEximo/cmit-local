@@ -336,40 +336,40 @@ public function searchPrestacion(Request $request)
         $resultados = [];
 
         foreach($request->Ids as $Id) {
-            $resultado = [];
 
             $prestacion = Prestacion::with(['paciente', 'empresa','paciente.fichalaboral'])->find($Id);
             $examenes = ItemPrestacion::with('examenes')->where('IdPrestacion', $Id)->where('Anulado', 0)->get();
 
 
-            if ($prestacion->empresa->SEMail === 1) {
-                return response()->json(['msg' => 'El cliente no acepta envio de correos electrónicos'], 409);
-            }
+            if(!empty($prestacion->empresa->EMailInformes)) {
 
-            $emails = $this->getEmailsReporte($prestacion->empresa->EMailInformes);
+                $emails = $this->getEmailsReporte($prestacion->empresa->EMailInformes);
 
-            $nombreCompleto = $prestacion->paciente->Apellido.' '.$prestacion->paciente->Nombre;
+                $nombreCompleto = $prestacion->paciente->Apellido.' '.$prestacion->paciente->Nombre;
 
-            $cuerpo = [
-                'paciente' => $nombreCompleto,
-                'Fecha' => Carbon::parse($prestacion->Fecha)->format("d/m/Y"),
-                'TipoDocumento' => $prestacion->paciente->TipoDocumento,
-                'Documento' => $prestacion->paciente->Documento,
-                'RazonSocial' => $prestacion->empresa->RazonSocial,
-                'examenes' => $examenes
-            ];
-            if ($this->checkExCtaImpago($Id) > 0) {
-            
-                $asunto = 'Solicitud de pago de exámen de '.$nombreCompleto;
-    
-                foreach ($emails as $email) {
-                    ExamenesImpagosJob::dispatch($email, $asunto, $cuerpo);
+                $cuerpo = [
+                    'paciente' => $nombreCompleto,
+                    'Fecha' => Carbon::parse($prestacion->Fecha)->format("d/m/Y"),
+                    'TipoDocumento' => $prestacion->paciente->TipoDocumento,
+                    'Documento' => $prestacion->paciente->Documento,
+                    'RazonSocial' => $prestacion->empresa->RazonSocial,
+                    'examenes' => $examenes
+                ];
+                if ($this->checkExCtaImpago($Id) > 0) {
+                
+                    $asunto = 'Solicitud de pago de exámen de '.$nombreCompleto;
+        
+                    foreach ($emails as $email) {
+                        ExamenesImpagosJob::dispatch($email, $asunto, $cuerpo);
+                    }
+        
+                    $resultados[] = ['msg' => 'El cliente '.$prestacion->empresa->RazonSocial.' presenta examenes a cuenta impagos en la prestacion '.$Id.'. Se ha enviado el email correspondiente', 'estado' => 'success'];
                 }
-    
-                $resultado = ['msg' => 'El '.$prestacion->empresa->RazonSocial.' presenta examenes a cuenta impagos en la prestacion '.$Id.'. Se ha enviado el email correspondiente', 'estado' => 'success'];
-            
-            }
-            array_push($resultados, $resultado);
+
+            }else{
+
+                $resultados[] = ['msg' => 'El cliente '.$prestacion->empresa->RazonSocial.' no presenta un correo electronico de informes. Por favor, registre uno', 'estado' => 'warning'];
+            }            
         }
 
         return response()->json($resultados);
