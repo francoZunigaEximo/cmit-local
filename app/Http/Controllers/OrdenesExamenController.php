@@ -335,7 +335,7 @@ public function searchPrestacion(Request $request)
 
             $resultados[] = $fileUrl;
         }
-
+        
         return response()->json($resultados);
     }
 

@@ -675,7 +675,10 @@ $(function() {
                     .done(function(response){
                         e.preventDefault();
 
+                        console.log(Array.isArray(response));
+                        let contador = 0
                         $.each(response, function(index, link){
+                            console.log(link, contador++)
                             window.open(link, '_blank');
                         });
                         
