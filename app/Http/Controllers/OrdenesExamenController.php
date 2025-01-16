@@ -435,19 +435,29 @@ public function searchPrestacion(Request $request)
                     }
                 }
 
-                $asunto = 'Estudios '.$nombreCompleto.' - '.$prestacion->paciente->TipoDocumento.' '.$prestacion->paciente->Documento;
+                if (!$this->checkExCtaImpago($Id) > 0) {
 
-                $attachments = [$eEstudioSend, $eAdjuntoSend, $eGeneralSend];
-                $estudios !== null ? array_push($attachments, $estudios) : null;
+                    $asunto = 'Estudios '.$nombreCompleto.' - '.$prestacion->paciente->TipoDocumento.' '.$prestacion->paciente->Documento;
 
-                foreach ($emails as $email) {
-                    ExamenesResultadosJob::dispatch($email, $asunto, $cuerpo, $attachments);
+                    $attachments = [$eEstudioSend, $eAdjuntoSend, $eGeneralSend];
+                    $estudios !== null ? array_push($attachments, $estudios) : null;
 
-                    // $info = new ExamenesResultadosMail(['subject' => $asunto, 'content' => $cuerpo, 'attachments' => $attachments]);
-                    //     Mail::to("nmaximowicz@eximo.com.ar")->send($info);
+                    foreach ($emails as $email) {
+                        ExamenesResultadosJob::dispatch($email, $asunto, $cuerpo, $attachments);
 
-                    $resultados[] = ['msg' => 'Se ha enviado el email correspondiente de la prestación '.$prestacion->Id, 'estado' => 'success'];
+                        // $info = new ExamenesResultadosMail(['subject' => $asunto, 'content' => $cuerpo, 'attachments' => $attachments]);
+                        //     Mail::to("nmaximowicz@eximo.com.ar")->send($info);
+
+                        $resultados[] = ['msg' => 'Se ha enviado el email correspondiente de la prestación '.$prestacion->Id, 'estado' => 'success'];
+                    }
+
+                }else{
+
+                    $resultado[] = ['msg' => 'El cliente presenta examenes a cuenta impagos. Solamente podrá enviar avisas con el botón de impagos por el momento', 'estado' => 'warning'];
+
                 }
+
+                
 
             }else{
 

@@ -743,9 +743,9 @@ class PrestacionesController extends Controller
             array_push($temp_estudio, $this->eEstudio($request->Id, 'no'));
             array_push($temp_estudio, $this->adjDigitalFisico($request->Id, 2));
 
-            $eEstudioSend = storage_path('app/public/eEstudio'.$prestacion->Id.'.pdf');
+            $eEstudioSend = storage_path('app/public/temp/eEstudio'.$prestacion->Id.'.pdf');
             $eAdjuntoSend = storage_path('app/public/temp/eAdjuntos_'.$prestacion->paciente->Apellido.'_'.$prestacion->paciente->Nombre.'_'.$prestacion->paciente->Documento.'_'.Carbon::parse($prestacion->Fecha)->format('d-m-Y').'.pdf');
-            $eGeneralSend = storage_path('app/public/eAdjGeneral'.$prestacion->Id.'.pdf');
+            $eGeneralSend = storage_path('app/public/temp/eAdjGeneral'.$prestacion->Id.'.pdf');
 
             $this->reporteService->fusionarPDFs($temp_estudio, $eEstudioSend);
             File::copy($this->adjAnexos($request->Id), $eAdjuntoSend);
@@ -1081,7 +1081,7 @@ class PrestacionesController extends Controller
             [],
             [],
             [],
-            storage_path('app/public/temp/merge_adjDigitales.pdf')
+            storage_path('app/public/temp/merge_adjDigitales_'.$idPrestacion.'.pdf')
         );
     }
 
@@ -1099,7 +1099,7 @@ class PrestacionesController extends Controller
             [],
             [],
             [],
-            storage_path('app/public/temp/merge_adjGenerales.pdf')
+            storage_path('app/public/temp/merge_adjGenerales_'.$idPrestacion.'.pdf')
         );
 
     }
@@ -1118,7 +1118,7 @@ class PrestacionesController extends Controller
             [],
             [],
             [],
-            storage_path('app/public/temp/merge_adjAnexos.pdf')
+            storage_path('app/public/temp/merge_adjAnexos_'.$idPrestacion.'.pdf')
         );
     }
 
