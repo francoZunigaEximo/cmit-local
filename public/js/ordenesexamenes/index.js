@@ -676,10 +676,14 @@ $(function() {
                         e.preventDefault();
 
                         console.log(Array.isArray(response));
-                        let contador = 0
+                        let contador = 1
                         $.each(response, function(index, link){
-                            console.log(link, contador++)
-                            window.open(link, '_blank');
+                            
+                            setTimeout(() => {
+                                console.log(link, contador++)
+                                window.open(link, '_blank');
+                            }, 2000);
+                            
                         });
                         
                         preloader('off');
