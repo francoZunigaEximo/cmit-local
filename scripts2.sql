@@ -833,7 +833,6 @@ BEGIN
         pre.Id != 0
         AND pre.Fecha != '0000-00-00'
         AND pre.Fecha IS NOT NULL
-		AND NOT cli.SEMail = 1
         AND i.Fecha BETWEEN fechaDesde AND fechaHasta
         AND pre.Cerrado = 1
         AND (
@@ -863,10 +862,13 @@ BEGIN
     GROUP BY 
         pre.Id
     ORDER BY
+    	CASE 
+	        WHEN cli.EMailInformes IS NULL OR cli.EMailInformes = '' THEN 0
+	        ELSE 1
+	    END,
+    	cli.EMailInformes DESC,
         pre.Fecha DESC,
-        cli.RazonSocial DESC,
-        pa.Apellido DESC,
-        pa.Nombre DESC
+        cli.RazonSocial DESC
     LIMIT 1000;
 END
 
