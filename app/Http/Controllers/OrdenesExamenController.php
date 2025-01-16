@@ -453,7 +453,7 @@ public function searchPrestacion(Request $request)
 
                 }else{
 
-                    $resultado[] = ['msg' => 'El cliente presenta examenes a cuenta impagos. Solamente podrá enviar avisas con el botón de impagos por el momento', 'estado' => 'warning'];
+                    $resultados[] = ['msg' => 'El cliente presenta examenes a cuenta impagos. Solamente podrá enviar avisas con el botón de impagos por el momento', 'estado' => 'warning'];
 
                 }
 
@@ -504,61 +504,6 @@ public function searchPrestacion(Request $request)
             [],
             [],
             null
-        );
-    }
-
-    private function adjGenerales(int $idPrestacion): mixed
-    {
-        return $this->reporteService->generarReporte(
-            AdjuntosGenerales::class,
-            null,
-            null,
-            null,
-            'guardar',
-            null,
-            null,
-            ['id' => $idPrestacion],
-            [],
-            [],
-            [],
-            storage_path('app/public/temp/merge_adjGenerales_'.$idPrestacion.'.pdf')
-        );
-
-    }
-
-    private function adjAnexos(int $idPrestacion): mixed
-    {
-        return $this->reporteService->generarReporte(
-            AdjuntosAnexos::class,
-            null,
-            null,
-            null,
-            'guardar',
-            null,
-            null,
-            ['id' => $idPrestacion],
-            [],
-            [],
-            [],
-            storage_path('app/public/temp/merge_adjAnexos_'.$idPrestacion.'.pdf')
-        );
-    }
-
-    private function adjDigitalFisico(int $idPrestacion, int $tipo): mixed // 1 es Digital, 2 es Fisico,Digital
-    {
-        return $this->reporteService->generarReporte(
-            AdjuntosDigitales::class,
-            null,
-            null,
-            null,
-            'guardar',
-            null,
-            null,
-            ['id' => $idPrestacion, 'tipo' => $tipo],
-            [],
-            [],
-            [],
-            storage_path('app/public/temp/merge_adjDigitales_'.$idPrestacion.'.pdf')
         );
     }
 
@@ -681,12 +626,64 @@ public function searchPrestacion(Request $request)
 
     }
 
+    private function adjGenerales(int $idPrestacion): mixed
+    {
+        return $this->reporteService->generarReporte(
+            AdjuntosGenerales::class,
+            null,
+            null,
+            null,
+            'guardar',
+            null,
+            null,
+            ['id' => $idPrestacion],
+            [],
+            [],
+            [],
+            storage_path('app/public/temp/merge_adjGenerales_'.$idPrestacion.'.pdf')
+        );
+
+    }
+
+    private function adjAnexos(int $idPrestacion): mixed
+    {
+        return $this->reporteService->generarReporte(
+            AdjuntosAnexos::class,
+            null,
+            null,
+            null,
+            'guardar',
+            null,
+            null,
+            ['id' => $idPrestacion],
+            [],
+            [],
+            [],
+            storage_path('app/public/temp/merge_adjAnexos_'.$idPrestacion.'.pdf')
+        );
+    }
+
+    private function adjDigitalFisico(int $idPrestacion, int $tipo): mixed // 1 es Digital, 2 es Fisico,Digital
+    {
+        return $this->reporteService->generarReporte(
+            AdjuntosDigitales::class,
+            null,
+            null,
+            null,
+            'guardar',
+            null,
+            null,
+            ['id' => $idPrestacion, 'tipo' => $tipo],
+            [],
+            [],
+            [],
+            storage_path('app/public/temp/merge_adjDigitales_'.$idPrestacion.'.pdf')
+        );
+    }
+
     private function condicionesComunes($query): mixed
     {
-        $query->limit(5000)
-        ->orderBy('itemsprestaciones.Id', 'DESC');
-
-        return $query;
+        return $query->limit(5000)->orderBy('itemsprestaciones.Id', 'DESC');
     }
 
     // SELECT 
