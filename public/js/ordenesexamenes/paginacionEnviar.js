@@ -17,7 +17,7 @@ $(function() {
             toastr.warning("Las fechas son obligatorias");
             return;
         }
-        console.log(eenviar)
+
         $('#listaOrdenesEEnviar').DataTable().clear().destroy();
 
         new DataTable("#listaOrdenesEEnviar", {

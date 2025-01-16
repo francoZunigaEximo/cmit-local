@@ -335,7 +335,7 @@ public function searchPrestacion(Request $request)
 
             $resultados[] = $fileUrl;
         }
-        
+
         return response()->json($resultados);
     }
 
@@ -372,8 +372,12 @@ public function searchPrestacion(Request $request)
                     }
         
                     $resultados[] = ['msg' => 'El cliente '.$prestacion->empresa->RazonSocial.' presenta examenes a cuenta impagos en la prestacion '.$Id.'. Se ha enviado el email correspondiente', 'estado' => 'success'];
-                }
+                
+                }else{
 
+                    $resultados[] = ['msg' => 'El cliente '.$prestacion->empresa->RazonSocial.' no presenta examenes a cuenta impagos en la prestacion '.$Id.'. No se le puede realizar ningun aviso de deuda.', 'estado' => 'success'];
+                
+                }
             }else{
 
                 $resultados[] = ['msg' => 'El cliente '.$prestacion->empresa->RazonSocial.' no presenta un correo electronico de informes. Por favor, registre uno', 'estado' => 'warning'];
@@ -393,59 +397,64 @@ public function searchPrestacion(Request $request)
             $prestacion = Prestacion::with(['paciente', 'empresa','paciente.fichalaboral'])->find($Id);
             $examenes = ItemPrestacion::with('examenes')->where('IdPrestacion', $Id)->where('Anulado', 0)->get();
 
-            $estudios = $this->AnexosFormulariosPrint($Id); //obtiene los ids en un array
+            if(!empty($prestacion->empresa->EMailInformes)) {
 
-            $emails = $this->getEmailsReporte($prestacion->empresa->EMailInformes);
-            $nombreCompleto = $prestacion->paciente->Apellido.' '.$prestacion->paciente->Nombre;
-            
-            $cuerpo['tarea'] = $prestacion->paciente->fichaLaboral->first()->Tareas;
-            $cuerpo['tipoPrestacion'] = ucwords($prestacion->TipoPrestacion);
-            $cuerpo['calificacion'] = substr($prestacion->Calificacion, 2) ?? '';
-            $cuerpo['evaluacion'] = substr($prestacion->Evaluacion, 2) ?? '';
-            $cuerpo['obsEvaluacion'] = $prestacion->Observaciones ?? '';
-            $cuerpo['RazonSocial'] = $prestacion->empresa->RazonSocial ?? '';
-            $cuerpo['paciente'] = $nombreCompleto ?? '';
-            $cuerpo['TipoDocumento'] = $prestacion->paciente->TipoDocumento ?? '';
-            $cuerpo['Documento'] = $prestacion->paciente->Documento ?? '';
-            $cuerpo['Fecha'] = Carbon::parse($prestacion->Fecha)->format("d/m/Y") ?? '';
-            $cuerpo['examenes'] = $examenes ?? '';
+                $estudios = $this->AnexosFormulariosPrint($Id); //obtiene los ids en un array
 
-            //path de los archivos a enviar y nombres personalizados cuando se fusionan
-            $eEstudioSend = storage_path('app/public/eEstudio'.$prestacion->Id.'.pdf');
-            $eAdjuntoSend = storage_path('app/public/temp/eAdjuntos_'.$prestacion->paciente->Apellido.'_'.$prestacion->paciente->Nombre.'_'.$prestacion->paciente->Documento.'_'.Carbon::parse($prestacion->Fecha)->format('d-m-Y').'.pdf');
-            $eGeneralSend = storage_path('app/public/eAdjGeneral'.$prestacion->Id.'.pdf');
+                $emails = $this->getEmailsReporte($prestacion->empresa->EMailInformes);
+                $nombreCompleto = $prestacion->paciente->Apellido.' '.$prestacion->paciente->Nombre;
+                
+                $cuerpo['tarea'] = $prestacion->paciente->fichaLaboral->first()->Tareas;
+                $cuerpo['tipoPrestacion'] = ucwords($prestacion->TipoPrestacion);
+                $cuerpo['calificacion'] = substr($prestacion->Calificacion, 2) ?? '';
+                $cuerpo['evaluacion'] = substr($prestacion->Evaluacion, 2) ?? '';
+                $cuerpo['obsEvaluacion'] = $prestacion->Observaciones ?? '';
+                $cuerpo['RazonSocial'] = $prestacion->empresa->RazonSocial ?? '';
+                $cuerpo['paciente'] = $nombreCompleto ?? '';
+                $cuerpo['TipoDocumento'] = $prestacion->paciente->TipoDocumento ?? '';
+                $cuerpo['Documento'] = $prestacion->paciente->Documento ?? '';
+                $cuerpo['Fecha'] = Carbon::parse($prestacion->Fecha)->format("d/m/Y") ?? '';
+                $cuerpo['examenes'] = $examenes ?? '';
 
-            //Creando eEnvio para adjuntar
-            array_push($temp_estudio, $this->eEstudio($Id, "no")); //construimos el eEstudio (caratula, resumen)
-            array_push($temp_estudio, $this->adjDigitalFisico($Id, 2)); // metemos en el eEstudio todos los adj fisicos digitales y fisicos
-            $this->reporteService->fusionarPDFs($temp_estudio, $eEstudioSend); //Fusionamos los archivos en uno solo 
-            File::copy($this->adjAnexos($Id), $eAdjuntoSend); //adjuntamos individualmente los Anexos
-            File::copy($this->adjGenerales($Id), $eGeneralSend);
-            
-            if(!empty($estudios)) {
-                foreach($estudios as $examen) {
-                    $estudio = $this->addEstudioExamen($request->Id, $examen);
-                    array_push($estudios, $estudio);
+                //path de los archivos a enviar y nombres personalizados cuando se fusionan
+                $eEstudioSend = storage_path('app/public/temp/eEstudio'.$prestacion->Id.'.pdf');
+                $eAdjuntoSend = storage_path('app/public/temp/eAdjuntos_'.$prestacion->paciente->Apellido.'_'.$prestacion->paciente->Nombre.'_'.$prestacion->paciente->Documento.'_'.Carbon::parse($prestacion->Fecha)->format('d-m-Y').'.pdf');
+                $eGeneralSend = storage_path('app/public/temp/eAdjGeneral'.$prestacion->Id.'.pdf');
+
+                //Creando eEnvio para adjuntar
+                array_push($temp_estudio, $this->eEstudio($Id, "no")); //construimos el eEstudio (caratula, resumen)
+                array_push($temp_estudio, $this->adjDigitalFisico($Id, 2)); // metemos en el eEstudio todos los adj fisicos digitales y fisicos
+                $this->reporteService->fusionarPDFs($temp_estudio, $eEstudioSend); //Fusionamos los archivos en uno solo 
+                File::copy($this->adjAnexos($Id), $eAdjuntoSend); //adjuntamos individualmente los Anexos
+                File::copy($this->adjGenerales($Id), $eGeneralSend);
+                
+                if(!empty($estudios)) {
+                    foreach($estudios as $examen) {
+                        $estudio = $this->addEstudioExamen($request->Id, $examen);
+                        array_push($estudios, $estudio);
+                    }
                 }
-            }
 
-            $asunto = 'Estudios '.$nombreCompleto.' - '.$prestacion->paciente->TipoDocumento.' '.$prestacion->paciente->Documento;
+                $asunto = 'Estudios '.$nombreCompleto.' - '.$prestacion->paciente->TipoDocumento.' '.$prestacion->paciente->Documento;
 
-            $attachments = [$eEstudioSend, $eAdjuntoSend, $eGeneralSend];
-            $estudios !== null ? array_push($attachments, $estudios) : null;
+                $attachments = [$eEstudioSend, $eAdjuntoSend, $eGeneralSend];
+                $estudios !== null ? array_push($attachments, $estudios) : null;
 
-            foreach ($emails as $email) {
-                // ExamenesResultadosJob::dispatch("nmaximowicz@eximo.com.ar", $asunto, $cuerpo, $this->sendPath);
-                ExamenesResultadosJob::dispatch($email, $asunto, $cuerpo, $attachments);
+                foreach ($emails as $email) {
+                    ExamenesResultadosJob::dispatch($email, $asunto, $cuerpo, $attachments);
 
-                // $info = new ExamenesResultadosMail(['subject' => $asunto, 'content' => $cuerpo, 'attachments' => $attachments]);
-                //     Mail::to("nmaximowicz@eximo.com.ar")->send($info);
+                    // $info = new ExamenesResultadosMail(['subject' => $asunto, 'content' => $cuerpo, 'attachments' => $attachments]);
+                    //     Mail::to("nmaximowicz@eximo.com.ar")->send($info);
 
-                array_push($resultados, ['msg' => 'Se ha enviado el email correspondiente de la prestación '.$prestacion->Id, 'estado' => 'success']);
+                    $resultados[] = ['msg' => 'Se ha enviado el email correspondiente de la prestación '.$prestacion->Id, 'estado' => 'success'];
+                }
+
+            }else{
+
+                $resultados[] = ['msg' => 'El cliente '.$prestacion->empresa->RazonSocial.' no presenta un correo electronico de informes. Por favor, registre uno', 'estado' => 'warning'];
+
             }
             
-            $prestacion->EnvioInforme = now()->format('Y-m-d');
-            $prestacion->save();
         }
 
         return response()->json($resultados);
