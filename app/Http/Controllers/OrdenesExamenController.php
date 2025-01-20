@@ -34,6 +34,7 @@ use App\Services\Reportes\Cuerpos\AdjuntosDigitales;
 use App\Jobs\ExamenesImpagosJob;
 use App\Jobs\ExamenesResultadosJob;
 use App\Helpers\ToolsEmails;
+use App\Models\Auditor;
 
 class OrdenesExamenController extends Controller
 {
@@ -44,6 +45,8 @@ class OrdenesExamenController extends Controller
     protected $sendPath;
     protected $fileNameExport;
     private $tempFile;
+
+    const TABLA = 6;
 
     public function __construct(ReporteService $reporteService)
     {
@@ -451,14 +454,17 @@ public function searchPrestacion(Request $request)
                         $resultados[] = ['msg' => 'Se ha enviado el email correspondiente de la prestación '.$prestacion->Id, 'estado' => 'success'];
                     }
 
+                    $prestacion->eEnviado = 1;
+                    $prestacion->FechaEnviado = now()->format('Y-m-d');
+                    $prestacion->save();
+
+                    Auditor::setAuditoria($Id, self::TABLA, 39, Auth::user()->name);
+
                 }else{
 
                     $resultados[] = ['msg' => 'El cliente presenta examenes a cuenta impagos. Solamente podrá enviar avisas con el botón de impagos por el momento', 'estado' => 'warning'];
 
                 }
-
-                
-
             }else{
 
                 $resultados[] = ['msg' => 'El cliente '.$prestacion->empresa->RazonSocial.' no presenta un correo electronico de informes. Por favor, registre uno', 'estado' => 'warning'];
