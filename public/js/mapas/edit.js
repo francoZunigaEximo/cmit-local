@@ -9,6 +9,7 @@ $(function() {
     getCerrarMapas();
     getFinalMapa();
     getEnMapa();
+    lstAuditorias();
     listaComentariosPrivados(IDMAPA, 'prestaciones','mapa');
     listaComentariosPrivados(IDMAPA, 'cerrado','mapa');
     listarRemitos(IDMAPA);
@@ -514,6 +515,7 @@ $(function() {
                 getEnMapa();
                 getFinalMapa();
                 getCerrarMapas();
+                lstAuditorias();
             })
             .fail(function(jqXHR){
                 preloader('off');
@@ -602,7 +604,7 @@ $(function() {
                 getFinalMapa();
                 getCerrarMapas();
                 listarRemitos(IDMAPA);
-
+                lstAuditorias();
             })
             .fail(function(jqXHR){
                 preloader('off');
@@ -739,6 +741,7 @@ $(function() {
                     getEnMapa();
                     getFinalMapa();
                     getCerrarMapas();
+                    lstAuditorias();
                     $('.saveEnviar').prop('disabled', false);
                 }, 3000);
                 
@@ -1274,6 +1277,41 @@ $(function() {
                 $('.ComObsEstado').val(rs);
 
             })
+    }
+
+    function lstAuditorias()
+    {
+        $('#auditoriaPres').empty();
+        preloader('on');
+        $.get(listadoAuditorias, {Id: IDMAPA})
+        .done(function(response){
+            preloader('off');
+            $.each(response, function(index, r){
+                let contenido = `
+                    <tr>
+                        <th>${fechaCompleta(r.Fecha)}</th>
+                        <th>${r.auditar_accion.Nombre}</th>
+                        <th>${r.IdUsuario}</th>
+                    </tr>
+                `;
+
+                $('#lstAuditorias').append(contenido);
+            })
+
+            $("#auditoriaPres").fancyTable({
+                pagination: true,
+                perPage: 10,
+                searchable: false,
+                globalSearch: false,
+                sortable: false, 
+            });
+        })
+        .fail(function(jqXHR){
+            preloader('off');
+            let errorData = JSON.parse(jqXHR.responseText);            
+            checkError(jqXHR.status, errorData.msg);
+            return;
+        });
     }
 
 

@@ -249,8 +249,7 @@ class MapasController extends Controller
         if (!$this->hasPermission("mapas_edit")) {
             abort(403);
         }
-        //listado de prestaciones que componen el mapa
-        $listado = Prestacion::where('IdMapa', $mapa->Id)->pluck('Id');
+        
 
         $cerradas = $this->contadorCerrado($mapa->Id);
         $finalizados = $this->contadorFinalizado($mapa->Id);
@@ -260,9 +259,9 @@ class MapasController extends Controller
         $enProceso = $this->contadorEnProceso($mapa->Id);
         $presentes = Prestacion::where('IdMapa', $mapa->Id)->count();
         $ausentes = (intval($mapa->Cpacientes) ?? 0) - $presentes;
-        $auditorias = Auditor::with('auditarAccion')->where('IdTabla', 5)->whereIn('IdRegistro', $listado)->orderBy('Id', 'Desc')->get();
+        
 
-        return view('layouts.mapas.edit', compact(['mapa', 'cerradas', 'finalizados', 'entregados', 'conEstado', 'presentes', 'completas', 'enProceso', 'ausentes', 'auditorias']));
+        return view('layouts.mapas.edit', compact(['mapa', 'cerradas', 'finalizados', 'entregados', 'conEstado', 'presentes', 'completas', 'enProceso', 'ausentes']));
     }
 
 
@@ -1083,6 +1082,15 @@ class MapasController extends Controller
         $query = Prestacion::with(['mapa', 'paciente'])->where('IdMapa', $request->mapa)->where('IdPaciente', $request->paciente)->count();
 
         return response()->json($query);
+    }
+
+    public function listadoAuditorias(Request $request)
+    {
+        //listado de prestaciones que componen el mapa
+        $listado = Prestacion::where('IdMapa', $request->Id)->pluck('Id');
+        return Auditor::with('auditarAccion')->where('IdTabla', 5)->whereIn('IdRegistro', $listado)->orderBy('Id', 'Desc')->get();
+
+
     }
 
     private function queryBase()
