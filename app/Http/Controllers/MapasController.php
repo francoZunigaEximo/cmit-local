@@ -249,8 +249,7 @@ class MapasController extends Controller
         if (!$this->hasPermission("mapas_edit")) {
             abort(403);
         }
-        //listado de prestaciones que componen el mapa
-        $listado = Prestacion::where('IdMapa', $mapa->Id)->pluck('Id');
+        
 
         $cerradas = $this->contadorCerrado($mapa->Id);
         $finalizados = $this->contadorFinalizado($mapa->Id);
@@ -260,9 +259,9 @@ class MapasController extends Controller
         $enProceso = $this->contadorEnProceso($mapa->Id);
         $presentes = Prestacion::where('IdMapa', $mapa->Id)->count();
         $ausentes = (intval($mapa->Cpacientes) ?? 0) - $presentes;
-        $auditorias = Auditor::with('auditarAccion')->where('IdTabla', 5)->whereIn('IdRegistro', $listado)->orderBy('Id', 'Desc')->get();
+        
 
-        return view('layouts.mapas.edit', compact(['mapa', 'cerradas', 'finalizados', 'entregados', 'conEstado', 'presentes', 'completas', 'enProceso', 'ausentes', 'auditorias']));
+        return view('layouts.mapas.edit', compact(['mapa', 'cerradas', 'finalizados', 'entregados', 'conEstado', 'presentes', 'completas', 'enProceso', 'ausentes']));
     }
 
 
@@ -419,58 +418,35 @@ class MapasController extends Controller
             return response()->json(['result' => $result]);
     }
 
-    public function show($id)
-    {
-        // Show
-    }
+    public function show(){}
 
     public function export(Request $request)
     {
-        $ids = $request->Id;
-        if (! is_array($ids)) {
-            $ids = [$ids];
-        }
-        $mapas = $this->queryBase();
 
-        if ($request->archivo === 'csv')
+        if ($request->archivo === 'xls')
         {
-
-            $mapas->when($request->modulo === 'remito', function ($mapas) use ($ids, $request) {
-                $mapas->whereIn('prestaciones.NroCEE', $ids)
-                        ->where('mapas.Nro', $request->mapa);
-            });
-
-            $mapas->when(empty($request->Tipo), function ($mapas) use ($ids) {
-                $mapas->whereIn('mapas.Id', $ids);
-            });
-
-            $result = $mapas->orderBy('prestaciones.Id', 'DESC')->get();
-
-            if ($result->isEmpty()) {
-                return response()->json(['msg' => 'No se encontraron datos para exportar. Hay un conflicto'], 409);
-            }
-
-            return $this->listadoMapa($result);
+            return $request->modulo === 'remito'
+                ? $this->remitoMapas($request->mapa, $request->Id)
+                : $this->listadoMapa($request->Id);
 
         } elseif ($request->archivo === 'pdf') {
 
-            $result = $mapas->whereIn('prestaciones.NroCEE', $ids)
-            ->where('mapas.Nro', $request->mapa)
-            ->orderBy('prestaciones.Id', 'DESC')->get(); 
+            $examenes = Prestacion::where('NroCEE', $request->Id)->pluck('Id');
+            $items = ItemPrestacion::with(['prestaciones', 'examenes', 'prestaciones.paciente'])->whereIn('IdPrestacion', $examenes)->get();
 
-            if ($result->isEmpty()) {
+            if ($examenes->isEmpty()) {
                 return response()->json(['msg' => 'No se encontraron datos para generar el PDF. Hay un conflicto'], 409);
             }
+            return response()->json(['msg' => 'Desactivado por desarrollo'], 409);
+            // $pdf = PDF::loadView('layouts.mapas.pdf', ['data' => $items]);
+            // $path = storage_path('app/public/temp/');
+            // $fileName = time() . '.pdf';
+            // $pdf->save($path . $fileName);
             
-            $pdf = PDF::loadView('layouts.mapas.pdf', ['result' => $result]);
-            $path = storage_path('app/public/');
-            $fileName = time() . '.pdf';
-            $pdf->save($path . $fileName);
-            
-            $filePath = $path . $fileName;
-            chmod($filePath, 0777);
+            // $filePath = $path . $fileName;
+            // chmod($filePath, 0777);
 
-            return response()->json(['filePath' => $filePath, 'msg' => 'Reporte generado']);
+            // return response()->json(['filePath' => $filePath, 'msg' => 'Se ha generado correctamente el reporte ', 'estado' => 'success']);
         }
     }
 
@@ -1085,6 +1061,15 @@ class MapasController extends Controller
         return response()->json($query);
     }
 
+    public function listadoAuditorias(Request $request)
+    {
+        //listado de prestaciones que componen el mapa
+        $listado = Prestacion::where('IdMapa', $request->Id)->pluck('Id');
+        return Auditor::with('auditarAccion')->where('IdTabla', 5)->whereIn('IdRegistro', $listado)->orderBy('Id', 'Desc')->get();
+
+
+    }
+
     private function queryBase()
     {
         return Mapa::leftJoin('prestaciones', 'mapas.Id', '=', 'prestaciones.IdMapa')
@@ -1340,6 +1325,8 @@ class MapasController extends Controller
             storage_path('app/public/temp/merge_adjDigitales_'.$idPrestacion.'.pdf')
         );
     }
+
+    private function remitoPdf() {}
 
     private function registrarEEnvio(int $id): void
     {

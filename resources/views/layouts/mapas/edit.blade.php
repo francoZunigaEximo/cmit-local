@@ -501,18 +501,7 @@
                                         </tr>
                                     </thead>
                                     <tbody class="list form-check-all" id="auditoriaPres">
-                                        @forelse($auditorias as $auditoria)
-                                        <tr>
-                                            <th>{{ isset($auditoria->Fecha) ? \Carbon\Carbon::parse($auditoria->Fecha)->format('d/m/Y H:i:s') : '' }}</th>
-                                            <th>{{ $auditoria->auditarAccion->Nombre ?? '' }}</th>
-                                            <th>{{ $auditoria->IdUsuario ?? '' }}</th>
-                                        </tr>
-                                        @empty
-                                        <tr>
-                                            <th>No hay registros actualmente</th>
-                                        </tr>
-
-                                        @endforelse
+                     
                                     </tbody>
                                 </table>
                             </div>
@@ -696,6 +685,7 @@ const getComentarioPres = "{{ route('getComentarioPres') }}";
 const setComentarioPres = "{{ route('setComentarioPres') }}";
 const reverseRemito = "{{ route('reverseRemito') }}";
 const vistaPrevia = "{{ route('mapas.vistaPrevia') }}";
+const listadoAuditorias = "{{ route('mapas.auditorias') }}";
 //Extras
 const TOKEN = "{{ csrf_token() }}";
 const MAPA = "{{ $mapa->Nro }}";

@@ -9,6 +9,7 @@ $(function() {
     getCerrarMapas();
     getFinalMapa();
     getEnMapa();
+    lstAuditorias();
     listaComentariosPrivados(IDMAPA, 'prestaciones','mapa');
     listaComentariosPrivados(IDMAPA, 'cerrado','mapa');
     listarRemitos(IDMAPA);
@@ -36,25 +37,24 @@ $(function() {
     $(document).on('click', '.excel, .pdf', function(e){
         e.preventDefault();
 
-        let ids = [];
-        ids.push($(this).data('remito'));
+            let id = $(this).data('remito');
 
-        let arr = {
-            excel: 
-                {
-                    datos:  {modulo: 'remito', tipo: 'excel', mapa: MAPA, Id: ids, archivo: 'csv'},
-                    archivo: 'csv'    
-                },
-            pdf:
-                {
-                    datos:  {Id: ids, mapa: MAPA, archivo: 'pdf'},
-                    archivo: 'pdf'  
-                }
+            arr = {
+                excel: 
+                    {
+                        datos:  {modulo: 'remito', Id: id,  mapa: IDMAPA, archivo: 'xls'}, 
+                        archivo: 'excel'  
+                    },
+                pdf:
+                    {
+                        datos:  {modulo: 'remito', Id: id, mapa: IDMAPA, archivo: 'pdf'}, 
+                        archivo: 'pdf'
+                    }
         };
         
         tipo = $(this).hasClass('pdf') ? 'pdf' : 'excel';
 
-        if (ids.length === 0) {
+        if (id.length === 0) {
             toastr.warning('Debes seleccionar al menos un mapa para exportar.');
             return;
         }
@@ -65,12 +65,14 @@ $(function() {
             buttons: ['Cancelar', 'Generar']
         }).then((confirmar) => {
             if(confirmar){
+                preloader('on');
                 $.ajax({
                     url: fileExport,
                     type: "GET",
                     data: arr[tipo].datos,
-                    success: function(response) {
-                        createFile(arr[tipo].archivo, response.filePath, generarCodigoAleatorio + "_reporte");
+                    success: function(response, ) {
+                        createFile(arr[tipo].archivo, response.filePath, generarCodigoAleatorio() + "_reporte");
+                        preloader('off');
                         toastr.success(response.msg);
                     },
                     error: function(jqXHR) {
@@ -514,6 +516,7 @@ $(function() {
                 getEnMapa();
                 getFinalMapa();
                 getCerrarMapas();
+                lstAuditorias();
             })
             .fail(function(jqXHR){
                 preloader('off');
@@ -602,7 +605,7 @@ $(function() {
                 getFinalMapa();
                 getCerrarMapas();
                 listarRemitos(IDMAPA);
-
+                lstAuditorias();
             })
             .fail(function(jqXHR){
                 preloader('off');
@@ -739,6 +742,7 @@ $(function() {
                     getEnMapa();
                     getFinalMapa();
                     getCerrarMapas();
+                    lstAuditorias();
                     $('.saveEnviar').prop('disabled', false);
                 }, 3000);
                 
@@ -1243,8 +1247,11 @@ $(function() {
                                 <button data-remito="${r.NroCEE}" type="button" class="btn botonGeneral ${r.Entregado === 1 ? 'revertirEntrega' : 'entregarRemito'}" ${r.Entregado === 1 ? '' : 'data-bs-toggle="modal" data-bs-target="#entregarModal"'}>${r.Entregado === 1 ? 'Revertir Entrega':'Entregar'}</button> 
                             </td>
                             <td>
-                                <button data-remito="${r.NroCEE}" type="button" class="pdf btn iconGeneral" title="Generar reporte en Pdf">
-                                    <i class="ri-file-pdf-line"></i>
+                                <button data-remito="${r.NroCEE}" type="button" class="excel btn iconGeneral" title="Excel">
+                                    <i class="ri-file-excel-line fs-5"></i>
+                                </button>
+                                <button data-remito="${r.NroCEE}" type="button" class="pdf btn iconGeneral" title="PDF">
+                                    <i class="ri-file-pdf-line fs-5"></i>
                                 </button>
                             </td>
                         </tr>
@@ -1274,6 +1281,41 @@ $(function() {
                 $('.ComObsEstado').val(rs);
 
             })
+    }
+
+    function lstAuditorias()
+    {
+        $('#auditoriaPres').empty();
+        preloader('on');
+        $.get(listadoAuditorias, {Id: IDMAPA})
+        .done(function(response){
+            preloader('off');
+            $.each(response, function(index, r){
+                let contenido = `
+                    <tr>
+                        <th>${fechaCompleta(r.Fecha)}</th>
+                        <th>${r.auditar_accion.Nombre}</th>
+                        <th>${r.IdUsuario}</th>
+                    </tr>
+                `;
+
+                $('#lstAuditorias').append(contenido);
+            })
+
+            $("#auditoriaPres").fancyTable({
+                pagination: true,
+                perPage: 10,
+                searchable: false,
+                globalSearch: false,
+                sortable: false, 
+            });
+        })
+        .fail(function(jqXHR){
+            preloader('off');
+            let errorData = JSON.parse(jqXHR.responseText);            
+            checkError(jqXHR.status, errorData.msg);
+            return;
+        });
     }
 
 

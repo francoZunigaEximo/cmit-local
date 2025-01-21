@@ -7,11 +7,15 @@ use App\Models\Cliente;
 use App\Models\ExamenCuentaIt;
 use App\Models\FacturaDeVenta;
 use App\Models\ItemPrestacion;
+use App\Models\Mapa;
 use App\Models\PrecioPorCodigo;
+use App\Models\Prestacion;
 use App\Models\PrestacionObsFase;
 use App\Models\ReporteFinneg;
 use App\Models\Telefono;
 use Carbon\Carbon;
+use FontLib\TrueType\Collection;
+use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use illuminate\Support\Str;
@@ -204,7 +208,7 @@ trait ReporteExcel
 
     }
 
-    public function listadoMapa($mapas)
+    public function listadoMapa($ids)
     {
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -231,21 +235,43 @@ trait ReporteExcel
         $sheet->setCellValue('M1', 'Apellido y Nombre');
         $sheet->setCellValue('N1', 'Observación');
 
+        $mapas = Mapa::join('clientes as empresa', 'mapas.IdEmpresa', '=', 'empresa.Id')
+            ->join('clientes as art', 'mapas.IdART', '=', 'art.Id')
+            ->leftJoin('prestaciones', 'mapas.Id', '=', 'prestaciones.IdMapa')
+            ->leftJoin('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+            ->select(
+                'mapas.Id as Id',
+                'mapas.Nro as Nro',
+                'art.RazonSocial as Art',
+                'empresa.RazonSocial as Empresa',
+                'mapas.Fecha',
+                'mapas.FechaE',
+                'mapas.Inactivo as Inactivo',
+                'prestaciones.NroCEE as NroCEE',
+                'prestaciones.eEnviado as eEnviado',
+                'prestaciones.Cerrado as Cerrado',
+                'prestaciones.Entregado as Entregado',
+                'prestaciones.Finalizado as Finalizado',
+                DB::raw("CONCAT(pacientes.Apellido,' ',pacientes.Nombre) as NombreCompleto"),
+                'mapas.Obs as Obs'
+            )->whereIn('mapas.Id', $ids)
+            ->get();
+
         $fila = 2;
         foreach($mapas as $mapa){
             $sheet->setCellValue('A'.$fila, $mapa->Id);
             $sheet->setCellValue('B'.$fila, $mapa->Nro);
-            $sheet->setCellValue('C'.$fila, $mapa->Art);
-            $sheet->setCellValue('D'.$fila, $mapa->Empresa);
+            $sheet->setCellValue('C'.$fila, $mapa->Art ?? '');
+            $sheet->setCellValue('D'.$fila, $mapa->Empresa ?? '');
             $sheet->setCellValue('E'.$fila, $mapa->Fecha);
             $sheet->setCellValue('F'.$fila, $mapa->FechaE);
             $sheet->setCellValue('G'.$fila, $mapa->Inactivo === 0 ? "No" : "Si");
             $sheet->setCellValue('H'.$fila, $mapa->NroCEE);
-            $sheet->setCellValue('I'.$fila, $mapa->eEnviado);
-            $sheet->setCellValue('J'.$fila, $mapa->Cerrado);
-            $sheet->setCellValue('K'.$fila, $mapa->Entregado);
-            $sheet->setCellValue('L'.$fila, $mapa->Finalizado);
-            $sheet->setCellValue('M'.$fila, $mapa->Apellido.' '.$mapa->Nombre);
+            $sheet->setCellValue('I'.$fila, in_array($mapa->eEnviado, [0,'',null]) ? "No" : "Si");
+            $sheet->setCellValue('J'.$fila, in_array($mapa->Cerrado, [0,'',null]) ? "No" : "Si");
+            $sheet->setCellValue('K'.$fila, in_array($mapa->Entregado, [0,'',null]) ? "No" : "Si");
+            $sheet->setCellValue('L'.$fila, in_array($mapa->Finalizado, [0,'',null]) ? "No" : "Si");
+            $sheet->setCellValue('M'.$fila, $mapa->NombreCompleto ?? '-');
             $sheet->setCellValue('N'.$fila, $mapa->Obs);
             $fila++;
         }
@@ -683,6 +709,54 @@ trait ReporteExcel
         return $this->generarArchivo($spreadsheet, $name);
     }
 
+    public function remitoMapas(int $idMapa, int $nroRemito)
+    {
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+
+        $columnas = ['A', 'B', 'C', 'D', 'E'];
+
+        foreach($columnas as $columna){
+            $sheet->getColumnDimension($columna)->setAutoSize(true);
+        }
+
+        $mapa = Mapa::with(['prestacion', 'artMapa', 'empresaMapa'])->find($idMapa);
+
+        $sheet->setCellValue('A1', 'REMITO DE ENTREGA DE ESTUDIOS');
+        $sheet->setCellValue('A3', 'ART: '.$mapa->artMapa->RazonSocial ?? '');
+        $sheet->setCellValue('A4', 'REMITO: '.$nroRemito ?? 0);
+        $sheet->setCellValue('A5', 'EMPRESA: '.$mapa->empresaMapa->RazonSocial ?? '');
+        $sheet->setCellValue('A6', 'MAPA: '.$mapa->Id ?? 0);
+
+      
+        $examenes = Prestacion::where('NroCEE', $nroRemito)->pluck('Id');
+        $items = ItemPrestacion::with(['prestaciones', 'examenes', 'prestaciones.paciente'])->whereIn('IdPrestacion', $examenes)->get();
+
+        $sheet->setCellValue('A8', 'Paciente');
+        $sheet->setCellValue('B8', 'DNI');
+        $sheet->setCellValue('C8', 'CUIL');
+        $sheet->setCellValue('D8', 'Prestación');
+        $sheet->setCellValue('E8', 'Examenes');
+
+        $fila = 9;
+        foreach($items as $item){
+
+            $nombreCompleto = ($item->prestaciones->paciente->Apellido ?? '').' '.($item->prestaciones->paciente->Nombre ?? '');
+
+            $sheet->setCellValue('A'.$fila, $nombreCompleto);
+            $sheet->setCellValue('B'.$fila, $item->prestaciones->paciente->Documento ?? '');
+            $sheet->setCellValue('B'.$fila, $item->prestaciones->paciente->Identificacion ?? '');
+            $sheet->setCellValue('B'.$fila, $item->prestaciones->Id ?? '');
+            $sheet->setCellValue('B'.$fila, $item->examenes->Nombre ?? '');
+            $fila++;
+        }
+
+        $name = 'resultados_'.Str::random(6).'.xlsx';
+        return $this->generarArchivo($spreadsheet, $name);
+
+    }
+
     private function generarArchivo($excel, $nombre)
     {
           // Guardar el archivo en la carpeta de almacenamiento
@@ -700,7 +774,7 @@ trait ReporteExcel
         return $fecha === '0000-00-00' ? '' : Carbon::parse($fecha)->format('d/m/Y');
     }
     
-    private function formaPagoPrestacion($pago)
+    private function formaPagoPrestacion(string $pago): string
     {
         switch ($pago) {
             case "B":
@@ -713,4 +787,6 @@ trait ReporteExcel
                 return 'CCorriente';
         }
     }
+
+
 }

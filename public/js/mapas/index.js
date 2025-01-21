@@ -44,7 +44,7 @@ $(document).ready(()=>{
                     type: "GET",
                     data: {
                         Id: ids,
-                        archivo: 'csv'
+                        archivo: 'xls'
                     },
                     success: function(response) {
                         createFile("excel", response.filePath, generarCodigoAleatorio() + "_reporte");
