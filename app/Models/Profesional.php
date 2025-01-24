@@ -78,7 +78,7 @@ class Profesional extends Model
 
     public function user()
     {
-        return $this->hasOne(User::class, 'IdProfesional', 'Id');
+        return $this->belongsTo(User::class, 'Id', 'IdProfesional');
     }
 
     public function itemsPrestacion()

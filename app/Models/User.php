@@ -38,7 +38,7 @@ class User extends Authenticatable
 
     public function profesional()
     {
-        return $this->belongsTo(Profesional::class, 'Id', 'profesional_id');
+        return $this->hasOne(Profesional::class, 'Id', 'profesional_id');
     }
 
     public function personal()

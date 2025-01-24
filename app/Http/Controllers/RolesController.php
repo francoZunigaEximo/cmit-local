@@ -132,7 +132,7 @@ class RolesController extends Controller
                 'T5' => in_array("Evaluador ART", $buscar) === true ? 1 : 0,
             ]);
             $user->update(['profesional_id' => $id]);
-        
+            
         }elseif(count($buscar) === 1 && $user->profesional_id !== 0) {
 
             foreach ($this->lstRoles as $key => $value) {
@@ -146,17 +146,22 @@ class RolesController extends Controller
     {
         $buscar = $this->listadoRoles($roles->nombre);
 
-        foreach ($this->lstRoles as $key => $value) {
-            $user->profesional->$value = in_array($key, $buscar) === true ? 0 : $user->profesional->$value;
+        if(!empty($buscar)) {
+
+            foreach ($this->lstRoles as $key => $value) {
+                $user->profesional->$value = in_array($key, $buscar) === true ? 0 : $user->profesional->$value;
+            }
+            $user->profesional->save();
+            ProfesionalProv::where('IdProf', $user->profesional_id)->delete();
+
         }
-        $user->profesional->save();
-        ProfesionalProv::where('IdProf', $user->profesional_id)->delete();
     }
 
     private function listadoRoles($rol)
     {
         $arrList = explode(',', trim($rol));
         $arrKey = array_keys($this->lstRoles);
+
         return array_intersect($arrList, $arrKey);
     }
 
