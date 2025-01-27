@@ -7,8 +7,6 @@ $(document).ready(()=>{
         }
     });
 
-    let IdComentario = null;
-
     //Fechas en filtros
     $('#fechaHasta').val(fechaNow(null, "-", 0));
     

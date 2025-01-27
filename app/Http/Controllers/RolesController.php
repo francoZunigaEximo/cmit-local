@@ -10,12 +10,16 @@ use App\Models\Rol;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use App\Services\Llamador\Profesionales;
+
+use App\Events\ListadoProfesionalesEvent;
 
 class RolesController extends Controller
 {
     private array $lstRoles;
+    protected $listadoProfesionales;
 
-    public function __construct()
+    public function __construct(Profesionales $listadoProfesionales)
     {
         $this->lstRoles = [
             "Efector" => "T1", 
@@ -24,6 +28,8 @@ class RolesController extends Controller
             "Combinado" => "T4", 
             "Evaluador ART" => "T5"
         ];
+
+        $this->listadoProfesionales = $listadoProfesionales;
     }
 
     public function listado(Request $request)
@@ -138,6 +144,10 @@ class RolesController extends Controller
             foreach ($this->lstRoles as $key => $value) {
                 $user->profesional->$value = in_array($key, $buscar) ? 1 : 0;
             }
+
+            $efectores = $this->listadoProfesionales->listado('Efector');
+            broadcast(new ListadoProfesionalesEvent($efectores));
+
             $user->profesional->save();
         }
     }
@@ -153,6 +163,9 @@ class RolesController extends Controller
             }
             $user->profesional->save();
             ProfesionalProv::where('IdProf', $user->profesional_id)->delete();
+
+            $efectores = $this->listadoProfesionales->listado('Efector');
+            broadcast(new ListadoProfesionalesEvent($efectores));
 
         }
     }
