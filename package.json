@@ -1,9 +1,9 @@
 {
   "private": true,
   "dependencies": {
+    "laravel-echo": "^1.19.0",
     "n": "^9.1.0",
-    "sweetalert": "^2.1.2",
-    "toastr": "^2.1.4"
+    "pusher-js": "^8.4.0-rc2"
   },
   "name": "cmit",
   "description": "![Badge en Desarollo](https://img.shields.io/badge/STATUS-EN%20DESAROLLO-green)",

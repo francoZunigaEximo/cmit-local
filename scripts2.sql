@@ -912,3 +912,9 @@ ALTER TABLE examenes MODIFY COLUMN aliasexamen VARCHAR(50) NULL;
 UPDATE examenes SET aliasexamen = NULL;
 
 ALTER TABLE mapas CHANGE IdEMpresa IdEmpresa int(11) NOT NULL
+
+/* Funciones de ViteJS */
+npm install
+npm laravel-vite-plugin
+
+npm install toastr jquery sweetalert select2 datatables.net datatables.net-dt

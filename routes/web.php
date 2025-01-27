@@ -22,6 +22,7 @@ use App\Http\Controllers\NoticiasController;
 use App\Http\Controllers\PrestacionesObsFasesController;
 use App\Http\Controllers\OrdenesExamenController;
 use App\Http\Controllers\ExamenesCuentaController;
+use App\Http\Controllers\LlamadorController;
 use App\Http\Controllers\MensajesController;
 use App\Http\Controllers\NotasCreditoController;
 use App\Http\Controllers\PaqueteEstudioController;
@@ -386,5 +387,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('alias-examenes/delete', [AliasExamenesController::class, 'deleteAlias'])->name('aliasExamenes.del');
     Route::get('alias-examenes/getExamenSelect', [AliasExamenesController::class, 'getAliasSelect'])->name('aliasExamenes.getExamenSelect');
 
+    Route::get('llamador/efector', [LlamadorController::class, 'efector'])->name('llamador.efector');
+    Route::get('llamador/informador', [LlamadorController::class, 'informador'])->name('llamador.informador');
+    Route::get('llamador/evaluador', [LlamadorController::class, 'evaluador'])->name('llamador.evaluador');
+    Route::get('llamador/efector/buscar', [LlamadorController::class, 'buscarEfector'])->name('llamador.buscarEfector');
 });
 

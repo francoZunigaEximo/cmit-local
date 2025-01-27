@@ -224,3 +224,17 @@ function calculoAvance(data) {
 function obtenerFormato(date) {
     return date.toISOString().slice(0, 10);
 };
+
+function calcularEdad(fechaNacimiento) {
+    let fechaNac = new Date(fechaNacimiento), fechaActual = new Date();
+
+    let edad = fechaActual.getFullYear() - fechaNac.getFullYear();
+
+    let mesActual = fechaActual.getMonth(), diaActual = fechaActual.getDate(), mesNacimiento = fechaNac.getMonth(), diaNacimiento = fechaNac.getDate();
+
+    if (mesActual < mesNacimiento || (mesActual === mesNacimiento && diaActual < diaNacimiento)) {
+        edad--;
+    }
+
+    return edad;
+}
