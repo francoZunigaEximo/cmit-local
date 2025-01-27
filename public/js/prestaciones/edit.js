@@ -542,72 +542,115 @@ $(document).ready(()=> {
     $(document).on('click', '.resumenTotal', function(e){
         e.preventDefault();
 
-        preloader('on');
-        $.get(exportXls, {Id: ID})
-            .done(function(response){
-                preloader('off');
-                createFile("excel", response.filePath, generarCodigoAleatorio() + '_reporte');
-                toastr.success(response.msg);
-            })
-            .fail(function(jqXHR){
-                preloader('off');
-                let errorData = JSON.parse(jqXHR.responseText);            
-                checkError(jqXHR.status, errorData.msg);
-                return;
-            });
+        swal({
+            title: "¿Desea generar el resumen?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar){
+                preloader('on');
+                $.get(exportXls, {Id: ID})
+                    .done(function(response){
+                        
+                        createFile("excel", response.filePath, generarCodigoAleatorio() + '_reporte');
+                        preloader('off');
+                        toastr.success(response.msg);
+                    })
+                    .fail(function(jqXHR){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
+                    });
+            }
+        });
     });
 
     $(document).on('click', '.eAnexo', function(e){
         e.preventDefault();
         
-        preloader('on');
-        $.get(exportPdf, {Id: ID, adjAnexos: 'true', buttonEA: 'true'})
-            .done(function(response){
-                createFile("pdf", response.filePath, response.name);
-                preloader('off')
-                toastr.success(response.msg)
-            })
-            .fail(function(jqXHR){
-                preloader('off');
-                let errorData = JSON.parse(jqXHR.responseText);            
-                checkError(jqXHR.status, errorData.msg);
-                return;
-            });    
+        swal({
+            title: "¿Desea generar el anexo?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar){
+                preloader('on');
+                $.get(exportPdf, {Id: ID, adjAnexos: 'true', buttonEA: 'true'})
+                    .done(function(response){
+
+                        createFile("pdf", response.filePath, response.name);
+                        preloader('off')
+                        toastr.success(response.msg)
+                    })
+                    .fail(function(jqXHR){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
+                    }); 
+            }
+        });
+
+           
     });
 
     $(document).on('click', '.eEnviarReporte', function(e){
         e.preventDefault();
 
-        preloader('on');
-        $.get(eEnviarAviso, {Id: ID})
-            .done(function(response){
-                preloader('off');
-                toastr.success(response.msg);
-            })
-            .fail(function(jqXHR){
-                preloader('off');
-                let errorData = JSON.parse(jqXHR.responseText);
-                checkError(jqXHR.status, errorData.msg);
-                return;
-            })
+        swall({
+            title: "¿Desea enviar el reporte?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar){
+
+                preloader('on');
+                $.get(eEnviarAviso, {Id: ID})
+                    .done(function(response){
+                        preloader('off');
+                        toastr.success(response.msg);
+                    })
+                    .fail(function(jqXHR){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
+                    });
+
+            }
+        });
+
+        
     })
 
     $(document).on('click', '.eEstudio', function(e){
         e.preventDefault();
+
+        swal({
+            title: "¿Desea enviar el estudio?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar) {
+
+                preloader('on');
+                $.get(exportPdf, {Id: ID, eEstudio: 'true', buttonEE: 'true'})
+                    .done(function(response){
+                        createFile("pdf", response.filePath, response.name);
+                        preloader('off')
+                        toastr.success(response.msg)
+                    })
+                    .fail(function(jqXHR){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
+                    });  
+            }
+        })
         
-        preloader('on');
-        $.get(exportPdf, {Id: ID, eEstudio: 'true', buttonEE: 'true'})
-            .done(function(response){
-                createFile("pdf", response.filePath, response.name);
-                preloader('off')
-                toastr.success(response.msg)
-            })
-            .fail(function(jqXHR){
-                preloader('off');
-                let errorData = JSON.parse(jqXHR.responseText);            
-                checkError(jqXHR.status, errorData.msg);
-                return;
-            });    
+          
     });
 
     $(document).on('click', '.enviarReporte', function(e){
