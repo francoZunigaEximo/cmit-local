@@ -53,8 +53,8 @@
 
                     <div class="col-2">
                         <label class="form-label">ART</label>
-                        <select data-id="{{ $prestacione->art->Id}}" type="text" name="art" id="art" class="form-control">
-                            <option value="{{ $prestacione->art->Id}}" selected>{{ $prestacione->art->RazonSocial }} - {{ $prestacione->art->Identificacion }}</option>
+                        <select data-id="{{ $prestacione->art->Id ?? 0}}" type="text" name="art" id="art" class="form-control">
+                            <option value="{{ $prestacione->art->Id ?? 0}}" selected>{{ $prestacione->art->RazonSocial ?? ''}} - {{ $prestacione->art->Identificacion ?? ''}}</option>
                         </select>
                     </div>
     

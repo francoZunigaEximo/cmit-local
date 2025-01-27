@@ -61,12 +61,12 @@ class Prestacion extends Model
 
     public function empresa()
     {
-        return $this->belongsTo(Cliente::class, 'Id', 'IdEmpresa');
+        return $this->belongsTo(Cliente::class, 'IdEmpresa', 'Id');
     }
 
     public function art()
     {
-        return $this->belongsTo(Cliente::class, 'Id', 'IdART');
+        return $this->belongsTo(Cliente::class, 'IdART', 'Id');
     }
 
     public function mapa()

@@ -66,7 +66,7 @@ class Cliente extends Model
 
     public function prestacion()
     {
-        return $this->hasMany(Prestacion::class, ['IdART', 'IdEmpresa'], 'Id');
+        return $this->hasOne(Prestacion::class, 'Id', ['IdART', 'IdEmpresa']);
     }
 
     public function mapa()
