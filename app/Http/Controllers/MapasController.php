@@ -898,7 +898,7 @@ class MapasController extends Controller
 
                         $asunto = 'Mapa '.$nombreCompleto.' - '.$prestacion->paciente->TipoDocumento.' '.$prestacion->paciente->Documento;  
 
-                        ReporteMapasJob::dispatch($email, $asunto, $cuerpo, $attachments); //Enviamos el correo al CronJob y Redis
+                        ReporteMapasJob::dispatch($email, $asunto, $cuerpo, $attachments)->onQueue('correos'); //Enviamos el correo al CronJob y Redis
 
                         $this->copiasRegistroEEnvio($prestacion->Id); //Enviamos las copias de los archivos creados a las carpetas correspondientes del sistema
 
@@ -950,7 +950,7 @@ class MapasController extends Controller
 
                         $asunto = 'Mapa '.$nombreCompleto.' - '.$prestacion->paciente->TipoDocumento.' '.$prestacion->paciente->Documento;
           
-                        ReporteMapasJob::dispatch($email, $asunto, $cuerpo, $attachments);
+                        ReporteMapasJob::dispatch($email, $asunto, $cuerpo, $attachments)->onQueue('correos');
                         $this->copiasRegistroEEnvio($prestacion->Id); //Enviamos las copias de los archivos creados a las carpetas correspondientes del sistema
 
                         Auditor::setAuditoria($id, self::TBLMAPA, $accion, Auth::user()->name);

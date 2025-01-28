@@ -70,7 +70,24 @@ return [
             'block_for' => null,
             'after_commit' => false,
         ],
-
+        
+        //Personalizado
+        'correos' => [
+            'driver' => 'redis',
+            'connection' => 'default',
+            'queue' => 'correos',
+            'retry_after' => 90,
+            'block_for' => null,
+            'after_commit' => false,
+        ],
+        'websockets' => [
+            'driver' => 'redis',
+            'connection' => 'default',
+            'queue' => 'websockets',
+            'retry_after' => 90,
+            'block_for' => null,
+            'after_commit' => false,
+        ],
     ],
 
     /*

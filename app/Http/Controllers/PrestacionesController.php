@@ -53,7 +53,7 @@ use App\Jobs\ExamenesResultadosJob;
 
 use App\Helpers\ToolsEmails;
 use App\Helpers\ToolsReportes;
-
+use App\Jobs\EnviarAvisoJob;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\EnviarReporte;
 use App\Mail\ExamenesResultadosMail;
@@ -678,7 +678,7 @@ class PrestacionesController extends Controller
 
         foreach ($emails as $email) {
             //EnviarReporteJob::dispatch($email, $asunto, $cuerpo, $this->sendPath);//Soporte para pruebas
-            EnviarReporteJob::dispatch($email, $asunto, $cuerpo, $this->sendPath); 
+            EnviarReporteJob::dispatch($email, $asunto, $cuerpo, $this->sendPath)->onQueue('correos'); 
             // $info = new EnviarReporte(['subject' => $asunto, 'content' => $cuerpo]);
             //         Mail::to($email)->send($info);
         }
@@ -708,6 +708,10 @@ class PrestacionesController extends Controller
             return response()->json(['msg' => 'El cliente no acepta envio de correos electrónicos'], 409);
         }
 
+        if (in_array($prestacion->empresa->EMailInformes, [null, ''], true)) {
+            return response()->json(['msg' => 'El cliente no posee email de informes'], 409);
+        }
+
         $emails = $this->getEmailsReporte($prestacion->empresa->EMailInformes);
 
         $nombreCompleto = $prestacion->paciente->Apellido.' '.$prestacion->paciente->Nombre;
@@ -726,7 +730,7 @@ class PrestacionesController extends Controller
             $asunto = 'Solicitud de pago de exámen de  '.$nombreCompleto;
 
             foreach ($emails as $email) {
-                ExamenesImpagosJob::dispatch($email, $asunto, $cuerpo);
+                ExamenesImpagosJob::dispatch($email, $asunto, $cuerpo)->onQueue('correos');
             }
 
             return response()->json(['msg' => 'El cliente presenta examenes a cuenta impagos. Se ha enviado el email correspondiente'], 409);
@@ -739,32 +743,10 @@ class PrestacionesController extends Controller
             $cuerpo['evaluacion'] = substr($prestacion->Evaluacion, 2) ?? '';
             $cuerpo['obsEvaluacion'] = $prestacion->Observaciones ?? '';
 
-            //Creando eEnvio para adjuntar
-            array_push($temp_estudio, $this->eEstudio($request->Id, 'no'));
-            array_push($temp_estudio, $this->adjDigitalFisico($request->Id, 2));
-
-            $eEstudioSend = storage_path('app/public/temp/eEstudio'.$prestacion->Id.'.pdf');
-            $eAdjuntoSend = storage_path('app/public/temp/eAdjuntos_'.$prestacion->paciente->Apellido.'_'.$prestacion->paciente->Nombre.'_'.$prestacion->paciente->Documento.'_'.Carbon::parse($prestacion->Fecha)->format('d-m-Y').'.pdf');
-            $eGeneralSend = storage_path('app/public/temp/eAdjGeneral'.$prestacion->Id.'.pdf');
-
-            $this->reporteService->fusionarPDFs($temp_estudio, $eEstudioSend);
-            File::copy($this->adjAnexos($request->Id), $eAdjuntoSend);
-            File::copy($this->adjGenerales($request->Id), $eGeneralSend);
-
             $asunto = 'Estudios '.$nombreCompleto.' - '.$prestacion->paciente->TipoDocumento.' '.$prestacion->paciente->Documento;
 
-            $attachments = [$eEstudioSend, $eAdjuntoSend, $eGeneralSend];
-
             foreach ($emails as $email) {
-                ExamenesResultadosJob::dispatch($email, $asunto, $cuerpo, $attachments);
-
-                // $info = new ExamenesResultadosMail(['subject' => $asunto, 'content' => $cuerpo, 'attachments' => $attachments]);
-                //     Mail::to("nmaximowicz@eximo.com.ar")->send($info);
-
-                Auditor::setAuditoria($request->Id, 1, 40, Auth::user()->name); //1: Prestacion y 40 enviar eEstudio desde Opciones
-                File::copy($this->eEstudio($request->Id, "no"), FileHelper::getFileUrl('escritura').'/Enviar/eEstudio'.$request->Id.'.pdf');
-                File::copy($this->adjDigitalFisico($request->Id, 2), FileHelper::getFileUrl('escritura').'/Enviar/eAdjuntos'.$request->Id.'.pdf');
-                File::copy($this->adjAnexos($request->Id), FileHelper::getFileUrl('escritura').'/Enviar/eAnexos'.$request->Id.'.pdf');
+                EnviarAvisoJob::dispatch($email, $asunto, $cuerpo)->onQueue('correos');
             }
 
             return response()->json(['msg' => 'Se ha enviado el resultado al cliente de manera correcta.'], 200);
@@ -867,7 +849,7 @@ class PrestacionesController extends Controller
             $asunto = 'Solicitud de pago de exámen de  '.$nombreCompleto;
 
             foreach ($emails as $email) {
-                ExamenesImpagosJob::dispatch($email, $asunto, $cuerpo);
+                ExamenesImpagosJob::dispatch($email, $asunto, $cuerpo)->onQueue('correos');
             }
 
             return response()->json(['msg' => 'El cliente presenta examenes a cuenta impagos. Se ha enviado el email correspondiente'], 409);
@@ -899,7 +881,7 @@ class PrestacionesController extends Controller
 
             foreach ($emails as $email) {
                 // ExamenesResultadosJob::dispatch("nmaximowicz@eximo.com.ar", $asunto, $cuerpo, $this->sendPath);
-                ExamenesResultadosJob::dispatch($email, $asunto, $cuerpo, $attachments);
+                ExamenesResultadosJob::dispatch($email, $asunto, $cuerpo, $attachments)->onQueue('correos');
 
                 // $info = new ExamenesResultadosMail(['subject' => $asunto, 'content' => $cuerpo, 'attachments' => $attachments]);
                 //     Mail::to("nmaximowicz@eximo.com.ar")->send($info);

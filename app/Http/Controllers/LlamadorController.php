@@ -35,7 +35,6 @@ class LlamadorController extends Controller
         if ($this->checkTipoRol(Auth::user()->name) > 0) {
 
             $efectores = $this->listadoProfesionales->listado('Efector');
-            broadcast(new ListadoProfesionalesEvent($efectores));
 
         }else {
 

@@ -598,7 +598,7 @@ $(document).ready(()=> {
     $(document).on('click', '.eEnviarReporte', function(e){
         e.preventDefault();
 
-        swall({
+        swal({
             title: "¿Desea enviar el reporte?",
             icon: "warning",
             buttons: ["Cancelar", "Aceptar"]

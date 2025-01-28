@@ -371,7 +371,7 @@ public function searchPrestacion(Request $request)
                     $asunto = 'Solicitud de pago de exámen de '.$nombreCompleto;
         
                     foreach ($emails as $email) {
-                        ExamenesImpagosJob::dispatch($email, $asunto, $cuerpo);
+                        ExamenesImpagosJob::dispatch($email, $asunto, $cuerpo)->onQueue('correos');
                     }
         
                     $resultados[] = ['msg' => 'El cliente '.$prestacion->empresa->RazonSocial.' presenta examenes a cuenta impagos en la prestacion '.$Id.'. Se ha enviado el email correspondiente', 'estado' => 'success'];
@@ -446,7 +446,7 @@ public function searchPrestacion(Request $request)
                     $estudios !== null ? array_push($attachments, $estudios) : null;
 
                     foreach ($emails as $email) {
-                        ExamenesResultadosJob::dispatch($email, $asunto, $cuerpo, $attachments);
+                        ExamenesResultadosJob::dispatch($email, $asunto, $cuerpo, $attachments)->onQueue('correos');
 
                         // $info = new ExamenesResultadosMail(['subject' => $asunto, 'content' => $cuerpo, 'attachments' => $attachments]);
                         //     Mail::to("nmaximowicz@eximo.com.ar")->send($info);
