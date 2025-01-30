@@ -879,6 +879,10 @@ class ItemPrestacionesController extends Controller
             ->join('proveedores as proveedor2', 'examenes.IdProveedor', '=', 'proveedor2.Id')
             ->join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
             ->join('profesionales as informador', 'itemsprestaciones.IdProfesional2', '=', 'informador.Id')
+            ->join('users as userEfector', 'efector.Id','=','userEfector.profesional_id')
+            ->join('users as userInformador', 'informador.Id','=','userInformador.profesional_id')
+            ->join('datos as datosEfector', 'userEfector.datos_id', '=', 'datosEfector.Id')
+            ->join('datos as datosInformador', 'userInformador.datos_id', '=', 'datosInformador.Id')
             ->leftJoin('archivosefector', 'itemsprestaciones.Id', '=', 'archivosefector.IdEntidad')
             ->leftJoin('archivosinformador', 'itemsprestaciones.Id', '=', 'archivosinformador.IdEntidad')
             ->select(
@@ -888,10 +892,15 @@ class ItemPrestacionesController extends Controller
                 'examenes.Informe as Informe',
                 'informador.InfAdj as InfAdj',
                 'examenes.NoImprime as ExaNI',
-                'efector.Nombre as NombreE',
-                'efector.Apellido as ApellidoE',
-                'informador.Nombre as NombreI',
-                'informador.Apellido as ApellidoI',
+                DB::raw('CONCAT(efector.Apellido, " ", efector.Nombre) as EfectorFullName'),
+                DB::raw('CONCAT(informador.Apellido, " ", informador.Nombre) as InformadorFullName'),
+                DB::raw('CONCAT(datosEfector.Apellido, " ", datosEfector.Nombre) as DatosEfectorFullName'),
+                DB::raw('CONCAT(datosInformador.Apellido, " ", datosInformador.Nombre) as DatosInformadorFullName'),
+                'efector.Apellido as EfectorApellido',
+                'informador.Apellido as InformadorApellido',
+                'datosEfector.Apellido as DatosEfectorApellido',
+                'datosInformador.Apellido as DatosInformadorApellido',
+                'efector.RegHis as RegHis',
                 'itemsprestaciones.Ausente as Ausente',
                 'itemsprestaciones.Forma as Forma',
                 'itemsprestaciones.Incompleto as Incompleto',
@@ -1201,31 +1210,27 @@ class ItemPrestacionesController extends Controller
     }
 
     //Tipo: efector, informador
-    private function getProfesional(int $id, string $tipo, int $proveedor): mixed
+    private function getProfesional(int $id): mixed
     {
-        $query = Profesional::find($id);
-        $result = null;
+        $query = Profesional::join('users', 'profesionales.Id', '=', 'users.profesional_id')
+                            ->join('datos', 'users.datos_id', '=', 'datos.Id')
+            ->select(
+                'profesionales.Id as Id',
+                'profesionales.Nombre as NombreProfesional',
+                'profesionales.Apellido as ApellidoProfesional',
+                'datos.Nombre as NombreDatos',
+                'datos.Apellido as ApellidoDatos',
+                'profesionales.RegHis as RegHis'
+            )->find($id);
 
-        if (!$query)
-        {
-            $result = [
-                'id' => $query->Id,
-                'data' => $query->RegHis === 1 
-                    ? $query->Apellido . " ". $query->Nombre
-                    : Auth::users()->personal->Apellido . " " . Auth::users()->personal->Nombre
-            ];
-        } else {
-
-            $result = User::join('user_rol', 'users.id', '=', 'user_rol.user_id')
-                        ->join('roles', 'user_rol.rol_id', '=', 'roles.Id')
-                        ->join('profesionales', 'users.profesional_id', '=', 'profesionales.Id')
-                        ->join('proveedores', 'profesionales.IdProveedor', '=', 'proveedores.Id')
-                        ->where('roles.nombre', $tipo)
-                        ->where('profesionales.IdProveedor', $proveedor)
-                        ->get();
-        }
-
-        return response()->json($result);
+        return collect(
+            (object) [
+                    'id' => $query->Id,
+                    'NombreCompleto' => $query->RegHis === 1 
+                        ? $query->ApellidoProfesional . " ". $query->NombreProfesional
+                        : $query->ApellidoDatos . " " . $query->NombreDatos
+            ]
+        );
     }
 
     private function marcarPrimeraCarga(int $id, string $who): void
@@ -1265,7 +1270,7 @@ class ItemPrestacionesController extends Controller
                 'adjuntoInformador' => $this->adjuntoInformador($query->Id),
                 'multiEfector' => $this->multiEfector($query->IdPrestacion, $query->IdProfesional, $query->examenes->IdProveedor),
                 'multiInformador' => $this->multiInformador($query->IdPrestacion, $query->IdProfesional2, $query->examenes->IdProveedor2),
-                'efectores' => $this->getProfesional($query->IdProfesional, "Efector", $query->IdProveedor),
+                'efectores' => $this->getProfesional($query->IdProfesional),
             ];
         }
 

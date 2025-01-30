@@ -592,6 +592,30 @@ $(document).ready(()=>{
                 for (let i = 0; i < registros.length; i++) {
                     const examen = registros[i];
 
+                    let titleEfector = examen.RegHis === 1 
+                        ? ![undefined,null,0].includes(examen.EfectorFullName) && (examen.EfectorFullName).length > 0 ? examen.EfectorFullName : examen.DatosEfectorFullName
+                        : ![undefined,null,0].includes(examen.DatosEfectorFullName) && (examen.DatosEfectorFullName).length > 0 ? examen.DatosEfectorFullName : '',
+                        
+                        fullNameEfector = examen.RegHis === 1 
+                        ? ![undefined,null,0].includes(examen.EfectorApellido) && (examen.EfectorApellido).length > 0 ? examen.EfectorApellido : examen.DatosEfectorApellido
+                        : ![undefined,null,0].includes(examen.DatosEfectorApellido) && (examen.DatosEfectorApellido).length > 0 ? examen.DatosEfectorApellido : '';
+
+                    let titleInformador = examen.Informe === 1 
+                        ? examen.RegHis === 1 
+                            ? ![undefined,null,0].includes(examen.InformadorFullName) && (examen.InformadorFullName).length > 0 
+                                ? examen.InformadorFullName
+                                : examen.DatosInformadorFullName
+                            : ![undefined,null,0].includes(examen.DatosInformadorFullName) && (examen.DatosInformadorFullName).length > 0 ? examen.DatosInformadorFullName : ''
+                        : '',
+
+                        fullNameInformador = examen.Informe === 1
+                        ? examen.RegHis === 1
+                            ? ![undefined,null,0].includes(examen.InformadorApellido) && (examen.InformadorApellido).length > 0 
+                                ? examen.InformadorApellido
+                                : examen.DatosInformadorApellido
+                            : ![undefined,null,0].includes(examen.DatosInformadorApellido) && (examen.DatosInformadorApellido).length > 0 ? examen.DatosInformadorApellido : ''
+                        : '';
+
                     filas += `
                         <tr ${examen.Anulado === 1 ? 'class="filaBaja"' : ''}>
                             <td><input type="checkbox" name="Id_examenes" value="${examen.IdItem}" checked></td>
@@ -621,13 +645,13 @@ $(document).ready(()=>{
                                     <i class="ri-flag-2-line ${examen.Anulado === 0 ? 'devol' : ''}"></i>
                                 </span>
                             </td>
-                            <td class="date text-center" title="${examen.ApellidoE} ${examen.NombreE}">${examen.ApellidoE}
+                            <td class="date text-center capitalize" title="${titleEfector}">${fullNameEfector}
                                 <span class="badge badge-soft-${([0,1,2].includes(examen.CAdj) ? 'danger': ([3,4,5].includes(examen.CAdj) ? 'success' : ''))}">
                                     ${([0,1,2].includes(examen.CAdj) ? 'Abierto': ([3,4,5].includes(examen.CAdj) ? 'Cerrado' : ''))}
                                 </span>
                                 ${examen.ExaAdj === 1 ? `<i class="ri-attachment-line ${examen.archivos > 0 ? 'verde' : 'gris'}"></i>`: ``}    
                             </td>
-                            <td class="date text-center" title="${examen.Informe === 0 ? examen.ApellidoI : ''} ${examen.Informe === 1 ? examen.NombreI : ''}">${examen.Informe === 1 ? examen.ApellidoI : ''}
+                            <td class="date text-center capitalize" title="${titleInformador}">${fullNameInformador}
                                 <span class="badge badge-soft-${(examen.CInfo === 0 ? 'dark' :(examen.CInfo === 3 ? 'success' : ([0,1,2].includes(examen.CInfo)) ? 'danger' : ''))}">${(examen.CInfo === 0 ? '' : (examen.CInfo === 3 ? 'Cerrado' : (examen.CInfo == 2 ? 'Borrador' : ([0,1].includes(examen.CInfo) ? 'Pendiente': ''))))}</span>
                                 ${examen.CInfo !== 0 ? `<i class="ri-attachment-line ${examen.archivosI > 0 ? 'verde' : 'gris'}"></i>`: ``}   
                             </td>
@@ -689,7 +713,7 @@ $(document).ready(()=>{
         $.get(editModal, {Id: id})
             .done(function(response){
 
-               
+               console.log(response)
                 const estadoAbierto = [0, 1, 2], 
                       estadoCerrado = [3, 4, 5], 
                       itemprestaciones = response.itemprestacion, 
@@ -776,7 +800,10 @@ $(document).ready(()=>{
                 $('#ex-FechaNC').val(notaCreditoEx?.Fecha);
                 $('#ex-NumeroNC').val(notaCEx);
 
-                $('#ex-efectores').empty().append('<option selected value="' + itemprestaciones.IdProfesional + '">' + itemprestaciones.profesionales1.Apellido + ' ' + itemprestaciones.profesionales1.Nombre + '</option>');
+                console.log("Response: " + response)
+                console.log("Efectores: " + response.efectores)
+
+                $('#ex-efectores').empty().append('<option selected value="' + itemprestaciones.IdProfesional + '">' + response.efectores.NombreCompleto + '</option>');
 
                 $('#ex-informadores').empty().append('<option selected value="' + itemprestaciones.IdProfesional2 + '">' + itemprestaciones.profesionales2.Apellido + ' ' + itemprestaciones.profesionales2.Nombre + '</option>');
 

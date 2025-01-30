@@ -184,7 +184,6 @@ function getDias(fecha){
     return (Math.round(diff/(1000*60*60*24)));
 }
 
-
 function stripTags(html) {
     if (html === null || html === undefined) {
         return;

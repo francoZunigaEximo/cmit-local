@@ -800,7 +800,7 @@ $(document).ready(()=> {
                 contentType: false,
                 success: function() {
                     loadListAdjPrestacion();
-                    $('#adjPrestacion').modal('hide');
+                    $('#addAdjPres').modal('hide');
                     $('#DescripcionAdjPrestacion, input[name="fileAdjPrestacion"]').val('');
                     preloader('off');
                     toastr.success("Se ha cargado el adjunto de manera correcta.");
@@ -1090,10 +1090,10 @@ $(document).ready(()=> {
  
                     let contenido =  `
                         <tr>
-                            <td>${fechaNow(d.Fecha, '/', 1)}</td>
-                            <td>${d.IdUsuario}</td>
-                            <td>${d.nombre_perfil}</td>
-                            <td>${d.Comentario}</td>
+                            <td>${fechaCompleta(d.Fecha)}</td>
+                            <td class="text-capitalize">${d.IdUsuario}</td>
+                            <td class="text-uppercase">${d.nombre_perfil}</td>
+                            <td class="text-start">${d.Comentario}</td>
                         </tr>
                     `;
                     $('#privadoPrestaciones').append(contenido);

@@ -428,10 +428,10 @@
                                         <table id="lstPrivPrestaciones" class="table table-bordered">
                                             <thead class="table-light">
                                                 <tr>
-                                                    <th class="sort">Fecha</th>
-                                                    <th>Usuario</th>
-                                                    <th>Rol</th>
-                                                    <th>Comentario</th>
+                                                    <th class="sort text-center" style="width: 100px">Fecha</th>
+                                                    <th class="text-center" style="width: 150px">Usuario</th>
+                                                    <th class="text-center" style="width: 150px">Rol</th>
+                                                    <th class="text-start">Comentario</th>
                                                 </tr>
                                             </thead>
                                             <tbody class="list form-check-all" id="privadoPrestaciones">
@@ -454,9 +454,9 @@
                                         <table id="lstAutorizados" class="table table-bordered">
                                             <thead class="table-light">
                                                 <tr>
-                                                    <th>Nombre y Apellido</th>
-                                                    <th>DNI</th>
-                                                    <th>Tipo de Autorización</th>
+                                                    <th class="text-center">Nombre y Apellido</th>
+                                                    <th class="text-center">DNI</th>
+                                                    <th class="text-center">Tipo de Autorización</th>
                                                 </tr>
                                             </thead>
                                             <tbody class="list form-check-all" id="autorizadosPres">
@@ -480,7 +480,7 @@
                                             <thead class="table-light">
                                                 <tr>
                                                     <th>Descripción</th>
-                                                    <th>Archivo</th>
+                                                    <th style="width: 50px">Archivo</th>
                                                 </tr>
                                             </thead>
                                             <tbody class="list form-check-all" id="adjPrestacion">

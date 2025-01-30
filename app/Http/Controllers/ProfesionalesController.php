@@ -430,21 +430,27 @@ class ProfesionalesController extends Controller
 
     public function listGeneral(Request $request): mixed
     {
-
-        $data = Profesional::join('proveedores', 'profesionales.IdProveedor', '=', 'proveedores.Id')
+        
+        $data = Profesional::join('profesionales_prov', 'profesionales.Id', '=', 'profesionales_prov.IdProf') 
+            ->join('proveedores', 'profesionales_prov.IdProv', '=', 'proveedores.Id')
+            ->join('users', 'profesionales.Id', '=', 'users.profesional_id')
+            ->join('datos', 'users.datos_id', '=', 'datos.Id')
+            ->join('user_rol', 'users.id', '=', 'user_rol.user_id')
+            ->join('roles', 'user_rol.rol_id', '=', 'roles.Id')
             ->select(
                 'profesionales.Id as Id',
-                DB::raw("CONCAT(profesionales.Apellido, ' ', profesionales.Nombre) AS NombreCompleto"),
+                DB::raw("CONCAT(datos.Apellido, ' ', datos.Nombre) AS NombreCompleto"),
             )
             ->where(function($query) use ($request) {
                 if ($request->tipo === 'efector') {
-                    $query->where('profesionales.T1', '1');
+                    $query->where('profesionales_prov.IdRol', 'Efector');
                 } elseif ($request->tipo === 'informador') {
-                    $query->where('profesionales.T2', '1');
+                    $query->where('profesionales_prov.IdRol', 'Informador');
                 }
             })
-            ->where('profesionales.IdProveedor', $request->proveedor)
+            ->where('profesionales_prov.IdProv', $request->proveedor)
             ->where('profesionales.Inactivo', '0')
+            ->groupBy('profesionales.Id')
             ->get();
 
             
