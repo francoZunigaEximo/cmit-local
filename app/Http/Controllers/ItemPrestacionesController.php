@@ -223,7 +223,6 @@ class ItemPrestacionesController extends Controller
 
             if($request->Para === 'asignar'){
                 $item->IdProfesional = $request->IdProfesional;
-
                 $item->CAdj = ($request->IdProfesional === 0 && $item->examenes->Adjunto === 1) ? 1 : 2;
 
                 $item->FechaAsignado = (($request->fecha == '0000-00-00' ||  $request->fecha == '0') ? '' : now()->format('Y-m-d'));
@@ -874,15 +873,15 @@ class ItemPrestacionesController extends Controller
             return response()->json(['msg' => 'No tienes permisos'], 403);
         }
 
-        $query = ItemPrestacion::join('profesionales as efector', 'itemsprestaciones.IdProfesional', '=','efector.Id')
+        $query = ItemPrestacion::join('profesionales as efector', 'itemsprestaciones.IdProfesional', '=', 'efector.Id') //ok
+            ->join('users as userEfector', 'efector.Id', '=', 'userEfector.profesional_id') // ok
+            ->join('datos as datosEfector', 'userEfector.datos_id', '=', 'datosEfector.Id') // ok
+            ->join('profesionales as informador', 'itemsprestaciones.IdProfesional2', '=', 'informador.Id')
+            ->join('users as userInformador', 'informador.Id', '=', 'userInformador.profesional_id') // Relación directa con usuarios
+            ->join('datos as datosInformador', 'userInformador.datos_id', '=', 'datosInformador.Id') // Relación con datos de informador
             ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
             ->join('proveedores as proveedor2', 'examenes.IdProveedor', '=', 'proveedor2.Id')
             ->join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
-            ->join('profesionales as informador', 'itemsprestaciones.IdProfesional2', '=', 'informador.Id')
-            ->join('users as userEfector', 'efector.Id','=','userEfector.profesional_id')
-            ->join('users as userInformador', 'informador.Id','=','userInformador.profesional_id')
-            ->join('datos as datosEfector', 'userEfector.datos_id', '=', 'datosEfector.Id')
-            ->join('datos as datosInformador', 'userInformador.datos_id', '=', 'datosInformador.Id')
             ->leftJoin('archivosefector', 'itemsprestaciones.Id', '=', 'archivosefector.IdEntidad')
             ->leftJoin('archivosinformador', 'itemsprestaciones.Id', '=', 'archivosinformador.IdEntidad')
             ->select(
@@ -892,11 +891,11 @@ class ItemPrestacionesController extends Controller
                 'examenes.Informe as Informe',
                 'informador.InfAdj as InfAdj',
                 'examenes.NoImprime as ExaNI',
-                DB::raw('CONCAT(efector.Apellido, " ", efector.Nombre) as EfectorFullName'),
+                DB::raw('CONCAT(efector.Apellido, " ", efector.Nombre) as EfectorFullName'), //ok
                 DB::raw('CONCAT(informador.Apellido, " ", informador.Nombre) as InformadorFullName'),
                 DB::raw('CONCAT(datosEfector.Apellido, " ", datosEfector.Nombre) as DatosEfectorFullName'),
                 DB::raw('CONCAT(datosInformador.Apellido, " ", datosInformador.Nombre) as DatosInformadorFullName'),
-                'efector.Apellido as EfectorApellido',
+                'efector.Apellido as EfectorApellido', // ok
                 'informador.Apellido as InformadorApellido',
                 'datosEfector.Apellido as DatosEfectorApellido',
                 'datosInformador.Apellido as DatosInformadorApellido',
@@ -912,6 +911,10 @@ class ItemPrestacionesController extends Controller
                 'itemsprestaciones.Anulado as Anulado',
                 DB::raw('(SELECT COUNT(*) FROM archivosefector WHERE IdEntidad = itemsprestaciones.Id) as archivos'),
                 DB::raw('(SELECT COUNT(*) FROM archivosinformador WHERE IdEntidad = itemsprestaciones.Id) as archivosI'),
+                'efector.Id as IdEfector',
+                'informador.Id as IdInformador',
+                'userEfector.id as IdUserEfector',
+                'userInformador.id as IdUserInformador'
             );                
 
         if ($request->tipo === 'listado' && is_array($request->IdExamen)) {
@@ -920,12 +923,14 @@ class ItemPrestacionesController extends Controller
                         ->where('itemsprestaciones.IdPrestacion', $request->Id);
         } 
 
-        return $query->orderBy('efector.IdProveedor', 'ASC')
+        $result = $query->orderBy('efector.IdProveedor', 'ASC')
             ->orderBy('examenes.Nombre', 'ASC')
             ->orderBy('itemsprestaciones.Fecha', 'ASC')
             ->groupBy('itemsprestaciones.Id')->get();
  
+        return $result;
         //return response()->json(['examenes' => $query]);
+   
     }
 
     public function show(){}
@@ -1271,6 +1276,7 @@ class ItemPrestacionesController extends Controller
                 'multiEfector' => $this->multiEfector($query->IdPrestacion, $query->IdProfesional, $query->examenes->IdProveedor),
                 'multiInformador' => $this->multiInformador($query->IdPrestacion, $query->IdProfesional2, $query->examenes->IdProveedor2),
                 'efectores' => $this->getProfesional($query->IdProfesional),
+                'informadores' => $this->getProfesional($query->IdProfesional2)
             ];
         }
 

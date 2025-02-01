@@ -593,27 +593,35 @@ $(document).ready(()=>{
                     const examen = registros[i];
 
                     let titleEfector = examen.RegHis === 1 
-                        ? ![undefined,null,0].includes(examen.EfectorFullName) && (examen.EfectorFullName).length > 0 ? examen.EfectorFullName : examen.DatosEfectorFullName
-                        : ![undefined,null,0].includes(examen.DatosEfectorFullName) && (examen.DatosEfectorFullName).length > 0 ? examen.DatosEfectorFullName : '',
+                        ? ![undefined,null,0].includes(examen.EfectorFullName) && (examen.EfectorFullName).length > 0 
+                            ? examen.EfectorFullName 
+                            : (examen.IdEfector  === 0 ? '' : examen.DatosEfectorFullName)
+                        : ![undefined,null,0].includes(examen.DatosEfectorFullName) && (examen.DatosEfectorFullName).length > 0 
+                            ? (examen.IdEfector === 0 ? '' : examen.DatosEfectorFullName)
+                            : '',
                         
                         fullNameEfector = examen.RegHis === 1 
-                        ? ![undefined,null,0].includes(examen.EfectorApellido) && (examen.EfectorApellido).length > 0 ? examen.EfectorApellido : examen.DatosEfectorApellido
-                        : ![undefined,null,0].includes(examen.DatosEfectorApellido) && (examen.DatosEfectorApellido).length > 0 ? examen.DatosEfectorApellido : '';
+                            ? ![undefined,null,0].includes(examen.EfectorApellido) && (examen.EfectorApellido).length > 0 
+                                ? examen.EfectorApellido 
+                                : (examen.IdEfector === 0 ? '' : examen.DatosEfectorApellido)
+                            : ![undefined,null,0].includes(examen.DatosEfectorApellido) && (examen.DatosEfectorApellido).length > 0 
+                                ? (examen.IdEfector === 0 ? '' : examen.DatosEfectorApellido)
+                                : '';
 
                     let titleInformador = examen.Informe === 1 
                         ? examen.RegHis === 1 
                             ? ![undefined,null,0].includes(examen.InformadorFullName) && (examen.InformadorFullName).length > 0 
                                 ? examen.InformadorFullName
-                                : examen.DatosInformadorFullName
-                            : ![undefined,null,0].includes(examen.DatosInformadorFullName) && (examen.DatosInformadorFullName).length > 0 ? examen.DatosInformadorFullName : ''
+                                : (examen.IdInformador === 0 ? '' : examen.DatosInformadorFullName)
+                            : ![undefined,null,0].includes(examen.DatosInformadorFullName) && (examen.DatosInformadorFullName).length > 0 ? (examen.IdInformador === 0 ? '' : examen.DatosInformadorFullName) : ''
                         : '',
 
                         fullNameInformador = examen.Informe === 1
                         ? examen.RegHis === 1
                             ? ![undefined,null,0].includes(examen.InformadorApellido) && (examen.InformadorApellido).length > 0 
                                 ? examen.InformadorApellido
-                                : examen.DatosInformadorApellido
-                            : ![undefined,null,0].includes(examen.DatosInformadorApellido) && (examen.DatosInformadorApellido).length > 0 ? examen.DatosInformadorApellido : ''
+                                : (examen.IdInformador === 0 ? '' : examen.DatosInformadorApellido)
+                            : ![undefined,null,0].includes(examen.DatosInformadorApellido) && (examen.DatosInformadorApellido).length > 0 ? (examen.IdInformador === 0 ?  '' : examen.DatosInformadorApellido) : ''
                         : '';
 
                     filas += `
@@ -713,7 +721,6 @@ $(document).ready(()=>{
         $.get(editModal, {Id: id})
             .done(function(response){
 
-               console.log(response)
                 const estadoAbierto = [0, 1, 2], 
                       estadoCerrado = [3, 4, 5], 
                       itemprestaciones = response.itemprestacion, 
@@ -800,12 +807,9 @@ $(document).ready(()=>{
                 $('#ex-FechaNC').val(notaCreditoEx?.Fecha);
                 $('#ex-NumeroNC').val(notaCEx);
 
-                console.log("Response: " + response)
-                console.log("Efectores: " + response.efectores)
-
                 $('#ex-efectores').empty().append('<option selected value="' + itemprestaciones.IdProfesional + '">' + response.efectores.NombreCompleto + '</option>');
 
-                $('#ex-informadores').empty().append('<option selected value="' + itemprestaciones.IdProfesional2 + '">' + itemprestaciones.profesionales2.Apellido + ' ' + itemprestaciones.profesionales2.Nombre + '</option>');
+                $('#ex-informadores').empty().append('<option selected value="' + itemprestaciones.IdProfesional2 + '">' + response.informadores.NombreCompleto + '</option>');
 
                 let efector = $('#ex-efectores').val(), informador = $('#ex-informadores').val();
                 
@@ -1283,8 +1287,8 @@ $(document).ready(()=>{
         let number = parseInt(e, 10);
 
         if(tipo === 'efector') {
-            
-            let resultado = await (number !== null && number !== undefined && number !== '' && number !== 0 && valCerrar.includes(parseInt(val, 10)));
+                                    
+            let resultado = await (![null,undefined,'',0].includes(number) && valCerrar.includes(parseInt(val, 10)));
 
             if (resultado) {
                 await borrarCache();
@@ -1293,7 +1297,7 @@ $(document).ready(()=>{
 
         }else if(tipo === 'informador') {
 
-            let resultado = await (number !== null && number !== undefined && number !== '' && number !== 0 && valCerrarI !== parseInt(val, 10));
+            let resultado = await (![null,undefined,'',0].includes(number) && valCerrarI !== parseInt(val, 10));
 
             if (resultado) {
                 await borrarCache();
@@ -1334,7 +1338,7 @@ $(document).ready(()=>{
             num = parseInt(e, 10);
         
         if (tipo === 'efector') {
-            let valido = num !== null && num !== '' && num !== 0;
+            let valido = ![null,undefined,'',0].includes(num);
             let resultado = await (valCerrar.includes(parseInt(val, 10)) && valido);
 
             if(resultado){
@@ -1364,11 +1368,7 @@ $(document).ready(()=>{
                 $('.ex-adjuntarInformador').show();
 
                 checkAdjunto(idItemprestacion, 'informador').then(response => {
-                    if (response === true) {
-                        $('.ex-adjuntarInformador').show();
-                    } else {
-                        $('.ex-adjuntarInformador').hide();
-                    }
+                    response === true ? $('.ex-adjuntarInformador').show() : $('.ex-adjuntarInformador').hide();
                 });
 
             }else if(errorEfector) {
@@ -1382,10 +1382,7 @@ $(document).ready(()=>{
             }else if(final){
 
                 await borrarCache();
-                $('.ex-cerrarI').hide();
-                $('.ex-abrir').hide();
-                $('.ex-liberarI').hide();
-                $('.ex-adjuntarInformador').hide();
+                $('.ex-cerrarI, .ex-abrir, .ex-liberarI, .ex-adjuntarInformador').hide();
 
                 if (CInfo === 3 && EstadoI === 'Pendiente' && anulado === 1) {
                     $('.ex-adjuntarInformador').show();
@@ -1437,7 +1434,7 @@ $(document).ready(()=>{
                     let contenido = `
                         <tr>
                             <td>${d.Nombre}</td>
-                            <td>${(d.DescripcionE !== null && d.DescripcionE !== undefined  && d.DescripcionE !== '' ? d.DescripcionE : ' ')}</td>
+                            <td>${(![null, undefined, ''].includes(d.DescripcionE) ? d.DescripcionE : '')}</td>
                             <td>${(d.Adjunto === 0 ? 'Físico' : 'Digital')}</td>
                             <td>${(d.MultiE === 0 ? 'Simple' : 'Multi')}</td>
                             <td>
@@ -1491,7 +1488,7 @@ $(document).ready(()=>{
                     let contenido = `
                         <tr>
                             <td>${d.Nombre}</td>
-                            <td>${(d.DescripcionI !== null && d.DescripcionI !== undefined && d.DescripcionI !== '' ? d.DescripcionI : '')}</td>
+                            <td>${(![null, undefined, ''].includes(d.DescripcionI) ? d.DescripcionI : '')}</td>
                             <td>
                                 <div class="d-flex justify-content-center align-items-center gap-2">
                                     <div class="edit">
@@ -1617,9 +1614,7 @@ $(document).ready(()=>{
     }
 
     function borrarCache() {
-        $.post(cacheDelete, {_token: TOKEN}, function(){
-            console.log("Cache borrada");
-        })
+        $.post(cacheDelete, {_token: TOKEN}, function(){});
     }
 
 
