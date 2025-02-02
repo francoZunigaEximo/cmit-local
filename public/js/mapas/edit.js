@@ -18,6 +18,9 @@ $(function() {
     $('.comentarioObsEstado').hide();
     $('#EstadoCerrar').val('abierto');
 
+    $('.seccionPrestaciones').show();
+    $('.seccionOpciones').hide(); 
+
     $('#verPrestacionModal').on('shown.bs.modal', function () {
         $('.comentarioObsEstado').hide();
         $(document).off('click', '.mostrarObsEstado, .cerrarObsEstado').on('click', '.mostrarObsEstado, .cerrarObsEstado', function(){
@@ -841,6 +844,8 @@ $(function() {
 
     $('#comentarioPrivado').on('hidden.bs.modal', function(){
         $("#Comentario, .ComObsEstado").val("");
+        $('.seccionOpciones').hide();
+        $('.seccionPrestaciones').show(); 
     });
 
     $('#closeModalButton').click(function() {
@@ -871,18 +876,29 @@ $(function() {
             });
     });
 
-    $('#checkAllCerrar').on('click', function() {
+    $(document).on('click', '.imprimirOpciones', function(e){
+        e.preventDefault();
 
+        $('.seccionPrestaciones').hide();
+        $('.seccionOpciones').show(); 
+    });
+
+    $(document).on('click', '.volverPrestacion', function(e){
+        e.preventDefault();
+
+        $('.seccionOpciones').hide();
+        $('.seccionPrestaciones').show(); 
+    });
+
+    $('#checkAllCerrar').on('click', function() {
         $('input[type="checkbox"][name="Id_cerrar"]:not(#checkAllCerrar)').prop('checked', this.checked);
     });
 
     $('#checkAllFinalizar').on('click', function() {
-
         $('input[type="checkbox"][name="Id_finalizar"]:not(#checkAllFinalizar)').prop('checked', this.checked);
     });
 
     $('#checkAllEnviar').on('click', function() {
-
         $('input[type="checkbox"][name="Id_enviar"]:not(#checkAllEnviar)').prop('checked', this.checked);
     });
 
@@ -897,7 +913,6 @@ $(function() {
         e.preventDefault();
         window.history.back();
     });
-
 
     $(document).on('click', '.vistaPreviaEnviar', function(e){
         e.preventDefault();
@@ -918,6 +933,79 @@ $(function() {
                 checkError(jqXHR.status, errorData.msg);
                 return;
             });
+    });
+
+    $(document).on('click', '.imprimirReporte', function(e){
+        e.preventDefault();
+
+        let evaluacion = $('#evaluacion').prop('checked'),
+            eEstudio = $('#eEstudio').prop('checked'),
+            eEnvio = $('#eEnvio').prop('checked'),
+            adjDigitales = $('#adjDigitales').prop('checked'),
+            adjFisicos = $('#adjFisicos').prop('checked'),
+            adjFisicosDigitales = $('#adjFisicosDigitales').prop('checked'),
+            adjGenerales = $('#adjGenerales').prop('checked'),
+            adjAnexos = $('#eAnexo').prop('checked'),
+            infInternos = $('#infInternos').prop('checked'),
+            pedProveedores = $('#pedProveedores').prop('checked'),
+            conPaciente = $('#conPaciente').prop('checked'),
+            resAdmin = $('#resAdmin').prop('checked'),
+            caratula = $('#caratula').prop('checked'),
+            consEstDetallado = $('#consEstDetallado').prop('checked'),
+            consEstSimple = $('#consEstSimple').prop('checked'),
+            audioCmit = $('#audioCmit').prop('checked'),
+            estudios = [],
+            IdPres = $('#IdPrestacion').text();
+
+            
+
+        let verificar = [
+            evaluacion,
+            eEstudio,
+            eEnvio,
+            adjDigitales,
+            adjFisicosDigitales,
+            adjGenerales,
+            adjAnexos,
+            infInternos,
+            pedProveedores,
+            conPaciente,
+            resAdmin,
+            caratula,
+            consEstDetallado,
+            consEstSimple,
+            audioCmit,
+            adjFisicos,
+            estudios
+        ];
+            
+        if (verificar.every(val => !val)) {
+            toastr.warning('Debe seleccionar algun check para obtener el reporte');
+            return;
+        }
+
+        if ([0,'',null,undefined].includes(IdPres)) {
+            toastr.warning('No hay ninguna prestación activa');
+            return;
+        }
+
+        $('input[data-nosend]:checked').each(function() {
+            estudios.push($(this).attr('id'));
+        });
+
+        preloader('on');
+        $.get(exportPdf, {Id: IdPres, evaluacion: evaluacion, eEstudio: eEstudio, eEnvio: eEnvio, adjDigitales: adjDigitales, adjFisicos: adjFisicos, adjFisicosDigitales: adjFisicosDigitales, adjGenerales: adjGenerales, adjAnexos: adjAnexos, infInternos: infInternos, pedProveedores: pedProveedores, conPaciente: conPaciente, resAdmin: resAdmin, caratula: caratula, consEstDetallado: consEstDetallado, consEstSimple: consEstSimple, audioCmit: audioCmit, estudios: estudios})
+            .done(function(response){
+                createFile("pdf", response.filePath, response.name);
+                preloader('off')
+                toastr.success(response.msg)
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            });    
     });
 
     function updateContador() {

@@ -551,47 +551,191 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>
             </div>
             <div class="modal-body">
-                <div class="row">
-                    <div class="col-sm-8 mb-3">
-                       <p><strong>Paciente: </strong><span id="nomPaciente"></span> <span id="apePaciente"></span> | <span id="tipoDocPaciente"></span> <span id="documentoPaciente"></span></p>
+                <div class="seccionPrestaciones">
+                    <div class="row">
+                        <div class="col-sm-8 mb-3">
+                           <p><strong>Paciente: </strong><span id="nomPaciente"></span> <span id="apePaciente"></span> | <span id="tipoDocPaciente"></span> <span id="documentoPaciente"></span></p>
+                        </div>
+                        <div class="col-sm-4" style="text-align: right;">
+                            <button class="btn btn-sm botonGeneral imprimirOpciones"><i class="ri-printer-line"></i> Imprimir</button>
+                            <button class="btn btn-sm botonGeneral eEstudioModal" data-id=""><i class="ri-file-text-line"></i> eEstudio</button>
+                            <button data-id="" title="Observación de Estado" class="btn btn-sm botonGeneral mostrarObsEstado"><i class="ri-chat-1-line"></i> Agregar Obs</button>
+                        </div>
                     </div>
-                    <div class="col-sm-4" style="text-align: right;">
-                        <button class="btn btn-sm botonGeneral"><i class="ri-printer-line"></i> Imprimir</button>
-                        <button class="btn btn-sm botonGeneral eEstudioModal" data-id=""><i class="ri-file-text-line"></i> eEstudio</button>
-                        <button data-id="" title="Observación de Estado" class="btn btn-sm botonGeneral mostrarObsEstado"><i class="ri-chat-1-line"></i> Agregar Obs</button>
+    
+                    <div class="comentarioObsEstado">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <p class="mb-0">Escriba una observación sobre el estado:</p>
+                            <i style="font-size:1.5em" class="ri-close-circle-line cerrarObsEstado"></i>
+                        </div>
+                        <textarea class="form-control mt-2 ComObsEstado" name="ComObsEstado" rows="5"></textarea>
+                        <div class="mt-2 text-center">
+                            <button type="button" class="btn btn-sm botonGeneral saveComObsEstado mt-2">Guardar Obs</button>
+                        </div>
+                    </div>
+    
+                    <div class="table-responsive table-card mt-3 mb-1">
+                        <table id="listaExaMapa" class="display table table-bordered" style="width:100%">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="sort">Examen</th>
+                                    <th class="sort">Especialidad</th>
+                                    <th class="sort">Efector</th>
+                                    <th style="width: 70px; background-color: #eeeeee"></th>
+                                    <th style="width: 130px; background-color: #eeeeee"></th>
+                                    <th class="sort">Informador</th>
+                                    <th style="width: 70px; background-color: #eeeeee"></th>
+                                    <th style="width: 50px">INC</th>
+                                    <th style="width: 50px">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="list form-check-all" id="examenMapa">
+            
+                            </tbody>
+                        </table>
                     </div>
                 </div>
+                
+                <div class="row seccionOpciones">
+                    <h3 class="ff-secondary fw-bold mt-1 text-center">Imprimir Opciones</h3>
+                    <div class="col-9 mx-auto box-information">
+                        <div class="text-end">
+                            <button class="btn btn-sm botonGeneral volverPrestacion">
+                                <i class="ri-arrow-left-line"></i> Volver a la prestación
+                            </button>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <form>
 
-                <div class="comentarioObsEstado">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <p class="mb-0">Escriba una observación sobre el estado:</p>
-                        <i style="font-size:1.5em" class="ri-close-circle-line cerrarObsEstado"></i>
-                    </div>
-                    <textarea class="form-control mt-2 ComObsEstado" name="ComObsEstado" rows="5"></textarea>
-                    <div class="mt-2 text-center">
-                        <button type="button" class="btn btn-sm botonGeneral saveComObsEstado mt-2">Guardar Obs</button>
-                    </div>
-                </div>
-
-                <div class="table-responsive table-card mt-3 mb-1">
-                    <table id="listaExaMapa" class="display table table-bordered" style="width:100%">
-                        <thead class="table-light">
-                            <tr>
-                                <th class="sort">Examen</th>
-                                <th class="sort">Especialidad</th>
-                                <th class="sort">Efector</th>
-                                <th style="width: 70px; background-color: #eeeeee"></th>
-                                <th style="width: 130px; background-color: #eeeeee"></th>
-                                <th class="sort">Informador</th>
-                                <th style="width: 70px; background-color: #eeeeee"></th>
-                                <th style="width: 50px">INC</th>
-                                <th style="width: 50px">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody class="list form-check-all" id="examenMapa">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="evaluacion">
+                                    <label class="form-check-label" for="evaluacion">
+                                        Evaluación resumen
+                                    </label>
+                                </div>
+                                
+                                <hr class="mt-2 mb-2">
         
-                        </tbody>
-                    </table>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="eEstudio">
+                                    <label class="form-check-label" for="eEstudio">
+                                        eEstudios
+                                    </label>
+                                </div>
+        
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="eAnexo">
+                                    <label class="form-check-label" for="eAnexo">
+                                        eAnexos
+                                    </label>
+                                </div>
+        
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="eEnvio">
+                                    <label class="form-check-label" for="eEnvio">
+                                        eEnvio
+                                    </label>
+                                </div>
+        
+                                <hr class="mt-2 mb-2">
+            
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="adjDigitales">
+                                    <label class="form-check-label" for="adjDigitales">
+                                        Adjuntos digitales
+                                    </label>
+                                </div>
+        
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="adjFisicos">
+                                    <label class="form-check-label" for="adjFisicos">
+                                        Adjuntos físicos
+                                    </label>
+                                </div>
+        
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="adjGenerales">
+                                    <label class="form-check-label" for="adjGenerales">
+                                        Adjuntos prestación
+                                    </label>
+                                </div>
+            
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="adjFisicosDigitales">
+                                    <label class="form-check-label" for="adjFisicosDigitales">
+                                        Adjuntos fisicos y digitales
+                                    </label>
+                                </div>
+        
+                                <hr class="mt-2 mb-2">
+        
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="infInternos">
+                                    <label class="form-check-label" for="infInternos">
+                                        Informes internos
+                                    </label>
+                                </div>
+            
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="pedProveedores">
+                                    <label class="form-check-label" for="pedProveedores">
+                                        Pedido a proveedores
+                                    </label>
+                                </div>
+        
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="conPaciente">
+                                    <label class="form-check-label" for="conPaciente">
+                                        Control paciente
+                                    </label>
+                                </div>
+        
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="resAdmin">
+                                    <label class="form-check-label" for="resAdmin">
+                                        Resumen administrativo
+                                    </label>
+                                </div>
+            
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="caratula">
+                                    <label class="form-check-label" for="caratula">
+                                        Caratula
+                                    </label>
+                                </div>
+        
+                                <hr class="mt-2 mb-2">
+            
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="consEstDetallado">
+                                    <label class="form-check-label" for="consEstDetallado">
+                                        Constancia de estudio completo (Detallado)
+                                    </label>
+                                </div>
+            
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="consEstSimple">
+                                    <label class="form-check-label" for="consEstSimple">
+                                        Constancia de estudio completo (Simple)
+                                    </label>
+                                </div>
+            
+                                <hr class="mt-2 mb-2">
+            
+                                <p class="fw-bold">Estudios:</p>
+        
+                                <div id="estudios">
+        
+                                </div>
+            
+                                <div class="mb-3 text-center">
+                                    <button type="button" class="btn btn-sm botonGeneral imprimirReporte"><i class="bx bxs-file-pdf"></i>Imprimir</button>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -686,6 +830,7 @@ const setComentarioPres = "{{ route('setComentarioPres') }}";
 const reverseRemito = "{{ route('reverseRemito') }}";
 const vistaPrevia = "{{ route('mapas.vistaPrevia') }}";
 const listadoAuditorias = "{{ route('mapas.auditorias') }}";
+const exportPdf = "{{ route('prestaciones.pdf') }}";
 //Extras
 const TOKEN = "{{ csrf_token() }}";
 const MAPA = "{{ $mapa->Nro }}";
