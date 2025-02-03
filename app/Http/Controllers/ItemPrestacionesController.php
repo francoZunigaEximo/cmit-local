@@ -873,10 +873,10 @@ class ItemPrestacionesController extends Controller
             return response()->json(['msg' => 'No tienes permisos'], 403);
         }
 
-        $query = ItemPrestacion::join('profesionales as efector', 'itemsprestaciones.IdProfesional', '=', 'efector.Id') //ok
+        $query = ItemPrestacion::leftJoin('profesionales as efector', 'itemsprestaciones.IdProfesional', '=', 'efector.Id') //ok
             ->join('users as userEfector', 'efector.Id', '=', 'userEfector.profesional_id') // ok
             ->join('datos as datosEfector', 'userEfector.datos_id', '=', 'datosEfector.Id') // ok
-            ->join('profesionales as informador', 'itemsprestaciones.IdProfesional2', '=', 'informador.Id')
+            ->leftJoin('profesionales as informador', 'itemsprestaciones.IdProfesional2', '=', 'informador.Id')
             ->join('users as userInformador', 'informador.Id', '=', 'userInformador.profesional_id') // Relación directa con usuarios
             ->join('datos as datosInformador', 'userInformador.datos_id', '=', 'datosInformador.Id') // Relación con datos de informador
             ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
