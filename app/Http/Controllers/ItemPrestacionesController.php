@@ -874,11 +874,11 @@ class ItemPrestacionesController extends Controller
         }
 
         $query = ItemPrestacion::leftJoin('profesionales as efector', 'itemsprestaciones.IdProfesional', '=', 'efector.Id') //ok
-            ->join('users as userEfector', 'efector.Id', '=', 'userEfector.profesional_id') // ok
-            ->join('datos as datosEfector', 'userEfector.datos_id', '=', 'datosEfector.Id') // ok
+            ->leftJoin('users as userEfector', 'efector.Id', '=', 'userEfector.profesional_id') // ok
+            ->leftJoin('datos as datosEfector', 'userEfector.datos_id', '=', 'datosEfector.Id') // ok
             ->leftJoin('profesionales as informador', 'itemsprestaciones.IdProfesional2', '=', 'informador.Id')
-            ->join('users as userInformador', 'informador.Id', '=', 'userInformador.profesional_id') // Relación directa con usuarios
-            ->join('datos as datosInformador', 'userInformador.datos_id', '=', 'datosInformador.Id') // Relación con datos de informador
+            ->leftJoin('users as userInformador', 'informador.Id', '=', 'userInformador.profesional_id') // Relación directa con usuarios
+            ->leftJoin('datos as datosInformador', 'userInformador.datos_id', '=', 'datosInformador.Id') // Relación con datos de informador
             ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
             ->join('proveedores as proveedor2', 'examenes.IdProveedor', '=', 'proveedor2.Id')
             ->join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
