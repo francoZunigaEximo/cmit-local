@@ -490,12 +490,12 @@ class MapasController extends Controller
             ->leftJoin('archivosefector', 'itemsprestaciones.Id', '=','archivosefector.IdEntidad')
             ->leftJoin('archivosinformador', 'itemsprestaciones.Id', '=','archivosinformador.IdEntidad')
             ->join('proveedores', 'examenes.IdProveedor', '=', 'proveedores.Id')
-            ->join('profesionales as profEfector', 'itemsprestaciones.IdProfesional', '=', 'profEfector.Id')
-            ->join('profesionales as profInformador', 'itemsprestaciones.IdProfesional2', '=', 'profInformador.Id')
-            ->join('users as userEfector', 'profEfector.Id', '=', 'userEfector.profesional_id')
-            ->join('users as userInformador', 'profInformador.Id', '=', 'userInformador.profesional_id')
-            ->join('datos as DatosEfector', 'userEfector.datos_id', '=', 'DatosEfector.Id')
-            ->join('datos as DatosInformador', 'userInformador.datos_id', '=', 'DatosInformador.Id')
+            ->leftJoin('profesionales as profEfector', 'itemsprestaciones.IdProfesional', '=', 'profEfector.Id')
+            ->leftJoin('profesionales as profInformador', 'itemsprestaciones.IdProfesional2', '=', 'profInformador.Id')
+            ->leftJoin('users as userEfector', 'profEfector.Id', '=', 'userEfector.profesional_id')
+            ->leftJoin('users as userInformador', 'profInformador.Id', '=', 'userInformador.profesional_id')
+            ->leftJoin('datos as DatosEfector', 'userEfector.datos_id', '=', 'DatosEfector.Id')
+            ->leftJoin('datos as DatosInformador', 'userInformador.datos_id', '=', 'DatosInformador.Id')
             ->select(
                 'examenes.Id AS IdExamen',
                 'examenes.Nombre AS NombreExamen',
