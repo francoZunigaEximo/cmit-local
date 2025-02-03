@@ -1111,8 +1111,7 @@ class MapasController extends Controller
                 FROM itemsprestaciones AS items 
                 WHERE items.IdPrestacion = prestaciones.Id
             ) AS Etapa'))
-        ->where('mapas.Nro', '=', $idmapa)
-        ->get();
+        ->where('mapas.Nro', '=', $idmapa);
     }
 
     private function queryCerrar($idmapa)
@@ -1130,8 +1129,7 @@ class MapasController extends Controller
             'prestaciones.Anulado AS Anulado',
             'pacientes.Nombre as NombrePaciente',
             'pacientes.Apellido as ApellidoPaciente',)
-            ->where('mapas.Nro', '=', $idmapa)
-            ->get();
+            ->where('mapas.Nro', '=', $idmapa);
     }
 
     private function queryFinalizar(string $idmapa): mixed
@@ -1154,8 +1152,7 @@ class MapasController extends Controller
             ->where('prestaciones.Devol', 0)
             ->where('prestaciones.RxPreliminar', 0)
             ->where('prestaciones.SinEsc', 0)
-            ->where('mapas.Nro', $idmapa)
-            ->get();
+            ->where('mapas.Nro', $idmapa);
 
     }
 
@@ -1180,8 +1177,7 @@ class MapasController extends Controller
             'empresa.SEMail AS EmpresaSinEnvio',
             'art.SEMail AS ArtSinEnvio',
             DB::raw('(SELECT CASE WHEN COUNT(*) = SUM(CASE WHEN items.Incompleto = 0 THEN 1 ELSE 0 END) THEN "Completo" ELSE "Incompleto" END FROM itemsprestaciones AS items WHERE items.IdPrestacion = prestaciones.Id) AS Etapa'))
-            ->where('mapas.Nro', $idmapa)
-            ->get();
+            ->where('mapas.Nro', $idmapa);
 
     }
 
