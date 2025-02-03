@@ -433,7 +433,7 @@ public function searchPrestacion(Request $request)
                 
                 if(!empty($estudios)) {
                     foreach($estudios as $examen) {
-                        $estudio = $this->addEstudioExamen($request->Id, $examen);
+                        $estudio = $this->addEstudioExamen($Id, $examen);
                         array_push($estudios, $estudio);
                     }
                 }
