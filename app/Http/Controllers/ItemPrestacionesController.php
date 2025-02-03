@@ -1215,7 +1215,7 @@ class ItemPrestacionesController extends Controller
     }
 
     //Tipo: efector, informador
-    private function getProfesional(int $id): mixed
+    private function getProfesional(int $id)
     {
         $query = Profesional::join('users', 'profesionales.Id', '=', 'users.profesional_id')
                             ->join('datos', 'users.datos_id', '=', 'datos.Id')
@@ -1228,14 +1228,16 @@ class ItemPrestacionesController extends Controller
                 'profesionales.RegHis as RegHis'
             )->find($id);
 
-        return collect(
-            (object) [
-                    'id' => $query->Id,
-                    'NombreCompleto' => $query->RegHis === 1 
-                        ? $query->ApellidoProfesional . " ". $query->NombreProfesional
-                        : $query->ApellidoDatos . " " . $query->NombreDatos
-            ]
-        );
+            if($query) {
+                return collect(
+                    (object) [
+                        'id' => $query->Id,
+                        'NombreCompleto' => $query->RegHis === 1 
+                            ? $query->ApellidoProfesional ." ". $query->NombreProfesional
+                            : $query->ApellidoDatos . " " . $query->NombreDatos
+                    ]
+                );
+            }
     }
 
     private function marcarPrimeraCarga(int $id, string $who): void
