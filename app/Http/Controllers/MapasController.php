@@ -45,6 +45,8 @@ class MapasController extends Controller
     private $tempFile;
 
     const TBLMAPA = 5; // cod de Mapas en la tabla auditariatablas
+    const FOLDERTEMP = 'temp/MAPA';
+    const BASETEMP = 'app/public/temp/';
 
     use ObserverMapas, CheckPermission, ReporteExcel, ToolsReportes, ToolsEmails;
 
@@ -198,8 +200,9 @@ class MapasController extends Controller
 
             $query->whereNot('mapas.Nro', 0)
                 ->whereNot('mapas.Fecha', '0000-00-00')
-                ->whereNotNull('mapas.Fecha')->groupBy('mapas.Nro')
+                ->whereNotNull('mapas.Fecha')
                 ->whereNot('mapas.Id', 0)
+                ->groupBy('mapas.Nro')
                 ->orderByDesc('mapas.Id');
 
             return Datatables::of($query)->make(true);
@@ -333,6 +336,7 @@ class MapasController extends Controller
             $Estado = $request->Estado;
             
             $query = $this->queryPrestaciones($request->mapa);
+
             $query->when($NroPrestacion, function ($query) use ($NroPrestacion) {
                 $query->where('prestaciones.Id', $NroPrestacion);
             });
@@ -468,9 +472,7 @@ class MapasController extends Controller
 
         } else {
             return response()->json(['msg' => 'Ha ocurrido un error y no se ha registrado la fecha'], 500);
-        }
-
-        
+        } 
     }
 
     public function getPacienteMapa(Request $request)
@@ -486,6 +488,7 @@ class MapasController extends Controller
     {
         return ItemPrestacion::join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
             ->leftJoin('archivosefector', 'itemsprestaciones.Id', '=','archivosefector.IdEntidad')
+            ->leftJoin('archivosinformador', 'itemsprestaciones.Id', '=','archivosinformador.IdEntidad')
             ->join('proveedores', 'examenes.IdProveedor', '=', 'proveedores.Id')
             ->join('profesionales as profEfector', 'itemsprestaciones.IdProfesional', '=', 'profEfector.Id')
             ->join('profesionales as profInformador', 'itemsprestaciones.IdProfesional2', '=', 'profInformador.Id')
@@ -512,9 +515,17 @@ class MapasController extends Controller
                 DB::raw('CONCAT(profInformador.Nombre, " ", profInformador.Apellido) AS fullNameInformador'),
                 DB::raw('CONCAT(DatosEfector.Nombre, " ", DatosEfector.Apellido) AS fullNameDatosEfector'),
                 DB::raw('CONCAT(DatosInformador.Nombre, " ", DatosInformador.Apellido) AS fullNameDatosInformador'),
-                DB::raw('(SELECT CASE WHEN COUNT(*) = SUM(CASE WHEN itemsprestaciones.Id = archivosefector.IdEntidad THEN 1 ELSE 0 END) THEN "adjunto" ELSE "sadjunto" END FROM itemsprestaciones WHERE itemsprestaciones.Id = archivosefector.IdEntidad) AS adjuntados')
+                DB::raw('(CASE 
+                        WHEN EXISTS(SELECT 1 FROM archivosefector WHERE itemsprestaciones.Id = archivosefector.IdEntidad) THEN "adjunto" 
+                        ELSE "sadjunto"
+                    END) AS adjEfector'),
+                DB::raw('(CASE 
+                    WHEN EXISTS(SELECT 1 FROM archivosinformador WHERE itemsprestaciones.Id = archivosinformador.IdEntidad) THEN "adjunto" 
+                    ELSE "sadjunto"
+                END) AS adjInformador')
             )
             ->where('itemsprestaciones.IdPrestacion', $request->prestacion)
+            ->groupBy('itemsprestaciones.Id')
             ->get();
     }
 
@@ -959,10 +970,10 @@ class MapasController extends Controller
             }
         }
 
-        $filePath = 'temp/MAPA' . $request->Id . '.pdf';
+        $filePath = SELF::FOLDERTEMP . $request->Id . '.pdf';
 
         $this->reporteService->fusionarPDFs($listado, $this->outputPath);
-        File::copy($this->outputPath, storage_path('app/public/temp/'.$filePath));
+        File::copy($this->outputPath, storage_path(SELF::BASETEMP.$filePath));
 
         $fileUrl = Storage::disk('public')->url($filePath);
         $fileUrl = str_replace('storage/', 'public/storage/', $fileUrl);
@@ -1070,8 +1081,7 @@ class MapasController extends Controller
 
     private function queryPrestaciones($idmapa)
     {
-
-        $query = Prestacion::join('mapas', 'prestaciones.IdMapa', '=', 'mapas.Id')
+        return Prestacion::join('mapas', 'prestaciones.IdMapa', '=', 'mapas.Id')
         ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
         ->leftJoin('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
         ->select(
@@ -1101,14 +1111,13 @@ class MapasController extends Controller
                 FROM itemsprestaciones AS items 
                 WHERE items.IdPrestacion = prestaciones.Id
             ) AS Etapa'))
-        ->where('mapas.Nro', '=', $idmapa);
-
-        return $query;
+        ->where('mapas.Nro', '=', $idmapa)
+        ->get();
     }
 
     private function queryCerrar($idmapa)
     {
-        $query = Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+        return Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
         ->join('mapas', 'prestaciones.IdMapa', '=', 'mapas.Id')
             ->select(
             'prestaciones.Id as IdPrestacion',
@@ -1121,9 +1130,8 @@ class MapasController extends Controller
             'prestaciones.Anulado AS Anulado',
             'pacientes.Nombre as NombrePaciente',
             'pacientes.Apellido as ApellidoPaciente',)
-            ->where('mapas.Nro', '=', $idmapa);
-
-        return $query;
+            ->where('mapas.Nro', '=', $idmapa)
+            ->get();
     }
 
     private function queryFinalizar(string $idmapa): mixed
@@ -1146,13 +1154,14 @@ class MapasController extends Controller
             ->where('prestaciones.Devol', 0)
             ->where('prestaciones.RxPreliminar', 0)
             ->where('prestaciones.SinEsc', 0)
-            ->where('mapas.Nro', $idmapa);
+            ->where('mapas.Nro', $idmapa)
+            ->get();
 
     }
 
     public function queryEnviar($idmapa)
     {
-        $query = Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+        return Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
         ->leftJoin('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
         ->join('clientes as empresa', 'prestaciones.IdART', '=', 'empresa.Id')
         ->join('clientes as art', 'prestaciones.IdEmpresa', '=', 'art.Id')
@@ -1171,9 +1180,9 @@ class MapasController extends Controller
             'empresa.SEMail AS EmpresaSinEnvio',
             'art.SEMail AS ArtSinEnvio',
             DB::raw('(SELECT CASE WHEN COUNT(*) = SUM(CASE WHEN items.Incompleto = 0 THEN 1 ELSE 0 END) THEN "Completo" ELSE "Incompleto" END FROM itemsprestaciones AS items WHERE items.IdPrestacion = prestaciones.Id) AS Etapa'))
-            ->where('mapas.Nro', $idmapa);
+            ->where('mapas.Nro', $idmapa)
+            ->get();
 
-        return $query;
     }
 
 

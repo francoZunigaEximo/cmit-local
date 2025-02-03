@@ -440,6 +440,9 @@ class ProfesionalesController extends Controller
             ->select(
                 'profesionales.Id as Id',
                 DB::raw("CONCAT(datos.Apellido, ' ', datos.Nombre) AS NombreCompleto"),
+                'profesionales.RegHis as RegHis',
+                DB::raw("CONCAT(profesionales.Apellido, ' ', profesionales.Nombre) AS NombreCompletoHis"),
+                'users.profesional_id as IdProf',
             )
             ->where(function($query) use ($request) {
                 if ($request->tipo === 'efector') {

@@ -431,8 +431,8 @@ $(function() {
     async function asignar(e, tipo){
 
         if (tipo === 'efector') {
-
-            let resultado = await (e === '0' || e === null || e === '');
+            
+            let resultado = await ([0,null,''].includes(e));
 
             if (resultado) {
 
@@ -443,7 +443,7 @@ $(function() {
         
         } else if (tipo === 'informador') {
 
-            let resultado = await (e === '0' || e === null || e === '') && (efector !== '0');
+            let resultado = await ([0,null,''].includes(e)) && (efector !== '0');
             
             if (resultado) {
                 $('.asignarI').show();
