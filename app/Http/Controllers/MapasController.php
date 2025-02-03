@@ -489,7 +489,7 @@ class MapasController extends Controller
         return ItemPrestacion::join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
             ->leftJoin('archivosefector', 'itemsprestaciones.Id', '=','archivosefector.IdEntidad')
             ->leftJoin('archivosinformador', 'itemsprestaciones.Id', '=','archivosinformador.IdEntidad')
-            ->join('proveedores', 'examenes.IdProveedor', '=', 'proveedores.Id')
+            ->leftJoin('proveedores', 'examenes.IdProveedor', '=', 'proveedores.Id')
             ->leftJoin('profesionales as profEfector', 'itemsprestaciones.IdProfesional', '=', 'profEfector.Id')
             ->leftJoin('profesionales as profInformador', 'itemsprestaciones.IdProfesional2', '=', 'profInformador.Id')
             ->leftJoin('users as userEfector', 'profEfector.Id', '=', 'userEfector.profesional_id')
