@@ -357,8 +357,13 @@ $(function() {
                     
                     let arrCompleto = [3,4,5,6], efectuadoOk = arrCompleto.includes(e.CAdj), arrCerrado = [3,4,5], cerradoOk = arrCerrado.includes(e.CAdj);
                     
-                    let efectorCompleto = e.ApellidoEfector + ' ' + e.NombreEfector,
-                        informadorCompleto = e.ApellidoInformador + ' ' + e.NombreInformador;
+                    let efectorCompleto = e.RegHisEfector === 1 
+                        ? e.fullNameEfector
+                        : e.IdProfesionalEfector !== 0 ? e.fullNameDatosEfector : '',
+                        
+                        informadorCompleto = e.RegHisInformador === 1
+                        ? e.fullNameInformador
+                        : e.IdProfesionalInformador !== 0 ? e.fullNameDatosInformador : '';
 
                     let contenido = `
                         <tr>
@@ -368,7 +373,7 @@ $(function() {
                             </td>
                             <td title="${e.NombreProveedor}">${e.NombreProveedor}</td>
                             <td>
-                                <span>${e.NombreEfector === null || e.ApellidoEfector == null ? '-' : efectorCompleto}</span>
+                                <span>${efectorCompleto}</span>
                                 <span>${(cerradoOk ? '<span style="display:block" class="custom-badge verde">Completo</span>' : '')}</span>
                             </td>
                             <td><span class="custom-badge pequeno">${arrCerrado.includes(e.CAdj) ? `cerrado`:`abierto`}</span></td>

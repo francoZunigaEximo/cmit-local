@@ -487,7 +487,12 @@ class MapasController extends Controller
         return ItemPrestacion::join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
             ->leftJoin('archivosefector', 'itemsprestaciones.Id', '=','archivosefector.IdEntidad')
             ->join('proveedores', 'examenes.IdProveedor', '=', 'proveedores.Id')
-            ->leftJoin('profesionales', 'itemsprestaciones.IdProfesional', '=', 'profesionales.Id')
+            ->join('profesionales as profEfector', 'itemsprestaciones.IdProfesional', '=', 'profEfector.Id')
+            ->join('profesionales as profInformador', 'itemsprestaciones.IdProfesional2', '=', 'profInformador.Id')
+            ->join('users as userEfector', 'profEfector.Id', '=', 'userEfector.profesional_id')
+            ->join('users as userInformador', 'profInformador.Id', '=', 'userInformador.profesional_id')
+            ->join('datos as DatosEfector', 'userEfector.datos_id', '=', 'DatosEfector.Id')
+            ->join('datos as DatosInformador', 'userInformador.datos_id', '=', 'DatosInformador.Id')
             ->select(
                 'examenes.Id AS IdExamen',
                 'examenes.Nombre AS NombreExamen',
@@ -499,10 +504,14 @@ class MapasController extends Controller
                 'itemsprestaciones.Anulado AS Anulado',
                 'examenes.Adjunto AS ExamenAdjunto',
                 'proveedores.Nombre AS NombreProveedor',
-                'profesionales.Nombre AS NombreEfector',
-                'profesionales.Apellido AS ApellidoEfector',
-                DB::raw('(SELECT Nombre FROM profesionales WHERE Id = itemsprestaciones.IdProfesional2) AS NombreInformador'),
-                DB::raw('(SELECT Apellido FROM profesionales WHERE Id = itemsprestaciones.IdProfesional2) AS ApellidoInformador'),
+                'profEfector.RegHis AS RegHisEfector',
+                'profInformador.RegHis AS RegHisInformador',
+                'userEfector.profesional_id AS IdProfesionalEfector',
+                'userInformador.profesional_id AS IdProfesionalInformador',
+                DB::raw('CONCAT(profEfector.Nombre, " ", profEfector.Apellido) AS fullNameEfector'),
+                DB::raw('CONCAT(profInformador.Nombre, " ", profInformador.Apellido) AS fullNameInformador'),
+                DB::raw('CONCAT(DatosEfector.Nombre, " ", DatosEfector.Apellido) AS fullNameDatosEfector'),
+                DB::raw('CONCAT(DatosInformador.Nombre, " ", DatosInformador.Apellido) AS fullNameDatosInformador'),
                 DB::raw('(SELECT CASE WHEN COUNT(*) = SUM(CASE WHEN itemsprestaciones.Id = archivosefector.IdEntidad THEN 1 ELSE 0 END) THEN "adjunto" ELSE "sadjunto" END FROM itemsprestaciones WHERE itemsprestaciones.Id = archivosefector.IdEntidad) AS adjuntados')
             )
             ->where('itemsprestaciones.IdPrestacion', $request->prestacion)
