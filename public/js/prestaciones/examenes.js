@@ -660,7 +660,7 @@ $(document).ready(()=>{
                                 ${examen.ExaAdj === 1 ? `<i class="ri-attachment-line ${examen.archivos > 0 ? 'verde' : 'gris'}"></i>`: ``}    
                             </td>
                             <td class="date text-center capitalize" title="${titleInformador}">${fullNameInformador}
-                                <span class="badge badge-soft-${(examen.CInfo === 0 ? 'dark' :(examen.CInfo === 3 ? 'success' : ([0,1,2].includes(examen.CInfo)) ? 'danger' : ''))}">${(examen.CInfo === 0 ? '' : (examen.CInfo === 3 ? 'Cerrado' : (examen.CInfo == 2 ? 'Borrador' : ([0,1].includes(examen.CInfo) ? 'Pendiente': ''))))}</span>
+                                <span class="badge badge-soft-${(examen.CInfo === 0 ? 'dark' :(examen.CInfo === 3 ? 'success' : ([1,2].includes(examen.CInfo)) ? 'danger' : ''))}">${(examen.CInfo === 0 ? '' : (examen.CInfo === 3 ? 'Cerrado' : (examen.CInfo == 2 ? 'Borrador' : (examen.CInfo === 1 ? 'Pendiente': ''))))}</span>
                                 ${examen.CInfo !== 0 ? `<i class="ri-attachment-line ${examen.archivosI > 0 ? 'verde' : 'gris'}"></i>`: ``}   
                             </td>
                             <td class="phone"><span class="${examen.Facturado === 1 ? 'badge badge-soft-success' : 'custom-badge rojo'}"><i class="ri-check-line"></i></span></td>

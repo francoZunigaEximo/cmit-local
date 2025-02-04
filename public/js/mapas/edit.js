@@ -379,10 +379,10 @@ $(function() {
                             <td><span class="custom-badge pequeno">${arrCerrado.includes(e.CAdj) ? `cerrado`:`abierto`}</span></td>
                             <td><span class="custom-badge pequeno">${e.ExamenAdjunto === 0 ? `No lleva adjuntos` : e.ExamenAdjunto === 1 && e.adjEfector === 'sadjunto' ? `pendiente` : e.ExamenAdjunto === 1 && e.adjEfector === 'adjunto' ? `Adjuntado` : `-`}</span></td>
                             <td>
-                                <span>${e.Informe === 0 ? 'Sin informador' : informadorCompleto }</span>
-                                <span>${(e.Informe === 0 ? '' : e.CInfo === 3 && adjInformador === 'adjunto' ? '<span style="display:block" class="custom-badge verde">Completo</span>' : '')}</span>
+                                <span>${e.CInfo === 0 ? 'Sin informador' : informadorCompleto }</span>
+                                <span>${(e.CInfo === 0 ? '' : e.CInfo === 3 && adjInformador === 'adjunto' ? '<span style="display:block" class="custom-badge verde">Completo</span>' : '')}</span>
                             </td>
-                            <td>${e.Informe === 0 ? '' : `<span class="custom-badge pequeno">${e.CInfo === 3 ? `cerrado`: `abierto`}</span>`}</td>
+                            <td>${e.CInfo === 0 ? '' : `<span class="custom-badge pequeno">${e.CInfo === 3 ? `cerrado`: `abierto`}</span>`}</td>
                             <td><span data-id="${e.IdItemPrestacion}" data-estado="examen" title="${e.Incompleto === 1 ? `Incompleto` : `Completo`}" class="cambiarEstado custom-badge ${e.Incompleto === 1 ? `rojo` : `verde`}"><i class="ri-lightbulb-line"></i></span></td>
                             <td>
                                 <button type="button" data-id="${e.IdItemPrestacion}" class="btn btn-sm iconGeneral verItemPrestacion" title="Ver exámen"><i class="ri-search-eye-line"></i></button>
