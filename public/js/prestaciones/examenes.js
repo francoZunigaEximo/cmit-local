@@ -660,8 +660,8 @@ $(document).ready(()=>{
                                 ${examen.ExaAdj === 1 ? `<i class="ri-attachment-line ${examen.archivos > 0 ? 'verde' : 'gris'}"></i>`: ``}    
                             </td>
                             <td class="date text-center capitalize" title="${titleInformador}">${fullNameInformador}
-                                <span class="badge badge-soft-${(examen.CInfo === 0 ? 'dark' :(examen.CInfo === 3 ? 'success' : ([1,2].includes(examen.CInfo)) ? 'danger' : ''))}">${(examen.CInfo === 0 ? '' : (examen.CInfo === 3 ? 'Cerrado' : (examen.CInfo == 2 ? 'Borrador' : (examen.CInfo === 1 ? 'Pendiente': ''))))}</span>
-                                ${examen.CInfo !== 0 ? `<i class="ri-attachment-line ${examen.archivosI > 0 ? 'verde' : 'gris'}"></i>`: ``}   
+                                <span class="badge badge-soft-${(examen.CInfo === 0 ? 'dark' :(examen.CInfo === 3 ? 'success' : ([1,2].includes(examen.CInfo)) ? 'danger' : ''))}">${(examen.CInfo === 0 || examen.InfAdj === 0 ? '' : (examen.CInfo === 3 ? 'Cerrado' : (examen.CInfo == 2 ? 'Borrador' : (examen.CInfo === 1 ? 'Pendiente': ''))))}</span>
+                                ${examen.InfAdj === 1 ? (examen.CInfo !== 0 ? `<i class="ri-attachment-line ${examen.archivosI > 0 ? 'verde' : 'gris'}"></i>`: ``) : ''}   
                             </td>
                             <td class="phone"><span class="${examen.Facturado === 1 ? 'badge badge-soft-success' : 'custom-badge rojo'}"><i class="ri-check-line"></i></span></td>
                             <td>
@@ -762,6 +762,8 @@ $(document).ready(()=>{
                     nroNc = notaCreditoEx?.Nro || '',
                     notaCEx = tipoNc + sucursalNc + nroNc;
                 
+                $('.ex-abrir').hide();
+                
                 $('#ex-qr').empty().text(response.qrTexto);
                 $('#ex-paciente').empty().text(paciente);
                 $('#ex-anulado').empty().html(anulado);
@@ -808,7 +810,7 @@ $(document).ready(()=>{
                 $('#ex-NumeroNC').val(notaCEx);
 
                 $('#ex-efectores').empty().append('<option selected value="' + response.efectores.id + '">' + response.efectores.NombreCompleto + '</option>');
-                console.log("IdProfesional2: " + itemprestaciones.IdProfesional2)
+          
                 $('#ex-informadores').empty().append('<option selected value="' + response.informadores.id + '">' + response.informadores.NombreCompleto + '</option>');
 
                 let efector = $('#ex-efectores').val(), informador = $('#ex-informadores').val();

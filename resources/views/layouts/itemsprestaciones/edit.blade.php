@@ -5,8 +5,8 @@
 @section('content')
 
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-    <h4 class="mb-sm-0">Exámen prestación <span class="custom-badge original">N°{{ $itemsprestacione->IdPrestacion }}</span> | Paciente <span class="custom-badge original">{{ $data['paciente']->paciente->Nombre ?? ''}} {{ $data['paciente']->Apellido ?? '' }}</span> {!! ($itemsprestacione->Anulado === 1) ? '<span class="custom-badge rojo">Bloqueado</span>' : '' !!}</h4>
-    <input type="hidden" value="{{ $itemsprestacione->Id }}" id="Id">
+    <h4 class="mb-sm-0">Exámen prestación <span class="custom-badge original">N°{{ $data['itemprestacion']->IdPrestacion  }}</span> | Paciente <span class="custom-badge original">{{ $data['paciente']->paciente->Nombre ?? ''}} {{ $data['paciente']->Apellido ?? '' }}</span> {!! ($data['itemprestacion']->Anulado === 1) ? '<span class="custom-badge rojo">Bloqueado</span>' : '' !!}</h4>
+    <input type="hidden" value="{{ $data['itemprestacion']->Id }}" id="Id">
     <div class="page-title-right d-inline">
         <p><strong>QR:</strong> {{ $data['qrTexto'] ?? ''}}</p>
     </div>
@@ -19,18 +19,18 @@
             <div class="messageExamen"></div>
 
             <div class="row">
-                <input type="hidden" id="identificacion" value="{{ $itemsprestacione->Id }}">
-                <input type="hidden" id="prestacion" value="{{ $itemsprestacione->IdPrestacion}}">
+                <input type="hidden" id="identificacion" value="{{ $data['itemprestacion']->Id }}">
+                <input type="hidden" id="prestacion" value="{{ $data['itemprestacion']->IdPrestacion}}">
 
                 <div class="col-6">
                     <div class="input-group input-group-sm mb-2 size50porcent">
                         <span class="input-group-text">Fecha Estudio</span>
-                        <input type="date" name="Fecha" id="Fecha" class="form-control" value="{{ $itemsprestacione->prestaciones->Fecha ?? ''}}">
+                        <input type="date" name="Fecha" id="Fecha" class="form-control" value="{{ $data['itemprestacion']->prestaciones->Fecha ?? ''}}">
                     </div>
 
                     <div class="input-group input-group-sm mb-2">
                         <span class="input-group-text">Exámen</span>
-                        <input type="text" name="Examen" id="Examen" class="form-control" value="{{ $itemsprestacione->examenes->Nombre ?? ''}}" @readonly(true)>
+                        <input type="text" name="Examen" id="Examen" class="form-control" value="{{ $data['itemprestacion']->examenes->Nombre ?? ''}}" @readonly(true)>
                     </div>
                 </div>
                 <div class="col-6"></div>
@@ -41,15 +41,15 @@
                 <div class="col-6">
                     <div class="input-group input-group-sm mb-2">
                         <span class="input-group-text">Especialidad Efector</span>
-                        <input type="text" class="form-control" name="provEfector" id="provEfector" value="{{ $itemsprestacione->examenes->proveedor1->Nombre ?? ''}}" @readonly(true)>
-                        <input type="hidden" id="IdEfector" value="{{ $itemsprestacione->examenes->proveedor1->Id ?? '' }}">
+                        <input type="text" class="form-control" name="provEfector" id="provEfector" value="{{ $data['itemprestacion']->examenes->proveedor1->Nombre ?? ''}}" @readonly(true)>
+                        <input type="hidden" id="IdEfector" value="{{ $data['itemprestacion']->examenes->proveedor1->Id ?? '' }}">
                     </div>
                 </div>
                 <div class="col-6">
                     <div class="input-group input-group-sm mb-2">
                         <span class="input-group-text">Especialidad Informador</span>
-                        <input type="text" class="form-control" name="provInformador" id="provInformador" value="{{ $itemsprestacione->examenes->proveedor2->Nombre ?? '' }}" @readonly(true)>
-                        <input type="hidden" id="IdInformador" value="{{ $itemsprestacione->examenes->proveedor2->Id ?? '' }}">
+                        <input type="text" class="form-control" name="provInformador" id="provInformador" value="{{ $data['itemprestacion']->examenes->proveedor2->Nombre ?? '' }}" @readonly(true)>
+                        <input type="hidden" id="IdInformador" value="{{ $data['itemprestacion']->examenes->proveedor2->Id ?? '' }}">
                     </div>
                 </div>
             </div>
@@ -58,7 +58,7 @@
                 <div class="col-12">
                     <div class="input-group input-group-sm mb-2">
                         <span class="input-group-text">Observaciones</span>
-                        <textarea class="form-control" style="height: 80px" id="ObsExamen" name="ObsExamen">{{ strip_tags($itemsprestacione->ObsExamen) ?? '' }}</textarea>
+                        <textarea class="form-control" style="height: 80px" id="ObsExamen" name="ObsExamen">{{ strip_tags($data['itemprestacion']->ObsExamen) ?? '' }}</textarea>
                     </div>
                 </div>
             </div>
@@ -73,8 +73,8 @@
                     <div class="input-group input-group-sm mb-2">
                         <span class="input-group-text">Efector</span>
                         <select name="efectores" id="efectores" class="form-control">
-                            <option value="{{ $itemsprestacione->profesionales1->Id ?? '' }}" selected>
-                                {{ $itemsprestacione->profesionales1->Apellido ?? '' }} {{ $itemsprestacione->profesionales1->Nombre ?? '' }}
+                            <option value="{{ $data['efectores']['id'] ?? '' }}" selected>
+                                {{ $data['efectores']['NombreCompleto'] ?? '' }}
                             </option>
                         </select>
                     </div>
@@ -83,30 +83,30 @@
                 <div class="col-md-2">
                     <div class="input-group input-group-sm mb-2">
                         <span class="input-group-text">Fecha asig.</span>
-                        <input type="date" class="form-control" id="FechaAsignado" name="FechaAsignado" value="{{ $itemsprestacione->FechaAsignado ?? ''}}" @readonly(true)>
+                        <input type="date" class="form-control" id="FechaAsignado" name="FechaAsignado" value="{{ $data['itemprestacion']->FechaAsignado ?? ''}}" @readonly(true)>
                     </div>
                 </div>
 
                 <div class="col-md-2">
                     <div class="input-group input-group-sm mb-2">
                         <span class="input-group-text">Estado</span>
-                        <input type="text" class="form-control" style="color: {{ (in_array($itemsprestacione->CAdj, [0, 1, 2]) ? 'red' : (in_array($itemsprestacione->CAdj, [3, 4, 5]) ? 'green' : '')) ?? ''}}" id="Estado" name="Estado" value="{{ (in_array($itemsprestacione->CAdj, [0, 1, 2]) ? 'Abierto' : (in_array($itemsprestacione->CAdj, [3, 4, 5]) ? 'Cerrado' : '')) ?? ''}}" @readonly(true)>
+                        <input type="text" class="form-control" style="color: {{ (in_array($data['itemprestacion']->CAdj, [0, 1, 2]) ? 'red' : (in_array($data['itemprestacion']->CAdj, [3, 4, 5]) ? 'green' : '')) ?? ''}}" id="Estado" name="Estado" value="{{ (in_array($data['itemprestacion']->CAdj, [0, 1, 2]) ? 'Abierto' : (in_array($data['itemprestacion']->CAdj, [3, 4, 5]) ? 'Cerrado' : '')) ?? ''}}" @readonly(true)>
                     </div>
                 </div>
 
                 <div class="col-md-2">
                     <div class="input-group input-group-sm mb-2">
                         <span class="input-group-text">Fecha Pago</span>
-                        <input type="date" class="form-control" id="FechaPagado" name="FechaPagado" value="{{ $itemsprestacione->FechaPagado ?? ''}}" @readonly(true)>
+                        <input type="date" class="form-control" id="FechaPagado" name="FechaPagado" value="{{ $data['itemprestacion']->FechaPagado ?? ''}}" @readonly(true)>
                     </div>
                 </div>
 
                 <div class="col-md-2">
-                    {!! ($itemsprestacione->Anulado === 1) ? '' : '<button type="button" id="asignar" class="btn botonGeneral btn-sm asignar">Asignar</button>' !!}
+                    {!! ($data['itemprestacion']->Anulado === 1) ? '' : '<button type="button" id="asignar" class="btn botonGeneral btn-sm asignar">Asignar</button>' !!}
                     <button type="button" id="liberar" class="btn botonGeneral btn-sm liberar">Liberar</button>
-                    {!! ($itemsprestacione->Anulado === 1) ? '' : '<button type="button" id="abrir" class="btn botonGeneral btn-sm abrir">Abrir</button>' !!}
-                    {!! ($itemsprestacione->Anulado === 1) ? '' : '<button type="button" id="cerrar" class="btn botonGeneral btn-sm cerrar">Cerrar</button>' !!}
-                   <input type="hidden" value="{{ $itemsprestacione->CAdj }}" id="CAdj">
+                    {!! ($data['itemprestacion']->Anulado === 1) ? '' : '<button type="button" id="abrir" class="btn botonGeneral btn-sm abrir">Abrir</button>' !!}
+                    {!! ($data['itemprestacion']->Anulado === 1) ? '' : '<button type="button" id="cerrar" class="btn botonGeneral btn-sm cerrar">Cerrar</button>' !!}
+                   <input type="hidden" value="{{ $data['itemprestacion']->CAdj }}" id="CAdj">
                 </div>
 
             </div>
@@ -115,7 +115,7 @@
                 <div class="col-md-3">
                     <div class="input-group input-group-sm mb-2">
                         <span class="input-group-text">Adjunto</span>
-                        <input type="text" style="{{ ($itemsprestacione->examenes->Adjunto === 1 && !empty($adjuntoEfector) && $adjuntoEfector === 0 ? 'color: red' : ($itemsprestacione->examenes->Adjunto === 1 && !empty($adjuntoEfector) && $adjuntoEfector === 1 ? 'color: green' : '')) }}" class="form-control" id="Estado" name="Estado" value="{{ ($itemsprestacione->examenes->Adjunto === 0 ? 'No lleva Adjuntos' : ($itemsprestacione->examenes->Adjunto === 1 && !empty($adjuntoEfector) && $adjuntoEfector === 0 ? 'Pendiente' : ($itemsprestacione->examenes->Adjunto === 1 && !empty($adjuntoEfector) && $adjuntoEfector === 1 ? 'Adjuntado' : '-'))) }}" @readonly(true)>
+                        <input type="text" style="{{ ($data['itemprestacion']->examenes->Adjunto === 1 && !empty($adjuntoEfector) && $adjuntoEfector === 0 ? 'color: red' : ($data['itemprestacion']->examenes->Adjunto === 1 && !empty($adjuntoEfector) && $adjuntoEfector === 1 ? 'color: green' : '')) }}" class="form-control" id="Estado" name="Estado" value="{{ ($data['itemprestacion']->examenes->Adjunto === 0 ? 'No lleva Adjuntos' : ($data['itemprestacion']->examenes->Adjunto === 1 && !empty($adjuntoEfector) && $adjuntoEfector === 0 ? 'Pendiente' : ($data['itemprestacion']->examenes->Adjunto === 1 && !empty($adjuntoEfector) && $adjuntoEfector === 1 ? 'Adjuntado' : '-'))) }}" @readonly(true)>
                         <button type="button" class="btn botonGeneral adjuntarEfector" data-bs-toggle="modal" data-bs-target="#modalEfector">Adjuntar archivo</button>
                     </div>
                 </div>
@@ -130,10 +130,10 @@
             <div class="row">
                 <div class="col-md-4">
                     <div class="input-group input-group-sm mb-2">
-                        @if($itemsprestacione->CInfo !== 0)
+                        @if($data['itemprestacion']->CInfo !== 0)
                         <span class="input-group-text">Informador</span>
                             <select name="informadores" id="informadores" class="form-control">
-                                <option value="{{ $itemsprestacione->profesionales2->Id ?? '' }}" selected>{{ $itemsprestacione->profesionales2->Apellido ?? '' }} {{ $itemsprestacione->profesionales2->Nombre ?? '' }}</option>
+                                <option value="{{ $data['informadores']['id'] ?? '' }}" selected>{{ $data['informadores']['NombreCompleto'] ?? '' }}</option>
                             </select>
                         @endif
                     </div>
@@ -142,41 +142,41 @@
                 <div class="col-md-2">
                     <div class="input-group input-group-sm mb-2">     
 
-                        @if($itemsprestacione->CInfo !== 0)
+                        @if($data['itemprestacion']->CInfo !== 0)
                             <span class="input-group-text">Estado</span>
-                            <input type="text" class="form-control" style="color: {{ ($itemsprestacione->CInfo === 0 || $itemsprestacione->CInfo === 1 || $itemsprestacione->CInfo === 2 ? 'red' : ($itemsprestacione->CInfo === 3 ? 'green' : '')) ?? ''}}" id="EstadoI" name="EstadoI" value="{{ (in_array($itemsprestacione->CInfo, [0,1]) ? 'Pediente' : ($itemsprestacione->CInfo === 2 ? 'Borrador' : ($itemsprestacione->CInfo === 3 ? 'Cerrado' : ''))) ?? ''}}" @readonly(true)>
+                            <input type="text" class="form-control" style="color: {{ ($data['itemprestacion']->CInfo === 0 || $data['itemprestacion']->CInfo === 1 || $data['itemprestacion']->CInfo === 2 ? 'red' : ($data['itemprestacion']->CInfo === 3 ? 'green' : '')) ?? ''}}" id="EstadoI" name="EstadoI" value="{{ (in_array($data['itemprestacion']->CInfo, [0,1]) ? 'Pediente' : ($data['itemprestacion']->CInfo === 2 ? 'Borrador' : ($data['itemprestacion']->CInfo === 3 ? 'Cerrado' : ''))) ?? ''}}" @readonly(true)>
 
                         @endif
                     </div>
                 </div>
 
                 <div class="col-md-2">
-                    @if($itemsprestacione->CInfo !== 0)
+                    @if($data['itemprestacion']->CInfo !== 0)
                         <div class="input-group input-group-sm mb-2">
                             <span class="input-group-text">Fecha Pago</span>
-                            <input type="date" id="FechaPagado2" name="FechaPagado2" class="form-control" value="{{ $itemsprestacione->FechaPagado2}}" @readonly(true)>
+                            <input type="date" id="FechaPagado2" name="FechaPagado2" class="form-control" value="{{ $data['itemprestacion']->FechaPagado2}}" @readonly(true)>
                         </div>
                     @endif
                 </div>
 
                 <div class="col-md-2">
 
-                    @if($itemsprestacione->CInfo !== 0)
-                        {!! ($itemsprestacione->Anulado === 1) ? '' : '<button type="button" id="asignarI" class="btn botonGeneral btn-sm asignarI">Asignar</button>' !!}
+                    @if($data['itemprestacion']->CInfo !== 0)
+                        {!! ($data['itemprestacion']->Anulado === 1) ? '' : '<button type="button" id="asignarI" class="btn botonGeneral btn-sm asignarI">Asignar</button>' !!}
                         <button type="button" id="liberarI" class="btn botonGeneral btn-sm liberarI">Liberar</button>
-                        {!! ($itemsprestacione->Anulado === 1) ? '' : '<button type="button" id="cerrarI" class="btn botonGeneral btn-sm cerrarI">Cerrar</button>' !!}
-                        <input type="hidden" value="{{ $itemsprestacione->CInfo }}" id="CInfo">
+                        {!! ($data['itemprestacion']->Anulado === 1) ? '' : '<button type="button" id="cerrarI" class="btn botonGeneral btn-sm cerrarI">Cerrar</button>' !!}
+                        <input type="hidden" value="{{ $data['itemprestacion']->CInfo }}" id="CInfo">
                     @endif
                 </div>
 
             </div>
-            @if($itemsprestacione->CInfo !== 0)
+            @if($data['itemprestacion']->CInfo !== 0)
             <div class="row">
                 <div class="col-md-3">
                     <div class="input-group input-group-sm mb-2">
 
                         <span class="input-group-text">Adjunto</span>
-                        <input type="text" style="{{ ($itemsprestacione->profesionales2->InfAdj === 1 && $data['adjuntoInformador'] === 0 ? 'color: red' : ($itemsprestacione->profesionales2->InfAdj === 1 && $data['adjuntoInformador'] === 1 ? 'color: green' : '')) }}" class="form-control" id="EstadoInf" name="EstadoInf" value="{{ ($itemsprestacione->profesionales2->InfAdj === 0 ? 'No lleva Adjuntos' : ($itemsprestacione->profesionales2->InfAdj === 1 && $data['adjuntoInformador'] === 0 ? 'Pendiente' : ($itemsprestacione->profesionales2->InfAdj === 1 && $data['adjuntoInformador'] === 1 ? 'Adjuntado' : '-'))) }}" @readonly(true)>
+                        <input type="text" style="{{ ($data['itemprestacion']->profesionales2->InfAdj === 1 && $data['adjuntoInformador'] === 0 ? 'color: red' : ($data['itemprestacion']->profesionales2->InfAdj === 1 && $data['adjuntoInformador'] === 1 ? 'color: green' : '')) }}" class="form-control" id="EstadoInf" name="EstadoInf" value="{{ ($data['itemprestacion']->profesionales2->InfAdj === 0 ? 'No lleva Adjuntos' : ($data['itemprestacion']->profesionales2->InfAdj === 1 && $data['adjuntoInformador'] === 0 ? 'Pendiente' : ($data['itemprestacion']->profesionales2->InfAdj === 1 && $data['adjuntoInformador'] === 1 ? 'Adjuntado' : '-'))) }}" @readonly(true)>
                         <button type="button" class="btn botonGeneral adjuntarInformador"  data-bs-toggle="modal" data-bs-target="#modalInformador">Adjuntar archivo</button>
                     </div>
                 </div>
@@ -185,12 +185,12 @@
         </div>
     </div>
 
-    @if($itemsprestacione->CInfo !== 0)
+    @if($data['itemprestacion']->CInfo !== 0)
     <div class="row mb-3">
         <div class="col-12 mx-auto box-information">
             <div class="input-group input-group-sm mb-2">
                 <span class="input-group-text">Observaciones Informador</span>
-                <textarea class="form-control" style="height: 80px" name="Obs" id="Obs" disabled>{!! isset($itemsprestacione->itemsInfo) ? strip_tags($itemsprestacione->itemsInfo->Obs) : '' !!}</textarea>
+                <textarea class="form-control" style="height: 80px" name="Obs" id="Obs" disabled>{!! isset($data['itemprestacion']->itemsInfo) ? strip_tags($data['itemprestacion']->itemsInfo->Obs) : '' !!}</textarea>
             </div>
         </div>
     </div>
@@ -203,22 +203,22 @@
                 <div class="col-md-4">
                     <div class="input-group input-group-sm mb-2">
                         <span class="input-group-text">Fecha Factura</span>
-                        <input type="date" class="form-control" id="FechaFacturaVta" name="FechaFacturaVta" value="{{ $itemsprestacione->facturadeventa->Fecha ?? ''}}" @readonly(true)>
+                        <input type="date" class="form-control" id="FechaFacturaVta" name="FechaFacturaVta" value="{{ $data['itemprestacion']->facturadeventa->Fecha ?? ''}}" @readonly(true)>
                     </div>
                     <div class="input-group input-group-sm mb-2">
                         <span class="input-group-text">Nro Factura</span>
-                        <input type="text" class="form-control" id="NroFacturaVta" name=" NroFacturaVta" value="{{ $itemsprestacione->facturadeventa->Tipo ?? ''}}{{ $itemsprestacione->facturadeventa->Sucursal ?? ''}}{{ $itemsprestacione->facturadeventa->NroFactura ?? ''}}" @readonly(true)>
+                        <input type="text" class="form-control" id="NroFacturaVta" name=" NroFacturaVta" value="{{ $data['itemprestacion']->facturadeventa->Tipo ?? ''}}{{ $data['itemprestacion']->facturadeventa->Sucursal ?? ''}}{{ $data['itemprestacion']->facturadeventa->NroFactura ?? ''}}" @readonly(true)>
                     </div>
                 </div>
 
                 <div class="col-md-4">
                     <div class="input-group input-group-sm mb-2">
                         <span class="input-group-text">Fecha NC</span>
-                        <input type="date" class="form-control" id="FechaNC" name="FechaNC" value="{{ $itemsprestacione->notaCreditoIt->notaCredito->Fecha ?? ''}}" @readonly(true)>
+                        <input type="date" class="form-control" id="FechaNC" name="FechaNC" value="{{ $data['itemprestacion']->notaCreditoIt->notaCredito->Fecha ?? ''}}" @readonly(true)>
                     </div>
                     <div class="input-group input-group-sm mb-2">
                         <span class="input-group-text">Número NC</span>
-                        <input type="text" class="form-control" id="NumeroNC" name="NumeroNC" value="{{ $itemsprestacione->notaCreditoIt->notaCredito->Tipo ?? ''}}{{ $itemsprestacione->notaCreditoIt->notaCredito->Sucursal ?? ''}}{{ $itemsprestacione->notaCreditoIt->notaCredito->Nro ?? ''}}" @readonly(true)>
+                        <input type="text" class="form-control" id="NumeroNC" name="NumeroNC" value="{{ $data['itemprestacion']->notaCreditoIt->notaCredito->Tipo ?? ''}}{{ $data['itemprestacion']->notaCreditoIt->notaCredito->Sucursal ?? ''}}{{ $data['itemprestacion']->notaCreditoIt->notaCredito->Nro ?? ''}}" @readonly(true)>
                     </div>
                 </div>
 
@@ -251,7 +251,7 @@
                     </tbody>
                 </table>
 
-                @if($itemsprestacione->CInfo !== 0)
+                @if($data['itemprestacion']->CInfo !== 0)
                     <table class="display table table-bordered mt-4" style="width:100%"  id="listadoInformador">
                         <thead class="table-light">
                             <th class="sort" title="Adjunto Informador">Adjunto Informador</th>
@@ -280,7 +280,7 @@
             <div class="modal-body">
                 <form id="form-efector">
                    
-                    @if($itemsprestacione->examenes->proveedor1->Multi == 1)
+                    @if($data['itemprestacion']->examenes->proveedor1->Multi == 1)
                     <div class="alert alert-info alert-border-left alert-dismissible fade show mb-2" role="alert">
                         Exámen con multi adjunto habilitado. Elija a que exámen quiere asociar el reporte.
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -301,7 +301,7 @@
                     <div class="mt-3">
                         <label for="Descripcion" class="form-label">Descripción</label>
                         <textarea class="form-control" name="DescripcionE" id="DescripcionE" rows="5"></textarea>
-                        <input type="hidden" id="multi" value="{{ $itemsprestacione->examenes->proveedor1->Multi == 1 ? 'success' : 'fail'}}">
+                        <input type="hidden" id="multi" value="{{ $data['itemprestacion']->examenes->proveedor1->Multi == 1 ? 'success' : 'fail'}}">
                     </div>
                 </form> 
             </div>
@@ -346,7 +346,7 @@
             </div>
             <div class="modal-body">
                 <form id="form-informador">
-                    @if($itemsprestacione->examenes->proveedor2->MultiE == 1 && $itemsprestacione->profesionales2->InfAdj == 1)
+                    @if($data['itemprestacion']->examenes->proveedor2->MultiE == 1 && $data['itemprestacion']->profesionales2->InfAdj == 1)
                     <div class="alert alert-info alert-border-left alert-dismissible fade show mb-2" role="alert">
                         Exámen con multi adjunto habilitado. Elija el reporte que quiere asociar.
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -373,7 +373,7 @@
                     <div class="mt-3">
                         <label for="Descripcion" class="form-label">Descripción</label>
                         <textarea class="form-control" name="DescripcionI" id="DescripcionI" rows="5"></textarea>
-                        <input type="hidden" id="multiE" value="{{ $itemsprestacione->examenes->proveedor2->MultiE == 1 && $itemsprestacione->profesionales2->InfAdj == 1 ? 'success' : 'fail'}}">
+                        <input type="hidden" id="multiE" value="{{ $data['itemprestacion']->examenes->proveedor2->MultiE == 1 && $data['itemprestacion']->profesionales2->InfAdj == 1 ? 'success' : 'fail'}}">
                     </div>
                 </form> 
             </div>
@@ -391,14 +391,14 @@
 <script>
     const TOKEN = '{{ csrf_token() }}';
 
-    const IDITEMPRES = "{{ $itemsprestacione->Id }}";
+    const IDITEMPRES = "{{ $data['itemprestacion']->Id }}";
     const updateItem = "{{ route('updateItem') }}";
     const updateAsignado = "{{ route('updateAsignado') }}";
     const listGeneral = "{{ route('listGeneral') }}";
     const updateAdjunto = "{{ route('updateAdjunto') }}";
     const paginacionGeneral = "{{ route('paginacionGeneral') }}";
     const updateItemExamen = "{{ route('updateItemExamen') }}";
-    const volver = "{{ route('prestaciones.edit', ['prestacione' => $itemsprestacione->IdPrestacion]) }}";
+    const volver = "{{ route('prestaciones.edit', ['prestacione' => $data['itemprestacion']->IdPrestacion]) }}";
     const fileUpload = "{{ route('uploadAdjunto') }}";
     const descargaE = "@fileUrl('lectura')/AdjuntosEfector";
     const descargaI = "@fileUrl('lectura')/AdjuntosInformador";
