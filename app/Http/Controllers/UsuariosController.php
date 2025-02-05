@@ -307,7 +307,7 @@ class UsuariosController extends Controller
             }
 
             if(Auth::user()->name === $query->name) {
-                return response()->json(['msg' => 'No puedes hacer una bloquear la cuenta que usas'], 409);
+                return response()->json(['msg' => 'No puedes hacer un bloqueo de la cuenta que usas'], 409);
             }
 
             $query->inactivo = $query->inactivo === 1 ? 0 : 1;

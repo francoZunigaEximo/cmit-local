@@ -1217,15 +1217,16 @@ class ItemPrestacionesController extends Controller
     //Tipo: efector, informador
     private function getProfesional(int $id)
     {
-        $query = Profesional::join('users', 'profesionales.Id', '=', 'users.profesional_id')
-                            ->join('datos', 'users.datos_id', '=', 'datos.Id')
+        $query = Profesional::leftJoin('users', 'profesionales.Id', '=', 'users.profesional_id')
+                            ->leftJoin('datos', 'users.datos_id', '=', 'datos.Id')
             ->select(
                 'profesionales.Id as Id',
                 'profesionales.Nombre as NombreProfesional',
                 'profesionales.Apellido as ApellidoProfesional',
                 'datos.Nombre as NombreDatos',
                 'datos.Apellido as ApellidoDatos',
-                'profesionales.RegHis as RegHis'
+                'profesionales.RegHis as RegHis',
+                'users.profesional_id as userProfesional'
             )->find($id);
 
             if($query) {
@@ -1234,7 +1235,7 @@ class ItemPrestacionesController extends Controller
                         'id' => $query->Id,
                         'NombreCompleto' => $query->RegHis === 1 
                             ? $query->ApellidoProfesional ." ". $query->NombreProfesional
-                            : $query->ApellidoDatos . " " . $query->NombreDatos
+                            : (in_array($query->userProfesional,[0,'',null], true) ? '' : $query->ApellidoDatos . " " . $query->NombreDatos)
                     ]
                 );
             }

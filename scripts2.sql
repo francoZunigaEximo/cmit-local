@@ -54,7 +54,8 @@ ALTER TABLE prestaciones add NroFactProv VARCHAR(200) NULL;
 /*** Profesionales ***/
 ALTER TABLE profesionales ADD COLUMN wImage varchar(100) DEFAULT '250px';
 ALTER TABLE profesionales ADD COLUMN hImage varchar(100) DEFAULT '250px';
-ALTER TABLE profesionales ADD RegHis TINYINT UNSIGNED DEFAULT 1;
+ALTER TABLE profesionales ADD RegHis TINYINT UNSIGNED DEFAULT 0;
+UPDATE profesionales SET RegHis = 1; /*Se toman todos los datos como antiguos, salvo los que se creen de cero */
 ALTER TABLE profesionales ADD T5 TINYINT UNSIGNED DEFAULT 0;
 ALTER TABLE profesionales ADD InfAdj INT DEFAULT 1 NOT NULL;
 
