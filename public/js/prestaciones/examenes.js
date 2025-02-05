@@ -807,9 +807,9 @@ $(document).ready(()=>{
                 $('#ex-FechaNC').val(notaCreditoEx?.Fecha);
                 $('#ex-NumeroNC').val(notaCEx);
 
-                $('#ex-efectores').empty().append('<option selected value="' + itemprestaciones.IdProfesional + '">' + response.efectores.NombreCompleto + '</option>');
-
-                $('#ex-informadores').empty().append('<option selected value="' + itemprestaciones.IdProfesional2 + '">' + response.informadores.NombreCompleto + '</option>');
+                $('#ex-efectores').empty().append('<option selected value="' + response.efectores.id + '">' + response.efectores.NombreCompleto + '</option>');
+                console.log("IdProfesional2: " + itemprestaciones.IdProfesional2)
+                $('#ex-informadores').empty().append('<option selected value="' + response.informadores.id + '">' + response.informadores.NombreCompleto + '</option>');
 
                 let efector = $('#ex-efectores').val(), informador = $('#ex-informadores').val();
                 
