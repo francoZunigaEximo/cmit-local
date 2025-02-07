@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
 use App\Traits\CheckPermission;
 use App\Traits\ReporteExcel;
-
+use Carbon\Carbon;
 
 class PacientesController extends Controller
 {
@@ -167,7 +167,7 @@ class PacientesController extends Controller
                 'paciente' => $paciente,
                 'provincias' => Provincia::all(),
                 'telefono' => $this->getTelefono($paciente->Id) ,
-                'suEdad' => $this->getAge($paciente->FechaNacimiento) ?? '',
+                'suEdad' => Carbon::parse($paciente->FechaNacimiento)->age,
                 'tipoPrestacion' => PrestacionesTipo::all(),
                 'tipoPrestacionN' => PrestacionesTipo::all(),
                 'fichaLaboral' => $this->getFichaLaboral($paciente->Id, null) ?? null,
