@@ -1,13 +1,51 @@
 $(function(){
 
-    $('#fechaHasta').val(fechaNow(null, "-", 0));
-    $('#estado').val('abierto');
+    const grillaEfector = $('#listaLlamadaEfector');
 
     let echo = window.Echo.channel('listado-efectores');
 
-    echo.listen('.ListadoProfesionalesEvent', (response) => {
-        console.log("Respuesta cruda:", response);
+    $('#fechaHasta').val(fechaNow(null, "-", 0));
+    $('#estado').val('abierto');
 
+    $(document).on('click', '.verPrestacion', function(e){
+        e.preventDefault();
+
+        let prestacion = $(this).data('prestacion');
+        window.open(lnkPrestaciones.replace('__item__', prestacion), '_blank');
+    });
+
+    $(document).on('click','.exportar', function(e){
+        e.preventDefault();
+
+        let lista = grillaEfector.DataTable();
+
+        if(!lista.data().any()){
+            lista.clear().destroy();
+            toastr.warning('No hay datos para exportar');
+            return;
+        }
+
+        let data = lista.rows({page: 'current'}).data().toArray(),
+            ids = data.map(function(row) {
+            return row.prestacion;
+        });
+
+        $.get(printExportar, {ids: ids, tipo: 'efector'})
+            .done(function(response){
+                createFile("xls", response.filePath, response.name);
+                preloader('off')
+                toastr.success(response.msg)
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            })
+
+    });
+
+    echo.listen('.ListadoProfesionalesEvent', (response) => {
         const efectores = response.efectores;
 
         $('#profesional').empty();

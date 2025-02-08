@@ -6,9 +6,12 @@ use App\Models\ExamenCuentaIt;
 use App\Models\ItemPrestacion;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 trait ToolsReportes
 {
+    private static $RUTATEMPORAL = "app/public/";
+
     public function AnexosFormulariosPrint(int $id): mixed
     {
         //verifico si hay anexos con formularios a imprimir
@@ -31,20 +34,31 @@ trait ToolsReportes
     }
 
     public function folderTempClean(): void
-{
-    $deleteFiles = ['file-', 'AINF', 'merge_']; 
-    
-    $files = Storage::disk('public')->files('temp'); 
-    
-    foreach ($files as $file) {
+    {
+        $deleteFiles = ['file-', 'AINF', 'merge_']; 
         
-        foreach ($deleteFiles as $deleteFile) {
-            if (Str::startsWith(basename($file), $deleteFile)) {
-         
-                Storage::disk('public')->delete($file);
-                break; 
+        $files = Storage::disk('public')->files('temp'); 
+        
+        foreach ($files as $file) {
+            
+            foreach ($deleteFiles as $deleteFile) {
+                if (Str::startsWith(basename($file), $deleteFile)) {
+            
+                    Storage::disk('public')->delete($file);
+                    break; 
+                }
             }
         }
     }
-}
+
+    public function generarArchivo($spreadsheet, $nombre)
+    {
+        $filePath = storage_path(self::$RUTATEMPORAL.$nombre);
+ 
+          $writer = new Xlsx($spreadsheet);
+          $writer->save($filePath);
+          chmod($filePath, 0777);
+ 
+          return response()->json(['filePath' => $filePath, 'msg' => 'Se ha generado correctamente el reporte ', 'estado' => 'success']);
+    }
 }

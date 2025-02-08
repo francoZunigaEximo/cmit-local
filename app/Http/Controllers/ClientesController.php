@@ -10,12 +10,18 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Yajra\DataTables\DataTables;
 use App\Traits\CheckPermission;
-use App\Traits\ReporteExcel;
+use App\Services\ReportesExcel\ReporteExcel;
 
 class ClientesController extends Controller
 {
+    use ObserverClientes, CheckPermission;
 
-    use ObserverClientes, CheckPermission, ReporteExcel;
+    protected $reporteExcel;
+
+    public function __construct(ReporteExcel $reporteExcel)
+    {
+        $this->reporteExcel = $reporteExcel;
+    }
 
     public function index(Request $request)
     {
@@ -376,7 +382,9 @@ class ClientesController extends Controller
         $clientes = Cliente::with(['localidad'])->whereIn('Id', $ids)->get();
 
         if($clientes) {
-            return $this->listadoCliente($clientes);
+            $reporte = $this->reporteExcel->crear('clientes');
+            return $reporte->generar($clientes);
+
         }else{
             return response()->json(['msg' => 'Error al generar el reporte'], 409);
         }

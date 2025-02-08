@@ -13,11 +13,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
-use Barryvdh\DomPDF\Facade\Pdf;
 use App\Traits\ObserverMapas;
 use Illuminate\Support\Facades\Auth;
 use App\Traits\CheckPermission;
-use App\Traits\ReporteExcel;
 use App\Services\Reportes\ReporteService;
 use App\Helpers\Tools;
 use App\Helpers\ToolsEmails;
@@ -36,6 +34,8 @@ use App\Helpers\FileHelper;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
+use App\Services\ReportesExcel\ReporteExcel;
+
 class MapasController extends Controller
 {
     protected $reporteService;
@@ -43,20 +43,25 @@ class MapasController extends Controller
     protected $sendPath;
     protected $fileNameExport;
     private $tempFile;
+    protected $reporteExcel;
 
     const TBLMAPA = 5; // cod de Mapas en la tabla auditariatablas
     const FOLDERTEMP = 'temp/MAPA';
     const BASETEMP = 'app/public/temp/';
 
-    use ObserverMapas, CheckPermission, ReporteExcel, ToolsReportes, ToolsEmails;
+    use ObserverMapas, CheckPermission, ToolsReportes, ToolsEmails;
 
-    public function __construct(ReporteService $reporteService)
+    public function __construct(
+        ReporteService $reporteService, 
+        ReporteExcel $reporteExcel
+        )
     {
         $this->reporteService = $reporteService;
         $this->outputPath = storage_path('app/public/temp/fusionar-'.Tools::randomCode(15).'.pdf');
         $this->sendPath = storage_path('app/public/temp/cmit-'.Tools::randomCode(15).'-informe.pdf');
         $this->fileNameExport = 'reporte-'.Tools::randomCode(15);
         $this->tempFile = 'app/public/temp/file-';
+        $this->reporteExcel = $reporteExcel;
     }
 
     public function index(Request $request): mixed
@@ -109,10 +114,8 @@ class MapasController extends Controller
                 ->selectRaw("COALESCE((SELECT COUNT(*) FROM prestaciones WHERE IdMapa = mapas.Id AND Cerrado = 1), 0) AS cdorCerrados")   
                 ->selectRaw("COALESCE((SELECT COUNT(*) FROM prestaciones WHERE IdMapa = mapas.Id AND Entregado = 1), 0) AS cdorEntregados");
             
-
             $query->when(!empty($Nro), function ($query) use ($Nro) {
-                $query->where('mapas.Nro', $Nro);
-                    
+                $query->where('mapas.Nro', $Nro);  
             });
 
             $query->when(!empty($Art), function ($query) use ($Art) {
@@ -197,7 +200,6 @@ class MapasController extends Controller
             });
 
             // dd($query->toSql(), $query->getBindings());
-
             $query->whereNot('mapas.Nro', 0)
                 ->whereNot('mapas.Fecha', '0000-00-00')
                 ->whereNotNull('mapas.Fecha')
@@ -207,9 +209,7 @@ class MapasController extends Controller
 
             return Datatables::of($query)->make(true);
         }
-
         return view('layouts.mapas.index');
-
     }
 
     public function create(): mixed
@@ -235,7 +235,6 @@ class MapasController extends Controller
         $presentes = Prestacion::where('IdMapa', $mapa->Id)->count();
         $ausentes = (intval($mapa->Cpacientes) ?? 0) - $presentes;
         
-
         return view('layouts.mapas.edit', compact(['mapa', 'cerradas', 'finalizados', 'entregados', 'conEstado', 'presentes', 'completas', 'enProceso', 'ausentes']));
     }
 
@@ -262,7 +261,6 @@ class MapasController extends Controller
             'Obs' => $request->Obs ?? '',
             'eEnviado' => 0,
         ]);
-
         return redirect()->route('mapas.edit', ['mapa' => $nuevoId]);
     }
 
@@ -317,7 +315,6 @@ class MapasController extends Controller
 
             return response()->json(['msg' => 'Mapa eliminado'], 200);
         }
-
         return response()->json(['msg' => 'Mapa no encontrado'], 404);
     }
 
@@ -390,7 +387,6 @@ class MapasController extends Controller
             });
               
             $result = $query->distinct()->get();
-            
             return response()->json(['result' => $result]);
     }
 
@@ -398,12 +394,13 @@ class MapasController extends Controller
 
     public function export(Request $request)
     {
-
         if ($request->archivo === 'xls')
         {
+            $reporte = $this->reporteExcel->crear('mapas');
+
             return $request->modulo === 'remito'
                 ? $this->remitoMapas($request->mapa, $request->Id)
-                : $this->listadoMapa($request->Id);
+                : $reporte->generar($request->Id);
 
         } elseif ($request->archivo === 'pdf') {
 
@@ -413,6 +410,7 @@ class MapasController extends Controller
             if ($examenes->isEmpty()) {
                 return response()->json(['msg' => 'No se encontraron datos para generar el PDF. Hay un conflicto'], 409);
             }
+
             return response()->json(['msg' => 'Desactivado por desarrollo'], 409);
             // $pdf = PDF::loadView('layouts.mapas.pdf', ['data' => $items]);
             // $path = storage_path('app/public/temp/');
@@ -460,13 +458,11 @@ class MapasController extends Controller
 
         if ($remitos) 
         {
-
             foreach ($remitos as $remito) {
                 $remito->Entregado = 1;
                 $remito->FechaEntrega = $request->FechaE;
                 $remito->save();
             }
-    
             constanciase::obsRemito($request->Id, $request->Obs);
             return response()->json(['msg' => 'Se han registrado las fechas de entrega en los remitos correspondientes'], 200);
 
@@ -481,7 +477,6 @@ class MapasController extends Controller
         $paciente = Paciente::where('Id', $prestacion->IdPaciente)->first(['Nombre', 'Apellido', 'TipoDocumento', 'Documento']);
 
         return response()->json($paciente);
-
     }
 
     public function examenes(Request $request)
@@ -539,15 +534,12 @@ class MapasController extends Controller
                 ->where('prestaciones.Entregado', 0)
                 ->where('prestaciones.eEnviado', 0);
         });
-
         $result = $query->get();
-
         return response()->json(['result' => $result]);
     }
 
     public function serchInCerrar(Request $request): mixed
     {
-
         $NroPresCerrar = $request->prestacion;
         $EstadoCerrar = $request->estado;
 
@@ -572,7 +564,6 @@ class MapasController extends Controller
         });
 
         $result = $query->get();
-
         return response()->json(['result' => $result]);
     }
 
@@ -623,7 +614,6 @@ class MapasController extends Controller
 
                 $respuestas[] = $respuesta;
             }
-            
             return response()->json($respuestas);
         }   
     }
@@ -631,21 +621,18 @@ class MapasController extends Controller
     public function checker(Request $request)
     {
         $mapa = Mapa::where('Nro', $request->Nro)->exists();
-
         return response()->json($mapa);
     }
 
     public function getFinalizar(Request $request)
     {
         $query = $this->queryFinalizar($request->mapa);
-        
         $query->where('prestaciones.Finalizado', 0)
             ->where('prestaciones.Cerrado', 1)
             ->where('prestaciones.Entregado', 0)
             ->where('prestaciones.eEnviado', 0);
 
         $result = $query->get();
-
         return response()->json(['result' => $result]);
     }
 
@@ -692,17 +679,14 @@ class MapasController extends Controller
         });
 
         $result = $query->get();
-
         return response()->json(['result' => $result]);
     }
 
     public function saveFinalizar(Request $request): mixed
     {
-        
         $ids = $request->ids;
         $nuevoNroRemito = Constanciase::max('NroC') + 1;
         Constanciase::addRemito($nuevoNroRemito);
-
         $respuestas = [];
 
         foreach ($ids as $id) {
@@ -718,13 +702,10 @@ class MapasController extends Controller
 
                 $respuesta = ['msg' => 'Se ha finalizado la prestación '.$id.' del mapa', 'estado' => 'success'];
             }else{
-
                 $respuesta = ['msg' => 'No se ha podido finalizar la prestación '.$id.' del mapa', 'estado' => 'warning'];
             }
-            
             $respuestas[] = $respuesta;      
         }
-
         return response()->json($respuestas);
     }
 
@@ -760,7 +741,6 @@ class MapasController extends Controller
         });
 
         $resutl = $query->distinct()->orderBy('prestaciones.NroCEE', 'DESC')->orderBy('pacientes.Apellido', 'ASC')->get();
-
         return response()->json(['result' => $resutl]);
     }
 
@@ -775,7 +755,6 @@ class MapasController extends Controller
         });
         
         $result = $query->orderBy('prestaciones.NroCEE', 'DESC')->orderBy('pacientes.Apellido', 'ASC')->distinct()->get();
-
         return response()->json(['result' => $result]);
     }
 
@@ -948,7 +927,6 @@ class MapasController extends Controller
         }
 
         $this->folderTempClean(); //Limpia la carpeta temporal
-
         return response()->json($respuestas);
     }
 
@@ -1013,7 +991,6 @@ class MapasController extends Controller
 
             return $remito; 
         });
-
         return response()->json(['result' => $resultados]);
     }
 
@@ -1049,8 +1026,6 @@ class MapasController extends Controller
         //listado de prestaciones que componen el mapa
         $listado = Prestacion::where('IdMapa', $request->Id)->pluck('Id');
         return Auditor::with('auditarAccion')->where('IdTabla', 5)->whereIn('IdRegistro', $listado)->orderBy('Id', 'Desc')->get();
-
-
     }
 
     private function queryBase()
@@ -1153,10 +1128,9 @@ class MapasController extends Controller
             ->where('prestaciones.RxPreliminar', 0)
             ->where('prestaciones.SinEsc', 0)
             ->where('mapas.Nro', $idmapa);
-
     }
 
-    public function queryEnviar($idmapa)
+    private function queryEnviar($idmapa)
     {
         return Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
         ->leftJoin('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
@@ -1178,7 +1152,6 @@ class MapasController extends Controller
             'art.SEMail AS ArtSinEnvio',
             DB::raw('(SELECT CASE WHEN COUNT(*) = SUM(CASE WHEN items.Incompleto = 0 THEN 1 ELSE 0 END) THEN "Completo" ELSE "Incompleto" END FROM itemsprestaciones AS items WHERE items.IdPrestacion = prestaciones.Id) AS Etapa'))
             ->where('mapas.Nro', $idmapa);
-
     }
 
 
@@ -1210,7 +1183,6 @@ class MapasController extends Controller
         }
     }
 
-
     private function eEstudio(int $idPrestacion, string $opciones): mixed
     {
         return $this->reporteService->generarReporte(
@@ -1231,7 +1203,6 @@ class MapasController extends Controller
 
     private function addEstudioExamen(int $idPrestacion, int $idExamen): mixed
     {
-
         return $this->reporteService->generarReporte(
             ListadoReportes::getReporte($idExamen),
             null,

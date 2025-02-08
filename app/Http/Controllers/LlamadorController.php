@@ -2,15 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Events\ListadoProfesionalesEvent;
 use App\Models\ItemPrestacion;
+use Illuminate\Http\Request;
 use App\Models\Prestacion;
+use App\Models\Profesional;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Yajra\DataTables\DataTables;
 use App\Services\Llamador\Profesionales;
 
@@ -31,10 +29,17 @@ class LlamadorController extends Controller
         $nombreCompleto = $user->personal->Apellido . ' ' . $user->personal->Nombre;
 
         $efectores = null;
+        
 
         if ($this->checkTipoRol(Auth::user()->name) > 0) {
 
-            $efectores = $this->listadoProfesionales->listado('Efector');
+            $nuevoEfector = $this->listadoProfesionales->listado('Efector');
+            $historicoEfector = Profesional::where('T1', 1)->where('RegHis', 1)->select(
+                'Id',
+                DB::raw("CONCAT(Apellido, ' ', Nombre) as NombreCompleto")
+            )->where('Inactivo', 0)->get();
+
+            $efectores = $nuevoEfector->merge($historicoEfector);
 
         }else {
 
@@ -48,55 +53,6 @@ class LlamadorController extends Controller
         return view('layouts.llamador.efector', compact(['efectores']));
     }
 
-    public function buscarEfector(Request $request)
-    {
-        if ($request->ajax()) {
-
-            $query = $this->queryBasico();
-
-            $query->when(!empty($request->profesional), function ($query) use ($request){
-                $query->where('itemsprestaciones.IdProfesional', $request->profesional);
-            });
-
-            $query->when(!empty($request->fechaDesde) || !empty($request->fechaHasta), function ($query) use ($request){
-                $query->whereBetween('prestaciones.Fecha', [$request->fechaDesde, $request->fechaHasta]);
-            });
-
-            $query->when(!empty($request->prestacion), function($query) use ($request){
-                $query->where('prestaciones.Id', $request->Id);
-            });
-
-            $query->when(!empty($request->estado) && ($request->estado === 'abierto'), function($query) use ($request){
-                $query->whereExists(function ($subquery) use ($request) {
-                    $subquery->select(DB::raw(1))
-                        ->from('itemsprestaciones')
-                        ->whereColumn('itemsprestaciones.IdPrestacion', 'prestaciones.Id')
-                        ->where('itemsprestaciones.IdProfesional', $request->profesional)
-                        ->whereIn('itemsprestaciones.CAdj', [0, 1, 2])
-                        ->where('itemsprestaciones.CInfo', 1);
-                });
-            });
-
-            $query->when(!empty($request->estado) && ($request->estado === 'cerrado'), function($query) use ($request){
-                $query->whereExists(function ($subquery) use ($request) {
-                    $subquery->select(DB::raw(1))
-                        ->from('itemsprestaciones')
-                        ->whereColumn('itemsprestaciones.IdPrestacion', 'prestaciones.Id')
-                        ->where('itemsprestaciones.IdProfesional', $request->profesional)
-                        ->whereIn('itemsprestaciones.CAdj', [3, 4, 5])
-                        ->where('itemsprestaciones.CInfo', 3);
-                });
-            });
-
-            $query->groupBy('prestaciones.Id')
-                    ->orderBy('prestaciones.Id', 'DESC');
-
-            return Datatables::of($query)->make(true);
-        }
-        
-        return view('layouts.llamador.efector');
-    }
-
     public function informador()
     {
         return view('layouts.llamador.informador');
@@ -105,6 +61,76 @@ class LlamadorController extends Controller
     public function evaluador()
     {
         return view('layouts.llamador.evaluador');
+    }
+
+    public function buscarEfector(Request $request)
+    {
+        if ($request->ajax()) {
+
+            $query = $this->queryBasico($request->profesional);
+
+            if (!empty($request->prestacion)){
+                
+                $query->where('prestaciones.Id', $request->prestacion);
+            
+            } else {
+
+                $query->when(!empty($request->profesional), function ($query) use ($request){
+                    $query->whereIn('itemsprestaciones.IdProfesional', [$request->profesional, 0]);
+                });
+    
+                $query->when(!empty($request->fechaDesde) || !empty($request->fechaHasta), function ($query) use ($request){
+                    $query->whereBetween('prestaciones.Fecha', [$request->fechaDesde, $request->fechaHasta]);
+                });
+    
+                $query->when(!empty($request->estado) && ($request->estado === 'abierto'), function($query) use ($request){
+                    $query->whereExists(function ($subquery) use ($request) {
+                        $subquery->select(DB::raw(1))
+                            ->from('itemsprestaciones')
+                            ->whereColumn('itemsprestaciones.IdPrestacion', 'prestaciones.Id')
+                            ->whereIn('itemsprestaciones.IdProfesional', [$request->profesional, 0])
+                            ->whereIn('itemsprestaciones.CAdj', [0, 1, 2]);
+                    });
+                });
+    
+                $query->when(!empty($request->estado) && ($request->estado === 'cerrado'), function($query) use ($request){
+                    $query->whereExists(function ($subquery) use ($request) {
+                        $subquery->select(DB::raw(1))
+                            ->from('itemsprestaciones')
+                            ->whereColumn('itemsprestaciones.IdPrestacion', 'prestaciones.Id')
+                            ->where('itemsprestaciones.IdProfesional', $request->profesional)
+                            ->whereIn('itemsprestaciones.CAdj', [3, 4, 5]);
+                    });
+                });
+    
+                $query->when(!empty($request->estado) && ($request->estado === 'todos'), function($query) use ($request){
+                    $query->whereExists(function ($subquery) use ($request) {
+                        $subquery->select(DB::raw(1))
+                            ->from('itemsprestaciones')
+                            ->whereColumn('itemsprestaciones.IdPrestacion', 'prestaciones.Id')
+                            ->where('itemsprestaciones.IdProfesional', $request->profesional);
+                    });
+                });
+
+            }
+
+            // $query->when(!empty($request->estado) && ($request->estado === 'vacio'), function($query) {
+            //     $query->whereDoesntHave('itemsprestaciones'); 
+            // });
+
+            $query->groupBy('prestaciones.Id')
+                  ->orderBy('prestaciones.Id', 'DESC')
+                  ->orderBy('pacientes.Apellido', 'DESC');
+
+            return Datatables::of($query)->make(true);
+        }
+        
+        return view('layouts.llamador.efector');
+    }
+
+    public function imprimirExcel(Request $request)
+    {
+        
     }
 
     private function checkTipoRol($usuario)
@@ -125,7 +151,7 @@ class LlamadorController extends Controller
         ->leftJoin('telefonos', 'pacientes.Id', '=', 'telefonos.IdEntidad')
         ->join('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
         ->select(
-            'prestaciones.Fecha as fecha',
+            DB::raw('DATE_FORMAT(prestaciones.Fecha, "%d/%m/%Y") as fecha'),
             'prestaciones.Id as prestacion',
             'empresa.RazonSocial as empresa',
             'empresa.ParaEmpresa as paraEmpresa',
@@ -133,7 +159,8 @@ class LlamadorController extends Controller
             DB::raw("CONCAT(pacientes.Apellido,' ',pacientes.Nombre) as paciente"),
             'pacientes.Documento as dni',
             'prestaciones.TipoPrestacion as tipo',
-            'pacientes.FechaNacimiento as fechaNacimiento'
+            'pacientes.FechaNacimiento as fechaNacimiento',
+            DB::raw("CONCAT(telefonos.CodigoArea,telefonos.NumeroTelefono) as telefono")
         )->whereNot('prestaciones.Fecha', null)
         ->whereNot('prestaciones.Fecha', '0000-00-00')
         ->where('prestaciones.Anulado', 0);

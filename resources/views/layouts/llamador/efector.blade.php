@@ -75,6 +75,13 @@
 
                                 </div>
 
+                                <div class="row">
+                                    <div class="col-12">
+                                        <button class="btn btn-sm botonGeneral exportar"><i class="ri-file-excel-line"></i>&nbsp;Exportar</button>
+                                        <button class="btn btn-sm botonGeneral detalles"><i class="ri-file-excel-line"></i>&nbsp;Detalles</button>
+                                    </div>
+                                </div>
+
                                 <div class="table mt-3 mb-1 mx-auto">
                                     <table id="listaLlamadaEfector" class="table table-bordered">
                                         <thead class="table-light">
@@ -110,6 +117,8 @@
 
 <script>
     const SEARCH = "{{ route('llamador.buscarEfector') }}";
+    const lnkPrestaciones = "{{ route('prestaciones.edit', ['prestacione' => '__item__']) }}";
+    const printExportar = "{{ route('llamador.excelEfector') }}";
 </script>
 
 @push('styles')
@@ -122,8 +131,8 @@
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
 
-<script src="{{ asset('/js/llamador/index.js')}}"></script>
-<script src="{{ asset('/js/llamador/paginacion.js')}}"></script>
+<script src="{{ asset('/js/llamador/index.js')}}?v={{ time() }}"></script>
+<script src="{{ asset('/js/llamador/paginacion.js')}}?v={{ time() }}"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/i18n/es.js"></script>

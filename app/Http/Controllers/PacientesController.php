@@ -2,28 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\FileHelper;
 use App\Models\Paciente;
 use App\Models\Prestacion;
 use App\Models\PrestacionesTipo;
 use App\Models\Provincia;
-use App\Traits\Components;
 use App\Traits\ObserverPacientes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
 use App\Traits\CheckPermission;
-use App\Traits\ReporteExcel;
 use Carbon\Carbon;
+use App\Services\ReportesExcel\ReporteExcel;
 
 class PacientesController extends Controller
 {
-    use Components, ObserverPacientes, CheckPermission, ReporteExcel;
+    use ObserverPacientes, CheckPermission;
 
-    /**
-     * Display a listing of the resource.
-     */
+    protected $reporteExcel;
+
+    public function __construct(ReporteExcel $reporteExcel)
+    {
+        $this->reporteExcel = $reporteExcel;
+    }
+
     public function index(Request $request): mixed
     {
         if(!$this->hasPermission("pacientes_show")){abort(403);}
@@ -276,7 +278,9 @@ class PacientesController extends Controller
         $pacientes = Paciente::with('localidad')->where('Estado', 1)->whereIn('Id', $ids)->get();
 
         if($pacientes) {
-            return $this->listadoPaciente($pacientes);
+            $reporte = $this->reporteExcel->crear('pacientes');
+            return $reporte->generar($pacientes);
+
         }else{
             return response()->json(['msg' => 'No se ha podido generar el archivo'], 409);
         }

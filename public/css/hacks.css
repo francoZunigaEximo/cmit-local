@@ -278,6 +278,10 @@ label {
 	color: orangered;
 }
 
+.azul {
+	color: blue;
+}
+
 .borde-inferior {
 	border-bottom: 2px solid rgb(26, 24, 24);
 }

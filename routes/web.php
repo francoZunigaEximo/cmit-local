@@ -391,5 +391,6 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('llamador/informador', [LlamadorController::class, 'informador'])->name('llamador.informador');
     Route::get('llamador/evaluador', [LlamadorController::class, 'evaluador'])->name('llamador.evaluador');
     Route::get('llamador/efector/buscar', [LlamadorController::class, 'buscarEfector'])->name('llamador.buscarEfector');
+    Route::get('llamador/efector/exportar', [LlamadorController::class, 'imprimirExcel'])->name('llamador.excelEfector');
 });
 

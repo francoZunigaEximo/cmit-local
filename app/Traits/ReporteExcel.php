@@ -92,7 +92,7 @@ trait ReporteExcel
             $sheet->setCellValue('E'.$fila, '7');
             $sheet->setCellValue('F'.$fila, '');
             $sheet->setCellValue('G'.$fila, '');
-            $sheet->setCellValue('H'.$fila, 'REMITO NRO: '.$data->prestacion->NroCEE.'| Mapa: '.$data->prestacion->IdMapa.' | Empresa: '.$data->empresa->RazonSocial);
+            $sheet->setCellValue('H'.$fila, 'REMITO NRO: '.$data->prestacion->NroCEE.' | Mapa: '.$data->prestacion->IdMapa.' | Empresa: '.$data->empresa->RazonSocial);
             $sheet->setCellValue('I'.$fila, $data->facturaresumen->Cod);
             $sheet->setCellValue('J'.$fila, '');
             $sheet->setCellValue('K'.$fila, $data->facturaresumen->Total);
@@ -119,94 +119,94 @@ trait ReporteExcel
         return $this->generarArchivo($spreadsheet, $name); 
     }
 
-    public function listadoPaciente($pacientes)
-    {
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-        $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+    // public function listadoPaciente($pacientes)
+    // {
+    //     $spreadsheet = new Spreadsheet();
+    //     $sheet = $spreadsheet->getActiveSheet();
+    //     $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
 
-        $columnas = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'M', 'N'];
+    //     $columnas = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'M', 'N'];
 
-        foreach($columnas as $columna){
-            $sheet->getColumnDimension($columna)->setAutoSize(true);
-        }
+    //     foreach($columnas as $columna){
+    //         $sheet->getColumnDimension($columna)->setAutoSize(true);
+    //     }
 
-        $sheet->setCellValue('A1', 'Numero');
-        $sheet->setCellValue('B1', 'Apellido');
-        $sheet->setCellValue('C1', 'Nombre');
-        $sheet->setCellValue('D1', 'CUIL/CUIT');
-        $sheet->setCellValue('E1', 'Documento');
-        $sheet->setCellValue('F1', 'Nacionalidad');
-        $sheet->setCellValue('G1', 'Fecha de Nacimiento');
-        $sheet->setCellValue('H1', 'Direccion');
-        $sheet->setCellValue('I1', 'Localidad');
-        $sheet->setCellValue('J1', 'Provincia');
-        $sheet->setCellValue('K1', 'Email');
-        $sheet->setCellValue('M1', 'Antecedentes');
-        $sheet->setCellValue('N1', 'Observaciones');
+    //     $sheet->setCellValue('A1', 'Numero');
+    //     $sheet->setCellValue('B1', 'Apellido');
+    //     $sheet->setCellValue('C1', 'Nombre');
+    //     $sheet->setCellValue('D1', 'CUIL/CUIT');
+    //     $sheet->setCellValue('E1', 'Documento');
+    //     $sheet->setCellValue('F1', 'Nacionalidad');
+    //     $sheet->setCellValue('G1', 'Fecha de Nacimiento');
+    //     $sheet->setCellValue('H1', 'Direccion');
+    //     $sheet->setCellValue('I1', 'Localidad');
+    //     $sheet->setCellValue('J1', 'Provincia');
+    //     $sheet->setCellValue('K1', 'Email');
+    //     $sheet->setCellValue('M1', 'Antecedentes');
+    //     $sheet->setCellValue('N1', 'Observaciones');
 
-        $fila = 2;
-        foreach($pacientes as $paciente){
-            $sheet->setCellValue('A'.$fila, $paciente->Id);
-            $sheet->setCellValue('B'.$fila, $paciente->Apellido);
-            $sheet->setCellValue('C'.$fila, $paciente->Nombre);
-            $sheet->setCellValue('D'.$fila, $paciente->Identificacion);
-            $sheet->setCellValue('E'.$fila, $paciente->Documento);
-            $sheet->setCellValue('F'.$fila, $paciente->Nacionalidad);
-            $sheet->setCellValue('G'.$fila, $paciente->FechaNacimiento);
-            $sheet->setCellValue('H'.$fila, $paciente->Direccion);
-            $sheet->setCellValue('I'.$fila, $paciente->localidad->Nombre);
-            $sheet->setCellValue('J'.$fila, $paciente->Provincia);
-            $sheet->setCellValue('K'.$fila, $paciente->EMail);
-            $sheet->setCellValue('H'.$fila, $paciente->Antecedentes);
-            $sheet->setCellValue('H'.$fila, $paciente->Observaciones);
-            $fila++;
-        }
+    //     $fila = 2;
+    //     foreach($pacientes as $paciente){
+    //         $sheet->setCellValue('A'.$fila, $paciente->Id);
+    //         $sheet->setCellValue('B'.$fila, $paciente->Apellido);
+    //         $sheet->setCellValue('C'.$fila, $paciente->Nombre);
+    //         $sheet->setCellValue('D'.$fila, $paciente->Identificacion);
+    //         $sheet->setCellValue('E'.$fila, $paciente->Documento);
+    //         $sheet->setCellValue('F'.$fila, $paciente->Nacionalidad);
+    //         $sheet->setCellValue('G'.$fila, $paciente->FechaNacimiento);
+    //         $sheet->setCellValue('H'.$fila, $paciente->Direccion);
+    //         $sheet->setCellValue('I'.$fila, $paciente->localidad->Nombre);
+    //         $sheet->setCellValue('J'.$fila, $paciente->Provincia);
+    //         $sheet->setCellValue('K'.$fila, $paciente->EMail);
+    //         $sheet->setCellValue('H'.$fila, $paciente->Antecedentes);
+    //         $sheet->setCellValue('H'.$fila, $paciente->Observaciones);
+    //         $fila++;
+    //     }
 
-        $name = 'pacientes_'.Str::random(6).'.xlsx';
-        return $this->generarArchivo($spreadsheet, $name);
-    }
+    //     $name = 'pacientes_'.Str::random(6).'.xlsx';
+    //     return $this->generarArchivo($spreadsheet, $name);
+    // }
 
-    public function listadoCliente($clientes)
-    {
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-        $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+    // public function listadoCliente($clientes)
+    // {
+    //     $spreadsheet = new Spreadsheet();
+    //     $sheet = $spreadsheet->getActiveSheet();
+    //     $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
 
-        $columnas = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
+    //     $columnas = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
 
-        foreach($columnas as $columna){
-            $sheet->getColumnDimension($columna)->setAutoSize(true);
-        }
+    //     foreach($columnas as $columna){
+    //         $sheet->getColumnDimension($columna)->setAutoSize(true);
+    //     }
 
-        $sheet->setCellValue('A1', 'Numero');
-        $sheet->setCellValue('B1', 'Razón Social');
-        $sheet->setCellValue('C1', 'Identificación');
-        $sheet->setCellValue('D1', 'Condición IVA');
-        $sheet->setCellValue('E1', 'Para Empresa');
-        $sheet->setCellValue('F1', 'Dirección');
-        $sheet->setCellValue('G1', 'Provincia');
-        $sheet->setCellValue('H1', 'Localidad');
-        $sheet->setCellValue('I1', 'CódigoPostal');
+    //     $sheet->setCellValue('A1', 'Numero');
+    //     $sheet->setCellValue('B1', 'Razón Social');
+    //     $sheet->setCellValue('C1', 'Identificación');
+    //     $sheet->setCellValue('D1', 'Condición IVA');
+    //     $sheet->setCellValue('E1', 'Para Empresa');
+    //     $sheet->setCellValue('F1', 'Dirección');
+    //     $sheet->setCellValue('G1', 'Provincia');
+    //     $sheet->setCellValue('H1', 'Localidad');
+    //     $sheet->setCellValue('I1', 'CódigoPostal');
 
-        $fila = 2;
-        foreach($clientes as $cliente){
-            $sheet->setCellValue('A'.$fila, $cliente->Id);
-            $sheet->setCellValue('B'.$fila, $cliente->RazonSocial);
-            $sheet->setCellValue('C'.$fila, $cliente->Identificacion);
-            $sheet->setCellValue('D'.$fila, $cliente->CondicionIva);
-            $sheet->setCellValue('E'.$fila, $cliente->ParaEmpresa);
-            $sheet->setCellValue('F'.$fila, $cliente->Direccion);
-            $sheet->setCellValue('G'.$fila, $cliente->Provincia);
-            $sheet->setCellValue('H'.$fila, $cliente->localidad->Nombre);
-            $sheet->setCellValue('I'.$fila, $cliente->localidad->CP);
-            $fila++;
-        }
+    //     $fila = 2;
+    //     foreach($clientes as $cliente){
+    //         $sheet->setCellValue('A'.$fila, $cliente->Id);
+    //         $sheet->setCellValue('B'.$fila, $cliente->RazonSocial);
+    //         $sheet->setCellValue('C'.$fila, $cliente->Identificacion);
+    //         $sheet->setCellValue('D'.$fila, $cliente->CondicionIva);
+    //         $sheet->setCellValue('E'.$fila, $cliente->ParaEmpresa);
+    //         $sheet->setCellValue('F'.$fila, $cliente->Direccion);
+    //         $sheet->setCellValue('G'.$fila, $cliente->Provincia);
+    //         $sheet->setCellValue('H'.$fila, $cliente->localidad->Nombre);
+    //         $sheet->setCellValue('I'.$fila, $cliente->localidad->CP);
+    //         $fila++;
+    //     }
 
-        $name = 'clientes'.Str::random(6).'.xlsx';
-        return $this->generarArchivo($spreadsheet, $name);
+    //     $name = 'clientes'.Str::random(6).'.xlsx';
+    //     return $this->generarArchivo($spreadsheet, $name);
 
-    }
+    // }
 
     public function listadoMapa($ids)
     {
@@ -235,27 +235,7 @@ trait ReporteExcel
         $sheet->setCellValue('M1', 'Apellido y Nombre');
         $sheet->setCellValue('N1', 'Observación');
 
-        $mapas = Mapa::join('clientes as empresa', 'mapas.IdEmpresa', '=', 'empresa.Id')
-            ->join('clientes as art', 'mapas.IdART', '=', 'art.Id')
-            ->leftJoin('prestaciones', 'mapas.Id', '=', 'prestaciones.IdMapa')
-            ->leftJoin('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-            ->select(
-                'mapas.Id as Id',
-                'mapas.Nro as Nro',
-                'art.RazonSocial as Art',
-                'empresa.RazonSocial as Empresa',
-                'mapas.Fecha',
-                'mapas.FechaE',
-                'mapas.Inactivo as Inactivo',
-                'prestaciones.NroCEE as NroCEE',
-                'prestaciones.eEnviado as eEnviado',
-                'prestaciones.Cerrado as Cerrado',
-                'prestaciones.Entregado as Entregado',
-                'prestaciones.Finalizado as Finalizado',
-                DB::raw("CONCAT(pacientes.Apellido,' ',pacientes.Nombre) as NombreCompleto"),
-                'mapas.Obs as Obs'
-            )->whereIn('mapas.Id', $ids)
-            ->get();
+        $mapas = $this->queryMapa($ids);
 
         $fila = 2;
         foreach($mapas as $mapa){
@@ -788,5 +768,29 @@ trait ReporteExcel
         }
     }
 
+    private function queryMapa(array $ids)
+    {
+        return Mapa::join('clientes as empresa', 'mapas.IdEmpresa', '=', 'empresa.Id')
+            ->join('clientes as art', 'mapas.IdART', '=', 'art.Id')
+            ->leftJoin('prestaciones', 'mapas.Id', '=', 'prestaciones.IdMapa')
+            ->leftJoin('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+            ->select(
+                'mapas.Id as Id',
+                'mapas.Nro as Nro',
+                'art.RazonSocial as Art',
+                'empresa.RazonSocial as Empresa',
+                'mapas.Fecha',
+                'mapas.FechaE',
+                'mapas.Inactivo as Inactivo',
+                'prestaciones.NroCEE as NroCEE',
+                'prestaciones.eEnviado as eEnviado',
+                'prestaciones.Cerrado as Cerrado',
+                'prestaciones.Entregado as Entregado',
+                'prestaciones.Finalizado as Finalizado',
+                DB::raw("CONCAT(pacientes.Apellido,' ',pacientes.Nombre) as NombreCompleto"),
+                'mapas.Obs as Obs'
+            )->whereIn('mapas.Id', $ids)
+            ->get();
+    }
 
 }
