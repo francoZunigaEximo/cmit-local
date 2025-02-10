@@ -208,94 +208,94 @@ trait ReporteExcel
 
     // }
 
-    public function listadoMapa($ids)
-    {
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-        $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+    // public function listadoMapa($ids)
+    // {
+    //     $spreadsheet = new Spreadsheet();
+    //     $sheet = $spreadsheet->getActiveSheet();
+    //     $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
 
-        $columnas = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N'];
+    //     $columnas = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N'];
 
-        foreach($columnas as $columna){
-            $sheet->getColumnDimension($columna)->setAutoSize(true);
-        }
+    //     foreach($columnas as $columna){
+    //         $sheet->getColumnDimension($columna)->setAutoSize(true);
+    //     }
 
-        $sheet->setCellValue('A1', 'Id');
-        $sheet->setCellValue('B1', 'Nro');
-        $sheet->setCellValue('C1', 'Art');
-        $sheet->setCellValue('D1', 'Empresa');
-        $sheet->setCellValue('E1', 'Fecha Corte');
-        $sheet->setCellValue('F1', 'Fecha Entrega');
-        $sheet->setCellValue('G1', 'Inactivo');
-        $sheet->setCellValue('H1', 'Nro de Remito');
-        $sheet->setCellValue('I1', 'eEnviado');
-        $sheet->setCellValue('J1', 'Cerrado');
-        $sheet->setCellValue('K1', 'Entregado');
-        $sheet->setCellValue('L1', 'Finalizado');
-        $sheet->setCellValue('M1', 'Apellido y Nombre');
-        $sheet->setCellValue('N1', 'Observación');
+    //     $sheet->setCellValue('A1', 'Id');
+    //     $sheet->setCellValue('B1', 'Nro');
+    //     $sheet->setCellValue('C1', 'Art');
+    //     $sheet->setCellValue('D1', 'Empresa');
+    //     $sheet->setCellValue('E1', 'Fecha Corte');
+    //     $sheet->setCellValue('F1', 'Fecha Entrega');
+    //     $sheet->setCellValue('G1', 'Inactivo');
+    //     $sheet->setCellValue('H1', 'Nro de Remito');
+    //     $sheet->setCellValue('I1', 'eEnviado');
+    //     $sheet->setCellValue('J1', 'Cerrado');
+    //     $sheet->setCellValue('K1', 'Entregado');
+    //     $sheet->setCellValue('L1', 'Finalizado');
+    //     $sheet->setCellValue('M1', 'Apellido y Nombre');
+    //     $sheet->setCellValue('N1', 'Observación');
 
-        $mapas = $this->queryMapa($ids);
+    //     $mapas = $this->queryMapa($ids);
 
-        $fila = 2;
-        foreach($mapas as $mapa){
-            $sheet->setCellValue('A'.$fila, $mapa->Id);
-            $sheet->setCellValue('B'.$fila, $mapa->Nro);
-            $sheet->setCellValue('C'.$fila, $mapa->Art ?? '');
-            $sheet->setCellValue('D'.$fila, $mapa->Empresa ?? '');
-            $sheet->setCellValue('E'.$fila, $mapa->Fecha);
-            $sheet->setCellValue('F'.$fila, $mapa->FechaE);
-            $sheet->setCellValue('G'.$fila, $mapa->Inactivo === 0 ? "No" : "Si");
-            $sheet->setCellValue('H'.$fila, $mapa->NroCEE);
-            $sheet->setCellValue('I'.$fila, in_array($mapa->eEnviado, [0,'',null]) ? "No" : "Si");
-            $sheet->setCellValue('J'.$fila, in_array($mapa->Cerrado, [0,'',null]) ? "No" : "Si");
-            $sheet->setCellValue('K'.$fila, in_array($mapa->Entregado, [0,'',null]) ? "No" : "Si");
-            $sheet->setCellValue('L'.$fila, in_array($mapa->Finalizado, [0,'',null]) ? "No" : "Si");
-            $sheet->setCellValue('M'.$fila, $mapa->NombreCompleto ?? '-');
-            $sheet->setCellValue('N'.$fila, $mapa->Obs);
-            $fila++;
-        }
+    //     $fila = 2;
+    //     foreach($mapas as $mapa){
+    //         $sheet->setCellValue('A'.$fila, $mapa->Id);
+    //         $sheet->setCellValue('B'.$fila, $mapa->Nro);
+    //         $sheet->setCellValue('C'.$fila, $mapa->Art ?? '');
+    //         $sheet->setCellValue('D'.$fila, $mapa->Empresa ?? '');
+    //         $sheet->setCellValue('E'.$fila, $mapa->Fecha);
+    //         $sheet->setCellValue('F'.$fila, $mapa->FechaE);
+    //         $sheet->setCellValue('G'.$fila, $mapa->Inactivo === 0 ? "No" : "Si");
+    //         $sheet->setCellValue('H'.$fila, $mapa->NroCEE);
+    //         $sheet->setCellValue('I'.$fila, in_array($mapa->eEnviado, [0,'',null]) ? "No" : "Si");
+    //         $sheet->setCellValue('J'.$fila, in_array($mapa->Cerrado, [0,'',null]) ? "No" : "Si");
+    //         $sheet->setCellValue('K'.$fila, in_array($mapa->Entregado, [0,'',null]) ? "No" : "Si");
+    //         $sheet->setCellValue('L'.$fila, in_array($mapa->Finalizado, [0,'',null]) ? "No" : "Si");
+    //         $sheet->setCellValue('M'.$fila, $mapa->NombreCompleto ?? '-');
+    //         $sheet->setCellValue('N'.$fila, $mapa->Obs);
+    //         $fila++;
+    //     }
 
-        $name = 'mapas'.Str::random(6).'.xlsx';
-        return $this->generarArchivo($spreadsheet, $name);
+    //     $name = 'mapas'.Str::random(6).'.xlsx';
+    //     return $this->generarArchivo($spreadsheet, $name);
 
-    }
+    // }
 
-    public function listadoEspecialidad($especialidades)
-    {
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-        $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+    // public function listadoEspecialidad($especialidades)
+    // {
+    //     $spreadsheet = new Spreadsheet();
+    //     $sheet = $spreadsheet->getActiveSheet();
+    //     $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
 
-        $columnas = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+    //     $columnas = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
 
-        foreach($columnas as $columna){
-            $sheet->getColumnDimension($columna)->setAutoSize(true);
-        }
+    //     foreach($columnas as $columna){
+    //         $sheet->getColumnDimension($columna)->setAutoSize(true);
+    //     }
 
-        $sheet->setCellValue('A1', 'Id');
-        $sheet->setCellValue('B1', 'Proveedor');
-        $sheet->setCellValue('C1', 'Ubicacion');
-        $sheet->setCellValue('D1', 'Telefono');
-        $sheet->setCellValue('E1', 'Adjunto');
-        $sheet->setCellValue('F1', 'Examen');
-        $sheet->setCellValue('G1', 'Informe');
+    //     $sheet->setCellValue('A1', 'Id');
+    //     $sheet->setCellValue('B1', 'Proveedor');
+    //     $sheet->setCellValue('C1', 'Ubicacion');
+    //     $sheet->setCellValue('D1', 'Telefono');
+    //     $sheet->setCellValue('E1', 'Adjunto');
+    //     $sheet->setCellValue('F1', 'Examen');
+    //     $sheet->setCellValue('G1', 'Informe');
 
-        $fila = 2;
-        foreach($especialidades as $especialidad){
-            $sheet->setCellValue('A'.$fila, $especialidad->IdEspecialidad ?? '-');
-            $sheet->setCellValue('B'.$fila, $especialidad->Nombre ?? '-');
-            $sheet->setCellValue('C'.$fila, $especialidad->Ubicacion === 0 ? 'Interno':($especialidad->Ubicacion === 1 ? 'Externo' : '-'));
-            $sheet->setCellValue('D'.$fila, $especialidad->Telefono ?? '-');
-            $sheet->setCellValue('E'.$fila, $especialidad->Adjunto === 0 ? 'Simple' : ($especialidad->Adjunto === 1 ? 'Multiple' : '-'));
-            $sheet->setCellValue('F'.$fila, $especialidad->Examen === 0 ? 'Simple' : ($especialidad->Examen === 1 ? 'Multiple' : '-'));
-            $sheet->setCellValue('G'.$fila, $especialidad->Informe === 0 ? 'Simple' : ($especialidad->Informe === 1 ? 'Multiple' : '-'));
-            $fila++;
-        }
+    //     $fila = 2;
+    //     foreach($especialidades as $especialidad){
+    //         $sheet->setCellValue('A'.$fila, $especialidad->IdEspecialidad ?? '-');
+    //         $sheet->setCellValue('B'.$fila, $especialidad->Nombre ?? '-');
+    //         $sheet->setCellValue('C'.$fila, $especialidad->Ubicacion === 0 ? 'Interno':($especialidad->Ubicacion === 1 ? 'Externo' : '-'));
+    //         $sheet->setCellValue('D'.$fila, $especialidad->Telefono ?? '-');
+    //         $sheet->setCellValue('E'.$fila, $especialidad->Adjunto === 0 ? 'Simple' : ($especialidad->Adjunto === 1 ? 'Multiple' : '-'));
+    //         $sheet->setCellValue('F'.$fila, $especialidad->Examen === 0 ? 'Simple' : ($especialidad->Examen === 1 ? 'Multiple' : '-'));
+    //         $sheet->setCellValue('G'.$fila, $especialidad->Informe === 0 ? 'Simple' : ($especialidad->Informe === 1 ? 'Multiple' : '-'));
+    //         $fila++;
+    //     }
 
-        $name = 'especialidades'.Str::random(6).'.xlsx';
-        return $this->generarArchivo($spreadsheet, $name);
-    }
+    //     $name = 'especialidades'.Str::random(6).'.xlsx';
+    //     return $this->generarArchivo($spreadsheet, $name);
+    // }
 
     public function listadoExamen($examenes)
     {

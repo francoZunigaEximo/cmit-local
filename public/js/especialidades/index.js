@@ -1,6 +1,6 @@
-$(document).ready(()=> {
+$(function() {
 
-    $('#excel').click(function(e) {
+    $(document).on('click', '#excel', function(e) {
         e.preventDefault();
 
         let ids = [];
@@ -28,7 +28,7 @@ $(document).ready(()=> {
                     },
                     success: function(response) {
                         preloader('off');
-                        createFile("excel", response.filePath, generarCodigoAleatorio() + '_reporte');
+                        createFile("xlsx", response.filePath, generarCodigoAleatorio() + '_reporte');
                         toastr.success(response.msg);
                     
                     },                    
@@ -44,7 +44,7 @@ $(document).ready(()=> {
         });       
     });
 
-    $('#btnBajaMultiple').click(function(e) {
+    $(document).on('click', '#btnBajaMultiple', function(e) {
         e.preventDefault();
 
         let ids = [];
@@ -88,7 +88,8 @@ $(document).ready(()=> {
         }));  
     });
 
-    $(document).on('click', '.blockEsp', function(){
+    $(document).on('click', '.blockEsp', function(e){
+        e.preventDefault();
 
         let especialidad = $(this).data('id');
         

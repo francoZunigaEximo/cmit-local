@@ -9,13 +9,20 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
-use App\Traits\ReporteExcel;
+use App\Services\ReportesExcel\ReporteExcel;
 use App\Traits\CheckPermission;
 
 class ProveedoresController extends Controller
 {
 
-    use ReporteExcel, CheckPermission;
+    use CheckPermission;
+
+    protected $reporteExcel;
+
+    public function __construct(ReporteExcel $reporteExcel)
+    {
+        $this->reporteExcel = $reporteExcel;
+    }
 
     public function index(Request $request)
     {
@@ -251,7 +258,8 @@ class ProveedoresController extends Controller
             ->get();
 
         if($especialidades) {
-            return $this->listadoEspecialidad($especialidades);
+            $reporte = $this->reporteExcel->crear('especialidades');
+            return $reporte->generar($especialidades);
         }else{
             return response()->json(['msg' => 'No se ha podido generar el archivo'], 409);
         }
@@ -260,7 +268,7 @@ class ProveedoresController extends Controller
 
     public function lstProveedores(Request $request)
     {
-        $listado = Proveedor::where('Id', '<>', 0)
+        $listado = Proveedor::whereNot('Id', 0)
         ->orderBy('Nombre', 'ASC')    
         ->get(['Id', 'Nombre']);
 
