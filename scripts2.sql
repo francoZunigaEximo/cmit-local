@@ -918,4 +918,6 @@ ALTER TABLE mapas CHANGE IdEMpresa IdEmpresa int(11) NOT NULL
 npm install
 npm laravel-vite-plugin
 
-npm install toastr jquery sweetalert select2 datatables.net datatables.net-dt
+-- npm install toastr jquery sweetalert select2 datatables.net datatables.net-dt
+
+ALTER TABLE mapas ADD COLUMN FechaAsignacion DATE NULL;

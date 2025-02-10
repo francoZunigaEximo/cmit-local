@@ -123,7 +123,7 @@
                             <input type="date" class="form-control" id="FechaEEdicion" name="FechaEEdicion" value="{{ $mapa->FechaE }}">
                         </div>
 
-                        <div class="input-group input-group-sm  size80porcent">
+                        <div class="input-group input-group-sm mb-2 size80porcent">
                             <span class="input-group-text">Estado&nbsp;<span class="required">(*)</span></span>
                             <select class="form-select" name="Estado" id="Estado">
                                 <option value="{{ $mapa->Inactivo }}" selected>{{ ($mapa->Inactivo == 0? 'Activo' : 'Inactivo') }}</option>
@@ -131,6 +131,12 @@
                                 <option value="1">Inactivo</option>
                             </select>
                         </div>
+
+                        <div class="input-group input-group-sm size80porcent">
+                            <span class="input-group-text">Fecha de Asignación</span>
+                            <input type="date" class="form-control" id="FechaAsignacion" name="FechaAsignacion" value="{{ $mapa->FechaAsignacion ?? '' }}">
+                        </div>
+
                     </div>
 
                     <div class="col-3 box-information">

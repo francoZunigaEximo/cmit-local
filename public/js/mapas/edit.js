@@ -101,12 +101,15 @@ $(function() {
             Cpacientes = $('#Cpacientes').val(),
             Cmapeados = $('#Cmapeados').val(),
             Obs = $('#Obs').val(),
-            IdMap = $('#Id').val();
+            IdMap = $('#Id').val(),
+            fechaAsignacion = $('#FechaAsignacion').val();
         
             if($('#form-update').valid()) {
-                preloader('off');
-                $.post(updateMapa, {_token: TOKEN, Nro:Nro, IdART: IdART, IdEmpresa: IdEmpresa, FechaEdicion: FechaEdicion, FechaEEdicion: FechaEEdicion, Estado: Estado, Cpacientes: Cpacientes, Obs: Obs, Id: IdMap, Cmapeados: Cmapeados})
+                preloader('on');
+                $.post(updateMapa, {_token: TOKEN, Nro:Nro, IdART: IdART, IdEmpresa: IdEmpresa, FechaEdicion: FechaEdicion, FechaEEdicion: FechaEEdicion, Estado: Estado, Cpacientes: Cpacientes, Obs: Obs, Id: IdMap, Cmapeados: Cmapeados, FechaAsignacion: fechaAsignacion})
+                
                 .done(function(response){
+                    preloader('off');
                     toastr.success(response.msg);
                     setTimeout(() => {
                         location.reload();

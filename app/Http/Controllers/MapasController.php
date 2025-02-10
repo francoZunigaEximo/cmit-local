@@ -260,6 +260,7 @@ class MapasController extends Controller
             'Inactivo' => $request->Estado ?? 0,
             'Obs' => $request->Obs ?? '',
             'eEnviado' => 0,
+            'FechaAsignacion' => $request->FechaAsignacion ?? '0000-00-00',
         ]);
         return redirect()->route('mapas.edit', ['mapa' => $nuevoId]);
     }
@@ -294,6 +295,7 @@ class MapasController extends Controller
             $mapa->Obs = $request->Obs;
             $mapa->Cmapeados = $data['totalMapeados'] ?? $request->Cmapeados;
             $mapa->Cpacientes = $data['pacientes'] ?? $request->Cpacientes;
+            $mapa->FechaAsignacion = $request->FechaAsignacion;
             $mapa->save();
         
             return response()->json(['msg' => 'Mapa actualizado'], 200);

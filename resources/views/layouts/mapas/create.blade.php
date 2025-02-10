@@ -70,13 +70,18 @@
                             <input type="date" class="form-control" id="FechaE" name="FechaE">
                         </div>
 
-                        <div class="input-group input-group-sm  size80porcent">
+                        <div class="input-group input-group-sm mb-2 size80porcent">
                             <span class="input-group-text">Estado&nbsp;<span class="required">(*)</span></span>
                             <select class="form-select" name="Estado" id="Estado">
                                 <option value="" selected>Elija una opción...</option>
                                 <option value="0">Activo</option>
                                 <option value="1">Inactivo</option>
                             </select>
+                        </div>
+
+                        <div class="input-group input-group-sm size80porcent">
+                            <span class="input-group-text">Fecha de Asignación</span>
+                            <input type="date" class="form-control" id="FechaAsignacion" name="FechaAsignacion">
                         </div>
                     </div>
 

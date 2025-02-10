@@ -24,6 +24,7 @@ class Mapa extends Model
         'Cpacientes',
         'Cmapeados',
         'FechaE',
+        'FechaAsignacion'
     ];
 
     public $timestamps = false;
