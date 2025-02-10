@@ -47,7 +47,7 @@ trait ObserverPacientes
 
     public function getPrestacion($id):  mixed
     {
-        $result = Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+        return Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
             ->join('clientes as emp', 'prestaciones.IdEmpresa', '=', 'emp.Id')
             ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
             ->join('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
@@ -77,10 +77,7 @@ trait ObserverPacientes
             ->where('prestaciones.Estado', '=', '1')
             ->orderBy('prestaciones.Id', 'DESC')
             ->groupBy('prestaciones.Id')
-            ->cursorPaginate(500);
-
-        return $result;
-        
+            ->cursorPaginate(500); 
     }
 
     public function addFoto($foto, $id, $tipo)

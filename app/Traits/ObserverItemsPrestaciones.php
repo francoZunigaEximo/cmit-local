@@ -14,7 +14,6 @@ trait ObserverItemsPrestaciones
 
     public function createItemPrestacionInfo($id, $observacion)
     {
-
         ItemPrestacionInfo::create([
             'Id' => ItemPrestacionInfo::max('Id') + 1,
             'IdIP' => $id,
@@ -27,7 +26,6 @@ trait ObserverItemsPrestaciones
 
     public function updateItemPrestacionInfo(int $id, string $observacion)
     {
-
         $query = ItemPrestacionInfo::where('IdIP', $id)->first();
         $query->Obs = $observacion ?? '';
         $query->save();
@@ -37,7 +35,6 @@ trait ObserverItemsPrestaciones
     public function getPaciente(int $id): mixed
     {
         return Prestacion::where('Id', $id)->with('paciente')->first();
-    
     }
 
     public function updateEstado(string $tipo, ?int $idItemPrestacion, ?int $idEfector, ?int $idInformador, ?string $multi, ?int $profesional)
@@ -49,7 +46,6 @@ trait ObserverItemsPrestaciones
 
         if($item)
         {
-
             if(in_array($tipo, ['efector', 'multiefector']) && $efectores)
             {
      
@@ -94,7 +90,6 @@ trait ObserverItemsPrestaciones
 
             if(in_array($tipo, ['informador', 'multiInformador']) && $informadores)
             {
-
                 switch($item->CInfo) {
 
                     case 0:
@@ -109,7 +104,6 @@ trait ObserverItemsPrestaciones
 
             }elseif(in_array($tipo, ['informador', 'multiInformador']) && !($informadores)){
                 
-               
                 switch($item->CInfo) {
 
                     case 3:

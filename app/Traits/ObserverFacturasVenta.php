@@ -10,11 +10,9 @@ trait ObserverFacturasVenta
 
     public function addFactura($tipo, $sucursal, $factura, $idempresa, $tipocliente, $Id)
     {
-
         $query = FacturaDeVenta::where('IdPrestacion', $Id)->first();
-        
+    
         if($query){
-
             $query->Tipo = $tipo;
             $query->Sucursal = $sucursal;
             $query->NroFactura = $factura;
@@ -23,10 +21,8 @@ trait ObserverFacturasVenta
 
         }else {
 
-            $nuevoId = FacturaDeVenta::max('Id') + 1;
-
             FacturaDeVenta::create([
-                'Id'=> $nuevoId,
+                'Id'=> FacturaDeVenta::max('Id') + 1,
                 'Tipo' => $tipo ?? '',
                 'Sucursal' => $sucursal ?? '',
                 'NroFactura' => $factura ?? '',
