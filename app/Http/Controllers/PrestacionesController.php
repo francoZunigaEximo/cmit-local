@@ -52,7 +52,6 @@ use App\Jobs\ExamenesImpagosJob;
 use App\Jobs\ExamenesResultadosJob;
 
 use App\Helpers\ToolsEmails;
-use App\Helpers\ToolsReportes;
 use App\Jobs\EnviarAvisoJob;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\EnviarReporte;
@@ -69,7 +68,7 @@ use FPDF;
 
 class PrestacionesController extends Controller
 {
-    use ObserverPrestaciones, ObserverFacturasVenta, CheckPermission, ReporteExcel, ToolsEmails, ToolsReportes;
+    use ObserverPrestaciones, ObserverFacturasVenta, CheckPermission, ReporteExcel, ToolsEmails;
 
     protected $reporteService;
     protected $outputPath;
