@@ -1626,4 +1626,11 @@ class PrestacionesController extends Controller
         return ArchivoInformador::where('IdPrestacion', $id)->first(['id']) ?? 0;
     }
 
+    private function checkExCtaImpago(int $idPrestacion): mixed
+    {
+        return ExamenCuentaIt::join('prestaciones', 'pagosacuenta_it.IdPrestacion', '=', 'prestaciones.Id')
+            ->join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
+            ->where('pagosacuenta_it.IdPrestacion', $idPrestacion)->where('pagosacuenta.Pagado', 0)->count();
+    }
+
 }
