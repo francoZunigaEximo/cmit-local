@@ -399,9 +399,11 @@ class MapasController extends Controller
         if ($request->archivo === 'xls')
         {
             $reporte = $this->reporteExcel->crear('mapas');
+            $remito = $this->reporteExcel->crear('remitos');
 
+            $datos = [ 'IdMapa' => $request->mapa, 'nroRemito' => $request->Id];
             return $request->modulo === 'remito'
-                ? $this->remitoMapas($request->mapa, $request->Id)
+                ? $remito->generar($datos)
                 : $reporte->generar($request->Id);
 
         } elseif ($request->archivo === 'pdf') {
