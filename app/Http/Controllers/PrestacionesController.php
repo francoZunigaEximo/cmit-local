@@ -84,8 +84,8 @@ class PrestacionesController extends Controller
     public function __construct(ReporteService $reporteService)
     {
         $this->reporteService = $reporteService;
-        $this->outputPath = storage_path('app/public/fusionar.pdf');
-        $this->sendPath = storage_path('app/public/cmit-'.Tools::randomCode(15).'-informe.pdf');
+        $this->outputPath = storage_path('app/public/temp/fusionar.pdf');
+        $this->sendPath = storage_path('app/public/temp/cmit-'.Tools::randomCode(15).'-informe.pdf');
         $this->fileNameExport = 'reporte-'.Tools::randomCode(15);
         $this->tempFile = 'app/public/temp/file-';
     }
@@ -676,9 +676,9 @@ class PrestacionesController extends Controller
         ];
 
         foreach ($emails as $email) {
-            //EnviarReporteJob::dispatch($email, $asunto, $cuerpo, $this->sendPath);//Soporte para pruebas
+            // dd($this->sendPath);exit;
             EnviarReporteJob::dispatch($email, $asunto, $cuerpo, $this->sendPath)->onQueue('correos'); 
-            // $info = new EnviarReporte(['subject' => $asunto, 'content' => $cuerpo]);
+            // $info = new EnviarReporte(['subject' => $asunto, 'content' => $cuerpo, 'attachments' => [$this->sendPath]]);
             //         Mail::to($email)->send($info);
         }
 

@@ -51,8 +51,8 @@ class OrdenesExamenController extends Controller
     public function __construct(ReporteService $reporteService)
     {
         $this->reporteService = $reporteService;
-        $this->outputPath = storage_path('app/public/fusionar'.Tools::randomCode(15).'.pdf');
-        $this->sendPath = storage_path('app/public/cmit-'.Tools::randomCode(15).'-informe.pdf');
+        $this->outputPath = storage_path('app/public/temp/fusionar'.Tools::randomCode(15).'.pdf');
+        $this->sendPath = storage_path('app/public/temp/cmit-'.Tools::randomCode(15).'-informe.pdf');
         $this->fileNameExport = 'reporte-'.Tools::randomCode(15);
         $this->tempFile = 'app/public/temp/file-';
     }

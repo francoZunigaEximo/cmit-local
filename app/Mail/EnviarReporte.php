@@ -3,7 +3,6 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
@@ -51,15 +50,11 @@ class EnviarReporte extends Mailable
      */
     public function attachments(): array
     {
-        $attachments = [];
-
-        // Si existen archivos adjuntos, los agregamos al array
-        if (!empty($this->data['attachments'])) {
-            foreach ($this->data['attachments'] as $attachmentPath) {
-                $attachments[] = Attachment::fromPath($attachmentPath);
-            }
+        if(!empty($this->data['attachments'])) {
+            return [
+                Attachment::fromPath($this->data['attachments'])
+            ];
         }
-        
-        return $attachments;
+        return [];
     }
 }
