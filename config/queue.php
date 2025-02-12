@@ -80,10 +80,18 @@ return [
             'block_for' => null,
             'after_commit' => false,
         ],
-        'websockets' => [
+        'websockets' => [ //para envio de reportes
             'driver' => 'redis',
             'connection' => 'default',
             'queue' => 'websockets',
+            'retry_after' => 90,
+            'block_for' => null,
+            'after_commit' => false,
+        ],
+        'mensajerias' => [ //mensajes de emails masivos desde Mensajeria
+            'driver' => 'redis',
+            'connection' => 'default',
+            'queue' => 'mensajerias',
             'retry_after' => 90,
             'block_for' => null,
             'after_commit' => false,

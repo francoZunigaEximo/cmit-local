@@ -334,7 +334,7 @@ class MensajesController extends Controller
                 
                 foreach ($correos as $correo) {
 
-                    SendEmailJob::dispatch($correo, $request->Asunto, $request->Cuerpo)->onQueue('correos');
+                    SendEmailJob::dispatch($correo, $request->Asunto, $request->Cuerpo)->onQueue('mensajerias');
                     //var_dump($correo, $request->Asunto, $request->Cuerpo);
             
                     /*$email = new EnvioResultadosMail(['subject' => $request->Asunto, 'content' => $request->Cuerpo]);
