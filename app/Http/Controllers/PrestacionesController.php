@@ -646,7 +646,7 @@ class PrestacionesController extends Controller
         }
 
         if ($request->resAdmin == 'true') {
-            array_push($listado, [$this->resAdmin($request->Id)]);
+            array_push($listado, $this->resAdmin($request->Id));
         }
 
         if ($request->consEstDetallado == 'true') {
