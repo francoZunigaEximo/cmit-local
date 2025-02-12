@@ -14,8 +14,10 @@ $(function(){
         window.open(lnkPrestaciones.replace('__item__', prestacion), '_blank');
     });
 
-    $(document).on('click','.exportar', function(e){
+    $(document).on('click','.exportar, .detalles', function(e){
         e.preventDefault();
+
+        let opcion = $(this).hasClass('exportar') ? 'exportar' : 'detalles';
 
         let lista = grillaEfector.DataTable();
 
@@ -30,9 +32,10 @@ $(function(){
             return row.prestacion;
         });
 
-        $.get(printExportar, {ids: ids, tipo: 'efector'})
+        preloader('on');
+        $.get(printExportar, {Ids: ids, tipo: 'efector', modo: opcion === exportar ? 'basico' : 'full'})
             .done(function(response){
-                createFile("xls", response.filePath, response.name);
+                createFile("xlsx", response.filePath, response.name);
                 preloader('off')
                 toastr.success(response.msg)
             })
@@ -42,7 +45,6 @@ $(function(){
                 checkError(jqXHR.status, errorData.msg);
                 return;
             })
-
     });
 
     echo.listen('.ListadoProfesionalesEvent', (response) => {

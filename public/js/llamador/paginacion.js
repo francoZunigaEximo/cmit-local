@@ -59,7 +59,7 @@ $(function(){
                     data: null,
                     width: '50px',
                     render: function(data){
-                        return `<span title="ver prestación" class="verPrestacion azul text-decoration-underline fw-bolder cursor-pointer" data-prestacion="${data.prestacion}">${data.prestacion}</span>`;
+                        return data.prestacion;
                     }
                 },
                 {
@@ -106,7 +106,7 @@ $(function(){
                 {
                     data: null,
                     render: function(data) {
-                         return `<span title="${data.CAdj}" class="custom-badge generalNegro">${[0,1,2].includes(data.CAdj) ? 'Abierto' : 'Cerrado'}</span>`;
+                         return data.Cerrado === 1 ? `<span class="custom-badge generalNegro">Cerrado</span>` : '';
                     }
                 },
                 {
