@@ -53,6 +53,7 @@ use App\Jobs\ExamenesResultadosJob;
 
 use App\Helpers\ToolsEmails;
 use App\Jobs\EnviarAvisoJob;
+use App\Jobs\EnvioReporteEspecialJob;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\EnviarReporte;
 use App\Mail\ExamenesResultadosMail;
@@ -701,7 +702,6 @@ class PrestacionesController extends Controller
     {
         $prestacion = Prestacion::with(['paciente', 'empresa','paciente.fichalaboral'])->find($request->Id);
         $examenes = ItemPrestacion::with('examenes')->where('IdPrestacion', $request->Id)->get();
-        $temp_estudio = [];
 
         if ($prestacion->empresa->SEMail === 1) {
             return response()->json(['msg' => 'El cliente no acepta envio de correos electrónicos'], 409);
@@ -750,6 +750,45 @@ class PrestacionesController extends Controller
 
             return response()->json(['msg' => 'Se ha enviado el resultado al cliente de manera correcta.'], 200);
         }
+    }
+
+    public function enviarReporteEspecial(Request $request)
+    {
+        $listado = [];
+
+        array_push($listado, $this->eEstudio($request->Id, "si"));
+        array_push($listado, $this->adjDigitalFisico($request->Id, 3));
+        array_push($listado, $this->adjAnexos($request->Id));
+        array_push($listado, $this->adjGenerales($request->Id));
+
+        if (empty($listado)) {
+            return response()->json(['msg' => 'No se han encontrado reportes para empaquetar y enviar. Consulte al administrador']);
+        }
+
+        $this->reporteService->fusionarPDFs($listado, $this->sendPath);
+
+        $prestacion = Prestacion::with(['empresa', 'paciente'])->find($request->Id);
+
+        $nombreCompleto = $prestacion->paciente->Apellido. ' '.$prestacion->paciente->Nombre;
+
+        $asunto = 'Examen Laboral ' . $nombreCompleto. ' ' .$prestacion->paciente->Documento . ' ' .$prestacion->TipoPrestacion;
+
+        $cuerpo['empresa'] = $prestacion->empresa->RazonSocial ?? '';
+        $cuerpo['nombreCompleto'] = $nombreCompleto ?? '';
+        $cuerpo['fechaPrestacion'] = Carbon::parse($prestacion->Fecha)->format('d/m/Y') ?? '';
+        $cuerpo['dni'] = $prestacion->paciente->Documento ?? '';
+        $cuerpo['paraEmpresa'] = $prestacion->empresa->ParaEmpresa ?? '';
+        $cuerpo['prestacion'] = $prestacion->Id ?? '';
+        $cuerpo['tipoPrestacion'] = $prestacion->TipoPrestacion ?? '';
+
+        if (empty($prestacion->empresa->EMailInformes)) {
+            return response()->json(['msg' => 'El cliente no posee un correo registrado'], 409);
+        }
+
+        EnvioReporteEspecialJob::dispatch($prestacion->empresa->EMailInformes, $asunto, $cuerpo, $this->sendPath)->onQueue('correos');
+
+        return response()->json(['msg' => 'Se ha enviado el reporte con exito'], 200);
+
     }
 
     public function resumenExcel(Request $request)

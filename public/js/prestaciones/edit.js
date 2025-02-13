@@ -595,11 +595,11 @@ $(document).ready(()=> {
            
     });
 
-    $(document).on('click', '.eEnviarReporte', function(e){
+    $(document).on('click', '.EnviarAviso', function(e){
         e.preventDefault();
 
         swal({
-            title: "¿Desea enviar el reporte?",
+            title: "¿Desea enviar el aviso de reporte?",
             icon: "warning",
             buttons: ["Cancelar", "Aceptar"]
         }).then((confirmar) => {
@@ -622,7 +622,36 @@ $(document).ready(()=> {
         });
 
         
-    })
+    });
+
+    $(document).on('click', '.eEnviarReporte', function(e){
+        e.preventDefault();
+
+        swal({
+            title: "¿Desea enviar el reporte eEstudio, eAnexos y Adjuntos Generales de la prestación?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar){
+
+                preloader('on');
+                $.get(eEnviarEspecial, {Id: ID})
+                    .done(function(response){
+                        preloader('off');
+                        toastr.success(response.msg);
+                    })
+                    .fail(function(jqXHR){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
+                    });
+
+            }
+        });
+
+        
+    });
 
     $(document).on('click', '.eEstudio', function(e){
         e.preventDefault();

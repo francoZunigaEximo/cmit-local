@@ -406,8 +406,9 @@
                             {{-- <button type="button" class="btn btn-sm botonGeneral" data-bs-toggle="modal" data-bs-target="#imprimir" ><i class="bx bxs-file-pdf"></i>&nbsp;Imprimir</button> --}}
                             <button type="button" class="btn btn-sm botonGeneral" data-bs-toggle="modal" data-bs-target="#opciones"><i class="ri-send-plane-line"></i>&nbsp;Opciones</button>
                             @can('prestaciones_eEnviar')
-                            <button type="button" id="eEnviarReporte" class="btn btn-sm botonGeneral eEnviarReporte"><i class="ri-send-plane-line"></i>&nbsp;Enviar</button>
+                            <button type="button" title="enviar eEstudio, eAnexos y Adjuntos Generales de la prestación" id="eEnviarReporte" class="btn btn-sm botonGeneral eEnviarReporte"><i class="ri-send-plane-line"></i>&nbsp;eEnviar</button>
                             @endcan
+                            <button type="button" title="Envia aviso de reporte listo o examenes impagos dependiendo del estado" class="btn btn-sm botonGeneral EnviarAviso"><i class="ri-send-plane-line"></i>&nbsp;Enviar Aviso</button>
                             @can('boton_todo')
                             <button type="button" class="btn btn-sm botonGeneral btnTodo"><i class="ri-stack-fill"></i>&nbsp;Todo</button>
                             @endcan
@@ -1567,6 +1568,8 @@ const urlPrestacion = "{{ route('prestaciones.edit', ['prestacione' => '__presta
 const cacheDelete = "{{ route('prestaciones.cacheDelete') }}";
 const descarga = "@fileUrl('lectura')/AdjuntosPrestacion";
 const deleteAdjPrest = "{{ route('prestaciones.deleteAdjPres') }}";
+
+const eEnviarEspecial = "{{ route('prestaciones.reporteEspecial') }}";
 
 //Select
 const selectTipoPrestacion = "{{ $prestacione->TipoPrestacion }}";
