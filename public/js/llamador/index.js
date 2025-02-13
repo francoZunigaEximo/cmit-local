@@ -33,9 +33,9 @@ $(function(){
         });
 
         preloader('on');
-        $.get(printExportar, {Ids: ids, tipo: 'efector', modo: opcion === exportar ? 'basico' : 'full'})
+        $.get(printExportar, {Ids: ids, tipo: 'efector', modo: opcion === 'exportar' ? 'basico' : 'full'})
             .done(function(response){
-                createFile("xlsx", response.filePath, response.name);
+                createFile("xlsx", response.filePath, generarCodigoAleatorio() + '_reporte');
                 preloader('off')
                 toastr.success(response.msg)
             })

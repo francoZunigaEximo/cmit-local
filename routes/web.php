@@ -137,6 +137,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/prestaciones/eliminar-adjunto-prestacion', [PrestacionesController::class, 'deleteAdjPrest'])->name('prestaciones.deleteAdjPres');
     Route::get('/prestaciones/listado-resultados', [PrestacionesController::class, 'getResultados'])->name('prestaciones.resultados');
     Route::get('/prestaciones/exportar-resultados', [PrestacionesController::class, 'exportResultados'])->name('prestaciones.exportarResultado');
+    Route::get('/prestaciones/enviar-reporteEspecial', [PrestacionesController::class, 'enviarReporteEspecial'])->name('prestaciones.reporteEspecial');
     Route::resource('prestaciones', PrestacionesController::class);
 
     //Ruta Ficha Laboral

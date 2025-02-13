@@ -147,10 +147,10 @@ class LlamadorController extends Controller
             }
 
         }elseif ($request->tipo === 'efector' && $request->modo === 'full') {
-            $prestaciones = $this->queryFull()->whereIn('prestaciones.Id', $request->Ids)->get();
+            $prestaciones = $this->queryFull()->whereIn('prestaciones.Id', $request->Ids)->groupBy('itemsprestaciones.Id')->get();
 
             if($prestaciones) {
-                $reporte = $this->reporteExcel->crear('efectorDetallado');
+                $reporte = $this->reporteExcel->crear('efectorDetalle');
                 return $reporte->generar($prestaciones);
             }else{
                 return response()->json(['msg' => 'No existen prestaciones para exportar'], 409);
@@ -201,7 +201,8 @@ class LlamadorController extends Controller
         ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
         ->leftJoin('telefonos', 'pacientes.Id', '=', 'telefonos.IdEntidad')
         ->join('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
-        ->leftJoin('examenes', 'itemsprestaciones.')
+        ->leftJoin('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
+        ->leftJoin('archivosefector', 'itemsprestaciones.Id', '=', 'archivosefector.IdEntidad')
         ->select(
             DB::raw('DATE_FORMAT(prestaciones.Fecha, "%d/%m/%Y") as fecha'),
             'prestaciones.Id as prestacion',
@@ -212,8 +213,38 @@ class LlamadorController extends Controller
             'art.RazonSocial as art',
             DB::raw("CONCAT(pacientes.Apellido,' ',pacientes.Nombre) as paciente"),
             'pacientes.Documento as dni',
-            'pacientes.FechaNacimiento as fechaNacimiento',
-            DB::raw("CONCAT(telefonos.CodigoArea,telefonos.NumeroTelefono) as telefono")
+            DB::raw("CONCAT(telefonos.CodigoArea,telefonos.NumeroTelefono) as telefono"),
+            'examenes.Nombre as nombreExamen',
+            DB::raw('(
+                CASE 
+                    WHEN itemsprestaciones.CAdj = 5 OR itemsprestaciones.CAdj = 3 AND itemsprestaciones.CInfo = 3 OR itemsprestaciones.CInfo = 0 THEN "Completo" ELSE "Incompleto"
+                END) AS estadoExamen
+            '),
+            'itemsprestaciones.Anulado as Anulado',
+            DB::raw('(
+                    CASE 
+                        WHEN itemsprestaciones.CAdj in (1,2,4) THEN "Pdte"
+                        WHEN itemsprestaciones.CAdj in (3,5) THEN "Cerr"
+                        ELSE ""
+                    END
+                ) AS estadoEfector
+                        '),
+            DB::raw('(
+                    CASE 
+                        WHEN itemsprestaciones.CInfo = 1 THEN "Pdte"
+                        WHEN itemsprestaciones.CInfo = 2 THEN "Borrador"
+                        WHEN itemsprestaciones.CInfo = 3 THEN "Cerr"
+                        ELSE ""
+                    END
+                    ) AS estadoInformador
+                '),
+            DB::raw('(CASE 
+                WHEN EXISTS(SELECT 1 FROM archivosefector WHERE itemsprestaciones.Id = archivosefector.IdEntidad) THEN "Adj" 
+                ELSE ""
+            END) AS estadoAdj'),
+            'itemsprestaciones.ObsExamen as obsExamen',
+            'itemsprestaciones.CAdj',
+            'itemsprestaciones.CInfo'
         )->whereNot('prestaciones.Fecha', null)
         ->whereNot('prestaciones.Fecha', '0000-00-00')
         ->where('prestaciones.Anulado', 0);

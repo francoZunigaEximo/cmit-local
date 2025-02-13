@@ -70,7 +70,7 @@ class EfectorDetallado implements ReporteInterface
             $sheet->setCellValue('I'.$fila, $efector->telefono ?? '');
             $sheet->setCellValue('J'.$fila, $efector->estadoExamen ?? '');
             $sheet->setCellValue('K'.$fila, $efector->nombreExamen ?? '');
-            $sheet->setCellValue('L'.$fila, $efector->Anulado ?? '');
+            $sheet->setCellValue('L'.$fila, $efector->Anulado === 0 ? 'NO' : 'SI');
             $sheet->setCellValue('M'.$fila, $efector->estadoEfector ?? '');
             $sheet->setCellValue('N'.$fila, $efector->estadoAdj ?? '');
             $sheet->setCellValue('O'.$fila, $efector->estadoInformador ?? '');
@@ -79,12 +79,12 @@ class EfectorDetallado implements ReporteInterface
         }
     }
 
-    public function generar($datos)
+    public function generar($efector)
     {
         $this->columnasYEncabezados($this->sheet);
-        $this->datos($this->sheet, $datos);
+        $this->datos($this->sheet, $efector);
         
-        $name = 'detalleEfector_' . Str::random(6) . '.xlsx';
+        $name = 'detalle_' . Str::random(6) . '.xlsx';
         return $this->generarArchivo($this->spreadsheet, $name);
     }
 }

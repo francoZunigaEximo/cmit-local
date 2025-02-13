@@ -70,7 +70,7 @@ class EfectorExportar implements ReporteInterface
         $this->columnasYEncabezados($this->sheet);
         $this->datos($this->sheet, $datos);
         
-        $name = 'exportarEfector_' . Str::random(6) . '.xlsx';
+        $name = 'exportar_' . Str::random(6) . '.xlsx';
         return $this->generarArchivo($this->spreadsheet, $name);
     }
 }
