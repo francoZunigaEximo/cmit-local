@@ -60,16 +60,16 @@ use App\Mail\ExamenesResultadosMail;
 use App\Models\ArchivoPrestacion;
 use App\Models\HistorialPrestacion;
 use App\Models\PrestacionObsFase;
-use App\Traits\ReporteExcel;
 use PhpOffice\PhpSpreadsheet\Calculation\Logical\Boolean;
 
 use Illuminate\Support\Facades\File;
+use App\Services\ReportesExcel\ReporteExcel;
 
 use FPDF;
 
 class PrestacionesController extends Controller
 {
-    use ObserverPrestaciones, ObserverFacturasVenta, CheckPermission, ReporteExcel, ToolsEmails;
+    use ObserverPrestaciones, ObserverFacturasVenta, CheckPermission, ToolsEmails;
 
     protected $reporteService;
     protected $outputPath;
@@ -81,14 +81,17 @@ class PrestacionesController extends Controller
     protected $sendFile2;
     protected $sendFile3;
 
+    protected $reporteExcel;
 
-    public function __construct(ReporteService $reporteService)
+
+    public function __construct(ReporteService $reporteService, ReporteExcel $reporteExcel)
     {
         $this->reporteService = $reporteService;
         $this->outputPath = storage_path('app/public/temp/fusionar.pdf');
         $this->sendPath = storage_path('app/public/temp/cmit-'.Tools::randomCode(15).'-informe.pdf');
         $this->fileNameExport = 'reporte-'.Tools::randomCode(15);
         $this->tempFile = 'app/public/temp/file-';
+        $this->reporteExcel = $reporteExcel;
     }
 
     public function index(Request $request): mixed
@@ -800,7 +803,9 @@ class PrestacionesController extends Controller
         $prestacion = Prestacion::find($request->Id);
 
         if($prestacion) {
-            return $this->resumenPrestacion($prestacion);
+            $reporte = $this->reporteExcel->crear('resumenTotal');
+            return $reporte->generar($prestacion);
+
         }else{
             return response()->json(['msg' => 'No se ha podido generar el archivo'], 409);
         }

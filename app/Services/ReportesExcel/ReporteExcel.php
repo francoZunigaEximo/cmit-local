@@ -9,6 +9,7 @@ use App\Services\ReportesExcel\modelos\Especialidad;
 use App\Services\ReportesExcel\modelos\Remito;
 use App\Services\ReportesExcel\modelos\EfectorExportar;
 use App\Services\ReportesExcel\modelos\EfectorDetallado;
+use App\Services\ReportesExcel\modelos\ResumenTotal;
 use Exception;
 
 class ReporteExcel
@@ -30,6 +31,8 @@ class ReporteExcel
                 return new EfectorExportar();
             case 'efectorDetalle':
                 return new EfectorDetallado();
+            case 'resumenTotal':
+                return new ResumenTotal();
             default:
                 throw new Exception("Tipo de reporte no soportado.");
         }
