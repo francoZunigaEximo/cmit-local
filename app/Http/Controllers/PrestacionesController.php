@@ -59,13 +59,10 @@ use App\Mail\EnviarReporte;
 use App\Mail\ExamenesResultadosMail;
 use App\Models\ArchivoPrestacion;
 use App\Models\HistorialPrestacion;
-use App\Models\PrestacionObsFase;
-use PhpOffice\PhpSpreadsheet\Calculation\Logical\Boolean;
+
 
 use Illuminate\Support\Facades\File;
 use App\Services\ReportesExcel\ReporteExcel;
-
-use FPDF;
 
 class PrestacionesController extends Controller
 {
@@ -992,11 +989,14 @@ class PrestacionesController extends Controller
     {
         if ($request->Tipo === 'exportSimple') {
 
-            return $this->SimplePrestacion($this->querySimple($request->IdPaciente));
+            $simple = $this->reporteExcel->crear('simplePrestacion');
+            return $simple->generar($this->querySimple($request->IdPaciente));
             
         }elseif($request->Tipo === 'exportDetallado') {
             
-            return $this->detalladaPrestacion($this->queryDetallado($request->IdPaciente));  
+            $detallada = $this->reporteExcel->crear('detalladaPrestacion');
+            return $detallada->generar($this->queryDetallado($request->IdPaciente));
+
         }
         return response()->json(['msg' => 'No se ha podido generar el archivo'], 409);
     }

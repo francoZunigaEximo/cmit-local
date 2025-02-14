@@ -42,7 +42,6 @@ class Cliente implements ReporteInterface
             $sheet->getColumnDimension($columna)->setAutoSize(true);
         }
 
-        // Establecer los encabezados de las celdas
         foreach ($encabezados as $celda => $valor) {
             $sheet->setCellValue($celda, $valor);
         }

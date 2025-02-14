@@ -4,12 +4,14 @@ namespace App\Services\ReportesExcel;
 
 use App\Services\ReportesExcel\modelos\Paciente;
 use App\Services\ReportesExcel\modelos\Cliente;
+use App\Services\ReportesExcel\modelos\DetalladaPrestacion;
 use App\Services\ReportesExcel\modelos\Mapa;
 use App\Services\ReportesExcel\modelos\Especialidad;
 use App\Services\ReportesExcel\modelos\Remito;
 use App\Services\ReportesExcel\modelos\EfectorExportar;
 use App\Services\ReportesExcel\modelos\EfectorDetallado;
 use App\Services\ReportesExcel\modelos\ResumenTotal;
+use App\Services\ReportesExcel\modelos\SimplePrestacion;
 use Exception;
 
 class ReporteExcel
@@ -33,6 +35,10 @@ class ReporteExcel
                 return new EfectorDetallado();
             case 'resumenTotal':
                 return new ResumenTotal();
+            case 'simplePrestacion':
+                return new SimplePrestacion();
+            case 'detalladaPrestacion':
+                return new DetalladaPrestacion();
             default:
                 throw new Exception("Tipo de reporte no soportado.");
         }
