@@ -52,11 +52,22 @@ class EnvioReporteEspecial extends Mailable
      */
     public function attachments(): array
     {
-        if(!empty($this->data['attachments'])) {
-            return [
-                Attachment::fromPath($this->data['attachments'])
-            ];
+        $attachments = [];
+
+        // Si existen archivos adjuntos, los agregamos al array
+        if (!empty($this->data['attachments'])) {
+            foreach ($this->data['attachments'] as $attachmentPath) {
+                $attachments[] = Attachment::fromPath($attachmentPath);
+            }
         }
-        return [];
+        
+        return $attachments;
+
+        // if(!empty($this->data['attachments'])) {
+        //     return [
+        //         Attachment::fromPath($this->data['attachments'])
+        //     ];
+        // }
+        // return [];
     }
 }

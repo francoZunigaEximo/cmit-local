@@ -754,18 +754,17 @@ class PrestacionesController extends Controller
 
     public function enviarReporteEspecial(Request $request)
     {
-        $listado = [];
+        $attachments = [];
 
-        array_push($listado, $this->eEstudio($request->Id, "si"));
-        array_push($listado, $this->adjDigitalFisico($request->Id, 3));
-        array_push($listado, $this->adjAnexos($request->Id));
-        array_push($listado, $this->adjGenerales($request->Id));
+        $eEstudio = $this->eEstudio($request->Id, "si");
+        $adjAnexos = $this->adjAnexos($request->Id);
+        $adjGenerales = $this->adjGenerales($request->Id);
 
-        if (empty($listado)) {
-            return response()->json(['msg' => 'No se han encontrado reportes para empaquetar y enviar. Consulte al administrador']);
+        $attachments = [$eEstudio, $adjAnexos, $adjGenerales];
+
+        if (empty($attachments)) {
+            return response()->json(['msg' => 'No se han encontrado reportes para empaquetar y enviar. Consulte al administrador'], 409);
         }
-
-        $this->reporteService->fusionarPDFs($listado, $this->sendPath);
 
         $prestacion = Prestacion::with(['empresa', 'paciente'])->find($request->Id);
 
@@ -785,7 +784,7 @@ class PrestacionesController extends Controller
             return response()->json(['msg' => 'El cliente no posee un correo registrado'], 409);
         }
 
-        EnvioReporteEspecialJob::dispatch($prestacion->empresa->EMailInformes, $asunto, $cuerpo, $this->sendPath)->onQueue('correos');
+        EnvioReporteEspecialJob::dispatch($prestacion->empresa->EMailInformes, $asunto, $cuerpo, $attachments)->onQueue('correos');
 
         return response()->json(['msg' => 'Se ha enviado el reporte con exito'], 200);
 

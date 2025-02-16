@@ -114,9 +114,9 @@ $(function(){
                     width:'100px',
                     render: function(data){
                         
-                        let llamar = '<button type="button" class="btn btn-sm botonGeneral"><i class="ri-edit-line"></i>Llamar</button>';
+                        let llamar = '<button type="button" class="btn btn-sm botonGeneral"><i class="ri-edit-line" ></i>Llamar</button>';
                         
-                        let atender = '<button type="button" class="btn btn-sm botonGeneral"><i class="ri-edit-line"></i>Atender</button>';
+                        let atender = '<button type="button" class="btn btn-sm botonGeneral" data-bs-toggle="modal" data-bs-target="#atenderEfector"><i class="ri-edit-line"></i>Atender</button>';
     
                         return llamar + ' ' + atender;
                     }
