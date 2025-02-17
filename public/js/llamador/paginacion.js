@@ -65,21 +65,24 @@ $(function(){
                 {
                     data: 'empresa',
                     name: 'empresa',
-                    width: '120px'
+                    width: '100px'
                 },
                 {
                     data: 'paraEmpresa',
                     name: 'paraEmpresa',
-                    width: '120px'
+                    width: '100px'
                 },
                 {
                     data: 'art',
                     name: 'art',
-                    width: '120px'
+                    width: '100px'
                 },
                 {
-                    data: 'paciente',
-                    name: 'paciente'
+                    data: null,
+                    width: '120px',
+                    render: function(data) {
+                        return `<span class="text-uppercase">${data.paciente} <span class="custom-badge generalNegro"></span></span>`;
+                    }
                 },
                 {
                     data: 'dni',
@@ -116,7 +119,7 @@ $(function(){
                         
                         let llamar = '<button type="button" class="btn btn-sm botonGeneral"><i class="ri-edit-line" ></i>Llamar</button>';
                         
-                        let atender = '<button type="button" class="btn btn-sm botonGeneral" data-bs-toggle="modal" data-bs-target="#atenderEfector"><i class="ri-edit-line"></i>Atender</button>';
+                        let atender = `<button type="button" data-id="${data.prestacion}" data-profesional=${data.idProfesional}" data-especialidades="${data.especialidades}" class="btn btn-sm botonGeneral atenderPaciente" data-bs-toggle="modal" data-bs-target="#atenderEfector"><i class="ri-edit-line"></i>Atender</button>`;
     
                         return llamar + ' ' + atender;
                     }

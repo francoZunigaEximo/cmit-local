@@ -124,8 +124,8 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>
             </div>
             <div class="modal-body">
-
-                <div class="row">
+                <hr size="1">
+                <div class="row p-2 fondo-grisClaro">
                     <div class="col-6 text-start">
                         <button class="btn btn-sm botonGeneral">Liberar</button>
                     </div>
@@ -133,7 +133,101 @@
                         <button class="btn btn-sm botonGeneral">Llamar</button>
                     </div>
                 </div>
- 
+                <hr size="1">
+
+                <div class="card card-h-100">
+                    <div class="card-body">
+
+                        <div class="row">
+
+                            <div class="col-md-9">
+
+                                <div class="row">
+
+                                    <div class="col-md-4">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">Profesional</span>
+                                            <input type="text" class="form-control" id="profesionalEfector" name="profesionalEfector" readonly="true">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-4">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">Prestación</span>
+                                            <input type="text" class="form-control" id="prestacionEfector" name="prestacionEfector" readonly="true">
+                                        </div>
+                                    </div>
+        
+                                    <div class="col-md-4">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">Tipo Exámen</span>
+                                            <input type="text" class="form-control" id="tipoEfector" name="tipoEfector" readonly="true">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">ART</span>
+                                            <input type="text" class="form-control" id="artEfector" name="artEfector" readonly="true">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">Empresa</span>
+                                            <input type="text" class="form-control" id="empresaEfector" name="empresaEfector" readonly="true">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4 mt-1">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">Para Empresa</span>
+                                            <input type="text" class="form-control" id="paraEmpresaEfector" name="paraEmpresaEfector" readonly="true">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4 mt-1">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">Paciente</span>
+                                            <input type="text" class="form-control" id="pacienteEfector" name="pacienteEfector" readonly="true">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4 mt-1">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">Edad</span>
+                                            <input type="text" class="form-control" id="edadEfector" name="edadEfector" readonly="true">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4 mt-1">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">Fecha Prestación</span>
+                                            <input type="text" class="form-control" id="fechaEfector" name="fechaEfector" readonly="true">
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            
+                            <div class="col-md-3">
+                                <img class="round mx-auto d-block img-fluid" id="fotoEfector" src="" alt="Foto del paciente" width="150px">
+                            </div>
+                            
+                        </div>
+                   
+                        <div class="row">
+                            <div class="col-md-12 text-end">
+                                <button class="btn btn-sm botonGeneral">Resultados</button>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+
             </div>
             <div class="modal-footer text-center">
                 <button type="button" class="btn btn-sm botonGeneral" data-bs-dismiss="modal">Cancelar</button>
@@ -148,6 +242,8 @@
     const SEARCH = "{{ route('llamador.buscarEfector') }}";
     const lnkPrestaciones = "{{ route('prestaciones.edit', ['prestacione' => '__item__']) }}";
     const printExportar = "{{ route('llamador.excelEfector') }}";
+    const FOTO = "@fileUrl('lectura')/Fotos/";
+    const dataPaciente = "{{ route('llamador.verPaciente') }}";
 </script>
 
 @push('styles')

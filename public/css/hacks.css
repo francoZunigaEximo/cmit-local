@@ -754,3 +754,12 @@ table th, table td {
 table th {
     text-align: left !important;
 }
+
+#fotoEfector {
+    transition: transform 0.25s ease;
+    cursor: zoom-in;
+}
+
+#fotoEfector.zoomed {
+    transform: scale(2);
+}

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ItemPrestacion;
 use Illuminate\Http\Request;
 use App\Models\Prestacion;
 use App\Models\ProfesionalProv;
@@ -69,7 +70,7 @@ class LlamadorController extends Controller
     {
         if ($request->ajax()) {
 
-            $query = $this->queryBasico();
+            $query = $this->queryBasico($request->profesional);
             $especialidades = ProfesionalProv::where('IdRol','Efector')->where('IdProf', $request->profesional)->pluck('IdProv')->toArray();
 
             if (!empty($request->prestacion)){
@@ -78,9 +79,13 @@ class LlamadorController extends Controller
             
             } else {
 
+                
+
                 $query->when(!empty($request->profesional), function ($query) use ($request, $especialidades){
+                    $data = json_encode($especialidades);
                     $query->whereIn('itemsprestaciones.IdProfesional', [$request->profesional, 0])
-                        ->whereIn('itemsprestaciones.IdProveedor', [$especialidades]);
+                        ->whereIn('itemsprestaciones.IdProveedor', $especialidades)
+                        ->addSelect(DB::raw('"' . implode(',', $especialidades) . '" as especialidades'));
                 });
     
                 $query->when(!empty($request->fechaDesde) || !empty($request->fechaHasta), function ($query) use ($request){
@@ -156,8 +161,16 @@ class LlamadorController extends Controller
                 return response()->json(['msg' => 'No existen prestaciones para exportar'], 409);
             }
         }
+    }
 
-        
+    public function verPaciente(Request $request)
+    {
+        $prestacion = Prestacion::with(['paciente','empresa','art'])->where('Id', $request->Id)->first();
+        $datos = User::with('personal')->where('profesional_id', $request->IdProfesional)->first();
+
+        $nombreCompleto = $datos->personal->Apellido.' '.$datos->personal->Nombre;
+
+        return $prestacion && $datos ? response()->json(['prestacion' => $prestacion, 'profesional' => $nombreCompleto]) : null;
     }
 
     private function checkTipoRol($usuario)
@@ -170,7 +183,7 @@ class LlamadorController extends Controller
                 ->count();
     }
 
-    private function queryBasico()
+    private function queryBasico(?int $idProfesional = null)
     {
         return Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
         ->join('clientes as empresa', 'prestaciones.IdEmpresa', '=', 'empresa.Id')
@@ -188,6 +201,7 @@ class LlamadorController extends Controller
             DB::raw("CONCAT(pacientes.Apellido,' ',pacientes.Nombre) as paciente"),
             'pacientes.Documento as dni',
             'pacientes.FechaNacimiento as fechaNacimiento',
+            $idProfesional !== null ? DB::raw($idProfesional.' as idProfesional') : '', 
             DB::raw("CONCAT(telefonos.CodigoArea,telefonos.NumeroTelefono) as telefono")
         )->whereNot('prestaciones.Fecha', null)
         ->whereNot('prestaciones.Fecha', '0000-00-00')
