@@ -141,6 +141,7 @@ class PacientesController extends Controller
             'Foto' => $foto,
             'Antecedentes' => $request->Antecedentes,
             'Observaciones' => $request->Observaciones,
+            'Sexo' => $request->Sexo,
         ]);
 
 
@@ -203,6 +204,7 @@ class PacientesController extends Controller
             'CP',
             'Antecedentes',
             'Observaciones',
+            'Sexo'
         ]);
 
         $paciente->update($data);

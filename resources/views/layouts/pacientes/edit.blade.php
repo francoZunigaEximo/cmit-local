@@ -63,10 +63,20 @@
                         <input type="text" class="form-control" value="{{ $paciente->Identificacion }}" id="identificacion" name="Identificacion">
                     </div>
 
-                    <div class="input-group input-group-sm">
+                    <div class="input-group input-group-sm mb-3">
                         <span class="input-group-text">Fecha de nacimiento&nbsp;<span class="required">(*)</span></span>
                         <input type="date" class="form-control" id="fecha" name="FechaNacimiento" value="{{ $paciente->FechaNacimiento }}">
                         <input type="text" class="form-control" id="edad" value="Edad: {{ $suEdad }}" title="Edad">
+                    </div>
+
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text">Sexo</span>
+                        <select class="form-select" id="Sexo" name="Sexo">
+                            <option selected value="{{ $paciente->Sexo ?? ''}}">{{ !empty($paciente->Sexo) ? ($paciente->Sexo === 'M' ? 'Masculino' : 'Femenino') : 'Elija una opción...' }}</option>
+                            <option value="M">Masculino</option>
+                            <option value="F">Femenino</option>
+                            <option value="">Sin Sexo</option>
+                        </select>
                     </div>
                 </div>
 

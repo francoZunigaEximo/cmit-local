@@ -3,9 +3,9 @@ $(document).ready(function(){
     quitarDuplicados("#tipoDocumento");
     quitarDuplicados("#provincia");
     quitarDuplicados("#tipoIdentificacion");
+    quitarDuplicados("#Sexo");
     checkProvincia();
     lstResultadosPrest(ID);
-
     
     $('#provincia').change(function() {
         let provincia = $(this).val();
