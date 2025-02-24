@@ -59,17 +59,13 @@ use App\Mail\EnviarReporte;
 use App\Mail\ExamenesResultadosMail;
 use App\Models\ArchivoPrestacion;
 use App\Models\HistorialPrestacion;
-use App\Models\PrestacionObsFase;
-use App\Traits\ReporteExcel;
-use PhpOffice\PhpSpreadsheet\Calculation\Logical\Boolean;
+use App\Services\ReportesExcel\ReporteExcel;
 
 use Illuminate\Support\Facades\File;
 
-use FPDF;
-
 class PrestacionesController extends Controller
 {
-    use ObserverPrestaciones, ObserverFacturasVenta, CheckPermission, ReporteExcel, ToolsEmails;
+    use ObserverPrestaciones, ObserverFacturasVenta, CheckPermission, ToolsEmails;
 
     protected $reporteService;
     protected $outputPath;
@@ -81,14 +77,17 @@ class PrestacionesController extends Controller
     protected $sendFile2;
     protected $sendFile3;
 
+    protected $reporteExcel;
 
-    public function __construct(ReporteService $reporteService)
+
+    public function __construct(ReporteService $reporteService, ReporteExcel $reporteExcel)
     {
         $this->reporteService = $reporteService;
         $this->outputPath = storage_path('app/public/temp/fusionar.pdf');
         $this->sendPath = storage_path('app/public/temp/cmit-'.Tools::randomCode(15).'-informe.pdf');
         $this->fileNameExport = 'reporte-'.Tools::randomCode(15);
         $this->tempFile = 'app/public/temp/file-';
+        $this->reporteExcel = $reporteExcel;
     }
 
     public function index(Request $request): mixed
@@ -986,11 +985,14 @@ class PrestacionesController extends Controller
     {
         if ($request->Tipo === 'exportSimple') {
 
-            return $this->SimplePrestacion($this->querySimple($request->IdPaciente));
+            $reporte = $this->reporteExcel->crear('simplePrestacion');
+            return $reporte->generar($this->querySimple($request->IdPaciente));
+
             
         }elseif($request->Tipo === 'exportDetallado') {
             
-            return $this->detalladaPrestacion($this->queryDetallado($request->IdPaciente));  
+            $reporte = $this->reporteExcel->crear('detalladaPrestacion');
+            return $reporte->generar($this->queryDetallado($request->IdPaciente));
         }
         return response()->json(['msg' => 'No se ha podido generar el archivo'], 409);
     }
