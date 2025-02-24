@@ -20,12 +20,12 @@ $(function() {
         }
 
         $(document).on('change', '#especialidadInf', function(){
-            var nuevoValor = $(this).val();
+            let nuevoValor = $(this).val();
+
+            if(['',0, undefined].includes(nuevoValor)) return; //evitamos la recarga vacia
             
             if (nuevoValor !== especialidad) {
-
                 especialidad = nuevoValor;
-
             }
         });
 

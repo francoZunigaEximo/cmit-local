@@ -1,6 +1,16 @@
 $(function() {
 
     $('#fechaHasta, #fechaHastaAsignados, #fechaHastaAdjunto, #fechaHastaInf, #fechaHastaAsignadosInf, #fechaHastaAdjuntoInf, #fechaHastaPres, #fechaHastaEEnviar').val(fechaNow(null, "-", 0)), $('#efectorPres').val('pendientes'),$('#tipoPres').val('todos');
+
+    let checks = {
+        '#checkAllAsignar': 'Id_asignar',
+        '#checkAllAsignado': 'Id_asignado',
+        '#checkAllAdj': 'Id_adjunto',
+        '#checkAllAsigInf': 'Id_asigInf',
+        '#checkAllAsignadoInf': 'Id_asignadoInf',
+        '#checkAllAdjInf': 'Id_adjuntoInf',
+        '#checkAllEEnviar': 'Id_EEnviar'
+    };
     
     let especialidadVal = $('#especialidad').val(),
         especialidadAsigVal = $('#especialidadAsignados').val(),
@@ -219,11 +229,12 @@ $(function() {
             buttons: ["Cancelar", "Aceptar"]
         }).then((confirmar) => {
             if(confirmar) {
+                preloader('on');
                 $.post(asignarProfesional, { _token: TOKEN, Ids: ids, IdProfesional: profesional, tipo: seleccion })
                 .done(function(response){
-
+                    preloader('off');
                     let data = response.message;
-                    toastr.info(data, "Información");
+                    toastr.success(data, "Información");
                     $(obj[seleccion][2]).DataTable().draw(false)
 
                 })
@@ -319,17 +330,14 @@ $(function() {
     });
 
     $(document).on('click', '.btnLiberar, .btnLiberarInf', function(e){
-
         e.preventDefault();
 
         let seleccion = $(this).hasClass('btnLiberar') ? 'btnLiberar' : 'btnLiberarInf';
-
         let obj = {
             //El ultimo es para tipo en el controlador
             btnLiberar: ['Id_asignado', '#checkAllAsignado', '#listaOrdenesEfectoresAsig', 'asigEfector'], 
             btnLiberarInf: ['Id_asignadoInf', '#checkAllAsignadoInf', '#listaOrdenesInformadoresAsig', 'asigInf']
-        }
-        
+        }   
         let ids = [];
 
         $('input[name="' + obj[seleccion][0] + '"]:checked').each(function() {
@@ -372,112 +380,79 @@ $(function() {
         document.querySelector(".select2-container--open .select2-search__field").focus()
     });
 
-    $('#resetPres').click(function(){ 
-        $('#form-index :input, #form-index select').val('');
+    $(document).on('click', '#resetPres', function(e){
+        e.preventDefault();
+        $('#form-index :input, #form-index select, #especialidadPres, #efectoresPres').val('');
         $('#examenPres').val([]).trigger('change.select2');
-        $('#especialidadPres').val('');
-        $('#efectoresPres').val('');
         $('#listaOrdenesPrestaciones').DataTable().clear().destroy();
         $('#fechaHastaPres').val(fechaNow(null, "-", 0));
     });
 
-    $('#reset').click(function(){ 
-        $('#form-index :input, #form-index select').val('');
-        $('#examen').val([]).trigger('change.select2');
-        $('#paciente').val([]).trigger('change.select2');
-        $('#empresa').val([]).trigger('change.select2');
-        $('#especialidad').val('');
-        $('#efectores').val('');
+    $(document).on('click', '#reset', function(e){
+        e.preventDefault();
+        $('#form-index :input, #form-index select, #especialidad, #efectores').val('');
+        ['#examen', '#paciente', '#empresa'].forEach(function(selector) {
+            $(selector).val([]).trigger('change.select2');
+        });
         $('#listaOrdenesEfectores').DataTable().clear().destroy();
         $('#fechaHasta').val(fechaNow(null, "-", 0));
     });
 
-    $('#resetInf').click(function(){ 
-        $('#form-index :input, #form-index select').val('');
-        $('#examenInf').val([]).trigger('change.select2');
-        $('#pacienteInf').val([]).trigger('change.select2');
-        $('#empresaInf').val([]).trigger('change.select2');
-        $('#especialidadInf').val('');
-        $('#informadores').val('');
+    $(document).on('click', '#resetInf', function(e){
+        e.preventDefault();
+        $('#form-index :input, #form-index select, #especialidadInf, #informadores').val('');
+        ['#examenInf', '#pacienteInf', '#empresaInf'].forEach(function(selector) {
+            $(selector).val([]).trigger('change.select2');
+        });
         $('#listaOrdenesInformadores').DataTable().clear().destroy();
         $('#fechaHastaInf').val(fechaNow(null, "-", 0));
     });
 
-    $('#resetAsignado').click(function(){ 
-        $('#form-index :input, #form-index select').val('');
-        $('#examenAsignados').val([]).trigger('change.select2');
-        $('#pacienteAsignados').val([]).trigger('change.select2');
-        $('#empresaAsignados').val([]).trigger('change.select2');
-        $('#especialidadAsignados').val('');
-        $('#efectorAsignado').val('');
+    $(document).on('click', '#resetAsignado', function(e){
+        e.preventDefault();
+        $('#form-index :input, #form-index select, #especialidadAsignados, #efectorAsignado').val('');
+        ['#examenAsignados','#pacienteAsignados','#empresaAsignados'].forEach(function(selector) {
+            $(selector).val([]).trigger('change.select2');
+        });
         $('#listaOrdenesEfectoresAsig').DataTable().clear().destroy();
         $('#fechaHastaAsignado').val(fechaNow(null, "-", 0));
     });
 
-    $('#resetAsignadoInf').click(function(){ 
-        $('#form-index :input, #form-index select').val('');
-        $('#examenAsignadosInf').val([]).trigger('change.select2');
-        $('#pacienteAsignadosInf').val([]).trigger('change.select2');
-        $('#empresaAsignadosInf').val([]).trigger('change.select2');
-        $('#especialidadAsignadosInf').val('');
-        $('#informadorAsignadoInf').val('');
+    $(document).on('click', '#resetAsignadoInf', function(e){
+        e.preventDefault();    
+        $('#form-index :input, #form-index select, #especialidadAsignadosInf, #informadorAsignadoInf').val('');
+        ['#examenAsignadosInf','#pacienteAsignadosInf','#empresaAsignadosInf'].forEach(function(selector) {
+            $(selector).val([]).trigger('change.select2');
+        });
         $('#listaOrdenesInformadoresAsig').DataTable().clear().destroy();
         $('#fechaDesdeAsignadosInf').val(fechaNow(null, "-", 0));
     });
 
-    $('#resetAdjunto').click(function(){ 
-        $('#form-index :input, #form-index select').val('');
-        $('#empresaAdjunto').val([]).trigger('change.select2');
-        $('#artAdjunto').val([]).trigger('change.select2');
-        $('#especialidadAdjunto').val('');
-        $('#efectorAdjunto').val('');
+    $(document).on('click', '#resetAdjunto', function(e){
+        e.preventDefault();  
+        $('#form-index :input, #form-index select, #especialidadAdjunto, #efectorAdjunto').val('');
+        ['#empresaAdjunto','#artAdjunto'].forEach(function(selector) {
+            $(selector).val([]).trigger('change.select2');
+        });
         $('#listaOrdenesEfectoresAdj').DataTable().clear().destroy();
         $('#fechaHastaAdjunto').val(fechaNow(null, "-", 0));
     });
 
-    $('#resetAdjuntoInf').click(function(){ 
-        $('#form-index :input, #form-index select').val('');
-        $('#empresaAdjuntoInf').val([]).trigger('change.select2');
-        $('#artAdjuntoInf').val([]).trigger('change.select2');
-        $('#especialidadAdjuntoInf').val('');
-        $('#informadorAdjuntoInf').val('');
+    $(document).on('click', '#resetAdjuntoInf', function(e){
+        e.preventDefault();  
+        $('#form-index :input, #form-index select, #especialidadAdjuntoInf, #informadorAdjuntoInf').val('');
+        ['empresaAdjuntoInf', 'artAdjuntoInf'].forEach(function(selector) {
+            $(selector).val([]).trigger('change.select2');
+        });
         $('#listaOrdenesInformadoresAdj').DataTable().clear().destroy();
         $('#fechaHastaAdjuntoInf').val(fechaNow(null, "-", 0));
     });
 
-    $('#checkAllAsignar').on('click', function() {
 
-        $('input[type="checkbox"][name="Id_asignar"]:not(#checkAllAsignar)').prop('checked', this.checked);
-    });
-
-    $('#checkAllAsignado').on('click', function() {
-
-        $('input[type="checkbox"][name="Id_asignado"]:not(#checkAllAsignado)').prop('checked', this.checked);
-    });
-
-    $('#checkAllAdj').on('click', function() {
-
-        $('input[type="checkbox"][name="Id_adjunto"]:not(#checkAllAdj)').prop('checked', this.checked);
-    });
-
-    $('#checkAllAsigInf').on('click', function() {
-
-        $('input[type="checkbox"][name="Id_asigInf"]:not(#checkAllAsigInf)').prop('checked', this.checked);
-    });
-
-    $('#checkAllAsignadoInf').on('click', function() {
-
-        $('input[type="checkbox"][name="Id_asignadoInf"]:not(#checkAllAsignadoInf)').prop('checked', this.checked);
-    });
-
-    $('#checkAllAdjInf').on('click', function() {
-
-        $('input[type="checkbox"][name="Id_adjuntoInf"]:not(#checkAllAdjInf)').prop('checked', this.checked);
-    });
-
-    $('#checkAllEEnviar').on('click', function() {
-
-        $('input[type="checkbox"][name="Id_EEnviar"]:not(#checkAllEEnviar)').prop('checked', this.checked);
+    $.each(checks, function(checkAllId, nombre) {
+        $(checkAllId).on('click', function() {
+            $('input[type="checkbox"][name="' + nombre + '"]:not(' + checkAllId + ')').prop('checked', this.checked);
+        });
     });
 
     $(document).on('change', '#efectores, #informadores', function() {
@@ -500,9 +475,8 @@ $(function() {
     });
 
     $(document).on('click', '.copiarQr', function(e) {
-
         e.preventDefault();
-        let prestacion = $(this).data('prestacion'), paciente = $(this).data('paciente'), examen = $(this).data('examen'), idexamen = $(this).data('examenid');
+        let prestacion = $(this).data('prestacion'), paciente = $(this).data('paciente'), idexamen = $(this).data('examenid');
         let copiarQr = crearQR("A", prestacion, idexamen, paciente);
         navigator.clipboard.writeText(copiarQr)
           .then(() => alert("Se ha copiado el siguiente QR: " + copiarQr))
@@ -588,8 +562,8 @@ $(function() {
             toastr.warning('No hay examenes seleccionados', 'Atención');
             return;
         }
-        preloader('on');
 
+        preloader('on');
         $.post(obj[opcion][2], { _token: TOKEN, Ids: ids, AutoCerrar: $(this).hasClass('automaticUploadIC') ? true : null, who: who, IdEntidad: $(this).data('id'), IdPrestacion: $(this).data('idprestacion') })
             .done(function(response){
                 var estados = [];
@@ -728,6 +702,7 @@ $(function() {
 
                     })
                     .fail(function(jqXHR){
+                        preloader('off');
                         let errorData = JSON.parse(jqXHR.responseText);
                         checkError(jqXHR.status, errorData.msg);
                         return;
