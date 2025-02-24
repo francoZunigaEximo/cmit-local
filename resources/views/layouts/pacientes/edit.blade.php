@@ -292,61 +292,9 @@
                                         <input type="text" class="form-control" id="Id" name="Id" value="{{ $paciente->Id }}" @readonly(true)>
                                         <input type="text" class="form-control" style="width: 50%" id="NombreCompleto" name="NombreCompleto" value="{{ $fichaLaboral->paciente->Apellido ?? $paciente->Apellido }} {{ $fichaLaboral->paciente->Nombre ?? $paciente->Nombre }}" @readonly(true)>
                                     </div>
-    
-                                    @php
-                                        $pagos = ["B" => "Contado", "A" => "Cuenta Corriente", "P" => "Exámen a Cuenta"];    
-                                    @endphp
-                  
-                                    <div class="input-group input-group-sm mb-2">
-                                        <span class="input-group-text">Forma de Pago</span>
-                                        <select class="form-control" id="PagoLaboral">
-                                            <option selected value="{{ $fichaLaboral->Pago ?? '' }}">{{ empty($fichaLaboral->Pago) ? 'Elija una opción...' : $pagos[$fichaLaboral->Pago] }}</option>
-                                            <option value="B">Contado</option>
-                                            <option value="A">Cuenta Corriente</option>
-                                            <option value="P">Exámen a Cuenta</option>
-                                        </select>
-                                    </div>
+
                                     <small id="alertaExCta" class="fw-bolder rojo mb-2">Exa Cta Disponible</small>
-
-                                    @php
-                                    $spagos = ["A" => "Efectivo", "B" => "Débito", "C" => "Crédito", "D" => "Cheque", "E" => "Otro", "F" => "Transferencia", "G" => "Sin Cargo"];    
-                                @endphp
-
-                                    <div class="input-group input-group-sm mb-2 SPago">
-                                        <span class="input-group-text">Medio de pago</span>
-                                        <select class="form-select" id="SPago">
-                                            <option selected value="{{ $fichaLaboral->SPago ?? '' }}">{{ empty($fichaLaboral->SPago) ? 'Elija una opción...' : $spagos[$fichaLaboral->SPago] }}</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="input-group input-group-sm mb-2 Factura">
-                                        <span class="input-group-text">Numero Factura</span>
-                                        <select class="form-select" id="Tipo">
-                                            <option value="{{ $fichaLaboral->Tipo ?? '' }}" selected>{{ $fichaLaboral->Tipo ?? 'Elija una opción...' }}</option>
-                                            <option value="A">A</option>
-                                            <option value="B">B</option>
-                                            <option value="E">E</option>
-                                            <option value="P">P</option>
-                                            <option value="R">R</option>
-                                            <option value="Z">Z</option>
-                                        </select>
-                                        <input type="text"  class="form-control" placeholder="nro sucursal" id="Sucursal" value="{{ $fichaLaboral->Sucursal ?? '' }}">
-                                        <input type="text"  class="form-control" placeholder="nro de factura" id="NroFactura" value="{{ $fichaLaboral->NroFactura ?? '' }}">
-                                    </div>
-
-                                    <div class="input-group input-group-sm mb-2 NroFactProv">
-                                        <span class="input-group-text">Nro Factura Provisoria</span>
-                                        <input type="text" class="form-control" placeholder="Numero de factura provisoria" id="NroFactProv" value="{{ $fichaLaboral->NroFactProv ?? '' }}">
-                                    </div>
-
-                                    <div class="input-group input-group-sm mb-2 Autoriza">
-                                        <span class="input-group-text">Autorizado por</span>
-                                        <select class="form-select" id="Autorizado">
-                                            <option value="{{ $fichaLaboral->Autorizado ?? '' }}" selected>{{ $fichaLaboral->Autorizado ?? 'Elija una opción...' }}</option>
-                                            <option value="Lucas Grunmann">Lucas Grunmann</option>
-                                        </select>
-                                    </div>
-                                    
+    
                                 </div>
                             
                                 <div class="col-6">
@@ -406,6 +354,71 @@
                                         </select>
                                     </div>
                                 </div>
+                            </div>
+
+                            <hr class="mt-1 mb-1">
+
+                            <div class="row text-center mt-2">
+                                <div class="col-3"></div>
+                                
+                                <div class="col-6">
+
+                                    @php
+                                        $pagos = ["B" => "Contado", "A" => "Cuenta Corriente", "P" => "Exámen a Cuenta"];    
+                                    @endphp
+                  
+                                    <div class="input-group input-group-sm mb-2">
+                                        <span class="input-group-text">Forma de Pago</span>
+                                        <select class="form-control" id="PagoLaboral">
+                                            <option selected value="{{ $fichaLaboral->Pago ?? '' }}">{{ empty($fichaLaboral->Pago) ? 'Elija una opción...' : $pagos[$fichaLaboral->Pago] }}</option>
+                                            <option value="B">Contado</option>
+                                            <option value="A">Cuenta Corriente</option>
+                                            <option value="P">Exámen a Cuenta</option>
+                                        </select>
+                                    </div>
+
+                                    @php
+                                        $spagos = ["A" => "Efectivo", "B" => "Débito", "C" => "Crédito", "D" => "Cheque", "E" => "Otro", "F" => "Transferencia", "G" => "Sin Cargo"];    
+                                    @endphp
+
+                                    <div class="input-group input-group-sm mb-2 SPago">
+                                        <span class="input-group-text">Medio de pago</span>
+                                        <select class="form-select" id="SPago">
+                                            <option selected value="{{ $fichaLaboral->SPago ?? '' }}">{{ empty($fichaLaboral->SPago) ? 'Elija una opción...' : $spagos[$fichaLaboral->SPago] }}</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="input-group input-group-sm mb-2 Factura">
+                                        <span class="input-group-text">Numero Factura</span>
+                                        <select class="form-select" id="Tipo">
+                                            <option value="{{ $fichaLaboral->Tipo ?? '' }}" selected>{{ $fichaLaboral->Tipo ?? 'Elija una opción...' }}</option>
+                                            <option value="A">A</option>
+                                            <option value="B">B</option>
+                                            <option value="E">E</option>
+                                            <option value="P">P</option>
+                                            <option value="R">R</option>
+                                            <option value="Z">Z</option>
+                                        </select>
+                                        <input type="text"  class="form-control" placeholder="nro sucursal" id="Sucursal" value="{{ $fichaLaboral->Sucursal ?? '' }}">
+                                        <input type="text"  class="form-control" placeholder="nro de factura" id="NroFactura" value="{{ $fichaLaboral->NroFactura ?? '' }}">
+                                    </div>
+
+                                    <div class="input-group input-group-sm mb-2 NroFactProv">
+                                        <span class="input-group-text">Nro Factura Provisoria</span>
+                                        <input type="text" class="form-control" placeholder="Numero de factura provisoria" id="NroFactProv" value="{{ $fichaLaboral->NroFactProv ?? '' }}">
+                                    </div>
+
+                                    <div class="input-group input-group-sm mb-2 Autoriza">
+                                        <span class="input-group-text">Autorizado por</span>
+                                        <select class="form-select" id="Autorizado">
+                                            <option value="{{ $fichaLaboral->Autorizado ?? '' }}" selected>{{ $fichaLaboral->Autorizado ?? 'Elija una opción...' }}</option>
+                                            <option value="Lucas Grunmann">Lucas Grunmann</option>
+                                        </select>
+                                    </div>
+
+                                </div>
+                                
+                                <div class="col-3"></div>
                             </div>
 
                             <hr class="mt-1 mb-1">

@@ -453,7 +453,7 @@ $(document).ready(function () {
         let ingreso = $('#FechaIngreso').val(), egreso = $('#FechaEgreso').val();
         let dateIngreso = new Date(ingreso), dateEgreso = egreso ? new Date(egreso) : new Date();
 
-        let diff = dateEgreso.getFullYear() - dateIngreso.getFullYear();
+        let diff = dateIngreso.getFullYear() - dateEgreso.getFullYear();
 
         if (dateEgreso.getMonth() < dateIngreso.getMonth() || (dateEgreso.getMonth() === dateIngreso.getMonth() && dateEgreso.getDate() < dateIngreso.getDate())) {
             diff--;
