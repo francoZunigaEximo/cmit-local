@@ -1120,7 +1120,7 @@
 </div>
 
 <div id="resultadosPaciente" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidde="true" style="display: none">
-    <div class="modal-dialog modal-fullscreen-xxl-down">
+    <div class="modal-dialog modal-fullscreen">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="myModalLabel"> Resultados</h5>
