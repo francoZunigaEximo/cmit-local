@@ -240,6 +240,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('itemsprestaciones/check-adjuntos', [ItemPrestacionesController::class, 'checkAdjunto'])->name('itemsprestaciones.checkAdjuntos');
     Route::get('itemsprestaciones/checkid', [ItemPrestacionesController::class, 'checkPrimeraCarga'])->name('itemsprestaciones.checkId');
     Route::get('itemsprestaciones/editModal', [ItemPrestacionesController::class, 'editModal'])->name('itemsprestaciones.editModal');
+    Route::get('itemsprestaciones/contador', [ItemPrestacionesController::class, 'contadorExamenes'])->name('itemsprestaciones.contador');
     Route::resource('itemsprestaciones', ItemPrestacionesController::class);
     Route::post('updateItem', [ItemPrestacionesController::class, 'updateItem'])->name('updateItem');
     Route::post('updateAsignado', [ItemPrestacionesController::class, 'updateAsignado'])->name('updateAsignado');
@@ -263,6 +264,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('marcarExamenAdjunto', [ItemPrestacionesController::class, 'marcarExamenAdjunto'])->name('marcarExamenAdjunto');
     Route::get('lstExamenes', [ItemPrestacionesController::class, 'lstExamenes'])->name('lstExamenes');
     Route::get('preExamenes', [ItemPrestacionesController::class, 'preExamenes'])->name('preExamenes');
+    
    
 
     //Rutas de FacturasdeVenta
@@ -301,7 +303,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('ordenesExamen', OrdenesExamenController::class);
 
     //Rutas de Examenes a Cuenta
-    Route::get('searchExCuenta', [ExamenesCuentaController::class, 'search'])->name('searchExCuenta');
+    Route::get('/examen-cuenta/buscar', [ExamenesCuentaController::class, 'search'])->name('searchExCuenta');
     Route::post('cambiarPago', [ExamenesCuentaController::class, 'cambiarPago'])->name('cambiarPago');
     Route::get('detallesExamenes', [ExamenesCuentaController::class, 'detalles'])->name('detallesExamenes');
     Route::post('eliminarExCuenta', [ExamenesCuentaController::class, 'delete'])->name('eliminarExCuenta');

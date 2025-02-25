@@ -9,6 +9,7 @@ $(document).ready(()=> {
     checkEstadoEnviar(ID);
     loadListAdjPrestacion();
     lstResultadosPrest(IDPACIENTE);
+
     
     $(document).on('change', '#empresa, #art, #TipoPrestacion', function(){
         let emp = $('#empresa').val(), art = $('#art').val();

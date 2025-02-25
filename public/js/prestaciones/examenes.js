@@ -5,6 +5,7 @@ $(document).ready(()=>{
     const valAbrir = [3, 4, 5], valCerrar = [0, 1, 2], valCerrarI = 3;
 
     cargarExamen();
+    contadorExamenes(ID);
 
     $('#exam').select2({
         placeholder: 'Seleccionar exámen...',
@@ -142,6 +143,7 @@ $(document).ready(()=>{
                             $('#exam').val([]).trigger('change.select2');
                             $('#addPaquete').val([]).trigger('change.select2');
                             cargarExamen();
+                            contadorExamenes(ID);
                             checkExamenes(ID);
                         }
 
@@ -221,6 +223,7 @@ $(document).ready(()=>{
                             $('#exam').val([]).trigger('change.select2');
                             $('#addPaquete').val([]).trigger('change.select2');
                             cargarExamen();
+                            contadorExamenes(ID);
                         }
                     }
                 });
@@ -340,6 +343,7 @@ $(document).ready(()=>{
                             $('#exam').val([]).trigger('change.select2');
                             $('#addPaquete').val([]).trigger('change.select2');
                             cargarExamen();
+                            contadorExamenes(ID);
                         }
 
                     }
@@ -399,6 +403,7 @@ $(document).ready(()=>{
                             $('#exam').val([]).trigger('change.select2');
                             $('#addPaquete').val([]).trigger('change.select2');
                             cargarExamen();
+                            contadorExamenes(ID);
                         }
 
                     }
@@ -459,6 +464,7 @@ $(document).ready(()=>{
     $('#modalExamen').on('hidden.bs.modal', function () {
         $('#listaExamenes').empty();
         cargarExamen(ID);
+        contadorExamenes(ID);
     });
 
     
@@ -493,6 +499,7 @@ $(document).ready(()=>{
                 $('#exam').val([]).trigger('change.select2');
                 $('#addPaquete').val([]).trigger('change.select2');
                 cargarExamen();
+                contadorExamenes(ID);
         },
             error: function(jqXHR){
                 preloader('off');
@@ -585,6 +592,7 @@ $(document).ready(()=>{
                 
                 let registros = response;
                 checkExamenes(ID);
+                contadorExamenes(ID);
                 
                 let filas = '';
 
@@ -1663,6 +1671,12 @@ $(document).ready(()=>{
         });
 
         return resultado;
+    }
+
+    function contadorExamenes(idPrestacion) {
+        $.get(contadorEx, {Id: idPrestacion}, function(response){
+            $('#countExamenes').empty().text(response);
+        });
     }
 
 

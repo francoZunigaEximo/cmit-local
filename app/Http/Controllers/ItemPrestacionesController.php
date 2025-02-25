@@ -1141,6 +1141,15 @@ class ItemPrestacionesController extends Controller
 
     }
 
+    public function contadorExamenes(Request $request)
+    {
+        $query = ItemPrestacion::where('IdPrestacion', $request->Id)->count();
+        if ($query) {
+            return response()->json($query);
+        }
+        
+    }
+
     private function generarCodigo(int $idprest, int $idex, int $idpac)
     {
         return 'A'.str_pad($idprest, 9, "0", STR_PAD_LEFT).str_pad($idex, 5, "0", STR_PAD_LEFT).str_pad($idpac, 7, "0", STR_PAD_LEFT).".pdf";

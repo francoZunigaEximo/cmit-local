@@ -353,7 +353,7 @@
                         </div>
                     </div>
 
-                    <div class="row text-left">
+                    <div class="row text-start">
                         <div class="col-auto">
                             <button type="button" class="btn btn-sm botonGeneral deleteExamenes"><i class="ri-delete-bin-2-line"></i>&nbsp;Eliminar</button>
                         </div>
@@ -368,6 +368,9 @@
                         </div>
                         <div class="col-auto">
                             <button type="button" class="btn btn-sm botonGeneral liberarExamenes">Liberar</button>
+                        </div>
+                        <div class="col-8 text-end">
+                            <span class="text-uppercase fw-bolder">Total de examenes: <span id="countExamenes">0</span></span>
                         </div>
                     </div>
 
@@ -1570,6 +1573,7 @@ const descarga = "@fileUrl('lectura')/AdjuntosPrestacion";
 const deleteAdjPrest = "{{ route('prestaciones.deleteAdjPres') }}";
 
 const eEnviarEspecial = "{{ route('prestaciones.reporteEspecial') }}";
+const contadorEx = "{{route('itemsprestaciones.contador')}}";
 
 //Select
 const selectTipoPrestacion = "{{ $prestacione->TipoPrestacion }}";
