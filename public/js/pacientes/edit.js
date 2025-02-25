@@ -108,7 +108,7 @@ $(document).ready(function(){
 
                     $('#provincia').append(nuevoOption);
                 },
-                error: function(xhr){
+                error: function(jqXHR){
                     preloader('off');
                     let errorData = JSON.parse(jqXHR.responseText);
                     checkError(jqXHR.status, errorData.msg);

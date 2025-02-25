@@ -326,6 +326,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('lstFacturadas', [ExamenesCuentaController::class, 'listadoUltimas'])->name('lstFacturadas');
     Route::get('saldoNoDatatable', [ExamenesCuentaController::class, 'saldoNoDatatable'])->name('saldoNoDatatable');
     Route::get('cantTotalDisponibles', [ExamenesCuentaController::class, 'disponibles'])->name('cantTotalDisponibles');
+    Route::get('/examenes-cuenta/disponibilidad', [ExamenesCuentaController::class, 'checkDisponibilidad'])->name('examenesCuenta.checkDisponibilidad');
     Route::resource('examenesCuenta', ExamenesCuentaController::class);
 
     //Rutas de Paquete de Estudio

@@ -1213,6 +1213,7 @@ const TOKEN = "{{ csrf_token() }}";
 
 const checkObs = "{{ route('checkObs') }}";
 const excelPrestaciones = "{{ route('prestaciones.excel') }}";
+const checkDisponibilidad = "{{ route('examenesCuenta.checkDisponibilidad') }}"
 
 $('#excel').click(function(e) {
     e.preventDefault();

@@ -829,6 +829,31 @@ class ExamenesCuentaController extends Controller
         return response()->json($examen);  
     }
 
+    public function checkDisponibilidad(Request $request)
+    {
+        if(!$this->hasPermission("examenCta_show")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
+
+        $examen = ExamenCuentaIt::join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
+            ->join('clientes', 'pagosacuenta.IdEmpresa', '=', 'clientes.Id')
+            ->join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
+            ->select(
+                'pagosacuenta.Id as Id',
+                'pagosacuenta_it.Obs as Precarga',
+                'examenes.Nombre as NombreExamen', 
+                //DB::raw('COUNT(pagosacuenta_it.IdExamen) as Cantidad')
+            )
+            ->where('pagosacuenta.IdEmpresa', $request->Id)
+            ->where('pagosacuenta_it.IdPrestacion', 0)
+            ->whereNot('pagosacuenta_it.Obs', 'provisorio')
+            ->orderBy('examenes.Nombre', 'Asc')
+            ->orderBy('pagosacuenta_it.Obs', 'Desc')
+            ->count();
+
+        return response()->json($examen);  
+    }
+
     public function listadoUltimas(Request $request)
     {
         if(!$this->hasPermission("examenCta_show")) {

@@ -188,8 +188,7 @@ $(document).ready(function () {
     });
 
     //Guardar FichaLaboral
-    $(document).on('click', '#guardarFicha', function(e){
-        e.preventDefault();
+    $(document).on('click', '#guardarFicha', function(){
 
         let paciente = ID,
             cliente = $('#selectClientes').val(),
@@ -266,56 +265,25 @@ $(document).ready(function () {
             return;
         }
 
-        preloader('on');
-        $.post(saveFichaAlta, {
-            paciente: paciente,
-            cliente: cliente,
-            art: art,
-            tareaRealizar: tareaRealizar,
-            tipoPrestacion: tipoPrestacion,
-            tipo: tipo,
-            pago: pago,
-            horario: horario,
-            observaciones: observaciones,
-            ultimoPuesto: ultimoPuesto,
-            puestoActual: puestoActual,
-            sectorActual: sectorActual,
-            ccosto: ccosto,
-            antiguedadPuesto: antiguedadPuesto,
-            fechaIngreso: fechaIngreso,
-            fechaEgreso: fechaEgreso,
-            antiguedadEmpresa: antiguedadEmpresa,
-            fechaPreocupacional: fechaPreocupacional,
-            fechaUltPeriod: fechaUltPeriod,
-            fechaExArt: fechaExArt,
-            Id: Id,
-            Spago: spago,
-            TipoF: tipoF,
-            SucursalF: sucursalF,
-            NumeroF: numeroF,
-            NumeroProvF: numeroProvF,
-            Autoriza: autoriza,
-            _token: TOKEN,
-            }) 
-            .done(function(response) {
+        async function verificarDisponibilidad(cliente, pago) {
+            let disponibilidad = await checkExCuentaDisponible(cliente);
+            data = disponibilidad === true && pago !== 'P';
+            preloader('on')
+            if (data) {
                 preloader('off');
-                toastr.success(response.msg);
-                mostrarFinanciador();
-                selectMedioPago();
-                selectorPago(pago, IDFICHA);
-                getMap(cliente, art);
-                setTimeout(() => {
-                    checkObservaciones();
-                }, 2000);
+                if (confirm('Tienes examenes a cuenta disponibles. ¿Estás seguro que deseas continuar?')) {
+                    
+                    saveFichaLaboral(paciente, cliente, art, tareaRealizar, tipoPrestacion, tipo, pago, horario, observaciones, ultimoPuesto, puestoActual, sectorActual, ccosto, antiguedadPuesto, fechaIngreso, fechaEgreso, antiguedadEmpresa, fechaPreocupacional, fechaUltPeriod, fechaExArt, Id, spago, tipoF, sucursalF, numeroF, numeroProvF, autoriza);
+                }else{
+                    e.stopPropagation();
+                }
+            }else{
+                preloader('off');
+                saveFichaLaboral(paciente, cliente, art, tareaRealizar, tipoPrestacion, tipo, pago, horario, observaciones, ultimoPuesto, puestoActual, sectorActual, ccosto, antiguedadPuesto, fechaIngreso, fechaEgreso, antiguedadEmpresa, fechaPreocupacional, fechaUltPeriod, fechaExArt, Id, spago, tipoF, sucursalF, numeroF, numeroProvF, autoriza);
+            }
+        }
 
-            })
-            .fail(function(jqXHR) {
-                preloader('off');
-                let errorData = JSON.parse(jqXHR.responseText);
-                checkError(jqXHR.status, errorData.msg);
-                return;
-                
-            });
+        verificarDisponibilidad(cliente, pago);  
     });
 
     //Calcular Antiguedad en la Empresa en FichaLaboral
@@ -647,10 +615,72 @@ $(document).ready(function () {
 
                     $('#alertaExCta').show();
                     $('#PagoLaboral, #Pago ').val('P');
+                    return true;
                 } else {
                     $('#alertaExCta').hide();
+                    return false;
                 }
             })
+    }
+
+    function saveFichaLaboral(...params) {
+        preloader('on');
+
+        $.post(saveFichaAlta, {
+            paciente: params[0],
+            cliente: params[1],
+            art: params[2],
+            tareaRealizar: params[3],
+            tipoPrestacion: params[4],
+            tipo: params[5],
+            pago: params[6],
+            horario: params[7],
+            observaciones: params[8],
+            ultimoPuesto: params[9],
+            puestoActual: params[10],
+            sectorActual: params[11],
+            ccosto: params[12],
+            antiguedadPuesto: params[13],
+            fechaIngreso: params[14],
+            fechaEgreso: params[15],
+            antiguedadEmpresa: params[16],
+            fechaPreocupacional: params[17],
+            fechaUltPeriod: params[18],
+            fechaExArt: params[19],
+            Id: params[20],
+            Spago: params[21],
+            TipoF: params[22],
+            SucursalF: params[23],
+            NumeroF: params[24],
+            NumeroProvF: params[25],
+            Autoriza: params[26],
+            _token: TOKEN,
+            }) 
+            .done(function(response) {
+                preloader('off');
+                toastr.success(response.msg);
+                mostrarFinanciador();
+                selectMedioPago();
+                selectorPago(params[6], IDFICHA);
+                getMap(params[1], params[2]);
+                setTimeout(() => {
+                    checkObservaciones();
+                }, 2000);
+
+            })
+            .fail(function(jqXHR) {
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);
+                checkError(jqXHR.status, errorData.msg);
+                return;
+                
+            });
+    }
+
+    async function checkExCuentaDisponible(id) {
+        $data = await $.get(checkDisponibilidad, {Id: id});
+        console.log("funcion: " + $data);
+        return $data > 0 ? true : false;
     }
 
     function marcarPago(pago) {
