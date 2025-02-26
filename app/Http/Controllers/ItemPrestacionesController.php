@@ -808,7 +808,9 @@ class ItemPrestacionesController extends Controller
             $examenes = [$examenes];
         }
 
-        foreach($examenes as $test) {
+        $examenes_filtrados = array_filter($examenes, 'is_numeric');
+
+        foreach($examenes_filtrados as $test) {
             if($this->adjuntoEfector($test) === 1 || $this->adjuntoInformador($test)) {
                 return response()->json(['msg' => 'No se puede eliminar el examen '.$test.' porque posee archivos adjuntos.Verifique'], 409);
             }

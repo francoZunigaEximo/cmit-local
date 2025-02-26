@@ -990,9 +990,11 @@ $(document).ready(()=>{
 
                 preloader('off');
                 let data = response.examenes,
-                    ids = data.map(function(item) {
-                    return item.Id;
-                  });
+                    ids = [];
+                console.log(data)
+                for (let i = 0; i < data.length; i++) {
+                    ids.push(data[i].Id);
+                }
                 saveExamen(ids, $('#idPrestacion').val());  
                 $('.addPaquete').val([]).trigger('change.select2');
             },
@@ -1057,16 +1059,15 @@ $(document).ready(()=>{
                         preloader('off');
                         var estados = [];
                         
-                        response.forEach(function(msg) {
-                            
+                        for (let i = 0; i < response.length; i++) {
+                            let msg = response[i];
                             let tipoRespuesta = {
                                 success: 'success',
                                 fail: 'info'
-                            }
+                            };
                             toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 });
                             estados.push(msg.estado);
-        
-                        });
+                        }
 
                         if(estados.includes('success')) {
                             $('#listaExamenes').empty();
@@ -1109,9 +1110,9 @@ $(document).ready(()=>{
 
         idExamen = [];
         if (Array.isArray(id)) {
-            $.each(id, function(index, item) {
-                idExamen.push(item);
-              });
+              for(let i = 0; i < id.length; i++){
+                idExamen.push(id[i]);
+              }
         }else{
             idExamen.push(id);
         }
@@ -1383,8 +1384,7 @@ $(document).ready(()=>{
                 preloader('off');
                 let data = await response.result;
 
-                $.each(data, function(index, d){
- 
+                for(let d = 0; d < data.length; d++){
                     let contenido =  `
                         <tr>
                             <td>${fechaCompleta(d.Fecha)}</td>
@@ -1394,7 +1394,7 @@ $(document).ready(()=>{
                         </tr>
                     `;
                     $('#privadoPrestaciones').append(contenido);
-                });
+                }
 
                 $('#lstPrivPrestaciones').fancyTable({
                     pagination: true,
