@@ -354,22 +354,18 @@
                     </div>
 
                     <div class="row text-start">
-                        <div class="col-auto">
+                        <div class="col-6 d-flex flex-wrap gap-2">
                             <button type="button" class="btn btn-sm botonGeneral deleteExamenes"><i class="ri-delete-bin-2-line"></i>&nbsp;Eliminar</button>
-                        </div>
-                        <div class="col-auto">
+                     
                             <button type="button" class="btn btn-sm botonGeneral bloquearExamenes"><i class="ri-forbid-2-line"></i>&nbsp;Anular</button>
-                        </div>
-                        <div class="col-auto">
+                      
                             <button type="button" class="btn btn-sm botonGeneral abrirExamenes">Abrir</button>
-                        </div>
-                        <div class="col-auto">
+                       
                             <button type="button" class="btn btn-sm botonGeneral adjuntoExamenes"><i class="ri-attachment-line"></i>&nbsp;Adjuntado</button>
-                        </div>
-                        <div class="col-auto">
+                        
                             <button type="button" class="btn btn-sm botonGeneral liberarExamenes">Liberar</button>
                         </div>
-                        <div class="col-8 text-end">
+                        <div class="col-6 d-flex justify-content-end align-items-center">
                             <span class="text-uppercase fw-bolder">Total de examenes: <span id="countExamenes">0</span></span>
                         </div>
                     </div>
