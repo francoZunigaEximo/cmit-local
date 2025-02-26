@@ -914,7 +914,14 @@ $(document).ready(()=> {
         $.get(loadlistadoAdjPres, {Id: ID})
             .done(function(response){
 
-                $.each(response, function(index, r){
+                for(let r = 0; r < response.length; r++){
+                
+                
+                }
+
+                for (let index = 0; index < response.length; index++) {
+                    let r = response[index];
+                    
                     let contenido = `
                         <tr>
                             <td>${r.Descripcion}</td>
@@ -934,9 +941,10 @@ $(document).ready(()=> {
                             </td>
                         </tr>
                     `;
-
+                
                     $('#adjPrestacion').append(contenido);
-                });
+                }
+                
                 
             })
             .fail(function(jqXHR){
@@ -958,7 +966,9 @@ $(document).ready(()=> {
 
           .done(function(response){
                 preloader('off');
-                $.each(response, function(index, data){
+                for(let index = 0; index < response.length; index++){
+                    let data = response[index];
+
                     let forNombre = (data.NombreExamen).replace(" ", "-");
                     let contenido = `
                         <div class="form-check mb-2">
@@ -970,7 +980,7 @@ $(document).ready(()=> {
                     `;
 
                     $('#estudios').append(contenido);
-                });
+                }
             })
             .fail(function(jqXHR){
                 preloader('off');
@@ -1116,8 +1126,9 @@ $(document).ready(()=> {
                 preloader('off');
                 let data = await response.result;
 
-                $.each(data, function(index, d){
- 
+                for(let index = 0; data.length > index; index++){
+                    let d = data[index];
+
                     let contenido =  `
                         <tr>
                             <td>${fechaCompleta(d.Fecha)}</td>
@@ -1127,11 +1138,11 @@ $(document).ready(()=> {
                         </tr>
                     `;
                     $('#privadoPrestaciones').append(contenido);
-                });
+                }
 
                 $('#lstPrivPrestaciones').fancyTable({
                     pagination: true,
-                    perPage: 15,
+                    perPage: 10,
                     searchable: false,
                     globalSearch: false,
                     sortable: false, 
@@ -1157,8 +1168,10 @@ $(document).ready(()=> {
                     $('.body-autorizado').append(contenido);
 
                 }else{
+                    for(let index = 0; autorizados.length > index; index++){
 
-                    $.each(autorizados, function(index, autorizado) {
+                        let autorizado = autorizados[index];
+
                         let contenido = `
                         <tr>
                             <td>${autorizado.Nombre} ${autorizado.Apellido}</td>
@@ -1167,6 +1180,14 @@ $(document).ready(()=> {
                         </tr>
                         `;
                         $('#autorizadosPres').append(contenido);
+                    }
+
+                    $("#lstAutorizados").fancyTable({
+                        pagination: true,
+                        perPage: 10,
+                        searchable: false,
+                        globalSearch: false,
+                        sortable: false, 
                     });
                 }
             },
@@ -1190,15 +1211,16 @@ $(document).ready(()=> {
 
                 if(response && response.length > 0){
 
-                    $.each(response, function(index, r) {
-                    
-                        contenido += `
-                        <tr>
-                            <td>${r.Precarga === '' ? '-' : r.Precarga}</td>
-                            <td>${r.NombreExamen}</td>
-                        </tr>
+                    for(let index = 0; response.length > index; index++){
+                        let r = response[index];
+                        let contenido = `
+                            <tr>
+                                <td>${r.Precarga === '' ? '-' : r.Precarga}</td>
+                                <td>${r.NombreExamen}</td>
+                            </tr>
                         `;
-                    });
+                        $('#lstSaldos').append(contenido);
+                    }
                 }else{
                     contenido = `
                         <tr>
@@ -1225,10 +1247,7 @@ $(document).ready(()=> {
     async function checkerIncompletos(idPrestacion)
     {
         if([null,'',0].includes(idPrestacion)) return;
-
-        $.get(await checkInc, {Id: idPrestacion}, function(){
-            console.log("Actualizados los estados");
-        });
+        $.get(await checkInc, {Id: idPrestacion});
     }
 
     function checkEstadoEnviar(id) {
@@ -1254,9 +1273,10 @@ $(document).ready(()=> {
             .done(function(response){
                 
                 preloader('off');
-                $.each(response, function(index, r){
 
-                    let icon = r.Evaluacion === 0 ? `<span class="custom-badge generalNegro">Antiguo</span>` : '',
+                for(let index = 0; response.length > index; index++){
+                    let r = response[index],
+                        icon = r.Evaluacion === 0 ? `<span class="custom-badge generalNegro">Antiguo</span>` : '',
                         evaluacion = r.Evaluacion === 0 ? '' : r.Evaluacion.slice(2),
                         calificacion = r.Calificacion ? r.Calificacion.slice(2) : '',
                         boton = r.Evaluacion !== 0 ? `<button data-id="${r.Id}" class="btn btn-sm iconGeneral verPrestacion" title="Ver">
@@ -1279,8 +1299,7 @@ $(document).ready(()=> {
                     `;
 
                     $('#lstResultadosPrestacion').append(contenido);
-
-                });
+                }
 
                 $("#listadoResultadosPrestacion").fancyTable({
                     pagination: true,
