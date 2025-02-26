@@ -126,17 +126,16 @@ $(document).ready(()=>{
                     success: function(response){
                         preloader('off');
                         var estados = [];
-                        
-                        response.forEach(function(msg) {
-                            
-                            let tipoRespuesta = {
-                                success: 'success',
-                                fail: 'info'
-                            }
-                            toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 });
-                            estados.push(msg.estado);
-        
-                        });
+
+                        for(let index = 0; index < response.length; index++){
+                            let msg = response[index],
+                                tipoRespuesta = {
+                                    success: 'success',
+                                    fail: 'info'
+                                }
+                                toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 });
+                                estados.push(msg.estado);
+                        }
 
                         if(estados.includes('success')) {
                             $('#listaExamenes').empty();
@@ -205,18 +204,16 @@ $(document).ready(()=>{
                         var estados = [];
                         
                         preloader('off')
-                        response.forEach(function(msg) {
-
-                            let tipoRespuesta = {
-                                success: 'success',
-                                fail: 'info'
-                            }
-                            
-                            toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 })
-                            
-                            estados.push(msg.estado)
-                            
-                        });
+                        for(let index = 0; index < response.length; index++){
+                            let msg = response[index],
+                                tipoRespuesta = {
+                                    success: 'success',
+                                    fail: 'info'
+                                }
+                           
+                            toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 });
+                            estados.push(msg.estado);
+                        }
                         
                         if(estados.includes('success')) {
                             $('#listaExamenes').empty();
@@ -265,16 +262,17 @@ $(document).ready(()=>{
                     success: function(response){
                         var estados = [];
                         preloader('off');
-                        response.forEach(function(msg) {
-                            
-                            let tipoRespuesta = {
-                                success: 'success',
-                                fail: 'info'
-                            }
+
+                        for(let index=0; index < response.length; index++){
+                            let msg = response[index],
+                                tipoRespuesta = {
+                                    success: 'success',
+                                    fail: 'info'
+                                }
                            
                             toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 });
                             estados.push(msg.estado);
-                        });
+                        }
 
                         if(estados.includes('success')) {
                             $('#listaExamenes').empty();
@@ -1554,17 +1552,16 @@ $(document).ready(()=>{
         if([null, undefined, ''].includes(data)) return;
         $('.listaGrupoEfector').empty();
 
-        $.each(data, function(index, examen) {
-
-            let contenido = `
+        for(let index = 0; index < data.length; index++) {
+            let examen = data[index],
+                contenido = `
                 <label class="list-group-item">
                     <input class="form-check-input me-1" type="checkbox" id="Id_multiAdj_${ examen.Id }" value="${examen.Id}" ${ examen.archivos_count > 0 ? 'disabled' : 'checked' }> 
                     ${ examen.archivos_count > 0 ? examen.NombreExamen + ' <i title="Con archivo adjunto" class="ri-attachment-line verde"></i>' : examen.NombreExamen}
                 </label>
             `;
-
             $('.listaGrupoEfector').append(contenido);
-    });
+        }
 
     }
 
@@ -1576,16 +1573,16 @@ $(document).ready(()=>{
         if([null, undefined, ''].includes(data)) return;
         
         $('.listaGrupoInformador').empty();
-            $.each(data, function(index, examen) {
-
-                let contenido = `
+        for(let index = 0; index < data.length; index++) {
+            let examen = data[index],
+                contenido = `
                     <label class="list-group-item">
                         <input class="form-check-input me-1" type="checkbox" id="Id_multiAdjInf_${ examen.Id }" value="${ examen.Id}" ${ examen.archivos_count > 0 ? 'disabled' : 'checked' }> 
                         ${ examen.archivos_count > 0 ? examen.NombreExamen + ' (' + examen.NombreProveedor + ') <i title="Con archivo adjunto" class="ri-attachment-line verde"></i>' : examen.NombreExamen + ' (' + examen.NombreProveedor + ')'}
                     </label>
                 `;
                 $('.listaGrupoInformador').append(contenido);
-            });
+        }
         
     }
 
