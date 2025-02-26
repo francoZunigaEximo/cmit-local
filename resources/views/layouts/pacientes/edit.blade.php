@@ -902,6 +902,13 @@
                                 </div>
                             </div>
 
+                            <div class="row">
+                                <div class="col-12 text-center mt-2">
+                                    <hr class="mt-2 mb-2 d-block">
+                                    <button type="button" id="finalizarWizzard" class="btn botonGeneral"><i class="ri-save-line"></i>Guardar</button>
+                                </div>
+                            </div>
+
                             <hr class="mt-3 mb-3">
 
                             <div class="row text-left">
@@ -997,12 +1004,7 @@
                                 </div>
                             </div>
 
-                            <div class="row">
-                                <div class="col-12 text-center mt-2">
-                                    <hr class="mt-2 mb-2 d-block">
-                                    <button type="button" id="finalizarWizzard" class="btn botonGeneral"><i class="ri-save-line"></i>Guardar</button>
-                                </div>
-                            </div>
+                            
                         </div>
                     </div>
                 </div>
