@@ -933,7 +933,7 @@ class ItemPrestacionesController extends Controller
         //     ->orderBy('itemsprestaciones.Fecha', 'ASC')
         //     ->groupBy('itemsprestaciones.Id')->get();
  
-        // return $result;
+        return $result;
    
     }
 
