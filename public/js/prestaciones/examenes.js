@@ -324,17 +324,17 @@ $(document).ready(()=>{
                     success: function(response){
                         var estados = [];
                         preloader('off');
-                        response.forEach(function(msg) {
-                            
-                            let tipoRespuesta = {
-                                success: 'success',
-                                fail: 'info'
-                            }
-                            
-                            toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 });
-                            estados.push(msg.estado);
-        
-                        });
+
+                        for(let index = 0; index < response.length; index++){
+                            let msg = response[index],
+                                tipoRespuesta = {
+                                    success: 'success',
+                                    fail: 'info'
+                                }
+
+                                toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 });
+                                estados.push(msg.estado);
+                        }
 
                         if(estados.includes('success')) {
                             $('#listaExamenes').empty();
@@ -470,9 +470,9 @@ $(document).ready(()=>{
 
         idExamen = [];
         if (Array.isArray(id)) {
-            $.each(id, function(index, item) {
-                idExamen.push(item);
-              });
+            for(let index = 0; index < id.length; index++) {
+                idExamen.push(id[index]);
+            }
         }else{
             idExamen.push(id);
         }
@@ -1417,13 +1417,13 @@ $(document).ready(()=>{
             $.get(await listGeneral, { proveedor: id, tipo: tipo })
                 .done(function (response) {
                     let data = response.resultados;
-
                     etiqueta.empty().append('<option value="">Elija una opción</option>');
 
-                    $.each(data, function (index, d) {
-                        let contenido = `<option value="${d.Id}">${d.NombreCompleto}</option>`;
-                        etiqueta.append(contenido);
-                    });
+                    for(let i = 0; i < data.length; i++) {
+                        let d = data[i],
+                            contenido = `<option value="${d.Id}">${d.NombreCompleto}</option>`;
+                            etiqueta.append(contenido);
+                    }
                 });
         }
     }
@@ -1431,13 +1431,16 @@ $(document).ready(()=>{
     async function listadoEModal(id){
         
         $('#listaefectores').empty();
-        let Estado = $('#ex-EstadoEx').val();
+        
         preloader('on');
         $.get(await paginacionGeneral, {Id: id, tipo: 'efector'})
             .done(function(response){
                 let data = response.resultado;
                 preloader('off');
-                $.each(data, function(index, d){
+
+                for(let index = 0; index < data.length; index++) {
+                    let d = data[index],
+                        Estado = $('#ex-EstadoEx').val();
 
                     let contenido = `
                         <tr>
@@ -1478,7 +1481,7 @@ $(document).ready(()=>{
                     `;
 
                     $('#listaefectores').append(contenido);
-                });
+                }
             })
     }
 
@@ -1491,56 +1494,61 @@ $(document).ready(()=>{
             .done(function(response){
                 let data = response.resultado;
                 preloader('off');
-                $.each(data, function(index, d){
 
-                    let contenido = `
-                        <tr>
-                            <td>${d.Nombre}</td>
-                            <td>${(![null, undefined, ''].includes(d.DescripcionI) ? d.DescripcionI : '')}</td>
-                            <td>
-                                <div class="d-flex justify-content-center align-items-center gap-2">
-                                    <div class="edit">
-                                        <a href="${descargaI}/${d.RutaI}" target="_blank">
-                                            <button type="button" class="btn btn-sm iconGeneral" title="Ver"><i class="ri-search-eye-line"></i></button>
-                                        </a>
-                                    </div>
-                                    <div class="download">
-                                        <a href="${descargaI}/${d.RutaI}" target="_blank" download>
-                                            <button type="button" class="btn btn-sm iconGeneral" title="Descargar"><i class="ri-download-2-line"></i></button>
-                                        </a>
-                                    </div>
-                                    ${(EstadoI === 'Cerrado') ? `
-                                    <div class="replace">
-                                        <button data-id="${d.IdI}" data-tipo="informador" data-bs-toggle="offcanvas" data-bs-target="#replaceAdjunto" class="btn btn-sm iconGeneral replaceAdjunto" title="Reemplazar archivo">
-                                            <i class="ri-file-edit-line"></i>
-                                        </button> 
-                                    </div>
-                                        `:``}
-                                    ${(EstadoI === 'Cerrado' || d.Anulado === 1) ? `
-                                    <div class="remove">
-                                        <button data-id="${d.IdI}" data-tipo="informador" class="btn btn-sm iconGeneral deleteAdjunto" title="Eliminar">
-                                            <i class="ri-delete-bin-2-line"></i>
-                                        </button>
-                                    </div>
-                                    ` : ''}
+                for(let index = 0; index < data.length; index++) {
+                    let d = data[index],
+                        contenido = `
+                    <tr>
+                        <td>${d.Nombre}</td>
+                        <td>${(![null, undefined, ''].includes(d.DescripcionI) ? d.DescripcionI : '')}</td>
+                        <td>
+                            <div class="d-flex justify-content-center align-items-center gap-2">
+                                <div class="edit">
+                                    <a href="${descargaI}/${d.RutaI}" target="_blank">
+                                        <button type="button" class="btn btn-sm iconGeneral" title="Ver"><i class="ri-search-eye-line"></i></button>
+                                    </a>
                                 </div>
-                            </td>
-                        </tr>
-                    `;
+                                <div class="download">
+                                    <a href="${descargaI}/${d.RutaI}" target="_blank" download>
+                                        <button type="button" class="btn btn-sm iconGeneral" title="Descargar"><i class="ri-download-2-line"></i></button>
+                                    </a>
+                                </div>
+                                ${(EstadoI === 'Cerrado') ? `
+                                <div class="replace">
+                                    <button data-id="${d.IdI}" data-tipo="informador" data-bs-toggle="offcanvas" data-bs-target="#replaceAdjunto" class="btn btn-sm iconGeneral replaceAdjunto" title="Reemplazar archivo">
+                                        <i class="ri-file-edit-line"></i>
+                                    </button> 
+                                </div>
+                                    `:``}
+                                ${(EstadoI === 'Cerrado' || d.Anulado === 1) ? `
+                                <div class="remove">
+                                    <button data-id="${d.IdI}" data-tipo="informador" class="btn btn-sm iconGeneral deleteAdjunto" title="Eliminar">
+                                        <i class="ri-delete-bin-2-line"></i>
+                                    </button>
+                                </div>
+                                ` : ''}
+                            </div>
+                        </td>
+                    </tr>
+                `;
 
-                    $('#listainformadores').append(contenido);
-                });
+                $('#listainformadores').append(contenido);     
+                }     
             })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            });
     }
 
     function ocultarCampos() {
         const elements = document.querySelectorAll('.ex-abrir, .ex-cerrar, .ex-asignar, .ex-liberar, .ex-asignarI, .ex-liberarI, .ex-cerrarI, .ex-adjuntarEfector, .ex-adjuntarInformador');
 
-        elements.forEach(element => {
-            element.style.display = 'none';
-        });
-
-
+        for(let i = 0; i < elements.length; i++) {
+            elements[i].style.display = 'none';
+        }
     }
 
     function multiExEfector(data) {
@@ -1562,7 +1570,6 @@ $(document).ready(()=>{
             `;
             $('.listaGrupoEfector').append(contenido);
         }
-
     }
 
     function multiExInformador(data) {

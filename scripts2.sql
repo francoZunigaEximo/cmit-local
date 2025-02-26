@@ -919,5 +919,60 @@ npm install
 npm laravel-vite-plugin
 
 -- npm install toastr jquery sweetalert select2 datatables.net datatables.net-dt
-
+|
 ALTER TABLE mapas ADD COLUMN FechaAsignacion DATE NULL;
+
+CREATE PROCEDURE getExamenes(IN tipo VARCHAR(50), IN Identifica INT, IN IdExamen VARCHAR(255))
+BEGIN
+	SELECT 
+	    examenes.Nombre as Nombre,
+	    examenes.Id as IdExamen,
+	    examenes.Adjunto as ExaAdj,
+	    examenes.Informe as Informe,
+	    informador.InfAdj as InfAdj,
+	    examenes.NoImprime as ExaNI,
+	    CONCAT(efector.Apellido, " ", efector.Nombre) as EfectorFullName, 
+	    CONCAT(informador.Apellido, " ", informador.Nombre) as InformadorFullName,
+	    CONCAT(datosEfector.Apellido, " ", datosEfector.Nombre) as DatosEfectorFullName,
+	    CONCAT(datosInformador.Apellido, " ", datosInformador.Nombre) as DatosInformadorFullName,
+	    efector.Apellido as EfectorApellido,
+	    informador.Apellido as InformadorApellido,
+	    datosEfector.Apellido as DatosEfectorApellido,
+	    datosInformador.Apellido as DatosInformadorApellido,
+	    efector.RegHis as RegHis,
+	    itemsprestaciones.Ausente as Ausente,
+	    itemsprestaciones.Forma as Forma,
+	    itemsprestaciones.Incompleto as Incompleto,
+	    itemsprestaciones.SinEsc as SinEsc,
+	    itemsprestaciones.Devol as Devol,
+	    itemsprestaciones.CAdj as CAdj,
+	    itemsprestaciones.CInfo as CInfo,
+	    itemsprestaciones.Id as IdItem,
+	    itemsprestaciones.Anulado as Anulado,
+	    (SELECT COUNT(*) FROM archivosefector WHERE IdEntidad = itemsprestaciones.Id) as archivos,
+	    (SELECT COUNT(*) FROM archivosinformador WHERE IdEntidad = itemsprestaciones.Id) as archivosI,
+	   efector.Id as IdEfector,
+	   informador.Id as IdInformador,
+	   userEfector.id as IdUserEfector,
+	   userInformador.id as IdUserInformador
+	FROM itemsprestaciones
+	LEFT JOIN profesionales as efector ON itemsprestaciones.IdProfesional = efector.Id
+	LEFT JOIN users as userEfector ON efector.Id = userEfector.profesional_id
+	LEFT JOIN datos as datosEfector ON userEfector.datos_id = datosEfector.Id
+	LEFT JOIN profesionales as informador ON itemsprestaciones.IdProfesional2 = informador.Id
+	LEFT JOIN users as userInformador ON informador.Id = userInformador.profesional_id
+	LEFT JOIN datos as datosInformador ON userInformador.datos_id = datosInformador.Id
+	LEFT JOIN examenes ON itemsprestaciones.IdExamen = examenes.Id
+	LEFT JOIN proveedores as proveedor2 ON examenes.IdProveedor = proveedor2.Id
+	JOIN prestaciones ON itemsprestaciones.IdPrestacion = prestaciones.Id
+	LEFT JOIN archivosefector ON itemsprestaciones.Id = archivosefector.IdEntidad
+	LEFT JOIN archivosinformador ON itemsprestaciones.Id = archivosinformador.IdEntidad
+	WHERE 
+		(tipo != 'listado' 
+         OR (tipo = 'listado' 
+             AND FIND_IN_SET(examenes.Id, IdExamen) > 0 
+             AND itemsprestaciones.IdPrestacion = Identifica))
+	ORDER BY efector.IdProveedor ASC, examenes.Nombre ASC, itemsprestaciones.Fecha ASC;
+END //
+
+DELIMITER ;
