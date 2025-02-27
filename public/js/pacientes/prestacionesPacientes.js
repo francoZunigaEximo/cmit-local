@@ -1,12 +1,10 @@
-$(document).ready(()=>{
+$(function(){
 
-    var IdNueva;
+    let IdNueva, empresaInput = $('#selectClientes').val(), artInput = $('#selectArt').val(), hoy = new Date().toLocaleDateString('en-CA'), precarga = $('#tipoPrestacionPres').val();
     
-    var empresaInput = $('#selectClientes').val(), artInput = $('#selectArt').val();
-    let hoy = new Date().toLocaleDateString('en-CA'), precarga = $('#tipoPrestacionPres').val();
     $('#Fecha, #FechaN').val(hoy);
-
     $('#siguienteExCta, .seleccionExCta').hide();
+    
     precargaTipoPrestacion(precarga);
     getMap(empresaInput, artInput);
     getListado(null);
@@ -86,8 +84,7 @@ $(document).ready(()=>{
             },
             success: function(response){
                 preloader('off');
-                let cliente = response.cliente;
-                let clienteArt = response.clienteArt;
+                let cliente = response.cliente, clienteArt = response.clienteArt;
                 
                 $.ajax({
                     url: savePrestacion,
@@ -137,14 +134,12 @@ $(document).ready(()=>{
     });
 
     //Buscador de prestaciones en Pacientes
-    $('#buscarPrestPaciente').on('keypress', function(event){
+    $('#buscarPrestPaciente').on('keypress', function(e){
 
-        if (event.keyCode === 13){
-            event.preventDefault();
-            
+        if (e.keyCode === 13){
+            e.preventDefault();
             let buscar = $(this).val();
-            $('#grillaPacientes').empty();
-            $('#grillaPacientes').append(getListado(buscar));
+            $('#grillaPacientes').empty().append(getListado(buscar));
         }
     });
 
@@ -220,12 +215,10 @@ $(document).ready(()=>{
         }); 
     });
 
-    $(document).on('keydown', function(event) {
-        if (event.keyCode === 27) {
-            event.preventDefault();
-
+    $(document).on('keydown', function(e) {
+        if (e.keyCode === 27) {
+            e.preventDefault();
             $('#buscar').val(" ");
-
             window.location.reload();
         }
     });
@@ -244,8 +237,7 @@ $(document).ready(()=>{
 
         if(['B','C', ''].includes(pago)) {
             
-            $('.ultimasFacturadas, .examenesDisponibles').hide();
-            $('#siguienteExCta').hide();
+            $('.ultimasFacturadas, .examenesDisponibles, #siguienteExCta').hide();
             $('#guardarPrestacion').show();
         }else{
             preloader('on');
