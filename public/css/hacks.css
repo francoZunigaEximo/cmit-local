@@ -784,3 +784,7 @@ tr.enlace-negro button.btn {
 tr.enlace-negro button.btn i {
     color: black !important;
 }
+
+:root {
+	--vz-border-color: #887c78 !important;
+}
