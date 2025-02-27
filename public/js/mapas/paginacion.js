@@ -192,13 +192,13 @@ $(document).ready(()=>{
                             resultado = $(row).addClass('fondo-amarillo');
                             break;
                         case (totalDias >= 1 && totalDias <= 10 && data.eEnviado === 0):
-                            resultado = $(row).addClass('fondo-naranja');
+                            resultado = $(row).addClass('fondo-naranja enlace-blanco');
                             break;
                         case (totalDias <= 0 && data.eEnviado === 0):
-                            resultado = $(row).addClass('fondo-rojo');
+                            resultado = $(row).addClass('fondo-rojo enlace-blanco');
                             break;
                         case (data.contadorPrestaciones > 0 && data.contadorPrestaciones === data.cdorEEnviados):
-                            resultado = $(row).addClass('fondo-verde');
+                            resultado = $(row).addClass('fondo-verde enlace-blanco');
                             break;
                     }
                 

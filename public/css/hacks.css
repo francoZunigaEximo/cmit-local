@@ -207,6 +207,7 @@ label {
 
 .fondo-amarillo {
 	background-color: yellow;
+	color: black;
 }
 
 .fondo-blanco {
@@ -766,4 +767,20 @@ table th {
 
 .navbar-menu {
 	position:fixed !important;
+}
+
+tr.enlace-blanco button.btn {
+    color: white !important;
+}
+
+tr.enlace-blanco button.btn i {
+    color: white !important;
+}
+
+tr.enlace-negro button.btn {
+    color: black !important;
+}
+
+tr.enlace-negro button.btn i {
+    color: black !important;
 }
