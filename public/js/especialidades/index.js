@@ -9,7 +9,7 @@ $(function() {
         });
 
         if (ids.length == 0) {
-            toastr.warning("Debe seleccionar alguna especialidad para generar el reporte");
+            toastr.warning("Debe seleccionar alguna especialidad para generar el reporte", "", {timeOut: 1000});
             return;
         }
 
@@ -29,7 +29,7 @@ $(function() {
                     success: function(response) {
                         preloader('off');
                         createFile("xlsx", response.filePath, generarCodigoAleatorio() + '_reporte');
-                        toastr.success(response.msg);
+                        toastr.success(response.msg, '', {timeOut: 1000});
                     
                     },                    
                     error: function(jqXHR) {
@@ -53,7 +53,7 @@ $(function() {
         });
 
         if (ids.length === 0) {
-            toastr.warning("Debe seleccionar al menos una especialidad para la baja múltiple");
+            toastr.warning("Debe seleccionar al menos una especialidad para la baja múltiple", "", {timeOut: 1000});
             return; 
         }
 
@@ -73,7 +73,7 @@ $(function() {
                     },
                     success: function(response) {
                         preloader('off');
-                        toastr.success(response.msg);
+                        toastr.success(response.msg, '', {timeOut: 1000});
                         $('#listaEspecialidades').DataTable().draw(false);
                     },
                     error: function(xhr) {
@@ -105,7 +105,7 @@ $(function() {
                 $.post(bajaEspecialidad, {_token: TOKEN, Id: especialidad})
                 .done(function(response){
                     preloader('off');
-                    toastr.success(response.msg);
+                    toastr.success(response.msg, '', {timeOut: 1000});
                     setTimeout(()=>{
                         $('#listaEspecialidades').DataTable().draw(false);
                     },3000);

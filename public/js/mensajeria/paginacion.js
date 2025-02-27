@@ -1,4 +1,4 @@
-$(document).ready(function(){
+$(function(){
  
     $(document).on('click', '.buscar', function(e){
 
@@ -13,7 +13,7 @@ $(document).ready(function(){
             bloqueado = $('#bloqueado').val();
 
         if([null, '', 0].includes(fechaHasta) || (![null, '', 0].includes(fechaDesde) && [null, '', 0].includes(fechaHasta))) {
-            toastr.warning("La fecha hasta es obligatoria. Tampoco puede faltar si la fecha desde esta incluida");
+            toastr.warning("La fecha hasta es obligatoria. Tampoco puede faltar si la fecha desde esta incluida", "", {timeOut: 1000});
             return;
         }
 

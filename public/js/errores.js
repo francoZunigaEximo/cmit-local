@@ -15,33 +15,33 @@ function checkError(status, msg = 'Ha ocurrido un error') {
     switch(status) {
         case 400:
             msg = 
-            toastr[errores[status][1]](msg, errores[status][0]);
+            toastr[errores[status][1]](msg, errores[status][0],'',{timeOut: 1000});
             break;
         case 401:
-            toastr[errores[status][1]](msg, errores[status][0]);
+            toastr[errores[status][1]](msg, errores[status][0],'',{timeOut: 1000});
             break;
         case 403:
-            toastr[errores[status][1]](msg, errores[status][0]);
+            toastr[errores[status][1]](msg, errores[status][0],'',{timeOut: 1000});
             break;
         case 404:
-            toastr[errores[status][1]](msg, errores[status][0]);
+            toastr[errores[status][1]](msg, errores[status][0],'',{timeOut: 1000});
             break;
         case 405:
-            toastr[errores[status][1]](msg, errores[status][0]);
+            toastr[errores[status][1]](msg, errores[status][0],'',{timeOut: 1000});
             break;
         case 409:
-            toastr[errores[status][1]](msg, errores[status][0]);
+            toastr[errores[status][1]](msg, errores[status][0],'',{timeOut: 1000});
             break;
         case 500:
-            toastr[errores[status][1]](msg, errores[status][0]);
+            toastr[errores[status][1]](msg, errores[status][0],'',{timeOut: 1000});
             break;
         case 503:
-            toastr[errores[status][1]](msg, errores[status][0]);
+            toastr[errores[status][1]](msg, errores[status][0],'',{timeOut: 1000});
             break;
         case 504:
-            toastr[errores[status][1]](msg, errores[status][0]);
+            toastr[errores[status][1]](msg, errores[status][0],'',{timeOut: 1000});
             break;
         default:
-            toastr.error('Ha ocurrido un error inesperado');
+            toastr.error('Ha ocurrido un error inesperado','',{timeOut: 1000});
     }
 }

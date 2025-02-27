@@ -1,11 +1,11 @@
-$(document).ready(function(){
+$(function(){
 
     $(document).on('click', '.editar', function(){
 
         let id = $(this).data('id');
    
         if([null, undefined, ''].includes(id)) {
-            toastr.warning("No hay ningún modelo para editar");
+            toastr.warning("No hay ningún modelo para editar", "", {timeOut: 1000});
             return;
         }
 
@@ -17,7 +17,7 @@ $(document).ready(function(){
         let id = $(this).data('id');
 
         if([null, undefined, ''].includes(id)) {
-            toastr.warning("No hay ningún modelo para eliminar");
+            toastr.warning("No hay ningún modelo para eliminar", "", {timeOut: 1000});
             return;
         }
 
@@ -32,7 +32,7 @@ $(document).ready(function(){
                 $.get(eliminarModelo, {Id: id})
                     .done(function(response){
                         preloader('off');
-                        toastr.success(response.msg);
+                        toastr.success(response.msg, '', {timeOut: 1000});
                         $('#listadoModeloMsj').DataTable().clear().draw(false);
                         
                     })

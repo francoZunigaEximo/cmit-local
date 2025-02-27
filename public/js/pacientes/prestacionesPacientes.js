@@ -50,7 +50,7 @@ $(document).ready(()=>{
             });
 
             if(ids.length === 0) {
-                toastr.warning("Debe seleccionar un examen para registrar la prestación");
+                toastr.warning("Debe seleccionar un examen para registrar la prestación",'',{timeOut: 1000});
                 return;
             }
         }
@@ -68,12 +68,12 @@ $(document).ready(()=>{
             NroFactProv = $('#NroFactProv').val();
             
         if (['', null].includes(tipoPrestacion)) {
-            toastr.warning('El tipo de prestación no puede ser un campo vacío');
+            toastr.warning('El tipo de prestación no puede ser un campo vacío','', {timeOut: 1000});
             return;
         }
 
         if (tipoPrestacion === 'ART' && (mapa == '0' || mapa === '')){
-            toastr.warning('Debe seleccionar un mapa vigente para continuar si su prestacion es ART');
+            toastr.warning('Debe seleccionar un mapa vigente para continuar si su prestacion es ART','', {timeOut: 1000});
             return;
         }
         
@@ -111,7 +111,7 @@ $(document).ready(()=>{
                         _token: TOKEN
                     },
                     success: function(response){
-                        toastr.success(response.msg);
+                        toastr.success(response.msg,'',{timeOut: 1000});
                         $('.nuevaPrestacion, .listadoExCta, .seleccionExCta').hide();
                         $('.prestacionLimpia').show();
 
@@ -168,7 +168,7 @@ $(document).ready(()=>{
                     },
                     success: function(response) {
                         preloader('off');
-                        toastr.success(response.msg);
+                        toastr.success(response.msg,'',{timeOut: 1000});
                         cambioEstadoBlock();
                     },
                     error: function(jqXHR) {
@@ -205,7 +205,7 @@ $(document).ready(()=>{
                     },
                     success: function(response) {
                         preloader('off');
-                        toastr.success(response.msg);
+                        toastr.success(response.msg,'',{timeOut: 1000});
                         cambioEstadoDown();
                         getListado(null);
                     },
@@ -321,7 +321,7 @@ $(document).ready(()=>{
 
         if([null,''].includes(examen)) {
             
-            toastr.warning('Debe seleccionar un exámen');
+            toastr.warning('Debe seleccionar un exámen','',{timeOut: 1000});
             return;
         }
 
@@ -348,7 +348,7 @@ $(document).ready(()=>{
         });
 
         if(ids.length === 0 && checkAll === false) {
-            toastr.warning("Debe seleccionar un examen para añadirlo a la prestación");
+            toastr.warning("Debe seleccionar un examen para añadirlo a la prestación",'',{timeOut: 1000});
             return;
         }
 
@@ -368,7 +368,7 @@ $(document).ready(()=>{
         let ids = $('#listEdicion input[name="Id_exa"]:checked'), checkAll = $('#checkAllEx').prop('checked');
     
         if(ids.length === 0 && checkAll === false) {
-            toastr.warning("Debe seleccionar un exámen para sacarlo del listado");
+            toastr.warning("Debe seleccionar un exámen para sacarlo del listado",'',{timeOut: 1000});
             return;
         }
     
@@ -376,7 +376,7 @@ $(document).ready(()=>{
             $(this).closest('tr').remove();
         });
 
-        toastr.success("Se elimino todo correctamente");
+        toastr.success("Se elimino todo correctamente",'',{timeOut: 1000});
     });
     
 
@@ -397,7 +397,7 @@ $(document).ready(()=>{
                         if (nombreExamen === r.NombreExamen) {
                             preloader('off');
                             existe = true;
-                            toastr.warning("No pueden haber dos examenes iguales en una prestación")
+                            toastr.warning("No pueden haber dos examenes iguales en una prestación",'',{timeOut: 1000});
                             return false; 
                         }
 
@@ -873,7 +873,7 @@ $(document).ready(()=>{
         ];
 
         if (verificar.every(val => !val || (Array.isArray(val) && val.length === 0) || (typeof val === 'object' && Object.keys(val).length === 0))) {
-            toastr.warning('Debe seleccionar alguna opción para poder imprimir los reportes');
+            toastr.warning('Debe seleccionar alguna opción para poder imprimir los reportes','',{timeOut: 1000});
             return;
         }
         preloader('on');
@@ -881,7 +881,7 @@ $(document).ready(()=>{
             .done(function(response){
                 preloader('off');
                 createFile("pdf", response.filePath, response.name);
-                toastr.success(response.msg);
+                toastr.success(response.msg,'',{timeOut: 1000});
             })
             .fail(function(jqXHR){
                 preloader('off');
@@ -974,7 +974,7 @@ $(document).ready(()=>{
         let paquete = $('#paquetes').val();
         
         if([null, undefined, ''].includes(paquete)){
-            toastr.warning("Debe seleccionar un paquete para poder añadirlo en su totalidad");
+            toastr.warning("Debe seleccionar un paquete para poder añadirlo en su totalidad",'',{timeOut: 1000});
             return;
         }
         preloader('on');
@@ -1031,12 +1031,12 @@ $(document).ready(()=>{
         }
 
         if (tieneAdjunto) {
-            toastr.warning('El o los examenes seleccionados tienen un reporte adjuntado. El mismo no se podrá eliminar.', 'Atención');
+            toastr.warning('El o los examenes seleccionados tienen un reporte adjuntado. El mismo no se podrá eliminar.', 'Atención', { timeOut: 10000 });
             return;
         }
 
         if(ids.length === 0 && checkAll === false){
-            toastr.warning('No hay examenes seleccionados', 'Atención');
+            toastr.warning('No hay examenes seleccionados', 'Atención', { timeOut: 10000 });
             return;
         }  
     
@@ -1090,7 +1090,7 @@ $(document).ready(()=>{
         let id = $("#exam").val();
         
         if(['', null, undefined].includes(id)) {
-            toastr.warning("Debe seleccionar un examen para poder añadirlo a la lista", "Atención");
+            toastr.warning("Debe seleccionar un examen para poder añadirlo a la lista", "Atención", { timeOut: 1000 });
             return;
         }
         saveExamen(id, $('#idPrestacion').val());
@@ -1118,7 +1118,7 @@ $(document).ready(()=>{
         }
 
         if (idExamen.length === 0) {
-            toastr.warning("No existe el exámen o el paquete no contiene examenes", "Atención");
+            toastr.warning("No existe el exámen o el paquete no contiene examenes", "Atención", { timeOut: 1000 });
             return;
         }
         preloader('on');
@@ -1163,7 +1163,7 @@ $(document).ready(()=>{
                 clearUrl = url.replace(/\/pacientes\/.*/, ''),
                 redireccionar =  clearUrl + '/noticias';
 
-                toastr.success(response.msg);
+                toastr.success(response.msg,'',{timeOut: 1000});
                 setTimeout(() => {
                     window.location.href = redireccionar;
                 }, 2000);
@@ -1280,7 +1280,7 @@ $(document).ready(()=>{
         }
 
         if(ids.length === 0 && checkAll === false){
-            toastr.warning('No hay examenes seleccionados', 'Atención');
+            toastr.warning('No hay examenes seleccionados', 'Atención', { timeOut: 10000 });
             return;
         }
     
@@ -1355,7 +1355,7 @@ $(document).ready(()=>{
         let comentario = $('#Comentario').val();
 
         if(comentario === ''){
-            toastr.warning('La observación no puede estar vacía');
+            toastr.warning('La observación no puede estar vacía','',{timeOut: 1000});
             return;
         }
 
@@ -1364,7 +1364,7 @@ $(document).ready(()=>{
         $.post(savePrivComent, {_token: TOKEN, Comentario: comentario, IdEntidad: idp, obsfasesid: 2})
             .done(function(){
                 preloader('off');
-                toastr.success('Se ha generado la observación correctamente');
+                toastr.success('Se ha generado la observación correctamente','',{timeOut: 1000});
 
                 setTimeout(() => {
                     $('#privadoPrestaciones').empty();

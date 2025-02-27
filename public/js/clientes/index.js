@@ -1,4 +1,4 @@
-$(document).ready(function(){
+$(function(){
 
     const tabla = "#listaClientes";
 
@@ -11,7 +11,7 @@ $(document).ready(function(){
         });
 
         if (ids.length === 0) {
-            toastr.warning('Debe seleccionar al menos un cliente para la baja múltiple');
+            toastr.warning('Debe seleccionar al menos un cliente para la baja múltiple', '', { timeOut: 1000 });
             return; 
         }
 
@@ -33,7 +33,7 @@ $(document).ready(function(){
                         ids: ids
                     },
                     success: function(response) {
-                        toastr.success(response.msg);
+                        toastr.success(response.msg, '', { timeOut: 1000 });
                         $('#listaClientes').DataTable().ajax.reload(function() {
                             $('#listaClientes tbody').show();
                             $(".dataTables_processing").hide();
@@ -62,7 +62,7 @@ $(document).ready(function(){
         });
 
         if(ids.length === 0) {
-            toastr.warning('Debes seleccionar al menos un cliente para exportar.');
+            toastr.warning('Debes seleccionar al menos un cliente para exportar.', '', { timeOut: 1000 });
             return;
         }
 
@@ -122,7 +122,7 @@ $(document).ready(function(){
 
                 $.post(baja, {_token: TOKEN, Id: cliente})
                 .done(function(response){
-                    toastr.success(response.msg);
+                    toastr.success(response.msg, '', {timeOut: 1000});
                     
                     $('#listaClientes').DataTable().ajax.reload(function(){
                         $('#listaClientes tbody').show();

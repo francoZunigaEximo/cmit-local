@@ -9,7 +9,7 @@ $(document).ready(function(){
         });
 
         if (ids.length === 0) {
-            toastr.warning("Debe seleccionar al menos un paciente para la baja múltiple");
+            toastr.warning("Debe seleccionar al menos un paciente para la baja múltiple",'',{timeOut: 1000});
             return; 
         }
 
@@ -50,8 +50,7 @@ $(document).ready(function(){
         });
     });
 
-
-    $('#excel').click(function(e) {
+    $(dpcument).on('click', '#excel', function(e) {
         e.preventDefault();
 
         let ids = [];
@@ -60,7 +59,7 @@ $(document).ready(function(){
         });
 
         if (ids.length === 0) {
-            toastr.warning('Debes seleccionar al menos un paciente para exportar.');
+            toastr.warning('Debes seleccionar al menos un paciente para exportar.','',{timeOut: 1000});
             return;
         }
 

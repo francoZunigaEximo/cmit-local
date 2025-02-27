@@ -9,7 +9,7 @@ $(function() {
             prestacion = $('#prestacion').val();
 
         if ((fechaDesde === '' || fechaHasta === '') && prestacion === '') {
-            toastr.warning("Las fechas son obligatorias", "Atención");
+            toastr.warning("Las fechas son obligatorias", "Atención", {timeOut: 1000});
             return;
         }
 
@@ -26,7 +26,7 @@ $(function() {
         });
 
         if (especialidad === '') {
-            toastr.warning("Debe seleccionar una especialidad");
+            toastr.warning("Debe seleccionar una especialidad",'',{timeOut: 1000});
             return;
         }
 

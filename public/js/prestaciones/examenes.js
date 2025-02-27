@@ -1,4 +1,4 @@
-$(document).ready(()=>{
+$(function(){
 
     let idExamen = [];
 
@@ -52,7 +52,7 @@ $(document).ready(()=>{
         let paquete = $('#paquetes').val();
         
         if([null, undefined, ''].includes(paquete)){
-            toastr.warning("Debe seleccionar un paquete para poder añadirlo en su totalidad");
+            toastr.warning("Debe seleccionar un paquete para poder añadirlo en su totalidad",'',{timeOut: 1000});
             return;
         }
         preloader('on');
@@ -104,7 +104,7 @@ $(document).ready(()=>{
         }
 
         if(ids.length === 0 && checkAll === false){
-            toastr.warning('No hay examenes seleccionados');
+            toastr.warning('No hay examenes seleccionados','',{timeOut: 1000});
             return;
         }  
     
@@ -181,7 +181,7 @@ $(document).ready(()=>{
         }
 
         if(ids.length === 0 && checkAll === false){
-            toastr.warning('No hay examenes seleccionados');
+            toastr.warning('No hay examenes seleccionados','',{timeOut: 1000});
             return;
         }
     
@@ -240,7 +240,7 @@ $(document).ready(()=>{
         let checkAll = $('#checkAllExamenes').prop('checked');
 
         if(ids.length === 0 && checkAll === false){
-            toastr.warning('No hay examenes seleccionados');
+            toastr.warning('No hay examenes seleccionados','',{timeOut: 1000});
             return;
         }
 
@@ -302,7 +302,7 @@ $(document).ready(()=>{
         let checkAll = $('#checkAllExamenes').prop('checked');
 
         if(ids.length === 0 && checkAll === false){
-            toastr.warning('No hay examenes seleccionados');
+            toastr.warning('No hay examenes seleccionados','',{timeOut: 1000});
             return;
         }
 
@@ -363,7 +363,7 @@ $(document).ready(()=>{
         let checkAll = $('#checkAllExamenes').prop('checked');
 
         if(ids.length === 0 && checkAll === false){
-            toastr.warning('No hay examenes seleccionados');
+            toastr.warning('No hay examenes seleccionados','',{timeOut: 1000});
             return;
         }
 
@@ -416,7 +416,7 @@ $(document).ready(()=>{
         let id = $("#exam").val();
         
         if(['', null, undefined].includes(id)) {
-            toastr.warning("Debe seleccionar un examen para poder añadirlo a la lista");
+            toastr.warning("Debe seleccionar un examen para poder añadirlo a la lista",'',{timeOut: 1000});
             return;
         }
         saveExamen(id);
@@ -478,7 +478,7 @@ $(document).ready(()=>{
         }
 
         if (idExamen.length === 0) {
-            toastr.warning("No existe el exámen o el paquete no contiene examenes");
+            toastr.warning("No existe el exámen o el paquete no contiene examenes",'',{timeOut: 1000});
             return;
         }
         preloader('on');
@@ -521,7 +521,7 @@ $(document).ready(()=>{
             },
             success: function(response){
                 preloader('off');
-                toastr.success(response.msg);
+                toastr.success(response.msg,'',{timeOut: 1000});
 
                 let fila = $('td#' + item).closest('tr'), 
                     span= fila.find('span#' + opcion.toLowerCase()),
@@ -888,7 +888,7 @@ $(document).ready(()=>{
                 $.post(updateItem, {Id : id, _token: TOKEN, CAdj: lista[cadj], Para: 'abrir' })
                     .done(function(response){
                         preloader('off');
-                        toastr.success('Se ha realizado la acción correctamente');
+                        toastr.success('Se ha realizado la acción correctamente','',{timeOut: 1000});
                         loadModalExamen(response.data.Id);
                         
                     })
@@ -923,7 +923,7 @@ $(document).ready(()=>{
                         $.post(updateItem, {Id : id, _token: TOKEN, CAdj: listaE[cadj], Para: who })
                             .done(function(response){
                                 preloader('off');
-                                toastr.success('Se ha cerrado al efector correctamente');
+                                toastr.success('Se ha cerrado al efector correctamente','',{timeOut: 1000});
                                 loadModalExamen(response.data.Id);
                             })
                             .fail(function(jqXHR){
@@ -949,7 +949,7 @@ $(document).ready(()=>{
                                 preloader('off');
                                 let query = response.data;
 
-                                toastr.success('Se ha cerrado al informador correctamente');
+                                toastr.success('Se ha cerrado al informador correctamente','',{timeOut: 1000});
                                 loadModalExamen(query.Id);
                                 
                             })
@@ -973,7 +973,7 @@ $(document).ready(()=>{
                 check = (who === 'asignar') ? $('#ex-efectores').val() : $('#ex-informadores').val();
     
             if(['', null, 0, '0'].includes(check)) {
-                toastr.warning("Debe seleccionar un Efector/Informador para poder asignar uno");
+                toastr.warning("Debe seleccionar un Efector/Informador para poder asignar uno",'',{timeOut: 1000});
                 return;
             }
     
@@ -989,7 +989,7 @@ $(document).ready(()=>{
                         .done(function(response){
                             preloader('off');
                             const itemprestaciones = response.data;
-                            toastr.success(response.msg);
+                            toastr.success(response.msg,'',{timeOut: 1000});
 
                             if (who === 'asignar') {
 
@@ -1035,7 +1035,7 @@ $(document).ready(()=>{
                         $.post(updateAsignado, { Id: id, _token: TOKEN, IdProfesional: 0, fecha: 0, Para: $(this).attr('id') === 'ex-liberar' ? 'asignar' : 'asignarI'})
                         .done(function(response){
                             preloader('off');
-                            toastr.success(response.msg);
+                            toastr.success(response.msg,'',{timeOut: 1000});
                             loadModalExamen(response.data.Id);
                             
                         })
@@ -1071,7 +1071,7 @@ $(document).ready(()=>{
             });
 
             if(ids.length === 0 && multi == "success"){
-                toastr.warning('No hay examenes seleccionados');
+                toastr.warning('No hay examenes seleccionados','',{timeOut: 1000});
                 return;
             }
             

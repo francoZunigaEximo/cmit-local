@@ -58,7 +58,7 @@ $(function() {
         tipo = $(this).hasClass('pdf') ? 'pdf' : 'excel';
 
         if (id.length === 0) {
-            toastr.warning('Debes seleccionar al menos un mapa para exportar.');
+            toastr.warning('Debes seleccionar al menos un mapa para exportar.', '', {timeOut: 1000});
             return;
         }
             
@@ -76,12 +76,12 @@ $(function() {
                     success: function(response, ) {
                         createFile(arr[tipo].archivo, response.filePath, generarCodigoAleatorio() + "_reporte");
                         preloader('off');
-                        toastr.success(response.msg);
+                        toastr.success(response.msg, '', {timeOut: 1000});
                     },
                     error: function(jqXHR) {
                         preloader('off');
                         let errorData = JSON.parse(jqXHR.responseText);            
-                        checkError(jqXHR.status, errorData.msg);
+                        checkError(jqXHR.status, errorData.msg,);
                         return;
                     }
                 });
@@ -110,7 +110,7 @@ $(function() {
                 
                 .done(function(response){
                     preloader('off');
-                    toastr.success(response.msg);
+                    toastr.success(response.msg, '', {timeOut: 1000});
                     setTimeout(() => {
                         location.reload();
                     }, 3000);
@@ -156,19 +156,19 @@ $(function() {
             remitoFechaE = $('#remitoFechaE').val();
 
         if(['', null, 0].includes(nroRemito)) {
-            toastr.warning('No se puede realizar la entrega porque no posee numero de remito. Debe Finalizar la Prestación.');
+            toastr.warning('No se puede realizar la entrega porque no posee numero de remito. Debe Finalizar la Prestación.','',{timeOut: 1000});
             $(this).prop('disabled', false);
             return;
         }
     
         if(['', null].includes(remitoFechaE)) {
-            toastr.warning('Debe especificar una fecha de entrega');
+            toastr.warning('Debe especificar una fecha de entrega','',{timeOut: 1000});
             $(this).prop('disabled', false);
             return;
         }
 
         if(['', null].includes(remitoObs)){
-            toastr.warning('Debe escribir una observación');
+            toastr.warning('Debe escribir una observación','',{timeOut: 1000});
             $(this).prop('disabled', false);
             return;
         }
@@ -183,7 +183,7 @@ $(function() {
                 $.post(saveRemitos, {_token: TOKEN, Obs: remitoObs, FechaE: remitoFechaE, Id: nroRemito})
                 .done(function(response){
                     preloader('off');
-                    toastr.success(response.msg);
+                    toastr.success(response.msg, '', {timeOut: 1000});
                     setTimeout(()=>{
                         $('#remitoObs').val('');
                         $('#entregarModal').modal('hide');
@@ -221,7 +221,7 @@ $(function() {
                 $.post(reverseRemito, {_token: TOKEN, Id: remito})
                     .done(function(response){
                         preloader('off');   
-                        toastr.success(response.msg);
+                        toastr.success(response.msg, '', {timeOut: 1000});
                         setTimeout(()=>{
                             listarRemitos(IDMAPA);
                             $('.revertirEntrega').prop('disabled', false);
@@ -249,7 +249,7 @@ $(function() {
             condiciones = [NroRemito, NroPrestacion, Etapa, Estado];
 
         if(condiciones.every(condicion => condicion === '')){
-            toastr.warning('Debe utilizar algun filtro', 'Atención');
+            toastr.warning('Debe utilizar algun filtro', 'Atención', {timeOut: 1000});
             return;
         }
 
@@ -270,7 +270,7 @@ $(function() {
                 let data = response.result;
 
                 if(data === ''){
-                    toastr.warning('No se han encontrado resultados', 'Atención');
+                    toastr.warning('No se han encontrado resultados', 'Atención', {timeOut: 1000});
                 }
 
                 $('#prestaMapa').empty();
@@ -511,7 +511,7 @@ $(function() {
         let checkAll =$('#checkAllCerrar').prop('checked');
 
         if(ids.length === 0 && checkAll === false){
-            toastr.warning('No hay ninguna prestación seleccionada para cerrar', 'Atención');
+            toastr.warning('No hay ninguna prestación seleccionada para cerrar', 'Atención', {timeOut: 1000});
             return;
         }
         preloader('on');
@@ -597,7 +597,7 @@ $(function() {
         let checkAll =$('#checkAllFinalizar').prop('checked');
 
         if(ids.length === 0 && checkAll === false){
-            toastr.warning('No hay ninguna prestación seleccionada para finalizar', 'Atención');
+            toastr.warning('No hay ninguna prestación seleccionada para finalizar', 'Atención', {timeOut: 1000});
             return;
         }
         preloader('on');
@@ -639,7 +639,7 @@ $(function() {
         let arr = [fDesde, fHasta, NroPresEnviar, eEnviadoEnviar, NroPresRemito];
 
         if(arr.every(condicion => condicion === '')) {
-            toastr.warning("No hay un filtro seleccionado");
+            toastr.warning("No hay un filtro seleccionado", "", {timeOut: 1000});
             return;
         }
         
@@ -709,7 +709,7 @@ $(function() {
         let checkAll =$('#checkAllEnviar').prop('checked');
 
         if (ids.length === 0 && checkAll === false) {
-            toastr.warning('No hay ninguna prestación seleccionada para eEnviar');
+            toastr.warning('No hay ninguna prestación seleccionada para eEnviar', '', {timeOut: 1000});
             return;
         }
 
@@ -720,12 +720,12 @@ $(function() {
             contarTrue = condiciones.filter(condicion => condicion === true).length;
 
         if (contarTrue !== 1){
-            toastr.warning("Debe seleccionar una opción");
+            toastr.warning("Debe seleccionar una opción", "", {timeOut: 1000});
             return;
         }
 
         if (condiciones.every(condicion => condicion === false)) {
-            toastr.warning("Debe seleccionar una de las opciones de envío");
+            toastr.warning("Debe seleccionar una de las opciones de envío", "", {timeOut: 1000});
             return;
         }
 
@@ -736,14 +736,14 @@ $(function() {
                
                 $.each(response, function(index, r){
                     if(r.icon === 'art-impresion' || r.icon === 'empresa-impresion') {
-                        toastr.success(r.msg);
+                        toastr.success(r.msg, '', {timeOut: 1000});
                         createFile("pdf", r.filePath, r.name);
                     
                     }else if(r.icon === 'art-email') {
-                        toastr.success(r.msg);
+                        toastr.success(r.msg, '', {timeOut: 1000});
                     
                     }else if(r.icon === 'empresa-email') {
-                        toastr.success(r.msg);
+                        toastr.success(r.msg, '', {timeOut: 1000});
                     }
                 });
                
@@ -803,14 +803,14 @@ $(function() {
         }
 
         if(comentario === ''){
-            toastr.warning('La observación no puede estar vacía', 'Atención');
+            toastr.warning('La observación no puede estar vacía', 'Atención', {timeOut: 1000});
             return;
         }
         preloader('on');
         $.post(savePrivComent, {_token: TOKEN, Comentario: comentario, IdEntidad: idprest, obsfasesid: lstFases[fase]})
             .done(function(response){
                 preloader('off');
-                toastr.success(response.msg);
+                toastr.success(response.msg, '', {timeOut: 1000});
 
                 setTimeout(() => {
                     $('#privadoPrestaciones, #privadoCerrar').empty();
@@ -839,7 +839,7 @@ $(function() {
         $.get(vistaPrevia, {Id: id})
             .done(function(response){
                 preloader('off');
-                toastr.success("Generando vista previa");
+                toastr.success("Generando vista previa", '', {timeOut: 1000});
                 window.open(response, '_blank');
             })
             .fail(function(jqXHR){
@@ -864,14 +864,14 @@ $(function() {
         let prestacion = $('#IdPrestacion').text(), observacion = $('.ComObsEstado').val();
 
         if(observacion === ''){
-            toastr.warning('Debe escribir un observación de la prestación');
+            toastr.warning('Debe escribir un observación de la prestación', '', {timeOut: 1000});
             return;
         }
         preloader('on');
         $.post(setComentarioPres, {_token: TOKEN, Id: prestacion, observacion: observacion})
             .done(function(response){
                 preloader('off');
-                toastr.success(response.msg);
+                toastr.success(response.msg, '', {timeOut: 1000});
                 setTimeout(()=>{
                     $('.comentarioObsEstado').hide();
                 }, 2000);
@@ -932,7 +932,7 @@ $(function() {
         $.get(vistaPrevia, {Id: id})
             .done(function(response){
                 preloader('off');
-                toastr.success("Generando vista previa");
+                toastr.success("Generando vista previa", '', {timeOut: 1000});
                 window.open(response, '_blank');
             })
             .fail(function(jqXHR){
@@ -988,12 +988,12 @@ $(function() {
         ];
             
         if (verificar.every(val => !val)) {
-            toastr.warning('Debe seleccionar algun check para obtener el reporte');
+            toastr.warning('Debe seleccionar algun check para obtener el reporte', '', {timeOut: 1000});
             return;
         }
 
         if ([0,'',null,undefined].includes(IdPres)) {
-            toastr.warning('No hay ninguna prestación activa');
+            toastr.warning('No hay ninguna prestación activa', '', {timeOut: 1000});
             return;
         }
 
@@ -1006,7 +1006,7 @@ $(function() {
             .done(function(response){
                 createFile("pdf", response.filePath, response.name);
                 preloader('off')
-                toastr.success(response.msg)
+                toastr.success(response.msg, '', {timeOut: 1000});
             })
             .fail(function(jqXHR){
                 preloader('off');

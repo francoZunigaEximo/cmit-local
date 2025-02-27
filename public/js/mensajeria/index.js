@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(function() {
 
     let atributos = {
                 
@@ -166,7 +166,7 @@ $(document).ready(function() {
             informes = $('#informes').prop('checked');
         
         if(![facturas,masivos,informes].some(validar => validar === true)) {
-            toastr.warning("Debe seleccionar algunas de las opciones de envio");
+            toastr.warning("Debe seleccionar algunas de las opciones de envio", '', {timeOut: 1000});
             return;
         }
         
@@ -176,7 +176,7 @@ $(document).ready(function() {
         });
 
         if(ids.length === 0) {
-            toastr.warning("No se ha seleccionado ningún cliente");
+            toastr.warning("No se ha seleccionado ningún cliente", '', {timeOut: 1000});
             return;
         }
 
@@ -218,7 +218,7 @@ $(document).ready(function() {
                     .done(function(response){
                         preloader('off');
 
-                        toastr.success(response.msg);
+                        toastr.success(response.msg, '', {timeOut: 1000});
                     })
                     .fail(function(jqXHR){
                         preloader('off');            
@@ -245,7 +245,7 @@ $(document).ready(function() {
         let id = $(this).data('id');
 
         if([null, undefined, ''].includes(id)) {
-            toastr.warning("No se ha seleccionado ningún registro");
+            toastr.warning("No se ha seleccionado ningún registro", '', {timeOut: 1000});
             return;
         }
 
@@ -274,7 +274,7 @@ $(document).ready(function() {
         let modelo = $('#modelo2').val();
 
         if(![data.Facturas, data.Masivos, data.Informes].some(validar => validar === true)) {
-            toastr.warning("Debe seleccionar alguna de las opciones de envio");
+            toastr.warning("Debe seleccionar alguna de las opciones de envio", '', {timeOut: 1000});
             return;
         }
         
@@ -288,7 +288,7 @@ $(document).ready(function() {
                 $.get(sendEmails, data)
                     .done(function(response){
                         preloader('off');
-                        toastr.success(response.msg);
+                        toastr.success(response.msg, '', {timeOut: 1000});
                     })
                     .fail(function(jqXHR){
                         preloader('off');

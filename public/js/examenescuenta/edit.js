@@ -1,4 +1,4 @@
-$(document).ready(function(){
+$(function(){
 
     listado();
 
@@ -144,26 +144,26 @@ $(document).ready(function(){
             contador = [examen, paquete, facturacion].filter(conteo => conteo !== null).length;
 
         if (contador !== 1) {
-            toastr.warning("Solo puede elegir un paquete o examen para aplicar a la vez. No puede seleccionar más de uno", {timeOut: 2000});
+            toastr.warning("Solo puede elegir un paquete o examen para aplicar a la vez. No puede seleccionar más de uno", {timeOut: 1000});
             return;
         }
 
         if  (cantidad <= 0 || cantidad === '') {
-            toastr.warning("Debe seleccionar una cantidad");
+            toastr.warning("Debe seleccionar una cantidad", {timeOut: 1000});
             return;
         }
 
         let valor = examen !== null ? examen : paquete !== null ? paquete : facturacion !== null ? facturacion : 0;
         let tipo = examen !== null ? 'examen' : paquete !== null ? 'paquete' : facturacion !== null ? 'facturacion' : 0;
 
-        if(valor === 0 || tipo === 0) { toastr.warning("Hay un problema en la selección del paquete. Verifique la selección"); return; }
+        if(valor === 0 || tipo === 0) { toastr.warning("Hay un problema en la selección del paquete. Verifique la selección", '', {timeOut: 1000}); return; }
 
         preloader('on');
 
         $.post(savePaquete, {_token: TOKEN, Id: ID, Tipo: tipo, examen: valor, precarga: dni, cantidad: cantidad})
             .done(function(){
                 preloader('off');
-                toastr.success('Se ha realizado ha cargado el o los examenes.')
+                toastr.success('Se ha realizado ha cargado el o los examenes.','',{timeOut: 1000});
                 setTimeout(()=> {
                     listado();
                 }, 3000);
@@ -184,7 +184,7 @@ $(document).ready(function(){
             partes = Factura.split('-');
 
         if (condiciones.some(condicion => condicion === '' || condicion === null) === true) {
-            toastr.warning("Los campos marcados con astericos son obligatorios");
+            toastr.warning("Los campos marcados con astericos son obligatorios", "", {timeOut: 1000});
             return;
         }
 
@@ -198,7 +198,7 @@ $(document).ready(function(){
                 $.post(updateExamenCuenta, {_token: TOKEN, IdEmpresa: empresa, Fecha: Fecha, Tipo: partes[0], Suc: parseInt(partes[1], 10), Nro: parseInt(partes[2], 10), Obs: Obs, FechaP: FechaPago, Id: ID})
                     .done(function(response){
                         preloader('off');
-                        toastr.success('Se ha actualizado el examen a cuenta correctamente');
+                        toastr.success('Se ha actualizado el examen a cuenta correctamente','', {timeOut: 1000});
                     })
             }
          });
@@ -282,7 +282,7 @@ $(document).ready(function(){
             if(ids.length === 0 && checkAll === false){
                 $(".saveCambiosEdit").hide();
                 $("#dniNuevo").attr("disabled", true);
-                toastr.warning('No hay items seleccionados');
+                toastr.warning('No hay items seleccionados','', {timeOut: 1000});
                 return;
             }
 
@@ -296,7 +296,7 @@ $(document).ready(function(){
         let id = $('#cargarId').val(), dniNuevo = $('#dniNuevo').val();
         
         if(dniNuevo.length > 8 || dniNuevo.length === 0) {
-            toastr.warning("El dni debe llevar un máximo de 8 digitos");
+            toastr.warning("El dni debe llevar un máximo de 8 digitos",'',{timeOut: 1000});
             return;
         }
 
@@ -304,7 +304,7 @@ $(document).ready(function(){
         $.post(savePrecarga, {_token: TOKEN, Id: id.includes(',') ? id = id.split(",") : id, Precarga: dniNuevo})
             .done(function(){
                 preloader('off');
-                toastr.success('Se ha cambiado el dni de la precarga');
+                toastr.success('Se ha cambiado el dni de la precarga','', {timeOut: 1000});
                 setTimeout(()=>{
                     $('#editarDNI').modal('hide');
                     listado();
@@ -323,7 +323,7 @@ $(document).ready(function(){
         });
 
         if(id.length === 0 && checkAll === false){
-            toastr.warning('No hay items seleccionados', 'Atención');
+            toastr.warning('No hay items seleccionados', 'Atención', {timeOut: 1000});
             return;
         }
 
@@ -338,7 +338,7 @@ $(document).ready(function(){
                 $.get(liberarItemExCta, {Id: id})
                     .done(function(){
                         preloader('off');
-                        toastr.success("Se ha realizado la liberación de los items correctamente");
+                        toastr.success("Se ha realizado la liberación de los items correctamente",'',{timeOut: 1000});
                         setTimeout(()=>{
                             listado()
                         },2000);
@@ -368,7 +368,7 @@ $(document).ready(function(){
             let checkAll =$('#checkAll').prop('checked');
 
             if(id.length === 0 && checkAll === false){
-                toastr.warning('No hay items seleccionados', 'Atención');
+                toastr.warning('No hay items seleccionados', 'Atención','', {timeOut: 1000});
                 return;
             }
         }
@@ -383,7 +383,7 @@ $(document).ready(function(){
                 $.get(deleteItemExCta, {Id: id})
                     .done(function(){
                         preloader('off');
-                        toastr.success("Se ha realizado la eliminación");
+                        toastr.success("Se ha realizado la eliminación",'',{timeOut: 1000});
                         setTimeout(()=>{
                             listado()
                         },2000);
@@ -399,7 +399,7 @@ $(document).ready(function(){
         let id = $(this).data('id'), tipo = $(this).hasClass('exportar') ? 'excel' : 'pdf';
 
         if([null, undefined, ""].includes(id)) {
-            toastr.warning('No hay datos para exportar');
+            toastr.warning('No hay datos para exportar','', {timeOut: 1000});
             return;
         }
 
@@ -426,7 +426,7 @@ $(document).ready(function(){
                             const data = JSON.parse(jsonResponse);
 
                             createFile(tipo, data.filePath, data.name);
-                            toastr.success(data.msg);
+                            toastr.success(data.msg, '', {timeOut: 1000});
                         }
                     },
                     error: function(jqXHR) {

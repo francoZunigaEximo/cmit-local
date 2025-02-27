@@ -1,4 +1,4 @@
-$(document).ready(function(){
+$(function(){
 
     $('.Cuerpo').richText(atributos);
 
@@ -8,7 +8,7 @@ $(document).ready(function(){
         let id = $('#Id').val();
 
         if([null, undefined, ''].includes(id)) {
-            toastr.warning("No hay ningún modelo para actualizar");
+            toastr.warning("No hay ningún modelo para actualizar", "", {timeOut: 1000});
             return;
         }
 
@@ -26,7 +26,7 @@ $(document).ready(function(){
             $.post(actualizarModelo, data)
                 .done(function(response){
                     preloader('off');
-                    toastr.success(response.msg);
+                    toastr.success(response.msg, '', {timeOut: 1000});
                     $('#form-create').trigger('reset');
                     $('.Cuerpo').html('');
                     setTimeout(() => {

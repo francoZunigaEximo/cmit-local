@@ -1,4 +1,4 @@
-$(document).ready(function(){
+$(function(){
 
     let paginacion = {
         
@@ -84,7 +84,7 @@ $(document).ready(function(){
         let fechaDesde = $('#fechaDesdeAu').val(), fechaHasta = $('#fechaHastaAu').val();
 
         if([null, undefined, ''].includes(fechaDesde) || [null, undefined, ''].includes(fechaHasta)) {
-            toastr.warning("Debe seleccionar un rango de fechas");
+            toastr.warning("Debe seleccionar un rango de fechas", "", {timeOut: 1000});
             return;
         }
         $(selector).DataTable().clear().destroy();

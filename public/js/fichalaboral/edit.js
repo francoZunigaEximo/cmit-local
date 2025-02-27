@@ -1,4 +1,4 @@
-$(document).ready(function () {
+$(function () {
  
     quitarDuplicados("#Horario");
     quitarDuplicados("#Tipo");
@@ -194,27 +194,27 @@ $(document).ready(function () {
         }
 
         if([0, null, undefined, ''].includes(tipoPrestacion)){
-            toastr.warning('¡El campo tipo de prestación es obligatorio!');
+            toastr.warning('¡El campo tipo de prestación es obligatorio!', '', {timeOut: 1000});
             return;
         }
 
         if([0, null, undefined, ''].includes(cliente) && [0, null, undefined, ''].includes(art)){
-            toastr.warning('¡Debe seleccionar una empresa o una art!');
+            toastr.warning('¡Debe seleccionar una empresa o una art!','', {timeOut: 1000});
             return;
         }
         
         if(tipoPrestacion === 'ART' && ([0, null, undefined, ''].includes(art))){
-            toastr.warning('¡Debe seleccionar una ART para el tipo de prestación ART!');
+            toastr.warning('¡Debe seleccionar una ART para el tipo de prestación ART!','', {timeOut: 1000});
             return;
         }
 
         if(tipoPrestacion === 'ART' && (![0, null, undefined, ''].includes(art)) && ([0, null, undefined, ''].includes(cliente))){
-            toastr.warning('¡Debe seleccionar una Empresa para el tipo de prestación ART y la ART seleccionada!');
+            toastr.warning('¡Debe seleccionar una Empresa para el tipo de prestación ART y la ART seleccionada!','', {timeOut: 1000});
             return;
         }
         
         if(tipoPrestacion !== 'ART' && ([0, null, undefined, ''].includes(cliente))){
-            toastr.warning('¡Debe seleccionar una empresa para el tipo de prestación seleccionado!');
+            toastr.warning('¡Debe seleccionar una empresa para el tipo de prestación seleccionado!','',{timeOut: 1000});
             return;
         }
 
@@ -246,7 +246,7 @@ $(document).ready(function () {
             }) 
             .done(function(response) {
                 preloader('off');
-                toastr.success(response.msg);
+                toastr.success(response.msg,'', {timeOut: 1000});
                 swal('Atención', 'Se actualizará la pantalla en segundos...', 'success');
                 setTimeout(() => {
                     window.location.reload();

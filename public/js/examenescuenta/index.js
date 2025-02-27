@@ -1,4 +1,4 @@
-$(document).ready(()=> {
+$(function(){
 
     const tabla = "#listadoExamenesCuentas";
 
@@ -209,7 +209,7 @@ $(document).ready(()=> {
         });
 
         if (ids.length === 0) {
-            toastr.warning('Debes seleccionar al menos un item para realizar la operación.');
+            toastr.warning('Debes seleccionar al menos un item para realizar la operación.','',{timeOut: 1000});
             return;
         }
 
@@ -253,7 +253,7 @@ $(document).ready(()=> {
         let id = $(this).data('id'), tipo = $(this).hasClass('detalles') ? 'detalles' : 'saldo';
 
         if([null, undefined, ''].includes(id)) {
-            toastr.warning("No posee identificador para iniciar el proceso");
+            toastr.warning("No posee identificador para iniciar el proceso", '', {timeOut: 1000});
             return;
         }
 
@@ -267,7 +267,7 @@ $(document).ready(()=> {
                 .done(function(response){
 
                     createFile("xlsx", response.filePath, "reporte");
-                    toastr.success("Se esta generando el reporte");
+                    toastr.success("Se esta generando el reporte", '', {timeOut: 1000});
                 });
             }
         });

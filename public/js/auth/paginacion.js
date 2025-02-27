@@ -1,6 +1,4 @@
-let nombre = $('#nombre').val(), usuario = $('#usua').val(), rol = $('#rol').val(), condiciones = [nombre, usuario, rol];
-
-$(document).ready(()=>{
+$(function(){
 
     let informacion = {
             
@@ -93,13 +91,12 @@ $(document).ready(()=>{
 
        let dataTable = new DataTable("#listaUsuarios", informacion);
 
-       $(document).on('click', '.buscarUsuario', function () {
-           let nombre = $('#nombre').val();
-           let usuario = $('#usua').val();
-           let rol = $('#rol').val();
+       $(document).on('click', '.buscarUsuario', function (e) {
+            e.preventDefault();
+           let nombre = $('#nombre').val(), usuario = $('#usua').val(),rol = $('#rol').val();
    
            if (nombre === '' && usuario === '' && rol === '') {
-               toastr.warning("Debe seleccionar algún filtro para buscar");
+               toastr.warning("Debe seleccionar algún filtro para buscar",'',{timeOut: 1000});
                return;
            }
    

@@ -1,4 +1,4 @@
-$(document).ready(()=>{
+$(function(){
 
     //Verifica si ya existe ese ParaEmpresa con ese Cuit
     $('#Identificacion, #ParaEmpresa').blur(function () {
@@ -51,7 +51,7 @@ $(document).ready(()=>{
             success: function(response){
                 
                 if(response.existe){
-                    toastr.warning('Ya existe ese cuit registrado en la base de datos');
+                    toastr.warning('Ya existe ese cuit registrado en la base de datos','',{timeOut: 1000});
                 }
             }
         });
@@ -82,7 +82,7 @@ $(document).ready(()=>{
                 },
                 error: function(xhr){
                     console.error(xhr);
-                    toastr.error("Hay un error en la busqueda de la localidad. Consulte al administrador", "Error");
+                    toastr.error("Hay un error en la busqueda de la localidad. Consulte al administrador", "Error", {timeOut: 1000});
                 }
             });
         }

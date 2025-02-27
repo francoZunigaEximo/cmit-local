@@ -75,42 +75,42 @@ $(document).ready(()=> {
  
          //Validamos la factura
         if (spago === 'G' && autorizado === ''){ 
-            toastr.warning('Si el medio de pago es gratuito, debe seleccionar quien autoriza.');
+            toastr.warning('Si el medio de pago es gratuito, debe seleccionar quien autoriza.', '', {timeOut: 1000});
             return;
         }
 
         if (pago === 'B' && spago === '') {
-            toastr.warning('Debe seleccionar un "medio de pago" cuando la "forma de pago" es "contado"');
+            toastr.warning('Debe seleccionar un "medio de pago" cuando la "forma de pago" es "contado"','', {timeOut: 1000});
             return;
         }
        
         if (['', null, undefined].includes(pago)) {
-            toastr.warning('Debe seleccionar una "forma de pago"');
+            toastr.warning('Debe seleccionar una "forma de pago"','', {timeOut: 1000});
             return;
         }
 
         if (pago === 'B' && (tipo == '' || sucursal === '' || nroFactura === '')){
-            toastr.warning('El pago es contado, asi que debe agregar el número de factura para continuar.');
+            toastr.warning('El pago es contado, asi que debe agregar el número de factura para continuar.','', {timeOut: 1000});
             return;
         }
 
         if (tipoPrestacion === ''){
-            toastr.warning("Atención", "El tipo de prestación no puede ser un campo vacío", "warning");
+            toastr.warning("Atención", "El tipo de prestación no puede ser un campo vacío", "warning", {timeOut: 1000});
             return;
         }
         
         if ([0, null, '', '0'].includes(art) && tipoPrestacion === 'ART') {
-            toastr.warning("Debe seleccionar un cliente ART si el tipo de prestación es ART");
+            toastr.warning("Debe seleccionar un cliente ART si el tipo de prestación es ART",'', {timeOut: 1000});
             return;
         }
         
         if (![0, null, undefined, '0'].includes(art) && tipoPrestacion === 'ART' && (['', null, 0].includes(mapas))) {
-            toastr.warning("Debe seleccionar un mapa vigente si la prestación es ART y tiene un cliente ART cargado");
+            toastr.warning("Debe seleccionar un mapa vigente si la prestación es ART y tiene un cliente ART cargado",'', {timeOut: 1000});
             return;
         }
 
         if (tipoPrestacion === 'ART' && ['', 0, null].includes(mapas)) {
-            toastr.warning("Debe seleccionar un mapa si la prestación es ART");
+            toastr.warning("Debe seleccionar un mapa si la prestación es ART",'', {timeOut: 1000});
             return;
         }
 
@@ -145,7 +145,7 @@ $(document).ready(()=> {
             },
             success: function(response){
                 preloader('off');
-                toastr.success(response.msg);
+                toastr.success(response.msg,'', {timeOut: 1000});
                 setTimeout(function(){
                     location.reload();
                 }, 3000);  
@@ -452,14 +452,14 @@ $(document).ready(()=> {
         let comentario = $('#Comentario').val();
 
         if(comentario === ''){
-            toastr.warning('La observación no puede estar vacía', 'Atención');
+            toastr.warning('La observación no puede estar vacía', 'Atención', {timeOut: 1000});
             return;
         }
         preloader('on');
         $.post(savePrivComent, {_token: TOKEN, Comentario: comentario, IdEntidad: ID, obsfasesid: 2})
             .done(function(){
                 preloader('off');
-                toastr.success('Perfecto', 'Se ha generado la observación correctamente');
+                toastr.success('Perfecto', 'Se ha generado la observación correctamente', {timeOut: 1000});
 
                 setTimeout(() => {
                     $('#privadoPrestaciones').empty();
@@ -517,7 +517,7 @@ $(document).ready(()=> {
         ];
             
         if (verificar.every(val => !val)) {
-            toastr.warning('Debe seleccionar algun check para obtener el reporte');
+            toastr.warning('Debe seleccionar algun check para obtener el reporte', '', {timeOut: 1000});
             return;
         }
 
@@ -530,7 +530,7 @@ $(document).ready(()=> {
             .done(function(response){
                 createFile("pdf", response.filePath, response.name);
                 preloader('off')
-                toastr.success(response.msg)
+                toastr.success(response.msg, '', {timeOut: 1000});
             })
             .fail(function(jqXHR){
                 preloader('off');
@@ -555,7 +555,7 @@ $(document).ready(()=> {
                         
                         createFile("excel", response.filePath, generarCodigoAleatorio() + '_reporte');
                         preloader('off');
-                        toastr.success(response.msg);
+                        toastr.success(response.msg, '', {timeOut: 1000});
                     })
                     .fail(function(jqXHR){
                         preloader('off');
@@ -582,7 +582,7 @@ $(document).ready(()=> {
 
                         createFile("pdf", response.filePath, response.name);
                         preloader('off')
-                        toastr.success(response.msg)
+                        toastr.success(response.msg, '', {timeOut: 1000});
                     })
                     .fail(function(jqXHR){
                         preloader('off');
@@ -610,7 +610,7 @@ $(document).ready(()=> {
                 $.get(eEnviarAviso, {Id: ID})
                     .done(function(response){
                         preloader('off');
-                        toastr.success(response.msg);
+                        toastr.success(response.msg, '', {timeOut: 1000});
                     })
                     .fail(function(jqXHR){
                         preloader('off');
@@ -639,7 +639,7 @@ $(document).ready(()=> {
                 $.get(eEnviarEspecial, {Id: ID})
                     .done(function(response){
                         preloader('off');
-                        toastr.success(response.msg);
+                        toastr.success(response.msg, '', {timeOut: 1000});
                     })
                     .fail(function(jqXHR){
                         preloader('off');
@@ -669,7 +669,7 @@ $(document).ready(()=> {
                     .done(function(response){
                         createFile("pdf", response.filePath, response.name);
                         preloader('off')
-                        toastr.success(response.msg)
+                        toastr.success(response.msg, '', {timeOut: 1000});
                     })
                     .fail(function(jqXHR){
                         preloader('off');
@@ -720,12 +720,12 @@ $(document).ready(()=> {
         ];
 
         if (verificar.some(val => val)) {
-            toastr.warning('Alguno de los reportes seleccionados no es apto para enviar');
+            toastr.warning('Alguno de los reportes seleccionados no es apto para enviar','',{timeOut: 1000});
             return;
         }
 
         if (verificarCorreos(EMailInformes) === false) {
-            toastr.warning('Alguno de los correos no es válido o el mismo se encuentra vacío');
+            toastr.warning('Alguno de los correos no es válido o el mismo se encuentra vacío', '', {timeOut: 1000});
             return;
         }
 
@@ -733,7 +733,7 @@ $(document).ready(()=> {
         $.get(enviarReporte, {evaluacion: evaluacion, eAnexo: eAnexo, adjDigitales: adjDigitales, adjFisicos: adjFisicos, adjPrestacion: adjPrestacion, resAdmin: resAdmin, consEstDetallado: consEstDetallado, consEstSimple: consEstSimple, EMailInformes: EMailInformes, Id: ID})
             .done(function(response){
                 preloader('off');
-                toastr.success(response.msg);
+                toastr.success(response.msg, '', {timeOut: 1000});
             })
             .fail(function(jqXHR){
                 preloader('off');
@@ -785,9 +785,9 @@ $(document).ready(()=> {
                     
                     if(response.icon === 'success') {
                         createFile("pdf", response.filePath, response.name);
-                        toastr.success(response.msg);
+                        toastr.success(response.msg, '', {timeOut: 1000});
                     }else{
-                        toastr.success(response.msg);
+                        toastr.success(response.msg, '', {timeOut: 1000});
                     }
                 })
                 .fail(function(jqXHR){
@@ -833,7 +833,7 @@ $(document).ready(()=> {
                     $('#addAdjPres').modal('hide');
                     $('#DescripcionAdjPrestacion, input[name="fileAdjPrestacion"]').val('');
                     preloader('off');
-                    toastr.success("Se ha cargado el adjunto de manera correcta.");
+                    toastr.success("Se ha cargado el adjunto de manera correcta.", '', {timeOut: 1000});
                 },
                 error: function (jqXHR) {
                     preloader('off');
@@ -864,7 +864,7 @@ $(document).ready(()=> {
                     .done(function(response){
                         loadListAdjPrestacion();
                         preloader('off');
-                        toastr.success(response.msg);
+                        toastr.success(response.msg,'', {timeOut: 1000});
                     })
                     .fail(function(jqXHR){
                         preloader('off');
@@ -897,7 +897,7 @@ $(document).ready(()=> {
             .done(function(response){
                 createFile("excel", response.filePath, generarCodigoAleatorio() + '_reporte');
                 preloader('off');
-                toastr.success('Se ha generado el archivo correctamente');
+                toastr.success('Se ha generado el archivo correctamente','', {timeOut: 1000});
             })
             .fail(function(jqXHR){
                 preloader('off');

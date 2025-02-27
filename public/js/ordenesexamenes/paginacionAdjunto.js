@@ -10,12 +10,12 @@ $(function() {
             especialidad = $('#especialidadAdjunto').val();
 
         if (fechaDesde === '' || fechaHasta === '') {
-            toastr.warning("Las fechas son obligatorias", "Atención");
+            toastr.warning("Las fechas son obligatorias", "Atención", {timeOut: 1000});
             return;
         }
 
         if (especialidad === '') {
-            toastr.warning('Debe seleccionar una especialidad para continuar', 'Atención');
+            toastr.warning('Debe seleccionar una especialidad para continuar', 'Atención', {timeOut: 1000});
             return;
         }
 

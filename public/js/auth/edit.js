@@ -1,4 +1,4 @@
-$(document).ready(()=>{
+$(function(){
 
     let IdProfesional = $('#IdProfesional').val();
     let resizing = false, startWidth, startHeight, startX, startY; //variables de ancho de imagen
@@ -43,7 +43,7 @@ $(document).ready(()=>{
                     $.post(actualizarDatos, {_token: TOKEN, Nombre: nombre, Apellido: apellido, TipoDocumento: tipoDocumento, Documento: documento, TipoIdentificacion: tipoIdentificacion, Identificacion: identificacion, Telefono: telefono, FechaNacimiento: fechaNacimiento, Provincia: provincia, IdLocalidad: localidad, CP: cp, Id: Id, email: email, Direccion: direccion, UserId: userId})
                         .done(function(response){
                             preloader('off');
-                            toastr.success(response.msg);
+                            toastr.success(response.msg, '', {timeOut: 1000});
                             setTimeout(()=>{
                                 location.reload();
                             },2000);
@@ -84,12 +84,12 @@ $(document).ready(()=>{
         let email = $('#email').val(), name = $('#usuario').val();
         
         if([null, undefined, ''].includes(email)) {
-            toastr.warning("El email no puede estar vacío");
+            toastr.warning("El email no puede estar vacío",'',{timeOut: 1000});
             return;
         }
 
         if(correoValido(email) === false) {
-            toastr.warning("El email no es válido");
+            toastr.warning("El email no es válido",'',{timeOut: 1000});
             return;
         }
 
@@ -98,7 +98,7 @@ $(document).ready(()=>{
             .done(function(response){
                 preloader('off');
                 $tipo = response.estado === 'true' ? 'success' : 'warning';
-                toastr[$tipo](response.msg);
+                toastr[$tipo](response.msg,'',{timeOut: 1000});
             });
 
     });
@@ -119,9 +119,9 @@ $(document).ready(()=>{
                     .done(function(response){
                         preloader('off');
                         if(response.estado === 'false'){
-                            toastr.warning(response.msg);
+                            toastr.warning(response.msg, '', {timeOut: 1000});
                         }else if(response.estado === 'true'){
-                            toastr.success(response.msg);
+                            toastr.success(response.msg, '', {timeOut: 1000});
                             checkRol(IdProfesional);
                             perfiles(IdProfesional);
                             setTimeout(() => {
@@ -156,7 +156,7 @@ $(document).ready(()=>{
                 $.get(deleteRol, {user: usuario, role: rol})
                     .done(function(response){
                         preloader('off');
-                        toastr.success(response.msg);
+                        toastr.success(response.msg, '', {timeOut: 1000});
                         checkRol(IdProfesional);
                         perfiles(IdProfesional);
                         cargarPerfiles();
@@ -213,7 +213,7 @@ $(document).ready(()=>{
                     contentType: false,
                     success: function(response) {
                         preloader('off');
-                        toastr.success(response.msg);
+                        toastr.success(response.msg, '', {timeOut: 1000});
                     },
                     error: function(jqXHR) {
                         preloader('off');
@@ -235,7 +235,7 @@ $(document).ready(()=>{
             Id = $('#IdProfesional').val();
 
         if(mn < 0) {
-            toastr.warning("Matricula no acepta números negativos");
+            toastr.warning("Matricula no acepta números negativos", '', {timeOut: 1000});
             return;
         }
         preloader('on');
@@ -243,7 +243,7 @@ $(document).ready(()=>{
             
             .done(function(response){
                 preloader('off');
-                toastr.success(response.msg);
+                toastr.success(response.msg, '', {timeOut: 1000});
             })
             .fail(function(jqXHR){
                 preloader('off');
@@ -277,7 +277,7 @@ $(document).ready(()=>{
         let perfil = $('#perfiles').val(), especialidad = $('#listaEspecialidad').val();
 
         if(perfil === '' || especialidad === '') {
-            toastr.warning("Debe seleccionar una especialidad y un perfil para poder añadirlo a la lista");
+            toastr.warning("Debe seleccionar una especialidad y un perfil para poder añadirlo a la lista", '', {timeOut: 1000});
             return;
         }
         preloader('on');
@@ -285,7 +285,7 @@ $(document).ready(()=>{
             
             .done(function(response){
                 preloader('off');
-                toastr.success(response.msg);
+                toastr.success(response.msg, '', {timeOut: 1000});
                 cargarPerfiles(); 
             })
             .fail(function(jqXHR){
@@ -311,7 +311,7 @@ $(document).ready(()=>{
                 $.post(delPerfil, {_token: TOKEN, IdProf: IdProf, IdProv: IdProv})
                 .done(function(){
                     preloader('off')
-                    toastr.success(`Se ha añadido el perfil de manera correcta`);
+                    toastr.success(`Se ha añadido el perfil de manera correcta`, '', {timeOut: 1000});
                     cargarPerfiles();
                 })
                 .fail(function(jqXHR){

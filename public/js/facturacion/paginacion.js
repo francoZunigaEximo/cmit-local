@@ -121,12 +121,12 @@ $(document).ready(function(){
             fechaHasta = $('#fechaHasta').val();
         
         if([null, undefined, ''].includes(tabla)){
-            toastr.warning('Seleccione un Ver Tabla de factura. El campo es obligatorio');
+            toastr.warning('Seleccione un Ver Tabla de factura. El campo es obligatorio','',{timeOut: 1000});
             return;
         }
 
         if(fechaDesde !== '' && fechaHasta === ''){
-            toastr.warning('Seleccione una fecha hasta. El campo es obligatorio si agrega una fecha desde');
+            toastr.warning('Seleccione una fecha hasta. El campo es obligatorio si agrega una fecha desde','',{timeOut: 1000});
             return;
         }
 

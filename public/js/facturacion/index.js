@@ -1,4 +1,4 @@
-$(document).ready(function(){
+$(function(){
     
     let hoy = new Date().toLocaleDateString('en-CA');
     $('#fechaHasta').val(hoy);
@@ -131,7 +131,7 @@ $(document).ready(function(){
         }
 
         if (ids.length === 0) {
-            toastr.warning('Debe seleccionar al menos una factura para la eliminar');
+            toastr.warning('Debe seleccionar al menos una factura para la eliminar','',{timeOut: 1000});
             return; 
         }
 
@@ -177,7 +177,7 @@ $(document).ready(function(){
         });
 
         if(ids.length === 0){
-            toastr.warning('Debe seleccionar al menos una factura para imprimir');
+            toastr.warning('Debe seleccionar al menos una factura para imprimir','',{timeOut: 1000});
             return;
         }
 
@@ -223,7 +223,7 @@ $(document).ready(function(){
         });
 
         if(ids.length === 0){
-            toastr.warning('Debe seleccionar al menos una factura para poder enviar el detalle');
+            toastr.warning('Debe seleccionar al menos una factura para poder enviar el detalle','',{timeOut: 1000});
             return;
         }
 
@@ -267,7 +267,7 @@ $(document).ready(function(){
         });
 
         if(ids.length === 0){
-            toastr.warning('Debe seleccionar al menos una factura para poder generar el reporte de Finnegans');
+            toastr.warning('Debe seleccionar al menos una factura para poder generar el reporte de Finnegans','',{timeOut: 1000});
             return;
         }
 

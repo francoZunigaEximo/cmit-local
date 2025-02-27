@@ -1,4 +1,4 @@
-$(document).ready(()=>{
+$(function(){
 
     $('#nombre').select2({
         language: {
@@ -157,7 +157,7 @@ $(document).ready(()=>{
 
                 $.get(bloquearUsuario, {Id: id})
                     .done(function(response){
-                        toastr.success(response.msg);
+                        toastr.success(response.msg, '', {timeOut: 1000});
                         $('#listaUsuarios').DataTable().ajax.reload(function(){
                             $('#listaUsuarios tbody').show();
                             $('.dataTables_processing').hide();
@@ -189,7 +189,7 @@ $(document).ready(()=>{
                 $.get(cambiarPassUsuario, {Id: id})
                     .done(function(response){
                         preloader('off');
-                        toastr.success(response.msg);
+                        toastr.success(response.msg, '', {timeOut: 1000});
                     }); 
             }
         });      

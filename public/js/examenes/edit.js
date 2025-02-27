@@ -1,4 +1,4 @@
-$(document).ready(()=>{
+$(function(){
 
     quitarDuplicados('#Estudio');
     quitarDuplicados('#Reporte');
@@ -43,7 +43,7 @@ $(document).ready(()=>{
                         $.post(updateExamen, {_token: TOKEN, Id: ID, Examen:Examen, IdEstudio: Estudio, Descripcion: Descripcion, IdReporte: Reporte, Cod: CodigoEx, Cod2: CodigoE, IdForm: Formulario, DiasVencimiento: DiasVencimiento, Inactivo: Inactivo, PI: priImpresion, IdProveedor: ProvEfector, IdProveedor2: ProvInformador, Informe: Informe, NoImprime: Fisico, Adjunto: Adjunto, Ausente: Ausente, Devol: Devolucion, Evaluador: EvalExclusivo, EvalCopia: ExpAnexo, aliasexamen: aliasexamen})
                         .done(function(response){
                             preloader('off')
-                            toastr.success(response.msg);
+                            toastr.success(response.msg, '', {timeOut: 1000});
                             setTimeout(() => {
                                 location.reload();
                             }, 3000);
@@ -127,12 +127,12 @@ $(document).ready(()=>{
                 .done(function(estatus){
 
                     if (estatus.estatus === true) {
-                        toastr.warning('No se puede eliminar el exámen porque esta siendo utilizada por una prestación');
+                        toastr.warning('No se puede eliminar el exámen porque esta siendo utilizada por una prestación','',{timeOut: 1000});
                         return;
             
                     } else if(estatus.estatus === false){
 
-                        toastr.success('Se ha eliminado correctamente el exámen. Se redireccionará a la pantalla de creación de examenes');
+                        toastr.success('Se ha eliminado correctamente el exámen. Se redireccionará a la pantalla de creación de examenes','',{timeOut: 1000});
                         setTimeout(()=>{
                             location.href = GOINDEX;
                         }, 3000);

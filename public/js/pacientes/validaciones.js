@@ -1,4 +1,4 @@
-$(document).ready(function(){
+$(function(){
 
     //Validaciones
      $("#form-update, #form-create").off();
@@ -132,17 +132,11 @@ $(document).ready(function(){
         return this.optional(element) || /^\w+([\.-]?\w+)*@(?:\w+\.)+[a-z]{2,3}$/i.test(value);
     }, "Por favor, ingresa una dirección de correo electrónico válida.");
 
-    toastr.options = {
-        closeButton: true,   
-        progressBar: true,    
-        timeOut: 3000,        
-    };
-
     $("#form-update, #form-create").on("submit", function(event) {
         if ($(this).valid()) {
             if($(this).attr("id") == "form-create"){
                 
-                toastr.success('¡Se ha creado el paciente de manera correcta.!', 'Felicitaciones');
+                toastr.success('¡Se ha creado el paciente de manera correcta.!', 'Felicitaciones', {timeOut: 1000});
                 setTimeout(() => {
                     $(this).unbind("submit").submit();
                 }, 3000);
@@ -155,7 +149,7 @@ $(document).ready(function(){
                 
             }
         } else {
-            toastr.info('¡Por favor, complete todos los campos requeridos correctamente!', 'Alerta');
+            toastr.warning('¡Por favor, complete todos los campos requeridos correctamente!', 'Alerta',{timeOut: 1000});
         }
         
         event.preventDefault();

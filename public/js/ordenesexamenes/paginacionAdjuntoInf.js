@@ -8,7 +8,7 @@ $(function() {
             especialidad = $('#especialidadAdjuntoInf').val()*/;
 
         if (fechaDesde === '' || fechaHasta === '') {
-            toastr.warning("Las fechas son obligatorias", "Atención");
+            toastr.warning("Las fechas son obligatorias", "Atención",{timeOut: 1000});
             return;
         }
 

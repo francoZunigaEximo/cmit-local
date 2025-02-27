@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(function() {
     toastr.options = {
         closeButton: true,   
         progressBar: true,    
@@ -194,19 +194,19 @@ function stripTags(html) {
 function verificarArchivo(archivo){
 
     if (!archivo || archivo.size === 0) {
-        toastr.warning("Debe seleccionar un archivo", "Atención");
+        toastr.warning("Debe seleccionar un archivo", "Atención", {timeOut: 1000});
         return false;
     }
 
     if (!archivo.name.includes('.')) {
-        toastr.warning("El archivo no tiene extensión o la misma es invalida", "Atención");
+        toastr.warning("El archivo no tiene extensión o la misma es invalida", "Atención", {timeOut: 1000});
         return false;
     }
 
     let tipoArchivo = archivo.type.toLowerCase();
 
     if(tipoArchivo !== 'application/pdf') {
-        toastr.warning("Solo se admite archivos PDF", "Atención");
+        toastr.warning("Solo se admite archivos PDF", "Atención", {timeOut: 1000});
         return false;
     }
 

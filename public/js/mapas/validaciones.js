@@ -1,4 +1,4 @@
-$(document).ready(()=>{
+$(function() {
 
     $("#form-update, #form-create").off();
     $("#form-update, #form-create").validate({
@@ -73,14 +73,14 @@ $(document).ready(()=>{
         // Verificar si el formulario es válido
         if ($(this).valid()) {
             if($(this).attr("id") == "form-create"){
-                toastr.success('¡Se ha generado el mapa de manera correcta.');
+                toastr.success('¡Se ha generado el mapa de manera correcta.','',{timeOut: 1000});
                 setTimeout(() => {
                     $(this).unbind("submit").submit();
                 }, 3000);   
             }
 
         } else {
-            toastr.warning('Por favor, complete todos los campos requeridos correctamente.');
+            toastr.warning('Por favor, complete todos los campos requeridos correctamente.','',{timeOut: 1000});
         }
         
         event.preventDefault();

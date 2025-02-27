@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(function() {
 
     $("#form-update, #form-create").off();
     $("#form-update, #form-create").validate({
@@ -142,7 +142,7 @@ $(document).ready(function() {
         if ($(this).valid()) {
             if($(this).attr("id") == "form-create"){
                 
-                toastr.success('¡Se ha creado el paciente de manera correcta. Se habilitarán la Opciones, Emails, Autorizados, Observaciones y Para Empresa!', 'Felicitaciones');
+                toastr.success('¡Se ha creado el paciente de manera correcta. Se habilitarán la Opciones, Emails, Autorizados, Observaciones y Para Empresa!', 'Felicitaciones', {timeOut: 1000});
                 setTimeout(()=> {
                     $(this).unbind("submit").submit();
                 }, 3000);
@@ -150,7 +150,7 @@ $(document).ready(function() {
 
                 
             }else{
-                toastr.success('¡Se han actualizado los datos de manera correcta. Se actualizará el navegador!', 'Perfecto');
+                toastr.success('¡Se han actualizado los datos de manera correcta. Se actualizará el navegador!', 'Perfecto', {timeOut: 1000});
                 setTimeout(() => {
                     $(this).unbind("submit").submit();
                 }, 3000);
@@ -159,7 +159,7 @@ $(document).ready(function() {
             }  
 
         } else {
-            toastr.error('Por favor, complete todos los campos requeridos correctamente.', 'Atención');
+            toastr.error('Por favor, complete todos los campos requeridos correctamente.', 'Atención', {timeOut: 1000});
         }
         
         event.preventDefault();

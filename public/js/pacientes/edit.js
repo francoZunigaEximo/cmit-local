@@ -64,7 +64,7 @@ $(document).ready(function(){
             .done(function(response){
                 createFile("excel", response.filePath, generarCodigoAleatorio() + '_reporte');
                 preloader('off');
-                toastr.success('Se ha generado el archivo correctamente');
+                toastr.success('Se ha generado el archivo correctamente','',{timeOut: 1000});
             })
             .fail(function(jqXHR){
                 preloader('off');

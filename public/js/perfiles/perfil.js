@@ -57,28 +57,28 @@ $(document).ready(()=>{
             name = $('#name').val();
 
         if([0,null,''].includes(email)) {
-            toastr.warning('El correo electrónico no puede estar vacío');
+            toastr.warning('El correo electrónico no puede estar vacío','',{timeOut: 1000});
             return;
         }
 
         if([0,null,''].includes(name)) {
-            toastr.warning('No identificamos al usuario. Consulte con el administrador');
+            toastr.warning('No identificamos al usuario. Consulte con el administrador','',{timeOut: 1000});
             return;
         }
 
         if(correoValido(email) === false) {
-            toastr.warning("El email no es válido");
+            toastr.warning("El email no es válido",'',{timeOut: 1000});
             return;
         }
 
         let result = await checkEmail(name,email);
         if (result && result.estado === 'false') {
-            toastr.warning(result.msg);
+            toastr.warning(result.msg, '', {timeOut: 1000});
             return;
         }
 
         if (result && result.estado === 'true') {
-            toastr.success(result.msg);
+            toastr.success(result.msg, '', {timeOut: 1000});
         }
     
         swal({
@@ -92,7 +92,7 @@ $(document).ready(()=>{
                 $.post(actualizarDatos, {_token: TOKEN, Nombre: nombre, Apellido: apellido, TipoDocumento: tipoDocumento, Documento: documento, TipoIdentificacion: tipoIdentificacion, Identificacion: identificacion, Telefono: telefono, FechaNacimiento: fechaNacimiento, Provincia: provincia, IdLocalidad: localidad, CP: cp, Id: Id, email: email, Direccion: direccion, name: name})
                     .done(function(response){
                         preloader('off');
-                        toastr.success(response.msg);
+                        toastr.success(response.msg, '', {timeOut: 1000});
                         setTimeout(()=>{
                             location.reload();
                         },2000);
@@ -124,7 +124,7 @@ $(document).ready(()=>{
                         .done(function(response) {
                             preloader('off');
 
-                            toastr.success(response.msg);
+                            toastr.success(response.msg, '', {timeOut: 1000});
                             setTimeout(()=>{
                                 location.reload();
                             },2000);

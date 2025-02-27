@@ -14,7 +14,7 @@ $(function(){
         if(prestacion === ''){
 
             if([0,'',null].includes(profesional)){ 
-                toastr.warning('El campo profesional no puede estar vacío');
+                toastr.warning('El campo profesional no puede estar vacío', '', {timeOut: 1000});
                 return;
             }
     

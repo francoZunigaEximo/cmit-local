@@ -1,4 +1,4 @@
-$(document).ready(function(){
+$(function(){
 
     let opciones = $('#opciones')
         opcionesClass = $('.opciones'),
@@ -102,7 +102,7 @@ $(document).ready(function(){
     
         if (!table.data().any() ) {
             table.destroy();
-            toastr.warning('No existen registros para exportar');
+            toastr.warning('No existen registros para exportar', '', {timeOut: 1000});
             return;
         }
 
@@ -115,7 +115,7 @@ $(document).ready(function(){
             .done(function(response){
                 createFile("excel", response.filePath, generarCodigoAleatorio() + "_reporte");
                 preloader('off')
-                toastr.success(response.msg)
+                toastr.success(response.msg, '', {timeOut: 1000});
             })
             .fail(function(jqXHR){
                 preloader('off');

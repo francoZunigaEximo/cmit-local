@@ -1,4 +1,4 @@
-$(document).ready(function(){
+$(function(){
     
     $('#Provincia').val('NEUQUEN');
     $('#IdLocalidad').val(3); //Elije la ciudad de Neuquen como default
@@ -26,17 +26,17 @@ $(document).ready(function(){
         let Nombre = $('#Nombre').val(), Externo = $('#Externo').val(), Inactivo = $('#Inactivo').val(), Telefono = $('#Telefono').val(), Direccion = $('#Direccion').val(), IdLocalidad = $('#IdLocalidad').val(), Obs = $('#Obs').val();
 
         if([0,null,''].includes(Nombre)) {
-            toastr.warning('El campo Nombre es obligatorio');
+            toastr.warning('El campo Nombre es obligatorio', '', {timeOut: 1000});
             return;
         }
 
         if([0,null,''].includes(Externo)) {
-            toastr.warning('Debe especificar si es externo');
+            toastr.warning('Debe especificar si es externo', '', {timeOut: 1000});
             return;
         }
 
         if([0,null,''].includes(Inactivo)) {
-            toastr.warning('Debe especificar si el campo es inactivo o no');
+            toastr.warning('Debe especificar si el campo es inactivo o no', '', {timeOut: 1000});
             return;
         }
 
@@ -53,7 +53,7 @@ $(document).ready(function(){
                         preloader('off');
                         let data = response.especialidad;
 
-                        toastr.success(response.msg);
+                        toastr.success(response.msg, '', {timeOut: 1000});
                         setTimeout(() => {
                             let nuevo = location.href.replace("create", "");
                             let lnk = nuevo + "" + data + "/edit";

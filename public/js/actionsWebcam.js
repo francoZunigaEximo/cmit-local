@@ -1,11 +1,11 @@
-$(document).ready(function(){
+$(function(){
   
     $(document).on('click', '#deleteButton', function(){
 
         let id = $(this).data('id'), checkImagen = $('#profile-image-preview').css('background-image');
 
         if(checkImagen.match(/foto-default\.png/)) {
-            toastr.warning('No hay imagen para eliminar');
+            toastr.warning('No hay imagen para eliminar','',{timeOut: 1000});
             return;
         }
         
@@ -18,7 +18,7 @@ $(document).ready(function(){
             if(confirmar){
                 $.post(deletePicture, {Id: id, _token: TOKEN})
                     .done(function(response){
-                        toastr.success(response.msg);
+                        toastr.success(response.msg,'',{timeOut: 1000});
                         setTimeout(() => {
                             location.reload();
                         }, 3000);

@@ -1,4 +1,4 @@
-$(document).ready(()=>{
+$(function(){
 
     $(document).on('click', '#crear', async function(e) {
         e.preventDefault();
@@ -6,22 +6,22 @@ $(document).ready(()=>{
         let email = $('#email').val();
 
         if(usuario === '') {
-            toastr.warning('El usuario no puede estar vacío');
+            toastr.warning('El usuario no puede estar vacío','',{timeOut: 1000});
             return;
         }
 
         if(verificarUsuario(usuario) === false) {
-            toastr.warning("El usuario no puede contener espacios vacíos, caracteres especiales y solo hasta 25 caracteres");
+            toastr.warning("El usuario no puede contener espacios vacíos, caracteres especiales y solo hasta 25 caracteres",'',{timeOut: 1000});
             return;
         }
       
         if(email === '') {
-            toastr.warning('El email no se puede encontrar vacío');
+            toastr.warning('El email no se puede encontrar vacío','',{timeOut: 1000});
             return;
         }
 
         if(correoValido(email) === false) {
-            toastr.warning('El email no es válido');
+            toastr.warning('El email no es válido','',{timeOut: 1000});
             return;
         }
 
@@ -29,12 +29,12 @@ $(document).ready(()=>{
         let usuarioExiste = await comprobarUsuario(usuario);
     
         if(usuarioExiste && usuarioExiste.exists) {
-            toastr.warning('El usuario ya se encuentra registrado en la base de datos');
+            toastr.warning('El usuario ya se encuentra registrado en la base de datos','',{timeOut: 1000});
             return;
         }
 
         if(emailValido && emailValido.exists) {
-            toastr.warning('El email ya se encuentra registrado en la base de datos');
+            toastr.warning('El email ya se encuentra registrado en la base de datos','',{timeOut: 1000});
             return;
         }
 
@@ -48,7 +48,7 @@ $(document).ready(()=>{
                 $.post(register, {_token: TOKEN, name: usuario, email: email})
                     .done(function(response) {
                         preloader('off');
-                        toastr.success(response.msg);
+                        toastr.success(response.msg,'',{timeOut: 1000});
                         $('#crear').attr('disabled', true);
                         setTimeout(function() {
                             let url = location.href;

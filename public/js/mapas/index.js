@@ -1,4 +1,4 @@
-$(document).ready(()=>{
+$(function() {
 
     //Botón reset en el buscador
     $('#reset').click(function(){ 
@@ -12,14 +12,14 @@ $(document).ready(()=>{
     //Datos Default
     $('#Ver').val('activo');
 
-    $('#Nro, #ART, #TipoPrestacion, #Empresa, #Estado, #corteDesde, #corteHasta, #entregaDesde, #entregaHasta, #Vencimiento, #Ver ').on('keydown', function(event) {
-        if (event.key === 'Enter') {
-            event.preventDefault();
+    $('#Nro, #ART, #TipoPrestacion, #Empresa, #Estado, #corteDesde, #corteHasta, #entregaDesde, #entregaHasta, #Vencimiento, #Ver ').on('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
         }
     });
 
     //Exportar Excel a clientes
-    $('#excel').click(function(e) {
+    $(document).on('click', '#excel', function(e){
         e.preventDefault();
 
         let ids = [];
@@ -28,7 +28,7 @@ $(document).ready(()=>{
         });
 
         if (ids.length === 0) {
-            toastr.warning('Debes seleccionar al menos un mapa para exportar.');
+            toastr.warning('Debes seleccionar al menos un mapa para exportar.', '', {timeOut: 1000});
             return;
         }
 
@@ -49,7 +49,7 @@ $(document).ready(()=>{
                     success: function(response) {
                         createFile("excel", response.filePath, generarCodigoAleatorio() + "_reporte");
                         preloader('off');
-                        toastr.success(response.msg);
+                        toastr.success(response.msg, '', {timeOut: 1000});
                         return;
                     },
                     error: function(jqXHR) {
@@ -83,7 +83,7 @@ $(document).ready(()=>{
                     },
                     success: function(response){
                         preloader("off");
-                        toastr.success(response.msg);
+                        toastr.success(response.msg, '', {timeOut: 1000});
                         $('#listaMapas').DataTable();
                         $('#listaMapas').DataTable().draw(false);
                     },

@@ -114,7 +114,7 @@ $(function() {
         let adjuntoEfector = $(this).hasClass('hoyDias') ? 1 : null;
 
         if (fechaDesde === '' || fechaHasta === '') {
-            toastr.warning("Las fechas son obligatorias");
+            toastr.warning("Las fechas son obligatorias", "", {timeOut: 1000});
             return;
         }
 

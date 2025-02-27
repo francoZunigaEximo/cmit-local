@@ -10,27 +10,27 @@ $(document).ready(function(){
         let Nombre = $('#Nombre').val(), Id = $('#Id').val(), Externo = $('#Externo').val(), Inactivo = $('#Inactivo').val(), Telefono = $('#Telefono').val(), Direccion = $('#Direccion').val(), IdLocalidad = $('#IdLocalidad').val(), Obs = $('#Obs').val(), Multi = $('#Multi').prop('checked'), MultiE = $('#MultiE').prop('checked'), Min = $('#Min').val(), PR = $('#PR').val(), InfAdj = $('#InfAdj').val();
         
         if(Nombre === ''){
-            toastr.warning('El campo Nombre es obligatorio');
+            toastr.warning('El campo Nombre es obligatorio', '', {timeOut: 1000});
             return;
         }
 
         if([0,null,''].includes(Externo)) {
-            toastr.warning('Debe especificar si es externo');
+            toastr.warning('Debe especificar si es externo', '', {timeOut: 1000});
             return;
         }
 
         if([0,null,''].includes(Inactivo)) {
-            toastr.warning('Debe especificar si el campo es inactivo o no');
+            toastr.warning('Debe especificar si el campo es inactivo o no', '', {timeOut: 1000});
             return;
         }
 
         if (PR < 0 || PR > 120){
-            toastr.warning('El máximo debe estar entre 0 y 60 y no ser negativo.');
+            toastr.warning('El máximo debe estar entre 0 y 60 y no ser negativo.', '', {timeOut: 1000});
             return;
         }
 
         if (Min < 0 || Min > 60){
-            toastr.warning('La duración debe estar entre 0 y 60 y no ser negativo.');
+            toastr.warning('La duración debe estar entre 0 y 60 y no ser negativo.', '', {timeOut: 1000});
             return;
         }
 
@@ -44,7 +44,7 @@ $(document).ready(function(){
                 $.post(updateProveedor, { _token: TOKEN, Id: Id, Nombre: Nombre, Externo: Externo, Inactivo: Inactivo, Telefono: Telefono, Direccion: Direccion, IdLocalidad: IdLocalidad, Obs: Obs, Multi: Multi, MultiE, Min: Min, PR: PR, InfAdj: InfAdj })
                     .done(function(response){
                         preloader('off');
-                        toastr.success(response.msg, 'Perfecto');
+                        toastr.success(response.msg, 'Perfecto', {timeOut: 1000});
                     })
                     .fail(function(jqXHR){
                         preloader('off');            

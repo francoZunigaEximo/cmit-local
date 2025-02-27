@@ -1,4 +1,4 @@
-$(document).ready(function(){
+$(function(){
 
     $(document).on('click', '#buscar', function(){
         
@@ -6,7 +6,7 @@ $(document).ready(function(){
 
         if(especialidad === '' && opciones === ''){
 
-            toastr.warning("Debe escribir que desea buscar o bien seleccionar un filtro", "Atención");
+            toastr.warning("Debe escribir que desea buscar o bien seleccionar un filtro", "Atención", {timeOut: 1000});
             return;
         } 
  

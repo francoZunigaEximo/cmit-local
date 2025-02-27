@@ -77,7 +77,7 @@ function format(rowData) {
 }
 
 
-$(document).ready(()=>{
+$(function(){
 
     $('.botonPagar, .quitarPago').prop('disabled', true);
     mostrarBotonesPago($('#estado').val());
@@ -297,7 +297,7 @@ $(document).ready(()=>{
         console.log(typeof(fechaDesde), typeof(fechaHasta));return; */
 
         if (fechaDesde === '' || fechaHasta === '') {
-            toastr.warning("Las fechas son obligatorias");
+            toastr.warning("Las fechas son obligatorias", "", {timeOut: 1000});
             return;
         }
 

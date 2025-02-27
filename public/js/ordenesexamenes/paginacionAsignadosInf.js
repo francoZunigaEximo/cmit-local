@@ -11,7 +11,7 @@ $(function() {
             /*especialidad = $('#especialidadAsignadosInf').val()*/;
 
         if ((fechaDesde === '' || fechaHasta === '') && nroPrestacion === '') {
-            toastr.warning("Las fechas son obligatorias");
+            toastr.warning("Las fechas son obligatorias",'',{timeOut: 1000});
             return;
         }
 

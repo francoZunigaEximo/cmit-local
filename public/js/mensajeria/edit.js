@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(function() {
 
     $(document).on('click', '.actualizar', function(e) {
         e.preventDefault();
@@ -19,7 +19,7 @@ $(document).ready(function() {
             $.post(updateEmail, {_token: TOKEN, EMailResultados: EMailResultados, EMailFactura: EMailFactura, EMailInformes: EMailInformes, Id: Id}) 
                 .done(function(response){
                     preloader('off');
-                    toastr.success(response.msg);
+                    toastr.success(response.msg, '', {timeOut: 1000});
                 })
                 .fail(function(jqXHR, xhr){
                     preloader('off');            

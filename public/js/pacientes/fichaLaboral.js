@@ -221,22 +221,22 @@ $(document).ready(function () {
 
         //Validamos la factura
         if (spago === 'G' && autoriza === ''){
-            toastr.warning('Si el medio de pago es gratuito, debe seleccionar quien autoriza.');
+            toastr.warning('Si el medio de pago es gratuito, debe seleccionar quien autoriza.', '', {timeOut: 1000});
             return;
         }
 
         if (pago === 'B' && spago === '') {
-            toastr.warning('Debe seleccionar un "medio de pago" cuando la "forma de pago" es "contado"');
+            toastr.warning('Debe seleccionar un "medio de pago" cuando la "forma de pago" es "contado"', '', {timeOut: 1000});
             return;
         }
 
         if (['',null,undefined].includes(pago)) {
-            toastr.warning('Debe seleccionar una "forma de pago"');
+            toastr.warning('Debe seleccionar una "forma de pago"','',{timeOut: 1000});
             return;
         }
 
         if (pago === 'B' && (tipoF == '' || sucursalF === '' || numeroF === '')){
-            toastr.warning('El pago es contado, asi que debe agregar el número de factura para continuar.');
+            toastr.warning('El pago es contado, asi que debe agregar el número de factura para continuar.','',{timeOut: 1000});
             return;
         }
 
@@ -246,22 +246,22 @@ $(document).ready(function () {
         }
 
         if([0, null, undefined, ''].includes(tipoPrestacion)){
-            toastr.warning('¡El campo tipo de prestación es obligatorio!');
+            toastr.warning('¡El campo tipo de prestación es obligatorio!','',{timeOut: 1000});
             return;
         }
 
         if([0, null, undefined, ''].includes(cliente) && [0, null, undefined, ''].includes(art)){
-            toastr.warning('¡Debe seleccionar una empresa o una art!');
+            toastr.warning('¡Debe seleccionar una empresa o una art!','',{timeOut: 1000});
             return;
         }
         
         if(tipoPrestacion === 'ART' && ([0, null, undefined, ''].includes(art))){
-            toastr.warning('¡Debe seleccionar una ART para el tipo de prestación ART!');
+            toastr.warning('¡Debe seleccionar una ART para el tipo de prestación ART!','',{timeOut: 1000});
             return;
         }
         
         if(tipoPrestacion !== 'ART' && ([0, null, undefined, ''].includes(cliente))){
-            toastr.warning('¡Debe seleccionar una empresa para el tipo de prestación seleccionado!');
+            toastr.warning('¡Debe seleccionar una empresa para el tipo de prestación seleccionado!','',{timeOut: 1000});
             return;
         }
 
@@ -658,7 +658,7 @@ $(document).ready(function () {
             }) 
             .done(function(response) {
                 preloader('off');
-                toastr.success(response.msg);
+                toastr.success(response.msg,'',{timeOut: 1000});
                 mostrarFinanciador();
                 selectMedioPago();
                 selectorPago(params[6], IDFICHA);

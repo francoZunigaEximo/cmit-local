@@ -26,7 +26,7 @@ $(document).ready(()=> {
             },
             success: function(){
                 preloader('off');
-                toastr.success('El autorizado ha sido eliminado correctamente');
+                toastr.success('El autorizado ha sido eliminado correctamente', '', {timeOut: 1000});
                 $('.body-autorizado').empty();
                 cargarAutorizados();
             },
@@ -54,12 +54,12 @@ $(document).ready(()=> {
 
     
         if(correo == true && mensajeria == true){
-            toastr.warning('¡No puede tener la opcion Mensajeria y Correo seleccionadas. Debe escoger por una opción!');
+            toastr.warning('¡No puede tener la opcion Mensajeria y Correo seleccionadas. Debe escoger por una opción!', '', {timeOut: 1000});
             return;
         }
 
         if(motivo === '' && bloqueado === 1){
-            toastr.warning('¡El motivo es un campo obligatorio si ha seleccionado la opción bloquear. Debe escribir un motivo!');
+            toastr.warning('¡El motivo es un campo obligatorio si ha seleccionado la opción bloquear. Debe escribir un motivo!', '', {timeOut: 1000});
             return;
         }
         
@@ -81,7 +81,7 @@ $(document).ready(()=> {
             },
             success: function(){
                 preloader('off');
-                toastr.success('¡Los datos se han guardado correctamente. Se recargará la página');
+                toastr.success('¡Los datos se han guardado correctamente. Se recargará la página', '', {timeOut: 1000});
                 setTimeout(()=> {
                     location.reload();
                 }, 3000);
@@ -140,22 +140,22 @@ $(document).ready(()=> {
         let camposBasicos = [Nombre, Apellido, DNI, Derecho];
 
         if (camposBasicos.every(contenido => contenido === '')) {
-            toastr.warning('Por favor, complete todos los campos obligatorios.');
+            toastr.warning('Por favor, complete todos los campos obligatorios.', '', {timeOut: 1000});
             return;
         }
 
         if(DNI.length > 8 || parseInt(DNI) < 0){
-            toastr.warning("El dni no puede contener más de 8 digitos o ser negativo");
+            toastr.warning("El dni no puede contener más de 8 digitos o ser negativo", '', {timeOut: 1000});
             return;
         }
 
         if(Nombre.length > 25){
-            toastr.warning("El nombre no puede contener mas de 25 caracteres");
+            toastr.warning("El nombre no puede contener mas de 25 caracteres", '', {timeOut: 1000});
             return;
         }
 
         if(Apellido.length > 30){
-            toastr.warning("El apellido no puede contener mas de 30 caracteres");
+            toastr.warning("El apellido no puede contener mas de 30 caracteres", '', {timeOut: 1000});
             return;
         }
         preloader('on');
@@ -173,7 +173,7 @@ $(document).ready(()=> {
             },
             success: function(){
                 preloader('off');
-                toastr.success('El autorizado se registró correctamente');
+                toastr.success('El autorizado se registró correctamente', '', {timeOut: 1000});
                 cargarAutorizados();
                 $('#Nombre, #Apellido, #DNI, #Derecho').val('');
             },
@@ -237,7 +237,7 @@ $(document).ready(()=> {
                 },
                 success: function(response){
                     preloader('off');
-                    toastr.success(response.msg);
+                    toastr.success(response.msg, '', {timeOut: 1000});
                     return;
                 },
                 error: function(jqXHR){
@@ -277,7 +277,7 @@ $(document).ready(()=> {
             },
             success: function(){
                 preloader('off');
-                toastr.success('Las observaciones se han cargado correctamente');
+                toastr.success('Las observaciones se han cargado correctamente', '', {timeOut: 1000});
             },
             error: function(jqXHR){
                 preloader('off');
@@ -473,12 +473,12 @@ $(document).ready(()=> {
         let Id = $('#Id').val(), CodigoArea = $('#nuevoPrefijo').val(), NumeroTelefono = $('#nuevoNumero').val(), Observaciones = $('#nuevaObservacion').val();
 
         if(CodigoArea == "" || NumeroTelefono == "") {
-            toastr.warning("Faltan datos en el número de teléfono del cliente. No pueden haber campos vacíos.");
+            toastr.warning("Faltan datos en el número de teléfono del cliente. No pueden haber campos vacíos.", '', {timeOut: 1000});
             return;
         }
 
         if(Observaciones == ""){
-            toastr.warning("Debe escribir alguna referencia en la observación.");
+            toastr.warning("Debe escribir alguna referencia en la observación.", '', {timeOut: 1000});
             return;
         }
 
@@ -515,16 +515,17 @@ $(document).ready(()=> {
 
                 if(telefonos.length > 0) {
 
-                    $.each(telefonos, function(index, result) {
+                    for(let index = 0; index < telefonos.length; index++){
+                        let result = telefonos[index];
+
                         let contenido = `<tr>
                                             <td>${result.CodigoArea}</td>
                                             <td>${result.NumeroTelefono}</td>
                                             <td>${result.Observaciones}</td>
                                             <td><div class="telefonoAcciones"><i data-id="${result.Id}" class="ri-edit-2-line editarTelefono" title="Editar" data-bs-toggle="modal" data-bs-target="#editTelefonoModal" id="editarTelefono"></i> <i data-id="${result.Id}" class="ri-delete-bin-line eliminarTelefono" title="Eliminar" id="eliminarTelefono"></i></li> <span class="badge text-bg-success" title="Este registro ya se encuentra en la base de datos">Base de datos</span></div></td>
                                         </tr>`;
-                        
                         $('#tablaTelefonos').append(contenido);
-                    });
+                    }
                 } else {
 
                     let contenido = '<p> Sin telefonos adicionales </p>';
@@ -553,7 +554,7 @@ $(document).ready(()=> {
             },
             success: function(){
                 preloader('off');
-                toastr.success("El número de telefono adicional se ha borrado de la base de datos.");
+                toastr.success("El número de telefono adicional se ha borrado de la base de datos.", '', {timeOut: 1000});
                 return;
             },
             error: function(jqXHR){ 

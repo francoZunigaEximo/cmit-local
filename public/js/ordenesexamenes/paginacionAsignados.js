@@ -12,17 +12,17 @@ $(function() {
             especialidad = $('#especialidadAsignados').val();
 
         if ((fechaDesde === '' || fechaHasta === '') && nroPrestacion === '') {
-            toastr.warning("Las fechas son obligatorias");
+            toastr.warning("Las fechas son obligatorias",'',{timeOut: 1000});
             return;
         }
 
         if (especialidad === '') {
-            toastr.warning('Debe seleccionar una especialidad para continuar', 'Atención');
+            toastr.warning('Debe seleccionar una especialidad para continuar', 'Atención',{timeOut: 1000});
             return;
         }
 
         if ((estado == '' || estado == 0) && nroPrestacion === '') {
-            toastr.warning("Debe seleccionar un estado para continuar", "Atención");
+            toastr.warning("Debe seleccionar un estado para continuar", "Atención",{timeOut: 1000});
             return;
         }
 

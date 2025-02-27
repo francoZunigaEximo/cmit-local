@@ -54,7 +54,7 @@ $(function() {
         });
 
         if(ids.length === 0 && multi == "success"){
-            toastr.warning('No hay examenes seleccionados');
+            toastr.warning('No hay examenes seleccionados','',{timeOut: 1000});
             return;
         }
         
@@ -89,7 +89,7 @@ $(function() {
                 contentType: false,
                 success: function() {
                     preloader('off');
-                    toastr.success("Se ha cargado el reporte de manera correcta.");
+                    toastr.success("Se ha cargado el reporte de manera correcta.", '', {timeOut: 1000});
                     setTimeout(() => {
                         location.reload();
                     }, 3000);
@@ -115,7 +115,7 @@ $(function() {
             $.post(updateItem, {Id : ID, _token: TOKEN, CAdj: lista[cadj], Para: 'abrir' })
                 .done(function(){
                     preloader('off');
-                    toastr.success('Se ha realizado la acción correctamente');
+                    toastr.success('Se ha realizado la acción correctamente', '', {timeOut: 1000});
                     setTimeout(() => {
                         location.reload();
                     }, 3000);
@@ -139,7 +139,7 @@ $(function() {
         let id = $(this).data('id'), tipo = $(this).data('tipo');
 
         if(id === '' || tipo === ''){
-            toastr.warning("Hay un problema porque no podemos identificar el tipo o la id a eliminar");
+            toastr.warning("Hay un problema porque no podemos identificar el tipo o la id a eliminar", '', {timeOut: 1000});
             return;
         }
         
@@ -153,7 +153,7 @@ $(function() {
                 $.get(deleteIdAdjunto, {Id: id, Tipo: tipo, ItemP: ID})
                     .done(function(response){
                         preloader('off');
-                        toastr.success(response.msg);
+                        toastr.success(response.msg, '', {timeOut: 1000});
                         
                         setTimeout(() => {
                             location.reload();
@@ -180,7 +180,7 @@ $(function() {
             $.post(updateItem, {Id : ID, _token: TOKEN, CAdj: listaE[cadj], Para: who })
                 .done(function(){
                     preloader('off');
-                    toastr.success('Se ha cerrado al efector correctamente');
+                    toastr.success('Se ha cerrado al efector correctamente', '', {timeOut: 1000});
                     setTimeout(() => {
                         location.reload();
                     }, 3000);
@@ -198,7 +198,7 @@ $(function() {
             $.post(updateItem, {Id : ID, _token: TOKEN, CInfo: 3, Para: who })
                 .done(function(){
                     preloader('off');
-                    toastr.success('Se ha cerrado al informador correctamente');
+                    toastr.success('Se ha cerrado al informador correctamente', '', {timeOut: 1000});
                     setTimeout(() => {
                         location.reload();
                     }, 3000);
@@ -220,7 +220,7 @@ $(function() {
             check = (who === 'asignar') ? $('#efectores').val() : $('#informadores').val();
 
         if(['', null, 0, '0'].includes(check)) {
-            toastr.warning("Debe seleccionar un Efector/Informador para poder asignar uno");
+            toastr.warning("Debe seleccionar un Efector/Informador para poder asignar uno", '', {timeOut: 1000});
             return;
         }
 
@@ -235,7 +235,7 @@ $(function() {
                 $.post(updateAsignado, { Id: ID, _token: TOKEN, IdProfesional: check, fecha: 1, Para: who})
                     .done(function(){
                         preloader('off');
-                        toastr.success('Se ha actualizado la información de manera correcta');
+                        toastr.success('Se ha actualizado la información de manera correcta', '', {timeOut: 1000});
                         setTimeout(() => {
                             location.reload();             
                         }, 3000); 
@@ -268,7 +268,7 @@ $(function() {
                     $.post(updateAsignado, { Id: ID, _token: TOKEN, IdProfesional: 0, fecha: 0, Para: $(this).attr('id') === 'liberar' ? 'asignar' : 'asignarI'})
                     .done(function(response){
                         preloader('off');
-                        toastr.success(response.msg);
+                        toastr.success(response.msg, '', {timeOut: 1000});
                         setTimeout(() => {
                             location.reload();
                         }, 3000);
@@ -296,7 +296,7 @@ $(function() {
         if (cadj in lista) {
             $.post(updateAdjunto, {Id: ID, _token: TOKEN, CAdj: lista[cadj]})
                 .done(function(response){
-                    toastr.success(response.msg);
+                    toastr.success(response.msg, '', {timeOut: 1000});
                     setTimeout(() => {
                         location.reload();
                     }, 3000);
@@ -319,7 +319,7 @@ $(function() {
         $.post(updateItemExamen, {Id: ID, _token: TOKEN, ObsExamen: ObsExamen, Profesionales2: Profesionales2, Obs: Obs, Fecha: Fecha})
             .done(function(response) {
 
-                toastr.success(response.msg);
+                toastr.success(response.msg, '', {timeOut: 1000});
                 setTimeout(() => {
                     location.reload();
                 }, 3000);
@@ -364,7 +364,7 @@ $(function() {
                 contentType: false,
                 success: function(response) {
                     preloader('off');
-                    toastr.success(response.msg);
+                    toastr.success(response.msg, '', {timeOut: 1000});
                     setTimeout(() => {
                         listadoE();
                         listadoI();
