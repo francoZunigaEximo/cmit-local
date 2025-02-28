@@ -671,273 +671,6 @@ BEGIN
 END
 
 CREATE PROCEDURE getSearchPrestacion(IN fechaDesde DATE, IN fechaHasta DATE, IN estadoPres VARCHAR, IN estadoEfector VARCHAR, IN estadoInformador VARCHAR, IN efector INT, IN informador INT, IN tipoProv VARCHAR, IN adjunto VARCHAR, IN examen INT, IN pendiente INT, IN vencido INT, IN especialidad INT, IN ausente VARCHAR, IN adjuntoEfector INT)
-
-BEGIN
-    SELECT 
-        i.Id AS IdItem, 
-        i.Fecha AS Fecha, 
-        i.CAdj AS Efector, 
-        i.CInfo AS Informador, 
-        i.IdProfesional AS IdProfesional, 
-        proEfector.Nombre AS Especialidad, 
-        proEfector.Id AS IdEspecialidad, 
-        pre.Id AS IdPrestacion, 
-        pre.Cerrado AS PresCerrado, 
-        pre.Finalizado AS PresFinalizado, 
-        pre.Entregado AS PresEntregado, 
-        pre.eEnviado AS PresEnviado, 
-        cli.RazonSocial AS Empresa, 
-        CONCAT(pa.Apellido,' ',pa.Nombre) as NombreCompleto,
-        pa.Documento AS Dni, 
-        -- (CASE 
-		--     WHEN (prof1.RegHis = 0 OR prof1.RegHis IS NULL) AND (i.IdProfesional = 0 OR i.IdProfesional IS NULL) THEN 
-		--         CONCAT(COALESCE(datosPro1.Apellido, ''), ' ', COALESCE(datosPro1.Nombre, ''))
-		--     ELSE 
-		--         CONCAT(COALESCE(prof1.Apellido, ''), ' ', COALESCE(prof1.Nombre, ''))
-		-- END) as profesionalEfector,
-        -- (CASE 
-        -- 	WHEN (prof2.RegHis = 0 OR prof2.RegHis IS NULL) AND (i.IdProfesional2 = 0 OR i.IdProfesional2 IS NULL) THEN 
-        -- 		CONCAT(COALESCE(datosPro2.Apellido, ''),' ',COALESCE(datosPro2.Nombre, ''))
-        -- 	ELSE 
-        -- 		CONCAT(COALESCE(prof2.Apellido, ''),' ',COALESCE(prof2.Nombre,''))
-        -- END) as profesionalInformador,
-		CONCAT(COALESCE(datosPro2.Apellido, ''),' ',COALESCE(datosPro2.Nombre, '')) as profesionalInformador,
-		CONCAT(COALESCE(datosPro1.Apellido, ''), ' ', COALESCE(datosPro1.Nombre, '')) as profesionalEfector,
-        exa.Nombre AS Examen, 
-        exa.Id AS IdExamen, 
-        exa.DiasVencimiento AS DiasVencimiento, 
-        (CASE 
-            WHEN i.CAdj IN (1,4) AND exa.NoImprime = 1 THEN 'Pdte_D' 
-            WHEN i.CAdj IN (1,4) AND exa.NoImprime = 0 THEN 'Pdte_F' 
-            WHEN i.CAdj IN (2,5) THEN 'Adj' 
-            ELSE ' ' 
-        END) AS Adj,
-        (CASE 
-            WHEN pre.Finalizado = 0 AND pre.Cerrado = 0 AND pre.Entregado = 0 THEN 'Abierto' 
-            WHEN pre.Cerrado = 1 AND pre.Finalizado = 0 THEN 'Cerrado' 
-            WHEN pre.Cerrado = 1 AND pre.Finalizado = 1 AND pre.Entregado = 0 THEN 'Finalizado' 
-            WHEN pre.Cerrado = 1 AND pre.Finalizado = 1 AND pre.Entregado = 1 THEN 'Entregado' 
-            ELSE ' ' 
-        END) AS estado,
-        (CASE 
-            WHEN pre.eEnviado = 1 THEN 'eEnv' 
-            ELSE '' 
-        END) AS eEnv,
-        (CASE 
-            WHEN i.CAdj IN (1,2,4) THEN 'Pendiente' 
-            WHEN i.CAdj IN (3,5) THEN 'Cerrado' 
-            ELSE '-' 
-        END) AS EstadoEfector,
-        (CASE
-	        WHEN i.CInfo = 0 THEN ''
-            WHEN i.CInfo = 1 THEN 'Pendiente' 
-            WHEN i.CInfo = 2 THEN 'Borrador' 
-            WHEN i.CInfo = 3 THEN 'Cerrado' 
-            ELSE '-' 
-        END) AS EstadoInformador
-    FROM itemsprestaciones i 
-    INNER JOIN prestaciones pre ON i.IdPrestacion = pre.Id 
-        AND pre.Estado = 1 
-        AND pre.Anulado = 0
-    LEFT JOIN examenes exa ON i.IdExamen = exa.Id 
-        AND (examen IS NULL OR exa.Id = examen) 
-        AND (adjunto IS NULL OR 
-            (CASE 
-                WHEN adjunto = 'fisico' THEN exa.NoImprime = 0 
-                WHEN adjunto = 'digital' THEN exa.NoImprime = 1 
-            END)
-        )
-    LEFT JOIN proveedores proEfector ON exa.IdProveedor = proEfector.Id 
-	LEFT JOIN proveedores proInformador ON exa.IdProveedor2 = proInformador.Id 
-    LEFT JOIN clientes cli ON pre.IdEmpresa = cli.Id 
-    LEFT JOIN pacientes pa ON pre.IdPaciente = pa.Id 
-    LEFT JOIN profesionales prof1 ON i.IdProfesional = prof1.Id
-        AND (efector IS NULL OR prof1.Id = efector)
-    LEFT JOIN profesionales prof2 ON i.IdProfesional2 = prof2.Id 
-        AND (informador IS NULL OR prof2.Id = informador)
-    LEFT JOIN users userPro1 ON prof1.Id = userPro1.profesional_id
-    LEFT JOIN users userPro2 ON prof2.Id = userPro2.profesional_id
-    LEFT JOIN datos datosPro1 ON userPro1.datos_id = datosPro1.Id
-    LEFT JOIN datos datosPro2 ON userPro2.datos_id = datosPro2.Id
-    LEFT JOIN archivosefector a ON i.Id = a.IdEntidad 
-    WHERE i.Id <> 0 
-    AND i.Fecha BETWEEN fechaDesde AND fechaHasta
-    AND (
-        estadoPres IS NULL
-        OR (estadoPres = 'abierto' AND pre.Finalizado = 0 AND pre.Cerrado = 0 AND pre.Entregado = 0)
-        OR (estadoPres = 'cerrado' AND pre.Cerrado = 1 AND pre.Finalizado = 0)
-        OR (estadoPres = 'finalizado' AND pre.Cerrado = 1 AND pre.Finalizado = 1 AND pre.Entregado = 0)
-        OR (estadoPres = 'entregado' AND pre.Cerrado = 1 AND pre.Finalizado = 1 AND pre.Entregado = 1)
-        OR (estadoPres = 'eenviado' AND pre.eEnviado = 1)
-    )
-    AND (
-    	estadoEfector IS NULL 
-    	OR (estadoEfector = 'pendientes' AND i.CAdj IN (0,1,2))
-       	OR (estadoEfector = 'cerrados' AND i.CAdj IN (3,4,5))
-   )
-   AND (estadoInformador IS NULL 
-   		OR (estadoInformador = 'pendientes' AND i.CInfo = 1)
-        OR (estadoInformador = 'borrador' AND i.CInfo = 2)
-        OR (estadoInformador = 'pendienteYborrador' AND i.CInfo IN (1,2))
-   )
-   AND (tipoProv IS NULL 
-   		OR (tipoProv = 'interno' AND proEfector.Externo = 0)
-        OR (tipoProv = 'externo' AND proEfector.Externo = 1)
-        OR (tipoProv = 'todos' AND proEfector.Externo IN (0,1))
-   )
-   AND (adjuntoEfector IS NULL 
-   		OR (adjuntoEfector = 1 AND a.IdEntidad = i.Id AND exa.adjunto = 1)
-   )
-   AND (
-	    vencido IS NULL
-	    OR (
-	        vencido = 1 
-	        AND exa.DiasVencimiento > 0 
-	        AND pre.Finalizado = 0 
-	        AND pre.Vto <> 0 
-	        AND DATE_ADD(i.Fecha, INTERVAL exa.DiasVencimiento DAY) <= fechaHasta 
-	        AND DATE_ADD(i.Fecha, INTERVAL exa.DiasVencimiento DAY) > i.Fecha
-	    )
-	)
-	AND (pendiente IS NULL 
-		OR 
-            (
-            pendiente = 1 
-            	AND (i.CAdj IN(0,1,2,4) OR i.CInfo IN(1,2))
-            )
-    )
-    AND (ausente IS NULL 
-    		OR (ausente = 'ausente' AND i.Ausente = 1)
-            OR (ausente = 'noAusente' AND i.Ausente = 0)
-            OR (ausente = 'todos' AND i.Ausente IN (0,1))
-    )
-
-    AND i.Anulado = 0
-    ORDER BY i.Id DESC 
-    LIMIT 5000;
-END
-
-
-CREATE PROCEDURE getSearchEEnviar(IN fechaDesde DATE, IN fechaHasta DATE, IN empresa INT, IN paciente INT, IN completo VARCHAR, IN abierto VARCHAR, IN cerrado VARCHAR, IN eenviar VARCHAR, IN impago VARCHAR)
-
-BEGIN
-    SELECT 
-        pre.Fecha AS Fecha,
-        pre.Id AS IdPrestacion,
-        pc2.IdPrestacion AS presta,
-        pre.FechaEnviado AS FechaEnviado,
-        cli.EMailInformes AS Correo,
-        cli.RazonSocial AS Empresa,
-        CONCAT(pa.Apellido, ' ', pa.Nombre) AS NombreCompleto,
-        pa.Documento AS Documento,
-        pa.Id AS IdPaciente,
-        pre.eEnviado AS eEnviado,
-        pre.Cerrado AS Cerrado
-    FROM 
-        prestaciones AS pre
-    JOIN 
-        clientes AS cli ON pre.IdEmpresa = cli.Id AND (empresa IS NULL OR cli.Id = empresa)
-    JOIN 
-        pacientes AS pa ON pre.IdPaciente = pa.Id AND (paciente IS NULL OR pa.Id = paciente)
-    JOIN 
-        pagosacuenta AS pc ON cli.Id = pc.IdEmpresa
-    LEFT JOIN 
-        pagosacuenta_it AS pc2 ON pc.Id = pc2.IdPago
-    JOIN 
-        itemsprestaciones AS i ON pre.Id = i.IdPrestacion
-    WHERE 
-        pre.Id != 0
-        AND pre.Fecha != '0000-00-00'
-        AND pre.Fecha IS NOT NULL
-        AND i.Fecha BETWEEN fechaDesde AND fechaHasta
-        AND pre.Cerrado = 1
-        AND (
-            CASE
-                WHEN completo = 'activo' THEN i.CAdj IN (3, 5) AND i.CInfo = 3 AND pc.Pagado = 1
-                WHEN abierto = 'activo' THEN i.CAdj IN (0, 1, 2) AND i.CInfo = 1 AND pc.Pagado = 0
-                WHEN cerrado = 'activo' THEN i.CAdj IN (3, 4, 5) AND i.CInfo = 3 AND pc.Pagado IN (0, 1)
-                WHEN impago = 'activo' THEN EXISTS (
-                    SELECT 1 
-                    FROM pagosacuenta_it AS pc_it
-                    JOIN pagosacuenta AS pc_check ON pc_it.IdPago = pc_check.Id
-                    WHERE pc_it.IdPrestacion = pre.Id 
-                    AND pc_check.Pagado = 0
-                )
-                ELSE (completo IS NULL AND abierto IS NULL AND cerrado IS NULL AND impago IS NULL)
-            END
-        )
-        AND (
-            CASE
-                WHEN eenviar IS NULL OR eenviar = '' THEN TRUE
-                WHEN eenviar = 'eenviado' AND pre.eEnviado = 1 THEN TRUE
-                WHEN eenviar = 'noeenviado' AND pre.eEnviado = 0 THEN TRUE
-                WHEN eenviar = 'todos' AND pre.eEnviado IN (0, 1) THEN TRUE
-                ELSE FALSE
-            END
-        )
-    GROUP BY 
-        pre.Id
-    ORDER BY
-    	CASE 
-	        WHEN cli.EMailInformes IS NULL OR cli.EMailInformes = '' THEN 0
-	        ELSE 1
-	    END,
-    	cli.EMailInformes DESC,
-        pre.Fecha DESC,
-        cli.RazonSocial DESC
-    LIMIT 1000;
-END
-
-
-/*********** Cambio en Informador de columna Informador *******************/
-(CASE
-	        WHEN i.CInfo = 0 THEN ''
-            WHEN i.CInfo = 1 THEN 'Pendiente' 
-            WHEN i.CInfo = 2 THEN 'Borrador' 
-            WHEN i.CInfo = 3 THEN 'Cerrado' 
-            ELSE '-' 
-        END) AS EstadoInformador
-
-ALTER TABLE profesionales_prov MODIFY COLUMN IdRol VARCHAR(10) DEFAULT '0' NULL;
-#Aplicar a PreProduccion
-
-CREATE TABLE aliasExamenes(
-	Id int AUTO_INCREMENT NOT NULL,
-	UNIQUE(Id),
-	Nombre VARCHAR(30) NOT NULL,
-	Descripcion VARCHAR(225) NULL,
-	PRIMARY KEY(Id)
-);
-
-/*** No va en Pre Produccion ***/
-#ALTER TABLE examenes ADD COLUMN aliasexamen_id INT DEFAULT 0 NOT NULL;
-#INSERT INTO aliasExamenes(Id, Nombre, Descripcion) VALUES(0, 'Sin datos', 'Sin datos');
-#ALTER TABLE examenes ADD CONSTRAINT fk_aliasexamenes FOREIGN KEY (aliasexamen_id) REFERENCES aliasExamenes(Id);
-
-
-#Verificar el Id 0 de alias para evitar problemas
-
-ALTER TABLE archivosefector ADD PuntoCarga INT DEFAULT 0 NOT NULL;
-ALTER TABLE archivosinformador ADD PuntoCarga INT DEFAULT 0 NOT NULL;
-
-#CASCADE en fk_archivosefector y fk_archivosinformador (NO VA)
-ALTER TABLE examenes DROP FOREIGN KEY fk_aliasexamenes;
-ALTER TABLE examenes CHANGE aliasexamen_id aliasexamen VARCHAR(50) NULL;
-ALTER TABLE examenes MODIFY COLUMN aliasexamen VARCHAR(50) NULL;
-
-UPDATE examenes SET aliasexamen = NULL;
-
-ALTER TABLE mapas CHANGE IdEMpresa IdEmpresa int(11) NOT NULL
-
-/* Funciones de ViteJS */
-npm install
-npm laravel-vite-plugin
-
--- npm install toastr jquery sweetalert select2 datatables.net datatables.net-dt
-|
-ALTER TABLE mapas ADD COLUMN FechaAsignacion DATE NULL;
-
-CREATE PROCEDURE getExamenes(IN tipo VARCHAR(50), IN Identifica INT, IN IdExamen VARCHAR(255))
 BEGIN
     SELECT 
         i.Id AS IdItem, 
@@ -1085,6 +818,131 @@ BEGIN
     GROUP BY(i.Id)
     ORDER BY i.Id DESC 
     LIMIT 5000;
-END //
+END 
+
+END
+
+
+CREATE PROCEDURE getSearchEEnviar(IN fechaDesde DATE, IN fechaHasta DATE, IN empresa INT, IN paciente INT, IN completo VARCHAR, IN abierto VARCHAR, IN cerrado VARCHAR, IN eenviar VARCHAR, IN impago VARCHAR)
+
+BEGIN
+    SELECT 
+        pre.Fecha AS Fecha,
+        pre.Id AS IdPrestacion,
+        pc2.IdPrestacion AS presta,
+        pre.FechaEnviado AS FechaEnviado,
+        cli.EMailInformes AS Correo,
+        cli.RazonSocial AS Empresa,
+        CONCAT(pa.Apellido, ' ', pa.Nombre) AS NombreCompleto,
+        pa.Documento AS Documento,
+        pa.Id AS IdPaciente,
+        pre.eEnviado AS eEnviado,
+        pre.Cerrado AS Cerrado
+    FROM 
+        prestaciones AS pre
+    JOIN 
+        clientes AS cli ON pre.IdEmpresa = cli.Id AND (empresa IS NULL OR cli.Id = empresa)
+    JOIN 
+        pacientes AS pa ON pre.IdPaciente = pa.Id AND (paciente IS NULL OR pa.Id = paciente)
+    JOIN 
+        pagosacuenta AS pc ON cli.Id = pc.IdEmpresa
+    LEFT JOIN 
+        pagosacuenta_it AS pc2 ON pc.Id = pc2.IdPago
+    JOIN 
+        itemsprestaciones AS i ON pre.Id = i.IdPrestacion
+    WHERE 
+        pre.Id != 0
+        AND pre.Fecha != '0000-00-00'
+        AND pre.Fecha IS NOT NULL
+        AND i.Fecha BETWEEN fechaDesde AND fechaHasta
+        AND pre.Cerrado = 1
+        AND (
+            CASE
+                WHEN completo = 'activo' THEN i.CAdj IN (3, 5) AND i.CInfo = 3 AND pc.Pagado = 1
+                WHEN abierto = 'activo' THEN i.CAdj IN (0, 1, 2) AND i.CInfo = 1 AND pc.Pagado = 0
+                WHEN cerrado = 'activo' THEN i.CAdj IN (3, 4, 5) AND i.CInfo = 3 AND pc.Pagado IN (0, 1)
+                WHEN impago = 'activo' THEN EXISTS (
+                    SELECT 1 
+                    FROM pagosacuenta_it AS pc_it
+                    JOIN pagosacuenta AS pc_check ON pc_it.IdPago = pc_check.Id
+                    WHERE pc_it.IdPrestacion = pre.Id 
+                    AND pc_check.Pagado = 0
+                )
+                ELSE (completo IS NULL AND abierto IS NULL AND cerrado IS NULL AND impago IS NULL)
+            END
+        )
+        AND (
+            CASE
+                WHEN eenviar IS NULL OR eenviar = '' THEN TRUE
+                WHEN eenviar = 'eenviado' AND pre.eEnviado = 1 THEN TRUE
+                WHEN eenviar = 'noeenviado' AND pre.eEnviado = 0 THEN TRUE
+                WHEN eenviar = 'todos' AND pre.eEnviado IN (0, 1) THEN TRUE
+                ELSE FALSE
+            END
+        )
+    GROUP BY 
+        pre.Id
+    ORDER BY
+    	CASE 
+	        WHEN cli.EMailInformes IS NULL OR cli.EMailInformes = '' THEN 0
+	        ELSE 1
+	    END,
+    	cli.EMailInformes DESC,
+        pre.Fecha DESC,
+        cli.RazonSocial DESC
+    LIMIT 1000;
+END
+
+
+/*********** Cambio en Informador de columna Informador *******************/
+(CASE
+	        WHEN i.CInfo = 0 THEN ''
+            WHEN i.CInfo = 1 THEN 'Pendiente' 
+            WHEN i.CInfo = 2 THEN 'Borrador' 
+            WHEN i.CInfo = 3 THEN 'Cerrado' 
+            ELSE '-' 
+        END) AS EstadoInformador
+
+ALTER TABLE profesionales_prov MODIFY COLUMN IdRol VARCHAR(10) DEFAULT '0' NULL;
+#Aplicar a PreProduccion
+
+CREATE TABLE aliasExamenes(
+	Id int AUTO_INCREMENT NOT NULL,
+	UNIQUE(Id),
+	Nombre VARCHAR(30) NOT NULL,
+	Descripcion VARCHAR(225) NULL,
+	PRIMARY KEY(Id)
+);
+
+/*** No va en Pre Produccion ***/
+#ALTER TABLE examenes ADD COLUMN aliasexamen_id INT DEFAULT 0 NOT NULL;
+#INSERT INTO aliasExamenes(Id, Nombre, Descripcion) VALUES(0, 'Sin datos', 'Sin datos');
+#ALTER TABLE examenes ADD CONSTRAINT fk_aliasexamenes FOREIGN KEY (aliasexamen_id) REFERENCES aliasExamenes(Id);
+
+
+#Verificar el Id 0 de alias para evitar problemas
+
+ALTER TABLE archivosefector ADD PuntoCarga INT DEFAULT 0 NOT NULL;
+ALTER TABLE archivosinformador ADD PuntoCarga INT DEFAULT 0 NOT NULL;
+
+#CASCADE en fk_archivosefector y fk_archivosinformador (NO VA)
+ALTER TABLE examenes DROP FOREIGN KEY fk_aliasexamenes;
+ALTER TABLE examenes CHANGE aliasexamen_id aliasexamen VARCHAR(50) NULL;
+ALTER TABLE examenes MODIFY COLUMN aliasexamen VARCHAR(50) NULL;
+
+UPDATE examenes SET aliasexamen = NULL;
+
+ALTER TABLE mapas CHANGE IdEMpresa IdEmpresa int(11) NOT NULL
+
+/* Funciones de ViteJS */
+npm install
+npm laravel-vite-plugin
+
+-- npm install toastr jquery sweetalert select2 datatables.net datatables.net-dt
+|
+ALTER TABLE mapas ADD COLUMN FechaAsignacion DATE NULL;
+
+CREATE PROCEDURE getExamenes(IN tipo VARCHAR(50), IN Identifica INT, IN IdExamen VARCHAR(255))
+//
 
 DELIMITER ;
