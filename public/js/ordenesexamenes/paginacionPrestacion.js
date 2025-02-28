@@ -123,13 +123,14 @@ $(function() {
         new DataTable("#listaOrdenesPrestaciones", {
 
             searching: false,
-            ordering: false,
+            ordering: true,
             processing: true,
             lengthChange: false,
             pageLength: 500,
             deferRender: true,
-            responsive: false,
+            responsive: true,
             serverSide: true,
+            stateSave: true,
             ajax: {
                 url: SEARCHPRESTACION,
                 data: function(d){
@@ -155,52 +156,52 @@ $(function() {
             type: 'POST',
             columns: [
                 {//1
-                    data: null,
+                    data: "Especialidad",
                     width: "80.3px",
-                    render: function(data) {
+                    render: function(data, type, row) {
 
-                        return `<div id="listado" data-id="${data.IdItem}"><span title="${data.Especialidad}">${data.Especialidad}</span></div>`;
+                        return `<div id="listado" data-id="${row.IdItem}"><span title="${data}">${data}</span></div>`;
                     }
                 },
                 {//2
-                    data: null,
+                    data: "Fecha",
                     width: "63.3px",
-                    render: function(data) {
-                        return `<div class="text-center">${fechaNow(data.Fecha,'/',0)}</div>`;
+                    render: function(data, type, row) {
+                        return `<div class="text-center">${fechaNow(data,'/',0)}</div>`;
                     }
                 },
                 {//3
-                    data: null,
+                    data: "IdPrestacion",
                     width: "70.3px",
-                    render: function(data) {
-                        return `<div class="text-center">${data.IdPrestacion}</div>`;
+                    render: function(data, type, row) {
+                        return `<div class="text-center">${data}</div>`;
                     } 
                 },
                 {//4
-                    data: null,
-                    render: function(data) {
-                        return `<span title="${data.Empresa}">${data.Empresa}</span>`;
+                    data: "Empresa",
+                    render: function(data, type, row) {
+                        return `<span title="${data}">${data}</span>`;
                     }
                 },
                 {//5
-                    data: null,
-                    render: function(data){
-                        return `<span title="${data.NombreCompleto}">${[null, undefined, ''].includes(data.NombreCompleto) ? '' : data.NombreCompleto}</span>`;
+                    data: "NombreCompleto",
+                    render: function(data, type, row){
+                        return `<span title="${data}">${[null, undefined, ''].includes(data) ? '' : data}</span>`;
                     }
                 },
                 {
-                    data: null,
+                    data: "Dni",
                     width: "65.3px",
-                    render: function(data) {
-                        return data.Dni;
+                    render: function(data, type, row) {
+                        return data;
                     }
                 },
                 {//6
-                    data: null,
+                    data: "estado",
                     width: "60.3px",
-                    render: function(data){
+                    render: function(data, type, row){
 
-                        switch(data.estado) {
+                        switch(data) {
 
                             case 'Abierto':
                                 return '';
@@ -216,30 +217,30 @@ $(function() {
                     }
                 },
                 {
-                    data: null,
-                    render: function(data) {
-                        return data.eEnv;
+                    data: "eEnv",
+                    render: function(data, type, row) {
+                        return data;
                     }
                 },
                 {//7
-                    data: null,
+                    data: "Examen",
                     width: "50px",
-                    render: function(data) {
-                        return `<span title="${data.Examen}">${data.Examen}</span>`;
+                    render: function(data, type, row) {
+                        return `<span title="${data}">${data}</span>`;
                     }
                 },
                 {//8
-                    data: null,
-                    render: function(data){
+                    data: "profesionalEfector",
+                    render: function(data, type, row){
 
-                        let profesional = data.profesionalEfector;
+                        let profesional = data;
                         return ![null, undefined, ''].includes(profesional) ? `<span title="${profesional}">${profesional}</span>` : '';
                     }
                 },
                 {//9
-                    data: null,
-                    render: function(data){
-                        switch (data.EstadoEfector) {
+                    data: "EstadoEfector",
+                    render: function(data, type, row){
+                        switch (data) {
                             case 'Pendiente':
                                 return '<span class="custom-badge rojo">Abie</span>';
                             case 'Cerrado':
@@ -250,25 +251,25 @@ $(function() {
                     }
                 },
                 {//10
-                    data: null,
-                    render: function(data){
-                        return `<div class="text-center ${['Pdte_D','Pdte_F'].includes(data.Adj) ? 'rojo' : 'verde'}">${data.Adj}</div>`;
+                    data: "Adj",
+                    render: function(data, type, row){
+                        return `<div class="text-center ${['Pdte_D','Pdte_F'].includes(data) ? 'rojo' : 'verde'}">${data}</div>`;
                     }
                 },
                 {//11
-                    data: null,
-                    render: function(data){
-                        let profesional = data.profesionalInformador;
+                    data: "profesionalInformador",
+                    render: function(data, type, row){
+                        let profesional = data;
                         return ![null, undefined, ''].includes(profesional) ? `<span title="${profesional}">${profesional}</span>` : '';
                     }
                 },
                 {
-                    data: null,
-                    render: function(data) {
+                    data: "EstadoInformador",
+                    render: function(data, type, row) {
                         let resultado = '';
                 
-                        if (![undefined, null, ''].includes(data.EstadoInformador)) {
-                            switch(data.EstadoInformador) {
+                        if (![undefined, null, ''].includes(data)) {
+                            switch(data) {
                                 case 'Pendiente':
                                     resultado = '<span class="custom-badge rojo">Pdte</span>';
                                     break;
@@ -291,10 +292,10 @@ $(function() {
                     }
                 },
                 {//13
-                    data: null,
-                    render: function(data) {
-                        let fecha = new Date(data.Fecha + 'T00:00'); 
-                        fecha.setDate(fecha.getDate() + parseInt(data.DiasVencimiento));
+                    data: "DiasVencimiento",
+                    render: function(data, type, row) {
+                        let fecha = new Date(row.Fecha + 'T00:00'); 
+                        fecha.setDate(fecha.getDate() + parseInt(data));
 
                         let dia = String(fecha.getDate()).padStart(2, '0'),
                             mes = String(fecha.getMonth() + 1).padStart(2, '0'),
@@ -304,20 +305,19 @@ $(function() {
                     }
                 },         
                 {//13
-                    data: null,
-                    render: function(data) {
+                    data: "Acciones",
+                    render: function(data, type, row) {
 
 
-                        let editarEx = `<a title="Editar examen" href="${linkItemPrestacion}/${data.IdItem}/edit" target="_blank"><button type="button" class="btn btn-sm iconGeneralNegro"><i class="ri-edit-line"></i></button></a>`,
+                        let editarEx = `<a title="Editar examen" href="${linkItemPrestacion}/${row.IdItem}/edit" target="_blank"><button type="button" class="btn btn-sm iconGeneralNegro"><i class="ri-edit-line"></i></button></a>`,
                         
-                        editarPres = `<a title="Editar prestación" href="${linkPrestaciones}/${data.IdPrestacion}/edit" target="_blank"><button type="button" class="btn btn-sm iconGeneralNegro"><i class="far fa-address-card"></i></button></a>`;
+                        editarPres = `<a title="Editar prestación" href="${linkPrestaciones}/${row.IdPrestacion}/edit" target="_blank"><button type="button" class="btn btn-sm iconGeneralNegro"><i class="far fa-address-card"></i></button></a>`;
 
                         return editarEx + ' ' + editarPres;
                     }
                 }
             ],
             language: {
-                processing: "<div style='text-align: center; margin-top: 20px;'><img src='./images/spinner.gif' /><p>Cargando...</p></div>",
                 emptyTable: "No hay prestaciones con los datos buscados",
                 paginate: {
                     first: "Primera",

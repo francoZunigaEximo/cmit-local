@@ -196,26 +196,26 @@
             
                                 </div>
             
-                                <div class="table mt-3 mb-1 mx-auto">
-                                    <table id="listaOrdenesPrestaciones" class="table table-bordered">
+                                <div class="table mt-3 mb-1 mx-auto" style="overflow-x: auto;">
+                                    <table id="listaOrdenesPrestaciones" class="table table-striped">
                                         <thead class="table-light">
                                             <tr>
-                                                <th class="sort">Especialidad</th>
-                                                <th class="sort">Fecha</th>
-                                                <th class="sort">Prestación</th>
-                                                <th class="sort">Empresa</th>
-                                                <th class="sort">Paciente</th>
+                                                <th>Especialidad</th>
+                                                <th>Fecha</th>
+                                                <th>Prestación</th>
+                                                <th>Empresa</th>
+                                                <th>Paciente</th>
                                                 <th>DNI</th>
-                                                <th class="sort">E_Presta</th>
+                                                <th>E_Presta</th>
                                                 <th>eEnv</th>
-                                                <th class="sort">Examen</th>
-                                                <th class="sort">Efector</th>
-                                                <th class="sort">E_EFE</th>
-                                                <th class="sort">ADJ</th>
-                                                <th class="sort">Informador</th>
-                                                <th class="sort">E_INF</th>
+                                                <th>Examen</th>
+                                                <th>Efector</th>
+                                                <th>E_EFE</th>
+                                                <th>ADJ</th>
+                                                <th>Informador</th>
+                                                <th>E_INF</th>
                                                 <th>Fecha Vto</th>
-                                                <th class="sort">Acción</th>
+                                                <th>Acción</th>
                                             </tr>
                                         </thead>
                                         <tbody class="list form-check-all">
@@ -1113,12 +1113,11 @@
 <link rel="stylesheet" href="{{ asset('css/fixSelect2.css') }}">
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<link rel="stylesheet" href="{{ asset('css/dataTables.dataTables.min.css') }}">
 @endpush
 
 @push('scripts')
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+<script src="{{ asset('js/dataTables.min.js') }}"></script>
 
 <script src="{{ asset('js/jquery.validate.min.js') }}"></script>
 <script src="{{ asset('js/ordenesexamenes/validaciones.js')}}?v={{ time() }}"></script>
