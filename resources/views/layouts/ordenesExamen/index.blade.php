@@ -117,7 +117,6 @@
                                                         <option value="pendientes">Pendientes</option>
                                                         <option value="borrador">Borrador</option>
                                                         <option value="pendienteYborrador">Pendiente y borrador</option>
-                                                        <option value="todos">Todos</option>
                                                     </select>
                                                 </div>
 

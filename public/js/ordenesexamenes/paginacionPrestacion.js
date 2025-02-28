@@ -146,7 +146,7 @@ $(function() {
                     d.adjunto = $('#adjuntoPres').val();
                     d.examen = $('#examenPres').val();
                     d.pendiente = conPendiente;
-                    d.vencido = $('#vencidoPres').prop('checked') ? 1:0;
+                    d.vencido = $('#vencidoPres').prop('checked') ? 1 : null;
                     d.ausente = ausente;
                     d.adjuntoEfector = adjuntoEfector;
                 },
@@ -234,7 +234,7 @@ $(function() {
                     render: function(data, type, row){
 
                         let profesional = data;
-                        return ![null, undefined, ''].includes(profesional) ? `<span title="${profesional}">${profesional}</span>` : '';
+                        return ![null, undefined, ''].includes(profesional) ? `<span title="${profesional}" class="text-uppercase">${profesional}</span>` : '';
                     }
                 },
                 {//9
@@ -260,7 +260,7 @@ $(function() {
                     data: "profesionalInformador",
                     render: function(data, type, row){
                         let profesional = data;
-                        return ![null, undefined, ''].includes(profesional) ? `<span title="${profesional}">${profesional}</span>` : '';
+                        return ![null, undefined, ''].includes(profesional) ? `<span title="${profesional}" class="text-uppercase">${profesional}</span>` : '';
                     }
                 },
                 {
@@ -309,9 +309,17 @@ $(function() {
                     render: function(data, type, row) {
 
 
-                        let editarEx = `<a title="Editar examen" href="${linkItemPrestacion}/${row.IdItem}/edit" target="_blank"><button type="button" class="btn btn-sm iconGeneralNegro"><i class="ri-edit-line"></i></button></a>`,
-                        
-                        editarPres = `<a title="Editar prestación" href="${linkPrestaciones}/${row.IdPrestacion}/edit" target="_blank"><button type="button" class="btn btn-sm iconGeneralNegro"><i class="far fa-address-card"></i></button></a>`;
+                        let editarEx = `<a title="Editar examen" href="${linkItemPrestacion}/${row.IdItem}/edit" target="_blank" style="display: inline-block;">
+                                            <button type="button" class="btn btn-sm iconGeneralNegro">
+                                                <i class="ri-edit-line"></i>
+                                            </button>
+                                        </a>`;
+
+                        let editarPres = `<a title="Editar prestación" href="${linkPrestaciones}/${row.IdPrestacion}/edit" target="_blank" style="display: inline-block;">
+                                            <button type="button" class="btn btn-sm iconGeneralNegro">
+                                                <i class="far fa-address-card"></i>
+                                            </button>
+                                        </a>`;
 
                         return editarEx + ' ' + editarPres;
                     }

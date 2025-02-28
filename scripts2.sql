@@ -679,21 +679,30 @@ BEGIN
         i.CAdj AS Efector, 
         i.CInfo AS Informador, 
         i.IdProfesional AS IdProfesional, 
-        pro.Nombre AS Especialidad, 
-        pro.Id AS IdEspecialidad, 
+        proEfector.Nombre AS Especialidad, 
+        proEfector.Id AS IdEspecialidad, 
         pre.Id AS IdPrestacion, 
         pre.Cerrado AS PresCerrado, 
         pre.Finalizado AS PresFinalizado, 
         pre.Entregado AS PresEntregado, 
         pre.eEnviado AS PresEnviado, 
         cli.RazonSocial AS Empresa, 
-        pa.Nombre AS NombrePaciente, 
-        pa.Apellido AS ApellidoPaciente, 
+        CONCAT(pa.Apellido,' ',pa.Nombre) as NombreCompleto,
         pa.Documento AS Dni, 
-        prof1.Nombre AS NombreProfesional, 
-        prof1.Apellido AS ApellidoProfesional, 
-        prof2.Nombre AS NombreProfesional2, 
-        prof2.Apellido AS ApellidoProfesional2, 
+        -- (CASE 
+		--     WHEN (prof1.RegHis = 0 OR prof1.RegHis IS NULL) AND (i.IdProfesional = 0 OR i.IdProfesional IS NULL) THEN 
+		--         CONCAT(COALESCE(datosPro1.Apellido, ''), ' ', COALESCE(datosPro1.Nombre, ''))
+		--     ELSE 
+		--         CONCAT(COALESCE(prof1.Apellido, ''), ' ', COALESCE(prof1.Nombre, ''))
+		-- END) as profesionalEfector,
+        -- (CASE 
+        -- 	WHEN (prof2.RegHis = 0 OR prof2.RegHis IS NULL) AND (i.IdProfesional2 = 0 OR i.IdProfesional2 IS NULL) THEN 
+        -- 		CONCAT(COALESCE(datosPro2.Apellido, ''),' ',COALESCE(datosPro2.Nombre, ''))
+        -- 	ELSE 
+        -- 		CONCAT(COALESCE(prof2.Apellido, ''),' ',COALESCE(prof2.Nombre,''))
+        -- END) as profesionalInformador,
+		CONCAT(COALESCE(datosPro2.Apellido, ''),' ',COALESCE(datosPro2.Nombre, '')) as profesionalInformador,
+		CONCAT(COALESCE(datosPro1.Apellido, ''), ' ', COALESCE(datosPro1.Nombre, '')) as profesionalEfector,
         exa.Nombre AS Examen, 
         exa.Id AS IdExamen, 
         exa.DiasVencimiento AS DiasVencimiento, 
@@ -719,17 +728,18 @@ BEGIN
             WHEN i.CAdj IN (3,5) THEN 'Cerrado' 
             ELSE '-' 
         END) AS EstadoEfector,
-        (CASE 
+        (CASE
+	        WHEN i.CInfo = 0 THEN ''
             WHEN i.CInfo = 1 THEN 'Pendiente' 
             WHEN i.CInfo = 2 THEN 'Borrador' 
-            WHEN i.CInfo IN (3,0) THEN 'Cerrado' 
+            WHEN i.CInfo = 3 THEN 'Cerrado' 
             ELSE '-' 
         END) AS EstadoInformador
     FROM itemsprestaciones i 
     INNER JOIN prestaciones pre ON i.IdPrestacion = pre.Id 
         AND pre.Estado = 1 
         AND pre.Anulado = 0
-    INNER JOIN examenes exa ON i.IdExamen = exa.Id 
+    LEFT JOIN examenes exa ON i.IdExamen = exa.Id 
         AND (examen IS NULL OR exa.Id = examen) 
         AND (adjunto IS NULL OR 
             (CASE 
@@ -737,67 +747,72 @@ BEGIN
                 WHEN adjunto = 'digital' THEN exa.NoImprime = 1 
             END)
         )
-    INNER JOIN proveedores pro ON exa.IdProveedor2 = pro.Id 
-        AND (especialidad IS NULL OR pro.Id = especialidad)
-    INNER JOIN clientes cli ON pre.IdEmpresa = cli.Id 
-    INNER JOIN pacientes pa ON pre.IdPaciente = pa.Id 
-    INNER JOIN profesionales prof1 ON i.IdProfesional = prof1.Id 
+    LEFT JOIN proveedores proEfector ON exa.IdProveedor = proEfector.Id 
+	LEFT JOIN proveedores proInformador ON exa.IdProveedor2 = proInformador.Id 
+    LEFT JOIN clientes cli ON pre.IdEmpresa = cli.Id 
+    LEFT JOIN pacientes pa ON pre.IdPaciente = pa.Id 
+    LEFT JOIN profesionales prof1 ON i.IdProfesional = prof1.Id
         AND (efector IS NULL OR prof1.Id = efector)
-    INNER JOIN profesionales prof2 ON i.IdProfesional2 = prof2.Id 
+    LEFT JOIN profesionales prof2 ON i.IdProfesional2 = prof2.Id 
         AND (informador IS NULL OR prof2.Id = informador)
+    LEFT JOIN users userPro1 ON prof1.Id = userPro1.profesional_id
+    LEFT JOIN users userPro2 ON prof2.Id = userPro2.profesional_id
+    LEFT JOIN datos datosPro1 ON userPro1.datos_id = datosPro1.Id
+    LEFT JOIN datos datosPro2 ON userPro2.datos_id = datosPro2.Id
     LEFT JOIN archivosefector a ON i.Id = a.IdEntidad 
-    WHERE 
-        i.Id <> 0 
-        AND i.Fecha BETWEEN fechaDesde AND fechaHasta 
-        AND (estadoPres IS NULL OR
-            (estadoPres = 'abierto' AND pre.Finalizado = 0 AND pre.Cerrado = 0 AND pre.Entregado = 0
-            OR estadoPres = 'cerrado' AND pre.Cerrado = 1 AND pre.Finalizado = 0
-            OR estadoPres = 'finalizado' AND pre.Cerrado = 1 AND pre.Finalizado = 1 AND pre.Entregado = 0
-            OR estadoPres = 'entregado' AND pre.Cerrado = 1 AND pre.Finalizado = 1 AND pre.Entregado = 1
-            OR estadoPres = 'eenviado' AND pre.eEnviado = 1
+    WHERE i.Id <> 0 
+    AND i.Fecha BETWEEN fechaDesde AND fechaHasta
+    AND (
+        estadoPres IS NULL
+        OR (estadoPres = 'abierto' AND pre.Finalizado = 0 AND pre.Cerrado = 0 AND pre.Entregado = 0)
+        OR (estadoPres = 'cerrado' AND pre.Cerrado = 1 AND pre.Finalizado = 0)
+        OR (estadoPres = 'finalizado' AND pre.Cerrado = 1 AND pre.Finalizado = 1 AND pre.Entregado = 0)
+        OR (estadoPres = 'entregado' AND pre.Cerrado = 1 AND pre.Finalizado = 1 AND pre.Entregado = 1)
+        OR (estadoPres = 'eenviado' AND pre.eEnviado = 1)
+    )
+    AND (
+    	estadoEfector IS NULL 
+    	OR (estadoEfector = 'pendientes' AND i.CAdj IN (0,1,2))
+       	OR (estadoEfector = 'cerrados' AND i.CAdj IN (3,4,5))
+   )
+   AND (estadoInformador IS NULL 
+   		OR (estadoInformador = 'pendientes' AND i.CInfo = 1)
+        OR (estadoInformador = 'borrador' AND i.CInfo = 2)
+        OR (estadoInformador = 'pendienteYborrador' AND i.CInfo IN (1,2))
+   )
+   AND (tipoProv IS NULL 
+   		OR (tipoProv = 'interno' AND proEfector.Externo = 0)
+        OR (tipoProv = 'externo' AND proEfector.Externo = 1)
+        OR (tipoProv = 'todos' AND proEfector.Externo IN (0,1))
+   )
+   AND (adjuntoEfector IS NULL 
+   		OR (adjuntoEfector = 1 AND a.IdEntidad = i.Id AND exa.adjunto = 1)
+   )
+   AND (
+	    vencido IS NULL
+	    OR (
+	        vencido = 1 
+	        AND exa.DiasVencimiento > 0 
+	        AND pre.Finalizado = 0 
+	        AND pre.Vto <> 0 
+	        AND DATE_ADD(i.Fecha, INTERVAL exa.DiasVencimiento DAY) <= fechaHasta 
+	        AND DATE_ADD(i.Fecha, INTERVAL exa.DiasVencimiento DAY) > i.Fecha
+	    )
+	)
+	AND (pendiente IS NULL 
+		OR 
+            (
+            pendiente = 1 
+            	AND (i.CAdj IN(0,1,2,4) OR i.CInfo IN(1,2))
             )
-        )
-        AND (estadoEfector IS NULL OR
-            (estadoEfector = 'pendientes' AND i.CAdj IN (0,1,2) 
-            OR estadoEfector = 'cerrados' AND i.CAdj IN (3,4,5)
-            )
-        )
-        AND (estadoInformador IS NULL OR
-            (estadoInformador = 'pendientes' AND i.CInfo = 1 
-            OR estadoInformador = 'borrador' AND i.CInfo = 2
-            OR estadoInformador = 'pendienteYborrador' AND i.CInfo IN (1,2)
-            )
-        )
-        AND (tipoProv IS NULL OR
-            (tipoProv = 'interno' AND pro.Externo = 0 
-            OR tipoProv = 'externo' AND pro.Externo = 1
-            OR tipoProv = 'todos' AND pro.Externo IN (0,1)
-            )
-        )
-        AND (ausente IS NULL OR
-            (ausente = 'ausente' AND i.Ausente = 1 
-            OR ausente = 'noAusente' AND i.Ausente = 0
-            OR ausente = 'todos' AND i.Ausente IN (0,1)
-            )
-        )
-        AND (adjuntoEfector IS NULL OR
-            (adjuntoEfector = 1 AND a.IdEntidad = i.Id AND exa.adjunto = 1)
-        )
-        AND (vencido IS NULL OR
-            (vencido = 1 AND exa.DiasVencimiento > 0 AND pre.Finalizado = 0 AND pre.Vto <> 0 AND DATE_ADD(i.Fecha, INTERVAL exa.DiasVencimiento DAY) <= fechaHasta AND DAY(DATE_ADD(i.Fecha, INTERVAL exa.DiasVencimiento DAY)) > DAY(i.Fecha))
-        )
-        AND (pendiente IS NULL OR 
-            (pendiente = 1 AND i.CAdj IN(0,1,2) 
-                           OR i.CAdj IN(1,4) 
-                           OR i.CInfo=1 
-                           OR i.CInfo=2 
-                           AND (estadoInformador IS NULL
-                           AND tipoProv IS NULL 
-                           AND ausente IS NULL
-                           AND adjuntoEfector IS NULL)
-            )
-        )
-        AND i.Anulado = 0
+    )
+    AND (ausente IS NULL 
+    		OR (ausente = 'ausente' AND i.Ausente = 1)
+            OR (ausente = 'noAusente' AND i.Ausente = 0)
+            OR (ausente = 'todos' AND i.Ausente IN (0,1))
+    )
+
+    AND i.Anulado = 0
     ORDER BY i.Id DESC 
     LIMIT 5000;
 END
@@ -924,55 +939,152 @@ ALTER TABLE mapas ADD COLUMN FechaAsignacion DATE NULL;
 
 CREATE PROCEDURE getExamenes(IN tipo VARCHAR(50), IN Identifica INT, IN IdExamen VARCHAR(255))
 BEGIN
-	SELECT 
-	    examenes.Nombre as Nombre,
-	    examenes.Id as IdExamen,
-	    examenes.Adjunto as ExaAdj,
-	    examenes.Informe as Informe,
-	    informador.InfAdj as InfAdj,
-	    examenes.NoImprime as ExaNI,
-	    CONCAT(efector.Apellido, " ", efector.Nombre) as EfectorFullName, 
-	    CONCAT(informador.Apellido, " ", informador.Nombre) as InformadorFullName,
-	    CONCAT(datosEfector.Apellido, " ", datosEfector.Nombre) as DatosEfectorFullName,
-	    CONCAT(datosInformador.Apellido, " ", datosInformador.Nombre) as DatosInformadorFullName,
-	    efector.Apellido as EfectorApellido,
-	    informador.Apellido as InformadorApellido,
-	    datosEfector.Apellido as DatosEfectorApellido,
-	    datosInformador.Apellido as DatosInformadorApellido,
-	    efector.RegHis as RegHis,
-	    itemsprestaciones.Ausente as Ausente,
-	    itemsprestaciones.Forma as Forma,
-	    itemsprestaciones.Incompleto as Incompleto,
-	    itemsprestaciones.SinEsc as SinEsc,
-	    itemsprestaciones.Devol as Devol,
-	    itemsprestaciones.CAdj as CAdj,
-	    itemsprestaciones.CInfo as CInfo,
-	    itemsprestaciones.Id as IdItem,
-	    itemsprestaciones.Anulado as Anulado,
-	    (SELECT COUNT(*) FROM archivosefector WHERE IdEntidad = itemsprestaciones.Id) as archivos,
-	    (SELECT COUNT(*) FROM archivosinformador WHERE IdEntidad = itemsprestaciones.Id) as archivosI,
-	   efector.Id as IdEfector,
-	   informador.Id as IdInformador,
-	   userEfector.id as IdUserEfector,
-	   userInformador.id as IdUserInformador
-	FROM itemsprestaciones
-	LEFT JOIN profesionales as efector ON itemsprestaciones.IdProfesional = efector.Id
-	LEFT JOIN users as userEfector ON efector.Id = userEfector.profesional_id
-	LEFT JOIN datos as datosEfector ON userEfector.datos_id = datosEfector.Id
-	LEFT JOIN profesionales as informador ON itemsprestaciones.IdProfesional2 = informador.Id
-	LEFT JOIN users as userInformador ON informador.Id = userInformador.profesional_id
-	LEFT JOIN datos as datosInformador ON userInformador.datos_id = datosInformador.Id
-	LEFT JOIN examenes ON itemsprestaciones.IdExamen = examenes.Id
-	LEFT JOIN proveedores as proveedor2 ON examenes.IdProveedor = proveedor2.Id
-	JOIN prestaciones ON itemsprestaciones.IdPrestacion = prestaciones.Id
-	LEFT JOIN archivosefector ON itemsprestaciones.Id = archivosefector.IdEntidad
-	LEFT JOIN archivosinformador ON itemsprestaciones.Id = archivosinformador.IdEntidad
-	WHERE 
-		(tipo != 'listado' 
-         OR (tipo = 'listado' 
-             AND FIND_IN_SET(examenes.Id, IdExamen) > 0 
-             AND itemsprestaciones.IdPrestacion = Identifica))
-	ORDER BY efector.IdProveedor ASC, examenes.Nombre ASC, itemsprestaciones.Fecha ASC;
+    SELECT 
+        i.Id AS IdItem, 
+        i.Fecha AS Fecha, 
+        i.CAdj AS Efector, 
+        i.CInfo AS Informador, 
+        i.IdProfesional AS IdProfesional, 
+        proEfector.Nombre AS Especialidad, 
+        proEfector.Id AS IdEspecialidad, 
+        pre.Id AS IdPrestacion, 
+        pre.Cerrado AS PresCerrado, 
+        pre.Finalizado AS PresFinalizado, 
+        pre.Entregado AS PresEntregado, 
+        pre.eEnviado AS PresEnviado, 
+        cli.RazonSocial AS Empresa, 
+        CONCAT(pa.Apellido,' ',pa.Nombre) as NombreCompleto,
+        pa.Documento AS Dni, 
+         (CASE 
+		     WHEN (userPro1.profesional_id <> 0 AND (prof1.Nombre IS NULL OR prof1.Nombre = '')) THEN 
+		         CONCAT(COALESCE(datosPro1.Apellido, ''), ' ', COALESCE(datosPro1.Nombre, ''))
+		     ELSE 
+		         CONCAT(COALESCE(prof1.Apellido, ''), ' ', COALESCE(prof1.Nombre, ''))
+		 END) as profesionalEfector,
+         (CASE 
+         	WHEN (userPro2.profesional_id <> 0 AND (prof2.Nombre IS NULL OR prof1.Nombre = '')) THEN
+         		CONCAT(COALESCE(datosPro2.Apellido, ''),' ',COALESCE(datosPro2.Nombre, ''))
+         	ELSE 
+         		CONCAT(COALESCE(prof2.Apellido, ''),' ',COALESCE(prof2.Nombre,''))
+        END) as profesionalInformador,
+        exa.Nombre AS Examen, 
+        exa.Id AS IdExamen, 
+        exa.DiasVencimiento AS DiasVencimiento, 
+        (CASE 
+            WHEN i.CAdj IN (1,4) AND exa.NoImprime = 1 THEN 'Pdte_D' 
+            WHEN i.CAdj IN (1,4) AND exa.NoImprime = 0 THEN 'Pdte_F' 
+            WHEN i.CAdj IN (2,5) THEN 'Adj' 
+            ELSE ' ' 
+        END) AS Adj,
+        (CASE 
+            WHEN pre.Finalizado = 0 AND pre.Cerrado = 0 AND pre.Entregado = 0 THEN 'Abierto' 
+            WHEN pre.Cerrado = 1 AND pre.Finalizado = 0 THEN 'Cerrado' 
+            WHEN pre.Cerrado = 1 AND pre.Finalizado = 1 AND pre.Entregado = 0 THEN 'Finalizado' 
+            WHEN pre.Cerrado = 1 AND pre.Finalizado = 1 AND pre.Entregado = 1 THEN 'Entregado' 
+            ELSE ' ' 
+        END) AS estado,
+        (CASE 
+            WHEN pre.eEnviado = 1 THEN 'eEnv' 
+            ELSE '' 
+        END) AS eEnv,
+        (CASE 
+            WHEN i.CAdj IN (1,2,4) THEN 'Pendiente' 
+            WHEN i.CAdj IN (3,5) THEN 'Cerrado' 
+            ELSE '-' 
+        END) AS EstadoEfector,
+        (CASE
+	        WHEN i.CInfo = 0 THEN ''
+            WHEN i.CInfo = 1 THEN 'Pendiente' 
+            WHEN i.CInfo = 2 THEN 'Borrador' 
+            WHEN i.CInfo = 3 THEN 'Cerrado' 
+            ELSE '-' 
+        END) AS EstadoInformador
+    FROM itemsprestaciones i 
+    INNER JOIN prestaciones pre ON i.IdPrestacion = pre.Id 
+        AND pre.Estado = 1 
+        AND pre.Anulado = 0
+    LEFT JOIN examenes exa ON i.IdExamen = exa.Id 
+        AND (examen IS NULL OR exa.Id = examen) 
+        AND (adjunto IS NULL OR 
+            (CASE 
+                WHEN adjunto = 'fisico' THEN exa.NoImprime = 0 
+                WHEN adjunto = 'digital' THEN exa.NoImprime = 1 
+            END)
+        )
+    LEFT JOIN proveedores proEfector ON exa.IdProveedor = proEfector.Id 
+	LEFT JOIN proveedores proInformador ON exa.IdProveedor2 = proInformador.Id 
+    LEFT JOIN clientes cli ON pre.IdEmpresa = cli.Id 
+    LEFT JOIN pacientes pa ON pre.IdPaciente = pa.Id 
+    LEFT JOIN profesionales prof1 ON i.IdProfesional = prof1.Id
+        AND (efector IS NULL OR prof1.Id = efector)
+    LEFT JOIN profesionales prof2 ON i.IdProfesional2 = prof2.Id 
+        AND (informador IS NULL OR prof2.Id = informador)
+    LEFT JOIN users userPro1 ON prof1.Id = userPro1.profesional_id
+    LEFT JOIN users userPro2 ON prof2.Id = userPro2.profesional_id
+    LEFT JOIN datos datosPro1 ON userPro1.datos_id = datosPro1.Id
+    LEFT JOIN datos datosPro2 ON userPro2.datos_id = datosPro2.Id
+    LEFT JOIN archivosefector a ON i.Id = a.IdEntidad 
+    WHERE i.Id <> 0 
+    AND i.Fecha BETWEEN fechaDesde AND fechaHasta
+    AND (
+        estadoPres IS NULL
+        OR (estadoPres = 'abierto' AND pre.Finalizado = 0 AND pre.Cerrado = 0 AND pre.Entregado = 0)
+        OR (estadoPres = 'cerrado' AND pre.Cerrado = 1 AND pre.Finalizado = 0)
+        OR (estadoPres = 'finalizado' AND pre.Cerrado = 1 AND pre.Finalizado = 1 AND pre.Entregado = 0)
+        OR (estadoPres = 'entregado' AND pre.Cerrado = 1 AND pre.Finalizado = 1 AND pre.Entregado = 1)
+        OR (estadoPres = 'eenviado' AND pre.eEnviado = 1)
+    )
+    AND (
+    	estadoEfector IS NULL 
+    	OR (estadoEfector = 'pendientes' AND i.CAdj IN (0,1,2))
+       	OR (estadoEfector = 'cerrados' AND i.CAdj IN (3,4,5))
+   )
+   AND (estadoInformador IS NULL 
+   		OR (estadoInformador = 'pendientes' AND i.CInfo = 1)
+        OR (estadoInformador = 'borrador' AND i.CInfo = 2)
+        OR (estadoInformador = 'pendienteYborrador' AND i.CInfo IN (1,2))
+   )
+   AND (tipoProv IS NULL 
+   		OR (tipoProv = 'interno' AND proEfector.Externo = 0)
+        OR (tipoProv = 'externo' AND proEfector.Externo = 1)
+        OR (tipoProv = 'todos' AND proEfector.Externo IN (0,1))
+   )
+   AND (adjuntoEfector IS NULL 
+   		OR (adjuntoEfector = 1 AND a.IdEntidad = i.Id AND exa.adjunto = 1)
+   )
+   AND (especialidad IS NULL OR (proEfector.Id = especialidad))
+   AND (efector IS NULL OR (prof1.Id = efector))
+   AND (informador IS NULL OR (prof2.Id = informador))
+   AND (
+	    vencido IS NULL
+	    OR (
+	        vencido = 1 
+	        AND exa.DiasVencimiento > 0 
+	        AND pre.Finalizado = 0 
+	        AND pre.Vto <> 0 
+	        AND DATE_ADD(i.Fecha, INTERVAL exa.DiasVencimiento DAY) <= fechaHasta 
+	        AND DATE_ADD(i.Fecha, INTERVAL exa.DiasVencimiento DAY) > i.Fecha
+	    )
+	)
+	
+    AND (ausente IS NULL 
+    		OR (ausente = 'ausente' AND i.Ausente = 1)
+            OR (ausente = 'noAusente' AND i.Ausente = 0)
+            OR (ausente = 'todos' AND i.Ausente IN (0,1))
+    )
+   AND (pendiente IS NULL 
+    OR 
+    pendiente <> 1
+    OR 
+    (
+        pendiente = 1 
+        AND (i.CAdj IN (0,1,2,4) OR i.CInfo IN (1,2))
+    )
+)
+    AND i.Anulado = 0
+    GROUP BY(i.Id)
+    ORDER BY i.Id DESC 
+    LIMIT 5000;
 END //
 
 DELIMITER ;
