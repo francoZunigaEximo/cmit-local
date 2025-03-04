@@ -679,7 +679,6 @@ $(document).ready(function () {
 
     async function checkExCuentaDisponible(id) {
         $data = await $.get(checkDisponibilidad, {Id: id});
-        console.log("funcion: " + $data);
         return $data > 0 ? true : false;
     }
 

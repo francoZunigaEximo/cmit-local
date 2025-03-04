@@ -1352,27 +1352,62 @@ $(function(){
             })
     });
 
-    function comentariosPrivados(){
+    $(document).on('click', '.deleteComentario', function(e){
+        e.preventDefault;
+
+        let id = $(this).data('id');
+
+        if(['',0, undefined, null].includes(id)) return;
+
+        swal({
+            title: "¿Está seguro que desea eliminar el comentario privado?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar) {
+
+                preloader('on')
+                $.get(eliminarComentario, {Id: id})
+                    .done(function(response){
+                        preloader('off');
+                        toastr.success(response.msg,'',{timeOut: 1000});
+                        comentariosPrivados();
+                    })
+                    .fail(function(jqXHR){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
+                    })
+
+            }
+        })
+
+        
+    });
+
+    async function comentariosPrivados(){
 
         $('#privadoPrestaciones').empty();
         preloader('on');
         let idp =  $('#idPrestacion').val();
-        $.get(privateComment, {Id: idp,  tipo: 'prestacion'})
-            .done(async function(response){
+        $.get(await privateComment, {Id: idp,  tipo: 'prestacion'})
+            .done(function(response){
                 preloader('off');
-                let data = await response.result;
+                let data = response.result;
 
-                for(let d = 0; d < data.length; d++){
-                    let contenido =  `
-                        <tr>
-                            <td style="width: 120px">${fechaCompleta(d.Fecha)}</td>
-                            <td style="width: 120px" class="text-capitalize">${d.IdUsuario}</td>
-                            <td style="width: 120px" class="text-uppercase">${d.nombre_perfil}</td>
-                            <td>${d.Comentario}</td>
-                            <td style="width: 60px">${USER === d.IdUsuario ? '<button type="button" class="btn btn-sm iconGeneralNegro"><i class="ri-edit-line"></i></button><button title="Eliminar" type="button" class="btn btn-sm iconGeneralNegro "><i class="ri-delete-bin-2-line"></i></button>' : ''}</td>
-                        </tr>
-                    `;
-                    $('#privadoPrestaciones').append(contenido);
+                for(let index = 0; index < data.length; index++){
+                    let d = data[index],
+                        contenido =  `
+                            <tr>
+                                <td style="width: 120px">${fechaCompleta(d.Fecha)}</td>
+                                <td style="width: 120px" class="text-capitalize">${d.IdUsuario}</td>
+                                <td style="width: 120px" class="text-uppercase">${d.nombre_perfil}</td>
+                                <td>${d.Comentario}</td>
+                                <td style="width: 60px">${USER === d.IdUsuario ? `<button type="button" class="btn btn-sm iconGeneralNegro"><i class="ri-edit-line"></i></button><button title="Eliminar" type="button" data-id="${d.Id}" class="btn btn-sm iconGeneralNegro deleteComentario"><i class="ri-delete-bin-2-line"></i></button>` : ''}</td>
+                            </tr>
+                        `;
+                        $('#privadoPrestaciones').append(contenido);
                 }
 
                 $('#lstPrivPrestaciones').fancyTable({

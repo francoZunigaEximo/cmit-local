@@ -886,6 +886,40 @@ $(function() {
             });
     });
 
+    $(document).on('click', '.deleteComentario', function(e){
+        e.preventDefault;
+
+        let id = $(this).data('id');
+
+        if(['',0, undefined, null].includes(id)) return;
+
+        swal({
+            title: "¿Está seguro que desea eliminar el comentario privado?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar) {
+
+                preloader('on')
+                $.get(eliminarComentario, {Id: id})
+                    .done(function(response){
+                        preloader('off');
+                        toastr.success(response.msg,'',{timeOut: 1000});
+                        comentariosPrivados();
+                    })
+                    .fail(function(jqXHR){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
+                    })
+
+            }
+        })
+
+        
+    });
+
     function loadListAdjPrestacion() {
 
         $('#adjPrestacion').empty();
@@ -1099,7 +1133,7 @@ $(function() {
                             <td style="width: 120px" class="text-capitalize">${d.IdUsuario}</td>
                             <td style="width: 120px" class="text-uppercase">${d.nombre_perfil}</td>
                             <td class="text-start">${d.Comentario}</td>
-                            <td style="width: 60px">${USER === d.IdUsuario ? '<button type="button" class="btn btn-sm iconGeneralNegro"><i class="ri-edit-line"></i></button><button title="Eliminar" type="button" class="btn btn-sm iconGeneralNegro "><i class="ri-delete-bin-2-line"></i></button>' : ''}</td>
+                            <td style="width: 60px">${USER === d.IdUsuario ? `<button type="button" class="btn btn-sm iconGeneralNegro"><i class="ri-edit-line"></i></button><button title="Eliminar" data-id="${d.Id}" type="button" class="btn btn-sm iconGeneralNegro deleteComentario"><i class="ri-delete-bin-2-line"></i></button>` : ''}</td>
                         </tr>
                     `;
                     $('#privadoPrestaciones').append(contenido);

@@ -1534,6 +1534,7 @@ const editModal = " {{ route('itemsprestaciones.editModal') }}";
 const checkAdj = "{{ route('itemsprestaciones.checkAdjuntos') }}";
 const paginacionGeneral = "{{ route('paginacionGeneral') }}";
 const listGeneral = "{{ route('listGeneral') }}";
+const eliminarComentario = "{{ route('comentariosPriv.eliminar') }}";
 
 const fileUpload = "{{ route('uploadAdjunto') }}";
 const descargaE = "@fileUrl('lectura')/AdjuntosEfector";

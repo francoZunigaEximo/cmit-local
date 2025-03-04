@@ -1218,6 +1218,7 @@ const checkObs = "{{ route('checkObs') }}";
 const excelPrestaciones = "{{ route('prestaciones.excel') }}";
 const checkDisponibilidad = "{{ route('examenesCuenta.checkDisponibilidad') }}"
 const USER = "{{ Auth::user()->name }}";
+const eliminarComentario = "{{ route('comentariosPriv.eliminar') }}";
 
 $('#excel').click(function(e) {
     e.preventDefault();

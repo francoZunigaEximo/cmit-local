@@ -566,7 +566,11 @@ $(function() {
                         <td>${f.ApellidoPaciente} ${f.NombrePaciente}</td>
                         <td>${f.Documento}</td>
                         <td><span style="text-align=center" class="custom-badge pequeno">${f.Finalizado === 1 ? `Finalizado` : `Cerrado`}</span></td>
-                        <td><button data-id="${f.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
+                        <td><button data-id="${f.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button>
+                        <button title="Observaciones privadas" type="button" class="iconGeneral btn btn-sm comentarioPrivado" data-bs-toggle="modal" data-bs-target="#comentarioPrivado" data-id="${f.IdPrestacion}" data-nombre="${f.ApellidoPaciente} ${f.NombrePaciente}" data-fase="finalizado">
+                                <i class="ri-chat-quote-line"></i>
+                            </button>
+                        </td>
                         <td>${f.Finalizado === 1 ? '<input type="checkbox" disabled>' : `<input type="checkbox" name="Id_finalizar" value="${f.IdPrestacion}" checked>`}</td>
                         
                     </tr>
@@ -1009,6 +1013,43 @@ $(function() {
             });    
     });
 
+    $(document).on('click', '.deleteComentario', function(e){
+        e.preventDefault;
+
+        let id = $(this).data('id');
+
+        if(['',0, undefined, null].includes(id)) return;
+
+        swal({
+            title: "¿Está seguro que desea eliminar el comentario privado?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar) {
+
+                preloader('on')
+                $.get(eliminarComentario, {Id: id})
+                    .done(function(response){
+                        preloader('off');
+                        toastr.success(response.msg,'',{timeOut: 1000});
+                        listaComentariosPrivados(IDMAPA, 'prestaciones','mapa');
+                        listaComentariosPrivados(IDMAPA, 'cerrado','mapa');
+                        listaComentariosPrivados(IDMAPA, 'finalizado','mapa');
+                        listaComentariosPrivados(IDMAPA, 'eEnviado','mapa');
+                    })
+                    .fail(function(jqXHR){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
+                    })
+
+            }
+        })
+
+        
+    });
+
     function updateContador() {
         let longitud = $('#remitoObs').val(), caracteres = longitud.length;
         $('#contadorRemitoObs').text(caracteres + '/' + maxCaracteres);
@@ -1148,8 +1189,9 @@ $(function() {
                     <td>${f.Documento}</td>
                     <td><span style="text-align=center" class="custom-badge pequeno">${f.Finalizado === 1 ? `Finalizado` : `Cerrado`}</span></td>
                     <td><button data-id="${f.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button>
-                     <button title="Observaciones privadas" type="button" class="iconGeneral btn btn-sm comentarioPrivado" data-bs-toggle="modal" data-bs-target="#comentarioPrivado"  data-id="${f.IdPrestacion}" data-nombre="${f.ApellidoPaciente} ${d.NombrePaciente}" data-fase="finalizado"></button>
-                                    <i class="ri-chat-quote-line"></i></td>
+                     <button title="Observaciones privadas" type="button" class="iconGeneral btn btn-sm comentarioPrivado" data-bs-toggle="modal" data-bs-target="#comentarioPrivado"  data-id="${f.IdPrestacion}" data-nombre="${f.ApellidoPaciente} ${f.NombrePaciente}" data-fase="finalizado">
+                                    <i class="ri-chat-quote-line"></i>
+                    </button></td>
                     <td>${f.Finalizado === 1 ? `<input type="checkbox" disabled>` : `<input type="checkbox" name="Id_finalizar" value="${f.IdPrestacion}" checked>`}</td>
                 </tr>
             `;
@@ -1203,7 +1245,9 @@ $(function() {
                         <td>${en.IdPrestacion} ${en.EmpresaSinEnvio === 1 ? `<i title="La empresa no tiene habilitado los envios de Emails" class="ri-mail-forbid-line rojo"></i>` : ``} ${en.ArtSinEnvio === 1 ? `<i title="La ART no tiene habilitado los envios de Emails" class="ri-mail-forbid-line rojo"></i>` : ``}</td>
                         <td>${en.ApellidoPaciente} ${en.NombrePaciente}</td>
                         <td>${en.Documento}</td>
-                        <td><span class="custom-badge pequeno">${(en.eEnviado === 1 ? 'eEnviado':'No eEnviado')}</span></td>
+                        <td>
+                            <span class="custom-badge pequeno">${(en.eEnviado === 1 ? 'eEnviado':'No eEnviado')}</span>
+                        </td>
                         <td>
                             <button data-id="${en.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button>
                             <button data-id="${en.IdPrestacion}" class="btn btn-sm iconGeneral vistaPreviaEnviar" title="Vista previa"><i class="ri-file-search-line"></i></button>
@@ -1211,7 +1255,8 @@ $(function() {
                                     <i class="ri-chat-quote-line"></i>
                             </button>
                         </td>
-                        <td>${en.eEnviado === 1 ? '' : en.eEnviado === 0 && en.Finalizado === 1 && en.Cerrado === 1 && en.Etapa === 'Completo' ? `<input type="checkbox" name="Id_enviar" value="${en.IdPrestacion}" checked>` : `<span class="custom-badge pequeno">Bloqueado</span>`}
+                        <td>
+                            ${en.eEnviado === 1 ? '' : en.eEnviado === 0 && en.Finalizado === 1 && en.Cerrado === 1 && en.Etapa === 'Completo' ? `<input type="checkbox" name="Id_enviar" value="${en.IdPrestacion}" checked>` : `<span class="custom-badge pequeno">Bloqueado</span>`}
                         </td> 
                     </tr>
                 `;
@@ -1303,7 +1348,7 @@ $(function() {
                             <td style="width: 120px" class="text-uppercase">${d.IdUsuario}</td>
                             <td style="width: 120px">${typeof(d.nombre_perfil) === 'int' ? '-' : d.nombre_perfil}</td>
                             <td>${d.Comentario}</td>
-                            <td style="width: 60px">${USER === d.IdUsuario || isAdmin ? '<button type="button" class="btn btn-sm iconGeneralNegro"><i class="ri-edit-line"></i></button><button title="Eliminar" type="button" class="btn btn-sm iconGeneralNegro "><i class="ri-delete-bin-2-line"></i></button>' : ''}</td>
+                            <td style="width: 60px">${USER === d.IdUsuario || isAdmin ? `<button type="button" class="btn btn-sm iconGeneralNegro"><i class="ri-edit-line"></i></button><button title="Eliminar" data-id="${d.Id}" type="button" class="btn btn-sm iconGeneralNegro deleteComentario"><i class="ri-delete-bin-2-line"></i></button>` : ''}</td>
                         </tr>
                     `;
 

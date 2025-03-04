@@ -75,19 +75,19 @@ class PrestacionesObsFasesController extends Controller
         ]);
     }
 
-    public function deleteComentario(Request $request): mixed 
+    public function deleteComentario(Request $request)
     {
         $query = PrestacionObsFase::find($request->Id);
-
-        if(!$query) {
-            return response()->json(['msg' => 'No se ha encontrado el identificador'], 409);
-        }
 
         if(Auth::user()->name !== $query->IdUsuario || !$this->roles->userAdmin(Auth::user()->id)) {
             return response()->json(['msg' => 'No puedes realizar la operación. Debes ser el usuario creador del comentario o un administrador']);
         }
+        if($query) {
+            $query->delete();
+            return response()->json(['msg' => 'Se ha eliminado el comentario correctamente'], 200);
+        }
 
-        return $query->delete();
+        
     }
 
     public function listadoRoles(Request $request)

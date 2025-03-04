@@ -157,11 +157,11 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('porcentajeExamen', [ExamenesController::class, 'porcentajeExamen'])->name('porcentajeExamen');
     Route::get('searchExamenes', [ExamenesController::class, 'searchExamenes'])->name('searchExamenes');
     Route::post('updateExamen', [ExamenesController::class, 'updateExamen'])->name('updateExamen');
-    Route::get('examenes/exportar/excel', [ExamenesController::class, 'excel'])->name('examenes.excel');
+    Route::get('/examenes/exportar/excel', [ExamenesController::class, 'excel'])->name('examenes.excel');
 
     //Ruta de Comentarios de Prestaciones
-    Route::post('setComentarioPres', [ComentariosPrestacionesController::class, 'setComentarioPres'])->name('setComentarioPres');
-    Route::get('getComentarioPres', [ComentariosPrestacionesController::class, 'getComentarioPres'])->name('getComentarioPres');
+    Route::post('/comentarios/guardar', [ComentariosPrestacionesController::class, 'setComentarioPres'])->name('setComentarioPres');
+    Route::get('/comentarios', [ComentariosPrestacionesController::class, 'getComentarioPres'])->name('getComentarioPres');
 
     //Rutas de Autorizados
     Route::post('/autorizados/eliminar', [AutorizadoController::class, 'delete'])->name('deleteAutorizado');
@@ -169,12 +169,12 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/autorizados/alta', [AutorizadoController::class, 'alta'])->name('clientes.altaAutorizado');
 
     //Rutas de Telefonos
-    Route::get('getTelefonos', [TelefonosController::class, 'getTelefonos'])->name('getTelefonos');
-    Route::post('deleteTelefono', [TelefonosController::class, 'deleteTelefono'])->name('deleteTelefono');
-    Route::post('saveTelefono', [TelefonosController::class, 'saveTelefono'])->name('saveTelefono');
+    Route::get('/telefonos', [TelefonosController::class, 'getTelefonos'])->name('getTelefonos');
+    Route::post('/telefonos/eliminar', [TelefonosController::class, 'deleteTelefono'])->name('deleteTelefono');
+    Route::post('/telefonos/guardar', [TelefonosController::class, 'saveTelefono'])->name('saveTelefono');
 
     //Rutas de Localidades
-    Route::get('searchLocalidad', [LocalidadController::class, 'searchLocalidad'])->name('searchLocalidad');
+    Route::get('/localidades/buscar', [LocalidadController::class, 'searchLocalidad'])->name('searchLocalidad');
 
     //Rutas de Mapas
     Route::get('/mapas/excel', [MapasController::class, 'export'])->name('mapas.exportar');
@@ -209,32 +209,31 @@ Route::group(['middleware' => 'auth'], function () {
     
     //Rutas de Profesionales
     //Route::resource('profesionales', ProfesionalesController::class);
-    Route::get('getEvaluador', [ProfesionalesController::class, 'getEvaluador'])->name('getEvaluador');
-    Route::get('searchProfesionales', [ProfesionalesController::class, 'search'])->name('searchProfesionales');
-    Route::post('estadoProfesional', [ProfesionalesController::class, 'estado'])->name('estadoProfesional');
-    Route::post('setPerfiles', [ProfesionalesController::class, 'setPerfil'])->name('setPerfiles');
-    Route::get('getPerfiles', [ProfesionalesController::class, 'getPerfil'])->name('getPerfiles');
-    Route::post('delPerfil', [ProfesionalesController::class, 'delPerfil'])->name('delPerfil');
-    Route::post('checkDocumento', [ProfesionalesController::class, 'checkDocumento'])->name('checkDocumento');
-    Route::post('profesionales/opcion/save', [ProfesionalesController::class, 'opciones'])->name('profesionales.opciones');
-    Route::post('profesionales/seguro/save', [ProfesionalesController::class, 'seguro'])->name('profesionales.seguro');
+    Route::get('/profesionales/evaluador', [ProfesionalesController::class, 'getEvaluador'])->name('getEvaluador');
+    Route::get('/profesionales/buscar', [ProfesionalesController::class, 'search'])->name('searchProfesionales');
+    Route::post('/profesionales/estado', [ProfesionalesController::class, 'estado'])->name('estadoProfesional');
+    Route::post('/profesionales/perfil/guardar', [ProfesionalesController::class, 'setPerfil'])->name('setPerfiles');
+    Route::get('/profesionales/perfil', [ProfesionalesController::class, 'getPerfil'])->name('getPerfiles');
+    Route::post('/profesionales/eliminar/perfil', [ProfesionalesController::class, 'delPerfil'])->name('delPerfil');
+    Route::post('/profesionales/documento/chequear', [ProfesionalesController::class, 'checkDocumento'])->name('checkDocumento');
+    Route::post('/profesionales/opcion/guardar', [ProfesionalesController::class, 'opciones'])->name('profesionales.opciones');
+    Route::post('/profesionales/seguro/guardar', [ProfesionalesController::class, 'seguro'])->name('profesionales.seguro');
     Route::get('choisePerfil', [ProfesionalesController::class, 'choisePerfil'])->name('choisePerfil');
     Route::get('choiseEspecialidad', [ProfesionalesController::class, 'choiseEspecialidad'])->name('choiseEspecialidad');
     Route::post('savePrestador', [ProfesionalesController::class, 'savePrestador'])->name('savePrestador');
     Route::get('listGeneral', [ProfesionalesController::class, 'listGeneral'])->name('listGeneral');
 
     //Rutas de Proveedores
+    Route::get('/especialidades/listado', [ProveedoresController::class, 'getProveedores'])->name('getProveedores');
+    Route::get('/especialidades/buscar', [ProveedoresController::class, 'search'])->name('searchEspecialidad');
+    Route::get('/especialidades/exportar/excel', [ProveedoresController::class, 'excel'])->name('especialidadExcel');
+    Route::post('/especialidades/baja-multiple', [ProveedoresController::class, 'multiDown'])->name('multiDownEspecialidad');
+    Route::post('/especialidades/baja', [ProveedoresController::class, 'down'])->name('bajaEspecialidad');
+    Route::get('/especialidades/chequear', [ProveedoresController::class, 'check'])->name('checkProveedor');
+    Route::post('/especialidades/guardar', [ProveedoresController::class, 'save'])->name('saveBasico');
+    Route::post('/especialidades/actualizar', [ProveedoresController::class, 'updateProveedor'])->name('updateProveedor');
+    Route::get('/especialidades/listado', [ProveedoresController::class, 'lstProveedores'])->name('lstProveedores');
     Route::resource('especialidades', ProveedoresController::class);
-    Route::get('getProveedores', [ProveedoresController::class, 'getProveedores'])->name('getProveedores');
-    Route::get('searchEspecialidad', [ProveedoresController::class, 'search'])->name('searchEspecialidad');
-    Route::get('especialidadExcel', [ProveedoresController::class, 'excel'])->name('especialidadExcel');
-    Route::post('multiDownEspecialidad', [ProveedoresController::class, 'multiDown'])->name('multiDownEspecialidad');
-    Route::post('bajaEspecialidad', [ProveedoresController::class, 'down'])->name('bajaEspecialidad');
-    Route::get('checkProveedor', [ProveedoresController::class, 'check'])->name('checkProveedor');
-    Route::post('saveBasico', [ProveedoresController::class, 'save'])->name('saveBasico');
-    Route::post('updateProveedor', [ProveedoresController::class, 'updateProveedor'])->name('updateProveedor');
-    Route::get('lstProveedores', [ProveedoresController::class, 'lstProveedores'])->name('lstProveedores');
-
     //Rutas de ItemsPrestaciones
     Route::post('itemsprestaciones/lista-examenes', [ItemPrestacionesController::class, 'getExamenes'])->name('itemsprestaciones.listadoexamenes');
     Route::get('itemsprestaciones/check-adjuntos', [ItemPrestacionesController::class, 'checkAdjunto'])->name('itemsprestaciones.checkAdjuntos');
@@ -269,12 +268,12 @@ Route::group(['middleware' => 'auth'], function () {
 
     //Rutas de FacturasdeVenta
     Route::get('getFactura', [FacturasVentaController::class, 'getFactura'])->name('getFactura');
-    Route::get('facturas/search', [FacturasVentaController::class, 'search'])->name('facturas.search');
-    Route::get('facturas/delete', [FacturasVentaController::class, 'delete'])->name('facturas.delete');
-    Route::get('facturas/export', [FacturasVentaController::class, 'export'])->name('facturas.export');
-    Route::get('facturas/enviar',[FacturasVentaController::class, 'enviar'])->name('facturas.enviar');
-    Route::get('facturas/excel', [FacturasVentaController::class, 'excel'])->name('facturas.excel');
-    Route::get('facturas/paginacion/alta',[FacturasVentaController::class, 'paginacionAlta'])->name('facturas.paginacion');
+    Route::get('/facturas/search', [FacturasVentaController::class, 'search'])->name('facturas.search');
+    Route::get('/facturas/delete', [FacturasVentaController::class, 'delete'])->name('facturas.delete');
+    Route::get('/facturas/export', [FacturasVentaController::class, 'export'])->name('facturas.export');
+    Route::get('/facturas/enviar',[FacturasVentaController::class, 'enviar'])->name('facturas.enviar');
+    Route::get('/facturas/excel', [FacturasVentaController::class, 'excel'])->name('facturas.excel');
+    Route::get('/facturas/paginacion/alta',[FacturasVentaController::class, 'paginacionAlta'])->name('facturas.paginacion');
     Route::get('facturas/detalles', [FacturasVentaController::class, 'verDetalle'])->name('facturas.detalle');
     Route::resource('facturas', FacturasVentaController::class);
 
@@ -286,6 +285,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/comentarios-privados', [PrestacionesObsFasesController::class, 'comentariosPriv'])->name('comentariosPriv');
     Route::post('/comentarios-privados/guardar', [PrestacionesObsFasesController::class, 'addComentario'])->name('savePrivComent');
     Route::get('/comentarios-privados/check-rol', [PrestacionesObsFasesController::class, 'listadoRoles'])->name('comentariosPrivados.checkRoles');
+    Route::get('/comentarios-privados/eliminar', [PrestacionesObsFasesController::class, 'deleteComentario'])->name('comentariosPriv.eliminar');
 
     //Rutas de Ordenes de examenes efectores
     Route::get('/etapas/buscar', [OrdenesExamenController::class, 'search'])->name('seachOrdenesExamen');
