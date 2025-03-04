@@ -1,4 +1,4 @@
-$(document).ready(()=> {
+$(function() {
 
     let fecha = $('#FechaVto').val(), opcion = $('#pago').val(), opcionPago = $('#SPago').val(), empresa = $('#empresa').val(), art = $('#art').val();
 
@@ -10,13 +10,6 @@ $(document).ready(()=> {
     loadListAdjPrestacion();
     lstResultadosPrest(IDPACIENTE);
 
-    
-    $(document).on('change', '#empresa, #art, #TipoPrestacion', function(){
-        let emp = $('#empresa').val(), art = $('#art').val();
-        examenesCta(emp);
-        precargaMapa(emp, art);
-    });
-    
     quitarDuplicados("#tipoPrestacion");
     quitarDuplicados("#pago");
     quitarDuplicados("#SPago");
@@ -37,6 +30,12 @@ $(document).ready(()=> {
         getAutoriza(opcionPago);
     });
     
+    $(document).on('change', '#empresa, #art, #TipoPrestacion', function(){
+        let emp = $('#empresa').val(), art = $('#art').val();
+        examenesCta(emp);
+        precargaMapa(emp, art);
+    });
+
     $('.alert').hide();
 
     $(document).on('change', '#pago', function(){
@@ -48,7 +47,7 @@ $(document).ready(()=> {
         getAutoriza(data);
     });
 
-    $('#actualizarPrestacion').on('click', function(e) {
+    $(document).on('click', '#actualizarPrestacion', function(e){
         e.preventDefault();
 
         let tipoPrestacion = $('#TipoPrestacion').val(),
@@ -113,8 +112,7 @@ $(document).ready(()=> {
             toastr.warning("Debe seleccionar un mapa si la prestación es ART",'', {timeOut: 1000});
             return;
         }
-
-        
+   
         preloader('on');
         $.ajax({
             url: updatePrestacion,
@@ -160,7 +158,7 @@ $(document).ready(()=> {
 
     });
 
-    $("#btnVolver").on("click", function(e) {
+    $(document).on('click', '#btnVolver', function(e){
         e.preventDefault();
         let location = UBICACION;
         return location === 'prestaciones' ? window.location.replace(GOPRESTACIONES) : window.location.replace(GOPACIENTES);
@@ -174,21 +172,16 @@ $(document).ready(()=> {
 
         $.get(checkParaEmpresa, {empresa: empresa})
             .done(function(response){
-
                 let data = response.cliente;
-
                 $('#paraEmpresa').val(data.ParaEmpresa);
             })
             .fail(function(jqXHR){
-
                 let errorData = JSON.parse(jqXHR.responseText);            
                 checkError(jqXHR.status, errorData.msg);
                 return;  
             });
     });
 
-    
- 
     $(document).on('click','.cerrar, .finalizar, .entregar, .eEnviar', function(e) {
         e.preventDefault();
         $(this).prop('readonly', false);
@@ -477,7 +470,6 @@ $(document).ready(()=> {
     $(document).on('click', '.imprimirReporte', function(e){
         e.preventDefault();
 
-
         let evaluacion = $('#evaluacion').prop('checked'),
             eEstudio = $('#eEstudio').prop('checked'),
             eEnvio = $('#eEnvio').prop('checked'),
@@ -579,7 +571,6 @@ $(document).ready(()=> {
                 preloader('on');
                 $.get(exportPdf, {Id: ID, adjAnexos: 'true', buttonEA: 'true'})
                     .done(function(response){
-
                         createFile("pdf", response.filePath, response.name);
                         preloader('off')
                         toastr.success(response.msg, '', {timeOut: 1000});
@@ -592,8 +583,6 @@ $(document).ready(()=> {
                     }); 
             }
         });
-
-           
     });
 
     $(document).on('click', '.EnviarAviso', function(e){
@@ -618,11 +607,8 @@ $(document).ready(()=> {
                         checkError(jqXHR.status, errorData.msg);
                         return;
                     });
-
             }
         });
-
-        
     });
 
     $(document).on('click', '.eEnviarReporte', function(e){
@@ -647,7 +633,6 @@ $(document).ready(()=> {
                         checkError(jqXHR.status, errorData.msg);
                         return;
                     });
-
             }
         });
 
@@ -678,9 +663,7 @@ $(document).ready(()=> {
                         return;
                     });  
             }
-        })
-        
-          
+        })   
     });
 
     $(document).on('click', '.enviarReporte', function(e){
@@ -798,9 +781,6 @@ $(document).ready(()=> {
                 });  
             }
        });
-
-
-        
     });
 
     $('#opciones').on('show.bs.modal', function () {
@@ -887,8 +867,7 @@ $(document).ready(()=> {
     $(document).on('click', '.exportSimple, .exportDetallado', function(e){
         e.preventDefault();
 
-        let id = $(this).data('id'),
-            tipo = $(this).hasClass('exportSimple') ? 'exportSimple' : 'exportDetallado';
+        let id = $(this).data('id'), tipo = $(this).hasClass('exportSimple') ? 'exportSimple' : 'exportDetallado';
 
         if([0, null, undefined, ''].includes(id)) return;
 
@@ -913,11 +892,6 @@ $(document).ready(()=> {
 
         $.get(loadlistadoAdjPres, {Id: ID})
             .done(function(response){
-
-                for(let r = 0; r < response.length; r++){
-                
-                
-                }
 
                 for (let index = 0; index < response.length; index++) {
                     let r = response[index];
@@ -1028,16 +1002,10 @@ $(document).ready(()=> {
     function selectMedioPago(opcion)
     {
         if(opcion === 'B'){
-            $('.SPago').show();
-            $('.Factura').show();
-            $('.NroFactProv').show();
+            $('.SPago, .Factura, .NroFactProv').show();
             $('.Autoriza').hide();
         }else {
-            $('.SPago').hide();
-            $('.ObsPres').hide();
-            $('.Factura').hide();
-            $('.NroFactProv').hide();
-            $('.Autoriza').hide();
+            $('.SPago, .ObsPres, .Factura, .NroFactProv, .Autoriza').hide();
         }
     }
 
@@ -1061,27 +1029,23 @@ $(document).ready(()=> {
 
         $.get(await getMapas, {empresa: empresaIn, art: artIn})
             .done(function(response){
-                
                 let mapas = response.mapas;
                 
                 if(![undefined, null].includes(mapas))
                 {
-                    $.each(mapas, function(index, d){
-
-                        let contenido = `<option value="${d.Id}">${d.Nro} | Empresa: ${d.RSE} - ART: ${d.RSArt}</option>`;
-    
+                    for(let index = 0; index < mapas.length; index++) {
+                        let d = mapas[index],
+                        contenido = `<option value="${d.Id}">${d.Nro} | Empresa: ${d.RSE} - ART: ${d.RSArt}</option>`;
+                        
                         $('#mapas').append(contenido);
-                    });
-                }
-                
-            })
+                    }
+                } 
+            });
     }
 
     function getFact(){
-
         $.get(getFactura, {Id: ID})
             .done(function(response){
-
                 let data = response.factura;
 
                 if(data){
@@ -1126,15 +1090,16 @@ $(document).ready(()=> {
                 preloader('off');
                 let data = await response.result;
 
-                for(let index = 0; data.length > index; index++){
+                for(let index = 0; index < data.length; index++){
                     let d = data[index];
 
                     let contenido =  `
                         <tr>
-                            <td>${fechaCompleta(d.Fecha)}</td>
-                            <td class="text-capitalize">${d.IdUsuario}</td>
-                            <td class="text-uppercase">${d.nombre_perfil}</td>
+                            <td style="width: 120px">${fechaCompleta(d.Fecha)}</td>
+                            <td style="width: 120px" class="text-capitalize">${d.IdUsuario}</td>
+                            <td style="width: 120px" class="text-uppercase">${d.nombre_perfil}</td>
                             <td class="text-start">${d.Comentario}</td>
+                            <td style="width: 60px">${USER === d.IdUsuario ? '<button type="button" class="btn btn-sm iconGeneralNegro"><i class="ri-edit-line"></i></button><button title="Eliminar" type="button" class="btn btn-sm iconGeneralNegro "><i class="ri-delete-bin-2-line"></i></button>' : ''}</td>
                         </tr>
                     `;
                     $('#privadoPrestaciones').append(contenido);
@@ -1168,7 +1133,7 @@ $(document).ready(()=> {
                     $('.body-autorizado').append(contenido);
 
                 }else{
-                    for(let index = 0; autorizados.length > index; index++){
+                    for(let index = 0; index < autorizados.length; index++){
 
                         let autorizado = autorizados[index];
 
@@ -1206,14 +1171,14 @@ $(document).ready(()=> {
 
         $.get(lstExDisponibles, {Id: id})
             .done(function(response) {
-                var contenido = '';
+                let contenido = '';
                 preloader('off');
 
                 if(response && response.length > 0){
 
-                    for(let index = 0; response.length > index; index++){
-                        let r = response[index];
-                        let contenido = `
+                    for(let index = 0; index < response.length; index++){
+                        let r = response[index],
+                            contenido = `
                             <tr>
                                 <td>${r.Precarga === '' ? '-' : r.Precarga}</td>
                                 <td>${r.NombreExamen}</td>
@@ -1235,9 +1200,7 @@ $(document).ready(()=> {
     }
 
     async function checkExamenes(id) {
-
         $.get(await buscarEx, {Id: id}, function(response){
-
             response === 0 
                 ? $('.auditoria, .autorizados, .evaluacion, .banderas').hide()
                 : $('.auditoria, .autorizados, .evaluacion, .banderas').show()  
@@ -1256,9 +1219,7 @@ $(document).ready(()=> {
 
         $.get(btnVisibleEnviar, {Id: id})
             .done(function(response){
-                let arr = ['pagado', 'completos', 'evaluado', 'pagado'],
-                    allTrue = arr.every(key => response[key] === true);
-
+                let arr = ['pagado', 'completos', 'evaluado', 'pagado'], allTrue = arr.every(key => response[key] === true);
                 return allTrue === true ? $('#eEnviarReporte').show() : $('#eEnviarReporte').hide();
             });
     }
@@ -1273,8 +1234,7 @@ $(document).ready(()=> {
             .done(function(response){
                 
                 preloader('off');
-
-                for(let index = 0; response.length > index; index++){
+                for(let index = 0; index < response.length; index++){
                     let r = response[index],
                         icon = r.Evaluacion === 0 ? `<span class="custom-badge generalNegro">Antiguo</span>` : '',
                         evaluacion = r.Evaluacion === 0 ? '' : r.Evaluacion.slice(2),
@@ -1309,7 +1269,6 @@ $(document).ready(()=> {
                     sortable: false, 
                 });
             });
-
     }
 
     

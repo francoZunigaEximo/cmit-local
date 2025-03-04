@@ -1,4 +1,4 @@
-$(document).ready(()=>{
+$(function(){
 
     $('#buscar, #FPago, #TipoCliente, #filtro').on('change', function() {
 

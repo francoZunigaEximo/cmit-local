@@ -890,7 +890,7 @@
                                     </div>
 
                                     <div class="input-group input-group">
-                                        <span class="input-group-text">Obs exámenes</span>
+                                        <span class="input-group-text">Obs prestaciones</span>
                                         <input type="text" class="form-control" placeholder="Observaciones" id="ObsExamenesN" name="ObsExamenesN">
                                     </div>
                     
@@ -994,6 +994,7 @@
                                                             <th>Usuario</th>
                                                             <th>Rol</th>
                                                             <th>Comentario</th>
+                                                            <th>Acciones</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody class="list form-check-all" id="privadoPrestaciones"></tbody>
@@ -1216,6 +1217,7 @@ const TOKEN = "{{ csrf_token() }}";
 const checkObs = "{{ route('checkObs') }}";
 const excelPrestaciones = "{{ route('prestaciones.excel') }}";
 const checkDisponibilidad = "{{ route('examenesCuenta.checkDisponibilidad') }}"
+const USER = "{{ Auth::user()->name }}";
 
 $('#excel').click(function(e) {
     e.preventDefault();

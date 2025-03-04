@@ -1,4 +1,4 @@
-$(document).ready(function(){
+$(function(){
 
     quitarDuplicados("#tipoDocumento");
     quitarDuplicados("#provincia");
@@ -21,9 +21,10 @@ $(document).ready(function(){
 
                 $('#localidad').empty().append('<option selected>Elija una opción...</option>');
 
-                localidades.forEach(function(localidad) {
+                for(let index = 0; index < localidades.length; index++){
+                    let localidad = localidades[index];
                     $('#localidad').append('<option value="' + localidad.id + '">' + localidad.nombre + '</option>');
-                });
+                }
             }
         });
     });
@@ -85,8 +86,7 @@ $(document).ready(function(){
 
     function checkProvincia(){
 
-        let provincia = $('#provincia').val();
-        let localidad = $('#localidad').val();
+        let provincia = $('#provincia').val(), localidad = $('#localidad').val();
 
         if (provincia === 0)
         {
@@ -98,9 +98,8 @@ $(document).ready(function(){
                 },
                 success: function(response){
                     
-                    let provinciaNombre = response.fillProvincia;
-                        
-                    let nuevoOption = $('<option>', {
+                    let provinciaNombre = response.fillProvincia,
+                        nuevoOption = $('<option>', {
                         value: provinciaNombre,
                         text: provinciaNombre,
                         selected: true,
@@ -128,16 +127,16 @@ $(document).ready(function(){
             .done(function(response){
 
                 preloader('off');
-                $.each(response, function(index, r){
 
-                    let icon = r.Evaluacion === 0 ? `<span class="custom-badge generalNegro">Antiguo</span>` : '',
+                for(let index = 0; index < response.length; index++) {
+                    let r = response[index],
+                        icon = r.Evaluacion === 0 ? `<span class="custom-badge generalNegro">Antiguo</span>` : '',
                         evaluacion = r.Evaluacion === 0 ? '' : r.Evaluacion.slice(2),
                         calificacion = r.Calificacion ? r.Calificacion.slice(2) : '',
                         boton = r.Evaluacion !== 0 ? `<button data-id="${r.Id}" class="btn btn-sm iconGeneral verPrestacion" title="Ver">
                                     <i class="ri-search-eye-line"></i>
-                                </button>` : '';
-
-                    let contenido = `
+                                </button>` : '',
+                        contenido = `
                         <tr>
                             <td style="width: 50px">${fechaNow(r.Fecha, "/", 0)}</td>
                             <td style="width: 50px">${r.Id} ${icon}</td>
@@ -153,8 +152,7 @@ $(document).ready(function(){
                     `;
 
                     $('#lstResultadosPres, #lstResultadosPres2').append(contenido);
-
-                });
+                }
 
                 $("#listadoResultadosPres").fancyTable({
                     pagination: true,

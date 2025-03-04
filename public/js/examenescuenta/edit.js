@@ -214,10 +214,10 @@ $(function(){
             .done(function(response){
                 preloader('off');                
                 let dniAnterior = '';
-                $.each(response, function(index, r){
-                    
-                    let nombreCompleto = r.ApellidoPaciente + ' ' + r.NombrePaciente;
-                    let contenido = `
+
+                for(let index = 0; index < response.length; index++) {
+                    let r = response[index], nombreCompleto = r.ApellidoPaciente + ' ' + r.NombrePaciente,
+                    contenido = `
                         <tr>
                             <td><div class="text-center"><input type="checkbox" name="Id" value="${r.IdEx}"></div></td>
                             <td>${r.Precarga === '' ? '-' : r.Precarga}</td>
@@ -241,13 +241,11 @@ $(function(){
                     if (dniAnterior && dniAnterior !== r.Precarga) {
                         $('#lstSaldos tr:last-child').prev().addClass('border-grueso');
                     }
-    
                     dniAnterior = r.Precarga;
-                });
-    
+                    
+                }
                 // Agrega la clase al último registro
                 $('#lstSaldos tr:last-child').addClass('border-grueso');
-    
                 $("#listadoSaldos").fancyTable({
                     pagination: true,
                     perPage: 15,
@@ -262,7 +260,7 @@ $(function(){
     $(document).on('click', '.editarDNI, .editarMasivo', function(e){
         e.preventDefault();
 
-        var id, ids = [];
+        let id, ids = [];
         $(".saveCambiosEdit").show();
         $("#dniNuevo").attr("disabled", false);
 

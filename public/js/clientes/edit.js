@@ -1,4 +1,4 @@
-$(document).ready(()=> {
+$(function() {
 
     let messageClientes = $('#messageClientes');
 
@@ -87,7 +87,6 @@ $(document).ready(()=> {
                 }, 3000);
                 
                if(bloqueado === 1 && motivo !== ''){
-
                     $.ajax({
                         url: block,
                         type: 'POST',
@@ -97,11 +96,10 @@ $(document).ready(()=> {
                             cliente: ID
                         },
                         success: function() {
-                            
                             swal('Atención', 'Se recargará la app tras el bloqueo', 'warning');
                             setTimeout(()=> {
                                 location.reload();
-                            }, 3000);
+                            }, 2000);
                             
         
                         },
@@ -115,7 +113,6 @@ $(document).ready(()=> {
 
                }
                 return;
-          
             },
             error: function(jqXHR){
                 preloader('off');
@@ -128,7 +125,7 @@ $(document).ready(()=> {
     });
 
     //Registro de autorizado
-    $('#btnAutorizado').click(function (e) {
+    $(document).on('click', '#btnAutorizado', function(e) {
         e.preventDefault();
 
         let TipoEntidad = $('#TipoEntidad').val(),
@@ -188,7 +185,6 @@ $(document).ready(()=> {
 
     //Chequeo de email. Carga de datos
     $(document).on('click', '#guardarEmail', function(e) {
-        console.log("prueba")
         e.preventDefault();
         
         // Verificación de correos
@@ -196,9 +192,8 @@ $(document).ready(()=> {
             emailsInformes = $('#EMailInformes').val(),
             emailsFactura = $('#EMailFactura').val(),
             emailsAnexo = $('#EMailAnexo').val(),
-            sinEnvio = $('#SEMail').prop('checked');
-
-        let isValidEmails = true;
+            sinEnvio = $('#SEMail').prop('checked'),
+            isValidEmails = true;
 
         // Función para verificar si un email no está vacío y es válido
         function checkEmailValidity(emails) {
@@ -348,8 +343,9 @@ $(document).ready(()=> {
 
                 }else{
 
-                    $.each(autorizados, function(index, autorizado) {
-                        let contenido = `<div class="d-flex align-items-center mb-3">
+                    for(let index = 0; index < autorizados.length; index++) {
+                        let autorizado = autorizados[index],
+                            contenido = `<div class="d-flex align-items-center mb-3">
                                             <div class="flex-shrink-0 avatar-sm">
                                                 <div class="avatar-title bg-light text-primary rounded-3 fs-18">
                                                     <i class="ri-shield-user-line"></i>
@@ -364,7 +360,7 @@ $(document).ready(()=> {
                                         </div>`;
 
                         $('.body-autorizado').append(contenido);
-                    });
+                    }
                 }
             },
             error: function(jqXHR){
@@ -432,10 +428,7 @@ $(document).ready(()=> {
                 <input type='hidden' class='telefono-input' name='telefonos[]' value='${datosArrayJSON}'>
             `);
 
-            $('#prefijoExtra').val("");
-            $('#numeroExtra').val("");
-            $('#obsExtra').val("");
-
+            $('#prefijoExtra, #numeroExtra, #obsExtra').val("");
             actualizarInputHidden();
 
         }
@@ -460,7 +453,6 @@ $(document).ready(()=> {
     $(document).on('click', '.editarTelefono', function(e){
         e.preventDefault();
         let telefonoId = $(this).data('id');
-
         verTelefono(telefonoId);
     });
 
@@ -484,7 +476,6 @@ $(document).ready(()=> {
 
         saveEdicion(Id, CodigoArea, NumeroTelefono, Observaciones);
         telefonos();
-        
     });
 
     $(document).on('click', '.nuevoExamen', function(e){

@@ -298,7 +298,7 @@ class UsuariosController extends Controller
             return response()->json(["msg" => "No tiene permisos"], 403);
         }
 
-        $query = User::find($request->Id);
+        $query = User::with('role')->find($request->Id);
 
         if($query) 
         {

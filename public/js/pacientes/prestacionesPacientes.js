@@ -516,6 +516,8 @@ $(function(){
                 let pacientes = response.pacientes;
                 $('#results').hide();
 
+                for(let index = 0; index < pacientes.length; index++)
+
                 $('#listaPacientes tbody').empty();
                 $.each(pacientes.data, function(index, papre) {
 
@@ -655,7 +657,6 @@ $(function(){
                     if(response && response.length) {
 
                         for (let r of response) {
-
                             result += r.NombreExamen + ' - ';
                         }
                         
@@ -678,17 +679,17 @@ $(function(){
         $.get(saldoNoDatatable, {Id: id})
             .done(function(response){
                 preloader('off');
-                
-                $.each(response, function(index, r){
-                    let contenido = `
+
+                for(let index = 0; index < response.length; index++) {
+                    let r = response[index],
+                    contenido = `
                         <tr>
                             <td>${r.contadorSaldos}</td>
                             <td>${r.Examen}</td>
                         </tr>
                     `;
                     $('#disponiblesExamenes').append(contenido);
-
-                });
+                }
             });
     }
 
@@ -822,24 +823,21 @@ $(function(){
     $(document).on('click', '.resulPaciente', function(e){
         e.preventDefault();
 
-        $('.prestacionLimpia').hide();
+        $('.prestacionLimpia, .reportesPacientes').hide();
         $('.resultadosPaciente').show();
-        $('.reportesPacientes').hide();
     });
 
     $(document).on('click', '.volverPrestacionLimpia', function(e){
         e.preventDefault();
 
-        $('.resultadosPaciente').hide();
+        $('.resultadosPaciente, .reportesPacientes').hide();
         $('.prestacionLimpia').show();
-        $('.reportesPacientes').hide();
     });
 
     $(document).on('click', '.imprimirReportes', function(e){
         e.preventDefault();
 
-        $('.resultadosPaciente').hide();
-        $('.prestacionLimpia').hide();
+        $('.resultadosPaciente, .prestacionLimpia').hide();
         $('.reportesPacientes').show();
     }); 
 
@@ -983,7 +981,7 @@ $(function(){
                 preloader('off');
                 let data = response.examenes,
                     ids = [];
-                console.log(data)
+ 
                 for (let i = 0; i < data.length; i++) {
                     ids.push(data[i].Id);
                 }
@@ -1004,8 +1002,7 @@ $(function(){
 
         e.preventDefault();
 
-        let ids = [], tieneAdjunto = false, id = $(this).data('delete'), adjunto, archivos;
-        var checkAll ='';
+        let ids = [], tieneAdjunto = false, id = $(this).data('delete'), adjunto, archivos; checkAll ='';
 
         if ($(this).hasClass('deleteExamenes')) {
 
@@ -1049,7 +1046,7 @@ $(function(){
                     },
                     success: function(response){
                         preloader('off');
-                        var estados = [];
+                        let estados = [];
                         
                         for (let i = 0; i < response.length; i++) {
                             let msg = response[i];
@@ -1182,11 +1179,10 @@ $(function(){
                 data: { Id: id }
             });
 
-            let estado = result.respuesta;
-            let examenes = result.examenes;
+            let estado = result.respuesta, examenes = result.examenes;
             
             if (estado === true) {
-                // Segunda llamada AJAX para obtener los exámenes
+
                 let response = await $.ajax({
                     url: getItemExamenes,
                     method: 'post',
@@ -1201,14 +1197,12 @@ $(function(){
                 preloader('off');
                 let registros = response;
 
-                registros.forEach(function(examen) {
-                    let examenId = examen.IdExamen;
-                    //let url = editUrl.replace('__examen__', examen.IdItem);
-    
-                    let fila = `
+                for(let index = 0; index < registros.length; index++){
+                    let examen = registros[index],
+                    fila = `
                         <tr ${examen.Anulado === 1 ? 'class="filaBaja"' : ''}>
                             <td><input type="checkbox" name="Id_examenes" value="${examen.IdItem}" checked ${examen.Anulado === 1 ? 'disabled' : ''}></td>
-                            <td data-idexam="${examenId}" id="${examen.IdItem}" style="text-align:left">${examen.Nombre} ${examen.Anulado === 1 ? '<span class="custom-badge rojo">Bloqueado</span>' : ''}</td>
+                            <td data-idexam="${examen.IdExamen}" id="${examen.IdItem}" style="text-align:left">${examen.Nombre} ${examen.Anulado === 1 ? '<span class="custom-badge rojo">Bloqueado</span>' : ''}</td>
                             <td>    
                                 <div class="d-flex gap-2">
                                     ${examen.Anulado === 0 ? `
@@ -1229,7 +1223,7 @@ $(function(){
                         </tr>`;
     
                     $('#listaExamenes').append(fila);
-                });
+                }
     
                 $("#listado").fancyTable({
                     pagination: true,
@@ -1254,20 +1248,17 @@ $(function(){
 
         e.preventDefault();
 
-        let ids = [], id = $(this).data('bloquear');
-        var checkAll ='';
+        let ids = [], id = $(this).data('bloquear'), checkAll ='';
 
         if ($(this).hasClass('bloquearExamenes')) {
 
             $('input[name="Id_examenes"]:checked').each(function() {
                 ids.push($(this).val());
-        
             });
     
             checkAll =$('#checkAllExa').prop('checked');
         
         }else if($(this).hasClass('bloquearExamen')){
-
             ids.push(id);
         }
 
@@ -1282,7 +1273,6 @@ $(function(){
             buttons: ["Cancelar", "Bloquear"],
         }).then((confirmar) => {
             if(confirmar){
-
                 preloader('on');
                 $.ajax({    
                     url: bloquearItemExamen,
@@ -1292,21 +1282,18 @@ $(function(){
                         _token: TOKEN
                     },
                     success: function(response){
-                        var estados = [];
-                        
+                        let estados = [];
                         preloader('off')
-                        response.forEach(function(msg) {
 
-                            let tipoRespuesta = {
-                                success: 'success',
-                                fail: 'info'
-                            }
-                            
+                        for(let index = 0; index < response.length; index++) {
+                            let msg = response[index],
+                                tipoRespuesta = {
+                                    success: 'success',
+                                    fail: 'info'
+                                }
                             toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 })
-                            
                             estados.push(msg.estado)
-                            
-                        });
+                        }
                         
                         if(estados.includes('success')) {
                             $('#listaExamenes').empty();
@@ -1334,10 +1321,9 @@ $(function(){
                     $('#guardarPrestacion').hide();
                 } else {
 
-                    $('examenesDisponibles, .ultimasFacturadas, #siguienteExCta').hide();
+                    $('examenesDisponibles, .ultimasFacturadas, #siguienteExCta, #alertaExCta').hide();
                     $('#PagoLaboral').val(data);
                     $('#guardarPrestacion').show();
-                    $('#alertaExCta').hide();
                 }
             })
     }
@@ -1379,10 +1365,11 @@ $(function(){
                 for(let d = 0; d < data.length; d++){
                     let contenido =  `
                         <tr>
-                            <td>${fechaCompleta(d.Fecha)}</td>
-                            <td>${d.IdUsuario}</td>
-                            <td>${d.nombre_perfil}</td>
+                            <td style="width: 120px">${fechaCompleta(d.Fecha)}</td>
+                            <td style="width: 120px" class="text-capitalize">${d.IdUsuario}</td>
+                            <td style="width: 120px" class="text-uppercase">${d.nombre_perfil}</td>
                             <td>${d.Comentario}</td>
+                            <td style="width: 60px">${USER === d.IdUsuario ? '<button type="button" class="btn btn-sm iconGeneralNegro"><i class="ri-edit-line"></i></button><button title="Eliminar" type="button" class="btn btn-sm iconGeneralNegro "><i class="ri-delete-bin-2-line"></i></button>' : ''}</td>
                         </tr>
                     `;
                     $('#privadoPrestaciones').append(contenido);

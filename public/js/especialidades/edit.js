@@ -1,4 +1,4 @@
-$(document).ready(function(){
+$(function(){
 
     quitarDuplicados("#Externo");
     quitarDuplicados("#Inactivo");
@@ -74,11 +74,11 @@ $(document).ready(function(){
             },
             success: function(response) {
                 let localidades = response.localidades;
-                $('#IdLocalidad').empty();
-                $('#IdLocalidad').append('<option selected>Elija una opción...</option>');
-                localidades.forEach(function(localidad) {
+                $('#IdLocalidad').empty().append('<option selected>Elija una opción...</option>');
+                for(let index = 0; index < localidades.length; index++) {
+                    let localidad = localidades[index];
                     $('#IdLocalidad').append('<option value="' + localidad.id + '">' + localidad.nombre + '</option>');
-                });
+                }
             }
         });
     }

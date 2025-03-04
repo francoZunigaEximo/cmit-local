@@ -259,6 +259,34 @@
                 </table>
             </div>
 
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h4 class="card-title mb-0">Observaciones privadas</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive table-card mt-3 mb-1">
+                                <table id="lstPrivPrestaciones" class="display table table-bordered" style="100%">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Fecha</th>
+                                            <th>Nro prestación</th>
+                                            <th>Usuario</th>
+                                            <th>Rol</th>
+                                            <th>Comentario</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="list form-check-all" id="privadoPrestaciones">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         <div class="tab-pane" id="remitos" role="tabpanel">
@@ -280,6 +308,35 @@
                     </tbody>
                 </table>
             </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h4 class="card-title mb-0">Observaciones privadas</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive table-card mt-3 mb-1">
+                                <table id="lstPrivEntregados" class="display table table-bordered" style="100%">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Fecha</th>
+                                            <th>Nro prestación</th>
+                                            <th>Usuario</th>
+                                            <th>Rol</th>
+                                            <th>Comentario</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="list form-check-all" id="privadoEntregar">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
         @can('mapas_cerrar')
         <div class="tab-pane" id="cerrar" role="tabpanel">
@@ -338,11 +395,12 @@
                                 <table id="lstPrivCerrados" class="display table table-bordered" style="100%">
                                     <thead class="table-light">
                                         <tr>
-                                            <th class="sort">Fecha</th>
-                                            <th class="sort">Nro prestación</th>
+                                            <th>Fecha</th>
+                                            <th>Nro prestación</th>
                                             <th>Usuario</th>
                                             <th>Rol</th>
                                             <th>Comentario</th>
+                                            <th>Acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody class="list form-check-all" id="privadoCerrar">
@@ -414,6 +472,34 @@
     
                     </tbody>
                 </table>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h4 class="card-title mb-0">Observaciones privadas</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive table-card mt-3 mb-1">
+                                <table id="lstPrivFinalizados" class="display table table-bordered" style="100%">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Fecha</th>
+                                            <th>Nro prestación</th>
+                                            <th>Usuario</th>
+                                            <th>Rol</th>
+                                            <th>Comentario</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="list form-check-all" id="privadoFinalizar">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -515,6 +601,35 @@
                     </div>
                 </div>
             </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h4 class="card-title mb-0">Observaciones privadas</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive table-card mt-3 mb-1">
+                                <table id="lstPrivEnviados" class="display table table-bordered" style="100%">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Fecha</th>
+                                            <th>Nro prestación</th>
+                                            <th>Usuario</th>
+                                            <th>Rol</th>
+                                            <th>Comentario</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="list form-check-all" id="privadoEnviar">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
         @endcan
 
@@ -837,10 +952,12 @@ const reverseRemito = "{{ route('reverseRemito') }}";
 const vistaPrevia = "{{ route('mapas.vistaPrevia') }}";
 const listadoAuditorias = "{{ route('mapas.auditorias') }}";
 const exportPdf = "{{ route('prestaciones.pdf') }}";
+const listadoRoles = "{{ route('comentariosPrivados.checkRoles')}}"
 //Extras
 const TOKEN = "{{ csrf_token() }}";
 const MAPA = "{{ $mapa->Nro }}";
 const IDMAPA = "{{ $mapa->Id }}";
+const USER = "{{ Auth::user()->name }}";
 </script>
 
 @push('styles')

@@ -20,12 +20,10 @@ $(function() {
         }
 
         $(document).on('change', '#estadoAsignados', function(){
-            var nuevoValor = $(this).val();
+            let nuevoValor = $(this).val();
             
             if (nuevoValor !== estado) {
-
                 estado = nuevoValor;
-
             }
         });
 
@@ -108,7 +106,6 @@ $(function() {
                     render: function(data) {
 
                         let abierto = [0, 1, 2], cerrado = [3, 4, 5], estatus = data.Estado;
-
                         let mostrar = abierto.includes(estatus)
                                         ? 'Abierto'
                                         : cerrado.includes(estatus)
@@ -121,7 +118,6 @@ $(function() {
                 {
                     data: null,
                     render: function(data) {
-                        
                         return  `<input type="checkbox" name="Id_adjunto" value="${data.IdItem}" checked>`;      
                     }
                 },

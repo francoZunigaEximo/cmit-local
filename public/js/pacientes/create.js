@@ -1,4 +1,4 @@
-$(document).ready(function(){
+$(function(){
 
     let doc = localStorage.getItem('insertDoc');
     
@@ -45,9 +45,7 @@ $(document).ready(function(){
             },
             success: function(response) {
                 let localidades = response.localidades;
-
-                $('#localidad').empty();
-                $('#localidad').append('<option selected>Elija una opción...</option>');
+                $('#localidad').empty().append('<option selected>Elija una opción...</option>');
 
                 localidades.forEach(function(localidad) {
                     $('#localidad').append('<option value="' + localidad.id + '">' + localidad.nombre + '</option>');

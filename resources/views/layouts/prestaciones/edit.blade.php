@@ -310,7 +310,7 @@
 
             <div class="col-12 box-information mb-2">
                 <div class="input-group input-group">
-                    <span class="input-group-text">Obs exámenes</span>
+                    <span class="input-group-text">Obs prestaciones</span>
                     <textarea class="form-control" id="ObsExamenes" name="ObsExamenes" rows="4">{{ $prestacione->ObsExamenes ?? ''}}</textarea>
                 </div>
 
@@ -428,10 +428,11 @@
                                         <table id="lstPrivPrestaciones" class="table table-bordered">
                                             <thead class="table-light">
                                                 <tr>
-                                                    <th class="sort text-center" style="width: 100px">Fecha</th>
-                                                    <th class="text-center" style="width: 150px">Usuario</th>
-                                                    <th class="text-center" style="width: 150px">Rol</th>
+                                                    <th class="sort text-center">Fecha</th>
+                                                    <th class="text-center">Usuario</th>
+                                                    <th class="text-center">Rol</th>
                                                     <th class="text-start">Comentario</th>
+                                                    <th>Acciones</th>
                                                 </tr>
                                             </thead>
                                             <tbody class="list form-check-all" id="privadoPrestaciones">
@@ -1570,6 +1571,7 @@ const deleteAdjPrest = "{{ route('prestaciones.deleteAdjPres') }}";
 
 const eEnviarEspecial = "{{ route('prestaciones.reporteEspecial') }}";
 const contadorEx = "{{route('itemsprestaciones.contador')}}";
+const USER = "{{ Auth::user()->name }}";
 
 //Select
 const selectTipoPrestacion = "{{ $prestacione->TipoPrestacion }}";

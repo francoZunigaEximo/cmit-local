@@ -49,8 +49,7 @@ $(function(){
                     data: null,
                     width: "30px",
                     render: function(data){
-                        let codigo = (data.Id).toString().padStart(6, '0');
-                        return codigo;
+                        return (data.Id).toString().padStart(6, '0');
                     },
                     style: {
                         fontSize: '1px'

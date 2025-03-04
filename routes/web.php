@@ -69,7 +69,7 @@ Route::group(['middleware' => 'auth'], function () {
     //Home del sitio
     //Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::get('/home', function () {
-        return redirect('/prestaciones');
+        return view('/prestaciones');
     })->name('home');
 
     //Rutas de Utility
@@ -285,6 +285,7 @@ Route::group(['middleware' => 'auth'], function () {
     //Rutas de Observaciones de Fases de Prestaciones
     Route::get('/comentarios-privados', [PrestacionesObsFasesController::class, 'comentariosPriv'])->name('comentariosPriv');
     Route::post('/comentarios-privados/guardar', [PrestacionesObsFasesController::class, 'addComentario'])->name('savePrivComent');
+    Route::get('/comentarios-privados/check-rol', [PrestacionesObsFasesController::class, 'listadoRoles'])->name('comentariosPrivados.checkRoles');
 
     //Rutas de Ordenes de examenes efectores
     Route::get('/etapas/buscar', [OrdenesExamenController::class, 'search'])->name('seachOrdenesExamen');

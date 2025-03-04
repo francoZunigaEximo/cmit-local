@@ -224,15 +224,12 @@ $(function(){
             $('.botonPagar').prop('disabled', true);
 
             $('#listadoExamenesCuentas tbody').off('click', 'td.details-control').on('click', 'td.details-control', function(){
-                var tr = $(this).closest('tr');
-                var row = tableIndex.row(tr);
+                let tr = $(this).closest('tr'), row = tableIndex.row(tr);
             
                 if(row.child.isShown()){
-                    // This row is already open - close it
                     row.child.hide();
                     tr.removeClass('shown');
                 } else {
-                    // Open this row
                     format(row.data()).then(function(div){
                         row.child(div).show();
                         tr.addClass('shown');
@@ -242,26 +239,18 @@ $(function(){
                 }
             });
         
-            // Handle click on "Expand All" button
             $(document).on('click', '#btn-show-all-children', function(){
-                // Enumerate all rows
                 tableIndex.rows().every(function(){
-                    // If row has details collapsed
                     if(!this.child.isShown()){
-                        // Open this row
                         this.child(format(this.data())).show();
                         $(this.node()).addClass('shown');
                     }
                 });
             });
         
-            // Handle click on "Collapse All" button
             $(document).on('click', '#btn-hide-all-children', function(){
-                // Enumerate all rows
                 tableIndex.rows().every(function(){
-                    // If row has details expanded
                     if(this.child.isShown()){
-                        // Collapse row details
                         this.child.hide();
                         $(this.node()).removeClass('shown');
                     }

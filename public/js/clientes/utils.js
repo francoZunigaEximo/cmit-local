@@ -1,4 +1,4 @@
-$(document).ready(()=>{
+$(function(){
 
     //Formato automático de Identificacion para create y edit
     $('#Identificacion').on('input', function() {

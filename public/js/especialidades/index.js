@@ -92,7 +92,6 @@ $(function() {
         e.preventDefault();
 
         let especialidad = $(this).data('id');
-        
         if(especialidad === '') return;
 
         swal({

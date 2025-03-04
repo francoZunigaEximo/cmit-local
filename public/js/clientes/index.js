@@ -1,7 +1,5 @@
 $(function(){
 
-    const tabla = "#listaClientes";
-
     $('#btnBajaMultiple').click(function(e) {
         e.preventDefault();
 
@@ -53,7 +51,7 @@ $(function(){
 
 
     //Exportar Excel a clientes
-    $('#excel').click(function(e) {
+    $(document).on('click', '#excel', function(e){
         e.preventDefault();
 
         let ids = [];
@@ -98,8 +96,8 @@ $(function(){
     });
 
     //Reset de busquedas
-    $(document).on('keydown', function(event) {
-        if (event.keyCode === 27) {
+    $(document).on('keydown', function(e) {
+        if (e.keyCode === 27) {
             window.location.href = GOINDEX;
         }
     });

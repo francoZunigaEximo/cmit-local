@@ -120,14 +120,8 @@ $(function () {
     });
 
     $(document).on('change', '#SPago', function(){
-
         let pago = $(this).val();
-
-        if(pago === 'G'){
-            $('.Autoriza').show();
-        }else{
-            $('.Autoriza').hide();
-        }
+        return pago === 'G' ? $('.Autoriza').show() : $('.Autoriza').hide();
     });
     
     //Alerta - verificacion de clientes bloqueados
@@ -264,7 +258,6 @@ $(function () {
     //Calcular Antiguedad en la Empresa en FichaLaboral
     $('#FechaIngreso, #FechaEgreso').change(function(){
         calcularAntiguedad();
-
     });
 
     $(document).on("select2:open", () => {
@@ -305,12 +298,12 @@ $(function () {
                 let tiposPrestacion = response.tiposPrestacion;
                 
                 if(tiposPrestacion) {
-                    $('#tipoPrestacionPres').empty();
-                    $('#tipoPrestacionPres').append('<option value="" selected>Elija una opción...</option>');
+                    $('#tipoPrestacionPres').empty().append('<option value="" selected>Elija una opción...</option>');
 
-                    tiposPrestacion.forEach(function(tipoPrestacion) {
+                    for(let index = 0; index < tiposPrestacion.length; index++){
+                        let tipoPrestacion = tiposPrestacion[index];
                         $('#tipoPrestacionPres').append('<option value="' + tipoPrestacion.nombre + '">' + tipoPrestacion.nombre + '</option>');
-                    });
+                    }
                     
                     if(estado) {    
                         $('#tipoPrestacionPres').val(estado);
