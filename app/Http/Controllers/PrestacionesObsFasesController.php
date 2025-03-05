@@ -6,6 +6,7 @@ use App\Models\PrestacionObsFase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Services\Roles\Checker;
+use Illuminate\Support\Facades\DB;
 
 class PrestacionesObsFasesController extends Controller
 {
@@ -57,37 +58,51 @@ class PrestacionesObsFasesController extends Controller
         return response()->json(['msg' => 'No se ha podido guardar el comentario'], 500);
     }
 
-    public function editComentario(Request $request): mixed
+    public function editComentario(Request $request)
     {
         $query = PrestacionObsFase::find($request->Id);
 
-        if(!$query) {
-            return response()->json(['msg' => 'No se ha encontrado el identificador'], 409);
+        if(Auth::user()->name !== $query->IdUsuario && $this->roles->userAdmin(Auth::user()->id) === false) {
+            return response()->json(['msg' => 'No puedes realizar la operación. Debes ser el usuario creador del comentario o un administrador'], 409);
         }
 
-        if(Auth::user()->name !== $query->IdUsuario || !$this->roles->userAdmin(Auth::user()->id)) {
-            return response()->json(['msg' => 'No puedes realizar la operación. Debes ser el usuario creador del comentario o un administrador']);
-        }
+        if($query) {
 
-        return $query->update([
-            'Comentario' => $request->Comentario,
-            'Fecha' => now()->format('Y-m-d H:i:s'),
-        ]);
+                $query->Comentario = $request->Comentario;
+                $query->Fecha = now()->format('Y-m-d H:i:s');
+                $query->save();
+                $query->refresh();
+
+            return response()->json(['msg' => 'Se ha modificado el comentario correctamente'], 200);
+        }  
     }
 
     public function deleteComentario(Request $request)
     {
         $query = PrestacionObsFase::find($request->Id);
 
-        if(Auth::user()->name !== $query->IdUsuario || !$this->roles->userAdmin(Auth::user()->id)) {
-            return response()->json(['msg' => 'No puedes realizar la operación. Debes ser el usuario creador del comentario o un administrador']);
+        if(Auth::user()->name !== $query->IdUsuario && !$this->roles->userAdmin(Auth::user()->id) === false) {
+            return response()->json(['msg' => 'No puedes realizar la operación. Debes ser el usuario creador del comentario o un administrador'], 409);
         }
         if($query) {
             $query->delete();
             return response()->json(['msg' => 'Se ha eliminado el comentario correctamente'], 200);
-        }
+        } 
+    }
 
-        
+    public function getComentario(Request $request)
+    {
+        $query = PrestacionObsFase::join('prestaciones', 'prestaciones_obsfases.IdEntidad', '=', 'prestaciones.Id')
+                                ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+                                ->select(
+                                    'prestaciones_obsfases.IdEntidad',
+                                    'prestaciones_obsfases.Comentario',
+                                    'prestaciones_obsfases.Id',
+                                    DB::raw("CONCAT(pacientes.Apellido,' ',pacientes.Nombre) as NombreCompleto")
+                                    )
+                                ->where('prestaciones_obsfases.Id', $request->Id)
+                                ->get();
+        return response()->json($query);
     }
 
     public function listadoRoles(Request $request)

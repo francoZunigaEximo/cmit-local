@@ -421,7 +421,7 @@
                         <div class="col-lg-12">
                             <div class="card titulo-tabla">
                                 <div class="card-header d-flex justify-content-between align-items-center">
-                                    <h4 class="card-title mb-0">Observaciones privadas</h4><button type="button" class="btn bt-sm botonGeneral" data-bs-toggle="modal" data-bs-target="#addObs">Añadir</button>
+                                    <h4 class="card-title mb-0">Observaciones privadas</h4><button type="button" class="btn bt-sm botonGeneral agregarComentario">Añadir</button>
                                 </div>
                                 <div class="card-body">
                                     <div class="table-card mb-1">
@@ -806,8 +806,10 @@
                 </div>
                 <div class="modal-footer">
                     <input type="hidden" id="fase">
+                    <input type="hidden" id="IdComentarioFase">
                     <button type="button" class="btn botonGeneral" id="reset" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn botonGeneral confirmarComentarioPriv">Confirmar</button>
+                    <button id="confirmar" type="button" class="btn botonGeneral confirmarComentarioPriv">Confirmar</button>
+                    <button id="modificar" type="button" class="btn botonGeneral editarComentarioPriv">Confirmar</button>
                 </div>
             </div>
         </div>
@@ -1535,6 +1537,7 @@ const checkAdj = "{{ route('itemsprestaciones.checkAdjuntos') }}";
 const paginacionGeneral = "{{ route('paginacionGeneral') }}";
 const listGeneral = "{{ route('listGeneral') }}";
 const eliminarComentario = "{{ route('comentariosPriv.eliminar') }}";
+const editarComentario = "{{ route('comentariosPriv.editar') }}";
 
 const fileUpload = "{{ route('uploadAdjunto') }}";
 const descargaE = "@fileUrl('lectura')/AdjuntosEfector";
@@ -1573,6 +1576,7 @@ const deleteAdjPrest = "{{ route('prestaciones.deleteAdjPres') }}";
 const eEnviarEspecial = "{{ route('prestaciones.reporteEspecial') }}";
 const contadorEx = "{{route('itemsprestaciones.contador')}}";
 const USER = "{{ Auth::user()->name }}";
+const getComentario = "{{ route('comentariosPriv.data') }}";
 
 //Select
 const selectTipoPrestacion = "{{ $prestacione->TipoPrestacion }}";

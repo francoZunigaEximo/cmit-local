@@ -1219,6 +1219,9 @@ const excelPrestaciones = "{{ route('prestaciones.excel') }}";
 const checkDisponibilidad = "{{ route('examenesCuenta.checkDisponibilidad') }}"
 const USER = "{{ Auth::user()->name }}";
 const eliminarComentario = "{{ route('comentariosPriv.eliminar') }}";
+const editarComentario = "{{ route('comentariosPriv.editar') }}";
+const getComentario = "{{ route('comentariosPriv.data') }}";
+const cacheDelete = "{{ route('prestaciones.cacheDelete') }}";
 
 $('#excel').click(function(e) {
     e.preventDefault();

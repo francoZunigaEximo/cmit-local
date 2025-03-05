@@ -884,8 +884,10 @@
                 </div>
                 <div class="modal-footer">
                     <input type="hidden" id="fase">
+                    <input type="hidden" id="IdComentarioFase">
                     <button type="button" class="btn botonGeneral" id="reset" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn botonGeneral confirmarComentarioPriv">Confirmar</button>
+                    <button id="confirmar" type="button" class="btn botonGeneral confirmarComentarioPriv">Confirmar</button>
+                    <button id="modificar" type="button" class="btn botonGeneral editarComentarioPriv">Confirmar</button>
                 </div>
             </div>
         </div>
@@ -926,6 +928,9 @@ const listadoAuditorias = "{{ route('mapas.auditorias') }}";
 const exportPdf = "{{ route('prestaciones.pdf') }}";
 const listadoRoles = "{{ route('comentariosPrivados.checkRoles')}}"
 const eliminarComentario = "{{ route('comentariosPriv.eliminar') }}";
+const editarComentario = "{{ route('comentariosPriv.editar') }}";
+const getComentario = "{{ route('comentariosPriv.data') }}";
+const cacheDelete = "{{ route('prestaciones.cacheDelete') }}";
 //Extras
 const TOKEN = "{{ csrf_token() }}";
 const MAPA = "{{ $mapa->Nro }}";

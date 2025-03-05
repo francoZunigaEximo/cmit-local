@@ -25,6 +25,13 @@ $(function() {
     comentariosPrivados();
     cargarAutorizados();
 
+    $('#modificar').hide();
+
+    $('#addObs').on('hide.bs.modal', function () {
+        $('#confirmar').show();
+        $('#modificar').hide();
+    });
+
     //Hack de carga
     $(document).ready(function(){
         getAutoriza(opcionPago);
@@ -915,9 +922,50 @@ $(function() {
                     })
 
             }
-        })
+        })   
+    });
 
-        
+    $(document).off('click', '.editarComentario').on('click', '.editarComentario', async function(){
+        borrarCache();
+
+        let id = $(this).data('id'),
+            data  = await $.get(getComentario,{Id: id});
+
+        $('#addObs').modal('show');
+        $('#addObs').attr('aria-hidden', 'false');
+        $('#confirmar').hide();
+        $('#modificar').show();
+        $('#IdComentarioFase').empty().val(data[0].Id)
+        $('#Comentario').val(data[0].Comentario);
+    });
+
+    $(document).off('click', '.editarComentarioPriv').on('click', '.editarComentarioPriv', function(e){
+        e.preventDefault();
+        let comentario = $('#Comentario').val(), id = $('#IdComentarioFase').val();
+
+        preloader('on')
+        $.get(editarComentario, {Id: id, Comentario: comentario})
+            .done(function(response){
+                $('#confirmar').show();
+                $('#modificar').hide();
+                $('#addObs').modal('hide');
+                preloader('off')
+                toastr.success(response.msg,'',{timeOut: 1000});
+                comentariosPrivados();
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            });
+    });
+
+    $(document).on('click', '.agregarComentario', function(e){
+        $('#addObs').modal('show');
+        $('#confirmar').show();
+        $('#modificar').hide();
+        $('#Comentario').val('');
     });
 
     function loadListAdjPrestacion() {
@@ -1133,7 +1181,9 @@ $(function() {
                             <td style="width: 120px" class="text-capitalize">${d.IdUsuario}</td>
                             <td style="width: 120px" class="text-uppercase">${d.nombre_perfil}</td>
                             <td class="text-start">${d.Comentario}</td>
-                            <td style="width: 60px">${USER === d.IdUsuario ? `<button type="button" class="btn btn-sm iconGeneralNegro"><i class="ri-edit-line"></i></button><button title="Eliminar" data-id="${d.Id}" type="button" class="btn btn-sm iconGeneralNegro deleteComentario"><i class="ri-delete-bin-2-line"></i></button>` : ''}</td>
+                            <td style="width: 60px">${USER === d.IdUsuario ? `
+                                <button type="button" data-id="${d.Id}" class="btn btn-sm iconGeneralNegro editarComentario"><i class="ri-edit-line"></i></button>
+                                <button title="Eliminar" data-id="${d.Id}" type="button" class="btn btn-sm iconGeneralNegro deleteComentario"><i class="ri-delete-bin-2-line"></i></button>` : ''}</td>
                         </tr>
                     `;
                     $('#privadoPrestaciones').append(contenido);
@@ -1306,5 +1356,7 @@ $(function() {
     }
 
     
-
+    function borrarCache() {
+        $.post(cacheDelete, {_token: TOKEN}, function(){});
+    }
 });

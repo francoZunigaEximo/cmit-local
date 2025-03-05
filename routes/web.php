@@ -286,6 +286,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/comentarios-privados/guardar', [PrestacionesObsFasesController::class, 'addComentario'])->name('savePrivComent');
     Route::get('/comentarios-privados/check-rol', [PrestacionesObsFasesController::class, 'listadoRoles'])->name('comentariosPrivados.checkRoles');
     Route::get('/comentarios-privados/eliminar', [PrestacionesObsFasesController::class, 'deleteComentario'])->name('comentariosPriv.eliminar');
+    Route::get('/comentarios-privados/editar', [PrestacionesObsFasesController::class, 'editComentario'])->name('comentariosPriv.editar');
+    Route::get('/comentarios-privados/comentario', [PrestacionesObsFasesController::class, 'getComentario'])->name('comentariosPriv.data');
 
     //Rutas de Ordenes de examenes efectores
     Route::get('/etapas/buscar', [OrdenesExamenController::class, 'search'])->name('seachOrdenesExamen');

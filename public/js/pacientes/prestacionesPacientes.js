@@ -1404,7 +1404,9 @@ $(function(){
                                 <td style="width: 120px" class="text-capitalize">${d.IdUsuario}</td>
                                 <td style="width: 120px" class="text-uppercase">${d.nombre_perfil}</td>
                                 <td>${d.Comentario}</td>
-                                <td style="width: 60px">${USER === d.IdUsuario ? `<button type="button" class="btn btn-sm iconGeneralNegro"><i class="ri-edit-line"></i></button><button title="Eliminar" type="button" data-id="${d.Id}" class="btn btn-sm iconGeneralNegro deleteComentario"><i class="ri-delete-bin-2-line"></i></button>` : ''}</td>
+                                <td style="width: 60px">${USER === d.IdUsuario ? `
+                                    <button type="button" data-id="${d.Id}" class="btn btn-sm iconGeneralNegro editarComentario"><i class="ri-edit-line"></i></button>
+                                    <button title="Eliminar" type="button" data-id="${d.Id}" class="btn btn-sm iconGeneralNegro deleteComentario"><i class="ri-delete-bin-2-line"></i></button>` : ''}</td>
                             </tr>
                         `;
                         $('#privadoPrestaciones').append(contenido);

@@ -24,6 +24,7 @@ $(function() {
     $('#remitoFechaE').val(hoy);
     $('.comentarioObsEstado').hide();
     $('#EstadoCerrar').val('abierto');
+    $('#modificar').hide();
 
     $('.seccionPrestaciones').show();
     $('.seccionOpciones').hide(); 
@@ -35,6 +36,11 @@ $(function() {
         $(this).hasClass('mostrarObsEstado') ? $('.comentarioObsEstado').show() : $('.comentarioObsEstado').hide();
 
         });
+    });
+
+    $('#comentarioPrivado').on('hide.bs.modal', function () {
+        $('#confirmar').show();
+        $('#modificar').hide();
     });
 
     $('#verPrestacionModa').on('hide.bs.modal', function () {
@@ -674,6 +680,9 @@ $(function() {
                             <td>
                                 <button data-id="${en.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button>
                                 <button data-id="${en.IdPrestacion}" class="btn btn-sm iconGeneral vistaPreviaEnviar" title="Vista previa"><i class="ri-file-search-line"></i></button>
+                                <button title="Observaciones privadas" type="button" class="iconGeneral btn btn-sm comentarioPrivado" data-bs-toggle="modal" data-bs-target="#comentarioPrivado"  data-id="${en.IdPrestacion}" data-nombre="${en.ApellidoPaciente} ${en.NombrePaciente}" data-fase="eEnviado">
+                                    <i class="ri-chat-quote-line"></i>
+                            </button>
                             </td>
                             <td>${en.eEnviado === 1 ? '' : en.eEnviado === 0 && en.Finalizado === 1 && en.Cerrado === 1 && en.Etapa === 'Completo' ? `<input type="checkbox" name="Id_enviar" value="${en.IdPrestacion}" checked>` : '<span class="custom-badge pequeno">Bloqueado</span>'}</td>     
                         </tr>
@@ -1042,12 +1051,50 @@ $(function() {
                         let errorData = JSON.parse(jqXHR.responseText);            
                         checkError(jqXHR.status, errorData.msg);
                         return;
-                    })
+                    });
 
             }
         })
+    });
 
+    $(document).off('click', '.editarComentario').on('click', '.editarComentario', async function(){
+        await borrarCache();
+
+        let id = $(this).data('id'),
+            data  = await $.get(getComentario,{Id: id});
+        $('#comentarioPrivado').modal('show');
+        $('#comentarioPrivado').attr('aria-hidden', 'false');
+        $('#confirmar').hide();
+        $('#modificar').show();
+        $('#IdComentarioFase').empty().val(data[0].Id)
+        $('#mostrarIdPrestacion').empty().text(data[0].IdEntidad);
+        $('#mostrarNombre').empty().text(data[0].NombreCompleto);
+        $('#Comentario').val(data[0].Comentario);
+    });
+
+    $(document).off('click', '.editarComentarioPriv').on('click', '.editarComentarioPriv', function(e){
         
+        let comentario = $('#Comentario').val(), id = $('#IdComentarioFase').val();
+
+        preloader('on')
+        $.get(editarComentario, {Id: id, Comentario: comentario})
+            .done(function(response){
+                $('#confirmar').show();
+                $('#modificar').hide();
+                $('#comentarioPrivado').modal('hide');
+                preloader('off')
+                toastr.success(response.msg,'',{timeOut: 1000});
+                listaComentariosPrivados(IDMAPA, 'prestaciones','mapa');
+                listaComentariosPrivados(IDMAPA, 'cerrado','mapa');
+                listaComentariosPrivados(IDMAPA, 'finalizado','mapa');
+                listaComentariosPrivados(IDMAPA, 'eEnviado','mapa');
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            });
     });
 
     function updateContador() {
@@ -1302,7 +1349,7 @@ $(function() {
 
     function listaComentariosPrivados(idmapa, opcionFase, tipo){
 
-        $('#privadoPrestaciones').empty();
+        $('#privadoPrestaciones, #privadoCerrar, #privadoFinalizar, #privadoEntregar, #privadoEnviar').empty();
         let listaFases = {
             prestaciones: {
                 id: 2,
@@ -1348,7 +1395,9 @@ $(function() {
                             <td style="width: 120px" class="text-uppercase">${d.IdUsuario}</td>
                             <td style="width: 120px">${typeof(d.nombre_perfil) === 'int' ? '-' : d.nombre_perfil}</td>
                             <td>${d.Comentario}</td>
-                            <td style="width: 60px">${USER === d.IdUsuario || isAdmin ? `<button type="button" class="btn btn-sm iconGeneralNegro"><i class="ri-edit-line"></i></button><button title="Eliminar" data-id="${d.Id}" type="button" class="btn btn-sm iconGeneralNegro deleteComentario"><i class="ri-delete-bin-2-line"></i></button>` : ''}</td>
+                            <td style="width: 60px">${USER === d.IdUsuario || isAdmin ? `
+                                <button type="button" data-id="${d.Id}" class="btn btn-sm iconGeneralNegro editarComentario"><i class="ri-edit-line"></i></button>
+                                <button title="Eliminar" data-id="${d.Id}" type="button" class="btn btn-sm iconGeneralNegro deleteComentario"><i class="ri-delete-bin-2-line"></i></button>` : ''}</td>
                         </tr>
                     `;
 
@@ -1452,11 +1501,11 @@ $(function() {
                     </tr>
                 `;
 
-                $('#lstAuditorias').append(contenido);
+                $('#auditoriaPres').append(contenido);
 
             }
 
-            $("#auditoriaPres").fancyTable({
+            $("#lstAuditorias").fancyTable({
                 pagination: true,
                 perPage: 10,
                 searchable: false,
@@ -1472,5 +1521,8 @@ $(function() {
         });
     }
 
+    function borrarCache() {
+        $.post(cacheDelete, {_token: TOKEN}, function(){});
+    }
 
 });
