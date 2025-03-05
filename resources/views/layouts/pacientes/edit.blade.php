@@ -1010,6 +1010,39 @@
                     </div>
                 </div>
 
+                <div class="row editarComentario">
+                    <h3 class="ff-secondary fw-bold mt-1 text-center">Modificar Comentario</h3>
+
+                    <div class="row">
+                        <div class="col-9 mx-auto box-information">
+                            <button class="btn btn-sm botonGeneral volverPrestacionLimpia">
+                                <i class="ri-arrow-left-line"></i> Volver a la prestación
+                            </button>
+
+                            <div class="row">
+                                <div class="col-sm-4"></div>
+                                <div class="col-sm-4">
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <textarea class="form-control" name="ComentarioEditar" id="ComentarioEditar" cols="30" rows="10"></textarea>
+                                                <input type="hidden" id="IdObservacion">
+                                            </div>
+                                        
+                                            <div class="col-sm-12 text-center mt-2">
+                                                <button class="btn btn-sm botonGeneral confirmarEdicion">Confirmar edición</button>
+                                            </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4"></div>
+                            </div>
+
+                        </div>
+                    </div>
+
+
+
+                </div>
+
                 <div class="row resultadosPaciente">
                     <h3 class="ff-secondary fw-bold mt-1 text-center">Resultados</h3>
                     <div class="col-9 mx-auto box-information">

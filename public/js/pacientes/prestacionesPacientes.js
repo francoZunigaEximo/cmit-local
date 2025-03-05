@@ -3,7 +3,7 @@ $(function(){
     let IdNueva, empresaInput = $('#selectClientes').val(), artInput = $('#selectArt').val(), hoy = new Date().toLocaleDateString('en-CA'), precarga = $('#tipoPrestacionPres').val();
     
     $('#Fecha, #FechaN').val(hoy);
-    $('#siguienteExCta, .seleccionExCta').hide();
+    $('#siguienteExCta, .seleccionExCta, .editarComentario').hide();
     
     precargaTipoPrestacion(precarga);
     getMap(empresaInput, artInput);
@@ -109,8 +109,7 @@ $(function(){
                     },
                     success: function(response){
                         toastr.success(response.msg,'',{timeOut: 1000});
-                        $('.nuevaPrestacion, .listadoExCta, .seleccionExCta').hide();
-                        $('.prestacionLimpia').show();
+                        $('.volverPrestacionLimpia').trigger('click');
 
                         IdNueva = response.nuevoId;
                         cargarExamen(response.nuevoId);
@@ -245,8 +244,7 @@ $(function(){
             .done(function(response){
                 preloader('off');
                 if(response > 0) {
-                    $('.ultimasFacturadas, .examenesDisponibles').show();
-                    $('#siguienteExCta').show();
+                    $('.ultimasFacturadas, .examenesDisponibles, #siguienteExCta').show();
                     $('#guardarPrestacion').hide();
                 }
             });
@@ -418,8 +416,7 @@ $(function(){
         
         if(['B', 'A', ''].includes(pago)) {
             
-            $('.ultimasFacturadas, .examenesDisponibles').hide();
-            $('#siguienteExCta').hide();
+            $('.ultimasFacturadas, .examenesDisponibles, #siguienteExCta').hide();
             $('#guardarPrestacion').show();
         }else{
             preloader('on');
@@ -427,8 +424,7 @@ $(function(){
             .done(function(response){
                 preloader('off');
                 if(response > 0) {
-                    $('.ultimasFacturadas, .examenesDisponibles').show();
-                    $('#siguienteExCta').show();
+                    $('.ultimasFacturadas, .examenesDisponibles, #siguienteExCta').show();
                     $('#guardarPrestacion').hide();
                 }
             });
@@ -493,11 +489,7 @@ $(function(){
     }
 
     function precargaTipoPrestacion(val){
-        if(val === 'ART'){
-            $('.selectMapaPres').show();
-        }else if(val !== 'ART'){
-            $('.selectMapaPres').hide();
-        }
+        return val === 'ART' ? $('.selectMapaPres').show() : $('.selectMapaPres').hide();
     }
 
     function getListado(buscar) {
@@ -822,24 +814,32 @@ $(function(){
 
     $(document).on('click', '.resulPaciente', function(e){
         e.preventDefault();
-
-        $('.prestacionLimpia, .reportesPacientes').hide();
+        $('.prestacionLimpia, .reportesPacientes,  .editarComentario').hide();
         $('.resultadosPaciente').show();
     });
 
     $(document).on('click', '.volverPrestacionLimpia', function(e){
         e.preventDefault();
-
-        $('.resultadosPaciente, .reportesPacientes').hide();
+        $('.resultadosPaciente, .reportesPacientes, .editarComentario').hide();
         $('.prestacionLimpia').show();
+        $('#ComentarioEditar').val('');
     });
 
     $(document).on('click', '.imprimirReportes', function(e){
         e.preventDefault();
-
-        $('.resultadosPaciente, .prestacionLimpia').hide();
+        $('.resultadosPaciente, .prestacionLimpia, .editarComentario').hide();
         $('.reportesPacientes').show();
     }); 
+
+    $(document).on('click', '.editarComentarioBtn', async function(e){
+        e.preventDefault();
+
+        let id = $(this).data('id'), data  = await await $.get(getComentario,{Id: id});
+        $('.resultadosPaciente, .prestacionLimpia, .reportesPacientes').hide();
+        $('.editarComentario').show();
+        $('#ComentarioEditar').empty().val(data[0].Comentario);
+        $('#IdObservacion').empty().val(data[0].Id);
+    });
 
     $(document).on('click', '.imprimirRepo', function(e){
 
@@ -999,18 +999,15 @@ $(function(){
     });
 
     $(document).on('click', '.deleteExamenes, .deleteExamen', function(e){
-
         e.preventDefault();
 
         let ids = [], tieneAdjunto = false, id = $(this).data('delete'), adjunto, archivos; checkAll ='';
-
         if ($(this).hasClass('deleteExamenes')) {
 
             $('input[name="Id_examenes"]:checked').each(function() {
                 adjunto = $(this).data('adjunto'), archivos = $(this).data('archivo');
                 adjunto == 1 && archivos > 0 ? tieneAdjunto = true : ids.push($(this).val());
             });
-    
             checkAll = $('#checkAllExa').prop('checked');
 
         } else if($(this).hasClass('deleteExamen')) {
@@ -1330,14 +1327,13 @@ $(function(){
 
     $(document).on('click', '.confirmarComentarioPriv', function(e){
         e.preventDefault();
-        let comentario = $('#Comentario').val();
+        let comentario = $('#Comentario').val(), idp =  $('#idPrestacion').val();
 
         if(comentario === ''){
             toastr.warning('La observación no puede estar vacía','',{timeOut: 1000});
             return;
         }
 
-        let idp =  $('#idPrestacion').val();
         preloader('on');
         $.post(savePrivComent, {_token: TOKEN, Comentario: comentario, IdEntidad: idp, obsfasesid: 2})
             .done(function(){
@@ -1356,8 +1352,6 @@ $(function(){
         e.preventDefault;
 
         let id = $(this).data('id');
-
-        if(['',0, undefined, null].includes(id)) return;
 
         swal({
             title: "¿Está seguro que desea eliminar el comentario privado?",
@@ -1379,12 +1373,33 @@ $(function(){
                         checkError(jqXHR.status, errorData.msg);
                         return;
                     })
-
             }
         })
-
-        
     });
+
+    
+    $(document).on('click', '.confirmarEdicion', function(e){
+        e.preventDefault();
+
+        let id = $('#IdObservacion').val(), comentario = $('#ComentarioEditar').val();
+
+        preloader('on')
+        $.get(editarComentario, {Id: id, Comentario: comentario})
+            .done(function(response){
+                $('.volverPrestacionLimpia').trigger('click');
+                $('#comentarioPrivado').modal('hide');
+                preloader('off')
+                toastr.success(response.msg,'',{timeOut: 1000});
+                comentariosPrivados();
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            });
+    });
+
 
     async function comentariosPrivados(){
 
@@ -1405,8 +1420,8 @@ $(function(){
                                 <td style="width: 120px" class="text-uppercase">${d.nombre_perfil}</td>
                                 <td>${d.Comentario}</td>
                                 <td style="width: 60px">${USER === d.IdUsuario ? `
-                                    <button type="button" data-id="${d.Id}" class="btn btn-sm iconGeneralNegro editarComentario"><i class="ri-edit-line"></i></button>
-                                    <button title="Eliminar" type="button" data-id="${d.Id}" class="btn btn-sm iconGeneralNegro deleteComentario"><i class="ri-delete-bin-2-line"></i></button>` : ''}</td>
+                                    <button type="button" data-id="${d.Id}" data-comentario="${d.Comentario}" class="btn btn-sm iconGeneralNegro editarComentarioBtn"><i class="ri-edit-line"></i></button>
+                                    <button title="Eliminar" type="button" data-id="${d.Id}"  class="btn btn-sm iconGeneralNegro deleteComentario"><i class="ri-delete-bin-2-line"></i></button>` : ''}</td>
                             </tr>
                         `;
                         $('#privadoPrestaciones').append(contenido);
@@ -1420,6 +1435,10 @@ $(function(){
                     sortable: false, 
                 });
             })   
+    }
+
+    function borrarCache() {
+        $.post(cacheDelete, {_token: TOKEN}, function(){});
     }
 
 });
