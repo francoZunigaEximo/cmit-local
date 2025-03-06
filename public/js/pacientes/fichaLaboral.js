@@ -408,11 +408,7 @@ $(document).ready(function () {
     }
 
     function activarMapas(estado){
-        if (estado === 'ART') {
-            $('.selectMapaPres').show();
-        }else{
-            $('.selectMapaPres').hide();
-        }
+        return estado === 'ART' ? $('.selectMapaPres').show() :  $('.selectMapaPres').hide();
     }
 
     //Creamos función para trabajar cambios en fechas automaticamente
@@ -452,26 +448,16 @@ $(document).ready(function () {
                 <option value="G">Sin Cargo</option>
             `;
 
-            $('.SPago').show();
-            $('.ObsPres').show();
-            $('.Factura').show();
-            $('.NroFactProv').show();
+            $('.SPago, .ObsPres, .Factura, .NroFactProv').show();
             $('#SPago').empty().append(contenido);
        
         }else if(opcion === 'C') {
 
-            $('.SPago').hide();
-            $('.ObsPres').hide();
-            $('.Factura').hide();
-            $('.NroFactProv').hide();
+            $('.SPago, .ObsPres, .Factura, .NroFactProv').hide();
             $('.Autoriza').show();
 
         }else{
-            $('.SPago').hide();
-            $('.ObsPres').hide();
-            $('.Factura').hide();
-            $('.NroFactProv').hide();
-            $('.Autoriza').hide();
+            $('.SPago, .ObsPres, .Factura, .NroFactProv, .Autoriza').hide();
         }
     }
 
@@ -551,20 +537,21 @@ $(document).ready(function () {
 
         $.get(lstExDisponibles, {Id: id})
             .done(function(response) {
-                var contenido = '';
+                let contenido = '';
                 preloader('off');
 
                 if(response && response.length > 0){
 
-                    $.each(response, function(index, r) {
-                    
+                    for(let index = 0; index < response.length; index++) {
+                        let r = response[index];
+
                         contenido += `
                         <tr>
                             <td>${r.Precarga === '' ? '-' : r.Precarga}</td>
                             <td>${r.NombreExamen}</td>
                         </tr>
                         `;
-                    });
+                    }
                 }else{
                     contenido = `
                         <tr>
@@ -588,8 +575,7 @@ $(document).ready(function () {
 
         if(['B','A', ''].includes(pago)) {
             
-            $('.ultimasFacturadas, .examenesDisponibles').hide();
-            $('#siguienteExCta').hide();
+            $('.ultimasFacturadas, .examenesDisponibles, #siguienteExCta').hide();
             $('#guardarPrestacion').show();
         }else{
             preloader('on');
@@ -597,8 +583,7 @@ $(document).ready(function () {
             .done(function(response){
                 preloader('off');
                 if(response > 0) {
-                    $('.ultimasFacturadas, .examenesDisponibles').show();
-                    $('#siguienteExCta').show();
+                    $('.ultimasFacturadas, .examenesDisponibles, #siguienteExCta').show();
                     $('#guardarPrestacion').hide();
                     checkExamenesCuenta(id)
                 }
@@ -714,13 +699,12 @@ $(document).ready(function () {
                 {
                     $('#mapas, #mapasN').empty().append('<option title="Sin mapas disponibles para esta ART y Empresa." value="0" selected>Sin mapas disponibles.</option>');
                 }else{
-
-                    $.each(mapas, function(index, d){
-
-                        let contenido = `<option value="${d.Id}">${d.Nro} | Empresa: ${d.RSE} - ART: ${d.RSArt}</option>`;
+                    for(let index = 0; index < mapas.length; index++) {
+                        let d = mapas[index],
+                            contenido = `<option value="${d.Id}">${d.Nro} | Empresa: ${d.RSE} - ART: ${d.RSArt}</option>`;
     
                         $('#mapas, #mapasN').append(contenido);
-                    });
+                    }
                 } 
             })
     }

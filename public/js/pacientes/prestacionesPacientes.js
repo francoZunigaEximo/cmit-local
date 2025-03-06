@@ -719,14 +719,14 @@ $(function(){
                         
                         return `
                         <tr class="fondo-gris">
-                            <td colspan="3"><span class="fw-bolder text-capitalize">fact </span> ${r.Tipo ?? '-'}${suc}-${numero}</td>
-                            <td>
-                                <tr>
-                                    <td colspan="4">
-                                        <span class="fw-bolder text-capitalize">Observación: </span><span>${r.Obs}</span>
-                                    </td>
-                                </tr>
-                            </td> 
+                            <td colspan="6">
+                                <span class="fw-bolder text-capitalize">fact </span> ${r.Tipo ?? '-'}${suc}-${numero}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="5">
+                                <span class="fw-bolder text-capitalize">Observación: </span><span>${r.Obs}</span>
+                            </td>
                         </tr>
                         ${moduloResult}
                         `;
@@ -756,7 +756,7 @@ $(function(){
                             let detallesResult = await detalles(r.Documento, r.IdPago);
                             return `
                             <tr class="fondo-grisClaro mb-2">
-                                <td colspan="4" class="fw-bolder"><span class="fw-bolder">${[0, ''].includes(r.Documento) ? '' : 'DNI Precargado: '}</span> ${[0, ''].includes(r.Documento) ? 'Sin precarga' : r.Documento}</td>          
+                                <td colspan="5" class="fw-bolder"><span class="fw-bolder">${[0, ''].includes(r.Documento) ? '' : 'DNI Precargado: '}</span> ${[0, ''].includes(r.Documento) ? 'Sin precarga' : r.Documento}</td>          
                                 ${detallesResult}
                             </tr>
                             `;
@@ -786,7 +786,7 @@ $(function(){
                         <tr>  
                             <td>${r.Cantidad}</td>
                             <td>${r.NombreExamen}</td>
-                            <td><input type="checkbox" class="form-check-input" value="${r.IdEx}"></td>
+                            <td style="width:5px"><input type="checkbox" class="form-check-input" value="${r.IdEx}"></td>
                         </tr>
                         `).join('');
                         resolve(result);
