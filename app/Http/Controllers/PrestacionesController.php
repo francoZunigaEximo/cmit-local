@@ -527,9 +527,9 @@ class PrestacionesController extends Controller
         $acciones = [
             'adjAnexos' => 'adjAnexos',
             'eEnvio' => ['eEstudio', 'adjAnexos', 'adjGenerales'],
-            'adjDigitales' => ['adjDigitalFisico' => 3],
-            'adjFisicos' => ['adjDigitalFisico' => 1],
-            'adjFisicosDigitales' => ['adjDigitalFisico' => 2],
+            'adjDigitales' => ['adjDigitalFisico' => 1],
+            'adjFisicos' => ['adjDigitalFisico' => 2],
+            'adjFisicosDigitales' => ['adjDigitalFisico' => 3],
             'adjGenerales' => 'adjGenerales',
             'infInternos' => 'infInternos',
             'pedProveedores' => 'pedProveedores',
@@ -632,24 +632,7 @@ class PrestacionesController extends Controller
             File::copy($this->adjAnexos($request->Id), FileHelper::getFileUrl('escritura').'/EnviarOpciones/eAnexos'.$request->Id.'_'.$this->getIdArchivoEfector($request->Id).'.pdf');
         }
 
-        if ($request->adjDigitales == 'true') {
-            array_push($listado, $this->adjDigitalFisico($request->Id, 3));
-        }
-
-        if ($request->adjFisicos == 'true') {
-            array_push($listado, $this->adjDigitalFisico($request->Id, 1));
-        }
-
-        if ($request->adjGenerales == 'true') {
-            array_push($listado, $this->adjGenerales($request->Id));
-            File::copy($this->adjGenerales($request->Id), FileHelper::getFileUrl('escritura').'/EnviarOpciones/eAdjuntos'.$request->Id.'.pdf');
-        }
-
-        if ($request->resAdmin == 'true') {
-            array_push($listado, $this->resAdmin($request->Id));
-        }
-
-        if ($request->consEstDetallado == 'true') {
+        if ($request->adjDigitales == 'true') {//
             array_push($listado, $this->consEstDetallado($request->Id));
             File::copy($this->consEstDetallado($request->Id), FileHelper::getFileUrl('escritura').'/EnviarOpciones/eConstanciaD'.$request->Id.'.pdf');
         }
@@ -1055,16 +1038,16 @@ class PrestacionesController extends Controller
     private function resumenEvaluacion(int $idPrestacion): mixed
     {
         return $this->reporteService->generarReporte(
-            Reducido::class,
-            null,
             EvaluacionResumen::class,
+            null,
+            null,
             null,
             'guardar',
             storage_path($this->tempFile.Tools::randomCode(15).'-'.Auth::user()->name.'.pdf'),
             null,
-            [],
-            [],
             ['id' => $idPrestacion, 'firmaeval' => 0, 'opciones' => 'no', 'eEstudio' => 'no'],
+            [],
+            [],
             [],
             null
         );
@@ -1088,7 +1071,7 @@ class PrestacionesController extends Controller
         );
     }
 
-    private function adjDigitalFisico(int $idPrestacion, int $tipo): mixed // 1 es Digital, 2 es Fisico,Digital
+    private function adjDigitalFisico(int $idPrestacion, int $tipo): mixed // 1 es Digital, 2 es Fisico
     {
         return $this->reporteService->generarReporte(
             AdjuntosDigitales::class,
