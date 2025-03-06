@@ -30,10 +30,6 @@ class EvaluacionResumen extends Reporte
 
         $datos['eEstudio'] === 'si' ? $pdf->AddPage() : '';
 
-        //Agrego el titulo reducido directamente
-        $reducido = new Reducido;
-        $reducido->render($pdf, []);
-
         $pdf->SetFont('Arial','',8);$pdf->SetXY(182,4);$pdf->Cell(0,3,$datos['id'],0,0,'L');
         $pdf->SetFont('Arial','B',10);$pdf->SetXY(10,32);$pdf->Cell(200,4,$tipoPrestacion['titulo'],0,0,'C');
 		$pdf->SetFont('Arial','',10);$pdf->SetXY(190,36);$pdf->Cell(0,3,'Neuquen '.Carbon::parse($query->Fecha)->format("d/m/Y"),0,0,'R');

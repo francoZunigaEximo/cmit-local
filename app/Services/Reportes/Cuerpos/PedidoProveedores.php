@@ -14,12 +14,22 @@ class PedidoProveedores extends Reporte
     {
         $idp = str_pad($datos['id'], 8, "0", STR_PAD_LEFT);
         $y = 0;
-        $controlcorte = 0;
 
         $prestaciones = $this->prestaciones($datos['id']);
         $itemsprestaciones = $this->itemsprestaciones($datos['id']);
 
         foreach($itemsprestaciones as $item) {
+
+            $examenes = $this->examenes($item->IdProveedor, $datos['id']);
+            $cantlineas = count($examenes);
+
+            $espacioNecesario = 45 + ($cantlineas * 4); 
+
+            if (($pdf->GetY() + $espacioNecesario) > 273) {
+                $pdf->AddPage(); 
+                $y = 0; 
+                $controlcorte = 0;
+            }
 
             //encabezado clte
             $pdf->SetY($y);
@@ -34,13 +44,6 @@ class PedidoProveedores extends Reporte
             $pdf->SetFont('Arial','',8);$pdf->SetXY(177,$y+25);$pdf->Cell(0,3,$idp,0,0,'L');
             $pdf->SetFont('Arial','B',8);$pdf->SetXY(171,$y+30);$pdf->Cell(20,3,$prestaciones->TipoPrestacion,0,0,'R');
 
-
-            $examenes = $this->examenes($item->IdProveedor, $datos['id']);
-
-            $cantlineas = count($examenes);
-	        $controlcorte = $pdf->GetY();
-
-            if (($controlcorte+45+4+$cantlineas*4)>273){$pdf->AddPage();$y=0;$controlcorte=0;}
             
              //examenes x proveedor
             $pdf->Rect(10,$y+42,180,10); $pdf->SetFont('Arial','B',8);
