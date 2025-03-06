@@ -109,6 +109,7 @@ $(function(){
                     },
                     success: function(response){
                         toastr.success(response.msg,'',{timeOut: 1000});
+                        $('.nuevaPrestacion').hide();
                         $('.volverPrestacionLimpia').trigger('click');
 
                         IdNueva = response.nuevoId;
@@ -1182,9 +1183,8 @@ $(function(){
 
                 let response = await $.ajax({
                     url: getItemExamenes,
-                    method: 'post',
+                    method: 'GET',
                     data: {
-                        _token: TOKEN,
                         IdExamen: examenes,
                         Id: id,
                         tipo: 'listado'
@@ -1198,10 +1198,17 @@ $(function(){
                     let examen = registros[index],
                     fila = `
                         <tr ${examen.Anulado === 1 ? 'class="filaBaja"' : ''}>
-                            <td><input type="checkbox" name="Id_examenes" value="${examen.IdItem}" checked ${examen.Anulado === 1 ? 'disabled' : ''}></td>
-                            <td data-idexam="${examen.IdExamen}" id="${examen.IdItem}" style="text-align:left">${examen.Nombre} ${examen.Anulado === 1 ? '<span class="custom-badge rojo">Bloqueado</span>' : ''}</td>
-                            <td>    
+                            <td>
+                                <input type="checkbox" name="Id_examenes" value="${examen.IdItem}" checked ${examen.Anulado === 1 ? 'disabled' : ''}>
+                            </td>
+                            <td data-idexam="${examen.IdExamen}" id="${examen.IdItem}" style="text-align:left;">${examen.Nombre} ${examen.Anulado === 1 ? '<span class="custom-badge rojo">Bloqueado</span>' : ''}</td>
+                            <td style="width: 100px">    
                                 <div class="d-flex gap-2">
+                                     <div class="bloquear">
+                                        <button data-id="${examen.IdItem}" class="btn btn-sm iconGeneral openExamen" title="Ver">
+                                            <i class="ri-zoom-in-line"></i>
+                                        </button>
+                                    </div>
                                     ${examen.Anulado === 0 ? `
                                          <div class="bloquear">
                                                     <button data-bloquear="${examen.IdItem}" class="btn btn-sm iconGeneral bloquearExamen" title="Baja">
@@ -1240,6 +1247,17 @@ $(function(){
             preloader('off');
         }
     }
+
+    $(document).on('click', '.openExamen', function(e){
+        e.preventDefault();
+
+        let id = $(this).data('id'),
+            url = location.href,
+            open = url.replace(/\/pacientes\/.*/, ''),
+            redireccionar = open + '/itemsprestaciones/' + id + '/edit';
+
+        window.open(redireccionar, '_blank');
+    });
 
     $(document).on('click', '.bloquearExamenes, .bloquearExamen', function(e){
 

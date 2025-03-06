@@ -235,7 +235,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/especialidades/listado', [ProveedoresController::class, 'lstProveedores'])->name('lstProveedores');
     Route::resource('especialidades', ProveedoresController::class);
     //Rutas de ItemsPrestaciones
-    Route::post('itemsprestaciones/lista-examenes', [ItemPrestacionesController::class, 'getExamenes'])->name('itemsprestaciones.listadoexamenes');
+    Route::get('itemsprestaciones/lista-examenes', [ItemPrestacionesController::class, 'getExamenes'])->name('itemsprestaciones.listadoexamenes');
     Route::get('itemsprestaciones/check-adjuntos', [ItemPrestacionesController::class, 'checkAdjunto'])->name('itemsprestaciones.checkAdjuntos');
     Route::get('itemsprestaciones/checkid', [ItemPrestacionesController::class, 'checkPrimeraCarga'])->name('itemsprestaciones.checkId');
     Route::get('itemsprestaciones/editModal', [ItemPrestacionesController::class, 'editModal'])->name('itemsprestaciones.editModal');

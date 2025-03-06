@@ -576,9 +576,8 @@ $(function(){
                 preloader('on');
                 const response = await $.ajax({
                     url: getItemExamenes,
-                    type: 'POST',
+                    type: 'GET',
                     data: {
-                        _token: TOKEN,
                         IdExamen: examenes,
                         Id: ID,
                         tipo: 'listado'
