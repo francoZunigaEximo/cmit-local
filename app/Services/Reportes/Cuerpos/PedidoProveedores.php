@@ -44,12 +44,12 @@ class PedidoProveedores extends Reporte
             $pdf->SetFont('Arial','',8);$pdf->SetXY(177,$y+25);$pdf->Cell(0,3,$idp,0,0,'L');
             $pdf->SetFont('Arial','B',8);$pdf->SetXY(171,$y+30);$pdf->Cell(20,3,$prestaciones->TipoPrestacion,0,0,'R');
 
-            
+
              //examenes x proveedor
             $pdf->Rect(10,$y+42,180,10); $pdf->SetFont('Arial','B',8);
-            $pdf->SetXY(11,$y+43);$pdf->Cell(0,3,$item->examenes->Nombre,0,0,'L');$pdf->SetFont('Arial','',7);
-            $pdf->SetXY(11,$y+46);$pdf->Cell(0,3,substr($item->proveedores->Direccion ?? '',0,50).' -  '.$item->proveedores->localidad->Nombre.' -  '.$item->proveedores->localidad->Provincia->Nombre,0,0,'L');
-            $pdf->SetXY(11,$y+49);$pdf->Cell(0,3,$item->proveedores->Telefono,0,0,'L');$pdf->SetFont('Arial','B',8);
+            $pdf->SetXY(11,$y+43);$pdf->Cell(0,3,$item->examenes->proveedor1->Nombre,0,0,'L');$pdf->SetFont('Arial','',7);
+            $pdf->SetXY(11,$y+46);$pdf->Cell(0,3,substr($item->examenes->proveedor1->Direccion ?? '',0,50).' -  '.$item->examenes->proveedor1->localidad->Nombre.' -  '.$item->examenes->proveedor1->localidad->Provincia->Nombre,0,0,'L');
+            $pdf->SetXY(11,$y+49);$pdf->Cell(0,3,$item->examenes->proveedor1->Telefono,0,0,'L');$pdf->SetFont('Arial','B',8);
             $pdf->SetXY(10,$y+53);$pdf->Cell(0,3,'Examenes Solicitados:',0,0,'L');$pdf->SetFont('Arial','',8);$pdf->Ln(5);	
 
            //mostrar examenes
@@ -82,10 +82,12 @@ class PedidoProveedores extends Reporte
     private function examenes(int $idProveedor, int $idPrestacion): mixed
     {
         return ItemPrestacion::join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
+                        ->join('proveedores', 'examenes.IdProveedor', '=', 'proveedores.Id')
             ->select(
                 'examenes.Nombre as Nombre',
                 'examenes.Cod2 as Cod2',
-                'itemsprestaciones.ObsExamen as ObsExamen'
+                'itemsprestaciones.ObsExamen as ObsExamen',
+                'proveedores.*'
             )
             ->where('itemsprestaciones.Anulado', 0)
             ->where('itemsprestaciones.IdPrestacion', $idPrestacion)
