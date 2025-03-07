@@ -32,6 +32,7 @@ class ReporteService
 
         $pdf = new Fpdi('P', 'mm', 'A4');
         $pdf->AddPage();
+        $pdf->SetFont('Arial','',8);
     
         $titulo = new $tituloClass();
         $titulo->render($pdf, $paramsTitulo);

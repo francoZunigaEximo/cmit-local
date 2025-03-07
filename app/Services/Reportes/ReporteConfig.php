@@ -12,5 +12,10 @@ class ReporteConfig
     public static $RUTAREXACUENTA = "/app/public/examenescuenta/";
 
     public static $AUDIOMETRIA = '/archivos/reportes/E1.jpg';
+    public static $AUDIOMETRIALIBERTY = '/archivos/reportes/E2.jpg';
+    public static $AUDIOMETRIAPREMEDICA0 = '/archivos/reportes/E3.jpg';
+    public static $AUDIOMETRIAPREMEDICA1 = '/archivos/reportes/E3_1.jpg';
+    public static $AUDIOMETRIACARLEY = '/archivos/reportes/E4.jpg';
+    public static $EGRESOPETREVEN = '/archivos/reportes/E6.jpg';
 
 }

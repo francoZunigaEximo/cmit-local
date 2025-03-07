@@ -20,7 +20,7 @@ class PedidoProveedores extends Reporte
 
         foreach($itemsprestaciones as $item) {
 
-            $examenes = $this->examenes($item->IdProveedor, $datos['id']);
+            $examenes = $this->examenes($item->examenes->IdProveedor, $datos['id']);
             $cantlineas = count($examenes);
 
             $espacioNecesario = 45 + ($cantlineas * 4); 
@@ -68,6 +68,7 @@ class PedidoProveedores extends Reporte
         }
     }
 
+
     private function prestaciones(int $id): mixed
     {
         return Prestacion::with(['paciente', 'empresa', 'paciente.localidad', 'paciente.localidad.provincia'])->find($id);
@@ -75,25 +76,28 @@ class PedidoProveedores extends Reporte
 
     private function itemsprestaciones(int $id): mixed
     {
-        return ItemPrestacion::with(['proveedores', 'proveedores.localidad', 'proveedores.localidad.provincia', 'examenes'])->where('Anulado', 0)->where('IdPrestacion', $id)->distinct()->get();
-
+        return ItemPrestacion::join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
+            ->join('proveedores', 'examenes.IdProveedor', '=', 'proveedores.Id')
+            ->join('localidades', 'proveedores.IdLocalidad', '=', 'localidades.Id')
+            ->join('provincias', 'localidades.IdPcia', '=', 'provincias.Id')
+            ->where('itemsprestaciones.Anulado', 0)
+            ->where('itemsprestaciones.IdPrestacion', $id)
+            ->groupBy('proveedores.Nombre')
+            ->get();
     }
 
     private function examenes(int $idProveedor, int $idPrestacion): mixed
     {
         return ItemPrestacion::join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
-                        ->join('proveedores', 'examenes.IdProveedor', '=', 'proveedores.Id')
             ->select(
                 'examenes.Nombre as Nombre',
                 'examenes.Cod2 as Cod2',
                 'itemsprestaciones.ObsExamen as ObsExamen',
-                'proveedores.*'
             )
             ->where('itemsprestaciones.Anulado', 0)
             ->where('itemsprestaciones.IdPrestacion', $idPrestacion)
-            ->where('itemsprestaciones.IdProveedor', $idProveedor)
+            ->where('examenes.IdProveedor', $idProveedor)
             ->orderBy('examenes.Nombre')
-            ->distinct()
             ->get();
     }
 
