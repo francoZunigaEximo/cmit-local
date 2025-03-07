@@ -95,12 +95,6 @@ $(function(){
         });
     });
 
-    //Reset de busquedas
-    $(document).on('keydown', function(e) {
-        if (e.keyCode === 27) {
-            window.location.href = GOINDEX;
-        }
-    });
 
     $(document).on('click', '.downCliente', function(e){
         e.preventDefault();

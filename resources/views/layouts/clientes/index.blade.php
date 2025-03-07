@@ -32,7 +32,7 @@
                 <div class="col-2">
                     <div class="mb-2">
                         <select id="TipoCliente" name="TipoCliente" class="form-select">
-                            <option value="" disabled selected hidden>Tipo</option>
+                            <option value="" >Empresa y ART</option>
                             <option value="E">Empresa</option>
                             <option value="A">ART</option>
                         </select>
@@ -56,7 +56,7 @@
                 <div class="col-2">
                     <div class="mb-2">
                         <select id="FPago" name="FPago" class="form-select">
-                            <option value="" disabled selected hidden>F.Pago</option>
+                            <option value="">F.Pago</option>
                             <option value="A">CC.</option>
                             <option value="B">Ctdo.</option>
                             <option value="C">Ctdo(CC Bloq)</option>
@@ -66,17 +66,16 @@
                 <div class="col-3">
                     <div class="" style="width: 100%;">
                         <input type="text" name="buscar" class="form-control" id="buscar" placeholder="CUIT, R. Social o ParaEmpresa">
-                        <p class="text-muted" id="search-instructions">ENTER para buscar</p>
                     </div>
                 </div>
                 <div class="col-1 v-flex justify-content-end align-items-center">
                     <div>
-                        <a href="{{ route('clientes.index') }}" class="btn btn-sm botonGeneral">Reiniciar</a>
+                        <button id="buscarBtn" class="btn btn-sm botonGeneral"><i class="ri-zoom-in-line"></i>&nbsp;Buscar</button>
                     </div>
                 </div>
             </div>
 
-            <div class="table-responsive table-card mb-1">
+            <div class="table-responsive table-card mb-1 mt-2">
                 <table id="listaClientes" class="display table table-bordered" style="width:100%">
                     <thead class="table-light">
                         <tr>
