@@ -21,8 +21,6 @@ class AudiometriaCmit extends Reporte
         $cabecera = new NroPrestacion();
         $retiraFisico = new MarcaRetiraFisico();
 
-
-
         $paciente = $prestacion->paciente->Apellido." ".$prestacion->paciente->Nombre;
 
         $arrSubtitulo = [

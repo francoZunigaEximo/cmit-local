@@ -20,6 +20,10 @@ class AudiometriaLiberty extends Reporte
         $prestacion = $this->prestacion($datos['id']);
         $datosPaciente = $this->datosPaciente($datos['id']);
 
+        if($prestacion->empresa->RF === 1){
+            $pdf->SetFont('Arial','B',14);$pdf->SetXY(170,4);$pdf->Cell(0,3,'RF',0,0,'L');$pdf->SetFont('Arial','',8);
+        }
+
         Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
 
         $paciente = $prestacion->paciente->Apellido.' '.$prestacion->paciente->Nombre;
