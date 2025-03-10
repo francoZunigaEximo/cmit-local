@@ -1143,7 +1143,7 @@ $(function(){
             Obs = $('#ObsN').val();
 
         preloader('on');
-        $.post(obsNuevaPrestacion, {_token: TOKEN, IdPrestacion: idP, ObservacionesPres: ObservacionesPres, ObsExamenes: ObsExamenes, Obs: Obs})
+        $.post(obsNuevaPrestacion, {_token: TOKEN, IdPrestacion: idP, Observaciones: ObservacionesPres, ObsExamenes: ObsExamenes, Obs: Obs})
             .done(function(response){
                 preloader('off');
                 let url = location.href,
