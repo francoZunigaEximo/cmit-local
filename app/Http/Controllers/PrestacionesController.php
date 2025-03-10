@@ -492,7 +492,7 @@ class PrestacionesController extends Controller
     {
         $query = Prestacion::find($request->IdPrestacion);
 
-        if ($query)
+        if($query)
         {
             $query->Observaciones = $request->Observaciones ?? '';
             $query->ObsExamenes = $request->ObsExamenes ?? '';
