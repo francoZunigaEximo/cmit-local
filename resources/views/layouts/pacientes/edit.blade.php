@@ -726,7 +726,7 @@
                             <div class="row auto-mx mb-3">
                                 <div class="table-responsive table-card mt-3 mb-1 mx-auto col-sm-8">
                                     <table id="lstExCta" class="display table table-bordered">
-                                        <tbody class="list form-check-all" id="lstEx">
+                                        <tbody class="list form-check-all" id="lstEx2">
                                             
                                         </tbody>
                                     </table>
