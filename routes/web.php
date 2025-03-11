@@ -69,7 +69,7 @@ Route::group(['middleware' => 'auth'], function () {
     //Home del sitio
     //Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::get('/home', function () {
-        return view('/prestaciones');
+        return redirect('/prestaciones');
     })->name('home');
 
     //Rutas de Utility

@@ -10,7 +10,8 @@ $(function(){
     getListado(null);
     listadoConSaldos(empresaInput);
     cantidadDisponibles(empresaInput);
-    listadoFacturas(empresaInput, null);
+    listadoFacturas(empresaInput, null, true, '#lstEx');
+    listadoFacturas(empresaInput, null, false, '#lstEx2');
     getUltimasFacturadas(empresaInput);
     selectorPago(pagoInput);
 
@@ -26,7 +27,8 @@ $(function(){
         getUltimasFacturadas(empresaCap);
         listadoConSaldos(empresaCap);
         cantidadDisponibles(empresaCap);
-        listadoFacturas(empresaCap, null);
+        listadoFacturas(empresaCap, null, true, '#lstEx');
+        listadoFacturas(empresaCap, null, false, '#lstEx2');
 
         if (tipoPrestacion === 'ART') {  
             getMap(empresaCap, artCap);  
@@ -316,7 +318,8 @@ $(function(){
             return;
         }
 
-        listadoFacturas(empIn, examen);
+        listadoFacturas(empIn, examen, true, '#lstEx');
+        listadoFacturas(empIn, examen, false, '#lstEx2');
         examen.remove();
     });
 
@@ -325,7 +328,8 @@ $(function(){
 
         let empIn = $('#selectClientes').val();
 
-        listadoFacturas(empIn, null);
+        listadoFacturas(empIn, null, true, '#lstEx');
+        listadoFacturas(empIn, null, false, '#lstEx2');
 
     });
 
@@ -378,11 +382,13 @@ $(function(){
 
     function cargaPreExamenes(valor) {
         preloader('on');
+        
         $.get(preExamenes, {Id: valor})
             .done(function(response){
-                $.each(response, function(index, r){
 
-                    var existe = false;
+                for(let index = 0; index < response.length; index++) {
+                    let r = response[index], existe = false;
+
                     $('#listEdicion tr').each(function() {
                         var nombreExamen = $(this).find('td:first').text();
                         if (nombreExamen === r.NombreExamen) {
@@ -409,7 +415,9 @@ $(function(){
                         $('#listEdicion').append(contenido);
                         preloader('off');
                     }
-                });
+                }
+
+                
             })
     }
 
@@ -479,12 +487,12 @@ $(function(){
                     $('#mapas, #mapasN').empty().append('<option title="Sin mapas disponibles para esta ART y Empresa." value="0" selected>Sin mapas disponibles.</option>');
                 }else{
 
-                    $.each(mapas, function(index, d){
-
-                        let contenido = `<option value="${d.Id}">${d.Nro} | Empresa: ${d.RSE} - ART: ${d.RSArt}</option>`;
+                    for(let index = 0; index < mapas.length; index++) {
+                        let d = mapas[index],
+                                contenido = `<option value="${d.Id}">${d.Nro} | Empresa: ${d.RSE} - ART: ${d.RSArt}</option>`;
     
                         $('#mapas, #mapasN').append(contenido);
-                    });
+                    }
                 } 
             })
     }
@@ -508,8 +516,6 @@ $(function(){
                 preloader('off');
                 let pacientes = response.pacientes;
                 $('#results').hide();
-
-                for(let index = 0; index < pacientes.length; index++)
 
                 $('#listaPacientes tbody').empty();
                 $.each(pacientes.data, function(index, papre) {
@@ -703,8 +709,9 @@ $(function(){
             })
     }
 
-    function listadoFacturas(id, idexamen) {
-        $('#lstEx').empty();
+    function listadoFacturas(id, idexamen, checkVisible, etiquetaId) {
+        //$('#lstEx').empty();
+        $(etiquetaId).empty();
         preloader('on');
     
         $.get(lstExClientes, { Id: id })
@@ -715,7 +722,7 @@ $(function(){
                     let promises = response.map(async function(r) {
                         let suc = [null, 0, undefined, ''].includes(r.Suc) ? '' : (r.Suc ? r.Suc.toString().padStart(4, '0') : '-');
                         let numero = [null, 0, undefined, ''].includes(r.Nro) ? '' : (r.Nro ? r.Nro.toString().padStart(8, '0') : '-');
-                        let moduloResult = await vistaDni(r.Id, idexamen);
+                        let moduloResult = await vistaDni(r.Id, idexamen, checkVisible);
                         
                         return `
                         <tr class="fondo-gris">
@@ -733,9 +740,9 @@ $(function(){
                     });
     
                     let contents = await Promise.all(promises);
-                    $('#lstEx').append(contents.join(''));
+                    $(etiquetaId).append(contents.join(''));
                 } else {
-                    $('#lstEx').append('<tr><td>No hay historial de facturas disponible</td></tr>');
+                    $(etiquetaId).append('<tr><td>No hay historial de facturas disponible</td></tr>');
                 }
             })
             .fail(function(error) {
@@ -744,7 +751,7 @@ $(function(){
             });
     }
     
-    async function vistaDni(id, idexamen) {
+    async function vistaDni(id, idexamen, checkVisible) {
         return new Promise((resolve, reject) => {
             preloader('on');
     
@@ -753,7 +760,7 @@ $(function(){
                     preloader('off');
                     if (response && response.length) {
                         let promises = response.map(async function(r) {
-                            let detallesResult = await detalles(r.Documento, r.IdPago);
+                            let detallesResult = await detalles(r.Documento, r.IdPago, checkVisible);
                             return `
                             <tr class="fondo-grisClaro mb-2">
                                 <td colspan="5" class="fw-bolder"><span class="fw-bolder">${[0, ''].includes(r.Documento) ? '' : 'DNI Precargado: '}</span> ${[0, ''].includes(r.Documento) ? 'Sin precarga' : r.Documento}</td>          
@@ -775,7 +782,7 @@ $(function(){
         });
     }
     
-    async function detalles(documento, idpago) {
+    async function detalles(documento, idpago, checkVisible) {
         return new Promise((resolve, reject) => {
             preloader('on');
             $.get(listExCta, { Id: documento, IdPago: idpago })
@@ -786,7 +793,7 @@ $(function(){
                         <tr>  
                             <td>${r.Cantidad}</td>
                             <td>${r.NombreExamen}</td>
-                            <td style="width:5px"><input type="checkbox" class="form-check-input" value="${r.IdEx}"></td>
+                            ${checkVisible === true ? `<td style="width:5px"><input type="checkbox" class="form-check-input" value="${r.IdEx}"></td>` : ''}
                         </tr>
                         `).join('');
                         resolve(result);
