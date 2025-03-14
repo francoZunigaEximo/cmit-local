@@ -921,3 +921,15 @@ npm laravel-vite-plugin
 -- npm install toastr jquery sweetalert select2 datatables.net datatables.net-dt
 
 ALTER TABLE mapas ADD COLUMN FechaAsignacion DATE NULL;
+
+CREATE TABLE llamador(
+	Id int AUTO_INCREMENT NOT NULL,
+	UNIQUE(Id),
+	profesional_id int(11) NOT NULL,
+	prestacion_id int(11) NOT NULL,
+	itemprestacion_id int(11) NOT NULL,
+	CONSTRAINT FK_ProfesionalLlamador FOREIGN KEY (profesional_id) REFERENCES profesionales(Id),
+	CONSTRAINT FK_PrestacionLlamador FOREIGN KEY (prestacion_id) REFERENCES prestaciones(Id),
+	CONSTRAINT FK_ItemprestacionLlamador FOREIGN KEY (itemprestacion_id) REFERENCES itemsprestaciones(Id),
+	PRIMARY KEY(Id)
+);

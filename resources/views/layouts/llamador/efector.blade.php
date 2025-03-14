@@ -130,7 +130,7 @@
                         <button class="btn btn-sm botonGeneral">Liberar</button>
                     </div>
                     <div class="col-6 text-end">
-                        <button class="btn btn-sm botonGeneral">Llamar</button>
+                        <button class="btn btn-sm botonGeneral">Llamar todo</button>
                     </div>
                 </div>
                 <hr size="1">
@@ -224,6 +224,11 @@
                             </div>
                         </div>
 
+                        <div class="row">
+                            <div class="col-md-12" id="tablasExamenes">
+
+                            </div>
+                        </div>
 
                     </div>
                 </div>

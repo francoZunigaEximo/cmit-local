@@ -2,6 +2,7 @@
 
 namespace App\Services\Llamador;
 
+use App\Models\Profesional;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
@@ -18,5 +19,16 @@ class Profesionales
                     )
                 ->where('roles.nombre', $tipo)
                 ->get();
+    }
+
+    public function getNombreCompleto(int $id)
+    {
+        return Profesional::join('users', 'profesionales.Id', '=', 'users.profesional_id')
+                        ->join('datos', 'users.datos_id', '=', 'datos.Id')
+                        ->select(
+                            DB::raw("CONCAT(datos.Nombre.' '.datos.Apellido) as NombreCompleto")
+                        )
+                        ->where('profesionales.Id', $id)
+                        ->first();
     }
 }

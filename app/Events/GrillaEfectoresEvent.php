@@ -8,38 +8,33 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class ListadoProfesionalesEvent implements ShouldBroadcastNow
+class GrillaEfectoresEvent implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $efectores;
-    /**
-     * Create a new event instance.
-     */
-    public function __construct($efectores)
+    public $grilla;
+
+    public function __construct($grilla)
     {
-        $this->efectores = $efectores;
+        $this->grilla = $grilla;
     }
 
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return array<int, \Illuminate\Broadcasting\Channel>
-     */
     public function broadcastOn()
     {
-        return new Channel('listado-efectores');
+        return new Channel('grilla-efectores');
     }
 
     public function broadcastAs()
     {
-        return 'ListadoProfesionalesEvent';
+        return 'GrillaEfectoresEvent';
     }
 
     public function broadcastWith()
     {
         return [
-            'efectores' => $this->efectores
+            'grilla' => $this->grilla
         ];
     }
+
+    
 }

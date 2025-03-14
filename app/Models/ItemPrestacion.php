@@ -131,4 +131,9 @@ class ItemPrestacion extends Model
     {
         return $this->hasOne(Proveedor::class, 'Id', 'IdProveedor');
     }
+
+    public function llamador()
+    {
+        return $this->belongsTo(Llamador::class, 'profesional_id', 'Id');
+    }
 }

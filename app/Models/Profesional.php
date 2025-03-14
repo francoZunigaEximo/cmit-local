@@ -86,4 +86,9 @@ class Profesional extends Model
         return $this->hasOne(ItemPrestacion::class, ['IdProfesional', 'IdProfesional2'], 'Id');
     }
 
+    public function llamador()
+    {
+        return $this->belongsTo(Llamador::class, 'profesional_id', 'Id');
+    }
+
 }

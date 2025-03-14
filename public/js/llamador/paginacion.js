@@ -117,7 +117,7 @@ $(function(){
                     width:'100px',
                     render: function(data){
                         
-                        let llamar = '<button type="button" class="btn btn-sm botonGeneral"><i class="ri-edit-line" ></i>Llamar</button>';
+                        let llamar = `<button type="button" data-id="${data.prestacion}" data-profesional=${data.idProfesional} class="btn btn-sm botonGeneral llamarExamen"><i class="ri-edit-line" ></i>Llamar</button>`;
                         
                         let atender = `<button type="button" data-id="${data.prestacion}" data-profesional=${data.idProfesional}" data-especialidades="${data.especialidades}" class="btn btn-sm botonGeneral atenderPaciente" data-bs-toggle="modal" data-bs-target="#atenderEfector"><i class="ri-edit-line"></i>Atender</button>`;
     

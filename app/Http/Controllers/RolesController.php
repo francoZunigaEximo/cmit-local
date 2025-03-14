@@ -13,9 +13,6 @@ use Illuminate\Support\Facades\Auth;
 use App\Services\Llamador\Profesionales;
 
 use App\Events\ListadoProfesionalesEvent;
-use Illuminate\Support\Facades\Bus;
-use Illuminate\Support\Facades\Event;
-
 class RolesController extends Controller
 {
     private array $lstRoles;
