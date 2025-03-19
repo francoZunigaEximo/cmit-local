@@ -11,14 +11,19 @@ use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Services\Llamador\Profesionales;
+use App\Services\Roles\Utilidades;
 
 use App\Events\ListadoProfesionalesEvent;
 class RolesController extends Controller
 {
     private array $lstRoles;
     protected $listadoProfesionales;
+    protected $utilidades;
 
-    public function __construct(Profesionales $listadoProfesionales)
+    const ADMIN = ['Administrador', 'Admin SR', 'Recepcion SR'];
+    const TIPOS = ['Efector', 'Informador'];
+
+    public function __construct(Profesionales $listadoProfesionales, Utilidades $utilidades)
     {
         $this->lstRoles = [
             "Efector" => "T1", 
@@ -29,6 +34,7 @@ class RolesController extends Controller
         ];
 
         $this->listadoProfesionales = $listadoProfesionales;
+        $this->utilidades = $utilidades;
     }
 
     public function listado(Request $request)

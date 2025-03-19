@@ -24,9 +24,9 @@
                                     <div class="col-sm-3 mb-3">
                                         <label for="profesional" class="form-label fw-bolder">Profesional <span class="required">(*)</span></label>
                                         <select class="form-control" name="profesional" id="profesional">
-                                            @if($efectores->count() === 1))
+                                            @if(!is_null($efectores) && $efectores->count() === 1)
                                                 <option value="{{ $efectores->first()->Id ?? 0}}">{{ $efectores->first()->NombreCompleto ?? '' }}</option>
-                                            @else
+                                            @elseif(!is_null($efectores))
                                                 <option value="" selected>Elija una opción...</option>
 
                                                 @forelse($efectores as $efector)
@@ -34,7 +34,8 @@
                                                 @empty
                                                     <option value="">Sin usuarios activos</option>
                                                 @endforelse
-
+                                            @else
+                                                <option value="" selected disabled>No habilitado</option>
                                             @endif
 
                                             

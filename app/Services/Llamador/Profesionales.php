@@ -15,7 +15,9 @@ class Profesionales
                 ->join('datos', 'users.datos_id', '=', 'datos.Id')
                 ->select(
                     'users.profesional_id as Id',
-                    DB::raw("CONCAT(datos.Apellido,' ',datos.Nombre) as NombreCompleto")
+                    DB::raw("CONCAT(datos.Apellido,' ',datos.Nombre) as NombreCompleto"),
+                    'users.name as usuario',
+                    
                     )
                 ->where('roles.nombre', $tipo)
                 ->get();

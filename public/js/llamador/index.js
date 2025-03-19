@@ -3,8 +3,7 @@ $(function(){
     const grillaEfector = $('#listaLlamadaEfector');
     const grillaExamenes = $('#tablasExamenes');
 
-    let echo = window.Echo.channel('listado-efectores'),
-        echo2 = window.Echo.channel('grilla-efectores');
+    let echo = window.Echo.channel('listado-efectores');
 
     $('#fechaHasta').val(fechaNow(null, "-", 0));
     $('#estado').val('abierto');
@@ -98,6 +97,12 @@ $(function(){
             $(this).removeClass('zoomed');
         }
     );
+
+    $(document).on('click', '.llamarExamen',function(e){
+        e.preventDefault();
+
+        
+    })
 
     function tablasExamenes(data) { 
         $(grillaExamenes).empty();
@@ -200,6 +205,8 @@ $(function(){
 
         $('#profesional').empty();
 
+        console.log(efectores);
+
         toastr.info('Se ha actualizado la lista de profesionales');
 
         if (efectores.length === 1) {
@@ -225,10 +232,6 @@ $(function(){
     });
 
    
-    // echo2.listen('.grillaEfectoresEvent', (e) => {
-    //     console.log('Evento recibido:', e.datos);
-    //     // Aquí puedes actualizar la grilla con los nuevos datos
-    //     $(grillaEfector).DataTable().ajax.reload(null, false);
-    // });
+    
 
 });

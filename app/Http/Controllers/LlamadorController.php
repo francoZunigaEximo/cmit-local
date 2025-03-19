@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\GrillaEfectoresEvent;
-use App\Models\ItemPrestacion;
 use Illuminate\Http\Request;
 use App\Models\Prestacion;
 use App\Models\ProfesionalProv;
@@ -14,6 +12,7 @@ use Yajra\DataTables\DataTables;
 use App\Services\Llamador\Examenes;
 use App\Services\Llamador\Profesionales;
 use App\Services\ReportesExcel\ReporteExcel;
+use App\Services\Roles\Utilidades;
 
 
 class LlamadorController extends Controller
@@ -21,6 +20,7 @@ class LlamadorController extends Controller
     protected $listadoProfesionales;
     protected $reporteExcel;
     protected $getExamenes;
+    protected $utilidades;
 
     const ADMIN = ['Administrador', 'Admin SR', 'Recepcion SR'];
     const TIPOS = ['Efector', 'Informador'];
@@ -29,11 +29,13 @@ class LlamadorController extends Controller
         Profesionales $listadoProfesionales, 
         ReporteExcel $reporteExcel,
         Examenes $getExamenes,
+        Utilidades $utilidades
         )
     {
         $this->listadoProfesionales = $listadoProfesionales;
         $this->reporteExcel = $reporteExcel;
         $this->getExamenes = $getExamenes;
+        $this->utilidades = $utilidades;
     }
 
     public function efector(Request $request)
@@ -42,19 +44,12 @@ class LlamadorController extends Controller
         $nombreCompleto = $user->personal->Apellido . ' ' . $user->personal->Nombre;
 
         $efectores = null;
-        
 
-        if ($this->checkTipoRol(Auth::user()->name) > 0) {
+        if ($this->utilidades->checkTipoRol(Auth::user()->name, SELF::ADMIN)) {
 
             $efectores = $this->listadoProfesionales->listado('Efector');
-            // $historicoEfector = Profesional::where('T1', 1)->where('RegHis', 1)->select(
-            //     'Id',
-            //     DB::raw("CONCAT(Apellido, ' ', Nombre) as NombreCompleto")
-            // )->where('Inactivo', 0)->get();
 
-            //$efectores = $nuevoEfector->merge($historicoEfector);
-
-        }else {
+        }else if($this->utilidades->checkTipoRol(Auth::user()->name, [SELF::TIPOS[0]])) {
 
             $efectores = collect([
                 (object)[
@@ -63,6 +58,7 @@ class LlamadorController extends Controller
                 ]
             ]);
         }
+
         return view('layouts.llamador.efector', compact(['efectores']));
     }
 
@@ -144,7 +140,6 @@ class LlamadorController extends Controller
     public function imprimirExcel(Request $request)
     {
         if($request->tipo === 'efector' && $request->modo === 'basico') {
-
             $prestaciones = $this->queryBasico()->whereIn('prestaciones.Id', $request->Ids)->groupBy('prestaciones.Id')->get();
 
             if($prestaciones) {
@@ -169,7 +164,6 @@ class LlamadorController extends Controller
     public function verPaciente(Request $request)
     {
         $nombreCompleto = '';
-
         $especialidades = explode(',', $request->Especialidades);
 
         $prestacion = Prestacion::with(['paciente','empresa','art'])->where('Id', $request->Id)->first();
@@ -189,15 +183,12 @@ class LlamadorController extends Controller
         }
     }
 
-    private function checkTipoRol($usuario)
+    public function controlLlamado(Request $request)
     {
-        return User::join('user_rol', 'users.id', '=', 'user_rol.user_id')
-                ->join('roles', 'user_rol.rol_id', '=', 'roles.Id')
-                ->join('datos', 'users.datos_id', '=', 'datos.Id')
-                ->whereIn('roles.nombre', self::ADMIN)
-                ->where('users.name', $usuario)
-                ->count();
+
     }
+
+    
 
     private function queryBasico(?int $idProfesional = null)
     {
