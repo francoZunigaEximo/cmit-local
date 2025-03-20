@@ -207,6 +207,8 @@ $(function(){
 
         console.log(efectores);
 
+        console.log(efectores);
+
         toastr.info('Se ha actualizado la lista de profesionales', '', {timeOut: 1000});
 
         if (efectores.length === 1) {
