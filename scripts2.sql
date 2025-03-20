@@ -933,3 +933,6 @@ CREATE TABLE llamador(
 	CONSTRAINT FK_ItemprestacionLlamador FOREIGN KEY (itemprestacion_id) REFERENCES itemsprestaciones(Id),
 	PRIMARY KEY(Id)
 );
+
+ALTER TABLE fichaslaborales MODIFY COLUMN FechaUltPeriod VARCHAR(15) DEFAULT NULL NULL;
+ALTER TABLE fichaslaborales MODIFY COLUMN FechaExArt VARCHAR(15) DEFAULT NULL NULL;
