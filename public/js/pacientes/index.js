@@ -51,7 +51,7 @@ $(document).ready(function(){
     });
 
 
-    $('#excel').click(function(e) {
+    $(document).on('click', '#excel', function(e) {
         e.preventDefault();
 
         let ids = [];

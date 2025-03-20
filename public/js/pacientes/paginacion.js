@@ -39,6 +39,10 @@ $(document).ready(()=>{
                     }
                 },
                 {
+                    data: 'Id',
+                    name: 'Id'
+                },
+                {
                     data: null,
                     render: function(data){
                         return `<strong>${(data.Apellido).toUpperCase()} ${(data.Nombre).toUpperCase()}</strong>`;

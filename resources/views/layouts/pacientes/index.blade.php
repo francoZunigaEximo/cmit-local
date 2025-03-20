@@ -57,7 +57,8 @@
                         <table id="listaPac" class="display table table-bordered" style="width:100%">
                             <thead class="table-light">
                                 <tr>
-                                    <th><input type="checkbox" id="checkAll" name="Id"></th>
+                                    <th class="text-center"><input type="checkbox" id="checkAll" name="Id"></th>
+                                    <th>Nro</th>
                                     <th class="sort">Apellido y Nombre</th>
                                     <th class="sort">Documento</th>
                                     <th class="sort">Teléfono</th>
