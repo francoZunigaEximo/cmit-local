@@ -493,12 +493,12 @@
 
                                         <div class="input-group input-group-sm mb-2">
                                             <span class="input-group-text">Usuario 1</span>
-                                            <input type="date" class="form-control"  id="FechaUltPeriod" value="{{ $fichaLaboral->FechaUltPeriod ?? '' }}">
+                                            <input type="text" class="form-control"  id="FechaUltPeriod" value="{{ $fichaLaboral->FechaUltPeriod ?? '' }}">
                                         </div>
 
                                         <div class="input-group input-group-sm mb-2">
                                             <span class="input-group-text">Usuario 2</span>
-                                            <input type="date" class="form-control" id="FechaExArt" value="{{ $fichaLaboral->FechaExArt ?? '' }}">
+                                            <input type="text" class="form-control" id="FechaExArt" value="{{ $fichaLaboral->FechaExArt ?? '' }}">
                                         </div>
                                     </div>
 
