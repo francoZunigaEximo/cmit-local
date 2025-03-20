@@ -37,7 +37,7 @@ $(function(){
                 {
                     data: null,
                     render: function(data){
-                        return `<div class="text-center"><input type="checkbox" name="Id" value="${data.IdEspecialidad}" checked></div>`;
+                        return `<div class="text-center"><input type="checkbox" name="Id" value="${data.IdEspecialidad}"></div>`;
                     }
                 },
                 {

@@ -942,7 +942,17 @@ npm laravel-vite-plugin
 |
 ALTER TABLE mapas ADD COLUMN FechaAsignacion DATE NULL;
 
-CREATE PROCEDURE getExamenes(IN tipo VARCHAR(50), IN Identifica INT, IN IdExamen VARCHAR(255))
-//
+CREATE TABLE llamador(
+	Id int AUTO_INCREMENT NOT NULL,
+	UNIQUE(Id),
+	profesional_id int(11) NOT NULL,
+	prestacion_id int(11) NOT NULL,
+	itemprestacion_id int(11) NOT NULL,
+	CONSTRAINT FK_ProfesionalLlamador FOREIGN KEY (profesional_id) REFERENCES profesionales(Id),
+	CONSTRAINT FK_PrestacionLlamador FOREIGN KEY (prestacion_id) REFERENCES prestaciones(Id),
+	CONSTRAINT FK_ItemprestacionLlamador FOREIGN KEY (itemprestacion_id) REFERENCES itemsprestaciones(Id),
+	PRIMARY KEY(Id)
+);
 
-DELIMITER ;
+ALTER TABLE fichaslaborales MODIFY COLUMN FechaUltPeriod VARCHAR(15) DEFAULT NULL NULL;
+ALTER TABLE fichaslaborales MODIFY COLUMN FechaExArt VARCHAR(15) DEFAULT NULL NULL;

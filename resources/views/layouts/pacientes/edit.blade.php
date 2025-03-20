@@ -171,9 +171,17 @@
                     <div class="row listjs-table" id="customerList">
 
                         <div class="col-sm-6 small">
-                            <button type="button" id="excel" class="btn btn-sm botonGeneral" title="Generar reporte XLSX">
-                            <i class="ri-file-excel-line"></i>&nbsp;Excel
+                            @can('prestaciones_report')
+                            <button type="button" class="btn iconGeneral" title="Reporte Simple" onclick="exportExcel('simple')">
+                                Simple <i class="ri-file-excel-line"></i>
                             </button>
+                            <button type="button" class="btn iconGeneral" title="Reporte Detallado" onclick="exportExcel('detallado')">
+                                Detallado <i class="ri-file-excel-line"></i>
+                            </button>
+                            <button type="button" class="btn iconGeneral" title="Reporte Completo" onclick="exportExcel('completo')">
+                                Completo <i class="ri-file-excel-line"></i>
+                            </button>
+                            @endcan
                         </div>
                         <div class="col-sm-6">
                             <div class="" style="width: 100%;">
@@ -507,13 +515,13 @@
                                         </div>
 
                                         <div class="input-group input-group-sm mb-2">
-                                            <span class="input-group-text">Fecha Ult. Periodico Empresa</span>
-                                            <input type="date" class="form-control"  id="FechaUltPeriod" value="{{ (isset($fichaLaboral->FechaUltPeriod) && $fichaLaboral->FechaUltPeriod !== '0000-00-00') ? \Carbon\Carbon::parse($fichaLaboral->FechaUltPeriod)->format('Y-m-d') : '' }}">
+                                            <span class="input-group-text">Usuario 1</span>
+                                            <input type="date" class="form-control"  id="FechaUltPeriod" value="{{ $fichaLaboral->FechaUltPeriod ?? '' }}">
                                         </div>
 
                                         <div class="input-group input-group-sm mb-2">
-                                            <span class="input-group-text">Fecha Ex ART</span>
-                                            <input type="date" class="form-control" id="FechaExArt" value="{{ (isset($fichaLaboral->FechaExArt) && $fichaLaboral->FechaExArt !== '0000-00-00') ? \Carbon\Carbon::parse($fichaLaboral->FechaExArt)->format('Y-m-d') : '' }}">
+                                            <span class="input-group-text">Usuario 2</span>
+                                            <input type="date" class="form-control" id="FechaExArt" value="{{ $fichaLaboral->FechaExArt ?? '' }}">
                                         </div>
                                     </div>
 
@@ -1250,8 +1258,7 @@ const editarComentario = "{{ route('comentariosPriv.editar') }}";
 const getComentario = "{{ route('comentariosPriv.data') }}";
 const cacheDelete = "{{ route('prestaciones.cacheDelete') }}";
 
-$('#excel').click(function(e) {
-    e.preventDefault();
+function exportExcel(tipo) {
 
     var ids = [];
     var filters = "";
@@ -1272,25 +1279,19 @@ $('#excel').click(function(e) {
         return;
     }
 
-    swal({
-        title: "¿Estas seguro que deseas exportar las prestaciones seleccionadas?",
-        icon: "warning",
-        buttons: ["Cancelar", "Aceptar"]
-    }).then((confirmar) => {
-        if(confirmar) {
+    filters = "";
+    length  = $('input[name="Id"]:checked').length;
 
-            var exportExcel = "{{ route('prestaciones.excel', ['ids' =>  'idsContent', 'filters' => 'filtersContent', 'tipo' => 'tipoContent']) }}";
-            exportExcel     = exportExcel.replace('idsContent', ids);
-            exportExcel     = exportExcel.replace('filtersContent', filters);
-            exportExcel     = exportExcel.replace('tipoContent', "basico");
-            exportExcel     = exportExcel.replaceAll('amp;', '');
-            window.location = exportExcel;
 
-        }
-    });
+    var exportExcel = "{{ route('prestaciones.excel', ['ids' =>  'idsContent', 'filters' => 'filtersContent', 'tipo' => 'tipoContent']) }}";
+    exportExcel     = exportExcel.replace('idsContent', ids);
+    exportExcel     = exportExcel.replace('filtersContent', filters);
+    exportExcel     = exportExcel.replace('tipoContent', tipo);
+    exportExcel     = exportExcel.replaceAll('amp;', '');
+    window.location = exportExcel;
+}
 
-    
-});
+
 
 const loadlistadoAdjPres = "{{ route('prestaciones.listaAdjPres') }}";
 const loadResultadosPres = "{{ route('prestaciones.resultados') }}";

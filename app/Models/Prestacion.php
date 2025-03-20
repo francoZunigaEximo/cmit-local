@@ -118,4 +118,9 @@ class Prestacion extends Model
     {
         return $this->belongsTo(DatoPaciente::class, 'IdPrestacion', 'Id');
     }
+
+    public function llamador()
+    {
+        return $this->belongsTo(Llamador::class, 'profesional_id', 'Id');
+    }
 }

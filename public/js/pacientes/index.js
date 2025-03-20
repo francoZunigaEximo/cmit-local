@@ -50,7 +50,8 @@ $(document).ready(function(){
         });
     });
 
-    $(dpcument).on('click', '#excel', function(e) {
+
+    $(document).on('click', '#excel', function(e) {
         e.preventDefault();
 
         let ids = [];

@@ -153,8 +153,7 @@ $(function(){
                         let tipoToastr = response.estado == 'success' ? ['success', 'Perfecto'] : ['info', 'Atención'];
 
                         toastr[tipoToastr[0]](response.message, [tipoToastr[1]], { timeOut: 10000 })
-                        let table = $(tabla).DataTable();
-                        table.draw(false);
+                        $(tabla).DataTable().draw(false);
                     })
                     .fail(function(jqXHR){
                         preloader('off');

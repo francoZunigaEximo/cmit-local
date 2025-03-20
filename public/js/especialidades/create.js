@@ -3,14 +3,14 @@ $(function(){
     $('#Provincia').val('NEUQUEN');
     $('#IdLocalidad').val(3); //Elije la ciudad de Neuquen como default
     $('.Telefono, .Direccion, .Provincia, .IdLocalidad, .Obs').hide();
- 
-    $(document).on('change', '#Externo', function(){
+
+    $(document).on('change', '#Externo', function() {
 
         let externo = $(this).val();
-        if(externo === '1'){
+    
+        if (externo === '1') {
             $('.Telefono, .Direccion, .Provincia, .IdLocalidad, .Obs').show();
-        
-        } else if(['',0,null].includes(externo)){
+        } else if (['', '0'].includes(externo)) {
             $('.Telefono, .Direccion, .Provincia, .IdLocalidad, .Obs').hide();
         }
     });
@@ -23,7 +23,7 @@ $(function(){
     $(document).on('click', '#saveBasico', function(e){
         e.preventDefault();
 
-        let Nombre = $('#Nombre').val(), Externo = $('#Externo').val(), Inactivo = $('#Inactivo').val(), Telefono = $('#Telefono').val(), Direccion = $('#Direccion').val(), IdLocalidad = $('#IdLocalidad').val(), Obs = $('#Obs').val();
+        let Nombre = $('#Nombre').val(), Externo = $('#Externo').val(), Inactivo = 1, Telefono = $('#Telefono').val(), Direccion = $('#Direccion').val(), IdLocalidad = $('#IdLocalidad').val(), Obs = $('#Obs').val();
 
         if([0,null,''].includes(Nombre)) {
             toastr.warning('El campo Nombre es obligatorio', '', {timeOut: 1000});

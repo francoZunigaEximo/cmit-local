@@ -1,6 +1,7 @@
 $(function(){
 
     const grillaEfector = $('#listaLlamadaEfector');
+    const grillaExamenes = $('#tablasExamenes');
 
     let echo = window.Echo.channel('listado-efectores');
 
@@ -51,15 +52,13 @@ $(function(){
     $(document).on('click', '.atenderPaciente', function(e){
         e.preventDefault();
 
-        let id = $(this).data('id'), profesional = $(this).data('profesional');
+        let id = $(this).data('id'), profesional = $(this).data('profesional'), especialidades = $(this).data('especialidades');
 
         $('#profesionalEfector, #prestacionEfector, #tipoEfector, #artEfector, #empresaEfector, #paraEmpresaEfector, #pacienteEfector, #edadEfector, #fechaEfector').empty();
         $('#fotoEfector').attr('src', '');
 
-        if([null,0,undefined,''].includes(id)) return;
-
         preloader('on')
-        $.get(dataPaciente, {Id: id, IdProfesional: profesional})
+        $.get(dataPaciente, {Id: id, IdProfesional: profesional, Especialidades: especialidades})
             .done(function(response){
                 const prestacion = response.prestacion, profesional = response.profesional;
 
@@ -79,6 +78,8 @@ $(function(){
                 $('#fechaEfector').val(fecha);
                 $('#fotoEfector').attr('src', FOTO + prestacion.paciente.Foto);
 
+                tablasExamenes(response.itemsprestaciones);
+
             })
             .fail(function(jqXHR){
                 preloader('off');
@@ -97,10 +98,114 @@ $(function(){
         }
     );
 
+    $(document).on('click', '.llamarExamen',function(e){
+        e.preventDefault();
+
+        
+    })
+
+    function tablasExamenes(data) { 
+        $(grillaExamenes).empty();
+        preloader('on');
+
+        const categoria = {};
+        data.forEach(function (item) {
+            if (!categoria[item.NombreEspecialidad]) {
+                categoria[item.NombreEspecialidad] = [];
+            }
+            categoria[item.NombreEspecialidad].push(item);
+        });
+    
+        // Recorre cada grupo de especialidades
+        for (const especialidad in categoria) {
+            if (categoria.hasOwnProperty(especialidad)) {
+                const examenes = categoria[especialidad];
+    
+                // Crea la tabla para la especialidad actual
+                let contenido = `
+                    <div class="especialidad-grilla mb-2">
+                        <h4>${especialidad}</h4>
+                        <table class="table table-bordered no-footer dataTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 250px">Examen</th>
+                                    <th style="width: 90px">Estado</th>
+                                    <th style="width: 120px">Adjunto</th>
+                                    <th>Observaciones</th>
+                                    <th style="width: 150px">Efector</th>
+                                    <th style="width: 150px">Informador</th>
+                                    <th style="width: 50px">
+                                        <input type="checkbox" class="checkAllExamenes" name="Id_examenes">
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+    
+       
+                examenes.forEach(function (examen) {
+                    contenido += `
+                        <tr>
+                            <td>${examen.NombreExamen}</td>
+                            <td>${estado(examen.CAdj)}</td>
+                            <td>${checkAdjunto(examen.NoImprime, examen.Adjunto, examen.Archivo)}</td>
+                            <td>${[null, undefined, ''].includes(examen.ObsExamen) ? '' : examen.ObsExamen}</td>
+                            <td>Efector</td>
+                            <td>Informador</td>
+                            <td>
+                                <input type="checkbox" name="Id_examenes" value="${examen.IdItem}">
+                            </td>
+                        </tr>
+                    `;
+                });
+    
+                contenido += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                preloader('off');
+                $(grillaExamenes).append(contenido);
+            }
+        }
+    }
+
+    function estado(data) {
+        
+        if([0,1,2].includes(data)){
+            return `<span class="rojo">Abierto <i class="fs-6 ri-lock-unlock-line"></i><span>`;
+        
+        }else if([3,4,5].includes(data)){
+            return `<span class="verde">Cerrado <i class="fs-6 ri-lock-2-line"></i><span>`;
+        }          
+    }
+
+    //No Imprime: saber si es fisico o digital / adjunto: si acepta o no adjuntos / condicion: pendiente o adjuntado
+    function checkAdjunto(noImprime, adjunto, condicion) {
+        console.log(noImprime, adjunto, condicion)
+        if (adjunto === 0) {
+            return ``;
+        }else if(adjunto === 1 && condicion > 0 && noImprime === 0) {
+            return `<span class="verde">Adjuntado <i class="fs-6 ri-map-pin-line"></i><span>`;
+        }else if(adjunto === 1 && condicion === 0 && noImprime === 0) {
+            return `<span class="rojo d-flex align-items-center justify-content-between w-100">
+                        <span class="me-auto">Pendiente</span>
+                        <i class="fs-6 ri-map-pin-line mx-auto"></i>
+                        <i class="fs-6 ri-folder-add-line ms-auto"></i>
+                    </span>`;
+        }else if(adjunto === 1 && noImprime === 1){
+            return `<span class="mx-auto"><i class="gris fs-6 ri-map-pin-line"></i><span>`;
+        }else{
+            return ``;
+        }
+    }
+
     echo.listen('.ListadoProfesionalesEvent', (response) => {
         const efectores = response.efectores;
 
         $('#profesional').empty();
+
+        console.log(efectores);
 
         toastr.info('Se ha actualizado la lista de profesionales', '', {timeOut: 1000});
 
@@ -125,5 +230,8 @@ $(function(){
             );
         }
     });
+
+   
+    
 
 });

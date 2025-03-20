@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ItemPrestacion;
 use Illuminate\Http\Request;
 use App\Models\Prestacion;
 use App\Models\ProfesionalProv;
@@ -10,20 +9,33 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
+use App\Services\Llamador\Examenes;
 use App\Services\Llamador\Profesionales;
 use App\Services\ReportesExcel\ReporteExcel;
+use App\Services\Roles\Utilidades;
+
 
 class LlamadorController extends Controller
 {
     protected $listadoProfesionales;
     protected $reporteExcel;
+    protected $getExamenes;
+    protected $utilidades;
 
     const ADMIN = ['Administrador', 'Admin SR', 'Recepcion SR'];
+    const TIPOS = ['Efector', 'Informador'];
 
-    public function __construct(Profesionales $listadoProfesionales, ReporteExcel $reporteExcel)
+    public function __construct(
+        Profesionales $listadoProfesionales, 
+        ReporteExcel $reporteExcel,
+        Examenes $getExamenes,
+        Utilidades $utilidades
+        )
     {
         $this->listadoProfesionales = $listadoProfesionales;
         $this->reporteExcel = $reporteExcel;
+        $this->getExamenes = $getExamenes;
+        $this->utilidades = $utilidades;
     }
 
     public function efector(Request $request)
@@ -32,19 +44,12 @@ class LlamadorController extends Controller
         $nombreCompleto = $user->personal->Apellido . ' ' . $user->personal->Nombre;
 
         $efectores = null;
-        
 
-        if ($this->checkTipoRol(Auth::user()->name) > 0) {
+        if ($this->utilidades->checkTipoRol(Auth::user()->name, SELF::ADMIN)) {
 
             $efectores = $this->listadoProfesionales->listado('Efector');
-            // $historicoEfector = Profesional::where('T1', 1)->where('RegHis', 1)->select(
-            //     'Id',
-            //     DB::raw("CONCAT(Apellido, ' ', Nombre) as NombreCompleto")
-            // )->where('Inactivo', 0)->get();
 
-            //$efectores = $nuevoEfector->merge($historicoEfector);
-
-        }else {
+        }else if($this->utilidades->checkTipoRol(Auth::user()->name, [SELF::TIPOS[0]])) {
 
             $efectores = collect([
                 (object)[
@@ -53,6 +58,7 @@ class LlamadorController extends Controller
                 ]
             ]);
         }
+
         return view('layouts.llamador.efector', compact(['efectores']));
     }
 
@@ -71,7 +77,7 @@ class LlamadorController extends Controller
         if ($request->ajax()) {
 
             $query = $this->queryBasico($request->profesional);
-            $especialidades = ProfesionalProv::where('IdRol','Efector')->where('IdProf', $request->profesional)->pluck('IdProv')->toArray();
+            $especialidades = ProfesionalProv::where('IdRol',SELF::TIPOS[0])->where('IdProf', $request->profesional)->pluck('IdProv')->toArray();
 
             if (!empty($request->prestacion)){
                 
@@ -79,12 +85,10 @@ class LlamadorController extends Controller
             
             } else {
 
-                
-
                 $query->when(!empty($request->profesional), function ($query) use ($request, $especialidades){
-                    $data = json_encode($especialidades);
                     $query->whereIn('itemsprestaciones.IdProfesional', [$request->profesional, 0])
-                        ->whereIn('itemsprestaciones.IdProveedor', $especialidades)
+                    // $query->where('itemsprestaciones.IdProfesional', $request->profesional)
+                        ->whereIn('examenes.IdProveedor', $especialidades)
                         ->addSelect(DB::raw('"' . implode(',', $especialidades) . '" as especialidades'));
                 });
     
@@ -121,12 +125,7 @@ class LlamadorController extends Controller
                             ->whereIn('itemsprestaciones.CAdj', [0, 1, 2, 3, 4, 5]);
                     });
                 });
-
             }
-
-            // $query->when(!empty($request->estado) && ($request->estado === 'vacio'), function($query) {
-            //     $query->whereDoesntHave('itemsprestaciones'); 
-            // });
 
             $query->groupBy('prestaciones.Id')
                   ->orderBy('prestaciones.Id', 'DESC')
@@ -141,7 +140,6 @@ class LlamadorController extends Controller
     public function imprimirExcel(Request $request)
     {
         if($request->tipo === 'efector' && $request->modo === 'basico') {
-
             $prestaciones = $this->queryBasico()->whereIn('prestaciones.Id', $request->Ids)->groupBy('prestaciones.Id')->get();
 
             if($prestaciones) {
@@ -165,23 +163,32 @@ class LlamadorController extends Controller
 
     public function verPaciente(Request $request)
     {
+        $nombreCompleto = '';
+        $especialidades = explode(',', $request->Especialidades);
+
         $prestacion = Prestacion::with(['paciente','empresa','art'])->where('Id', $request->Id)->first();
-        $datos = User::with('personal')->where('profesional_id', $request->IdProfesional)->first();
+        $itemsprestaciones = $this->getExamenes->getAllItemsprestaciones($request->Id, $especialidades);
 
-        $nombreCompleto = $datos->personal->Apellido.' '.$datos->personal->Nombre;
+        if (is_numeric($request->IdProfesional) && $request->IdProfesional == 'undefined') {
+            $datos = User::with('personal')->where('profesional_id', $request->IdProfesional)->first();
+            $nombreCompleto = $datos->personal->Apellido.' '.$datos->personal->Nombre;
+        } 
 
-        return $prestacion && $datos ? response()->json(['prestacion' => $prestacion, 'profesional' => $nombreCompleto]) : null;
+        if($prestacion) {
+            return response()->json([
+                'prestacion' => $prestacion, 
+                'profesional' => $nombreCompleto,
+                'itemsprestaciones' => $itemsprestaciones,
+            ]);
+        }
     }
 
-    private function checkTipoRol($usuario)
+    public function controlLlamado(Request $request)
     {
-        return User::join('user_rol', 'users.id', '=', 'user_rol.user_id')
-                ->join('roles', 'user_rol.rol_id', '=', 'roles.Id')
-                ->join('datos', 'users.datos_id', '=', 'datos.Id')
-                ->whereIn('roles.nombre', self::ADMIN)
-                ->where('users.name', $usuario)
-                ->count();
+
     }
+
+    
 
     private function queryBasico(?int $idProfesional = null)
     {
@@ -190,6 +197,8 @@ class LlamadorController extends Controller
         ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
         ->leftJoin('telefonos', 'pacientes.Id', '=', 'telefonos.IdEntidad')
         ->join('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
+        ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
+        ->join('proveedores', 'examenes.IdProveedor', '=', 'proveedores.Id')
         ->select(
             DB::raw('DATE_FORMAT(prestaciones.Fecha, "%d/%m/%Y") as fecha'),
             'prestaciones.Id as prestacion',
@@ -201,9 +210,14 @@ class LlamadorController extends Controller
             DB::raw("CONCAT(pacientes.Apellido,' ',pacientes.Nombre) as paciente"),
             'pacientes.Documento as dni',
             'pacientes.FechaNacimiento as fechaNacimiento',
-            $idProfesional !== null ? DB::raw($idProfesional.' as idProfesional') : '', 
             DB::raw("CONCAT(telefonos.CodigoArea,telefonos.NumeroTelefono) as telefono")
-        )->whereNot('prestaciones.Fecha', null)
+        );
+        
+        if ($idProfesional !== null) {
+            $query->addSelect(DB::raw($idProfesional . ' as idProfesional'));
+        }
+            
+       $query->whereNot('prestaciones.Fecha', null)
         ->whereNot('prestaciones.Fecha', '0000-00-00')
         ->where('prestaciones.Anulado', 0);
     }
