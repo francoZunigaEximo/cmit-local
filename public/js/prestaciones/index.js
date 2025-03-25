@@ -1,4 +1,4 @@
-$(document).ready(()=>{
+$(function() {
 
     //Fix de presionar enter sobre los campos
     $('#fechaDesde, #fechaHasta, #TipoPrestacion, #Estado, #nroprestacion').on('keydown', function(event) {
@@ -204,9 +204,6 @@ $(document).ready(()=>{
                     });
             }
         });
-
-            
-        
     });
 
     //Arrastramos eventos
@@ -301,9 +298,70 @@ $(document).ready(()=>{
             }
         });       
     });
+
+    $(document).on('click', '.exportExcel', function(e){
+        e.preventDefault();
+
+        const listaPrestaciones = $('#listaPrestaciones').DataTable();
+
+        let tipo = $(this).data('id'), nroprestacion = $('#nroprestacion').val(), fechaDesde = $('#fechaDesde').val(), fechaHasta = $('#fechaHasta').val();
+        
+        if (!listaPrestaciones.data().any() ) {
+            $('#listaPrestaciones').DataTable().destroy();
+            toastr.info('No existen registros para exportar', 'Atención');
+            return;
+        }
     
-    /*$('#checkAll').on('click', function() {
-        $('input[type="checkbox"][name="Id"]:not(#checkAll)').prop('checked', this.checked);
-    });*/
+        filters = "";
+        length  = $('input[name="Id"]:checked').length;
+    
+        let data = listaPrestaciones.rows({ page: 'current' }).data().toArray();
+        let ids = data.map(function(row) {
+            return row.Id;
+        });
+    
+        if(!['',0, null].includes(ids)) {
+            filters += "nroprestacion:" + nroprestacion + ",";
+            filters += "paciente:" + $('#pacienteSearch').val() + ",";
+            filters += "empresa:" + $('#empresaSearch').val() + ",";
+            filters += "art:" + $('#artSearch').val() + ",";
+            filters += "tipoPrestacion:" + $('#TipoPrestacion').val() + ",";
+            filters += "fechaDesde:" + fechaDesde + ",";
+            filters += "fechaHasta:" + fechaHasta + ",";
+            filters += "estado:" + $('#Estado').val() + ",";
+    
+            if((fechaDesde == '' || fechaHasta == '') && nroprestacion == ''){
+                swal('Alerta','La fecha "Desde" y "Hasta" son obligatorias.', 'warning');
+                return;
+            }
+        }
+
+        swal({
+            title: "¿Está seguro que desea exportar la lista de prestaciones?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"],
+        }).then((aceptar) => {
+            if(aceptar) {
+                preloader('on');
+                $.get(sendExcel, {ids: ids, filters: filters, tipo: tipo})
+                .done(function(response){
+                    preloader('off');
+                    createFile("excel", response.filePath, generarCodigoAleatorio() + "_reporte_" + tipo);
+                        preloader('off');
+                        toastr.success(response.msg);
+                        return;
+                })
+                .fail(function(jqXHR) {
+                    preloader('off');
+                    let errorData = JSON.parse(jqXHR.responseText);            
+                    checkError(jqXHR.status, errorData.msg);
+                    return; 
+                });
+
+            };
+        });
+
+        
+    });
 
 });

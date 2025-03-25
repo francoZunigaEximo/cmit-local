@@ -22,12 +22,10 @@ class PrestacionesExport implements FromCollection,WithHeadings
         $this->tipo     = $tipo;
     }
 
-    /**
-    * @return \Illuminate\Support\Collection
-    */
     public function headings(): array
     {
         switch ($this->tipo) {
+
             case 'simple':
                 return [
                     'Fecha',
@@ -59,7 +57,7 @@ class PrestacionesExport implements FromCollection,WithHeadings
                     'DEV',
                     'OBS ESTADOS'
                 ];
-                break;
+ 
             case 'detallado':
                 return [
                     'Fecha',
@@ -82,7 +80,7 @@ class PrestacionesExport implements FromCollection,WithHeadings
                     'DEV',
                     'OBS ESTADOS'
                 ];
-                break;
+                
             case 'completo':
                 return [
                     'Fecha',
@@ -129,7 +127,6 @@ class PrestacionesExport implements FromCollection,WithHeadings
                     'Obs. Informador',
                     'Obs. Privadas',
                 ];
-                break;
                 case 'basico':
                     return [
                         'Fecha',
@@ -147,7 +144,6 @@ class PrestacionesExport implements FromCollection,WithHeadings
                         'FP',
                         'FC'
                     ];
-                    break;
         }
     }
     
