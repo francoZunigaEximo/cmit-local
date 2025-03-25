@@ -51,9 +51,9 @@ use App\Jobs\ExamenesResultadosJob;
 use App\Helpers\ToolsEmails;
 use App\Jobs\EnviarAvisoJob;
 use App\Jobs\EnvioReporteEspecialJob;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\EnviarReporte;
-use App\Mail\ExamenesResultadosMail;
+// use Illuminate\Support\Facades\Mail;
+// use App\Mail\EnviarReporte;
+// use App\Mail\ExamenesResultadosMail;
 use App\Models\ArchivoPrestacion;
 use App\Models\HistorialPrestacion;
 use App\Services\ReportesExcel\ReporteExcel;
@@ -782,7 +782,9 @@ class PrestacionesController extends Controller
         $prestacion = Prestacion::find($request->Id);
 
         if($prestacion) {
-            return $this->resumenPrestacion($prestacion);
+            $reporte = $this->reporteExcel->crear('resumenTotal');
+            return $reporte->generar($prestacion);
+            
         }else{
             return response()->json(['msg' => 'No se ha podido generar el archivo'], 409);
         }
