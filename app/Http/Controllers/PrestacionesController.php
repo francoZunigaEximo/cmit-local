@@ -75,7 +75,7 @@ class PrestacionesController extends Controller
     protected $sendFile2;
     protected $sendFile3;
 
-
+    protected $reporteExcel;
 
     public function __construct(ReporteService $reporteService, ReporteExcel $reporteExcel)
     {
