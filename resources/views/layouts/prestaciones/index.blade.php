@@ -155,13 +155,13 @@
                                 Filtros <i class="ri-filter-2-line"></i>
                             </button>
                             @can('prestaciones_report')
-                            <button type="button" class="btn iconGeneral" title="Reporte Simple" onclick="exportExcel('simple')">
+                            <button type="button" class="btn iconGeneral exportExcel" data-id="simple" title="Reporte Simple">
                                 Simple <i class="ri-file-excel-line"></i>
                             </button>
-                            <button type="button" class="btn iconGeneral" title="Reporte Detallado" onclick="exportExcel('detallado')">
+                            <button type="button" class="btn iconGeneral exportExcel" data-id="detallado" title="Reporte Detallado">
                                 Detallado <i class="ri-file-excel-line"></i>
                             </button>
-                            <button type="button" class="btn iconGeneral" title="Reporte Completo" onclick="exportExcel('completo')">
+                            <button type="button" class="btn iconGeneral exportExcel"data-id="completo" title="Reporte Completo">
                                 Completo <i class="ri-file-excel-line"></i>
                             </button>
                             @endcan
@@ -266,52 +266,11 @@ const GOPACIENTES = "{{ route('pacientes.edit', ['paciente' => '__paciente__']) 
 const downPrestaActiva = "{{ route('prestaciones.baja') }}";
 const blockPrestacion = "{{ route('blockPrestacion') }}";
 const SEARCH = "{{ route('prestaciones.index') }}";
-//const SEARCH = "{{ route('searchPrestaciones') }}";
+
 const porcentajeExamen = "{{ route('porcentajeExamen') }}";
 const getClientes = "{{ route('getClientes') }}";
+const sendExcel = "{{ route('prestaciones.excel') }}";
 
-function exportExcel(tipo) {
-
-    var listaPrestaciones = $('#listaPrestaciones').DataTable();
-    
-    if (!listaPrestaciones.data().any() ) {
-        $('#listaPrestaciones').DataTable().destroy();
-        toastr.info('No existen registros para exportar', 'Atención');
-        return;
-    }
-
-
-    filters = "";
-    length  = $('input[name="Id"]:checked').length;
-
-    let data = listaPrestaciones.rows({ page: 'current' }).data().toArray();
-    let ids = data.map(function(row) {
-        return row.Id;
-    });
-
-    if(!['',0, null].includes(ids)) {
-        filters += "nroprestacion:" + $('#nroprestacion').val() + ",";
-        filters += "paciente:" + $('#pacienteSearch').val() + ",";
-        filters += "empresa:" + $('#empresaSearch').val() + ",";
-        filters += "art:" + $('#artSearch').val() + ",";
-        filters += "tipoPrestacion:" + $('#TipoPrestacion').val() + ",";
-        filters += "fechaDesde:" + $('#fechaDesde').val() + ",";
-        filters += "fechaHasta:" + $('#fechaHasta').val() + ",";
-        filters += "estado:" + $('#Estado').val() + ",";
-
-        if((fechaDesde == '' || fechaHasta == '') && nroprestacion == ''){
-            swal('Alerta','La fecha "Desde" y "Hasta" son obligatorias.', 'warning');
-            return;
-        }
-    }
-
-    var exportExcel = "{{ route('prestaciones.excel', ['ids' =>  'idsContent', 'filters' => 'filtersContent', 'tipo' => 'tipoContent']) }}";
-    exportExcel     = exportExcel.replace('idsContent', ids);
-    exportExcel     = exportExcel.replace('filtersContent', filters);
-    exportExcel     = exportExcel.replace('tipoContent', tipo);
-    exportExcel     = exportExcel.replaceAll('amp;', '');
-    window.location = exportExcel;
-}
 
 </script>
 

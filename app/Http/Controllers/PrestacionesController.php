@@ -16,7 +16,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
-use App\Exports\PrestacionesExport;
 use App\Helpers\FileHelper;
 use App\Helpers\Tools;
 use App\Models\ArchivoEfector;
@@ -25,8 +24,6 @@ use App\Models\ExamenCuentaIt;
 use App\Models\Fichalaboral;
 use App\Models\ItemPrestacion;
 use App\Services\Reportes\Cuerpos\AdjuntosAnexos;
-use Maatwebsite\Excel\Facades\Excel;
-use stdClass;
 use Illuminate\Support\Facades\Auth;
 use App\Traits\CheckPermission;
 use Illuminate\Support\Facades\Artisan;
@@ -63,6 +60,7 @@ use App\Services\ReportesExcel\ReporteExcel;
 
 use Illuminate\Support\Facades\File;
 
+
 class PrestacionesController extends Controller
 {
     use ObserverPrestaciones, ObserverFacturasVenta, CheckPermission, ToolsEmails;
@@ -77,7 +75,6 @@ class PrestacionesController extends Controller
     protected $sendFile2;
     protected $sendFile3;
 
-    protected $reporteExcel;
 
 
     public function __construct(ReporteService $reporteService, ReporteExcel $reporteExcel)
@@ -382,7 +379,7 @@ class PrestacionesController extends Controller
         return response()->json(['paraEmpresas' => $resultados]);
     }
 
-    public function getPresPaciente(Request $request): mixed
+    public function getPresPaciente(Request $request)
     {
         if (!$this->hasPermission("prestaciones_show") || !$this->hasPermission("prestaciones_edit")) {
             return response()->json(['msg' => 'No tienes permisos'], 403);
@@ -426,21 +423,25 @@ class PrestacionesController extends Controller
         /*if (!$this->hasPermission("prestaciones_report")) {
             return response()->json(['msg' => 'No tienes permisos'], 403);
         }*/
-
-        $ids        = $request->ids ? explode(",", $request->ids) : []; 
-        $filters    = $request->filters ? explode(",", $request->filters) : [];
-        $tipo       = $request->tipo;
-
-        if($filters){
-            $filtersAux = new stdClass() ;
-            foreach ($filters as $filter) {
-                $value = explode(":", $filter);
-                $filtersAux->{$value[0]} = isset($value[1]) ? $value[1] : "";
-            }
-            $filters = $filtersAux;
-        }
+    
+        $data = [];
+        $filters = $this->procesarFiltros($request->filters);
         
-        return Excel::download(new PrestacionesExport($ids, $filters, $tipo), 'prestaciones.xlsx');
+        array_push($data, $request->ids);
+        $data['filters'] = $filters;
+
+        switch ($request->tipo) {
+            case 'simple':
+                $reporte = $this->reporteExcel->crear('simplePrestacionFull');
+                return $reporte->generar($data);
+            case 'detallado':
+                $reporte = $this->reporteExcel->crear('detalladaPrestacionFull');
+                return $reporte->generar($data);
+            case 'completo':
+                $reporte = $this->reporteExcel->crear('completoPrestacionFull');
+                return $reporte->generar($data);
+        }
+
     }
 
     public function getBloqueo(Request $request)
@@ -1654,6 +1655,32 @@ class PrestacionesController extends Controller
         return ExamenCuentaIt::join('prestaciones', 'pagosacuenta_it.IdPrestacion', '=', 'prestaciones.Id')
             ->join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
             ->where('pagosacuenta_it.IdPrestacion', $idPrestacion)->where('pagosacuenta.Pagado', 0)->count();
+    }
+
+    private function procesarFiltros(string $filtro)
+    {
+        $filters = [];
+    
+        if (!empty($filtro)) {
+            $filtersArray = explode(",", $filtro);
+    
+            foreach ($filtersArray as $filter) {
+                $parts = explode(":", $filter, 2);
+    
+                // Verificar que haya exactamente dos partes (clave y valor)
+                if (count($parts) === 2) {
+                    $key = trim($parts[0]);
+                    $value = trim($parts[1]);
+    
+                    // Agregar el filtro solo si el valor no está vacío ni es 'undefined'
+                    if (!empty($value) && $value !== 'undefined') {
+                        $filters[$key] = $value;
+                    }
+                }
+            }
+        }
+    
+        return $filters;
     }
 
 }
