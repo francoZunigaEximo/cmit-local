@@ -989,11 +989,13 @@ class PrestacionesController extends Controller
     {
         if ($request->Tipo === 'exportSimple') {
 
-            return $this->SimplePrestacion($this->querySimple($request->IdPaciente));
+            $reporte = $this->reporteExcel->crear('simplePrestacion');
+            return $reporte->generar($this->querySimple($request->IdPaciente));
             
         }elseif($request->Tipo === 'exportDetallado') {
             
-            return $this->detalladaPrestacion($this->queryDetallado($request->IdPaciente));  
+            $reporte = $this->reporteExcel->crear('detalladaPrestacion');
+            return $reporte->generar($this->queryDetallado($request->IdPaciente));
         }
         return response()->json(['msg' => 'No se ha podido generar el archivo'], 409);
     }
