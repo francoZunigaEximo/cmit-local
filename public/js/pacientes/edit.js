@@ -88,10 +88,6 @@ $(function(){
         let tipo = $(this).data('id'), ids = [], filters = "";
         const table = $('#listaPacientes tbody tr');
     
-        $('input[name="Id"]:checked').each(function() {
-            ids.push($(this).val());  
-        });
-    
         ids = table.map(function(){
             return $(this).data('id');
         }).get();
