@@ -66,7 +66,7 @@ trait ToolsReportes
     public function getDBDetalleYCompleto(array $ids, array $filtros): mixed
     {
         $query = DB::table('prestaciones')
-        ->leftJoin('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+        ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
         ->leftJoin('clientes as emp', 'prestaciones.IdEmpresa', '=', 'emp.Id')
         ->leftJoin('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
         ->leftJoin('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
