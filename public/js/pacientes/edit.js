@@ -82,6 +82,64 @@ $(document).ready(function(){
 
     });
 
+    $(document).on('click', '.exportExcel', function(e){
+        e.preventDefault();
+        let tipo = $(this).data('id'), ids = [], filters = "";
+        const table = $('#listaPacientes tbody tr');
+    
+        $('input[name="Id"]:checked').each(function() {
+            ids.push($(this).val());  
+        });
+    
+        ids = table.map(function(){
+            return $(this).data('id');
+        }).get();
+    
+        if (ids.length === 0) { 
+            toastr.warning('No existen registros para exportar');
+            return;
+        }
+
+        swal({
+            title: "¿Está seguro que desea exportar la lista de prestaciones?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"],
+        }).then((aceptar) => {
+            if(aceptar) {
+                preloader('on');
+                $.get(sendExcel, {ids: ids, filters: filters, tipo: tipo})
+                .done(function(response){
+                    preloader('off');
+                    createFile("excel", response.filePath, generarCodigoAleatorio() + "_reporte_" + tipo);
+                        preloader('off');
+                        toastr.success(response.msg);
+                        return;
+                })
+                .fail(function(jqXHR) {
+                    preloader('off');
+                    let errorData = JSON.parse(jqXHR.responseText);            
+                    checkError(jqXHR.status, errorData.msg);
+                    return; 
+                });
+
+            };
+        });
+
+    });
+
+    function exportExcel(tipo) {
+
+        
+    
+    
+        var exportExcel = "{{ route('prestaciones.excel', ['ids' =>  'idsContent', 'filters' => 'filtersContent', 'tipo' => 'tipoContent']) }}";
+        exportExcel     = exportExcel.replace('idsContent', ids);
+        exportExcel     = exportExcel.replace('filtersContent', filters);
+        exportExcel     = exportExcel.replace('tipoContent', tipo);
+        exportExcel     = exportExcel.replaceAll('amp;', '');
+        window.location = exportExcel;
+    }
+
 
     function checkProvincia(){
 
