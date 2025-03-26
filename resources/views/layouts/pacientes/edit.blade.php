@@ -172,13 +172,13 @@
 
                         <div class="col-sm-6 small">
                             @can('prestaciones_report')
-                            <button type="button" class="btn iconGeneral" title="Reporte Simple" onclick="exportExcel('simple')">
+                            <button type="button" class="btn iconGeneral exportExcel" data-id="simple" title="Reporte Simple">
                                 Simple <i class="ri-file-excel-line"></i>
                             </button>
-                            <button type="button" class="btn iconGeneral" title="Reporte Detallado" onclick="exportExcel('detallado')">
+                            <button type="button" class="btn iconGeneral exportExcel" data-id="detallado" title="Reporte Detallado">
                                 Detallado <i class="ri-file-excel-line"></i>
                             </button>
-                            <button type="button" class="btn iconGeneral" title="Reporte Completo" onclick="exportExcel('completo')">
+                            <button type="button" class="btn iconGeneral exportExcel" data-id="completo" title="Reporte Completo">
                                 Completo <i class="ri-file-excel-line"></i>
                             </button>
                             @endcan
@@ -1258,46 +1258,11 @@ const editarComentario = "{{ route('comentariosPriv.editar') }}";
 const getComentario = "{{ route('comentariosPriv.data') }}";
 const cacheDelete = "{{ route('prestaciones.cacheDelete') }}";
 
-function exportExcel(tipo) {
-
-    var ids = [];
-    var filters = "";
-    var length = $('input[name="Id"]:checked').length;
-
-    $('input[name="Id"]:checked').each(function() {
-        ids.push($(this).val());  
-    });
-
-    let table = $('#listaPacientes tbody tr');
-    
-    ids = table.map(function(){
-        return $(this).data('id');
-    }).get();
-
-    if (ids.length === 0) { 
-        toastr.warning('No existen registros para exportar');
-        return;
-    }
-
-    filters = "";
-    length  = $('input[name="Id"]:checked').length;
-
-
-    var exportExcel = "{{ route('prestaciones.excel', ['ids' =>  'idsContent', 'filters' => 'filtersContent', 'tipo' => 'tipoContent']) }}";
-    exportExcel     = exportExcel.replace('idsContent', ids);
-    exportExcel     = exportExcel.replace('filtersContent', filters);
-    exportExcel     = exportExcel.replace('tipoContent', tipo);
-    exportExcel     = exportExcel.replaceAll('amp;', '');
-    window.location = exportExcel;
-}
-
-
-
 const loadlistadoAdjPres = "{{ route('prestaciones.listaAdjPres') }}";
 const loadResultadosPres = "{{ route('prestaciones.resultados') }}";
 const exResultado = "{{ route('prestaciones.exportarResultado') }}";
 const impRepo = "{{ route('prestaciones.pdf') }}";
-
+const sendExcel = "{{ route('prestaciones.excel') }}";
 </script>
 
 @push('styles')

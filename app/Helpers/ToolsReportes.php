@@ -66,12 +66,12 @@ trait ToolsReportes
     public function getDBDetalleYCompleto(array $ids, array $filtros): mixed
     {
         $query = DB::table('prestaciones')
-        ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-        ->join('clientes as emp', 'prestaciones.IdEmpresa', '=', 'emp.Id')
-        ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
-        ->join('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
-        ->join('examenes', 'examenes.Id', '=', 'itemsprestaciones.IdExamen')
-        ->join('profesionales as efector', 'efector.Id', '=', 'itemsprestaciones.IdProfesional')
+        ->leftJoin('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+        ->leftJoin('clientes as emp', 'prestaciones.IdEmpresa', '=', 'emp.Id')
+        ->leftJoin('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
+        ->leftJoin('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
+        ->leftJoin('examenes', 'examenes.Id', '=', 'itemsprestaciones.IdExamen')
+        ->leftJoin('profesionales as efector', 'efector.Id', '=', 'itemsprestaciones.IdProfesional')
         ->leftJoin('profesionales as informador', 'informador.Id', '=', 'itemsprestaciones.IdProfesional2')
         ->join('proveedores', 'proveedores.Id', '=', 'efector.IdProveedor')
         ->leftJoin('itemsfacturaventa', 'prestaciones.Id', '=', 'itemsfacturaventa.IdPrestacion')
@@ -128,7 +128,7 @@ trait ToolsReportes
 
         if (empty($filtros)) {
             return $query->orderBy('prestaciones.Id', 'DESC')
-            ->groupBy('prestaciones.Id')
+            //->groupBy('prestaciones.Id')
             ->get();
         }
         else {

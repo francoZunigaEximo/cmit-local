@@ -1660,7 +1660,7 @@ class PrestacionesController extends Controller
             ->where('pagosacuenta_it.IdPrestacion', $idPrestacion)->where('pagosacuenta.Pagado', 0)->count();
     }
 
-    private function procesarFiltros(string $filtro)
+    private function procesarFiltros(?string $filtro = null): array
     {
         $filters = [];
     
