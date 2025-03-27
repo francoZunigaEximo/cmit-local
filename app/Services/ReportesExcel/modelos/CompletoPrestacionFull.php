@@ -128,10 +128,10 @@ class CompletoPrestacionFull implements ReporteInterface
             $sheet->setCellValue('AK'.$fila, $prestacion->Informador ?? '');
             $sheet->setCellValue('AL'.$fila, ($prestacion->pagadoEfector <> '0000-00-00' ? Carbon::parse($prestacion->pagadoEfector)->format('d/m/Y') : ''));
             $sheet->setCellValue('AM'.$fila, $prestacion->pagadoInformador <> '0000-00-00' ? Carbon::parse($prestacion->pagadoInformador)->format('d/m/Y') : '');
-            $sheet->setCellValue('AN'.$fila, $prestacion->ObsExamen ?? '');
-            $sheet->setCellValue('AO'.$fila, '-'); // Consultar
-            $sheet->setCellValue('AP'.$fila, $prestacion->ObsInformador ?? '');
-            $sheet->setCellValue('AQ'.$fila, $prestacion->ObsEstado ?? '');
+            $sheet->setCellValue('AN'.$fila, strip_tags($prestacion->ObsExamen) ?? '');
+            $sheet->setCellValue('AO'.$fila, ''); // Consultar
+            $sheet->setCellValue('AP'.$fila, strip_tags($prestacion->ObsInformador) ?? '');
+            $sheet->setCellValue('AQ'.$fila, strip_tags($prestacion->ObsEstado) ?? '');
             $fila++;
         }
     }

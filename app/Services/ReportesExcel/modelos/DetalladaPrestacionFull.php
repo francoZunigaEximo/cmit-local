@@ -78,12 +78,12 @@ class DetalladaPrestacionFull implements ReporteInterface
             $sheet->setCellValue('K'.$fila, $prestacion->Anulado === 1 ? 'SI' : 'NO');
             $sheet->setCellValue('L'.$fila, $prestacion->ObsAnulado ?? '');
             $sheet->setCellValue('M'.$fila, $prestacion->Examen ?? '');
-            $sheet->setCellValue('N'.$fila, $prestacion->ObsExamen ?? '');
+            $sheet->setCellValue('N'.$fila, strip_tags($prestacion->ObsExamen) ?? '');
             $sheet->setCellValue('O'.$fila, $prestacion->Incompleto ?? '');
             $sheet->setCellValue('P'.$fila, $prestacion->Ausente ?? '');
             $sheet->setCellValue('Q'.$fila, $prestacion->Forma ?? '');
             $sheet->setCellValue('R'.$fila, $prestacion->Devol ?? '');
-            $sheet->setCellValue('S'.$fila, $prestacion->ObsEstado ?? '');
+            $sheet->setCellValue('S'.$fila, strip_tags($prestacion->ObsEstado) ?? '');
             $fila++;
         }
     }

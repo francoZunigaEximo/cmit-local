@@ -93,7 +93,7 @@ class SimplePrestacionFull implements ReporteInterface
             $sheet->setCellValue('P'.$fila, $this->formatearFecha($prestacion->FechaVto));
             $sheet->setCellValue('Q'.$fila, substr($prestacion->Evaluacion, 2));
             $sheet->setCellValue('R'.$fila, substr($prestacion->Calificacion, 2));
-            $sheet->setCellValue('S'.$fila, $prestacion->Observaciones ?? '');
+            $sheet->setCellValue('S'.$fila, strip_tags($prestacion->Observaciones) ?? '');
             $sheet->setCellValue('T'.$fila, $prestacion->Anulado === 1 ? 'SI' : 'NO');
             $sheet->setCellValue('U'.$fila, $prestacion->ObsAnulado ?? '');
             $sheet->setCellValue('V'.$fila, $prestacion->NroCEE ?? '');
@@ -102,7 +102,7 @@ class SimplePrestacionFull implements ReporteInterface
             $sheet->setCellValue('Y'.$fila, $prestacion->Ausente === 1 ? 'SI' : 'NO');
             $sheet->setCellValue('Z'.$fila, $prestacion->Forma === 1 ? 'SI' : 'NO');
             $sheet->setCellValue('AA'.$fila, $prestacion->Devol === 1 ? 'SI' : 'NO');
-            $sheet->setCellValue('AB'.$fila, $prestacion->ObsEstado ?? '');
+            $sheet->setCellValue('AB'.$fila, strip_tags($prestacion->ObsEstado) ?? '');
             $fila++;   
         }
     }
