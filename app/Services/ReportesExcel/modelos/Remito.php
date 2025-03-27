@@ -4,6 +4,7 @@ namespace App\Services\ReportesExcel\modelos;
 
 use App\Services\ReportesExcel\ReporteInterface;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Border;
 
 use Illuminate\Support\Str;
 use App\Helpers\ToolsReportes;
@@ -29,7 +30,7 @@ class Remito implements ReporteInterface
 
     public function columnasYEncabezados($sheet)
     {
-        $columnas = ['A', 'B', 'C', 'D', 'E','F','G'];
+        $columnas = ['A', 'B', 'C', 'D', 'E','F','G','H','I'];
 
         foreach($columnas as $columna){
             $sheet->getColumnDimension($columna)->setAutoSize(true);
@@ -41,35 +42,47 @@ class Remito implements ReporteInterface
         $mapa = Mapa::with(['prestacion', 'artMapa', 'empresaMapa'])->find($datos['IdMapa']);
 
         $sheet->setCellValue('A1', 'REMITO DE ENTREGA DE ESTUDIOS');
-        $sheet->setCellValue('A3', 'REMITO: '.$datos['nroRemito'] ?? 0);
-        $sheet->setCellValue('A4', 'EMPRESA: '.$mapa->empresaMapa->RazonSocial ?? '');
-        $sheet->setCellValue('A5', 'CUIT: '.$mapa->empresaMapa->Identificacion ?? '');
+        $sheet->setCellValue('A3', 'ART: '.$mapa->artMapa->RazonSocial ?? '');
+        $sheet->setCellValue('A4', 'REMITO: '.$datos['nroRemito'] ?? '');
+        $sheet->setCellValue('A5', 'EMPRESA: '.$mapa->empresaMapa->RazonSocial ?? '');
         $sheet->setCellValue('A6', 'MAPA: '.$mapa->Id ?? 0);
-        $sheet->setCellValue('A6', 'Fecha Mapa : '.Carbon::parse($mapa->FechaAsignacion)->format('d/m/Y') ?? '');
+        // $sheet->setCellValue('A6', 'Fecha Mapa : '.Carbon::parse($mapa->FechaAsignacion)->format('d/m/Y') ?? '');
+
+        $sheet->getStyle('A1')->getFont()->setBold(true);
       
         $examenes = Prestacion::where('NroCEE', $datos['nroRemito'])->pluck('Id');
-        $items = ItemPrestacion::with(['prestaciones', 'examenes', 'prestaciones.paciente'])->whereIn('IdPrestacion', $examenes)->get();
+        $items = ItemPrestacion::with(['prestaciones', 'examenes', 'prestaciones.paciente', 'prestaciones.empresa', 'prestaciones.art'])->whereIn('IdPrestacion', $examenes)->get();
 
-        $sheet->setCellValue('A8', 'DNI');
-        $sheet->setCellValue('B8', 'Paciente');
-        $sheet->setCellValue('C8', 'Prestación');
-        $sheet->setCellValue('D8', 'Examenes');
-        $sheet->setCellValue('E8', 'CUIL');
-        $sheet->setCellValue('F8', 'Código Exámen');
-        $sheet->setCellValue('G8', 'Fecha Prestación');
-        
+
+        $sheet->setCellValue('A8', 'CUIT');
+        $sheet->setCellValue('B8', 'CUIL');
+        $sheet->setCellValue('C8', 'CÓDIGO DE EXÁMEN');
+        $sheet->setCellValue('D8', 'FECHA DE EXAMEN');
+        $sheet->setCellValue('E8', 'FECHA DE ASIGNACION');
+        $sheet->setCellValue('F8', 'PACIENTE');
+        $sheet->setCellValue('G8', 'DNI');
+        $sheet->setCellValue('H8', 'PRESTACION');
+        $sheet->setCellValue('I8', 'EXAMENES');
+
+        $sheet->getStyle('A8:I8')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+        $sheet->getStyle('A8:I8')->getFont()->setBold(true);
+
         $fila = 9;
         foreach($items as $item){
 
             $nombreCompleto = ($item->prestaciones->paciente->Apellido ?? '').' '.($item->prestaciones->paciente->Nombre ?? '');
 
-            $sheet->setCellValue('A'.$fila, $item->prestaciones->paciente->Documento ?? '');
-            $sheet->setCellValue('B'.$fila, $nombreCompleto);
-            $sheet->setCellValue('C'.$fila, $item->prestaciones->Id ?? ''); 
-            $sheet->setCellValue('D'.$fila, $item->examenes->Nombre ?? '');
-            $sheet->setCellValue('E'.$fila, $item->paciente->Identificacion ?? '');
-            $sheet->setCellValue('F'.$fila, $item->examenes->Cod ?? '');
-            $sheet->setCellValue('G'.$fila, Carbon::parse($item->prestaciones->Fecha)->format('d/m/Y') ?? '');
+            $sheet->getStyle('A'.$fila.':I'.$fila)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+
+            $sheet->setCellValue('A'.$fila, str_replace('-','', $item->prestaciones->art->Identificacion) ?? '');
+            $sheet->setCellValue('B'.$fila, str_replace('-','',$item->prestaciones->paciente->Identificacion) ?? '');
+            $sheet->setCellValue('C'.$fila, $item->examenes->Cod ?? '');
+            $sheet->setCellValue('D'.$fila, Carbon::parse($item->prestaciones->Fecha)->format('d/m/Y') ?? '');
+            $sheet->setCellValue('E'.$fila, $mapa->FechaAsignacion <> '0000-00-00' || $mapa->FechaAsignacion <> null ? Carbon::parse($mapa->FechaAsignacion)->format('d/m/Y') : '');
+            $sheet->setCellValue('F'.$fila, $nombreCompleto);
+            $sheet->setCellValue('G'.$fila, $item->prestaciones->paciente->Documento ?? '');
+            $sheet->setCellValue('H'.$fila, $item->prestaciones->Id ?? '');
+            $sheet->setCellValue('I'.$fila, $item->examenes->Nombre ?? '');
             $fila++;
         }
     }
