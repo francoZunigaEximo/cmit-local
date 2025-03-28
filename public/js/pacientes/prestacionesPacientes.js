@@ -116,6 +116,7 @@ $(function(){
 
                         IdNueva = response.nuevoId;
                         cargarExamen(response.nuevoId);
+                        contadorExamenes(response.nuevoId);
                         $('#idPrestacion').val(response.nuevoId);
                     },
                     error: function(jqXHR){
@@ -816,6 +817,7 @@ $(function(){
     $(document).on('click', '.cargarExPrestacion, #guardarPrestacion', function(e){
         e.preventDefault();
         cargarExamen($('#idPrestacion').val());
+        contadorExamenes($('#idPrestacion').val());
         $('#listaExamenes').empty();
         
     });
@@ -828,7 +830,7 @@ $(function(){
 
     $(document).on('click', '.volverPrestacionLimpia', function(e){
         e.preventDefault();
-        $('.resultadosPaciente, .reportesPacientes, .editarComentario').hide();
+        $('.resultadosPaciente, .reportesPacientes, .editarComentario, .seleccionExCta').hide();
         $('.prestacionLimpia').show();
         $('#ComentarioEditar').val('');
     });
@@ -1068,7 +1070,7 @@ $(function(){
                             $('#exam').val([]).trigger('change.select2');
                             $('#addPaquete').val([]).trigger('change.select2');
                             cargarExamen(IdNueva);
-
+                            contadorExamenes(IdNueva)
                         }
 
                     }
@@ -1131,6 +1133,7 @@ $(function(){
                 $('#exam').val([]).trigger('change.select2');
                 $('#addPaquete').val([]).trigger('change.select2');
                 cargarExamen(idPrestacion);
+                contadorExamenes(idPrestacion);
         },
             error: function(jqXHR){
                 preloader('off');
@@ -1322,6 +1325,7 @@ $(function(){
                             $('#exam').val([]).trigger('change.select2');
                             $('#addPaquete').val([]).trigger('change.select2');
                             cargarExamen(IdNueva);
+                            contadorExamenes(IdNueva);
                         }
                     }
                 });
@@ -1464,6 +1468,12 @@ $(function(){
 
     function borrarCache() {
         $.post(cacheDelete, {_token: TOKEN}, function(){});
+    }
+
+    function contadorExamenes(idPrestacion) {
+        $.get(contadorEx, {Id: idPrestacion}, function(response){
+            $('#countExamenes').empty().text(response);
+        });
     }
 
 });

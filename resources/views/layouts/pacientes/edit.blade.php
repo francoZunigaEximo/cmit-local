@@ -913,22 +913,21 @@
 
                             <hr class="mt-3 mb-3">
 
-                            <div class="row text-left">
-                                <div class="col-auto">
+                            <div class="row text-start">
+                                <div class="col-6 d-flex flex-wrap gap-2">
                                     <button type="button" class="btn btn-sm botonGeneral imprimirReportes"><i class="bx bxs-file-pdf"></i>&nbsp;Imprimir</button>
-                                </div>
-                                
-                                <div class="col-auto">
+
                                     <button type="button" class="btn btn-sm botonGeneral deleteExamenes"><i class="ri-delete-bin-2-line"></i>&nbsp;Eliminar</button>
-                                </div>
 
-                                <div class="col-auto">
                                     <button type="button" class="btn btn-sm botonGeneral bloquearExamenes"><i class="ri-forbid-2-line"></i>&nbsp;Anular</button>
-                                </div>
 
-                                <div class="col-auto">
                                     <button type="button" class="btn btn-sm botonGeneral resulPaciente naranja"><i class="ri-add-line align-bottom me-1"></i>&nbsp;Resultados</button>
                                 </div>
+
+                                <div class="col-6 d-flex justify-content-end align-items-center">
+                                    <span class="text-uppercase fw-bolder">Total de examenes: <span id="countExamenes">0</span></span>
+                                </div>
+
                             </div>
 
                             <div class="row mt-2">
@@ -1263,6 +1262,7 @@ const loadResultadosPres = "{{ route('prestaciones.resultados') }}";
 const exResultado = "{{ route('prestaciones.exportarResultado') }}";
 const impRepo = "{{ route('prestaciones.pdf') }}";
 const sendExcel = "{{ route('prestaciones.excel') }}";
+const contadorEx = "{{route('itemsprestaciones.contador')}}";
 </script>
 
 @push('styles')

@@ -1,4 +1,4 @@
-$(document).ready(()=>{
+$(function(){
 
     $('th.sort').click(function() {
         let table = $(this).closest('table');
