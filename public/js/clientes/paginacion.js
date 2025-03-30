@@ -46,13 +46,13 @@ $(function(){
                     {
                         data: null,
                         render: function(data){
-                            return `<span title="${data.RazonSocial}">${acortadorTexto((data.RazonSocial).toUpperCase(), 20)}</span>`;
+                            return `<span title="${data.RazonSocial}">${(data.RazonSocial).toUpperCase()}</span>`;
                         }
                     },
                     {
                         data: null,
                         render: function(data){
-                            return `<span title="${data.ParaEmpresa}">${acortadorTexto((data.ParaEmpresa).toUpperCase(), 20)}</span>`;
+                            return `<span title="${data.ParaEmpresa}">${(data.ParaEmpresa).toUpperCase()}</span>`;
                         }
                     },
                     {

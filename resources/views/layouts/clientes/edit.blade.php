@@ -91,6 +91,7 @@
                                 <option value="E">Empresa</option>
                                 @endif
                             </select>
+                            <span class="text-muted small">El cliente se deshabilita si tiene actividades asociadas.</span>
                         </div>
                     </div>        
                     <div class="col-3 p-2 mb-2" style="background-color: #eeeeee">
@@ -108,7 +109,7 @@
                         <input type="text" class="form-control" value="{{ $cliente->RazonSocial }}" id="RazonSocial" name="RazonSocial">
                     </div><!--end col-->
                     <div class="col-6 mb-3">
-                        <label for="NombreFantasia" class="form-label">Nombre de Fantasía</label>
+                        <label for="NombreFantasia" class="form-label">Alias</label>
                         <input type="text" class="form-control" value="{{ $cliente->NombreFantasia }}" id="NombreFantasia" name="NombreFantasia">
                     </div><!--end col-->
                     
@@ -612,6 +613,7 @@ const getBloqueo = "{{ route('getBloqueo') }}";
 const lstClientes = "{{ route('lstClientes') }}";
 const listadoDni = "{{ route('listadoDni') }}";
 const listadoEx = "{{ route('listadoEx') }}";
+const checkEstadoTipo = "{{ route('clientes.checkEstado') }}";
 
 </script>
 

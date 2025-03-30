@@ -89,6 +89,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('pacientes', PacientesController::class);
 
     //Rutas de Clientes
+    Route::get('/clientes/check-estado', [ClientesController::class, 'cambioEstado'])->name('clientes.checkEstado');
     Route::resource('clientes', ClientesController::class);
     Route::post('cliente/down', [ClientesController::class, 'baja'])->name('baja');
     Route::post('clientes/multipleDown', [ClientesController::class, 'multipleDown'])->name('clientes.multipleDown');
@@ -102,7 +103,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('verifyIdentificacion', [ClientesController::class, 'verifyIdentificacion'])->name('verifyIdentificacion');
     Route::get('exportExcelClientes', [ClientesController::class, 'excel'])->name('exportExcelClientes');
     Route::get('checkParaEmpresa', [ClientesController::class, 'checkParaEmpresa'])->name('checkParaEmpresa');
-    route::get('getBloqueo', [ClientesController::class, 'getBloqueo'])->name('getBloqueo');
+    Route::get('getBloqueo', [ClientesController::class, 'getBloqueo'])->name('getBloqueo');
+
 
     //Rutas de Prestaciones
     Route::get('/prestaciones/baja', [PrestacionesController::class, 'down'])->name('prestaciones.baja');

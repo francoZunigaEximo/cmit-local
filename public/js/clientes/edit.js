@@ -11,6 +11,7 @@ $(function() {
     quitarDuplicados("#FPago");
     checkBloq();
     examenes();
+    checkeoEstado(ID);
 
     $(document).on('click', '.delete-icon', function(e) {
         e.preventDefault();
@@ -774,8 +775,16 @@ $(function() {
                 .fail(function(error){
                     reject(error);
                 });
-        });
+        }); 
+    }
+    
+    function checkeoEstado(idCliente) {
         
-    }    
+        if([null, 0, '', undefined].includes(idCliente)) return;
+
+        $.get(checkEstadoTipo, {Id: idCliente}, function(response){
+            return response  === true ? $('#TipoCliente').attr('disabled', true) : $('#TipoCliente').attr('disabled', false);
+        });
+    }
 
 });
