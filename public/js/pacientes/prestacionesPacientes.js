@@ -1,11 +1,46 @@
 $(function(){
 
-    let IdNueva, empresaInput = $('#selectClientes').val(), artInput = $('#selectArt').val(), hoy = new Date().toLocaleDateString('en-CA'), precarga = $('#tipoPrestacionPres').val();
+    const principal = {
+        Fecha: $('#Fecha'),
+        FechaN: $('#FechaN'),
+        siguienteExCta: $('#siguienteExCta'),
+        seleccionExCta: $('.seleccionExCta'),
+        editarComentario: $('.editarComentario'),
+    }
+
+    const variables = {
+        ElPago: $('#ElPago'),
+        ElSPago: $('#ElSPago'),
+        ElTipo: $('#ElTipo'),
+        ElSucursal: $('#ElSucursal'),
+        ElNroFactura: $('#ElNroFactura'),
+        ElNroFactProv: $('#ElNroFactProv'),
+        ElAutorizado: $('#ElAutorizado'),
+        tipoPrestacionPres: $('#tipoPrestacionPres'),
+    };
+
+    variables.ElPago
+        .add(variables.ElSPago)
+        .add(variables.ElTipo)
+        .add(variables.ElSucursal)
+        .add(variables.ElNroFactura)
+        .add(variables.ElNroFactProv)
+        .add(variables.ElAutorizado)
+        .prop('disabled', true);
+
+    let IdNueva, empresaInput = $('#selectClientes').val(), artInput = $('#selectArt').val(), hoy = new Date().toLocaleDateString('en-CA');
     
-    $('#Fecha, #FechaN').val(hoy);
-    $('#siguienteExCta, .seleccionExCta, .editarComentario').hide();
+    principal.Fecha
+        .add(principal.FechaN)
+        .val(hoy);
+
+    principal.siguienteExCta
+        .add(principal.seleccionExCta)
+        .add(principal.editarComentario)
+        .hide();
+
     
-    precargaTipoPrestacion(precarga);
+    precargaTipoPrestacion(variables.tipoPrestacionPres.val());
     getMap(empresaInput, artInput);
     getListado(null);
     listadoConSaldos(empresaInput);
@@ -13,11 +48,10 @@ $(function(){
     listadoFacturas(empresaInput, null, true, '#lstEx');
     listadoFacturas(empresaInput, null, false, '#lstEx2');
     getUltimasFacturadas(empresaInput);
-    selectorPago(pagoInput);
+    // selectorPago(pagoInput);
 
-    $(document).on('change', '#tipoPrestacionPres', function(){
-        let actPrecarga = $('#tipoPrestacionPres').val();
-        precargaTipoPrestacion(actPrecarga);
+    variables.tipoPrestacionPres.on('change', function(){
+        precargaTipoPrestacion(variables.tipoPrestacionPres.val());
     });
 
     $(document).on('change', '#selectClientes, #selectArt, input[type=radio][name=TipoPrestacion]', function() {
@@ -61,11 +95,11 @@ $(function(){
             pago = $('#PagoLaboral').val(),
             spago = $('#SPago').val(),
             observaciones = $('#Observaciones').val(),
-            autorizado = $('#Autorizado').val(),
-            tipo = $('#Tipo').val();
-            sucursal = $('#Sucursal').val();
-            nroFactura = $('#NroFactura').val(),
-            NroFactProv = $('#NroFactProv').val();
+            autorizado = $('#ElAutorizado').val(),
+            tipo = $('#ElTipo').val();
+            sucursal = $('#ElSucursal').val();
+            nroFactura = $('#ElNroFactura').val(),
+            NroFactProv = $('#ElNroFactProv').val();
             
         if (['', null].includes(tipoPrestacion)) {
             toastr.warning('El tipo de prestación no puede ser un campo vacío','', {timeOut: 1000});
@@ -1156,15 +1190,8 @@ $(function(){
         $.post(obsNuevaPrestacion, {_token: TOKEN, IdPrestacion: idP, Observaciones: ObservacionesPres, ObsExamenes: ObsExamenes, Obs: Obs})
             .done(function(response){
                 preloader('off');
-                let url = location.href,
-                clearUrl = url.replace(/\/pacientes\/.*/, ''),
-                redireccionar =  clearUrl + '/noticias';
 
                 toastr.success(response.msg,'',{timeOut: 1000});
-                setTimeout(() => {
-                    window.location.href = redireccionar;
-                }, 2000);
-
             })
             .fail(function(jqXHR){
                 preloader('off');
@@ -1172,11 +1199,14 @@ $(function(){
                 checkError(jqXHR.status, errorData.msg);
                 return;  
             });
-        
-       
-        
     });
     
+
+    $(document).on('click', '#SalirWizzard', function(e){
+        e.preventDefault();
+        location.reload();
+    });
+
     async function cargarExamen(id) {
         try {
             preloader('on');

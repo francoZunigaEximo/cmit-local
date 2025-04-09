@@ -1,25 +1,87 @@
-$(document).ready(function () {
+$(function () {
 
-    let pagoLaboral = $('#PagoLaboral').val(), changeTipo = $('input[name="TipoPrestacion"]:checked').val(), empresaInput = $('#selectClientes').val(), artInput = $('#selectArt').val();
-    $('.nuevaPrestacionModal, .observacionesModal, .nuevaPrestacion, .ObBloqueoEmpresa, .ObBloqueoArt, .ObEmpresa, .ObsPaciente, .ObsPres, .Factura, .TareaRealizar, .UltimoPuesto, .PuestoActual, .SectorActual, .AntiguedadPuesto, .AntiguedadEmpresa, .FechaIngreso, .FechaEgreso, .selectMapaPres, .Autoriza, .listadoExCta, #examenesDisponibles, #ultimasFacturadas, #alertaExCta, .NroFactProv').hide();
-    let IDficha = ['', null, undefined].includes(empresaInput) ? IDFICHA : empresaInput;
+    const principal = {
+        lstSaldos: $('#lstSaldos'),
+        seguirAl: $('.seguirAl'),
+        eventDelete: $('.eventDelete'),
+        mapas: $('#mapas'),
+        mapasN: $('#mapasN'),
+        alertaExCta: $('#alertaExCta'),
+        SPago: $('.SPago'),
+        Autoriza: $('.Autoriza'),
+        ObsPres: $('.ObsPres'),
+        Factura: $('.Factura'),
+        NroFactProv: $('.NroFactProv'),
+        nuevaPrestacion: $('.nuevaPrestacion'),
+        observacionesModal: $('.observacionesModal'),
+        altaPrestacionModal: $('#altaPrestacionModal'),
+        guardarFicha: $('#guardarFicha'),
+        mensajeFichaLaboral: $('#mensajeFichaLaboral'),
+        verListadoExCta: $('.verListadoExCta'),
+        listadoExCta: $('.listadoExCta'),
+        fichaLaboralModal: $('.fichaLaboralModal'),
+        cerrarlstExCta: $('.cerrarlstExCta'),
+        prestacionLimpia: $('.prestacionLimpia'),
+        ultimasFacturadas: $('.ultimasFacturadas'),
+        examenesDiponibles: $('examenesDisponibles'),
+        siguienteExCta: $('#siguienteExCta'),
+        guardarPrestacion: $('#guardarPrestacion'),
+        selectMapaPres: $('.selectMapaPres'),
+        selectMapaPresN: $('.selectMapaPresN'),
+    };
+
+    const variables = {
+        PagoLaboral: $('#PagoLaboral'),
+        Pago: $('#Pago'),
+        SPago: $('#SPago'),
+        Tipo: $('#Tipo'),
+        Sucursal: $('#Sucursal'),
+        NroFactura: $('#NroFactura'),
+        FechaIngreso: $('#FechaIngreso'),
+        FechaEgreso: $('#FechaEgreso'),
+        TipoPrestacion: $('input[name="TipoPrestacion"]'),
+        selectClientes: $('#selectClientes'),
+        selectArt: $('#selectArt'),
+        tipoPrestacionHidden: $('#tipoPrestacionHidden'),
+        tipoPrestacionPres: $('#tipoPrestacionPres'),
+        tipoPrestacionPresN: $('#tipoPrestacionPresN'),
+        divtipoPrestacionPresOtros: $("#divtipoPrestacionPresOtros"),
+        selectClientesPres: $('#selectClientesPres'),
+        selectArtPres: $('#selectArtPres'),
+        selectClientesPresN: $('#selectClientesPresN'),
+        selectArtPresN: $('#selectArtPresN'),
+        tipoPrestacionPresOtros: $('#tipoPrestacionPresOtros'),
+        Autorizado: $('#Autorizado'),
+        NroFactProv: $('#NroFactProv'),
+        ElPago: $('#ElPago'),
+        ElSPago: $('#ElSPago'),
+        ElTipo: $('#ElTipo'),
+        ElSucursal: $('#ElSucursal'),
+        ElNroFactura: $('#ElNroFactura'),
+        ElAutorizado: $('#ElAutorizado'),
+        ElNroFactProv: $('#ElNroFactProv'),
+    };
+
+    let changeTipo = $('input[name="TipoPrestacion"]:checked').val();
     
+    $('.nuevaPrestacionModal, .observacionesModal, .nuevaPrestacion, .ObBloqueoEmpresa, .ObBloqueoArt, .ObEmpresa, .ObsPaciente, .ObsPres, .Factura, .TareaRealizar, .UltimoPuesto, .PuestoActual, .SectorActual, .AntiguedadPuesto, .AntiguedadEmpresa, .FechaIngreso, .FechaEgreso, .selectMapaPres, .Autoriza, .listadoExCta, #examenesDisponibles, #ultimasFacturadas, #alertaExCta, .NroFactProv, #divtipoPrestacionPresOtros, .verListadoExCta').hide();
+
+    let IDficha = ['', null, undefined].includes(variables.selectClientes.val()) ? IDFICHA : variables.selectClientes.val();
+    
+    removerCeroSelect2(variables.selectArt);
     quitarDuplicados('#Horario');
     quitarDuplicados('#Tipo');
     quitarDuplicados('#TipoPrestacion');
-    quitarDuplicados('#PagoLaboral');
+    quitarDuplicados("#PagoLaboral");
     quitarDuplicados('#Tipo');
     quitarDuplicados('#Autorizado');
     calcularAntiguedad();
     mostrarFinanciador();
-    selectorPago(pagoLaboral, IDFICHA);
-    checkExamenesCuenta(IDficha);
-    marcarPago(pagoLaboral);
-    selectMedioPago();
+    marcarPago(variables.PagoLaboral.val());
+    selectMedioPago(variables.PagoLaboral.val());
 
-    $(document).on('change', '#selectClientes, #selectArt', function(){
-        let empresaInput = $('#selectClientes').val(), artInput = $('#selectArt').val();
-        getMap(empresaInput, artInput);
+    variables.selectClientes.add(variables.selectArt).on('change', function(){
+        getMap(variables.selectClientes.val(), variables.selectArt.val());
     });
 
     const listOpciones = {
@@ -34,54 +96,59 @@ $(document).ready(function () {
         '.CCosto': ['INGRESO', 'S/C_OCUPACIO', 'RECMED', 'CARNET', 'OTRO', 'ART', 'EGRESO', 'OCUPACIONAL', 'PERIODICO']
     };
 
-    $('.eventDelete').on('click', function() {
-        //$('.nuevaPrestacion').hide();
-        //$('.observacionesModal').hide();
-        //$('.fichaLaboralModal').show();
+    principal.eventDelete.on('click', function() {
         location.reload();
     });
 
-    $('.seguirAl').on('click', function(e){
+    principal.seguirAl.on('click', function(e){
         e.preventDefault();
-        $('.nuevaPrestacion').show();
-        $('.observacionesModal').hide();
+        principal.nuevaPrestacion.show();
+        principal.observacionesModal.hide();
     });
 
-    $(document).on('change', '#tipoPrestacionPres', function(){
-        let estado = $('#tipoPrestacionPres').val();
-        activarMapas(estado);
+    variables.tipoPrestacionPres.on('change', function(){
+        activarMapas(variables.tipoPrestacionPres.val());
     });
     
     //Hack para forzar la recarga
     $(document).ready(function () {
-        let inputShow = $('input[name="TipoPrestacion"]:checked').val();
-        opcionesFicha(inputShow);
+        opcionesFicha(variables.TipoPrestacion.filter(':checked').val());
     });
    
     // Tipo de prestaciones muestra opciones
-    $('input[name="TipoPrestacion"]').change(function () {
-        let inputShow = $('input[name="TipoPrestacion"]:checked').val();
-        opcionesFicha(inputShow);
+    variables.TipoPrestacion.change(function () {
+        opcionesFicha(variables.TipoPrestacion.filter(':checked').val());
+        limpiezaInputsPagos();
     });
 
-    $('#PagoLaboral').change(function(IDFICHA){
-        let valor = $(this).val(); 
-        $('#Pago').val(valor).find('option[value="' + valor + '"]').prop('selected', true);
-        selectorPago(valor, IDFICHA)
+    variables.PagoLaboral.change(function(){
+        let valor = $(this).val();
+        selectorPago(valor);
+        // checkExamenesCuenta(IDficha);
     });
 
-    $('input[name="TipoPrestacion"]').change(function(){
+    variables.TipoPrestacion.change(function(){
         changeTipo = $(this).val(); 
-        $('#tipoPrestacionHidden').val(changeTipo);
-        changeTipo === 'OTRO' ? $("#divtipoPrestacionPresOtros").show() : $("#divtipoPrestacionPresOtros").hide();
+        variables.tipoPrestacionHidden.val(changeTipo);
+        changeTipo === 'OTRO' ? variables.divtipoPrestacionPresOtros.show() : variables.divtipoPrestacionPresOtros.hide();
+        checkExamenesCuenta(IDficha);
     });
 
-    $('#Pago').val(pagoLaboral);
-    $('#tipoPrestacionPres').val(changeTipo);
-    $('#tipoPrestacionHidden').val(changeTipo);
+    variables.TipoPrestacion.change(function(){
+        return variables.TipoPrestacion.filter(':checked').val() === 'ART'
+            ? variables.PagoLaboral.find('option[value="P"]').remove()
+            : variables.PagoLaboral.empty().append(`<option selected="" value="">Elija una opción...</option>
+                <option value="B">Contado</option>
+                <option value="A">Cuenta Corriente</option>
+                <option value="P">Exámen a Cuenta</option>`);
+    });
 
-    $('#selectClientes').select2({
-        dropdownParent: $('#altaPrestacionModal'),
+    variables.Pago.val(variables.PagoLaboral.val());
+    // variables.tipoPrestacionPres.val(changeTipo);
+    variables.tipoPrestacionHidden.val(changeTipo);
+
+    variables.selectClientes.select2({
+        dropdownParent: principal.altaPrestacionModal,
         placeholder: 'Seleccionar Cliente',
         language: 'es',
         allowClear: true,
@@ -118,7 +185,7 @@ $(document).ready(function () {
 
     $('#selectArt').select2({
         placeholder: 'Seleccionar ART',
-        dropdownParent: $('#altaPrestacionModal'),
+        dropdownParent: principal.altaPrestacionModal,
         language: 'es',
         allowClear: true,
         language: {
@@ -152,13 +219,15 @@ $(document).ready(function () {
         minimumInputLength: 2
     });
 
-    $(document).on('change', '#SPago', function(){
+    variables.SPago.on('change', function(){
         let pago = $(this).val();
-        pago === 'G' ? $('.Autoriza').show() : $('.Autoriza').hide();
+        return pago === 'G' 
+            ? principal.Autoriza.show() 
+            : principal.Autoriza.hide();
     });
 
     //Alerta - verificacion de clientes bloqueados
-    $('#selectClientes').on('select2:select', function (e) {
+    variables.selectClientes.on('select2:select', function (e) {
         let cliente = e.params.data.id;
 
         $.ajax({
@@ -170,129 +239,131 @@ $(document).ready(function () {
             },
             success: function (response) {
                 let data = response.cliente;
-                data.Bloqueado === 0 ? deshabilitarBloqueo() : cargarBloqueo(data);
+                data.Bloqueado === 0 
+                    ? deshabilitarBloqueo() 
+                    : cargarBloqueo(data);
             }
         });
     });
 
-    $(document).on('change', '#PagoLaboral', function(){
-        selectMedioPago();
+    variables.PagoLaboral.on('change', function() {
+        selectMedioPago(variables.PagoLaboral.val());
     });
 
     //Habilitamos el botón de guardar
-    $('#selectClientes').on('change', function(){
-        
+    variables.selectClientes.on('change', function(){
         if($(this).select2('data').map(option => option.id).length === 0){
-            $('#guardarFicha').removeAttr('disabled').removeAttr('title', 'Botón habilitado').removeAttr('data-toggle', 'tooltip').removeAttr('data-placement', 'top');
+            principal.guardarFicha
+                .removeAttr('disabled')
+                .removeAttr('title', 'Botón habilitado')
+                .removeAttr('data-toggle', 'tooltip')
+                .removeAttr('data-placement', 'top');
         }
     });
 
     //Guardar FichaLaboral
-    $(document).on('click', '#guardarFicha', function(){
+    principal.guardarFicha.on('click', function(e){
+        e.preventDefault();
 
-        let paciente = ID,
-            cliente = $('#selectClientes').val(),
-            art = $('#selectArt').val(),
-            tipoPrestacion =  $('input[name="TipoPrestacion"]:checked').val(),
-            tipoPrestacionPresOtros =  $('#tipoPrestacionPresOtros').val(),
-            tareaRealizar = $('#TareaRealizar').val(),
-            tipo = $('#TipoJornada').val(),
-            pago = $('#PagoLaboral').val(),
-            spago = $('#SPago').val(),
-            tipoF = $('#Tipo').val(),
-            sucursalF = $('#Sucursal').val(),
-            numeroF = $('#NroFactura').val(),
-            numeroProvF = $('#NroFactProv').val(),
-            autoriza = $('#Autorizado').val(),
-            horario = $('#Horario').val(),
-            observaciones = $('#ObservacionesFicha').val(),
-            ultimoPuesto = $('#UltimoPuesto').val(),
-            puestoActual = $('#PuestoActual').val(),
-            sectorActual = $('#SectorActual').val(),
-            ccosto = $('#CCostos').val(),
-            antiguedadPuesto = $('#AntiguedadPuesto').val(),
-            fechaIngreso = $('#FechaIngreso').val(),
-            fechaEgreso = $('#FechaEgreso').val(),
-            fechaPreocupacional = $('#FechaPreocupacional').val(),
-            fechaUltPeriod =$('#FechaUltPeriod').val(),
-            fechaExArt = $('#FechaExArt').val(),
-            antiguedadEmpresa = $('#AntiguedadEmpresa').val(),
-            Id = $('#IdFichaLaboral').val();
+        let data = {
+            paciente: ID,
+            cliente: variables.selectClientes.val(),
+            art: variables.selectArt.val(),
+            tareaRealizar: $('#TareaRealizar').val(),
+            tipoPrestacion: variables.TipoPrestacion.filter(':checked').val(),
+            tipo: $('#TipoJornada').val(),
+            pago: variables.PagoLaboral.val(),
+            horario: $('#Horario').val(),
+            observaciones: $('#ObservacionesFicha').val(),
+            ultimoPuesto: $('#UltimoPuesto').val(),
+            puestoActual: $('#PuestoActual').val(),
+            sectorActual: $('#SectorActual').val(),
+            ccosto: $('#CCostos').val(),
+            antiguedadPuesto: $('#AntiguedadPuesto').val(),
+            fechaIngreso: variables.FechaIngreso.val(),
+            fechaEgreso: variables.FechaEgreso.val(),
+            antiguedadEmpresa: $('#AntiguedadEmpresa').val(),
+            fechaPreocupacional: $('#FechaPreocupacional').val(),
+            fechaUltPeriod: $('#FechaUltPeriod').val(),
+            fechaExArt: $('#FechaExArt').val(),
+            Id: $('#IdFichaLaboral').val(),
+            Spago: variables.SPago.val(),
+            TipoF: variables.Tipo.val(),
+            SucursalF: variables.Sucursal.val(),
+            NumeroF: variables.NroFactura.val(),
+            NumeroProvF: $('#NroFactProv').val(),
+            Autoriza: $('#Autorizado').val()
+        };
+    
 
         //Validamos la factura
-        if (spago === 'G' && autoriza === ''){
+        if (data.Spago === 'G' && data.Autoriza === ''){
             toastr.warning('Si el medio de pago es gratuito, debe seleccionar quien autoriza.', '', {timeOut: 1000});
             return;
         }
 
-        if (pago === 'B' && spago === '') {
+        if (data.pago === 'B' && data.Spago === '') {
             toastr.warning('Debe seleccionar un "medio de pago" cuando la "forma de pago" es "contado"', '', {timeOut: 1000});
             return;
         }
 
-        if (['',null,undefined].includes(pago)) {
+        if (['',null,undefined].includes(data.pago)) {
             toastr.warning('Debe seleccionar una "forma de pago"','',{timeOut: 1000});
             return;
         }
 
-        if (pago === 'B' && (tipoF == '' || sucursalF === '' || numeroF === '')){
+        if (data.pago === 'B' && (data.TipoF == '' || data.SucursalF === '' || data.NumeroF === '')){
             toastr.warning('El pago es contado, asi que debe agregar el número de factura para continuar.','',{timeOut: 1000});
             return;
         }
 
-        if(tipoPrestacion === 'OTRO' && tipoPrestacionPresOtros) {
-            tipoPrestacion = tipoPrestacionPresOtros;
-            $('#tipoPrestacionHidden').val(tipoPrestacion);
+        if(data.tipoPrestacion === 'OTRO' && variables.tipoPrestacionPresOtros.val() === '') {
+            toastr.warning('¡El campo tipo de prestación OTRO necesita una opción de tipo!','',{timeOut: 1000});
+            return;
         }
 
-        if([0, null, undefined, ''].includes(tipoPrestacion)){
+
+        if([0, null, undefined, ''].includes(data.tipoPrestacion)){
             toastr.warning('¡El campo tipo de prestación es obligatorio!','',{timeOut: 1000});
             return;
         }
 
-        if([0, null, undefined, ''].includes(cliente) && [0, null, undefined, ''].includes(art)){
+        if(["0", null, undefined, ''].includes(data.cliente) && ["0", null, undefined, ''].includes(data.art)){
             toastr.warning('¡Debe seleccionar una empresa o una art!','',{timeOut: 1000});
             return;
         }
         
-        if(tipoPrestacion === 'ART' && ([0, null, undefined, ''].includes(art))){
+        if(data.tipoPrestacion === 'ART' && (["0", null, undefined, ''].includes(data.art))){
             toastr.warning('¡Debe seleccionar una ART para el tipo de prestación ART!','',{timeOut: 1000});
             return;
         }
         
-        if(tipoPrestacion !== 'ART' && ([0, null, undefined, ''].includes(cliente))){
+        if(data.tipoPrestacion !== 'ART' && (["0", null, undefined, ''].includes(data.cliente))){
             toastr.warning('¡Debe seleccionar una empresa para el tipo de prestación seleccionado!','',{timeOut: 1000});
             return;
         }
 
-        async function verificarDisponibilidad(cliente, pago) {
-            let disponibilidad = await checkExCuentaDisponible(cliente);
-            data = disponibilidad === true && pago !== 'P';
-            preloader('on')
-            if (data) {
-                preloader('off');
-                if (confirm('Tienes examenes a cuenta disponibles. ¿Estás seguro que deseas continuar?')) {
-                    
-                    saveFichaLaboral(paciente, cliente, art, tareaRealizar, tipoPrestacion, tipo, pago, horario, observaciones, ultimoPuesto, puestoActual, sectorActual, ccosto, antiguedadPuesto, fechaIngreso, fechaEgreso, antiguedadEmpresa, fechaPreocupacional, fechaUltPeriod, fechaExArt, Id, spago, tipoF, sucursalF, numeroF, numeroProvF, autoriza);
-                }else{
-                    e.stopPropagation();
-                }
-            }else{
-                preloader('off');
-                saveFichaLaboral(paciente, cliente, art, tareaRealizar, tipoPrestacion, tipo, pago, horario, observaciones, ultimoPuesto, puestoActual, sectorActual, ccosto, antiguedadPuesto, fechaIngreso, fechaEgreso, antiguedadEmpresa, fechaPreocupacional, fechaUltPeriod, fechaExArt, Id, spago, tipoF, sucursalF, numeroF, numeroProvF, autoriza);
-            }
+        // tipoPrestacion = variables.tipoPrestacionPresOtros;
+        // variables.tipoPrestacionHidden.val(tipoPrestacion);
+
+        //ejecutamos la verificación de disponibilidad
+        if(["0", null, undefined, ''].includes(data.art)) {
+            verificarDisponibilidad(data.cliente, data.pago, data);
+            variables.Pago.find('option[value="' + data.pago + '"]').prop('selected', true);
+        }else{
+            saveFichaLaboral(data);
+            variables.Pago.find('option[value="' + data.pago + '"]').prop('selected', true);
         }
 
-        verificarDisponibilidad(cliente, pago);  
     });
 
     //Calcular Antiguedad en la Empresa en FichaLaboral
-    $('#FechaIngreso, #FechaEgreso').change(function(){
+    variables.FechaIngreso.add(variables.FechaEgreso).on('change', function () {
         calcularAntiguedad();
     });
 
     //Actualizamos
-    $('#mensajeFichaLaboral').change(function() {
+    principal.mensajeFichaLaboral.change(function() {
         actualizarMensaje();
     });
 
@@ -300,49 +371,52 @@ $(document).ready(function () {
         document.querySelector(".select2-container--open .select2-search__field").focus()
     });
     
-    $(document).on('click', '.verListadoExCta', function(e){
+    principal.verListadoExCta.on('click', function(e){
         e.preventDefault();
-        $('.listadoExCta').show();
-        $('.fichaLaboralModal').hide();
+        principal.listadoExCta.show();
+        principal.fichaLaboralModal.hide();
 
-        let id = $('#selectClientes').val();
-        examenesCta(id);
+        examenesCta(variables.selectClientes.val());
     });
 
-    $(document).on('click', '.cerrarlstExCta', function(e){
+    principal.cerrarlstExCta.on('click', function(e){
         e.preventDefault();
-        $('.listadoExCta').hide();
-        $('.fichaLaboralModal').show();
+        principal.listadoExCta.hide();
+        principal.fichaLaboralModal.show();
     });
 
-    $(document).on('change', '#selectClientes', function(){
+    variables.selectClientes.on('change', function(){
         let id = $(this).val();
         checkExamenesCuenta(id);
     });
 
-    $('#altaPrestacionModal').on('hidden.bs.modal', function () {
-        $('.prestacionLimpia, .observacionesModal, .nuevaPrestacion').hide();
-        $('.fichaLaboralModal').show();
+    principal.altaPrestacionModal.on('hidden.bs.modal', function () {
+        principal.prestacionLimpia.add(principal.observacionesModal).add(principal.nuevaPrestacion).hide();
+        principal.fichaLaboralModal.show();
         checkExamenesCuenta(IDficha);
-        getMap(empresaInput, artInput);
+        getMap(variables.selectClientes.val(), variables.selectArt.val());
       });
 
     //Bloqueo de cliente si existe
-    function cargarBloqueo(response) {
+    function cargarBloqueo(response){
         let razonSocial = response.RazonSocial, motivo = response.Motivo, identificacion = response.Identificacion;
 
         $('#razonSocialModal').text(razonSocial);
         $('#motivoModal').text(motivo);
         $('#identificacionModal').text(identificacion);
 
-        $('#guardarFicha').attr('disabled', 'disabled').attr('title', 'Botón bloqueado').attr('data-toggle', 'tooltip').attr('data-placement', 'top');
+        principal.guardarFicha.attr('disabled', 'disabled').attr('title', 'Botón bloqueado').attr('data-toggle', 'tooltip').attr('data-placement', 'top');
 
         swal("¡Cliente Bloqueado!", "El cliente " +  razonSocial + " | cuit: " + identificacion + " se encuentra bloqueado por el siguiente motivo: " + motivo +  ". No podrá avanzar con el alta. Se ha bloqueado el botón de registro.","info");
-    }
+    };
 
-    function deshabilitarBloqueo() {
-        $('#guardarFicha').removeAttr('disabled').removeAttr('title', 'Botón habilitado').removeAttr('data-toggle', 'tooltip').removeAttr('data-placement', 'top');
-    }
+    function deshabilitarBloqueo(){
+        principal.guardarFicha
+            .removeAttr('disabled')
+            .removeAttr('title', 'Botón habilitado')
+            .removeAttr('data-toggle', 'tooltip')
+            .removeAttr('data-placement', 'top');
+    };
 
     function mostrarFinanciador(){
         preloader('on');
@@ -356,30 +430,26 @@ $(document).ready(function () {
 
                 if(verificar !== undefined && verificar.Id ) {
 
-                    $('#selectClientesPres, #selectArtPres, #selectClientesPresN, #selectArtPresN').empty();
+                    variables.selectClientesPres
+                        .add(variables.selectArtPres)
+                        .add(variables.selectClientesPresN)
+                        .add(variables.selectArtPresN)
+                        .empty();
 
-                    $('#selectClientesPres, #selectClientesPresN').val(cliente.RazonSocial);
-                    $('#selectArtPres, #selectArtPresN').val(clienteArt.RazonSocial);
+                    variables.selectClientesPres
+                        .add(variables.selectClientesPresN)
+                        .val(cliente.RazonSocial);
+                    variables.selectArtPres
+                        .add(variables.selectArtPresN)
+                        .val(clienteArt.RazonSocial);
 
-                    $('#selectClientesPres').change(function() {
-                        filtrarTipoPrestacion($('#selectClientesPres, #tipoPrestacionPresN').val(), null);
-                    });
-
-                    let estado = $('#tipoPrestacionHidden').val();
-                    
-                    if (estado !== 'ART' || estado === '') {
-                        $('.selectMapaPres, .selectMapaPresN').hide();
-                    } else {
-                        $('.selectMapaPres, .selectMapaPresN').show();
-                    }
-
-                    filtrarTipoPrestacion(estado);
+                    filtrarTipoPrestacion(variables.tipoPrestacionHidden.val());
                 }
             }
         });   
-    }
+    };
 
-    function filtrarTipoPrestacion(estado) {
+    function filtrarTipoPrestacion(estado){
         preloader('on');
         $.ajax({
             url: getTipoPrestacion,
@@ -390,17 +460,48 @@ $(document).ready(function () {
                 let tiposPrestacion = response.tiposPrestacion;
                 
                 if(tiposPrestacion) {
-                    $('#tipoPrestacionPres, #tipoPrestacionPresN').empty();
-                    $('#tipoPrestacionPres, #tipoPrestacionPresN').append('<option value="" selected>Elija una opción...</option>');
+                    variables.tipoPrestacionPres
+                        .add(variables.tipoPrestacionPresN)
+                        .empty()
+                        .append('<option value="" selected>Elija una opción...</option>');
 
-                    tiposPrestacion.forEach(function(tipoPrestacion) {
-                        $('#tipoPrestacionPres').append('<option value="' + tipoPrestacion.nombre + '">' + tipoPrestacion.nombre + '</option>');
+                    if(estado === 'ART') {
 
-                        $('#tipoPrestacionPresN').append('<option value="' + tipoPrestacion.nombre + '">' + tipoPrestacion.nombre + '</option>');
-                    });
+                        variables.tipoPrestacionPres
+                            .add(variables.tipoPrestacionPresN)
+                            .empty()
+                            .append('<option value="ART" selected>ART</option>');
+
+                    }else {
+
+                        tiposPrestacion.forEach(function(tipoPrestacion) {
+                            variables.tipoPrestacionPres
+                                .append('<option value="' + tipoPrestacion.nombre + '">' + tipoPrestacion.nombre + '</option>');
+    
+                            variables.tipoPrestacionPresN
+                                .append('<option value="' + tipoPrestacion.nombre + '">' + tipoPrestacion.nombre + '</option>');
+                        });
+
+                        variables.tipoPrestacionPres.add(variables.tipoPrestacionPresN).find('option[value="ART"]').remove();
+                    }                    
                     
-                    if(estado) {    
-                        $('#tipoPrestacionPres, #tipoPrestacionPresN').val(estado);
+                    if(estado) { 
+                        
+                        let result = estado === 'OTRO' ? variables.tipoPrestacionPresOtros.val() : estado;
+                        
+                        variables.tipoPrestacionPres
+                            .add(variables.tipoPrestacionPresN)
+                            .val(result);
+                    }
+
+                    if (estado !== 'ART' || estado === '') {
+                        principal.selectMapaPres
+                            .add(principal.selectMapaPresN)
+                            .hide();
+                    } else {
+                        principal.selectMapaPres
+                            .add(principal.selectMapaPresN)
+                            .show();
                     }
                 }
             }
@@ -408,13 +509,14 @@ $(document).ready(function () {
     }
 
     function activarMapas(estado){
-        return estado === 'ART' ? $('.selectMapaPres').show() :  $('.selectMapaPres').hide();
-    }
+        return estado === 'ART' 
+            ? principal.selectMapaPres.show() 
+            :  principal.selectMapaPres.hide();
+    };
 
-    //Creamos función para trabajar cambios en fechas automaticamente
     function calcularAntiguedad(){
-        
-        let ingreso = $('#FechaIngreso').val(), egreso = $('#FechaEgreso').val();
+    
+        let ingreso = variables.FechaIngreso.val(), egreso = variables.FechaEgreso.val();
         let dateIngreso = new Date(ingreso), dateEgreso = egreso ? new Date(egreso) : new Date();
 
         let diff = dateIngreso.getFullYear() - dateEgreso.getFullYear();
@@ -424,20 +526,21 @@ $(document).ready(function () {
         }
 
         $('#AntiguedadEmpresa').val(diff);
-    }
+    };
 
-    function opcionesFicha(option) {
+    function opcionesFicha(option){
         Object.entries(listOpciones).forEach(([campo, opciones]) => {
-            opciones.includes(option) ? $(campo).show() : $(campo).hide();
+            opciones.includes(option) 
+                ? $(campo).show() 
+                : $(campo).hide();
         });
-    }
+    };
 
-    function selectMedioPago()
-    {
-        let opcion = $('#PagoLaboral').val()
+    function selectMedioPago(opcion){
+
         if(opcion === 'B'){
 
-            let contenido = `
+            const contenido = `
                 <option value="" selected>Elija una opción...</option>
                 <option value="A">Efectivo</option>
                 <option value="B">Débito</option>
@@ -448,79 +551,123 @@ $(document).ready(function () {
                 <option value="G">Sin Cargo</option>
             `;
 
-            $('.SPago, .ObsPres, .Factura, .NroFactProv').show();
-            $('#SPago').empty().append(contenido);
+            principal.SPago
+                .add(principal.Factura)
+                .add(principal.NroFactProv)
+                .add(principal.ObsPres)
+                .show();
+                
+            variables.SPago
+                .empty()
+                .append(contenido);
        
         }else if(opcion === 'C') {
-
-            $('.SPago, .ObsPres, .Factura, .NroFactProv').hide();
-            $('.Autoriza').show();
-
+            principal.ObsPres
+                .add(principal.Factura)
+                .add(principal.NroFactProv)
+                .add(principal.SPago)
+                .hide();
+            
+            principal.Autoriza.show();
         }else{
-            $('.SPago, .ObsPres, .Factura, .NroFactProv, .Autoriza').hide();
+            principal.SPago
+                .add(principal.Autoriza)
+                .add(principal.ObsPres)
+                .add(principal.Factura)
+                .add(principal.NroFactProv)
+                .hide();
         }
-    }
+    };
 
     async function checkObservaciones() {
+
+        const elementos = {
+            ObBloqueoEmpresa: $('.ObBloqueoEmpresa'),
+            ObBloqueoArt: $('.ObBloqueoArt'),
+            ObArt: $('.ObArt'),
+            ObEmpresa: $('.ObEmpresa'),
+            ObPaciente: $('.ObPaciente'),
+            messagePrestacion: $('.messagePrestacion')
+        };
+
+        let alerta = `
+        <!-- Warning Alert -->
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <strong> No existen observaciones para mostrar en la prestación. </strong>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `;
      
         if (ID === '') return;
-        $('.ObBloqueoEmpresa, .ObBloqueoArt, .ObArt, .ObEmpresa, .ObPaciente').hide();
-        $('.seguirAl').prop('disabled', false).removeAttr('title');
+        
+        elementos.ObBloqueoArt.hide();
+        elementos.ObBloqueoEmpresa.hide();
+        elementos.ObArt.hide();
+        elementos.ObEmpresa.hide();
+        elementos.ObPaciente.hide();
+
+        principal.seguirAl
+            .prop('disabled', false)
+            .removeAttr('title');
 
         try {
-
             const response = await $.get(checkObs, { Id: ID });
-
             let obsArt = response.obsArt, obsEmpresa = response.obsEmpresa, obsPaciente = response.obsPaciente;
 
             if([obsArt.Motivo, obsArt.Observaciones, obsEmpresa.Motivo, obsEmpresa.Observaciones, obsPaciente.Observaciones].every(value => value === '' || value === null)){
 
-                let alerta = `
-                <!-- Warning Alert -->
-                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                        <strong> No existen observaciones para mostrar en la prestación. </strong>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                `;
+                principal.fichaLaboralModal
+                    .add(principal.observacionesModal)
+                    .hide();
+                principal.nuevaPrestacion.show();
 
-                $('.fichaLaboralModal, .observacionesModal').hide();
-                $('.nuevaPrestacion').show();
-
-                $(".messagePrestacion").html(alerta);
+                elementos.messagePrestacion.html(alerta);
                 setTimeout(()=>{
-                    $(".messagePrestacion").hide();
+                    elementos.messagePrestacion.fadeOut();
                 }, 10000);
             
             }else{
 
-                $('.fichaLaboralModal').hide();
-                $('.observacionesModal').show();
+                principal.fichaLaboralModal.hide();
+                principal.observacionesModal.show();
 
                 if(![null, undefined, ''].includes(obsArt.Motivo)) {
-                    $('.ObBloqueoArt').show();
-                    $('.ObBloqueoArt p').text(obsArt.Motivo);
-                    $('.seguirAl').prop('disabled', true).attr('title', 'Boton bloqueado');
+                    elementos.ObBloqueoArt.show();
+                    elementos.ObBloqueoArt
+                        .find('p')
+                        .text(obsArt.Motivo);
+                    principal.seguirAl
+                        .prop('disabled', true)
+                        .attr('title', 'Boton bloqueado');
                 }
 
                 if(![null, undefined, ''].includes(obsArt.Observaciones)) {
-                    $('.ObArt').show();
-                    $('.ObArt p').text(obsArt.Observaciones);
+                    elementos.ObArt.show();
+                    elementos.ObArt
+                        .find('p')
+                        .text(obsArt.Observaciones);
                 }
                 
                 if(![null, undefined, ''].includes(obsEmpresa.Observaciones)) {
-                    $('.ObEmpresa').show();
-                    $('.ObEmpresa p').text(obsEmpresa.Observaciones);
+                    elementos.ObEmpresa.show();
+                    elementos.ObEmpresa
+                        .find('p')
+                        .text(obsEmpresa.Observaciones);
                 }
 
                 if(![null,undefined, ''].includes(obsEmpresa.Motivo)) {
-                    $('.ObBloqueoEmpresa').show();
-                    $('.ObBloqueoEmpresa p').text(obsEmpresa.Motivo);
+                    elementos.ObBloqueoEmpresa.show();
+                    elementos.ObBloqueoEmpresa
+                        .find('p')
+                        .text(obsEmpresa.Motivo);
                     //$('.seguirAl').prop('disabled', true).attr('title', 'Boton bloqueado');
                 }
                 
                 if(![null, undefined, ''].includes(obsPaciente.Observaciones)) {
-                    $('.ObPaciente').show();
-                    $('.ObPaciente p').text(obsPaciente.Observaciones);
+                    elementos.ObPaciente.show();
+                    elementos.ObPaciente
+                        .find('p')
+                        .text(obsPaciente.Observaciones);
                 }
             } 
         } catch (jqXHR) {
@@ -528,11 +675,11 @@ $(document).ready(function () {
             checkError(jqXHR.status, errorData.msg);
             return;
         }
-    }
+    };
 
     function examenesCta(id) {
 
-        $('#lstSaldos').empty();
+        principal.lstSaldos.empty();
         preloader('on');
 
         $.get(lstExDisponibles, {Id: id})
@@ -561,93 +708,128 @@ $(document).ready(function () {
                         </tr>
                         `;
                 }
-                $('#lstSaldos').append(contenido); 
+                principal.lstSaldos.append(contenido); 
             });    
-    }
+    };
 
-    
-
-    function selectorPago(pago, id) {
+    function selectorPago(pago) {
 
         if (pago != 'B') {
-            $('#SPago, #Tipo, #Sucursal, #NroFactura').val(" ");
+
+            variables.SPago.val('');
+            variables.Tipo.val('');
+            variables.Sucursal.val('');
+            variables.NroFactura.val('');
         }
 
         if(['B','A', ''].includes(pago)) {
             
-            $('.ultimasFacturadas, .examenesDisponibles, #siguienteExCta').hide();
-            $('#guardarPrestacion').show();
-        }else{
+            principal.ultimasFacturadas
+                .add(principal.examenesDiponibles)
+                .add(principal.siguienteExCta)
+                .hide();
+            principal.guardarPrestacion.show();
+        
+        }else if(pago === 'P') {
+
             preloader('on');
-            $.get(cantTotalDisponibles, {Id: $('#selectClientes').val()})
+            $.get(cantTotalDisponibles, {Id: variables.selectClientes.val()})
             .done(function(response){
                 preloader('off');
                 if(response > 0) {
-                    $('.ultimasFacturadas, .examenesDisponibles, #siguienteExCta').show();
-                    $('#guardarPrestacion').hide();
-                    checkExamenesCuenta(id)
+                    principal.ultimasFacturadas
+                        .add(principal.examenesDiponibles)
+                        .add(principal.siguienteExCta)
+                        .show();
+                    principal.guardarPrestacion.hide();
+                    checkExamenesCuenta(variables.selectClientes.val())
                 }
             });
         }
-    }
+    };
 
-    async function checkExamenesCuenta(id){
+    async function checkExamenesCuenta(id) {
 
-        $.get(lstExDisponibles, {Id: id})
-            .done(await function(response){
+        try {
+            const response = await $.get(lstExDisponibles, { Id: id });
+    
+            if (
+                response &&
+                response.length > 0 &&
+                !['ART', '', undefined, 0].includes($("input[name='TipoPrestacion']:checked").val())
+            ) {
 
-                if(response && response.length > 0) {
+                principal.alertaExCta.add(principal.verListadoExCta).show();
+                variables.PagoLaboral.val('P');
+                variables.Pago.val('P');
+                limpiezaInputsPagos();
+                return true;
 
-                    $('#alertaExCta').show();
-                    $('#PagoLaboral, #Pago ').val('P');
-                    return true;
-                } else {
-                    $('#alertaExCta').hide();
-                    return false;
-                }
-            })
-    }
+            } else {
+                principal.alertaExCta
+                    .add(principal.verListadoExCta)
+                    .hide();
+                return;
+            }
+        } catch (jqXHR) {
+            preloader('off');
+            let errorData = JSON.parse(jqXHR.responseText);
+            checkError(jqXHR.status, errorData.msg);
+            return;
+        }
+    };
 
-    function saveFichaLaboral(...params) {
+    function saveFichaLaboral(data){
         preloader('on');
 
         $.post(saveFichaAlta, {
-            paciente: params[0],
-            cliente: params[1],
-            art: params[2],
-            tareaRealizar: params[3],
-            tipoPrestacion: params[4],
-            tipo: params[5],
-            pago: params[6],
-            horario: params[7],
-            observaciones: params[8],
-            ultimoPuesto: params[9],
-            puestoActual: params[10],
-            sectorActual: params[11],
-            ccosto: params[12],
-            antiguedadPuesto: params[13],
-            fechaIngreso: params[14],
-            fechaEgreso: params[15],
-            antiguedadEmpresa: params[16],
-            fechaPreocupacional: params[17],
-            fechaUltPeriod: params[18],
-            fechaExArt: params[19],
-            Id: params[20],
-            Spago: params[21],
-            TipoF: params[22],
-            SucursalF: params[23],
-            NumeroF: params[24],
-            NumeroProvF: params[25],
-            Autoriza: params[26],
+            IdPaciente: data.paciente,
+            IdEmpresa: data.cliente === '' ? 0 : data.cliente,
+            IdART: data.art === '' ? 0 : data.art,
+            tareaRealizar: data.tareaRealizar === '' ? '' : data.tareaRealizar,
+            TipoPrestacion: data.tipoPrestacion === '' ? '' : data.tipoPrestacion,
+            TipoJornada: data.tipo === '' ? '' : data.tipo,
+            Pago: data.pago === '' ? '' : data.pago,
+            Jornada: data.horario === '' ? '' : data.horario,
+            Observaciones: data.observaciones === '' ? '' : data.observaciones,
+            TareasEmpAnterior: data.ultimoPuesto === '' ? '' : data.ultimoPuesto,
+            Puesto: data.puestoActual === '' ? '' : data.puestoActual,
+            Sector: data.sectorActual === '' ? '' : data.sectorActual,
+            CCosto: data.ccosto === '' ? '' : data.ccosto,
+            AntigPuesto: data.antiguedadPuesto === '' ? '' : data.antiguedadPuesto,
+            FechaIngreso: data.fechaIngreso === '' ? '' : data.fechaIngreso,
+            FechaEgreso: data.fechaEgreso === '' ? '' : data.fechaEgreso,
+            antiguedadEmpresa: data.antiguedadEmpresa,
+            FechaPreocupacional: data.fechaPreocupacional === '' ? '' : data.fechaPreocupacional,
+            FechaUltPeriod: data.fechaUltPeriod === '' ? '' : data.fechaUltPeriod,
+            FechaExArt: data.fechaExArt === '' ? '' : data.fechaExArt,
+            Id: data.Id,
+            SPago: data.Spago === '' ? '' : data.Spago,
+            Tipo: data.TipoF === '' ? '' : data.TipoF,
+            Sucursal: data.SucursalF === '' ? '' : data.SucursalF,
+            NroFactura: data.NumeroF === '' ? '' : data.NumeroF,
+            NroFactProv: data.NumeroProvF === '' ? '' : data.NumeroProvF,
+            Autorizado: data.Autoriza === '' ? '' :data.Autoriza,   
             _token: TOKEN,
             }) 
             .done(function(response) {
                 preloader('off');
                 toastr.success(response.msg,'',{timeOut: 1000});
+
                 mostrarFinanciador();
-                selectMedioPago();
-                selectorPago(params[6], IDFICHA);
-                getMap(params[1], params[2]);
+                selectMedioPago(variables.PagoLaboral.val());
+
+                variables.PagoLaboral.val() === 'A' ? variables.ElPago.val("C") : variables.ElPago.val(variables.PagoLaboral.val());
+                variables.ElSPago.val(data.Spago);
+                variables.ElTipo.val(data.TipoF);
+                variables.ElSucursal.val(data.SucursalF);
+                variables.ElNroFactura.val(data.NumeroF);
+                variables.ElAutorizado.val(data.Autoriza);
+                variables.ElNroFactura.val(data.NumeroProvF);
+                variables.ElNroFactProv.val(data.NumeroProvF);
+                
+                selectorPago(data.pago);
+                getMap(data.cliente, data.art);
                 setTimeout(() => {
                     checkObservaciones();
                 }, 2000);
@@ -660,7 +842,7 @@ $(document).ready(function () {
                 return;
                 
             });
-    }
+    };
 
     async function checkExCuentaDisponible(id) {
         $data = await $.get(checkDisponibilidad, {Id: id});
@@ -671,42 +853,91 @@ $(document).ready(function () {
 
         switch (pago) {
             case 'P':
-                $('#PagoLaboral').val('P');
+                variables.PagoLaboral.val(pago);
                 break;
             case 'A':
-                $('#PagoLaboral').val('A');
+                variables.PagoLaboral.val(pago);
                 break;
             case 'B':
-                $('#PagoLaboral').val('B');
+                $variables.PagoLaboral.val(pago);
                 break;
             default:
-                $('#PagoLaboral').val('');
+                variables.PagoLaboral.val('');
                 break;
         }
     }
 
-    async function getMap(idEmpresa, idArt){
+    function getMap(idEmpresa, idArt){
 
-        let empresa = idEmpresa, art = idArt;
+        const mapas = [principal.mapas, principal.mapasN];
  
-        $.get(getMapas, {empresa: empresa, art: art})
-            .done(await function(response){
+        $.get(getMapas, {empresa: idEmpresa, art: idArt})
+            .done(async function(response){
 
-                let mapas = response.mapas;
-                $('#mapas, #mapasN').empty();
+                let dataMap = await response.mapas;
+            
+                mapas.forEach(mapa => {
+                    mapa.empty();
+                });
 
-                if(mapas.length === 0)
+                if(dataMap.length === 0)
                 {
-                    $('#mapas, #mapasN').empty().append('<option title="Sin mapas disponibles para esta ART y Empresa." value="0" selected>Sin mapas disponibles.</option>');
+                    
+                    mapas.forEach(mapa => {
+                        mapa.empty().append(`
+                            <option title="Sin mapas disponibles para esta ART y Empresa." value="0" selected>
+                                Sin mapas disponibles.
+                            </option>
+                        `);
+                    });
+
                 }else{
-                    for(let index = 0; index < mapas.length; index++) {
-                        let d = mapas[index],
+                    for(let index = 0; index < dataMap.length; index++) {
+                        let d = dataMap[index],
                             contenido = `<option value="${d.Id}">${d.Nro} | Empresa: ${d.RSE} - ART: ${d.RSArt}</option>`;
     
-                        $('#mapas, #mapasN').append(contenido);
+                        mapas.forEach(mapa => {
+                            mapa.append(contenido);
+                        });
                     }
                 } 
             })
     }
-    
+
+    async function verificarDisponibilidad(cliente, pago, data) {
+
+        let disponibilidad = await checkExCuentaDisponible(cliente);
+        allData = disponibilidad === true && pago !== 'P';
+
+        preloader('on')
+        if (allData) {
+            preloader('off');
+            if (confirm('Tienes examenes a cuenta disponibles. ¿Estás seguro que deseas continuar?')) {
+                
+                saveFichaLaboral(data);
+            }else{
+                e.stopPropagation();
+            }
+        }else{
+            preloader('off');
+            saveFichaLaboral(data);
+        }
+    }
+
+    function limpiezaInputsPagos() {
+        variables.SPago.val('');
+        variables.Tipo.val('');
+        variables.Sucursal.val('');
+        variables.NroFactura.val('');
+        variables.Autorizado.val('');
+        variables.NroFactProv.val('');
+
+        principal.SPago
+            .add(principal.Factura)
+            .add(principal.NroFactProv)
+            .add(principal.Autoriza)
+            .hide();
+    }
+
+
 });

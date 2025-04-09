@@ -46,7 +46,7 @@
                         <span class="input-group-text">Documento&nbsp;<span class="required">(*)</span></span>
                         <select class="form-select" name="TipoDocumento" id="tipoDocumento">
                             <option selected value="{{ $paciente->TipoDocumento }}">{{ $paciente->TipoDocumento }}</option>
-                            <option value="DNI">DNI</option>
+                            <option value="DNI">DNI</optiPsvQWXZeBDbMon>
                             <option value="PAS">PAS</option>
                             <option value="LC">LC</option>
                             <option value="CF">CF</option>
@@ -325,37 +325,37 @@
                             <div class="row text-center">
                                 <div class="col-12">
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="ART" value="ART" {{ isset($fichaLaboral) && $fichaLaboral->TipoPrestacion === 'ART' ? 'checked' : '' }}>
+                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="ART" value="ART">
                                         <label class="form-check-label" for="ART">ART</label>
                                     </div>
 
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="INGRESO" value="INGRESO" {{ isset($fichaLaboral) && $fichaLaboral->TipoPrestacion === 'INGRESO' ? 'checked' : '' }}>
+                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="INGRESO" value="INGRESO" >
                                         <label class="form-check-label" for="ingreso">INGRESO</label>
                                     </div>
                             
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="PERIODICO" value="PERIODICO" {{ isset($fichaLaboral) && $fichaLaboral->TipoPrestacion === 'PERIODICO' ? 'checked' : '' }}>
+                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="PERIODICO" value="PERIODICO">
                                         <label class="form-check-label" for="periodico">PERIODICO</label>
                                     </div>
 
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="OCUPACIONAL" value="OCUPACIONAL" {{ isset($fichaLaboral) && $fichaLaboral->TipoPrestacion === 'OCUPACIONAL' ? 'checked' : '' }}>
+                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="OCUPACIONAL" value="OCUPACIONAL">
                                         <label class="form-check-label" for="ocupacional">OCUPACIONAL</label>
                                     </div>
 
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="EGRESO" value="EGRESO" {{ isset($fichaLaboral) && $fichaLaboral->TipoPrestacion === 'EGRESO' ? 'checked' : '' }}>
+                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="EGRESO" value="EGRESO">
                                         <label class="form-check-label" for="egreso">EGRESO</label>
                                     </div>
 
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="TipoPrestacion" id="OTRO" value="OTRO" {{ isset($fichaLaboral) && in_array($fichaLaboral->TipoPrestacion, ['CARNET', 'NO ART', 'RECMED','S/C_OCUPACIONAL']) ? 'checked' : '' }}>
+                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="TipoPrestacion" id="OTRO" value="OTRO">
                                         <label class="form-check-label" for="otro">OTRO</label>
                                     </div>
-                                    <div class="form-check form-check-inline" id="divtipoPrestacionPresOtros" style="display: {{  isset($fichaLaboral) && in_array($fichaLaboral->TipoPrestacion, ['CARNET', 'NO ART', 'RECMED','S/C_OCUPACIONAL']) ? '' : 'none' }}">
+                                    <div class="form-check form-check-inline" id="divtipoPrestacionPresOtros" style="display: ">
                                         <select class="form-select" id="tipoPrestacionPresOtros">
-                                            <option selected value="{{ isset($fichaLaboral) && in_array($fichaLaboral->TipoPrestacion, ['CARNET', 'NO ART', 'RECMED','S/C_OCUPACIONAL']) ? $fichaLaboral->TipoPrestacion : '' }}">{{ isset($fichaLaboral) && in_array($fichaLaboral->TipoPrestacion, ['CARNET', 'NO ART', 'RECMED','S/C_OCUPACIONAL']) ? $fichaLaboral->TipoPrestacion : 'Elija una opción...' }}</option>
+                                            <option selected value="">Elija una opción...</option>
                                             @foreach ($tiposPrestacionOtros as $tipo)
                                             <option value="{{ $tipo->Nombre }}">{{ $tipo->Nombre }}</option>
                                             @endforeach
@@ -370,15 +370,10 @@
                                 <div class="col-3"></div>
                                 
                                 <div class="col-6">
-
-                                    @php
-                                        $pagos = ["B" => "Contado", "A" => "Cuenta Corriente", "P" => "Exámen a Cuenta"];    
-                                    @endphp
-                  
                                     <div class="input-group input-group-sm mb-2">
                                         <span class="input-group-text">Forma de Pago</span>
                                         <select class="form-control" id="PagoLaboral">
-                                            <option selected value="{{ $fichaLaboral->Pago ?? '' }}">{{ empty($fichaLaboral->Pago) ? 'Elija una opción...' : $pagos[$fichaLaboral->Pago] }}</option>
+                                            <option selected value="">Elija una opción...</option>
                                             <option value="B">Contado</option>
                                             <option value="A">Cuenta Corriente</option>
                                             <option value="P">Exámen a Cuenta</option>
@@ -392,7 +387,6 @@
                                     <div class="input-group input-group-sm mb-2 SPago">
                                         <span class="input-group-text">Medio de pago</span>
                                         <select class="form-select" id="SPago">
-                                            <option selected value="{{ $fichaLaboral->SPago ?? '' }}">{{ empty($fichaLaboral->SPago) ? 'Elija una opción...' : $spagos[$fichaLaboral->SPago] }}</option>
                                         </select>
                                     </div>
 
@@ -419,7 +413,7 @@
                                     <div class="input-group input-group-sm mb-2 Autoriza">
                                         <span class="input-group-text">Autorizado por</span>
                                         <select class="form-select" id="Autorizado">
-                                            <option value="{{ $fichaLaboral->Autorizado ?? '' }}" selected>{{ $fichaLaboral->Autorizado ?? 'Elija una opción...' }}</option>
+                                            <option value="" selected>Elija una opción...</option>
                                             <option value="Lucas Grunmann">Lucas Grunmann</option>
                                         </select>
                                     </div>
@@ -642,6 +636,60 @@
                                         <div class="input-group input-group-sm mb-2">
                                             <span class="input-group-text">Fecha</span>
                                             <input type="date" class="form-control" id="Fecha" name="Fecha">
+                                        </div>
+
+                                        <hr class="mt-3 mb-3">
+
+                                        <div class="input-group input-group-sm mb-2">
+                                            <span class="input-group-text">Forma de Pago</span>
+                                            <select class="form-select" id="ElPago">
+                                                <option value="" selected>Elija una opción...</option>
+                                                <option value="B">Contado</option>
+                                                <option value="C">Cuenta Corriente</option>
+                                                <option value="P">Examen a cuenta</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="input-group input-group-sm mb-2 SPago">
+                                            <span class="input-group-text">Medio de pago</span>
+                                            <select class="form-select" id="ElSPago">
+                                                <option value="" selected>Elija una opción...</option>
+                                                <option value="A">Efectivo</option>
+                                                <option value="B">Débito</option>
+                                                <option value="C">Crédito</option>
+                                                <option value="D">Cheque</option>
+                                                <option value="E">Otro</option>
+                                                <option value="F">Transferencia</option>
+                                                <option value="G">Sin Cargo</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="input-group input-group-sm mb-2 Factura">
+                                            <span class="input-group-text">Numero Factura</span>
+                                            <select class="form-select" id="ElTipo">
+                                                <option value="" selected>Elija una opción...</option>
+                                                <option value="A">A</option>
+                                                <option value="B">B</option>
+                                                <option value="E">E</option>
+                                                <option value="P">P</option>
+                                                <option value="R">R</option>
+                                                <option value="Z">Z</option>
+                                            </select>
+                                            <input type="text"  class="form-control" placeholder="nro sucursal" id="ElSucursal">
+                                            <input type="text"  class="form-control" placeholder="nro de factura" id="ElNroFactura">
+                                        </div>
+
+                                        <div class="input-group input-group-sm mb-2 NroFactProv">
+                                            <span class="input-group-text">Nro Factura Provisoria</span>
+                                            <input type="text" class="form-control" placeholder="Numero de factura provisoria" id="ElNroFactProv">
+                                        </div>
+
+                                        <div class="input-group input-group-sm mb-2 Autoriza">
+                                            <span class="input-group-text">Autorizado por</span>
+                                            <select class="form-select" id="ElAutorizado">
+                                                <option value="" selected>Elija una opción...</option>
+                                                <option value="Lucas Grunmann">Lucas Grunmann</option>
+                                            </select>
                                         </div>
 
                                     </div>
@@ -908,6 +956,7 @@
                                 <div class="col-12 text-center mt-2">
                                     <hr class="mt-2 mb-2 d-block">
                                     <button type="button" id="finalizarWizzard" class="btn botonGeneral"><i class="ri-save-line"></i>Guardar</button>
+                                    <button type="button" id="SalirWizzard" class="btn botonGeneral"><i class="ri-save-line"></i>Salir</button>
                                 </div>
                             </div>
 

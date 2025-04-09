@@ -237,3 +237,7 @@ function calcularEdad(fechaNacimiento) {
 
     return edad;
 }
+
+function removerCeroSelect2(selector) {
+    $(selector).find('option[value="0"]').remove();
+}
