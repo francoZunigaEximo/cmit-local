@@ -1,5 +1,20 @@
 $(function(){
 
+    const principal = {
+        provincia: $('#provincia'),
+        multiVolver: $('.multiVolver'),
+        exportSimple: $('.exportSimple'),
+        exportDetallado: $('.exportDetallado'),
+        verPrestacion: $('.verPrestacion'),
+        exportExcel: $('.exportExcel'),
+        listaPacientes: $('#listaPacientes')
+    };
+
+    const variables = {
+        localidad: $('#localidad'),
+        codigoPostal: $('#codigoPostal')
+    };
+
     quitarDuplicados("#tipoDocumento");
     quitarDuplicados("#provincia");
     quitarDuplicados("#tipoIdentificacion");
@@ -7,52 +22,39 @@ $(function(){
     checkProvincia();
     lstResultadosPrest(ID);
     
-    $('#provincia').change(function() {
+    principal.provincia.change(function() {
         let provincia = $(this).val();
 
-        $.ajax({
-            url: getLocalidades,
-            type: "GET",
-            data: {
-                provincia: provincia,
-            },
-            success: function(response) {
+        $.get(getLocalidades, {provincia: provincia})
+            .done(function(response){
                 let localidades = response.localidades;
 
-                $('#localidad').empty().append('<option selected>Elija una opción...</option>');
+                variables.localidad.empty().append('<option selected>Elija una opción...</option>');
 
                 for(let index = 0; index < localidades.length; index++){
                     let localidad = localidades[index];
-                    $('#localidad').append('<option value="' + localidad.id + '">' + localidad.nombre + '</option>');
+                    variables.localidad.append('<option value="' + localidad.id + '">' + localidad.nombre + '</option>');
                 }
-            }
-        });
+            });
     });
-
  
 
-    $('#localidad').change(function() {
+    variables.localidad.change(function() {
         let localidadId = $(this).val();
 
-        // Realizar la solicitud Ajax
-        $.ajax({
-            url: getCodigoPostal,
-            type: "GET",
-            data: {
-                localidadId: localidadId,
-            },
-            success: function(response) {
-                // Actualizar el valor del input de Código Postal
-                $('#codigoPostal').val(response.codigoPostal);
-            }
-        });
+        $.get(getCodigoPostal,{localidadId: localidadId})
+            .done(function(response){
+                variables.codigoPostal.val(response.codigoPostal);
+            });
+        
     });
 
-    $(document).on('click', '.multiVolver', function(e) {
+    principal.multiVolver.on('click', function(e) {
+        e.preventDefault();
         window.history.back();
     });
 
-    $(document).on('click', '.exportSimple, .exportDetallado', function(e){
+    principal.exportSimple.add(principal.exportDetallado).on('click', function(e){
         e.preventDefault();
 
         let id = $(this).data('id'),
@@ -75,7 +77,7 @@ $(function(){
             });
     });
 
-    $(document).on('click', '.verPrestacion', function(e){
+    principal.verPrestacion.on('click',function(e){
         e.preventDefault();
 
         let link = url.replace('__prestacion__', $(this).data('id'));
@@ -83,10 +85,10 @@ $(function(){
 
     });
 
-    $(document).on('click', '.exportExcel', function(e){
+    principal.exportExcel.on('click', function(e){
         e.preventDefault();
         let tipo = $(this).data('id'), ids = [], filters = "";
-        const table = $('#listaPacientes tbody tr');
+        const table = principal.listaPacientes.find('tbody tr');
     
         ids = table.map(function(){
             return $(this).data('id');
@@ -124,34 +126,14 @@ $(function(){
 
     });
 
-    function exportExcel(tipo) {
-
-        
-    
-    
-        var exportExcel = "{{ route('prestaciones.excel', ['ids' =>  'idsContent', 'filters' => 'filtersContent', 'tipo' => 'tipoContent']) }}";
-        exportExcel     = exportExcel.replace('idsContent', ids);
-        exportExcel     = exportExcel.replace('filtersContent', filters);
-        exportExcel     = exportExcel.replace('tipoContent', tipo);
-        exportExcel     = exportExcel.replaceAll('amp;', '');
-        window.location = exportExcel;
-    }
-
-
     function checkProvincia(){
 
         let provincia = $('#provincia').val(), localidad = $('#localidad').val();
 
         if (provincia === 0)
         {
-            $.ajax({
-                url: checkP,
-                type: 'GET',
-                data: {
-                    localidad: localidad,
-                },
-                success: function(response){
-                    
+            $.get(checkP, {localidad: localidad})
+                .done(function(response){
                     let provinciaNombre = response.fillProvincia,
                         nuevoOption = $('<option>', {
                         value: provinciaNombre,
@@ -159,15 +141,14 @@ $(function(){
                         selected: true,
                     });
 
-                    $('#provincia').append(nuevoOption);
-                },
-                error: function(jqXHR){
+                    variables.provincia.append(nuevoOption);
+                })
+                .fail(function(jqXHR){
                     preloader('off');
                     let errorData = JSON.parse(jqXHR.responseText);
                     checkError(jqXHR.status, errorData.msg);
                     return;
-                }
-            });
+                });
         }
     }
 

@@ -110,7 +110,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/prestaciones/baja', [PrestacionesController::class, 'down'])->name('prestaciones.baja');
     Route::get('prestaciones/block', [PrestacionesController::class, 'blockPrestacion'])->name('blockPrestacion');
     Route::get('/prestaciones/buscar', [PrestacionesController::class, 'search'])->name('searchPrestaciones');
-    Route::post('/prestaciones/guardar', [PrestacionesController::class, 'savePrestacion'])->name('savePrestacion');
+    Route::get('/prestaciones/guardar', [PrestacionesController::class, 'savePrestacion'])->name('savePrestacion');
     Route::post('/prestaciones/obtener-para-empresa', [PrestacionesController::class, 'getParaEmpresas'])->name('getParaEmpresas');
     Route::post('/prestaciones/chequear-financiador', [PrestacionesController::class, 'checkFinanciador'])->name('checkFinanciador');
     Route::post('/prestaciones/verificar-bloqueo', [PrestacionesController::class, 'verifyBlock'])->name('verifyBlock');

@@ -268,7 +268,7 @@ class PrestacionesController extends Controller
             return response()->json(['msg' => 'No tienes permisos'], 403);
         }
 
-        if ($this->checkPacientePresMapa($request->paciente, $request->mapas) > 0 && $request->mapas !== 0 && $request->tipoPrestacion === 'ART') {
+        if ($this->checkPacientePresMapa($request->IdPaciente, $request->IdMapa) > 0 && $request->IdMapa !== 0 && $request->TipoPrestacion === 'ART') {
             return response()->json(['msg' => 'El paciente ya se encuentra incluido en el mapa'], 409);
         }
 
@@ -276,36 +276,35 @@ class PrestacionesController extends Controller
 
         Prestacion::create([
             'Id' => $nuevoId,
-            'IdPaciente' => $request->paciente,
-            'TipoPrestacion' => $request->tipoPrestacion,
-            'IdMapa' => $request->tipoPrestacion <> 'ART' ? 0 : ($request->mapas ?? 0),
-            'Pago' => $request->pago,
-            'SPago' => $request->spago ?? '',
-            'Observaciones' => $request->observaciones ??  '',
+            'IdPaciente' => $request->IdPaciente,
+            'TipoPrestacion' => $request->TipoPrestacion,
+            'IdMapa' => $request->TipoPrestacion <> 'ART' ? 0 : ($request->IdMapa ?? 0),
+            'Pago' => $request->Pago,
+            'SPago' => $request->SPago ?? '',
+            'Observaciones' => $request->Observaciones ??  '',
             'IdEmpresa' => $request->IdEmpresa,
             'IdART' => $request->IdART,
             'Fecha' => now()->format('Y-m-d'),
-            'Financiador' => $request->financiador,
             'NroFactProv' => $request->NroFactProv
         ]);
 
         Auditor::setAuditoria($nuevoId, 1, 44, Auth::user()->name);
 
-        $empresa = ($request->tipoPrestacion === 'ART' ? $request->IdART : $request->IdEmpresa);
+        $empresa = ($request->TipoPrestacion === 'ART' ? $request->IdART : $request->IdEmpresa);
 
-        $request->mapas && $this->updateMapeados($request->mapas, "quitar");
+        $request->IdMapa && $this->updateMapeados($request->IdMapa, "quitar");
 
-        if (!in_array($request->examenCuenta, [0, null, ''])) {
-            $examenes = $this->registrarExamenCta($request->examenCuenta, $nuevoId);
+        if (!in_array($request->ExamenCuenta, [0, null, ''])) {
+            $examenes = $this->registrarExamenCta($request->ExamenCuenta, $nuevoId);
         } 
     
         if (isset($examenes) && is_array($examenes) && !in_array($examenes, [0, null, ''])) {
             $this->registrarExamenes($examenes, $nuevoId);
         }
 
-        if($request->tipo && $request->sucursal && $request->nroFactura && $nuevoId)
+        if($request->Tipo && $request->Sucursal && $request->NroFactura && $nuevoId)
         {
-            $this->addFactura($request->tipo, $request->sucursal, $request->nroFactura, $empresa, $request->tipoPrestacion, $nuevoId);
+            $this->addFactura($request->Tipo, $request->Sucursal, $request->NroFactura, $empresa, $request->TipoPrestacion, $nuevoId);
         }
     
         return response()->json(['nuevoId' => $nuevoId, 'msg' => 'Se ha generado la prestación del paciente.'], 200);

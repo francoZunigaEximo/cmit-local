@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Examen;
 use App\Models\PaqueteEstudio;
 use Illuminate\Support\Facades\Cache;
 use App\Traits\ObserverExamenes;
+use Illuminate\Support\Facades\DB;
 
 class PaqueteEstudioController extends Controller
 {
@@ -40,17 +40,14 @@ class PaqueteEstudioController extends Controller
 
     public function paqueteId(Request $request)
     {
+        if(empty($request->IdPaquete)){
+            return response()->json(['msg' => 'No se pudo obtener el paquete'], 500);
+        }
 
-        $query = $this->paqueteEstudio($request->IdPaquete);
-
-        if($query){
-
-            $idExamenes = $query->pluck('IdExamen')->toArray();
-            $examenes = Examen::whereIn('Id', $idExamenes)->get();
+        $examenes = DB::select('CALL getExamenesPaquete(?)', [$request->IdPaquete]);
             
-            return response()->json(['examenes' => $examenes], 200);
-        }   
-        return response()->json(['msg' => 'No se pudo obtener el paquete'], 500); 
+        return response()->json(['examenes' => $examenes], 200);
+         
     }
     
 }

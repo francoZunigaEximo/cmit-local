@@ -957,3 +957,16 @@ CREATE TABLE llamador(
 ALTER TABLE fichaslaborales MODIFY COLUMN FechaUltPeriod VARCHAR(15) DEFAULT NULL NULL;
 ALTER TABLE fichaslaborales MODIFY COLUMN FechaExArt VARCHAR(15) DEFAULT NULL NULL;
 ALTER TABLE proveedores ADD COLUMN Obs TEXT NULL;
+
+DROP PROCEDURE IF EXISTS getExamenesPaquete;
+
+DELIMITER $$
+$$
+CREATE DEFINER=`db_cmit`@`%` PROCEDURE `db_cmit`.`getExamenesPaquete`(IN `IdPaquete` INT)
+BEGIN
+	SELECT e.Id, e.Nombre FROM relpaqest r
+	INNER JOIN examenes e ON r.IdExamen = e.Id 
+	WHERE r.IdPaquete = IdPaquete;
+END
+$$
+DELIMITER ;

@@ -705,6 +705,17 @@
                                 </div>
                             </div>
 
+                            <hr class="mt-3 mb-3">
+
+                            <div class="row">
+                                <div class="col-12 text-center mt-2">
+                                    <hr class="mt-2 mb-2 d-block">
+                                    <button type="button" class="btn botonGeneral eventDelete" data-bs-dismiss="modal"><i class="ri-close-circle-line"></i>Cancelar</button>
+                                    <button type="button" id="guardarPrestacion" class="btn botonGeneral"><i class="ri-save-line"></i>Guardar</button>
+                                    <button type="button" id="siguienteExCta" class="btn botonGeneral"><i class="ri-arrow-right-line"></i>Siguiente</button>
+                                </div>
+                            </div>
+
                             <hr class="mt-3 mb-3 ultimasFacturadas">
 
                             <div class="row mt-2 ultimasFacturadas">
@@ -727,7 +738,7 @@
                                 </div>
                             </div>
 
-                            <div class="row mt-2 examenesDisponibles">
+                            <div class="row mt-2 ultimasFacturadas">
                                 <div class="col-lg-12">
                                     <div class="card titulo-tabla">
                                         <div class="card-header d-flex justify-content-between align-items-center">
@@ -751,14 +762,7 @@
                                 </div>
                             </div>
 
-                            <div class="row">
-                                <div class="col-12 text-center mt-2">
-                                    <hr class="mt-2 mb-2 d-block">
-                                    <button type="button" class="btn botonGeneral eventDelete" data-bs-dismiss="modal"><i class="ri-close-circle-line"></i>Cancelar</button>
-                                    <button type="button" id="guardarPrestacion" class="btn botonGeneral"><i class="ri-save-line"></i>Guardar</button>
-                                    <button type="button" id="siguienteExCta" class="btn botonGeneral"><i class="ri-arrow-right-line"></i>Siguiente</button>
-                                </div>
-                            </div>
+                            
                         </div>
                     </div>
                    

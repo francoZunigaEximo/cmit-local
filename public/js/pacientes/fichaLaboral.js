@@ -62,7 +62,7 @@ $(function () {
         ElNroFactProv: $('#ElNroFactProv'),
     };
 
-    let changeTipo = $('input[name="TipoPrestacion"]:checked').val();
+    let changeTipo = $('input[name="TipoPrestacion"]:checked').val(), e;
     
     $('.nuevaPrestacionModal, .observacionesModal, .nuevaPrestacion, .ObBloqueoEmpresa, .ObBloqueoArt, .ObEmpresa, .ObsPaciente, .ObsPres, .Factura, .TareaRealizar, .UltimoPuesto, .PuestoActual, .SectorActual, .AntiguedadPuesto, .AntiguedadEmpresa, .FechaIngreso, .FechaEgreso, .selectMapaPres, .Autoriza, .listadoExCta, #examenesDisponibles, #ultimasFacturadas, #alertaExCta, .NroFactProv, #divtipoPrestacionPresOtros, .verListadoExCta').hide();
 
@@ -343,12 +343,11 @@ $(function () {
             return;
         }
 
-        // tipoPrestacion = variables.tipoPrestacionPresOtros;
-        // variables.tipoPrestacionHidden.val(tipoPrestacion);
-
         //ejecutamos la verificación de disponibilidad
-        if(["0", null, undefined, ''].includes(data.art)) {
-            verificarDisponibilidad(data.cliente, data.pago, data);
+        if(
+            ((["0", null, undefined, ''].includes(data.art) || !["0", null, undefined, ''].includes(data.art)) && data.tipoPrestacion !== 'ART')
+        ) {
+            verificarDisponibilidad(data.cliente, data.pago, data, e);
             variables.Pago.find('option[value="' + data.pago + '"]').prop('selected', true);
         }else{
             saveFichaLaboral(data);
@@ -904,7 +903,7 @@ $(function () {
             })
     }
 
-    async function verificarDisponibilidad(cliente, pago, data) {
+    async function verificarDisponibilidad(cliente, pago, data, e) {
 
         let disponibilidad = await checkExCuentaDisponible(cliente);
         allData = disponibilidad === true && pago !== 'P';

@@ -6,7 +6,62 @@ $(function(){
         siguienteExCta: $('#siguienteExCta'),
         seleccionExCta: $('.seleccionExCta'),
         editarComentario: $('.editarComentario'),
-    }
+        nuevaPrestacion: $('.nuevaPrestacion'),
+        volverPrestacionLimpia: $('.volverPrestacionLimpia'),
+        buscarPrestPaciente: $('#buscarPrestPaciente'),
+        grillaPacientes: $('#grillaPacientes'),
+        selectMapaPres: $('.selectMapaPres'),
+        ultimasFacturadas: $('.ultimasFacturadas'),
+        examenesDisponibles: $('.examenesDisponibles'),
+        guardarPrestacion: $('#guardarPrestacion'),
+        cargarExPrestacion: $('.cargarExPrestacion'),
+        blockPrestPaciente: $('#blockPrestPaciente'),
+        downPrestPaciente: $('#downPrestPaciente'),
+        buscarExamen: $('.buscarExamen'),
+        reiniciarExamen: $('.reiniciarExamen'),
+        precargaExamenes: $('.precargaExamenes'),
+        checkAllEx: $('#checkAllEx'),
+        countExamenes: $('#countExamenes'),
+        privadoPrestaciones: $('#privadoPrestaciones'),
+        finalizarWizzard: $('#finalizarWizzard'),
+        lstPrivPrestaciones: $('#lstPrivPrestaciones'),
+        confirmarEdicion: $('.confirmarEdicion'),
+        disponiblesExamenes: $('#disponiblesExamenes'),
+        totalCantidad: $('#totalCantidad'),
+        grillaFacturadas: $('#grillaFacturadas'),
+        listaPacientes: $('#listaPacientes'),
+        estadoBadge: $('#estadoBadge'),
+        filapresId: $('#filapresId'),
+        comentarioPrivado: $('#comentarioPrivado'),
+        listEdicion: $('#listEdicion'),
+        deleteMasivo: $('.deleteMasivo'),
+        deleteEx: $('.deleteEx'),
+        listaExamenes: $('#listaExamenes'),
+        prestacionLimpia: $('.prestacionLimpia'),
+        resultadosPaciente: $('.resultadosPaciente'),
+        reportesPacientes: $('.reportesPacientes'),
+        resulPaciente: $('.resulPaciente'),
+        imprimirRepo: $('.imprimirRepo'),
+        addPaquete: $('.addPaquete'),
+        altaPrestacionModal: $('#altaPrestacionModal'),
+        addExamen: $('.addExamen'),
+        fichaLaboralModal: $('.fichaLaboralModal'),
+        deleteExamenes: $('.deleteExamenes'),
+        deleteExamen: $('.deleteExamen'),
+        SalirWizzard: $('#SalirWizzard'),
+        openExamen: $('.openExamen'),
+        bloquearExamenes: $('.bloquearExamenes'),
+        bloquearExamen: $('.bloquearExamen'),
+        listado: $("#listado"),
+        alertaExCta: $('#alertaExCta'),
+        confirmarComentarioPriv: $('.confirmarComentarioPriv'),
+        deleteComentario: $('.deleteComentario'),
+        results: $('#results'),
+        lstEx: $('#lstEx'),
+        lstEx2: $('#lstEx2'),
+        observacionesModal: $('.observacionesModal'),
+        checkAllExa: $('#checkAllExa')
+    };
 
     const variables = {
         ElPago: $('#ElPago'),
@@ -17,6 +72,38 @@ $(function(){
         ElNroFactProv: $('#ElNroFactProv'),
         ElAutorizado: $('#ElAutorizado'),
         tipoPrestacionPres: $('#tipoPrestacionPres'),
+        selectClientes: $('#selectClientes'),
+        selectArt: $('#selectArt'),
+        Fecha: $('#Fecha'),
+        TipoPrestacion: $('#tipoPrestacionPres'),
+        IdPaciente: ID,
+        IdMapa: $('#mapas'),
+        IdMapaN: $('.#mapasN'),
+        PagoLaboral: $('#PagoLaboral'),
+        SPago: $('#SPago'),
+        Observaciones: $('#Observaciones'),
+        AutorizaSC: $('#ElAutorizado'),
+        Sucursal: $('#ElSucursal'),
+        NumeroFacturaVta: $('#ElNroFactura'),
+        NroFactProv: $('#ElNroFactProv'),
+        idPrestacion: $('#idPrestacion'),
+        buscar: $('#buscar'),
+        examen: $('#examen'),
+        Comentario: $("#Comentario"),
+        ObsN: $('#ObsN'),
+        IdObservacion: $('#IdObservacion'),
+        ComentarioEditar: $('#ComentarioEditar'),
+        infInternos: $('#infInternos'),
+        pedProveedores: $('#pedProveedores'),
+        conPaciente: $('#conPaciente'),
+        resAdmin: $('#resAdmin'),
+        caratula: $('#caratula'),
+        consEstDetallado: $('#consEstDetallado'),
+        consEstSimple: $('#consEstSimple'),
+        paquetes: $('#paquetes'),
+        exam: $("#exam"),
+        ObsExamenesN: $('#ObsExamenesN'),
+        ObservacionesPresN: $('#ObservacionesPresN')
     };
 
     variables.ElPago
@@ -28,7 +115,7 @@ $(function(){
         .add(variables.ElAutorizado)
         .prop('disabled', true);
 
-    let IdNueva, empresaInput = $('#selectClientes').val(), artInput = $('#selectArt').val(), hoy = new Date().toLocaleDateString('en-CA');
+    let IdNueva, hoy = new Date().toLocaleDateString('en-CA');
     
     principal.Fecha
         .add(principal.FechaN)
@@ -41,13 +128,13 @@ $(function(){
 
     
     precargaTipoPrestacion(variables.tipoPrestacionPres.val());
-    getMap(empresaInput, artInput);
+    getMap(variables.selectClientes.val(), variables.selectArt.val());
     getListado(null);
-    listadoConSaldos(empresaInput);
-    cantidadDisponibles(empresaInput);
-    listadoFacturas(empresaInput, null, true, '#lstEx');
-    listadoFacturas(empresaInput, null, false, '#lstEx2');
-    getUltimasFacturadas(empresaInput);
+    listadoConSaldos(variables.selectClientes.val());
+    cantidadDisponibles(variables.selectClientes.val());
+    listadoFacturas(variables.selectClientes.val(), null, true, '#lstEx');
+    listadoFacturas(variables.selectClientes.val(), null, false, '#lstEx2');
+    getUltimasFacturadas(variables.selectClientes.val());
     // selectorPago(pagoInput);
 
     variables.tipoPrestacionPres.on('change', function(){
@@ -56,132 +143,108 @@ $(function(){
 
     $(document).on('change', '#selectClientes, #selectArt, input[type=radio][name=TipoPrestacion]', function() {
 
-        let empresaCap = $('#selectClientes').val(), artCap = $('#selectArt').val(), tipoPrestacion = $('input[type=radio][name=TipoPrestacion]:checked').val();
+        let tipoPrestacion = $('input[type=radio][name=TipoPrestacion]:checked').val(), empresa = variables.selectClientes.val(), art = variables.selectArt.val();
 
-        getUltimasFacturadas(empresaCap);
-        listadoConSaldos(empresaCap);
-        cantidadDisponibles(empresaCap);
-        listadoFacturas(empresaCap, null, true, '#lstEx');
-        listadoFacturas(empresaCap, null, false, '#lstEx2');
+        getUltimasFacturadas(variables.selectClientes.val());
+        listadoConSaldos(variables.selectClientes.val());
+        cantidadDisponibles(variables.selectClientes.val());
+        listadoFacturas(variables.selectClientes.val(), null, true, '#lstEx');
+        listadoFacturas(variables.selectClientes.val(), null, false, '#lstEx2');
 
-        if (tipoPrestacion === 'ART') {  
-            getMap(empresaCap, artCap);  
+        if(tipoPrestacion === 'ART') {  
+            getMap(empresa, art);  
         }
     });
 
      //Guardamos la prestación
-    $(document).on('click', '.cargarExPrestacion, #guardarPrestacion', function(e){
+    principal.guardarPrestacion.add(principal.cargarExPrestacion).on('click', async function(e){
         e.preventDefault();
 
-        // Agregamos los eamenes a cuenta
+        let ids = [];
+
         if ($(this).hasClass('cargarExPrestacion')) {
 
-            var ids = [];
-
-            $('#listEdicion input[type="checkbox"]').each(function(){
-                var id = $(this).data('id'); 
-                ids.push(id);
+            variables.listEdicion.find('input[type="checkbox"]').each(function(){
+                ids.push($(this).data('id'));
             });
 
             if(ids.length === 0) {
                 toastr.warning("Debe seleccionar un examen para registrar la prestación",'',{timeOut: 1000});
                 return;
             }
-        }
-        let paciente = ID,
-            fecha = $('#Fecha').val(),
-            tipoPrestacion = $('#tipoPrestacionPres').val(),
-            mapa = $('#mapas').val(),
-            pago = $('#PagoLaboral').val(),
-            spago = $('#SPago').val(),
-            observaciones = $('#Observaciones').val(),
-            autorizado = $('#ElAutorizado').val(),
-            tipo = $('#ElTipo').val();
-            sucursal = $('#ElSucursal').val();
-            nroFactura = $('#ElNroFactura').val(),
-            NroFactProv = $('#ElNroFactProv').val();
-            
-        if (['', null].includes(tipoPrestacion)) {
+        }  
+
+        if (['', null].includes(variables.TipoPrestacion.val())) {
             toastr.warning('El tipo de prestación no puede ser un campo vacío','', {timeOut: 1000});
             return;
         }
 
-        if (tipoPrestacion === 'ART' && (mapa == '0' || mapa === '')){
+        if (variables.TipoPrestacion.val() === 'ART' && ['0','',null].includes(variables.IdMapa.val())){
             toastr.warning('Debe seleccionar un mapa vigente para continuar si su prestacion es ART','', {timeOut: 1000});
             return;
         }
+
         
         preloader('on');
-        $.ajax({
-            url: verificarAlta,
-            type: 'GET',
-            data: {
-                Id: ID
-            },
-            success: function(response){
-                preloader('off');
-                let cliente = response.cliente, clienteArt = response.clienteArt;
-                
-                $.ajax({
-                    url: savePrestacion,
-                    method: 'post',
-                    data: {
-                        paciente: paciente,
-                        tipoPrestacion: tipoPrestacion,
-                        mapas: mapa,
-                        fecha: fecha,
-                        pago: pago,
-                        spago: spago,
-                        observaciones: observaciones,
-                        tipo: tipo,
-                        autorizado: autorizado,
-                        sucursal: sucursal,
-                        nroFactura: nroFactura,
-                        IdART: clienteArt.Id ?? 0,
-                        IdEmpresa: cliente.Id ?? 0,
-                        examenCuenta: ids,
-                        NroFactProv: NroFactProv,
-                        _token: TOKEN
-                    },
-                    success: function(response){
-                        toastr.success(response.msg,'',{timeOut: 1000});
-                        $('.nuevaPrestacion').hide();
-                        $('.volverPrestacionLimpia').trigger('click');
+        const alta = await $.get(verificarAlta, {Id: ID})
 
-                        IdNueva = response.nuevoId;
-                        cargarExamen(response.nuevoId);
-                        contadorExamenes(response.nuevoId);
-                        $('#idPrestacion').val(response.nuevoId);
-                    },
-                    error: function(jqXHR){
-                        preloader('off');
-                        let errorData = JSON.parse(jqXHR.responseText);            
-                        checkError(jqXHR.status, errorData.msg);
-                        return; 
-                    }
-                });
-            },
-            error: function(jqXHR){
+        if (alta && Object.keys(alta).length > 0) {
+
+            $.get(savePrestacion, {
+                IdPaciente: variables.IdPaciente,
+                Fecha: variables.Fecha.val(),
+                TipoPrestacion: variables.TipoPrestacion.val(),
+                IdMapa: variables.IdMapa.val() ?? 0,
+                Pago: variables.PagoLaboral.val() ?? '',
+                SPago: variables.SPago.val() ?? '',
+                Observaciones: variables.Observaciones.val() ?? '',
+                AutorizaSC: variables.AutorizaSC.val() ?? '',
+                Tipo: variables.ElTipo.val(),
+                Sucursal: variables.ElSucursal.val(),
+                NroFactura: variables.ElNroFactura.val(),
+                NroFactProv: variables.ElNroFactProv.val(),
+                IdART: alta.clienteArt.Id ?? 0,
+                IdEmpresa: alta.cliente.Id ?? 0,
+                ExamenCuenta: ids,
+            })
+            .done(function(response){
+                preloader('off');
+                toastr.success(response.msg,'',{timeOut: 1000});
+                principal.nuevaPrestacion.hide();
+                principal.volverPrestacionLimpia.trigger('click');
+                principal.listaExamenes.empty();
+                
+                e.preventDefault();
+                IdNueva = response.nuevoId;
+                cargarExamen(response.nuevoId);
+                contadorExamenes(response.nuevoId);
+                variables.idPrestacion.val(IdNueva);
+            
+            })
+            .fail(function(jqXHR){
                 preloader('off');
                 let errorData = JSON.parse(jqXHR.responseText);            
                 checkError(jqXHR.status, errorData.msg);
                 return; 
-            }   
-        });
+            });
+
+        }
+        
     });
 
     //Buscador de prestaciones en Pacientes
-    $('#buscarPrestPaciente').on('keypress', function(e){
+    principal.buscarPrestPaciente.on('keypress', function(e){
 
         if (e.keyCode === 13){
             e.preventDefault();
-            let buscar = $(this).val();
-            $('#grillaPacientes').empty().append(getListado(buscar));
+            principal.grillaPacientes
+                .empty()
+                .append(getListado($(this).val()));
         }
     });
 
     //Bloqueo de prestación
-    $(document).on('click', '#blockPrestPaciente', function(e) {
+    principal.blockPrestPaciente.on('click', function(e){
         e.preventDefault();
         let Id = $(this).data('idprest');
 
@@ -192,24 +255,18 @@ $(function(){
         }).then((confirmar) => {
             if(confirmar) {
                 preloader('on');
-                $.ajax({
-                    url: blockPrestacion,
-                    type: 'GET',
-                    data: {
-                        Id: Id,
-                    },
-                    success: function(response) {
+                $.get(blockPrestacion, {Id:Id})
+                    .done(function(response){
                         preloader('off');
                         toastr.success(response.msg,'',{timeOut: 1000});
                         cambioEstadoBlock();
-                    },
-                    error: function(jqXHR) {
+                    })
+                    .fail(function(jqXHR){
                         preloader('off');
                         let errorData = JSON.parse(jqXHR.responseText);            
                         checkError(jqXHR.status, errorData.msg);
                         return; 
-                    }
-                });
+                    });
 
             }
         });
@@ -218,7 +275,7 @@ $(function(){
     });
 
     //Baja logica de prestación
-    $(document).on('click', '#downPrestPaciente', function(e) {
+    principal.downPrestPaciente.on('click', function(e){
         e.preventDefault();
         let Id = $(this).data('idprest');
         
@@ -229,25 +286,19 @@ $(function(){
         }).then((confirmar) => {
             if(confirmar) {
                 preloader('on');
-                $.ajax({
-                    url: downPrestaActiva,
-                    type: 'GET',
-                    data: {
-                        Id: Id,
-                    },
-                    success: function(response) {
+                $.get(downPrestaActiva, {Id:Id})
+                    .done(function(response){
                         preloader('off');
                         toastr.success(response.msg,'',{timeOut: 1000});
                         cambioEstadoDown();
                         getListado(null);
-                    },
-                    error: function(xhr){
+                    })
+                    .fail(function(jqXHR){
                         preloader('off');
                         let errorData = JSON.parse(jqXHR.responseText);            
                         checkError(jqXHR.status, errorData.msg);
                         return; 
-                    }
-                });
+                    });
             }
         }); 
     });
@@ -255,56 +306,56 @@ $(function(){
     $(document).on('keydown', function(e) {
         if (e.keyCode === 27) {
             e.preventDefault();
-            $('#buscar').val(" ");
+            variables.buscar.val(" ");
             window.location.reload();
         }
     });
 
     $(document).on('change', '#PagoLaboral', function(){
-
-        let pago = $(this).val();
-        selectorPago(pago);
+        selectorPago($(this).val());
     });
 
     function selectorPago(pago) {
         
-        if (pago != 'B') {
-            $('#SPago, #Tipo, #Sucursal, #NroFactura').val(" ");
-        }
-
         if(['B','C', ''].includes(pago)) {
             
-            $('.ultimasFacturadas, .examenesDisponibles, #siguienteExCta').hide();
-            $('#guardarPrestacion').show();
-        }else{
+            principal.ultimasFacturadas
+                .add(principal.siguienteExCta)
+                .hide();
+            
+            principal.guardarPrestacion.show();
+
+        }else if(variables.TipoPrestacion.val() !== 'ART') {
             preloader('on');
-            $.get(cantTotalDisponibles, {Id: $('#selectClientes').val()})
+            $.get(cantTotalDisponibles, {Id: variables.selectClientes.val()})
             .done(function(response){
                 preloader('off');
                 if(response > 0) {
-                    $('.ultimasFacturadas, .examenesDisponibles, #siguienteExCta').show();
-                    $('#guardarPrestacion').hide();
+                    principal.ultimasFacturadas
+                    .add(principal.siguienteExCta)
+                    .show();
+                    
+                    principal.guardarPrestacion.hide();
                 }
             });
         }
-
     }
 
-    $(document).on('click', '#siguienteExCta', function(e){
+    principal.siguienteExCta.on('click', function(e){
         e.preventDefault();
-        $('.seleccionExCta').show();
-        $('.nuevaPrestacion').hide();
+        principal.seleccionExCta.show();
+        principal.nuevaPrestacion.hide();
     });
 
     $(document).on('click', '.volverPrestacion', function(e){
         e.preventDefault();
-        $('.seleccionExCta').hide();
-        $('.nuevaPrestacion').show();
+        principal.seleccionExCta.hide();
+        principal.nuevaPrestacion.show();
     });
 
-    $('#examen').select2({
+    variables.examen.select2({
         placeholder: 'Seleccionar exámen...',
-        dropdownParent: $('#altaPrestacionModal'),
+        dropdownParent: principal.altaPrestacionModal,
         language: {
             noResults: function() {
 
@@ -342,38 +393,33 @@ $(function(){
         document.querySelector(".select2-container--open .select2-search__field").focus()
     });
 
-    $(document).on('click', '.buscarExamen', function(e){
+    principal.buscarExamen.on('click', function(e){
         e.preventDefault();
 
-        let examen = $('#examen').val(), empIn = $('#selectClientes').val();
-
-        if([null,''].includes(examen)) {
+        if([null,''].includes(variables.examen.val())) {
             
             toastr.warning('Debe seleccionar un exámen','',{timeOut: 1000});
             return;
         }
 
-        listadoFacturas(empIn, examen, true, '#lstEx');
-        listadoFacturas(empIn, examen, false, '#lstEx2');
-        examen.remove();
+        listadoFacturas(variables.selectClientes.val(), variables.examen.val(), true, '#lstEx');
+        listadoFacturas(variables.selectClientes.val(), variables.examen.val(), false, '#lstEx2');
+        variables.examen.remove();
     });
 
-    $(document).on('click', '.reiniciarExamen', function(e){
+    principal.reiniciarExamen.on('click', function(e){
         e.preventDefault();
-
-        let empIn = $('#selectClientes').val();
-
-        listadoFacturas(empIn, null, true, '#lstEx');
-        listadoFacturas(empIn, null, false, '#lstEx2');
+        listadoFacturas(variables.selectClientes.val(), null, true, '#lstEx');
+        listadoFacturas(variables.selectClientes.val(), null, false, '#lstEx2');
 
     });
 
-    $(document).on('click', '.precargaExamenes', function(e){
+    principal.precargaExamenes.on('click', function(e){
         e.preventDefault();
 
-        let ids = [], checkAll =$('#checkAllEx').prop('checked');
+        let ids = [], checkAll = principal.checkAllEx.prop('checked');
 
-        $('#lstEx input[type="checkbox"]:checked').each(function(){
+        variables.lstEx.find('input[type="checkbox"]:checked').each(function(){
             ids.push($(this).val());
         });
 
@@ -383,19 +429,18 @@ $(function(){
         }
 
         cargaPreExamenes(ids);
-        $('#lstEx input[type="checkbox"]:checked').prop('checked', false);
+        variables.lstEx.find('input[type="checkbox"]:checked').prop('checked', false);
     });
 
-    $(document).on('click', '.deleteEx', function(e){
+    principal.deleteMasivo.add(principal.deleteEx).on('click', function(e){
         e.preventDefault();
-        $(this).closest('tr').remove();
-        
-    });
 
-    $(document).on('click', '.deleteMasivo', function(e){
-        e.preventDefault();
+        if($(this).hasClass('deleteEx')) {
+            $(this).closest('tr').remove();
+            return;
+        }
     
-        let ids = $('#listEdicion input[name="Id_exa"]:checked'), checkAll = $('#checkAllEx').prop('checked');
+        let ids = variables.listEdicion.find('input[name="Id_exa"]:checked'), checkAll = principal.checkAllEx.prop('checked');
     
         if(ids.length === 0 && checkAll === false) {
             toastr.warning("Debe seleccionar un exámen para sacarlo del listado",'',{timeOut: 1000});
@@ -410,7 +455,7 @@ $(function(){
     });
     
 
-    $('#checkAllEx').on('click', function() {
+    principal.checkAllEx.on('click', function() {
         $('input[type="checkbox"][name="Id_exa"]:not(#checkAllEx)').prop('checked', this.checked);
     });
   
@@ -424,7 +469,8 @@ $(function(){
                 for(let index = 0; index < response.length; index++) {
                     let r = response[index], existe = false;
 
-                    $('#listEdicion tr').each(function() {
+                    principal.listEdicion.find('tr').each(function() {
+    
                         var nombreExamen = $(this).find('td:first').text();
                         if (nombreExamen === r.NombreExamen) {
                             preloader('off');
@@ -447,7 +493,7 @@ $(function(){
                                 </td>
                             </tr>
                         `;
-                        $('#listEdicion').append(contenido);
+                        principal.listEdicion.append(contenido);
                         preloader('off');
                     }
                 }
@@ -456,84 +502,57 @@ $(function(){
             })
     }
 
-    function selectorPago(pago) {
-        
-        if(['B', 'A', ''].includes(pago)) {
-            
-            $('.ultimasFacturadas, .examenesDisponibles, #siguienteExCta').hide();
-            $('#guardarPrestacion').show();
-        }else{
-            preloader('on');
-            $.get(cantTotalDisponibles, {Id: $('#selectClientes').val()})
-            .done(function(response){
-                preloader('off');
-                if(response > 0) {
-                    $('.ultimasFacturadas, .examenesDisponibles, #siguienteExCta').show();
-                    $('#guardarPrestacion').hide();
-                }
-            });
-        }
-
-    }
-
-    //Obtener fechas
-    function fechaNow(fechaAformatear, divider, format) {
-        let dia, mes, anio; 
-    
-        if (fechaAformatear === null) {
-            let fechaHoy = new Date();
-    
-            dia = fechaHoy.getDate().toString().padStart(2, '0');
-            mes = (fechaHoy.getMonth() + 1).toString().padStart(2, '0');
-            anio = fechaHoy.getFullYear();
-        } else {
-            let nuevaFecha = fechaAformatear.split("-"); 
-            dia = nuevaFecha[0]; 
-            mes = nuevaFecha[1]; 
-            anio = nuevaFecha[2];
-        }
-        return (format === 1) ? `${dia}${divider}${mes}${divider}${anio}` : `${anio}${divider}${mes}${divider}${dia}`;
-    }
-
     function cambioEstadoDown() {
-        let borrar = $('#filapresId').data('filapres');
+        let borrar = principal.filapresId.data('filapres');
         $('tr[data-filapres="' + borrar + '"]').hide();
     }
 
     function cambioEstadoBlock() {
-        $('#blockPrestPaciente').prop('disabled', true);
-        $('#estadoBadge').removeClass('badge badge-soft-success').addClass('badge badge-soft-danger');
-        $('#estadoBadge').text('Bloqueado');
+        principal.blockPrestPaciente.prop('disabled', true);
+        
+        principal.estadoBadge
+            .removeClass('badge badge-soft-success')
+            .addClass('badge badge-soft-danger')
+            .text('Bloqueado');
+        
         getListado(null);
     }
 
     async function getMap(idEmpresa, idArt){
 
-        let empresa = idEmpresa, art = idArt;
- 
-        $.get(getMapas, {empresa: empresa, art: art})
+        $.get(getMapas, {empresa: idEmpresa, art: idArt})
             .done(await function(response){
    
                 let mapas = response.mapas;
-                $('#mapas, #mapasN').empty();
+
+                variables.IdMapa
+                    .add(variables.IdMapaN)
+                    .empty();
                 
                 if(mapas.length === 0)
                 {
-                    $('#mapas, #mapasN').empty().append('<option title="Sin mapas disponibles para esta ART y Empresa." value="0" selected>Sin mapas disponibles.</option>');
+                    variables.IdMapa
+                        .add(variables.IdMapaN)
+                        .empty()
+                        .append('<option title="Sin mapas disponibles para esta ART y Empresa." value="0" selected>Sin mapas disponibles.</option>');
+
                 }else{
 
                     for(let index = 0; index < mapas.length; index++) {
                         let d = mapas[index],
                                 contenido = `<option value="${d.Id}">${d.Nro} | Empresa: ${d.RSE} - ART: ${d.RSArt}</option>`;
     
-                        $('#mapas, #mapasN').append(contenido);
+                        variables.IdMapa
+                            .variables.IdMapaN
+                            .append(contenido);
+
                     }
                 } 
             })
     }
 
     function precargaTipoPrestacion(val){
-        return val === 'ART' ? $('.selectMapaPres').show() : $('.selectMapaPres').hide();
+        return val === 'ART' ? principal.selectMapaPres.show() : principal.selectMapaPres.hide();
     }
 
     function getListado(buscar) {
@@ -550,9 +569,9 @@ $(function(){
 
                 preloader('off');
                 let pacientes = response.pacientes;
-                $('#results').hide();
+                principal.results.hide();
 
-                $('#listaPacientes tbody').empty();
+                principal.listaPacientes.find('tbody').empty();
                 $.each(pacientes.data, function(index, papre) {
 
                     let cerradoAdjunto = papre.CerradoAdjunto || 0,
@@ -628,7 +647,7 @@ $(function(){
                             </tr>`;
 
 
-                    $('#listaPacientes tbody').append(row);
+                    principal.listaPacientes.find('tbody').append(row);
                 });
             }
         });
@@ -649,7 +668,7 @@ $(function(){
 
     async function getUltimasFacturadas(id) {
 
-        $('#grillaFacturadas').empty();
+        principal.grillaFacturadas.empty();
         preloader('on');
         $.get(lstFacturadas, {Id: id})
             .done(async function(response){
@@ -675,7 +694,7 @@ $(function(){
                 });
     
                 let mostrar = await Promise.all(promises);
-                mostrar.forEach(ver => $('#grillaFacturadas').append(ver));
+                mostrar.forEach(ver => principal.grillaFacturadas.append(ver));
             });
     }
     
@@ -707,8 +726,7 @@ $(function(){
 
     function listadoConSaldos(id) //Desde financiador tomo empresa
     {
-        $('#disponiblesExamenes').empty();
-     
+        principal.disponiblesExamenes.empty();
         preloader('on');
         $.get(saldoNoDatatable, {Id: id})
             .done(function(response){
@@ -722,24 +740,24 @@ $(function(){
                             <td>${r.Examen}</td>
                         </tr>
                     `;
-                    $('#disponiblesExamenes').append(contenido);
+                    principal.disponiblesExamenes.append(contenido);
                 }
             });
     }
 
     async function cantidadDisponibles(id)
     {
-        $('#totalCantidad').empty();
+        principal.totalCantidad.empty();
 
         $.get(cantTotalDisponibles, {Id: id})
             .done(await function(response){
-                $('#totalCantidad').text(response);
+                principal.totalCantidad.text(response);
                 if(response === 0) {
-                    $('#siguienteExCta').hide();
-                    $('#guardarPrestacion').show();
+                    principal.siguienteExCta.hide();
+                    principal.guardarPrestacion.show();
                 }else if(response > 0) {
-                    $('#siguienteExCta').show();
-                    $('#guardarPrestacion').hide();
+                    principal.siguienteExCta.show();
+                    principal.guardarPrestacion.hide();
                 }
             })
     }
@@ -846,72 +864,101 @@ $(function(){
 
     /******************************Nueva pantalla de prestaciones **************************************/
     
-    $('.prestacionLimpia, .resultadosPaciente, .reportesPacientes').hide();
+    principal.prestacionLimpia
+        .add(principal.resultadosPaciente)
+        .add(principal.reportesPacientes)
+        .hide();
 
-    $(document).on('click', '.cargarExPrestacion, #guardarPrestacion', function(e){
+    principal.resulPaciente.on('click', function(e){
         e.preventDefault();
-        cargarExamen($('#idPrestacion').val());
-        contadorExamenes($('#idPrestacion').val());
-        $('#listaExamenes').empty();
-        
+
+        principal.prestacionLimpia
+            .add(principal.resultadosPaciente)
+            .add(principal.editarComentario)
+            .hide();
+        principal.resultadosPaciente.show();
     });
 
-    $(document).on('click', '.resulPaciente', function(e){
-        e.preventDefault();
-        $('.prestacionLimpia, .reportesPacientes,  .editarComentario').hide();
-        $('.resultadosPaciente').show();
-    });
+    principal.volverPrestacionLimpia.on('click', function(e){
 
-    $(document).on('click', '.volverPrestacionLimpia', function(e){
         e.preventDefault();
-        $('.resultadosPaciente, .reportesPacientes, .editarComentario, .seleccionExCta').hide();
-        $('.prestacionLimpia').show();
-        $('#ComentarioEditar').val('');
+        principal.resultadosPaciente
+            .add(principal.reportesPacientes)
+            .add(principal.editarComentario)
+            .add(principal.seleccionExCta)
+            .hide();
+        principal.prestacionLimpia.show();
+        variables.ComentarioEditar.val('');
     });
 
     $(document).on('click', '.imprimirReportes', function(e){
         e.preventDefault();
-        $('.resultadosPaciente, .prestacionLimpia, .editarComentario').hide();
-        $('.reportesPacientes').show();
+
+        principal.resultadosPaciente
+            .add(principal.prestacionLimpia)
+            .add(principal.editarComentario)
+            .hide();
+
+        principal.reportesPacientes.show();
     }); 
 
     $(document).on('click', '.editarComentarioBtn', async function(e){
         e.preventDefault();
 
         let id = $(this).data('id'), data  = await await $.get(getComentario,{Id: id});
-        $('.resultadosPaciente, .prestacionLimpia, .reportesPacientes').hide();
-        $('.editarComentario').show();
-        $('#ComentarioEditar').empty().val(data[0].Comentario);
-        $('#IdObservacion').empty().val(data[0].Id);
+
+        principal.prestacionLimpia
+        .add(principal.resultadosPaciente)
+        .add(principal.reportesPacientes)
+        .hide();
+
+        principal.editarComentario.show();
+
+        variables.ComentarioEditar
+            .empty()
+            .val(data[0].Comentario);
+        
+        variables.IdObservacion
+            .empty()
+            .val(data[0].Id);
     });
 
-    $(document).on('click', '.imprimirRepo', function(e){
+    principal.imprimirRepo.on('click', function(e){
+        e.preventDefault();
 
-        let idP = $('#idPrestacion').val(),
-            infInternos = $('#infInternos').prop('checked'),
-            pedProveedores = $('#pedProveedores').prop('checked'),
-            conPaciente = $('#conPaciente').prop('checked'),
-            resAdmin = $('#resAdmin').prop('checked'),
-            caratula = $('#caratula').prop('checked'),
-            consEstDetallado = $('#consEstDetallado').prop('checked'),
-            consEstSimple = $('#consEstSimple').prop('checked');
+        let infInternos = variables.infInternos.prop('checked'),
+            pedProveedores = variables.pedProveedores.prop('checked'),
+            conPaciente = variables.conPaciente.prop('checked'),
+            resAdmin = variables.resAdmin.prop('checked'),
+            caratula = variables.caratula.prop('checked'),
+            consEstDetallado = variables.consEstDetallado.prop('checked'),
+            consEstSimple = variables.consEstSimple.prop('checked');
 
         let verificar = [
-            infInternos,
-            pedProveedores,
-            conPaciente,
-            resAdmin,
-            caratula,
-            consEstDetallado,
-            consEstSimple
-        ];
+                infInternos,
+                pedProveedores,
+                conPaciente,
+                resAdmin,
+                caratula,
+                consEstDetallado,
+                consEstSimple
+            ];
 
         if (verificar.every(val => !val || (Array.isArray(val) && val.length === 0) || (typeof val === 'object' && Object.keys(val).length === 0))) {
             toastr.warning('Debe seleccionar alguna opción para poder imprimir los reportes','',{timeOut: 1000});
             return;
         }
         preloader('on');
-        $.get(impRepo, {Id: idP, infInternos: infInternos, pedProveedores: pedProveedores, conPaciente: conPaciente, resAdmin: resAdmin, caratula: caratula, consEstDetallado: consEstDetallado, consEstSimple: consEstSimple})
+        $.get(impRepo, {
+            Id: variables.idPrestacion.val(), 
+            infInternos: infInternos, 
+            pedProveedores: pedProveedores, 
+            conPaciente: conPaciente, 
+            resAdmin: resAdmin, 
+            caratula: caratula, 
+            consEstDetallado: consEstDetallado, 
+            consEstSimple: consEstSimple
+        })
             .done(function(response){
                 preloader('off');
                 createFile("pdf", response.filePath, response.name);
@@ -926,8 +973,8 @@ $(function(){
     });
 
 
-    $('#exam').select2({
-        dropdownParent: $('#altaPrestacionModal'),
+    variables.exam.select2({
+        dropdownParent: principal.altaPrestacionModal,
         placeholder: 'Seleccionar exámen...',
         language: {
             noResults: function() {
@@ -962,8 +1009,8 @@ $(function(){
         minimumInputLength: 2
     });
 
-    $('#paquetes').select2({
-        dropdownParent: $('#altaPrestacionModal'),
+    variables.paquetes.select2({
+        dropdownParent: principal.altaPrestacionModal,
         placeholder: 'Seleccionar paquete...',
         language: {
             noResults: function() {
@@ -1001,48 +1048,38 @@ $(function(){
     $(document).on("select2:open", () => {
         document.querySelector(".select2-container--open .select2-search__field").focus()
     });
-
-    $(document).on('click', '.addPaquete', function(e){
+  
+    principal.addPaquete.on('click', function(e){
         e.preventDefault();
         
-        let paquete = $('#paquetes').val();
-        
-        if([null, undefined, ''].includes(paquete)){
+        if([null, undefined, ''].includes(variables.paquetes.val())){
             toastr.warning("Debe seleccionar un paquete para poder añadirlo en su totalidad",'',{timeOut: 1000});
             return;
         }
         preloader('on');
-       $.ajax({
-            url: paqueteId,
-            type: 'POST',
-            data: {
-                _token: TOKEN,
-                IdPaquete: paquete,
-            },
+       $.post(paqueteId,{_token: TOKEN, IdPaquete: variables.paquetes.val()})
+            .done(function(response){
 
-            success:function(response){
-
-                preloader('off');
                 let data = response.examenes,
                     ids = [];
  
                 for (let i = 0; i < data.length; i++) {
                     ids.push(data[i].Id);
                 }
-                saveExamen(ids, $('#idPrestacion').val());  
-                $('.addPaquete').val([]).trigger('change.select2');
-            },
-            error: function(jqXHR){
+                saveExamen(ids, variables.idPrestacion.val()); 
+ 
+                variables.paquetes.val([]).trigger('change.select2');
+            })
+            .fail(function(jqXHR){
                 preloader('off');
                 let errorData = JSON.parse(jqXHR.responseText);            
                 checkError(jqXHR.status, errorData.msg);
                 return; 
-            }
-       });
+            });
        
     });
 
-    $(document).on('click', '.deleteExamenes, .deleteExamen', function(e){
+    principal.deleteExamenes.add(principal.deleteExamen).on('click', function(e){
         e.preventDefault();
 
         let ids = [], tieneAdjunto = false, id = $(this).data('delete'), adjunto, archivos; checkAll ='';
@@ -1052,7 +1089,6 @@ $(function(){
                 adjunto = $(this).data('adjunto'), archivos = $(this).data('archivo');
                 adjunto == 1 && archivos > 0 ? tieneAdjunto = true : ids.push($(this).val());
             });
-            checkAll = $('#checkAllExa').prop('checked');
 
         } else if($(this).hasClass('deleteExamen')) {
 
@@ -1061,12 +1097,12 @@ $(function(){
         }
 
         if (tieneAdjunto) {
-            toastr.warning('El o los examenes seleccionados tienen un reporte adjuntado. El mismo no se podrá eliminar.', 'Atención', { timeOut: 10000 });
+            toastr.warning('El o los examenes seleccionados tienen un reporte adjuntado. El mismo no se podrá eliminar.', 'Atención', { timeOut: 1000 });
             return;
         }
 
-        if(ids.length === 0 && checkAll === false){
-            toastr.warning('No hay examenes seleccionados', 'Atención', { timeOut: 10000 });
+        if(ids.length === 0 && principal.checkAllExa.prop('checked') === false){
+            toastr.warning('No hay examenes seleccionados', 'Atención', { timeOut: 1000 });
             return;
         }  
     
@@ -1078,14 +1114,9 @@ $(function(){
             if (confirmar){
 
                 preloader('on');
-                $.ajax({
-                    url: deleteItemExamen,
-                    type: 'POST',
-                    data: {
-                        Id: ids,
-                        _token: TOKEN
-                    },
-                    success: function(response){
+                $.post(deleteItemExamen, {Id: ids,  _token: TOKEN})
+                    .done(function(response){
+
                         preloader('off');
                         let estados = [];
                         
@@ -1095,56 +1126,159 @@ $(function(){
                                 success: 'success',
                                 fail: 'info'
                             };
-                            toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 });
+                            toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 1000 });
                             estados.push(msg.estado);
                         }
 
                         if(estados.includes('success')) {
-                            $('#listaExamenes').empty();
-                            $('#exam').val([]).trigger('change.select2');
-                            $('#addPaquete').val([]).trigger('change.select2');
+                            principal.listaExamenes.empty();
+                            variables.exam.val([]).trigger('change.select2');
+                            variables.paquetes.val([]).trigger('change.select2');
                             cargarExamen(IdNueva);
                             contadorExamenes(IdNueva)
                         }
 
-                    }
-                });
+                    })
             }
             
         });
     });
 
-    $(document).on('click', '.addExamen', function(e){
+    principal.addExamen.on('click', function(e){
         e.preventDefault();
 
-        let id = $("#exam").val();
-        
-        if(['', null, undefined].includes(id)) {
+        let id = [];
+
+        if(['', null, undefined].includes(variables.exam.val())) {
             toastr.warning("Debe seleccionar un examen para poder añadirlo a la lista", "Atención", { timeOut: 1000 });
             return;
         }
-        saveExamen(id, $('#idPrestacion').val());
+
+        id.push(variables.exam.val());
+        saveExamen(id, variables.idPrestacion.val());
     });
 
-    $('#altaPrestacionModal').on('hidden.bs.modal', function () {
-        $('.prestacionLimpia, .observacionesModal, .nuevaPrestacion, .reportesPacientes').hide();
-        $('.fichaLaboralModal').show();
+    principal.altaPrestacionModal.on('hidden.bs.modal', function () {
+        principal.prestacionLimpia
+            .add(principal.observacionesModal)
+            .add(principal.nuevaPrestacion)
+            .add(principal.reportesPacientes)
+            .hide();
+
+        principal.fichaLaboralModal.show();
         checkExamenesCuenta(IDFICHA);
     });
 
-    $('#checkAllExa').on('click', function() {
+    principal.checkAllExa.on('click', function(){
         $('input[type="checkbox"][name="Id_examenes"]:not(#checkAllExa)').prop('checked', this.checked);
+    });
+
+    principal.finalizarWizzard.on('click', function(e){
+        e.preventDefault();
+
+        preloader('on');
+        $.post(obsNuevaPrestacion, {
+            _token: TOKEN, 
+            IdPrestacion: variables.idPrestacion.val(), 
+            Observaciones: variables.ObservacionesPresN.val(), 
+            ObsExamenes: variables.ObsExamenesN.val(),
+            Obs: variables.ObsN.val()})
+            .done(function(response){
+                preloader('off');
+                toastr.success(response.msg,'',{timeOut: 1000});
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;  
+            });
+    });
+    
+    principal.SalirWizzard.on('click', function(e){
+        e.preventDefault();
+        location.reload();
+    });
+
+    principal.openExamen.on('click', function(e) {
+        e.preventDefault();
+
+        let id = $(this).data('id'),
+            url = location.href,
+            open = url.replace(/\/pacientes\/.*/, ''),
+            redireccionar = open + '/itemsprestaciones/' + id + '/edit';
+
+        window.open(redireccionar, '_blank');
+    });
+
+    principal.bloquearExamenes.add(principal.bloquearExamen).on('click', function(e){
+
+        e.preventDefault();
+
+        let ids = [], id = $(this).data('bloquear'), checkAll ='';
+
+        if ($(this).hasClass('bloquearExamenes')) {
+
+            $('input[name="Id_examenes"]:checked').each(function() {
+                ids.push($(this).val());
+            });
+        
+        }else if($(this).hasClass('bloquearExamen')){
+            ids.push(id);
+        }
+        
+        if (ids.length === 0 && principal.checkAllExa.prop('checked') === false) {
+            toastr.warning('No hay examenes seleccionados', 'Atención', { timeOut: 1000 });
+            return;
+        }
+    
+        swal({
+            title: "Confirme el bloqueo de los examenes",
+            icon: "warning",
+            buttons: ["Cancelar", "Bloquear"],
+        }).then((confirmar) => {
+            if(confirmar){
+                preloader('on');
+                $.ajax({    
+                    url: bloquearItemExamen,
+                    type: 'POST',
+                    data: {
+                        Id: ids,
+                        _token: TOKEN
+                    },
+                    success: function(response){
+                        let estados = [];
+                        preloader('off')
+
+                        for(let index = 0; index < response.length; index++) {
+                            let msg = response[index],
+                                tipoRespuesta = {
+                                    success: 'success',
+                                    fail: 'info'
+                                }
+                            toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 1000 })
+                            estados.push(msg.estado)
+                        }
+                        
+                        if(estados.includes('success')) {
+                            principal.listaExamenes.empty();
+                            variables.exam.val([]).trigger('change.select2');
+                            variables.paquetes.val([]).trigger('change.select2');
+                            cargarExamen(IdNueva);
+                            contadorExamenes(IdNueva);
+                        }
+                    }
+                });
+            }
+        });     
     });
 
     function saveExamen(id, idPrestacion){
 
         idExamen = [];
-        if (Array.isArray(id)) {
-              for(let i = 0; i < id.length; i++){
-                idExamen.push(id[i]);
-              }
-        }else{
-            idExamen.push(id);
+
+        for(let i = 0; i < id.length; i++){
+        idExamen.push(id[i]);
         }
 
         if (idExamen.length === 0) {
@@ -1162,12 +1296,12 @@ $(function(){
                 idExamen: idExamen
             },
             success: function(){
-                preloader('off');
-                $('#listaExamenes').empty();
-                $('#exam').val([]).trigger('change.select2');
-                $('#addPaquete').val([]).trigger('change.select2');
+                principal.listaExamenes.empty();
+                variables.exam.val([]).trigger('change.select2');
+                variables.paquetes.trigger('change.select2');
                 cargarExamen(idPrestacion);
                 contadorExamenes(idPrestacion);
+                preloader('off');
         },
             error: function(jqXHR){
                 preloader('off');
@@ -1177,35 +1311,6 @@ $(function(){
             }
         });
     }
-    
-    $(document).on('click', '#finalizarWizzard', function(e){
-        e.preventDefault();
-
-        let idP = $('#idPrestacion').val(),
-            ObservacionesPres = $('#ObservacionesPresN').val(),
-            ObsExamenes = $('#ObsExamenesN').val(),
-            Obs = $('#ObsN').val();
-
-        preloader('on');
-        $.post(obsNuevaPrestacion, {_token: TOKEN, IdPrestacion: idP, Observaciones: ObservacionesPres, ObsExamenes: ObsExamenes, Obs: Obs})
-            .done(function(response){
-                preloader('off');
-
-                toastr.success(response.msg,'',{timeOut: 1000});
-            })
-            .fail(function(jqXHR){
-                preloader('off');
-                let errorData = JSON.parse(jqXHR.responseText);            
-                checkError(jqXHR.status, errorData.msg);
-                return;  
-            });
-    });
-    
-
-    $(document).on('click', '#SalirWizzard', function(e){
-        e.preventDefault();
-        location.reload();
-    });
 
     async function cargarExamen(id) {
         try {
@@ -1266,10 +1371,10 @@ $(function(){
                             </td>
                         </tr>`;
     
-                    $('#listaExamenes').append(fila);
+                    principal.listaExamenes.append(fila);
                 }
     
-                $("#listado").fancyTable({
+                principal.listado.fancyTable({
                     pagination: true,
                     perPage: 50,
                     searchable: false,
@@ -1288,126 +1393,61 @@ $(function(){
         }
     }
 
-    $(document).on('click', '.openExamen', function(e){
-        e.preventDefault();
-
-        let id = $(this).data('id'),
-            url = location.href,
-            open = url.replace(/\/pacientes\/.*/, ''),
-            redireccionar = open + '/itemsprestaciones/' + id + '/edit';
-
-        window.open(redireccionar, '_blank');
-    });
-
-    $(document).on('click', '.bloquearExamenes, .bloquearExamen', function(e){
-
-        e.preventDefault();
-
-        let ids = [], id = $(this).data('bloquear'), checkAll ='';
-
-        if ($(this).hasClass('bloquearExamenes')) {
-
-            $('input[name="Id_examenes"]:checked').each(function() {
-                ids.push($(this).val());
-            });
-    
-            checkAll =$('#checkAllExa').prop('checked');
-        
-        }else if($(this).hasClass('bloquearExamen')){
-            ids.push(id);
-        }
-
-        if(ids.length === 0 && checkAll === false){
-            toastr.warning('No hay examenes seleccionados', 'Atención', { timeOut: 10000 });
-            return;
-        }
-    
-        swal({
-            title: "Confirme el bloqueo de los examenes",
-            icon: "warning",
-            buttons: ["Cancelar", "Bloquear"],
-        }).then((confirmar) => {
-            if(confirmar){
-                preloader('on');
-                $.ajax({    
-                    url: bloquearItemExamen,
-                    type: 'POST',
-                    data: {
-                        Id: ids,
-                        _token: TOKEN
-                    },
-                    success: function(response){
-                        let estados = [];
-                        preloader('off')
-
-                        for(let index = 0; index < response.length; index++) {
-                            let msg = response[index],
-                                tipoRespuesta = {
-                                    success: 'success',
-                                    fail: 'info'
-                                }
-                            toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 })
-                            estados.push(msg.estado)
-                        }
-                        
-                        if(estados.includes('success')) {
-                            $('#listaExamenes').empty();
-                            $('#exam').val([]).trigger('change.select2');
-                            $('#addPaquete').val([]).trigger('change.select2');
-                            cargarExamen(IdNueva);
-                            contadorExamenes(IdNueva);
-                        }
-                    }
-                });
-            }
-        });     
-    });
-    
-
     async function checkExamenesCuenta(id){
 
         $.get(lstExDisponibles, {Id: id})
             .done(await function(response){
-                let data = selectorPago(pagoInput);
+                // let data = selectorPago(pagoInput);
 
                 if(response && response.length > 0) {
 
-                    $('#alertaExCta, .examenesDisponibles, .ultimasFacturadas, #siguienteExCta').show();
-                    $('#PagoLaboral, #Pago ').val('P');
-                    $('#guardarPrestacion').hide();
-                } else {
+                    principal.alertaExCta
+                        .add(principal.ultimasFacturadas)
+                        .add(principal.siguienteExCta)
+                        .show();
 
-                    $('examenesDisponibles, .ultimasFacturadas, #siguienteExCta, #alertaExCta').hide();
-                    $('#PagoLaboral').val(data);
-                    $('#guardarPrestacion').show();
+                    variables.PagoLaboral.val('P');
+                    principal.guardarPrestacion.hide();
+                } else {
+                    principal.ultimasFacturadas
+                        .add(principal.alertaExCta)
+                        .add(principal.siguienteExCta)
+                        .hide();
+
+                    variables.PagoLaboral.val(data);
+                    principal.guardarPrestacion.show();
                 }
             })
     }
 
-    $(document).on('click', '.confirmarComentarioPriv', function(e){
+    principal.confirmarComentarioPriv.on('click', function(e){
         e.preventDefault();
-        let comentario = $('#Comentario').val(), idp =  $('#idPrestacion').val();
 
-        if(comentario === ''){
+        if(variables.Comentario.val() === ''){
             toastr.warning('La observación no puede estar vacía','',{timeOut: 1000});
             return;
         }
 
         preloader('on');
-        $.post(savePrivComent, {_token: TOKEN, Comentario: comentario, IdEntidad: idp, obsfasesid: 2})
+        $.post(savePrivComent, {
+            _token: TOKEN, 
+            Comentario: variables.Comentario.val(), 
+            IdEntidad: variables.idPrestacion.val(), 
+            obsfasesid: 2})
+
             .done(function(){
                 preloader('off');
                 toastr.success('Se ha generado la observación correctamente','',{timeOut: 1000});
 
                 setTimeout(() => {
-                    $('#privadoPrestaciones').empty();
-                    $("#Comentario").val("");
+                    principal.privadoPrestaciones.empty();
+                    variables.Comentario.val("");
                     comentariosPrivados();
                 }, 3000);
             })
     });
 
-    $(document).on('click', '.deleteComentario', function(e){
+    principal.deleteComentario.on('click', function(e){
         e.preventDefault;
 
         let id = $(this).data('id');
@@ -1436,17 +1476,14 @@ $(function(){
         })
     });
 
-    
-    $(document).on('click', '.confirmarEdicion', function(e){
+    principal.confirmarEdicion.on('click', function(e){
         e.preventDefault();
 
-        let id = $('#IdObservacion').val(), comentario = $('#ComentarioEditar').val();
-
         preloader('on')
-        $.get(editarComentario, {Id: id, Comentario: comentario})
+        $.get(editarComentario, {Id: variables.IdObservacion.val(), Comentario: variables.ComentarioEditar.val()})
             .done(function(response){
-                $('.volverPrestacionLimpia').trigger('click');
-                $('#comentarioPrivado').modal('hide');
+                principal.volverPrestacionLimpia.trigger('click');
+                principal.comentarioPrivado.modal('hide');
                 preloader('off')
                 toastr.success(response.msg,'',{timeOut: 1000});
                 comentariosPrivados();
@@ -1460,12 +1497,12 @@ $(function(){
     });
 
 
-    async function comentariosPrivados(){
+    async function comentariosPrivados() {
 
-        $('#privadoPrestaciones').empty();
+        principal.privadoPrestaciones.empty();
         preloader('on');
-        let idp =  $('#idPrestacion').val();
-        $.get(await privateComment, {Id: idp,  tipo: 'prestacion'})
+
+        $.get(await privateComment, {Id: variables.idPrestacion.val(),  tipo: 'prestacion'})
             .done(function(response){
                 preloader('off');
                 let data = response.result;
@@ -1483,10 +1520,10 @@ $(function(){
                                     <button title="Eliminar" type="button" data-id="${d.Id}"  class="btn btn-sm iconGeneralNegro deleteComentario"><i class="ri-delete-bin-2-line"></i></button>` : ''}</td>
                             </tr>
                         `;
-                        $('#privadoPrestaciones').append(contenido);
+                        principal.privadoPrestaciones.append(contenido);
                 }
 
-                $('#lstPrivPrestaciones').fancyTable({
+                principal.lstPrivPrestaciones.fancyTable({
                     pagination: true,
                     perPage: 15,
                     searchable: false,
@@ -1496,13 +1533,11 @@ $(function(){
             })   
     }
 
-    function borrarCache() {
-        $.post(cacheDelete, {_token: TOKEN}, function(){});
-    }
-
     function contadorExamenes(idPrestacion) {
         $.get(contadorEx, {Id: idPrestacion}, function(response){
-            $('#countExamenes').empty().text(response);
+            principal.countExamenes
+                .empty()
+                .text(response);
         });
     }
 
