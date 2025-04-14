@@ -617,7 +617,7 @@ $(function() {
 
                 if(await response.prestacion === true){
 
-                    $('#Fecha, #ObsExamen, #efectores, #informadores').prop('disabled', true);
+                    $('#Fecha, #ObsExamen, #efectores, #informadores, #actualizarExamen').prop('disabled', true);
                     $('button').removeClass('asignar abrir cerrar asignarI cerrarI');
                     //p$('button').removeAttr('id');
                     $('i.ri-play-list-add-line').removeClass('addPaquete');

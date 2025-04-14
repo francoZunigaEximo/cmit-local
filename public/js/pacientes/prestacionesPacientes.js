@@ -1079,7 +1079,8 @@ $(function(){
        
     });
 
-    principal.deleteExamenes.add(principal.deleteExamen).on('click', function(e){
+    $(document).on('click', '.deleteExamenes, .deleteExamen', function(e){
+
         e.preventDefault();
 
         let ids = [], tieneAdjunto = false, id = $(this).data('delete'), adjunto, archivos; checkAll ='';
@@ -1200,7 +1201,7 @@ $(function(){
         location.reload();
     });
 
-    principal.openExamen.on('click', function(e) {
+    $(document).on('click','.openExamen', function(e) {
         e.preventDefault();
 
         let id = $(this).data('id'),
@@ -1211,7 +1212,7 @@ $(function(){
         window.open(redireccionar, '_blank');
     });
 
-    principal.bloquearExamenes.add(principal.bloquearExamen).on('click', function(e){
+    $(document).on('click', '.bloquearExamenes, .bloquearExamen', function(e){
 
         e.preventDefault();
 
