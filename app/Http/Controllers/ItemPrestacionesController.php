@@ -869,16 +869,17 @@ class ItemPrestacionesController extends Controller
     }
 
         
-    public function getExamenes(Request $request): mixed
+    public function getExamenes(Request $request)
     {
         if (!$this->hasPermission("prestaciones_edit")) {
             return response()->json(['msg' => 'No tienes permisos'], 403);
         }
 
-        // $IdExamen = implode(',', $request->IdExamen);
-        // $result = DB::Select("CALL getExamenes(?,?,?)", [$request->Id, $request->tipo, $IdExamen]);
+        $IdExamen = implode(',', $request->IdExamen);
+        $result = DB::Select("CALL getExamenes(?,?,?)", [$request->Id, $request->tipo, $IdExamen]);
 
-        $query = ItemPrestacion::leftJoin('profesionales as efector', 'itemsprestaciones.IdProfesional', '=', 'efector.Id') //ok
+        $query = DB::table('itemsprestaciones')
+            ->leftJoin('profesionales as efector', 'itemsprestaciones.IdProfesional', '=', 'efector.Id') //ok
             ->leftJoin('users as userEfector', 'efector.Id', '=', 'userEfector.profesional_id') // ok
             ->leftJoin('datos as datosEfector', 'userEfector.datos_id', '=', 'datosEfector.Id') // ok
             ->leftJoin('profesionales as informador', 'itemsprestaciones.IdProfesional2', '=', 'informador.Id')
@@ -995,7 +996,9 @@ class ItemPrestacionesController extends Controller
             $idExamenes[] = $examen->IdExamen;
         }
 
-        return response()->json(['respuesta' => ! $examenes->isEmpty(), 'examenes' => $idExamenes]);
+
+
+        return response()->json($idExamenes);
     }
 
     public function itemExamen(Request $request)

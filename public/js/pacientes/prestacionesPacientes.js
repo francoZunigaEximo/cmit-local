@@ -164,7 +164,7 @@ $(function(){
 
         if ($(this).hasClass('cargarExPrestacion')) {
 
-            variables.listEdicion.find('input[type="checkbox"]').each(function(){
+            principal.listEdicion.find('input[type="checkbox"]').each(function(){
                 ids.push($(this).data('id'));
             });
 
@@ -419,7 +419,7 @@ $(function(){
 
         let ids = [], checkAll = principal.checkAllEx.prop('checked');
 
-        variables.lstEx.find('input[type="checkbox"]:checked').each(function(){
+        principal.lstEx.find('input[type="checkbox"]:checked').each(function(){
             ids.push($(this).val());
         });
 
@@ -429,7 +429,7 @@ $(function(){
         }
 
         cargaPreExamenes(ids);
-        variables.lstEx.find('input[type="checkbox"]:checked').prop('checked', false);
+        principal.lstEx.find('input[type="checkbox"]:checked').prop('checked', false);
     });
 
     principal.deleteMasivo.add(principal.deleteEx).on('click', function(e){
@@ -440,7 +440,7 @@ $(function(){
             return;
         }
     
-        let ids = variables.listEdicion.find('input[name="Id_exa"]:checked'), checkAll = principal.checkAllEx.prop('checked');
+        let ids = principal.listEdicion.find('input[name="Id_exa"]:checked'), checkAll = principal.checkAllEx.prop('checked');
     
         if(ids.length === 0 && checkAll === false) {
             toastr.warning("Debe seleccionar un exámen para sacarlo del listado",'',{timeOut: 1000});
@@ -1287,30 +1287,21 @@ $(function(){
             return;
         }
         preloader('on');
-        $.ajax({
-
-            url: saveItemExamenes,
-            type: 'post',
-            data: {
-                _token: TOKEN,
-                idPrestacion: idPrestacion,
-                idExamen: idExamen
-            },
-            success: function(){
+        $.post(saveItemExamenes,{_token: TOKEN, idPrestacion: idPrestacion, idExamen: idExamen})
+            .done(function(){
                 principal.listaExamenes.empty();
                 variables.exam.val([]).trigger('change.select2');
                 variables.paquetes.trigger('change.select2');
                 cargarExamen(idPrestacion);
                 contadorExamenes(idPrestacion);
                 preloader('off');
-        },
-            error: function(jqXHR){
+            })
+            .fail(function(jqXHR){
                 preloader('off');
                 let errorData = JSON.parse(jqXHR.responseText);            
                 checkError(jqXHR.status, errorData.msg);
                 return;  
-            }
-        });
+            })
     }
 
     async function cargarExamen(id) {
@@ -1323,9 +1314,9 @@ $(function(){
                 data: { Id: id }
             });
 
-            let estado = result.respuesta, examenes = result.examenes;
+            let examenes = result;
             
-            if (estado === true) {
+            if (examenes.length > 0) {
 
                 let response = await $.ajax({
                     url: getItemExamenes,

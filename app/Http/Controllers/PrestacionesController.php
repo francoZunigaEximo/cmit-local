@@ -973,8 +973,6 @@ class PrestacionesController extends Controller
             $reporte = $this->reporteExcel->crear('simplePrestacion');
             return $reporte->generar($this->querySimple($request->IdPaciente));
 
-
-            
         }elseif($request->Tipo === 'exportDetallado') {
             
             $reporte = $this->reporteExcel->crear('detalladaPrestacion');
