@@ -78,7 +78,7 @@ $(function(){
         TipoPrestacion: $('#tipoPrestacionPres'),
         IdPaciente: ID,
         IdMapa: $('#mapas'),
-        IdMapaN: $('.#mapasN'),
+        IdMapaN: $('#mapasN'),
         PagoLaboral: $('#PagoLaboral'),
         SPago: $('#SPago'),
         Observaciones: $('#Observaciones'),
