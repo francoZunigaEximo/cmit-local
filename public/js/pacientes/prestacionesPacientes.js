@@ -208,18 +208,15 @@ $(function(){
                 ExamenCuenta: ids,
             })
             .done(function(response){
-                preloader('off');
                 toastr.success(response.msg,'',{timeOut: 1000});
                 principal.nuevaPrestacion.hide();
                 principal.volverPrestacionLimpia.trigger('click');
                 principal.listaExamenes.empty();
-                
-                e.preventDefault();
                 IdNueva = response.nuevoId;
                 cargarExamen(response.nuevoId);
                 contadorExamenes(response.nuevoId);
                 variables.idPrestacion.val(IdNueva);
-            
+                preloader('off');
             })
             .fail(function(jqXHR){
                 preloader('off');

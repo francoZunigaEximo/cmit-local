@@ -875,8 +875,8 @@ class ItemPrestacionesController extends Controller
             return response()->json(['msg' => 'No tienes permisos'], 403);
         }
 
-        $IdExamen = implode(',', $request->IdExamen);
-        $result = DB::Select("CALL getExamenes(?,?,?)", [$request->Id, $request->tipo, $IdExamen]);
+        // $IdExamen = implode(',', $request->IdExamen);
+        // $result = DB::Select("CALL getExamenes(?,?,?)", [$request->Id, $request->tipo, $IdExamen]);
 
         $query = DB::table('itemsprestaciones')
             ->leftJoin('profesionales as efector', 'itemsprestaciones.IdProfesional', '=', 'efector.Id') //ok
