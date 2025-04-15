@@ -241,7 +241,8 @@ $(function(){
     });
 
     //Bloqueo de prestación
-    principal.blockPrestPaciente.on('click', function(e){
+    $(document).on('click', '#blockPrestPaciente', function(e){
+
         e.preventDefault();
         let Id = $(this).data('idprest');
 
@@ -272,7 +273,8 @@ $(function(){
     });
 
     //Baja logica de prestación
-    principal.downPrestPaciente.on('click', function(e){
+    $(document).on('click', '#downPrestPaciente', function(e){
+
         e.preventDefault();
         let Id = $(this).data('idprest');
         
