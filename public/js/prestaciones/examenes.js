@@ -569,10 +569,9 @@ $(function(){
             });
     
             preloader('off');
-            let estado = result.respuesta;
-            let examenes = result.examenes;
+            let examenes = result;
     
-            if (estado) {
+            if (examenes.length > 0) {
                 preloader('on');
                 const response = await $.ajax({
                     url: getItemExamenes,
