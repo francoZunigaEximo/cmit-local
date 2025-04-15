@@ -144,6 +144,9 @@ $(function(){
                 },
                 info: "Mostrando _START_ a _END_ de _TOTAL_ de prestaciones",
             },
+            createdRow: function(row, data, dataIndex) {
+                $(row).attr('data-id', data.prestacion);
+            }
         });
     })
 

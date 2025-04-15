@@ -1,12 +1,30 @@
 $(function(){
 
-    const grillaEfector = $('#listaLlamadaEfector');
-    const grillaExamenes = $('#tablasExamenes');
+    const principal = {
+        grillaEfector: $('#listaLlamadaEfector'),
+        grillaExamenes: $('#tablasExamenes')
+    };
+
+    const variables = {
+        fechaHasta: $('#fechaHasta'),
+        estado: $('#estado'),
+        profesionalEfector: $('#profesionalEfector'),
+        prestacionEfector: $('#prestacionEfector'),
+        tipoEfector: $('#tipoEfector'),
+        artEfector: $('#artEfector'),
+        empresaEfector: $('#empresaEfector'),
+        paraEmpresaEfector: $('#paraEmpresaEfector'),
+        pacienteEfector: $('#pacienteEfector'),
+        edadEfector: $('#edadEfector'),
+        fechaEfector: $('#fechaEfector'),
+        fotoEfector: $('#fotoEfector'),
+        profesional: $('#profesional')
+    };
 
     let echo = window.Echo.channel('listado-efectores');
 
-    $('#fechaHasta').val(fechaNow(null, "-", 0));
-    $('#estado').val('abierto');
+    variables.fechaHasta.val(fechaNow(null, "-", 0));
+    variables.estado.val('abierto');
 
     $(document).on('click', '.verPrestacion', function(e){
         e.preventDefault();
@@ -20,7 +38,7 @@ $(function(){
 
         let opcion = $(this).hasClass('exportar') ? 'exportar' : 'detalles';
 
-        let lista = grillaEfector.DataTable();
+        let lista = principal.grillaEfector.DataTable();
 
         if(!lista.data().any()){
             lista.clear().destroy();
@@ -54,8 +72,18 @@ $(function(){
 
         let id = $(this).data('id'), profesional = $(this).data('profesional'), especialidades = $(this).data('especialidades');
 
-        $('#profesionalEfector, #prestacionEfector, #tipoEfector, #artEfector, #empresaEfector, #paraEmpresaEfector, #pacienteEfector, #edadEfector, #fechaEfector').empty();
-        $('#fotoEfector').attr('src', '');
+        variables.profesionalEfector
+            .add(variables.prestacionEfector)
+            .add(variables.tipoEfector)
+            .add(variables.artEfector)
+            .add(variables.empresaEfector)
+            .add(variables.paraEmpresaEfector)
+            .add(variables.pacienteEfector)
+            .add(variables.edadEfector)
+            .add(variables.fechaEfector)
+            .empty();
+
+        variables.fotoEfector.attr('src', '');
 
         preloader('on')
         $.get(dataPaciente, {Id: id, IdProfesional: profesional, Especialidades: especialidades})
@@ -67,16 +95,16 @@ $(function(){
                     fecha = fechaNow(prestacion.Fecha,'/',0);
 
                 preloader('off');
-                $('#prestacionEfector').val(prestacion.Id);
-                $('#profesionalEfector').val(profesional);
-                $('#tipoEfector').val(prestacion.TipoPrestacion);
-                $('#artEfector').val(prestacion.art.RazonSocial);
-                $('#empresaEfector').val(prestacion.empresa.RazonSocial);
-                $('#paraEmpresaEfector').val(prestacion.empresa.ParaEmpresa);
-                $('#pacienteEfector').val(paciente);
-                $('#edadEfector').val(edad);
-                $('#fechaEfector').val(fecha);
-                $('#fotoEfector').attr('src', FOTO + prestacion.paciente.Foto);
+                variables.prestacionEfector.val(prestacion.Id);
+                variables.profesionalEfector.val(profesional);
+                variables.tipoEfector.val(prestacion.TipoPrestacion);
+                variables.artEfector.val(prestacion.art.RazonSocial);
+                variables.empresaEfector.val(prestacion.empresa.RazonSocial);
+                variables.paraEmpresaEfector.val(prestacion.empresa.ParaEmpresa);
+                variables.pacienteEfector.val(paciente);
+                variables.edadEfector.val(edad);
+                variables.fechaEfector.val(fecha);
+                variables.fotoEfector.attr('src', FOTO + prestacion.paciente.Foto);
 
                 tablasExamenes(response.itemsprestaciones);
 
@@ -89,7 +117,7 @@ $(function(){
             });
     });
 
-    $('#fotoEfector').hover(
+    variables.fotoEfector.hover(
         function() {
             $(this).addClass('zoomed');
         },
@@ -101,11 +129,27 @@ $(function(){
     $(document).on('click', '.llamarExamen',function(e){
         e.preventDefault();
 
+        let fila = $(this).closest('tr');
+        fila.css('background-color', 'red');
+        fila.css('color', 'white');
+
+        $(this).empty().html('<i class="ri-edit-line"></i> Liberar').removeClass('llamarExamen').addClass('liberarExamen');
         
-    })
+    });
+
+    $(document).on('click', '.liberarExamen',function(e){
+        e.preventDefault();
+
+        let fila = $(this).closest('tr');
+        fila.css('background-color', 'white');
+        fila.css('color', 'black');
+
+        $(this).empty().html('<i class="ri-edit-line"></i> Llamar').removeClass('liberarExamen').addClass('llamarExamen');
+        
+    });
 
     function tablasExamenes(data) { 
-        $(grillaExamenes).empty();
+        principal.grillaExamenes.empty();
         preloader('on');
 
         const categoria = {};
@@ -165,7 +209,7 @@ $(function(){
                     </div>
                 `;
                 preloader('off');
-                $(grillaExamenes).append(contenido);
+                principal.grillaExamenes.append(contenido);
             }
         }
     }
@@ -182,7 +226,7 @@ $(function(){
 
     //No Imprime: saber si es fisico o digital / adjunto: si acepta o no adjuntos / condicion: pendiente o adjuntado
     function checkAdjunto(noImprime, adjunto, condicion) {
-        console.log(noImprime, adjunto, condicion)
+        // console.log(noImprime, adjunto, condicion)
         if (adjunto === 0) {
             return ``;
         }else if(adjunto === 1 && condicion > 0 && noImprime === 0) {
@@ -203,29 +247,27 @@ $(function(){
     echo.listen('.ListadoProfesionalesEvent', (response) => {
         const efectores = response.efectores;
 
-        $('#profesional').empty();
-
-        console.log(efectores);
+        variables.profesional.empty();
 
         toastr.info('Se ha actualizado la lista de profesionales');
 
         if (efectores.length === 1) {
 
-            $('#profesional').append(
+            variables.profesional.append(
                 `<option value="${efectores[0].Id}" selected>${efectores[0].NombreCompleto}</option>`
             );
         } else if(efectores.length > 1) {
 
-            $('#profesional').append('<option value="" selected>Elija una opción...</option>');
+            variables.profesional.append('<option value="" selected>Elija una opción...</option>');
             $.each(efectores, function(index, value){
                 let contenido = `<option value="${value.Id}">${value.NombreCompleto}</option>`;
 
-                $('#profesional').append(contenido);
+                variables.profesional.append(contenido);
             });
 
         } else {
 
-            $('#profesional').append(
+            variables.profesional.append(
                 `<option value="" selected>No hay efectores</option>`
             );
         }
