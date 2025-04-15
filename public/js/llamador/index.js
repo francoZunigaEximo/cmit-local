@@ -21,7 +21,8 @@ $(function(){
         profesional: $('#profesional')
     };
 
-    let echo = window.Echo.channel('listado-efectores');
+    let echo = window.Echo.channel('listado-efectores'),
+        echo2 = window.Echo.channel('grilla-efectores');
 
     variables.fechaHasta.val(fechaNow(null, "-", 0));
     variables.estado.val('abierto');
@@ -129,12 +130,16 @@ $(function(){
     $(document).on('click', '.llamarExamen',function(e){
         e.preventDefault();
 
+        let prestacion = $(this).data('id');
+
         let fila = $(this).closest('tr');
         fila.css('background-color', 'red');
         fila.css('color', 'white');
 
         $(this).empty().html('<i class="ri-edit-line"></i> Liberar').removeClass('llamarExamen').addClass('liberarExamen');
         
+        $.get(addAtencion, {})
+
     });
 
     $(document).on('click', '.liberarExamen',function(e){
@@ -274,6 +279,13 @@ $(function(){
     });
 
    
-    
+    echo2.listen('.GrillaEfectoresEvent', (e) => {
+
+        let fila = $(`tr[data-id="${e.prestacionId}"]`);
+        if (fila.length > 0) {
+            fila.css('background-color', 'red'); // Pintar la fila de rojo
+            fila.find('.llamarExamen').prop('disabled', true); // Deshabilitar el botón "Llamar"
+        }
+    });
 
 });

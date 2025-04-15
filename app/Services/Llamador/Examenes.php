@@ -2,9 +2,13 @@
 
 namespace App\Services\Llamador;
 
+use App\Events\GrillaEfectoresEvent;
 use App\Models\ArchivoEfector;
 use App\Models\ArchivoInformador;
 use App\Models\ItemPrestacion;
+use App\Models\Llamador;
+use App\Models\Prestacion;
+use App\Models\Profesional;
 use Illuminate\Support\Facades\DB;
 
 class Examenes 
@@ -37,6 +41,23 @@ class Examenes
         
         }elseif($tipo === 'informador') {
             return ArchivoInformador::where('IdEntidad', $idPrestacion)->count();
+        }
+    }
+
+    public function getRegistrarPrestacion(int $profesional, int $prestacion)
+    {
+        $prestacion = Prestacion::where('Id', $prestacion)->exists();
+        $profesional = Profesional::where('Id', $profesional)->exists();
+
+        if($prestacion && $profesional) {
+            Llamador::created([
+                'Id' => Llamador::max('Id') + 1,
+                'profesional_id' => $profesional,
+	            'prestacion_id' => $prestacion,
+                'itemprestacion_id' => 0
+            ]);
+
+            event(new GrillaEfectoresEvent($prestacion));
         }
     }
 }

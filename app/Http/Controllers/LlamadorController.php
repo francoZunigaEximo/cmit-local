@@ -188,8 +188,6 @@ class LlamadorController extends Controller
 
     }
 
-    
-
     private function queryBasico(?int $idProfesional = null)
     {
         return Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')

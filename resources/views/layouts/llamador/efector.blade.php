@@ -250,6 +250,7 @@
     const printExportar = "{{ route('llamador.excelEfector') }}";
     const FOTO = "@fileUrl('lectura')/Fotos/";
     const dataPaciente = "{{ route('llamador.verPaciente') }}";
+    const USERACTIVO = "{{ Auth::user()->id }}";
 </script>
 
 @push('styles')
