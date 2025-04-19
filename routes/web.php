@@ -402,5 +402,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('llamador/efector/buscar', [LlamadorController::class, 'buscarEfector'])->name('llamador.buscarEfector');
     Route::get('llamador/efector/exportar', [LlamadorController::class, 'imprimirExcel'])->name('llamador.excelEfector');
     Route::get('llamador/ver-paciente', [LlamadorController::class, 'verPaciente'])->name('llamador.verPaciente');
+    Route::get('llamador/efector/llamar-paciente',[LlamadorController::class, 'controlLlamado'])->name('llamador.llamar-paciente');
+    Route::get('llamador/check-status', [LlamadorController::class, 'checkLlamado'])->name('llamador.check');
+
+    
 });
 
