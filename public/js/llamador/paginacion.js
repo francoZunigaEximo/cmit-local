@@ -144,7 +144,14 @@ $(function(){
                 },
                 info: "Mostrando _START_ a _END_ de _TOTAL_ de prestaciones",
             },
-            createdRow: function(row, data, dataIndex) {
+            createdRow: async function(row, data, dataIndex) {
+
+                let status = await $.get(checkLlamado, {id: data.prestacion})
+
+                if (status && status === true) {
+                    $(row).css('color', 'red');
+                }
+
                 $(row).attr('data-id', data.prestacion);
             }
         });

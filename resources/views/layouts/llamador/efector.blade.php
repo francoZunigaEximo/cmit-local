@@ -250,7 +250,9 @@
     const printExportar = "{{ route('llamador.excelEfector') }}";
     const FOTO = "@fileUrl('lectura')/Fotos/";
     const dataPaciente = "{{ route('llamador.verPaciente') }}";
-    const USERACTIVO = "{{ Auth::user()->id }}";
+    const USERACTIVO = "{{ Auth::user()->profesional_id }}";
+    const addAtencion = "{{ route('llamador.llamar-paciente') }}";
+    const checkLlamado = "{{ route('llamador.check') }}";
 </script>
 
 @push('styles')
@@ -265,6 +267,8 @@
 
 <script src="{{ asset('/js/llamador/index.js')}}?v={{ time() }}"></script>
 <script src="{{ asset('/js/llamador/paginacion.js')}}?v={{ time() }}"></script>
+<script src="{{ asset('/js/llamador/sockets.js')}}?v={{ time() }}"></script>
+
 
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/i18n/es.js"></script>

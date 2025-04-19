@@ -21,9 +21,6 @@ $(function(){
         profesional: $('#profesional')
     };
 
-    let echo = window.Echo.channel('listado-efectores'),
-        echo2 = window.Echo.channel('grilla-efectores');
-
     variables.fechaHasta.val(fechaNow(null, "-", 0));
     variables.estado.val('abierto');
 
@@ -127,30 +124,44 @@ $(function(){
         }
     );
 
-    $(document).on('click', '.llamarExamen',function(e){
+    $(document).on('click', '.llamarExamen, .liberarExamen',function(e){
         e.preventDefault();
 
-        let prestacion = $(this).data('id');
+        const accion = $(this).hasClass('llamarExamen') ? 'llamado' : 'liberar',
+              boton = {
+                    llamado: {
+                        texto: '<i class="ri-edit-line"></i> Liberar',
+                        remover: 'llamarExamen',
+                        agregar: 'liberarExamen',
+                        textoFila: 'red'
+
+                    },
+                    liberar: {
+                        texto: '<i class="ri-edit-line"></i> Llamar',
+                        remover: 'liberarExamen',
+                        agregar: 'llamarExamen',
+                        textoFila: 'black'
+                    }
+            };
 
         let fila = $(this).closest('tr');
-        fila.css('background-color', 'red');
-        fila.css('color', 'white');
+        fila.css('color', boton[accion].textoFila);
 
-        $(this).empty().html('<i class="ri-edit-line"></i> Liberar').removeClass('llamarExamen').addClass('liberarExamen');
+        $(this).empty()
+               .html(boton[accion].texto)
+               .removeClass(boton[accion].remover)
+               .addClass(boton[accion].agregar);
         
-        $.get(addAtencion, {})
-
-    });
-
-    $(document).on('click', '.liberarExamen',function(e){
-        e.preventDefault();
-
-        let fila = $(this).closest('tr');
-        fila.css('background-color', 'white');
-        fila.css('color', 'black');
-
-        $(this).empty().html('<i class="ri-edit-line"></i> Llamar').removeClass('liberarExamen').addClass('llamarExamen');
-        
+        $.get(addAtencion, {prestacion: $(this).data('id'), profesional: variables.profesional.val()})
+            .done(function(){
+                console.log("registro exitoso")
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            });
     });
 
     function tablasExamenes(data) { 
@@ -249,43 +260,6 @@ $(function(){
         }
     }
 
-    echo.listen('.ListadoProfesionalesEvent', (response) => {
-        const efectores = response.efectores;
 
-        variables.profesional.empty();
-
-        toastr.info('Se ha actualizado la lista de profesionales');
-
-        if (efectores.length === 1) {
-
-            variables.profesional.append(
-                `<option value="${efectores[0].Id}" selected>${efectores[0].NombreCompleto}</option>`
-            );
-        } else if(efectores.length > 1) {
-
-            variables.profesional.append('<option value="" selected>Elija una opción...</option>');
-            $.each(efectores, function(index, value){
-                let contenido = `<option value="${value.Id}">${value.NombreCompleto}</option>`;
-
-                variables.profesional.append(contenido);
-            });
-
-        } else {
-
-            variables.profesional.append(
-                `<option value="" selected>No hay efectores</option>`
-            );
-        }
-    });
-
-   
-    echo2.listen('.GrillaEfectoresEvent', (e) => {
-
-        let fila = $(`tr[data-id="${e.prestacionId}"]`);
-        if (fila.length > 0) {
-            fila.css('background-color', 'red'); // Pintar la fila de rojo
-            fila.find('.llamarExamen').prop('disabled', true); // Deshabilitar el botón "Llamar"
-        }
-    });
 
 });
