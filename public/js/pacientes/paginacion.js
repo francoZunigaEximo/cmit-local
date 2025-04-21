@@ -1,4 +1,4 @@
-$(document).ready(()=>{
+$(function(){
 
     $(document).on('click', '.btnBuscar', function(e){
         e.preventDefault();
@@ -11,7 +11,7 @@ $(document).ready(()=>{
         }
 
         $('#listaPac').DataTable().clear().destroy();
-        
+
         new DataTable('#listaPac', {
 
             searching: false,
@@ -22,7 +22,7 @@ $(document).ready(()=>{
             deferRender: true,
             responsive: false,
             serverSide: true,
-            stateSave: true,
+            stateSave: false,
             dataType: 'json',
             type: 'POST',
             ajax: {
@@ -103,12 +103,9 @@ $(document).ready(()=>{
                 $("#listaPac").show();
                 $(".dataTables_processing").hide();
             },
-            
         });
-
     });
             
-
 
 });
 

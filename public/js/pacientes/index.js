@@ -6,7 +6,6 @@ $(function(){
         dataTables_processing: $(".dataTables_processing"),
         excel: $('#excel'),
         downPaciente: $('.downPaciente')
-
     };
 
     principal.btnBajaMultiple.click(function(e) {
@@ -65,9 +64,9 @@ $(function(){
 
     principal.excel.on('click', function(e){
         e.preventDefault();
-
+        
         let ids = [];
-        $('input[name="Id"]:checked').each(function() {
+        $('input[name="Id"]:checked').each(function(){
             ids.push($(this).val());
         });
 
@@ -100,7 +99,6 @@ $(function(){
                     });
             }
         });
-
     });
 
     principal.downPaciente.on('click', function(e){
@@ -152,5 +150,8 @@ $(function(){
         });
   
     });
+
+
+
 
 });
