@@ -60,7 +60,8 @@ $(function(){
         lstEx: $('#lstEx'),
         lstEx2: $('#lstEx2'),
         observacionesModal: $('.observacionesModal'),
-        checkAllExa: $('#checkAllExa')
+        checkAllExa: $('#checkAllExa'),
+        paqueteExamen: $('.paqueteExamen')
     };
 
     const variables = {
@@ -216,6 +217,7 @@ $(function(){
                 cargarExamen(response.nuevoId);
                 contadorExamenes(response.nuevoId);
                 variables.idPrestacion.val(IdNueva);
+                verificarExamenCuenta();
                 preloader('off');
             })
             .fail(function(jqXHR){
@@ -1398,7 +1400,10 @@ $(function(){
                         .show();
 
                     variables.PagoLaboral.val('P');
+                    
                     principal.guardarPrestacion.hide();
+
+
                 } else {
                     principal.ultimasFacturadas
                         .add(principal.alertaExCta)
@@ -1406,6 +1411,7 @@ $(function(){
                         .hide();
 
                     variables.PagoLaboral.val(data);
+                    
                     principal.guardarPrestacion.show();
                 }
             })
@@ -1530,6 +1536,18 @@ $(function(){
                 .empty()
                 .text(response);
         });
+    }
+
+    function verificarExamenCuenta()
+    {
+        console.log("PagoLaboral: " + variables.PagoLaboral);
+
+        if(variables.PagoLaboral === 'P') {
+            principal.paqueteExamen.hide();
+
+        }else{
+            principal.paqueteExamen.show();
+        }
     }
 
 });

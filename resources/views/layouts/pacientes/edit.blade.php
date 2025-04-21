@@ -983,7 +983,7 @@
 
                             </div>
 
-                            <div class="row mt-2">
+                            <div class="row mt-2 paqueteExamen">
                         
                                 <div class="col-6">
                                     <label for="paquetes" class="form-label">Paquetes</label> <!-- select 2 de paquetes de exámenes -->

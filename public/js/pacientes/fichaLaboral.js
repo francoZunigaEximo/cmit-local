@@ -131,7 +131,7 @@ $(function () {
         changeTipo = $(this).val(); 
         variables.tipoPrestacionHidden.val(changeTipo);
         changeTipo === 'OTRO' ? variables.divtipoPrestacionPresOtros.show() : variables.divtipoPrestacionPresOtros.hide();
-        checkExamenesCuenta(IDficha);
+        checkExamenesCuenta(variables.selectClientes.val());
     });
 
     variables.TipoPrestacion.change(function(){
@@ -392,7 +392,7 @@ $(function () {
     principal.altaPrestacionModal.on('hidden.bs.modal', function () {
         principal.prestacionLimpia.add(principal.observacionesModal).add(principal.nuevaPrestacion).hide();
         principal.fichaLaboralModal.show();
-        checkExamenesCuenta(IDficha);
+        checkExamenesCuenta(variables.selectClientes.val());
         getMap(variables.selectClientes.val(), variables.selectArt.val());
       });
 
@@ -518,7 +518,7 @@ $(function () {
         let ingreso = variables.FechaIngreso.val(), egreso = variables.FechaEgreso.val();
         let dateIngreso = new Date(ingreso), dateEgreso = egreso ? new Date(egreso) : new Date();
 
-        let diff = dateIngreso.getFullYear() - dateEgreso.getFullYear();
+        let diff =  dateEgreso.getFullYear() - dateIngreso.getFullYear();
 
         if (dateEgreso.getMonth() < dateIngreso.getMonth() || (dateEgreso.getMonth() === dateIngreso.getMonth() && dateEgreso.getDate() < dateIngreso.getDate())) {
             diff--;
@@ -735,6 +735,7 @@ $(function () {
             $.get(cantTotalDisponibles, {Id: variables.selectClientes.val()})
             .done(function(response){
                 preloader('off');
+                console.log(response);
                 if(response > 0) {
                     principal.ultimasFacturadas
                         .add(principal.examenesDiponibles)
@@ -748,6 +749,13 @@ $(function () {
     };
 
     async function checkExamenesCuenta(id) {
+
+        if([null, 0,''].includes(id)) {
+            principal.alertaExCta
+                    .add(principal.verListadoExCta)
+                    .hide();
+                return;
+        }
 
         try {
             const response = await $.get(lstExDisponibles, { Id: id });
