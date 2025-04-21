@@ -65,10 +65,46 @@ $(function(){
     principal.excel.on('click', function(e){
         e.preventDefault();
         
-        let ids = [];
-        $('input[name="Id"]:checked').each(function(){
-            ids.push($(this).val());
-        });
+        let ids = [], 
+            table = $('#listaPac').DataTable();
+        
+        let pageInfo = table.page.info();
+        let totalPages = pageInfo.pages; // Número total de páginas
+        let currentPage = table.page(); // Guardar la página actual para restaurarla después
+
+        console.log("Total de páginas:", totalPages); // Verificar el número total de páginas
+
+        // Función recursiva para procesar todas las páginas
+        function processAllPages(pageIndex) {
+            if (pageIndex >= totalPages) {
+                // Cuando se procesan todas las páginas, restaurar la página original
+                table.page(currentPage).draw(false);
+                console.log("Todos los IDs capturados:", ids); // Mostrar los IDs capturados
+                return;
+            }
+
+            console.log("Procesando página:", pageIndex); // Verificar qué página se está procesando
+
+            // Ir a la página actual y forzar una solicitud al servidor
+            table.page(pageIndex).draw(true);
+
+            // Esperar a que los datos se carguen antes de continuar
+            setTimeout(() => {
+                // Iterar sobre las filas de la página actual
+                table.rows({ page: 'current' }).every(function () {
+                    let rowData = this.data();
+                    console.log("Datos de fila:", rowData); // Verificar los datos de cada fila
+                    let id = rowData.Id; // Acceder al campo Id
+                    ids.push(id); // Agregar el ID al array
+                });
+
+                // Procesar la siguiente página
+                processAllPages(pageIndex + 1);
+            }, 500); // Pequeño retraso para permitir que los datos se carguen
+        }
+
+        // Iniciar el procesamiento desde la primera página
+        processAllPages(0);
 
         if (ids.length === 0) {
             toastr.warning('Debes seleccionar al menos un paciente para exportar.','',{timeOut: 1000});
