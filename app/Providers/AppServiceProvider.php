@@ -84,6 +84,7 @@ class AppServiceProvider extends ServiceProvider
             "paciente_report",
             "prestaciones_report",
             "clientes_export",
+            "examenCta_report"
         ]);
 
         $this->gateAccess([
