@@ -1,7 +1,7 @@
 <style>
 .negrita_verde{
     font-weight: bold;
-    color: green;
+    color: #0f9d58;
 }
 </style>
 
