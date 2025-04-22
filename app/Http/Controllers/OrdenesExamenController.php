@@ -212,7 +212,7 @@ class OrdenesExamenController extends Controller
     {
         if($request->ajax())
         {
-            $query = DB::select("CALL getSeachInfA(?,?,?,?,?.?,?,?)", [
+            $query = DB::select("CALL getSeachInfA(?,?,?,?,?,?,?,?)", [
                 $request->fechaDesde,
                 $request->fechaHasta,
                 $request->informador,
