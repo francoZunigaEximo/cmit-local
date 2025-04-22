@@ -732,11 +732,11 @@ $(function () {
         }else if(pago === 'P') {
 
             preloader('on');
-            $.get(cantTotalDisponibles, {Id: variables.selectClientes.val()})
+            $.get(lstExDisponibles, {Id: variables.selectClientes.val()})
             .done(function(response){
                 preloader('off');
-                console.log(response);
-                if(response > 0) {
+
+                if(response.length > 0) {
                     principal.ultimasFacturadas
                         .add(principal.examenesDiponibles)
                         .add(principal.siguienteExCta)
@@ -852,8 +852,8 @@ $(function () {
     };
 
     async function checkExCuentaDisponible(id) {
-        $data = await $.get(checkDisponibilidad, {Id: id});
-        return $data > 0 ? true : false;
+        $data = await $.get(lstExDisponibles, {Id: id});
+        return $data.length > 0 ? true : false;
     }
 
     function marcarPago(pago) {

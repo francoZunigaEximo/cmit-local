@@ -829,31 +829,6 @@ class ExamenesCuentaController extends Controller
         return response()->json($examen);  
     }
 
-    public function checkDisponibilidad(Request $request)
-    {
-        if(!$this->hasPermission("examenCta_show")) {
-            return response()->json(['msg' => 'No tiene permisos'], 403);
-        }
-
-        $examen = ExamenCuentaIt::join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
-            ->join('clientes', 'pagosacuenta.IdEmpresa', '=', 'clientes.Id')
-            ->join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
-            ->select(
-                'pagosacuenta.Id as Id',
-                'pagosacuenta_it.Obs as Precarga',
-                'examenes.Nombre as NombreExamen', 
-                //DB::raw('COUNT(pagosacuenta_it.IdExamen) as Cantidad')
-            )
-            ->where('pagosacuenta.IdEmpresa', $request->Id)
-            ->where('pagosacuenta_it.IdPrestacion', 0)
-            ->whereNot('pagosacuenta_it.Obs', 'provisorio')
-            ->orderBy('examenes.Nombre', 'Asc')
-            ->orderBy('pagosacuenta_it.Obs', 'Desc')
-            ->count();
-
-        return response()->json($examen);  
-    }
-
     public function listadoUltimas(Request $request)
     {
         if(!$this->hasPermission("examenCta_show")) {
@@ -907,105 +882,10 @@ class ExamenesCuentaController extends Controller
         return response()->json($query);
     }
 
-    public function disponibles(Request $request)
+    public function listExCta(Request $request)
     {
-        if(!$this->hasPermission("examenCta_show")) {
-            return response()->json(['msg' => 'No tiene permisos'], 403);
-        }
-
-        $query = ExamenCuenta::join('pagosacuenta_it', 'pagosacuenta.Id', '=', 'pagosacuenta_it.IdPago')
-            ->where('pagosacuenta.IdEmpresa', $request->Id)
-            ->where('pagosacuenta_it.IdPrestacion', 0)
-            ->whereNot('pagosacuenta_it.Obs', 'provisorio')
-            ->count();
-
+        $query = DB::Select('CALL getListaExCta(?)', [$request->Id]);
         return response()->json($query);
-    }
-
-     //Listado dentro de Pacientes en Alta de Prestación - Muestra las facturas en la grilla
-     public function lstExClientes(Request $request)
-     {
-        if(!$this->hasPermission("prestaciones_show")) {
-            return response()->json(['msg' => 'No tiene permisos'], 403);
-        }
-
-         $clientes = ExamenCuentaIt::join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
-             ->join('pagosacuenta', function($join) use ($request) {
-                $join->on('pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id');
-                    $join->where('pagosacuenta.IdEmpresa', $request->Id);
-             })
-             ->select(
-                 'examenes.Nombre as NombreExamen',
-                 'pagosacuenta.Tipo as Tipo',
-                 'pagosacuenta.Suc as Suc',
-                 'pagosacuenta.Nro as Nro',
-                 'pagosacuenta.Obs as Obs',
-                 'pagosacuenta.Id as Id'
-             )
-             ->where('pagosacuenta_it.IdPrestacion', 0)
-             ->whereNot('pagosacuenta_it.Obs', 'provisorio')
-             ->groupBy(['pagosacuenta.Tipo', 'pagosacuenta.Suc','pagosacuenta.Nro'])
-             ->get();
- 
-         return response()->json($clientes);
-     }
-
-    //Listado dentro de Pacientes en Alta de Prestación con todos los DNI precargados
-    public function listadoPrecarga(Request $request)
-    {
-        if(!$this->hasPermission("prestaciones_show")) {
-            return response()->json(['msg' => 'No tiene permisos'], 403);
-        }
-
-        $clientes = ExamenCuentaIt::join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
-            ->select(
-                'pagosacuenta_it.Precarga as Documento',
-                'pagosacuenta_it.IdPrestacion as IdPrestacion',
-                'pagosacuenta_it.IdPago as IdPago'
-            )
-            ->where('pagosacuenta_it.IdPago', $request->Id);
-
-            $clientes->when(!empty($request->IdExamen), function ($query) use ($request) {
-                $query->where('pagosacuenta_it.IdExamen', $request->IdExamen)
-                        ->whereNot('pagosacuenta_it.IdExamen', '<>', $request->IdExamen);
-            });
-            $clientes = $clientes->where('pagosacuenta_it.IdPrestacion', 0)
-            ->groupBy('pagosacuenta_it.Precarga')  
-            ->orderBy('pagosacuenta_it.Precarga', 'Desc')
-            ->get();
-
-        return response()->json($clientes);
-    }
-
-    //Listado dentro de Pacientes en Alta de Prestación
-    public function listadoExCta(Request $request)
-    {
-        if(!$this->hasPermission("prestaciones_show")) {
-            return response()->json(['msg' => 'No tiene permisos'], 403);
-        }
-
-        $clientes = ExamenCuentaIt::join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
-            ->join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
-            ->select(
-                'examenes.Nombre as NombreExamen',
-                'examenes.Id as IdTest',
-                'pagosacuenta_it.Id as IdEx',
-                'pagosacuenta.Pagado as Pagado',
-                DB::raw('(SELECT COUNT(*) FROM pagosacuenta_it WHERE IdPago = pagosacuenta.Id AND IdExamen = examenes.Id AND IdPrestacion = 0) as Cantidad')
-            )
-            ->where(function ($query) use ($request) {
-                $query->where('pagosacuenta_it.Precarga', $request->Id)
-                        ->orWhereNull('pagosacuenta_it.Precarga');
-            })
-            ->where('pagosacuenta_it.IdPrestacion', 0)
-            ->where('pagosacuenta.Id', $request->IdPago)
-            ->whereNot('pagosacuenta_it.IdExamen', 0);
-
-            $clientes = $clientes->groupBy('examenes.Id')->orderBy('pagosacuenta_it.IdPrestacion', 'ASC')
-            ->get();
-        
-        return response()->json($clientes);
-        
     }
     
     private function tituloReporte(?int $id): mixed
