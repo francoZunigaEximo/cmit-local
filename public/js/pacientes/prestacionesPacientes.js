@@ -133,9 +133,9 @@ $(function(){
     getListado(null);
     listadoConSaldos(variables.selectClientes.val());
     cantidadDisponibles(variables.selectClientes.val());
-    listadoFacturas(variables.selectClientes.val(), null, true, '#lstEx');
-    listadoFacturas(variables.selectClientes.val(), null, false, '#lstEx2');
     getUltimasFacturadas(variables.selectClientes.val());
+    tablasExamenes(variables.selectClientes.val(), false, '#lstEx2');
+    tablasExamenes(variables.selectClientes.val(), true, '#lstEx');
     // selectorPago(pagoInput);
 
     variables.tipoPrestacionPres.on('change', function(){
@@ -149,8 +149,8 @@ $(function(){
         getUltimasFacturadas(variables.selectClientes.val());
         listadoConSaldos(variables.selectClientes.val());
         cantidadDisponibles(variables.selectClientes.val());
-        listadoFacturas(variables.selectClientes.val(), null, true, '#lstEx');
-        listadoFacturas(variables.selectClientes.val(), null, false, '#lstEx2');
+        tablasExamenes(variables.selectClientes.val(), false, '#lstEx2');
+        tablasExamenes(variables.selectClientes.val(), true, '#lstEx');
 
         if(tipoPrestacion === 'ART') {  
             getMap(empresa, art);  
@@ -328,10 +328,10 @@ $(function(){
 
         }else if(variables.TipoPrestacion.val() !== 'ART') {
             preloader('on');
-            $.get(cantTotalDisponibles, {Id: variables.selectClientes.val()})
+            $.get(lstExDisponibles, {Id: variables.selectClientes.val()})
             .done(function(response){
                 preloader('off');
-                if(response > 0) {
+                if(response.length > 0) {
                     principal.ultimasFacturadas
                     .add(principal.siguienteExCta)
                     .show();
@@ -403,16 +403,15 @@ $(function(){
             return;
         }
 
-        listadoFacturas(variables.selectClientes.val(), variables.examen.val(), true, '#lstEx');
-        listadoFacturas(variables.selectClientes.val(), variables.examen.val(), false, '#lstEx2');
+        tablasExamenes(variables.selectClientes.val(), false, '#lstEx2');
+        tablasExamenes(variables.selectClientes.val(), true, '#lstEx');
         variables.examen.remove();
     });
 
     principal.reiniciarExamen.on('click', function(e){
         e.preventDefault();
-        listadoFacturas(variables.selectClientes.val(), null, true, '#lstEx');
-        listadoFacturas(variables.selectClientes.val(), null, false, '#lstEx2');
-
+        tablasExamenes(variables.selectClientes.val(), false, '#lstEx2');
+        tablasExamenes(variables.selectClientes.val(), true, '#lstEx');
     });
 
     principal.precargaExamenes.on('click', function(e){
@@ -433,7 +432,7 @@ $(function(){
         principal.lstEx.find('input[type="checkbox"]:checked').prop('checked', false);
     });
 
-    principal.deleteMasivo.add(principal.deleteEx).on('click', function(e){
+    $(document).on('click', '.deleteMasivo, .deleteEx', function(e){
         e.preventDefault();
 
         if($(this).hasClass('deleteEx')) {
@@ -750,116 +749,91 @@ $(function(){
     {
         principal.totalCantidad.empty();
 
-        $.get(cantTotalDisponibles, {Id: id})
+        $.get(lstExDisponibles, {Id: id})
             .done(await function(response){
-                principal.totalCantidad.text(response);
-                if(response === 0) {
+                principal.totalCantidad.text(response.length);
+                if(response.length === 0) {
                     principal.siguienteExCta.hide();
                     principal.guardarPrestacion.show();
-                }else if(response > 0) {
+                }else if(response.length > 0) {
                     principal.siguienteExCta.show();
                     principal.guardarPrestacion.hide();
                 }
             })
     }
 
-    function listadoFacturas(id, idexamen, checkVisible, etiquetaId) {
-        //$('#lstEx').empty();
+    async function tablasExamenes(idCliente, checkVisible, etiquetaId) { 
+    
+        let data = await $.get(getListaExCta, {Id: idCliente});
+    
+        if (!Array.isArray(data) || data.length === 0) {
+            $(etiquetaId).append('<tr><td>No hay historial de facturas disponible</td></tr>');
+            return;
+        }
+    
         $(etiquetaId).empty();
-        preloader('on');
     
-        $.get(lstExClientes, { Id: id })
-            .done(async function(response) {
-                preloader('off');
-                if (response && response.length) {
-                    // Utiliza Promise.all para manejar todas las promesas a la vez
-                    let promises = response.map(async function(r) {
-                        let suc = [null, 0, undefined, ''].includes(r.Suc) ? '' : (r.Suc ? r.Suc.toString().padStart(4, '0') : '-');
-                        let numero = [null, 0, undefined, ''].includes(r.Nro) ? '' : (r.Nro ? r.Nro.toString().padStart(8, '0') : '-');
-                        let moduloResult = await vistaDni(r.Id, idexamen, checkVisible);
-                        
-                        return `
-                        <tr class="fondo-gris">
-                            <td colspan="6">
-                                <span class="fw-bolder text-capitalize">fact </span> ${r.Tipo ?? '-'}${suc}-${numero}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="5">
-                                <span class="fw-bolder text-capitalize">Observación: </span><span>${r.Obs}</span>
-                            </td>
-                        </tr>
-                        ${moduloResult}
-                        `;
+        const factura = {};
+        
+        data.forEach(function (item) {
+            if (!factura[item.Factura]) {
+                factura[item.Factura] = [];
+            }
+            factura[item.Factura].push(item);
+        });
+    
+        for (const grupoFactura in factura) {
+            if (factura.hasOwnProperty(grupoFactura)) {
+                const examenes = factura[grupoFactura];
+    
+                const documentos = {};
+                examenes.forEach((examen) => {
+                    const documentoKey = examen.Documento || "Sin precarga";
+                    if (!documentos[documentoKey]) {
+                        documentos[documentoKey] = [];
+                    }
+                    documentos[documentoKey].push({
+                        IdEx: examen.IdEx,
+                        CantidadExamenes: examen.CantidadExamenes,
+                        NombreExamen: examen.NombreExamen
                     });
+                });
     
-                    let contents = await Promise.all(promises);
-                    $(etiquetaId).append(contents.join(''));
-                } else {
-                    $(etiquetaId).append('<tr><td>No hay historial de facturas disponible</td></tr>');
-                }
-            })
-            .fail(function(error) {
-                preloader('off');
-                console.error('Error fetching facturas:', error);
-            });
-    }
+                let contenido = `
+                    <tr class="fondo-gris">
+                        <td colspan="6">
+                            <span class="fw-bolder text-capitalize">fact </span> ${grupoFactura}
+                        </td>
+                    </tr>
+                `;
     
-    async function vistaDni(id, idexamen, checkVisible) {
-        return new Promise((resolve, reject) => {
-            preloader('on');
+                for (const documentoKey in documentos) {
+                    if (documentos.hasOwnProperty(documentoKey)) {
+                        const examenesPorDocumento = documentos[documentoKey];
     
-            $.get(listPrecarga, { Id: id, IdExamen: idexamen })
-                .done(async function(response) {
-                    preloader('off');
-                    if (response && response.length) {
-                        let promises = response.map(async function(r) {
-                            let detallesResult = await detalles(r.Documento, r.IdPago, checkVisible);
-                            return `
+                        contenido += `
                             <tr class="fondo-grisClaro mb-2">
-                                <td colspan="5" class="fw-bolder"><span class="fw-bolder">${[0, ''].includes(r.Documento) ? '' : 'DNI Precargado: '}</span> ${[0, ''].includes(r.Documento) ? 'Sin precarga' : r.Documento}</td>          
-                                ${detallesResult}
+                                <td colspan="5" class="fw-bolder">
+                                    <span class="fw-bolder">${documentoKey === "Sin precarga" ? "" : "DNI Precargado: "}</span> 
+                                    ${documentoKey}
+                                </td>
                             </tr>
-                            `;
+                        `;
+    
+                        examenesPorDocumento.forEach((examen) => {
+                            contenido += `
+                                <tr>
+                                    <td>${examen.CantidadExamenes}</td>
+                                    <td>${examen.NombreExamen}</td>
+                                    ${checkVisible === true ? `<td style="width:5px"><input type="checkbox" class="form-check-input" value="${examen.IdEx}"></td>` : ''}
+                                </tr>`;
                         });
-    
-                        let result = await Promise.all(promises);
-                        resolve(result.join(''));
-                    } else {
-                        resolve('<tr><td>No hay detalles disponibles</td></tr>');
                     }
-                })
-                .fail(function(error) {
-                    preloader('off');
-                    reject(error);
-                });
-        });
-    }
+                }
     
-    async function detalles(documento, idpago, checkVisible) {
-        return new Promise((resolve, reject) => {
-            preloader('on');
-            $.get(listExCta, { Id: documento, IdPago: idpago })
-                .done(async function(response) {
-                    preloader('off');
-                    if (response && response.length) {
-                        let result = response.map(r => `
-                        <tr>  
-                            <td>${r.Cantidad}</td>
-                            <td>${r.NombreExamen}</td>
-                            ${checkVisible === true ? `<td style="width:5px"><input type="checkbox" class="form-check-input" value="${r.IdEx}"></td>` : ''}
-                        </tr>
-                        `).join('');
-                        resolve(result);
-                    } else {
-                        resolve('<tr><td>No hay detalles disponibles</td></tr>');
-                    }
-                })
-                .fail(function(error) {
-                    preloader('off');
-                    reject(error);
-                });
-        });
+                $(etiquetaId).append(contenido);
+            }
+        }
     }
 
 
@@ -1275,6 +1249,82 @@ $(function(){
         });     
     });
 
+    principal.deleteComentario.on('click', function(e){
+        e.preventDefault;
+
+        let id = $(this).data('id');
+
+        swal({
+            title: "¿Está seguro que desea eliminar el comentario privado?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar) {
+
+                preloader('on')
+                $.get(eliminarComentario, {Id: id})
+                    .done(function(response){
+                        preloader('off');
+                        toastr.success(response.msg,'',{timeOut: 1000});
+                        comentariosPrivados();
+                    })
+                    .fail(function(jqXHR){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
+                    })
+            }
+        })
+    });
+
+    principal.confirmarEdicion.on('click', function(e){
+        e.preventDefault();
+
+        preloader('on')
+        $.get(editarComentario, {Id: variables.IdObservacion.val(), Comentario: variables.ComentarioEditar.val()})
+            .done(function(response){
+                principal.volverPrestacionLimpia.trigger('click');
+                principal.comentarioPrivado.modal('hide');
+                preloader('off')
+                toastr.success(response.msg,'',{timeOut: 1000});
+                comentariosPrivados();
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            });
+    });
+
+    principal.confirmarComentarioPriv.on('click', function(e){
+        e.preventDefault();
+
+        if(variables.Comentario.val() === ''){
+            toastr.warning('La observación no puede estar vacía','',{timeOut: 1000});
+            return;
+        }
+
+        preloader('on');
+        $.post(savePrivComent, {
+            _token: TOKEN, 
+            Comentario: variables.Comentario.val(), 
+            IdEntidad: variables.idPrestacion.val(), 
+            obsfasesid: 2})
+
+            .done(function(){
+                preloader('off');
+                toastr.success('Se ha generado la observación correctamente','',{timeOut: 1000});
+
+                setTimeout(() => {
+                    principal.privadoPrestaciones.empty();
+                    variables.Comentario.val("");
+                    comentariosPrivados();
+                }, 3000);
+            })
+    });
+
     function saveExamen(id, idPrestacion){
 
         idExamen = [];
@@ -1417,83 +1467,6 @@ $(function(){
             })
     }
 
-    principal.confirmarComentarioPriv.on('click', function(e){
-        e.preventDefault();
-
-        if(variables.Comentario.val() === ''){
-            toastr.warning('La observación no puede estar vacía','',{timeOut: 1000});
-            return;
-        }
-
-        preloader('on');
-        $.post(savePrivComent, {
-            _token: TOKEN, 
-            Comentario: variables.Comentario.val(), 
-            IdEntidad: variables.idPrestacion.val(), 
-            obsfasesid: 2})
-
-            .done(function(){
-                preloader('off');
-                toastr.success('Se ha generado la observación correctamente','',{timeOut: 1000});
-
-                setTimeout(() => {
-                    principal.privadoPrestaciones.empty();
-                    variables.Comentario.val("");
-                    comentariosPrivados();
-                }, 3000);
-            })
-    });
-
-    principal.deleteComentario.on('click', function(e){
-        e.preventDefault;
-
-        let id = $(this).data('id');
-
-        swal({
-            title: "¿Está seguro que desea eliminar el comentario privado?",
-            icon: "warning",
-            buttons: ["Cancelar", "Aceptar"]
-        }).then((confirmar) => {
-            if(confirmar) {
-
-                preloader('on')
-                $.get(eliminarComentario, {Id: id})
-                    .done(function(response){
-                        preloader('off');
-                        toastr.success(response.msg,'',{timeOut: 1000});
-                        comentariosPrivados();
-                    })
-                    .fail(function(jqXHR){
-                        preloader('off');
-                        let errorData = JSON.parse(jqXHR.responseText);            
-                        checkError(jqXHR.status, errorData.msg);
-                        return;
-                    })
-            }
-        })
-    });
-
-    principal.confirmarEdicion.on('click', function(e){
-        e.preventDefault();
-
-        preloader('on')
-        $.get(editarComentario, {Id: variables.IdObservacion.val(), Comentario: variables.ComentarioEditar.val()})
-            .done(function(response){
-                principal.volverPrestacionLimpia.trigger('click');
-                principal.comentarioPrivado.modal('hide');
-                preloader('off')
-                toastr.success(response.msg,'',{timeOut: 1000});
-                comentariosPrivados();
-            })
-            .fail(function(jqXHR){
-                preloader('off');
-                let errorData = JSON.parse(jqXHR.responseText);            
-                checkError(jqXHR.status, errorData.msg);
-                return;
-            });
-    });
-
-
     async function comentariosPrivados() {
 
         principal.privadoPrestaciones.empty();
@@ -1540,14 +1513,16 @@ $(function(){
 
     function verificarExamenCuenta()
     {
-        console.log("PagoLaboral: " + variables.PagoLaboral);
+        console.log("PagoLaboral: " + variables.PagoLaboral.val());
 
-        if(variables.PagoLaboral === 'P') {
+        if(variables.PagoLaboral.val() === 'P') {
             principal.paqueteExamen.hide();
 
         }else{
             principal.paqueteExamen.show();
         }
     }
+
+
 
 });

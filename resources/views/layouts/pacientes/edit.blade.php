@@ -1267,7 +1267,6 @@ const lstExDisponibles = "{{ route('lstExDisponibles') }}";
 const lstFacturadas = "{{ route('lstFacturadas')}}";
 const lstExamenes = "{{ route('lstExamenes') }}";
 const saldoNoDatatable = "{{ route('saldoNoDatatable') }}";
-const cantTotalDisponibles = "{{ route('cantTotalDisponibles') }}";
 const lstClientes = "{{ route('lstClientes') }}";
 const listPrecarga = "{{ route('listPrecarga') }}";
 const listExCta = "{{ route('listExCta') }}";
@@ -1303,7 +1302,6 @@ const TOKEN = "{{ csrf_token() }}";
 
 const checkObs = "{{ route('checkObs') }}";
 const excelPrestaciones = "{{ route('prestaciones.excel') }}";
-const checkDisponibilidad = "{{ route('examenesCuenta.checkDisponibilidad') }}"
 const USER = "{{ Auth::user()->name }}";
 const eliminarComentario = "{{ route('comentariosPriv.eliminar') }}";
 const editarComentario = "{{ route('comentariosPriv.editar') }}";
@@ -1316,6 +1314,7 @@ const exResultado = "{{ route('prestaciones.exportarResultado') }}";
 const impRepo = "{{ route('prestaciones.pdf') }}";
 const sendExcel = "{{ route('prestaciones.excel') }}";
 const contadorEx = "{{route('itemsprestaciones.contador')}}";
+const getListaExCta = "{{ route('examenesCuenta.listado') }}";
 </script>
 
 @push('styles')

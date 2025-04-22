@@ -10,7 +10,7 @@ $(function() {
     quitarDuplicados("#CondicionIva");
     quitarDuplicados("#FPago");
     checkBloq();
-    examenes();
+    tablasExamenes(ID, false, '#lstFact')
     checkeoEstado(ID);
 
     $(document).on('click', '.delete-icon', function(e) {
@@ -689,93 +689,78 @@ $(function() {
             });
     }
 
-    function examenes(){
-    $('#lstFact').empty();
-    preloader('on');
-    $.get(lstClientes, {Id: ID})
-        .done(async function(response){
-            preloader('off');
-            let promises = response.map(async function(r) {
-                if(response && response.length) {
-                    let suc = (r.Suc).toString().padStart(4, '0'), numero = (r.Nro).toString().padStart(8, '0');
-                    let moduloResult = await modulo(r.Id);
-                    let contenido = `
-                    <tr class="fondo-gris mb-2">
-                        <td><span class="fw-bolder text-capitalize">fecha </span> ${fechaNow(r.Fecha,'/',0)}</td>
-                        <td><span class="fw-bolder text-capitalize">factura </span> ${r.Tipo}${suc}${numero}</td>
-                        <td><span class="fw-bolder text-capitalize">cantidad Pacientes </span>${r.Cantidad}</td>
-                        <td>
-                            <tr>
-                                <td colspan="4">
-                                    <span class="fw-bolder text-capitalize">Observación: </span><span>${r.Obs}</span>
+    async function tablasExamenes(idCliente, checkVisible, etiquetaId) { 
+    
+        let data = await $.get(getListaExCta, {Id: idCliente});
+    
+        if (!Array.isArray(data) || data.length === 0) {
+            $(etiquetaId).append('<tr><td>No hay historial de facturas disponible</td></tr>');
+            return;
+        }
+    
+        $(etiquetaId).empty();
+    
+        const factura = {};
+        
+        data.forEach(function (item) {
+            if (!factura[item.Factura]) {
+                factura[item.Factura] = [];
+            }
+            factura[item.Factura].push(item);
+        });
+    
+        for (const grupoFactura in factura) {
+            if (factura.hasOwnProperty(grupoFactura)) {
+                const examenes = factura[grupoFactura];
+    
+                const documentos = {};
+                examenes.forEach((examen) => {
+                    const documentoKey = examen.Documento || "Sin precarga";
+                    if (!documentos[documentoKey]) {
+                        documentos[documentoKey] = [];
+                    }
+                    documentos[documentoKey].push({
+                        IdEx: examen.IdEx,
+                        CantidadExamenes: examen.CantidadExamenes,
+                        NombreExamen: examen.NombreExamen
+                    });
+                });
+    
+                let contenido = `
+                    <tr class="fondo-gris">
+                        <td colspan="6">
+                            <span class="fw-bolder text-capitalize">fact </span> ${grupoFactura}
+                        </td>
+                    </tr>
+                `;
+    
+                for (const documentoKey in documentos) {
+                    if (documentos.hasOwnProperty(documentoKey)) {
+                        const examenesPorDocumento = documentos[documentoKey];
+    
+                        contenido += `
+                            <tr class="fondo-grisClaro mb-2">
+                                <td colspan="5" class="fw-bolder">
+                                    <span class="fw-bolder">${documentoKey === "Sin precarga" ? "" : "DNI Precargado: "}</span> 
+                                    ${documentoKey}
                                 </td>
                             </tr>
-                        </td>  
-                        ${moduloResult}
-                    </tr>`;
-                    return contenido;
-                }else{
-                    return '<tr class="mb-2"><td>No hay historial de facturas disponible</td></tr>';
-                } 
-            });
-            let contents = await Promise.all(promises);
-            contents.forEach(content => $('#lstFact').append(content));
-        });
-    }
-
-    async function modulo(id) {
-        return new Promise((resolve, reject) => {
-            preloader('on');
-            $.get(listadoDni, {Id: id})
-                .done(async function(response){
-                    preloader('off');
-                    if (response && response.length) {
-                        let result = '';
-                        for (let r of response) {
-                            let detallesResult = await detalles(r.IdPrestacion, r.IdPago); 
-                            result += `
-                                <tr class="fondo-grisClaro">
-                                    <td colspan="4" class="fw-bolder"><span class="fw-bolder">${r.IdPrestacion === 0 ? 'Generales' : 'DNI'}</span> ${r.IdPrestacion === 0 ? '' : r.Documento}</td>
-                                    ${detallesResult}
-                                </tr>
-                            `;
-                        }
-                        resolve(result);
-                    }
-                })
-                .fail(function(error){
-                    reject(error);
-                });
-        });
-    }
+                        `;
     
-
-    async function detalles(id, idpago) {
-        return new Promise((resolve, reject) => {
-            preloader('on');
-            $.get(listadoEx, {Id: id, IdPago: idpago})
-                .done(async function(response){
-                    preloader('off');
-                    if (response && response.length) {
-                        let result =  '';
-                        for (let r of response) {
-                            let suc = [null, undefined, 0, ''].includes(r.Suc) ? '' : (r.Suc).toString().padStart(4, '0'), 
-                                numero = [null, undefined, 0, ''].includes(r.Nro) ? '' : (r.Nro).toString().padStart(8, '0');
-                            result += `
-                            <tr>
-                                <td>${r.Cantidad}</td>
-                                <td>${r.NombreExamen}</td>
-                                <td colspan="2"><span class="${r.Pagado === 0 ? 'rojo': ''}">${[null, undefined, 0, ''].includes(r.Tipo) ? '' : r.Tipo}${suc}${numero}</span></td>
-                            </tr>
-                            `;
-                        }
-                        resolve(result);
+                        examenesPorDocumento.forEach((examen) => {
+                            contenido += `
+                                <tr>
+                                    <td>${examen.CantidadExamenes}</td>
+                                    <td>${examen.NombreExamen}</td>
+                                    ${checkVisible === true ? `<td style="width:5px"><input type="checkbox" class="form-check-input" value="${examen.IdEx}"></td>` : ''}
+                                </tr>`;
+                        });
                     }
-                })
-                .fail(function(error){
-                    reject(error);
-                });
-        }); 
+                }
+    
+                $(etiquetaId).append(contenido);
+            }
+        }
     }
     
     function checkeoEstado(idCliente) {
