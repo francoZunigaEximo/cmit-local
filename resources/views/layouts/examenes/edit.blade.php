@@ -11,8 +11,10 @@
 </div>
 
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-    <h4 class="mb-sm-0">Examen&nbsp;<span class="custom-badge original">{{ $examene->Id }}</span> {!! ($examene->Inactivo === 3) ? '<span class="custom-badge rojo">Deshabilitado</span>' : '' !!}</h4>
-
+    <div class="d-flex aling-items-center">
+        <h4 class="mb-sm-0">Examen&nbsp;<span class="custom-badge original">{{ $examene->Id }}</span> {!! ($examene->Inactivo === 3) ? '<span class="custom-badge rojo">Deshabilitado</span>' : '' !!}</h4>
+        <x-helper>{!!$helper!!}</x-helper>
+    </div>
     <div class="page-title-right">
         <button type="button" id="clonar" class="btn botonGeneral"><i class="ri-file-copy-2-line"></i> Clonar</button>
         <button type="button" {!! $examene->Inactivo === 3 ? 'disabled' : 'id="eliminar"' !!} class="btn botonGeneral"><i class="ri-delete-bin-line"></i> Eliminar</button>
