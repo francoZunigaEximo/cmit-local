@@ -92,8 +92,9 @@ function createFile(tipo, array, name){
         path = match ? match[1] : '';
 
     let url = new URL(location.href),
-        baseUrl = url.origin,
-        fullPath = baseUrl + '/cmit/storage' + path;
+        checkPublic = url.href.includes("public") ? '/cmit/storage' : '/storage',
+        baseUrl = url.origin + checkPublic,
+        fullPath = baseUrl + path;
 
     let link = document.createElement('a');
     link.href = fullPath;
