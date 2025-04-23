@@ -5,8 +5,10 @@
 @section('content')
 
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-    <h4 class="mb-sm-0">Registrar exámen</h4>
-
+    <div class="d-flex align-items-center">
+        <h4 class="mb-sm-0">Registrar exámen</h4>
+        <x-helper>{!!$helper!!}</x-helper>
+    </div>
     <div class="page-title-right">
     </div>
 </div>

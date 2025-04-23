@@ -23,13 +23,22 @@ class UsuariosController extends Controller
     const folder = "Prof";
     use CheckPermission;
 
+    public $helper = '
+        <div class="d-flex flex-column gap-1">
+            <span class="small"><i class="ri-edit-line"></i>&nbsp;Editar correo electronico, datos personales y roles.</span>
+            <span class="small"><i class="ri-delete-bin-2-line"></i>&nbsp;Dar de baja/eliminar el usuario.</span>
+            <span class="small"><i class="ri-lock-2-line"></i>&nbsp;Desactivar o activar usuario.</span>
+            <span class="small"><i class="ri-lock-password-line"></i>&nbsp;Reset de password a "cmit1234".</span>
+        </div>
+    ';
+
     public function index()
     {
         if(!$this->hasPermission("usuarios_show")) {
             abort(403);
         } 
 
-        return view('layouts.usuarios.index');
+        return view('layouts.usuarios.index', ['helper'=>$this->helper]);
     }
 
     public function create()

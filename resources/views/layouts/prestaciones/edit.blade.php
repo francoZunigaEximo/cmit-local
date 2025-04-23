@@ -11,9 +11,12 @@
 </div>
 
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+    <div class="d-flex">
     <h4 class="mb-sm-0">Prestación <span class="custom-badge original">N° {{ $prestacione->Id }}</span>&nbsp;<span class="custom-badge verde">Financiador {{ ($prestacione->TipoPrestacion === 'ART' ? 'ART' : 'EMPRESA') }}</span> {!! ($prestacione->Anulado === 1) ? '<span class="custom-badge rojo">Bloqueado</span>' : '' !!}</h4>
-
+    <x-helper>{!!$helper!!}</x-helper>
+    </div>
     <div class="page-title-right">
+        
         <button type="button" class="btn botonGeneral" data-bs-toggle="modal" data-bs-target="#resultadosPaciente">
             <i class="ri-add-line align-bottom me-1"></i> Resultados
         </button>

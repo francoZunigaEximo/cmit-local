@@ -11,8 +11,10 @@
 </div>
 
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-    <h4 class="mb-sm-0">Cliente <span class="custom-badge original">Nro. {{ $cliente->Id }}</span> {!! ($cliente->Bloqueado === 1) ? '<span class="custom-badge rojo">Bloqueado</span>' : '' !!}</h4>
-
+    <div class="d-flex">
+        <h4 class="mb-sm-0">Cliente <span class="custom-badge original">Nro. {{ $cliente->Id }}</span> {!! ($cliente->Bloqueado === 1) ? '<span class="custom-badge rojo">Bloqueado</span>' : '' !!}</h4>
+        <x-helper>{!!$helper!!}</x-helper>
+    </div>
     <div class="page-title-right"></div>
 </div>
                         
