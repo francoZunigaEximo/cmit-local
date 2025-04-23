@@ -36,11 +36,12 @@ class Paciente implements ReporteInterface
             'I1' => 'Localidad',
             'J1' => 'Provincia',
             'K1' => 'Email',
+            'L1' => 'Telefono',
             'M1' => 'Antecedentes',
             'N1' => 'Observaciones'
         ];
 
-        $columnas = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'M', 'N'];
+        $columnas = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M','N'];
 
         foreach ($columnas as $columna) {
             $sheet->getColumnDimension($columna)->setAutoSize(true);
@@ -56,6 +57,8 @@ class Paciente implements ReporteInterface
     {
         $fila = 2;
         foreach ($pacientes as $paciente) {
+            $nroTelefono = ( $paciente->CodigoArea != "" ? "(".$paciente->CodigoArea.") " : "" ). $paciente->NumeroTelefono;
+            
             $sheet->setCellValue('A' . $fila, $paciente->Id);
             $sheet->setCellValue('B' . $fila, $paciente->Apellido);
             $sheet->setCellValue('C' . $fila, $paciente->Nombre);
@@ -67,6 +70,7 @@ class Paciente implements ReporteInterface
             $sheet->setCellValue('I' . $fila, $paciente->localidad->Nombre);
             $sheet->setCellValue('J' . $fila, $paciente->Provincia);
             $sheet->setCellValue('K' . $fila, $paciente->EMail);
+            $sheet->setCellValue('L' . $fila, $nroTelefono);   
             $sheet->setCellValue('M' . $fila, $paciente->Antecedentes);
             $sheet->setCellValue('N' . $fila, $paciente->Observaciones);
             $fila++;

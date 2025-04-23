@@ -22,15 +22,15 @@ services:
   composer-aux:
     image: composer
     volumes:
-      - '.:/app'
-    command: install --ignore-platform-reqs --no-scripts
+      - './:/app'
+    command: install --ignore-platform-reqs --no-scripts && composer update 
 
   myapp:
     image: docker.io/bitnami/laravel:10
     ports:
       - '8000:8000'
     environment:
-      - DB_HOST=192.168.111.8
+      - DB_HOST=192.168.111.14
       - DB_PORT=3306
       - DB_USERNAME=db_cmit
       - DB_DATABASE=db_cmit
@@ -41,8 +41,15 @@ services:
       - REDIS_PASSWORD=null
       - REDIS_PORT=6379
     volumes:
-      - '.:/app'
+      - './:/app'
     depends_on:
       - composer-aux
       - mariadb
       - redis  
+  nginx:
+    image: nginx:latest
+    ports:
+      - "8089:80"
+    volumes:
+      - ./:/app
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf

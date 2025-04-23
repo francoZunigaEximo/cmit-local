@@ -13,12 +13,15 @@ $(document).ready(()=>{
         $('#listaPac').DataTable().clear().destroy();
         
         new DataTable('#listaPac', {
-
+            lengthMenu: [
+                [25, 50, 100, 500,],
+                [25, 50, 100, 500,]
+            ],
+            pageLength: 500,
             searching: false,
             ordering: false,
             processing: true,
-            lengthChange: false,
-            pageLength: 50,
+            lengthChange: true,
             deferRender: true,
             responsive: false,
             serverSide: true,
