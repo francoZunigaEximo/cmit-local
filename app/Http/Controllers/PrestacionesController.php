@@ -77,6 +77,28 @@ class PrestacionesController extends Controller
 
     protected $reporteExcel;
 
+    public $helper = '
+        <ul>
+            <li>No se podrán <b class="negrita_verde">Cerrar</b> las Prestaciones con exámenes Incompletos o Ausentes</li>
+            <li>No se podrán <b class="negrita_verde">Finalizar</b> las Prestaciones con Sin Escanear, Forma o devolución</li>
+            <li>Para Borrar Prestaciones con exámenes provenientes de <b class="negrita_verde">exámenes a Cuenta</b> primero deben eliminarse los exámenes</li>
+        </ul>
+    ';
+
+    public $helperEdit = '
+        <ul>
+            <li>No se podrán <b class="negrita_verde">Cerrar</b> las Prestaciones con exámenes Incompletos o Ausentes</li>
+            <li>No se podrán <b class="negrita_verde">Finalizar</b> las Prestaciones con Preliminar RX, Sin Escanear, Forma o devolución</li>
+            <li>Solo se podrán <b class="negrita_verde">Reactivar</b> las Prestaciones sin No asociadas</li>
+            <li>El botón <b class="negrita_verde">Todo</b> Cierra, Envia la Calificacion Laboral e Imprime Resumen, o reste y formularios Anexos para completar </li>
+            <li>Para poder enviar <b class="negrita_verde">Resultados</b>, el Cliente debe tener Mail Informes, no registrar Sin Envio de Mails y no contar con Examenes a Cuenta impagos asociados</li>
+            <li>Solo puede <b class="negrita_verde">e-Enviar</b> si la prestacion esta Cerrada y los examenes estan cerrados, adjuntados e informados (incluidos los anexos)</li>
+            <li>Envia los reportes al <b class="negrita_verde">Email Informes</b> de la Empresa o ART, segun el Tipo de Prestación</li>
+            <li>Si el <b class="negrita_verde">Tipo</b> es OTRO/CARNET/REC MED/S/C_OCUPACIONAL (Sin Calificacion Laboral), el e-Estudio NO genera hoja de aptitud, solo Adjuntos</li>    
+            <li>No es posible cambiar Empresa y ART si la Prestaciones esta Anulada, Facturada o tiene Constancia Entrega</li>
+        </ul>
+    ';
+
     public function __construct(ReporteService $reporteService, ReporteExcel $reporteExcel)
     {
         $this->reporteService = $reporteService;
@@ -98,7 +120,7 @@ class PrestacionesController extends Controller
             return Datatables::of($query)->make(true);
         }
 
-        return view('layouts.prestaciones.index');
+        return view('layouts.prestaciones.index', ['helper' => $this->helper]);
     }
     
     public function create()
@@ -126,7 +148,7 @@ class PrestacionesController extends Controller
         $fichalaboral = Fichalaboral::where('IdPaciente', $prestacione->IdPaciente)->orderBy('Id', 'Desc')->first();
         $tiposPrestacionOtros = PrestacionesTipo::whereNotIn('Nombre', $tiposPrestacionPrincipales)->get();
 
-        return view('layouts.prestaciones.edit', compact(['tipoPrestacion', 'prestacione', 'financiador', 'auditorias', 'fichalaboral', 'tiposPrestacionOtros']));
+        return view('layouts.prestaciones.edit', compact(['tipoPrestacion', 'prestacione', 'financiador', 'auditorias', 'fichalaboral', 'tiposPrestacionOtros']), ['helper'=> $this->helperEdit]);
     }
 
     public function estados(Request $request)

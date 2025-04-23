@@ -5,8 +5,10 @@
 @section('content')
 
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-    <h4 class="mb-sm-0">Mapas</h4>
-
+    <div class="d-flex align-items-center">
+        <h4 class="mb-sm-0">Mapas</h4>
+        <x-helper>{!!$helper!!}</x-helper>
+    </div>
     <div class="page-title-right">
         <ol class="breadcrumb m-0">
             <li class="breadcrumb-item"><a href="{{ route('mapas.index') }}">Mapas</a></li>
@@ -85,20 +87,13 @@
                                 </div>
 
                             </div>
-
                             <div class="row">
-                                <div class="col-sm-9 mb-3">
-                                    <span class="custom-badge amarillo"> Entregas entre 15 a 11 días </span>
-                                    <span class="custom-badge naranja">Entregas entre 10 a 1 día</span>
-                                    <span class="custom-badge rojo">Entregas con 0 en adelante mientras no este eEnviado</span>
-                                    <span class="custom-badge verde">Entregas eEnviadas</span>
-                                </div>
+                               
                                 <div class="col-sm-3" style="text-align: right;">
                                     <button type="button" id="reset" class="btn botonGeneral">Reiniciar</button>
                                     <button type="button" id="buscar" class="btn botonGeneral">Buscar</button>
                                 </div>
                             </div>
-                            
                         </div>
                     </div>
 
