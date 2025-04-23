@@ -733,12 +733,12 @@
                 
                                     <div class="input-group input-group-sm mb-2">
                                         <span class="input-group-text">Fecha Ult. Periodico Empresa</span>
-                                        <input type="date" class="form-control"  id="FechaUltPeriod" value="{{ (isset($fichalaboral->FechaUltPeriod) && $fichalaboral->FechaUltPeriod !== '0000-00-00') ? \Carbon\Carbon::parse($fichalaboral->FechaUltPeriod)->format('Y-m-d') : '' }}">
+                                        <input type="date" class="form-control"  id="FechaUltPeriod" value="{{ $fichalaboral->FechaUltPeriod ?? '' }}">
                                     </div>
                 
                                     <div class="input-group input-group-sm mb-2">
                                         <span class="input-group-text">Fecha Ex ART</span>
-                                        <input type="date" class="form-control" id="FechaExArt" value="{{ (isset($fichalaboral->FechaExArt) && $fichalaboral->FechaExArt !== '0000-00-00') ? \Carbon\Carbon::parse($fichalaboral->FechaExArt)->format('Y-m-d') : '' }}">
+                                        <input type="date" class="form-control" id="FechaExArt" value="{{ $fichalaboral->FechaExArt ?? '' }}">
                                     </div>
                                 </div>
                 
