@@ -39,4 +39,5 @@ class Examenes
             return ArchivoInformador::where('IdEntidad', $idPrestacion)->count();
         }
     }
+
 }

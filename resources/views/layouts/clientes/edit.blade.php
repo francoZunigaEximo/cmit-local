@@ -616,6 +616,7 @@ const lstClientes = "{{ route('lstClientes') }}";
 const listadoDni = "{{ route('listadoDni') }}";
 const listadoEx = "{{ route('listadoEx') }}";
 const checkEstadoTipo = "{{ route('clientes.checkEstado') }}";
+const getListaExCta = "{{ route('examenesCuenta.listado') }}";
 
 </script>
 

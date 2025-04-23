@@ -6,7 +6,6 @@ $(function(){
         dataTables_processing: $(".dataTables_processing"),
         excel: $('#excel'),
         downPaciente: $('.downPaciente')
-
     };
 
     principal.btnBajaMultiple.click(function(e) {
@@ -65,11 +64,12 @@ $(function(){
 
     principal.excel.on('click', function(e){
         e.preventDefault();
-
+        
         let ids = [];
-        $('input[name="Id"]:checked').each(function() {
+        
+        $('input[name="Id"]:checked').each(function(){
             ids.push($(this).val());
-        });
+        })
 
         if (ids.length === 0) {
             toastr.warning('Debes seleccionar al menos un paciente para exportar.','',{timeOut: 1000});
@@ -105,7 +105,6 @@ $(function(){
                     });
             }
         });
-
     });
 
     principal.downPaciente.on('click', function(e){
@@ -157,5 +156,8 @@ $(function(){
         });
   
     });
+
+
+
 
 });

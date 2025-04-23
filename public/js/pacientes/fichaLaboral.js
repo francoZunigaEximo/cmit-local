@@ -131,7 +131,7 @@ $(function () {
         changeTipo = $(this).val(); 
         variables.tipoPrestacionHidden.val(changeTipo);
         changeTipo === 'OTRO' ? variables.divtipoPrestacionPresOtros.show() : variables.divtipoPrestacionPresOtros.hide();
-        checkExamenesCuenta(IDficha);
+        checkExamenesCuenta(variables.selectClientes.val());
     });
 
     variables.TipoPrestacion.change(function(){
@@ -392,7 +392,7 @@ $(function () {
     principal.altaPrestacionModal.on('hidden.bs.modal', function () {
         principal.prestacionLimpia.add(principal.observacionesModal).add(principal.nuevaPrestacion).hide();
         principal.fichaLaboralModal.show();
-        checkExamenesCuenta(IDficha);
+        checkExamenesCuenta(variables.selectClientes.val());
         getMap(variables.selectClientes.val(), variables.selectArt.val());
       });
 
@@ -518,7 +518,7 @@ $(function () {
         let ingreso = variables.FechaIngreso.val(), egreso = variables.FechaEgreso.val();
         let dateIngreso = new Date(ingreso), dateEgreso = egreso ? new Date(egreso) : new Date();
 
-        let diff = dateIngreso.getFullYear() - dateEgreso.getFullYear();
+        let diff =  dateEgreso.getFullYear() - dateIngreso.getFullYear();
 
         if (dateEgreso.getMonth() < dateIngreso.getMonth() || (dateEgreso.getMonth() === dateIngreso.getMonth() && dateEgreso.getDate() < dateIngreso.getDate())) {
             diff--;
@@ -732,10 +732,11 @@ $(function () {
         }else if(pago === 'P') {
 
             preloader('on');
-            $.get(cantTotalDisponibles, {Id: variables.selectClientes.val()})
+            $.get(lstExDisponibles, {Id: variables.selectClientes.val()})
             .done(function(response){
                 preloader('off');
-                if(response > 0) {
+
+                if(response.length > 0) {
                     principal.ultimasFacturadas
                         .add(principal.examenesDiponibles)
                         .add(principal.siguienteExCta)
@@ -748,6 +749,13 @@ $(function () {
     };
 
     async function checkExamenesCuenta(id) {
+
+        if([null, 0,''].includes(id)) {
+            principal.alertaExCta
+                    .add(principal.verListadoExCta)
+                    .hide();
+                return;
+        }
 
         try {
             const response = await $.get(lstExDisponibles, { Id: id });
@@ -844,8 +852,8 @@ $(function () {
     };
 
     async function checkExCuentaDisponible(id) {
-        $data = await $.get(checkDisponibilidad, {Id: id});
-        return $data > 0 ? true : false;
+        $data = await $.get(lstExDisponibles, {Id: id});
+        return $data.length > 0 ? true : false;
     }
 
     function marcarPago(pago) {

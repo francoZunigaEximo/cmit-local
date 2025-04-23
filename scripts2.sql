@@ -970,3 +970,43 @@ BEGIN
 END
 $$
 DELIMITER ;
+
+DROP PROCEDURE IF EXISTS db_cmit.getListaExCta;
+
+DELIMITER $$
+$$
+CREATE DEFINER=`db_cmit`@`%` PROCEDURE `db_cmit`.`getListaExCta`(IN `IdCliente` INT)
+BEGIN
+SELECT 
+    COUNT(e.Nombre) AS CantidadExamenes,
+    c.RazonSocial AS Empresa,
+    e.Nombre AS NombreExamen,
+    pi2.Precarga AS Documento,
+    CONCAT(
+        p.Tipo,
+        LPAD(p.Suc, 4, '0'),
+        '-',
+        LPAD(p.Nro, 8, '0')
+    ) AS Factura,
+    MAX(p.Obs) as Obs,
+    MAX(pi2.Id) as IdEx
+	FROM pagosacuenta_it pi2
+	INNER JOIN pagosacuenta p ON pi2.IdPago = p.Id
+	INNER JOIN clientes c ON p.IdEmpresa = c.Id
+	INNER JOIN examenes e ON pi2.IdExamen = e.Id
+	WHERE 
+	    c.Id = IdCliente
+	    AND pi2.Obs <> 'provisorio'
+	    AND pi2.IdPrestacion = 0
+	    AND NOT pi2.IdExamen = 0
+	GROUP BY 
+	    c.RazonSocial, 
+	    e.Nombre,
+	    pi2.Precarga,
+	    Factura
+	ORDER BY 
+	    pi2.IdPrestacion,
+	    pi2.Precarga ASC;
+END
+
+INSERT INTO rol_permisos (rol_id,permiso_id) VALUES(13,81); -- Permiso a administrador para imprimir Saldos y Detalles

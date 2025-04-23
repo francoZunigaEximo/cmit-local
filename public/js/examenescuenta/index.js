@@ -267,6 +267,12 @@ $(function(){
 
                     createFile("xlsx", response.filePath, "reporte");
                     toastr.success("Se esta generando el reporte", '', {timeOut: 1000});
+                })
+                .fail(function(jqXHR){
+                    preloader('off');
+                    let errorData = JSON.parse(jqXHR.responseText);            
+                    checkError(jqXHR.status, errorData.msg);
+                    return;  
                 });
             }
         });

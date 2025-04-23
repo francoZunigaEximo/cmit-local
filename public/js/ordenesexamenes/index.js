@@ -649,7 +649,6 @@ $(function() {
                     .done(function(response){
                         e.preventDefault();
 
-                        console.log(Array.isArray(response));
                         let contador = 1
                         $.each(response, function(index, link){
                             

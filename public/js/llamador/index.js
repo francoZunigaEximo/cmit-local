@@ -1,12 +1,28 @@
 $(function(){
 
-    const grillaEfector = $('#listaLlamadaEfector');
-    const grillaExamenes = $('#tablasExamenes');
+    const principal = {
+        grillaEfector: $('#listaLlamadaEfector'),
+        grillaExamenes: $('#tablasExamenes')
+    };
 
-    let echo = window.Echo.channel('listado-efectores');
+    const variables = {
+        fechaHasta: $('#fechaHasta'),
+        estado: $('#estado'),
+        profesionalEfector: $('#profesionalEfector'),
+        prestacionEfector: $('#prestacionEfector'),
+        tipoEfector: $('#tipoEfector'),
+        artEfector: $('#artEfector'),
+        empresaEfector: $('#empresaEfector'),
+        paraEmpresaEfector: $('#paraEmpresaEfector'),
+        pacienteEfector: $('#pacienteEfector'),
+        edadEfector: $('#edadEfector'),
+        fechaEfector: $('#fechaEfector'),
+        fotoEfector: $('#fotoEfector'),
+        profesional: $('#profesional')
+    };
 
-    $('#fechaHasta').val(fechaNow(null, "-", 0));
-    $('#estado').val('abierto');
+    variables.fechaHasta.val(fechaNow(null, "-", 0));
+    variables.estado.val('abierto');
 
     $(document).on('click', '.verPrestacion', function(e){
         e.preventDefault();
@@ -20,7 +36,7 @@ $(function(){
 
         let opcion = $(this).hasClass('exportar') ? 'exportar' : 'detalles';
 
-        let lista = grillaEfector.DataTable();
+        let lista = principal.grillaEfector.DataTable();
 
         if(!lista.data().any()){
             lista.clear().destroy();
@@ -54,8 +70,18 @@ $(function(){
 
         let id = $(this).data('id'), profesional = $(this).data('profesional'), especialidades = $(this).data('especialidades');
 
-        $('#profesionalEfector, #prestacionEfector, #tipoEfector, #artEfector, #empresaEfector, #paraEmpresaEfector, #pacienteEfector, #edadEfector, #fechaEfector').empty();
-        $('#fotoEfector').attr('src', '');
+        variables.profesionalEfector
+            .add(variables.prestacionEfector)
+            .add(variables.tipoEfector)
+            .add(variables.artEfector)
+            .add(variables.empresaEfector)
+            .add(variables.paraEmpresaEfector)
+            .add(variables.pacienteEfector)
+            .add(variables.edadEfector)
+            .add(variables.fechaEfector)
+            .empty();
+
+        variables.fotoEfector.attr('src', '');
 
         preloader('on')
         $.get(dataPaciente, {Id: id, IdProfesional: profesional, Especialidades: especialidades})
@@ -67,16 +93,16 @@ $(function(){
                     fecha = fechaNow(prestacion.Fecha,'/',0);
 
                 preloader('off');
-                $('#prestacionEfector').val(prestacion.Id);
-                $('#profesionalEfector').val(profesional);
-                $('#tipoEfector').val(prestacion.TipoPrestacion);
-                $('#artEfector').val(prestacion.art.RazonSocial);
-                $('#empresaEfector').val(prestacion.empresa.RazonSocial);
-                $('#paraEmpresaEfector').val(prestacion.empresa.ParaEmpresa);
-                $('#pacienteEfector').val(paciente);
-                $('#edadEfector').val(edad);
-                $('#fechaEfector').val(fecha);
-                $('#fotoEfector').attr('src', FOTO + prestacion.paciente.Foto);
+                variables.prestacionEfector.val(prestacion.Id);
+                variables.profesionalEfector.val(profesional);
+                variables.tipoEfector.val(prestacion.TipoPrestacion);
+                variables.artEfector.val(prestacion.art.RazonSocial);
+                variables.empresaEfector.val(prestacion.empresa.RazonSocial);
+                variables.paraEmpresaEfector.val(prestacion.empresa.ParaEmpresa);
+                variables.pacienteEfector.val(paciente);
+                variables.edadEfector.val(edad);
+                variables.fechaEfector.val(fecha);
+                variables.fotoEfector.attr('src', FOTO + prestacion.paciente.Foto);
 
                 tablasExamenes(response.itemsprestaciones);
 
@@ -89,7 +115,7 @@ $(function(){
             });
     });
 
-    $('#fotoEfector').hover(
+    variables.fotoEfector.hover(
         function() {
             $(this).addClass('zoomed');
         },
@@ -98,14 +124,48 @@ $(function(){
         }
     );
 
-    $(document).on('click', '.llamarExamen',function(e){
+    $(document).on('click', '.llamarExamen, .liberarExamen',function(e){
         e.preventDefault();
 
+        const accion = $(this).hasClass('llamarExamen') ? 'llamado' : 'liberar',
+              boton = {
+                    llamado: {
+                        texto: '<i class="ri-edit-line"></i> Liberar',
+                        remover: 'llamarExamen',
+                        agregar: 'liberarExamen',
+                        textoFila: 'red'
+
+                    },
+                    liberar: {
+                        texto: '<i class="ri-edit-line"></i> Llamar',
+                        remover: 'liberarExamen',
+                        agregar: 'llamarExamen',
+                        textoFila: 'black'
+                    }
+            };
+
+        let fila = $(this).closest('tr');
+        fila.css('color', boton[accion].textoFila);
+
+        $(this).empty()
+               .html(boton[accion].texto)
+               .removeClass(boton[accion].remover)
+               .addClass(boton[accion].agregar);
         
-    })
+        $.get(addAtencion, {prestacion: $(this).data('id'), profesional: variables.profesional.val()})
+            .done(function(){
+                console.log("registro exitoso")
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            });
+    });
 
     function tablasExamenes(data) { 
-        $(grillaExamenes).empty();
+        principal.grillaExamenes.empty();
         preloader('on');
 
         const categoria = {};
@@ -165,7 +225,7 @@ $(function(){
                     </div>
                 `;
                 preloader('off');
-                $(grillaExamenes).append(contenido);
+                principal.grillaExamenes.append(contenido);
             }
         }
     }
@@ -182,7 +242,7 @@ $(function(){
 
     //No Imprime: saber si es fisico o digital / adjunto: si acepta o no adjuntos / condicion: pendiente o adjuntado
     function checkAdjunto(noImprime, adjunto, condicion) {
-        console.log(noImprime, adjunto, condicion)
+        // console.log(noImprime, adjunto, condicion)
         if (adjunto === 0) {
             return ``;
         }else if(adjunto === 1 && condicion > 0 && noImprime === 0) {
@@ -205,7 +265,6 @@ $(function(){
 
         $('#profesional').empty();
 
-        console.log(efectores);
 
         console.log(efectores);
 

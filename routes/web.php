@@ -329,11 +329,10 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('exportExcel', [ExamenesCuentaController::class, 'excel'])->name('exportExcel');
     Route::get('exportPDF', [ExamenesCuentaController::class, 'pdf'])->name('exportPDF');
     Route::get('exportGeneral', [ExamenesCuentaController::class, 'reporteGeneral'])->name('exportGeneral');
-    Route::get('lstExDisponibles', [ExamenesCuentaController::class, 'disponibilidad'])->name('lstExDisponibles');
+    Route::get('/examenes-cuenta/disponibilidad', [ExamenesCuentaController::class, 'disponibilidad'])->name('lstExDisponibles');
     Route::get('lstFacturadas', [ExamenesCuentaController::class, 'listadoUltimas'])->name('lstFacturadas');
     Route::get('saldoNoDatatable', [ExamenesCuentaController::class, 'saldoNoDatatable'])->name('saldoNoDatatable');
-    Route::get('cantTotalDisponibles', [ExamenesCuentaController::class, 'disponibles'])->name('cantTotalDisponibles');
-    Route::get('/examenes-cuenta/disponibilidad', [ExamenesCuentaController::class, 'checkDisponibilidad'])->name('examenesCuenta.checkDisponibilidad');
+    Route::get('examenesCuenta/listado-examenes', [ExamenesCuentaController::class, 'listExCta'])->name('examenesCuenta.listado');
     Route::resource('examenesCuenta', ExamenesCuentaController::class);
 
     //Rutas de Paquete de Estudio
@@ -402,5 +401,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('llamador/efector/buscar', [LlamadorController::class, 'buscarEfector'])->name('llamador.buscarEfector');
     Route::get('llamador/efector/exportar', [LlamadorController::class, 'imprimirExcel'])->name('llamador.excelEfector');
     Route::get('llamador/ver-paciente', [LlamadorController::class, 'verPaciente'])->name('llamador.verPaciente');
+    Route::get('llamador/efector/llamar-paciente',[LlamadorController::class, 'controlLlamado'])->name('llamador.llamar-paciente');
+    Route::get('llamador/check-status', [LlamadorController::class, 'checkLlamado'])->name('llamador.check');
+
+    
 });
 
