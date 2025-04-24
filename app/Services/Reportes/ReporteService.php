@@ -29,7 +29,6 @@ class ReporteService
         ?string $newPath
     ): string
     {
-
         $pdf = new Fpdi('P', 'mm', 'A4');
         $pdf->AddPage();
         $pdf->SetFont('Arial','',8);
