@@ -106,9 +106,9 @@ class CompletoPrestacionFull implements ReporteInterface
             $sheet->setCellValue('O'.$fila, $prestacion->Entregado <> '0000-00-00' ? Carbon::parse($prestacion->Entregado)->format('d/m/Y') : '');
             $sheet->setCellValue('P'.$fila, $prestacion->eEnviado <> '0000-00-00' ? Carbon::parse($prestacion->eEnviado)->format('d/m/Y') : '');
             $sheet->setCellValue('Q'.$fila, $prestacion->FechaVto  <> '0000-00-00' ? Carbon::parse($prestacion->FechaVto) : '');
-            $sheet->setCellValue('R'.$fila, $prestacion->Evaluacion ?? '');
-            $sheet->setCellValue('S'.$fila, $prestacion->Calificacion ?? '');
-            $sheet->setCellValue('T'.$fila, $prestacion->Observaciones ?? '');
+            $sheet->setCellValue('R'.$fila, substr($prestacion->Evaluacion, 2));
+            $sheet->setCellValue('S'.$fila, substr($prestacion->Calificacion, 2));
+            $sheet->setCellValue('T'.$fila, strip_tags($prestacion->Observaciones) ?? '');
             $sheet->setCellValue('U'.$fila, $prestacion->Examen ?? '');
             $sheet->setCellValue('V'.$fila, $prestacion->ExaAnulado === 1 ? 'Sí' : '');
             $sheet->setCellValue('W'.$fila, $prestacion->Incompleto === 1 ? 'Sí' : '');
