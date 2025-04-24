@@ -46,7 +46,7 @@ class CompletoPrestacionFull implements ReporteInterface
             'Q1' => 'Vencimiento',
             'R1' => 'Evaluacion',
             'S1' => 'Calificacion',
-            'T1' => 'Obs.Resultado',
+            'T1' => 'Obs. Evaluación',
             'U1' => 'Examen',
             'V1' => 'Anulado',
             'W1' => 'INC',

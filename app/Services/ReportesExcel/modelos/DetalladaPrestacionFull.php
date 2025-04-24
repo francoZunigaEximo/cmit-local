@@ -46,9 +46,12 @@ class DetalladaPrestacionFull implements ReporteInterface
             'Q1' => 'FOR',
             'R1' => 'DEV',
             'S1' => 'Obs Estados',
+            'T1' => 'Evaluacion',
+            'U1' => 'Calificacion',
+            'V1' => 'Obs. Evaluación'
         ];
 
-        $columnas = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S'];
+        $columnas = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S','T','U','V'];
 
         foreach($columnas as $columna){
             $sheet->getColumnDimension($columna)->setAutoSize(true);
@@ -84,6 +87,9 @@ class DetalladaPrestacionFull implements ReporteInterface
             $sheet->setCellValue('Q'.$fila, $prestacion->Forma ?? '');
             $sheet->setCellValue('R'.$fila, $prestacion->Devol ?? '');
             $sheet->setCellValue('S'.$fila, strip_tags($prestacion->ObsEstado) ?? '');
+            $sheet->setCellValue('T'.$fila, substr($prestacion->Evaluacion, 2));
+            $sheet->setCellValue('U'.$fila, substr($prestacion->Calificacion, 2));
+            $sheet->setCellValue('V'.$fila, strip_tags($prestacion->Observaciones) ?? '');
             $fila++;
         }
     }
