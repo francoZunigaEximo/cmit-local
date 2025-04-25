@@ -786,12 +786,12 @@ $(function() {
 
             lstEspecialidades.empty().append('<option value="" selected>Elige una opción...</option>');
 
-            $.each(response.result, function(index, r){
+            for(let index = 0; index < response.length; index++) {
+                let r = response[index],
+                contenido = `<option value="${r.Id}">${r.Nombre}</option>`;
+                lstEspecialidades.append(contenido);    
 
-                contenido = `<option title="${r.Nombre}" value="${r.Id}">${r.Nombre}</option>`;
-
-                lstEspecialidades.append(contenido);
-            });
+            }
         });
     }
 

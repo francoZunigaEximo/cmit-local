@@ -8,14 +8,6 @@ use Illuminate\Http\Request;
 
 class FichaAltaController extends Controller
 {
-    public function edit(Fichalaboral $fichalaboral)
-    {
-        $tiposPrestacionPrincipales = ['ART', 'INGRESO', 'PERIODICO', 'OCUPACIONAL', 'EGRESO', 'OTRO'];
-        $tiposPrestacionOtros = PrestacionesTipo::whereNotIn('Nombre', $tiposPrestacionPrincipales)->get();
-
-        return view('layouts.fichalaboral.edit', compact(['fichalaboral', 'tiposPrestacionOtros']));
-    }
-
     public function save(Request $request)
     {
         $data = $request->all();
