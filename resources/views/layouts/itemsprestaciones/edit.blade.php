@@ -203,11 +203,11 @@
                 <div class="col-md-4">
                     <div class="input-group input-group-sm mb-2">
                         <span class="input-group-text">Fecha Factura</span>
-                        <input type="date" class="form-control" id="FechaFacturaVta" name="FechaFacturaVta" value="{{ $data['itemprestacion']->facturadeventa->Fecha ?? ''}}" @readonly(true)>
+                        <input type="date" class="form-control" id="FechaFacturaVta" name="FechaFacturaVta" value="" @readonly(true)>
                     </div>
                     <div class="input-group input-group-sm mb-2">
                         <span class="input-group-text">Nro Factura</span>
-                        <input type="text" class="form-control" id="NroFacturaVta" name=" NroFacturaVta" value="{{ $data['itemprestacion']->facturadeventa->Tipo ?? ''}}{{ $data['itemprestacion']->facturadeventa->Sucursal ?? ''}}{{ $data['itemprestacion']->facturadeventa->NroFactura ?? ''}}" @readonly(true)>
+                        <input type="text" class="form-control" id="NroFacturaVta" name=" NroFacturaVta" value="" @readonly(true)>
                     </div>
                 </div>
 

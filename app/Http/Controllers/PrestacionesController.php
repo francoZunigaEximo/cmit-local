@@ -108,7 +108,7 @@ class PrestacionesController extends Controller
         }
 
         $tipoPrestacion = PrestacionesTipo::all();
-        $paquetes = PaqueteEstudio::all();
+        $paquetes = PaqueteEstudio::all();git 
 
         return view('layouts.prestaciones.create', compact(['tipoPrestacion', 'paquetes']));
     }
@@ -293,14 +293,6 @@ class PrestacionesController extends Controller
         $empresa = ($request->TipoPrestacion === 'ART' ? $request->IdART : $request->IdEmpresa);
 
         $request->IdMapa && $this->updateMapeados($request->IdMapa, "quitar");
-
-        if (!in_array($request->ExamenCuenta, [0, null, ''])) {
-            $examenes = $this->registrarExamenCta($request->ExamenCuenta, $nuevoId);
-        } 
-    
-        if (isset($examenes) && is_array($examenes) && !in_array($examenes, [0, null, ''])) {
-            $this->registrarExamenes($examenes, $nuevoId);
-        }
 
         if($request->Tipo && $request->Sucursal && $request->NroFactura && $nuevoId)
         {
