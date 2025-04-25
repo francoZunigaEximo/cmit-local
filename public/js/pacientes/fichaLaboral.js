@@ -495,7 +495,7 @@ $(function () {
                         .add(variables.selectArtPresN)
                         .val(clienteArt.RazonSocial);
 
-                    filtrarTipoPrestacion(variables.tipoPrestacionHidden.val());
+                    filtrarTipoPrestacion(variables.TipoPrestacion.filter(':checked').val());
                 }
             }
         });   
@@ -544,6 +544,8 @@ $(function () {
                         variables.tipoPrestacionPres
                             .add(variables.tipoPrestacionPresN)
                             .val(result);
+
+                        console.log(result); 
                     }
 
                     if (estado !== 'ART' || estado === '') {
