@@ -144,7 +144,7 @@ $(function () {
 
     variables.TipoPrestacion.change(function(){
         variables.tipoPrestacionHidden.val(variables.TipoPrestacion.val());
-        variables.TipoPrestacion.val() === 'MAS' ? variables.divtipoPrestacionPresOtros.show() : variables.divtipoPrestacionPresOtros.hide();
+        variables.TipoPrestacion.filter(':checked').val() === 'MAS' ? variables.divtipoPrestacionPresOtros.show() : variables.divtipoPrestacionPresOtros.hide();
         checkExamenesCuenta(variables.selectClientes.val());
     });
 
