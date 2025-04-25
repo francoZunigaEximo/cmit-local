@@ -103,10 +103,11 @@ $(function () {
     selectMedioPago(variables.PagoLaboral.val());
     masOpcion();
 
-    principal.tipoPrestacionPresOtros
+    variables.tipoPrestacionPresOtros
         .add(variables.tipoPrestacionPresN)
         .add(variables.tipoPrestacionPres)
-        .find('option[value="NO ART"]').remove();
+        .find('option[value="NO ART"]')
+        .remove();
 
     variables.selectClientes.add(variables.selectArt).on('change', function(){
         getMap(variables.selectClientes.val(), variables.selectArt.val());
