@@ -99,7 +99,7 @@ class SimplePrestacion implements ReporteInterface
             $sheet->setCellValue('Y'.$fila, $prestacion->Ausente === 1 ? 'SI' : 'NO');
             $sheet->setCellValue('Z'.$fila, $prestacion->Forma === 1 ? 'SI' : 'NO');
             $sheet->setCellValue('AA'.$fila, $prestacion->Devol === 1 ? 'SI' : 'NO');
-            $sheet->setCellValue('AB'.$fila, strip_tags($prestacion->prestacionComentario->Obs) ?? '');
+            $sheet->setCellValue('AB'.$fila, strip_tags($prestacion->prestacionComentario->Obs ?? ''));
             $fila++;
             
         }
