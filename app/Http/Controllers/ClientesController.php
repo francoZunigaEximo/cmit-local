@@ -445,6 +445,19 @@ class ClientesController extends Controller
         return response()->json($this->checkPrestaciones($request->Id));
     }
 
+    public function formaPago(Request $request)
+    {
+        $cliente = Cliente::where('Id', $request->Id)->first(['FPago']);
+
+        return response()->json($cliente);
+    }
+
+    public function getLocalidad(Request $request)
+    {
+        $localidad = Localidad::where('Id', $request->Id)->first(['Nombre', 'CP']);
+        return response()->json(['localidad' => $localidad]);
+    }
+
     private function formatearIdentificacion($identificacion)
     {
         if (strpos($identificacion, '-') !== false) {

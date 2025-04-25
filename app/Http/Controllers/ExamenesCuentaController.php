@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Examen;
 use App\Models\ExamenCuenta;
 use App\Models\ExamenCuentaIt;
+use App\Models\ItemPrestacion;
 use App\Models\Relpaqest;
 use App\Models\Relpaqfact;
+use App\Services\ItemsPrestaciones\Helper;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use App\Traits\ObserverExamenesCuenta;
@@ -18,6 +21,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use App\Traits\CheckPermission;
 
 use App\Services\Reportes\ReporteService;
+use App\Services\ItemsPrestaciones\Helper as ItemSupport;
 use App\Services\Reportes\Titulos\Basico;
 use App\Services\Reportes\Titulos\Empresa;
 use App\Services\Reportes\Cuerpos\ExamenCuenta as ExCuenta;
@@ -27,10 +31,12 @@ class ExamenesCuentaController extends Controller
     use ObserverExamenesCuenta, CheckPermission;
 
     protected $reporteService;
+    protected $itemSupport;
 
-    public function __construct(ReporteService $reporteService)
+    public function __construct(ReporteService $reporteService, ItemSupport $itemSupport)
     {
         $this->reporteService = $reporteService;
+        $this->itemSupport = $itemSupport;
     }
 
     public function index(Request $request)
@@ -275,6 +281,7 @@ class ExamenesCuentaController extends Controller
                 'pacientes.Apellido as ApellidoPaciente'
             )
             ->where('pagosacuenta.Id', $request->Id)
+            ->whereNot('pagosacuenta_it.Obs', 'provisorio')
             ->orderBy('pacientes.Apellido', 'ASC')
             ->get();
 
@@ -887,7 +894,40 @@ class ExamenesCuentaController extends Controller
         $query = DB::Select('CALL getListaExCta(?)', [$request->Id]);
         return response()->json($query);
     }
-    
+
+    public function cargarExCtaPrestacion(Request $request)
+    {
+        if (!isset($request->Ids) || !is_array($request->Ids)) {
+            return response()->json(['error' => 'No hay examenes a cuenta para procesar'], 400);
+        }
+
+        $ids = $request->Ids;
+        $examenesCta = ExamenCuentaIt::whereIn('id', $ids)->get();
+        $resultados = [];
+
+        foreach ($examenesCta as $examenCta) {
+
+            $itemPrestacion = ItemPrestacion::where('IdPrestacion', $request->IdPrestacion)
+                ->where('IdExamen', $examenCta->IdExamen)
+                ->exists(); // Seguridad de que no exista un examen con la prestacion
+
+            if ($itemPrestacion) {
+                $resultados[] = ['msg' => 'El examen ya está registrado en esta prestación', 'status' => 'warning'];
+            
+            } else {
+
+                $examenCta->IdPrestacion = $request->IdPrestacion;
+                $examenCta->save();
+
+                $this->addItemPrestacion($request->IdPrestacion, $examenCta->IdExamen);
+
+                $resultados[] = ['msg' => 'Examen a cuenta cargado correctamente.', 'status' => 'success'];
+            }
+        }
+
+        return response()->json($resultados);
+    }
+
     private function tituloReporte(?int $id): mixed
     {
         return ExamenCuenta::join('clientes', 'pagosacuenta.IdEmpresa', '=', 'clientes.Id')
@@ -1003,5 +1043,32 @@ class ExamenesCuentaController extends Controller
             'pacientes.Apellido as ApePaciente',
             'examenes.Nombre as Examen'
         );
+    }
+
+    private function addItemPrestacion(int $idPrestacion, int $idExamen)
+    {
+        $examen = Examen::find($idExamen);
+        $honorarios = $this->itemSupport->honorarios($examen->Id, $examen->IdProveedor);
+
+        ItemPrestacion::create([
+            'Id' => ItemPrestacion::max('Id') + 1,
+            'IdPrestacion' => $idPrestacion,
+            'IdExamen' => $examen->Id,
+            'Fecha' => now()->format('Y-m-d'),
+            'CAdj' => $examen->Cerrado === 1 
+                        ? ($examen->Adjunto === 0 ? 3 : 4) 
+                        : 1,
+            'CInfo' => $examen->Informe,
+            'IdProveedor' => $examen->IdProveedor,
+            'VtoItem' => $examen->DiasVencimiento,
+            'SinEsc' => $examen->SinEsc,
+            'Forma' => $examen->Forma,
+            'Ausente' => $examen->Ausente,
+            'Devol' => $examen->Devol,
+            'IdProfesional' => $examen->Cerrado === 1 ? 26 : 0,
+            'Honorarios' => $honorarios == 'true' ? $honorarios->Honorarios : 0
+        ]);
+
+        ItemPrestacion::InsertarVtoPrestacion($idPrestacion);
     }
 }

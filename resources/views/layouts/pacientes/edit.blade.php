@@ -350,8 +350,8 @@
                                     </div>
 
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="TipoPrestacion" id="OTRO" value="OTRO">
-                                        <label class="form-check-label" for="otro">OTRO</label>
+                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="TipoPrestacion" id="MAS" value="MAS">
+                                        <label class="form-check-label" for="mas">MAS</label>
                                     </div>
                                     <div class="form-check form-check-inline" id="divtipoPrestacionPresOtros" style="display: ">
                                         <select class="form-select" id="tipoPrestacionPresOtros">
@@ -798,93 +798,8 @@
                     </div>
                 </div>
 
-                <div class="row seleccionExCta">
-                    <div class="row">
-                        <div class="col-sm-4"></div>
-                        <div class="col-sm-4 text-center"><h3 class="ff-secondary fw-bold mt-1 text-center">Agregar examenes a cuenta</h3></div>
-                        <div class="col-sm-4 text-center"></div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-12 mx-auto box-information">
-                            <div class="row">
-                                <div class="col-sm-12 text-end">
-                                    <button type="button" class="btn btn-sm botonGeneral volverPrestacion"><i class="ri-arrow-left-line"></i>Volver</button>
-                                </div>
-                            </div>
-
-                            <div class="d-flex justify-content-center align-items-center">
-                                <div class="col-sm-6 mt-5 mt-lg-0">
-                                    <div class="row g-3 mb-0 justify-content-center">
-                                        <div class="col-sm-6">
-                                            <select name="examen" id="examen" class="form-control"></select>
-                                        </div>
-                                        <div class="col-auto">
-                                            <button type="button" class="btn btn-sm botonGeneral buscarExamen"><i class="ri-search-line"></i> Buscar</button>
-                                            <button type="button" class="btn btn-sm botonGeneral reiniciarExamen"><i class="ri-arrow-go-forward-fill"></i> Reiniciar</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-
-                            <div class="row mx-auto">
-                                <div class="table-responsive table-card mt-3 mb-1 mx-auto col-sm-8">
-                                    <table id="lstExCta" class="display table table-bordered">
-                                        <tbody class="list form-check-all" id="lstEx">
-                                            
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-
-                            <div class="row mb-2">
-                                <div class="col-sm-12 text-center">
-                                    <button type="button" class="btn btn-sm botonGeneral precargaExamenes"><i class="ri-arrow-up-circle-line"></i>&nbsp;Cargar</button>
-                                </div>
-                            </div>
-
-                            <hr class="mt-1 mb-1">
-
-                            <div class="row mx-auto">
-                                <div class="col-sm-7 text-end mt-2 p-2 mx-auto">
-                                    <button type="button" class="btn btn-sm botonGeneral deleteMasivo"><i class="ri-delete-bin-6-line"></i>&nbsp;Eliminar</button>
-                                </div>
-                            </div>
-
-                            <div class="row mx-auto mb-3">
-                                <div class="table-responsive table-card mt-3 mb-1 mx-auto col-sm-7">
-                                    <table id="listadoSaldos" class="display table table-bordered">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th class="sort">Examen</th>
-                                                <th>Especialidad</th>
-                                                <th>Dias a Vencer</th>
-                                                <th><input type="checkbox" id="checkAllEx" name="Id_exa"></th>
-                                                <th>Acciones</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="list form-check-all" id="listEdicion">
-                            
-                                        </tbody>
-                                    </table>
-                            
-                                </div>
-                            </div>
-
-                            <div class="row mb-2">
-                                <div class="col-sm-12 text-center">
-                                    <button type="button" class="btn btn-sm botonGeneral cargarExPrestacion"><i class="ri-save-line"></i>&nbsp;Guardar</button>
-                                </div>
-                            </div>
-
-
-                        </div>
-                    </div>
-                </div>
-
                 <div class="row prestacionLimpia">
-                    <h3 class="ff-secondary fw-bold mt-1 text-center">Alta Prestación</h3>
+                    <h3 class="ff-secondary fw-bold mt-1 text-center tituloPrestacion">Alta Prestación</h3>
                     <div class="row">
                         <div class="col-9 mx-auto box-information">
                             <div class="messagePrestacion"></div>
@@ -983,6 +898,7 @@
 
                             </div>
 
+
                             <div class="row mt-2 paqueteExamen">
                         
                                 <div class="col-6">
@@ -1018,6 +934,43 @@
                                         <tbody id="listaExamenes" class="list form-check-all"></tbody>
                                     </table>
             
+                                </div>
+                            </div>
+
+                            <hr class="mt-3 mb-3">
+
+                            <div class="row paqueteExCta">
+                                
+                                <div class="d-flex justify-content-center align-items-center">
+                                    <div class="col-sm-12 mt-5 mt-lg-0">
+                                        <div class="row g-3 mb-0 justify-content-center">
+                                            <div class="col-sm-6">
+                                                <select name="examen" id="examen" class="form-control"></select>
+                                            </div>
+                                            <div class="col-auto">
+                                                <button type="button" class="btn btn-sm botonGeneral buscarExamen"><i class="ri-search-line"></i> Buscar</button>
+                                                <button type="button" class="btn btn-sm botonGeneral reiniciarExamen"><i class="ri-arrow-go-forward-fill"></i> Reiniciar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+    
+                                <div class="row mx-auto">
+                                    <div class="table-responsive table-card mt-3 mb-1 mx-auto col-sm-8">
+                                        <table id="lstExCta" class="display table table-bordered">
+                                            <tbody class="list form-check-all" id="lstEx">
+                                                
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+    
+                            </div>
+
+                            <div class="row mb-2 paqueteExCta">
+                                <div class="col-sm-12 text-center">
+                                    <button type="button" class="btn btn-sm botonGeneral cargarExPrestacion"><i class="ri-save-line"></i>&nbsp;Añadir Ex a Cuenta</button>
                                 </div>
                             </div>
 
@@ -1272,7 +1225,6 @@ const listPrecarga = "{{ route('listPrecarga') }}";
 const listExCta = "{{ route('listExCta') }}";
 const lstExClientes = "{{ route('lstExClientes') }}";
 const searchExamen = "{{ route('searchExamen') }}";
-const preExamenes = "{{ route('preExamenes') }}";
 const IDFICHA = "{{ $fichaLaboral->empresa->Id ?? ''}}";
 const pagoInput = "{{ $fichaLaboral->Pago ?? ''}} ";
 const checkItemExamen = "{{ route('checkItemExamen') }}";
@@ -1285,6 +1237,7 @@ const privateComment = "{{ route('comentariosPriv') }}";
 const savePrivComent = "{{ route('savePrivComent') }}";
 const bloquearItemExamen = "{{ route('bloquearItemExamen') }}";
 const obsNuevaPrestacion = "{{ route('obsNuevaPrestacion') }}";
+const getFormaPagoART = "{{ route('clientes.formaPago') }}";
 
 const getMapas = "{{ route('getMapas') }}";
 
@@ -1315,6 +1268,7 @@ const impRepo = "{{ route('prestaciones.pdf') }}";
 const sendExcel = "{{ route('prestaciones.excel') }}";
 const contadorEx = "{{route('itemsprestaciones.contador')}}";
 const getListaExCta = "{{ route('examenesCuenta.listado') }}";
+const cargarExCta = "{{ route('examenesCuenta.cargar') }}";
 </script>
 
 @push('styles')

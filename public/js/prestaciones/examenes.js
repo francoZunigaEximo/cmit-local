@@ -116,44 +116,28 @@ $(function(){
             if (confirmar){
 
                 preloader('on');
-                $.ajax({
-                    url: deleteItemExamen,
-                    type: 'POST',
-                    data: {
-                        Id: ids,
-                        _token: TOKEN
-                    },
-                    success: function(response){
+                $.post(deleteItemExamen, {Id: ids,  _token: TOKEN})
+                    .done(function(response){
                         preloader('off');
-                        var estados = [];
+                        for (let i = 0; i < response.length; i++) {
+                            let data = response[i];
+                            toastr[data.status](data.msg, "", { timeOut: 1000 });
 
-                        for(let index = 0; index < response.length; index++){
-                            let msg = response[index],
-                                tipoRespuesta = {
-                                    success: 'success',
-                                    fail: 'info'
-                                }
-                                toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 });
-                                estados.push(msg.estado);
                         }
 
-                        if(estados.includes('success')) {
-                            $('#listaExamenes').empty();
-                            $('#exam').val([]).trigger('change.select2');
-                            $('#addPaquete').val([]).trigger('change.select2');
-                            cargarExamen();
-                            contadorExamenes(ID);
-                            checkExamenes(ID);
-                        }
-
-                    },
-                    error: function(jqXHR){
+                        principal.listaExamenes.empty();
+                        variables.exam.val([]).trigger('change.select2');
+                        variables.paquetes.val([]).trigger('change.select2');
+                        cargarExamen();
+                        contadorExamenes(IdNueva);
+                        tablasExamenes(variables.selectClientes.val(), true, '#lstEx');
+                    })
+                    .fail(function(jqXHR){
                         preloader('off');
                         let errorData = JSON.parse(jqXHR.responseText);            
                         checkError(jqXHR.status, errorData.msg);
                         return; 
-                    }
-                });
+                    });
             }
             
         });

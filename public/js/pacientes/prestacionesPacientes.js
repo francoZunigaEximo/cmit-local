@@ -61,7 +61,9 @@ $(function(){
         lstEx2: $('#lstEx2'),
         observacionesModal: $('.observacionesModal'),
         checkAllExa: $('#checkAllExa'),
-        paqueteExamen: $('.paqueteExamen')
+        paqueteExamen: $('.paqueteExamen'),
+        tituloPrestacion: $('.tituloPrestacion'),
+        paqueteExCta: $('.paqueteExCta'),
     };
 
     const variables = {
@@ -122,8 +124,7 @@ $(function(){
         .add(principal.FechaN)
         .val(hoy);
 
-    principal.siguienteExCta
-        .add(principal.seleccionExCta)
+    principal.seleccionExCta
         .add(principal.editarComentario)
         .hide();
 
@@ -157,23 +158,43 @@ $(function(){
         }
     });
 
-     //Guardamos la prestación
-    principal.guardarPrestacion.add(principal.cargarExPrestacion).on('click', async function(e){
+    principal.cargarExPrestacion.on('click', function(e){
         e.preventDefault();
 
         let ids = [];
 
-        if ($(this).hasClass('cargarExPrestacion')) {
+        principal.lstEx.find('input[type="checkbox"][id^="Id_"]:checked').each(function(){
+            ids.push($(this).val());
+        });
 
-            principal.listEdicion.find('input[type="checkbox"]').each(function(){
-                ids.push($(this).data('id'));
-            });
+        if(ids.length === 0) {
+            toastr.warning("Debe seleccionar un examen para registrar la prestación",'',{timeOut: 1000});
+            return;
+        }
+        preloader('on');
+          $.post(cargarExCta, {Ids: ids, IdPrestacion: variables.idPrestacion.val(), _token: TOKEN})
+            .done(function(response){
+                if(response[0].status !== 'warning') {
+                    principal.listaExamenes.empty();
+                    cargarExamen(variables.idPrestacion.val());
+                    contadorExamenes(variables.idPrestacion.val());
+                    tablasExamenes(variables.selectClientes.val(), true, '#lstEx');  
+                }
+                preloader('off');
+                toastr[response[0].status](response[0].msg,'',{timeOut: 1000});
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return; 
+            });  
 
-            if(ids.length === 0) {
-                toastr.warning("Debe seleccionar un examen para registrar la prestación",'',{timeOut: 1000});
-                return;
-            }
-        }  
+    });
+
+     //Guardamos la prestación
+    principal.guardarPrestacion.on('click', async function(e){
+        e.preventDefault();
 
         if (['', null].includes(variables.TipoPrestacion.val())) {
             toastr.warning('El tipo de prestación no puede ser un campo vacío','', {timeOut: 1000});
@@ -185,7 +206,6 @@ $(function(){
             return;
         }
 
-        
         preloader('on');
         const alta = await $.get(verificarAlta, {Id: ID})
 
@@ -206,7 +226,6 @@ $(function(){
                 NroFactProv: variables.ElNroFactProv.val(),
                 IdART: alta.clienteArt.Id ?? 0,
                 IdEmpresa: alta.cliente.Id ?? 0,
-                ExamenCuenta: ids,
             })
             .done(function(response){
                 toastr.success(response.msg,'',{timeOut: 1000});
@@ -342,10 +361,16 @@ $(function(){
         }
     }
 
-    principal.siguienteExCta.on('click', function(e){
+    $(document).on('click', '#siguienteExCta', function(e){
         e.preventDefault();
-        principal.seleccionExCta.show();
         principal.nuevaPrestacion.hide();
+        principal.prestacionLimpia.show();
+
+        principal.guardarPrestacion.trigger('click');
+
+        verificarExamenCuenta();
+
+
     });
 
     $(document).on('click', '.volverPrestacion', function(e){
@@ -394,7 +419,7 @@ $(function(){
         document.querySelector(".select2-container--open .select2-search__field").focus()
     });
 
-    principal.buscarExamen.on('click', function(e){
+    $(document).on('click','.buscarExamen', function(e){
         e.preventDefault();
 
         if([null,''].includes(variables.examen.val())) {
@@ -402,35 +427,32 @@ $(function(){
             toastr.warning('Debe seleccionar un exámen','',{timeOut: 1000});
             return;
         }
-
-        tablasExamenes(variables.selectClientes.val(), false, '#lstEx2');
-        tablasExamenes(variables.selectClientes.val(), true, '#lstEx');
+        tablasExamenes(variables.selectClientes.val(), true, '#lstEx', variables.examen.val());
         variables.examen.remove();
     });
 
-    principal.reiniciarExamen.on('click', function(e){
+    $(document).on('click', '.reiniciarExamen', function(e){
         e.preventDefault();
-        tablasExamenes(variables.selectClientes.val(), false, '#lstEx2');
         tablasExamenes(variables.selectClientes.val(), true, '#lstEx');
     });
 
-    principal.precargaExamenes.on('click', function(e){
-        e.preventDefault();
+    // principal.precargaExamenes.on('click', function(e){
+    //     e.preventDefault();
 
-        let ids = [], checkAll = principal.checkAllEx.prop('checked');
+    //     let ids = [], checkAll = principal.checkAllEx.prop('checked');
 
-        principal.lstEx.find('input[type="checkbox"]:checked').each(function(){
-            ids.push($(this).val());
-        });
+    //     principal.lstEx.find('input[type="checkbox"]:checked').each(function(){
+    //         ids.push($(this).val());
+    //     });
 
-        if(ids.length === 0 && checkAll === false) {
-            toastr.warning("Debe seleccionar un examen para añadirlo a la prestación",'',{timeOut: 1000});
-            return;
-        }
+    //     if(ids.length === 0 && checkAll === false) {
+    //         toastr.warning("Debe seleccionar un examen para añadirlo a la prestación",'',{timeOut: 1000});
+    //         return;
+    //     }
 
-        cargaPreExamenes(ids);
-        principal.lstEx.find('input[type="checkbox"]:checked').prop('checked', false);
-    });
+    //     cargaPreExamenes(ids);
+    //     principal.lstEx.find('input[type="checkbox"]:checked').prop('checked', false);
+    // });
 
     $(document).on('click', '.deleteMasivo, .deleteEx', function(e){
         e.preventDefault();
@@ -460,47 +482,47 @@ $(function(){
     });
   
 
-    function cargaPreExamenes(valor) {
-        preloader('on');
+    // function cargaPreExamenes(valor) {
+    //     preloader('on');
         
-        $.get(preExamenes, {Id: valor})
-            .done(function(response){
+    //     $.get(preExamenes, {Id: valor})
+    //         .done(function(response){
 
-                for(let index = 0; index < response.length; index++) {
-                    let r = response[index], existe = false;
+    //             for(let index = 0; index < response.length; index++) {
+    //                 let r = response[index], existe = false;
 
-                    principal.listEdicion.find('tr').each(function() {
+    //                 principal.listEdicion.find('tr').each(function() {
     
-                        var nombreExamen = $(this).find('td:first').text();
-                        if (nombreExamen === r.NombreExamen) {
-                            preloader('off');
-                            existe = true;
-                            toastr.warning("No pueden haber dos examenes iguales en una prestación",'',{timeOut: 1000});
-                            return false; 
-                        }
+    //                     var nombreExamen = $(this).find('td:first').text();
+    //                     if (nombreExamen === r.NombreExamen) {
+    //                         preloader('off');
+    //                         existe = true;
+    //                         toastr.warning("No pueden haber dos examenes iguales en una prestación",'',{timeOut: 1000});
+    //                         return false; 
+    //                     }
 
-                    });
+    //                 });
     
-                    if (!existe) {
-                        let contenido = `
-                            <tr>
-                                <td>${r.NombreExamen}</td>
-                                <td>${r.Especialidad}</td>
-                                <td>${r.diasVencer}</td>
-                                <td><input type="checkbox" name="Id_exa" data-id="${r.IdEx}"></td>
-                                <td>
-                                    <button type="button" class="btn iconGeneral deleteEx"><i class="ri-delete-bin-2-line"></i></button>
-                                </td>
-                            </tr>
-                        `;
-                        principal.listEdicion.append(contenido);
-                        preloader('off');
-                    }
-                }
+    //                 if (!existe) {
+    //                     let contenido = `
+    //                         <tr>
+    //                             <td>${r.NombreExamen}</td>
+    //                             <td>${r.Especialidad}</td>
+    //                             <td>${r.diasVencer}</td>
+    //                             <td><input type="checkbox" name="Id_exa" data-id="${r.IdEx}"></td>
+    //                             <td>
+    //                                 <button type="button" class="btn iconGeneral deleteEx"><i class="ri-delete-bin-2-line"></i></button>
+    //                             </td>
+    //                         </tr>
+    //                     `;
+    //                     principal.listEdicion.append(contenido);
+    //                     preloader('off');
+    //                 }
+    //             }
 
                 
-            })
-    }
+    //         })
+    // }
 
     function cambioEstadoDown() {
         let borrar = principal.filapresId.data('filapres');
@@ -762,8 +784,8 @@ $(function(){
             })
     }
 
-    async function tablasExamenes(idCliente, checkVisible, etiquetaId) { 
-    
+    async function tablasExamenes(idCliente, checkVisible, etiquetaId, filtroId = null) { 
+        preloader('on');
         let data = await $.get(getListaExCta, {Id: idCliente});
     
         if (!Array.isArray(data) || data.length === 0) {
@@ -795,15 +817,17 @@ $(function(){
                     documentos[documentoKey].push({
                         IdEx: examen.IdEx,
                         CantidadExamenes: examen.CantidadExamenes,
-                        NombreExamen: examen.NombreExamen
+                        NombreExamen: examen.NombreExamen,
+                        IdFiltro: examen.IdFiltro
                     });
                 });
     
                 let contenido = `
                     <tr class="fondo-gris">
-                        <td colspan="6">
+                        <td colspan="5">
                             <span class="fw-bolder text-capitalize">fact </span> ${grupoFactura}
                         </td>
+                        ${checkVisible === true ? `<td style="width:5px"><input type="checkbox" class="form-check-input" id="checkAll-${grupoFactura}"></td>` : ''}
                     </tr>
                 `;
     
@@ -813,29 +837,54 @@ $(function(){
     
                         contenido += `
                             <tr class="fondo-grisClaro mb-2">
-                                <td colspan="5" class="fw-bolder">
+                                <td colspan="6" class="fw-bolder">
                                     <span class="fw-bolder">${documentoKey === "Sin precarga" ? "" : "DNI Precargado: "}</span> 
                                     ${documentoKey}
                                 </td>
                             </tr>
                         `;
-    
-                        examenesPorDocumento.forEach((examen) => {
-                            contenido += `
-                                <tr>
-                                    <td>${examen.CantidadExamenes}</td>
-                                    <td>${examen.NombreExamen}</td>
-                                    ${checkVisible === true ? `<td style="width:5px"><input type="checkbox" class="form-check-input" value="${examen.IdEx}"></td>` : ''}
-                                </tr>`;
-                        });
+
+                        if (filtroId !== null) {
+
+                            const examenesFiltrados = examenesPorDocumento.filter((examen) => examen.IdFiltro === parseInt(filtroId, 10));
+
+                            examenesFiltrados.forEach((examen) => {
+                                contenido += `
+                                    <tr>
+                                        <td>${examen.CantidadExamenes}</td>
+                                        <td colspan="4">${examen.NombreExamen}</td>
+                                        ${checkVisible === true ? `<td style="width:5px"><input type="checkbox" class="form-check-input" id="Id_${grupoFactura}" value="${examen.IdEx}"></td>` : ''}
+                                    </tr>`;
+                            });
+
+                        }else{
+
+                            examenesPorDocumento.forEach((examen) => {
+                                contenido += `
+                                    <tr>
+                                        <td>${examen.CantidadExamenes}</td>
+                                        <td colspan="4">${examen.NombreExamen}</td>
+                                        ${checkVisible === true ? `<td style="width:5px"><input type="checkbox" class="form-check-input" id="Id_${grupoFactura}" value="${examen.IdEx}"></td>` : ''}
+                                    </tr>`;
+                            });
+
+                        }
                     }
                 }
-    
+                preloader('off');
                 $(etiquetaId).append(contenido);
             }
         }
     }
 
+    $('tbody').on('click', '.form-check-input[id^="checkAll"]', function () {
+        let checkAll = $(this).attr('id'),
+            nroFactura = checkAll.split('-')[1] + '-' + checkAll.split('-')[2];
+            checkPrincipal = $(this).closest('tr'),
+            checkboxes = checkPrincipal.nextUntil('tr.fondo-gris').find(`input[id^="Id_${nroFactura}"]`);
+        
+            checkboxes.prop('checked', $(this).is(':checked'));
+    });
 
     /******************************Nueva pantalla de prestaciones **************************************/
     
@@ -1092,29 +1141,26 @@ $(function(){
                 preloader('on');
                 $.post(deleteItemExamen, {Id: ids,  _token: TOKEN})
                     .done(function(response){
-
                         preloader('off');
-                        let estados = [];
-                        
                         for (let i = 0; i < response.length; i++) {
-                            let msg = response[i];
-                            let tipoRespuesta = {
-                                success: 'success',
-                                fail: 'info'
-                            };
-                            toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 1000 });
-                            estados.push(msg.estado);
+                            let data = response[i];
+                            toastr[data.status](data.msg, "", { timeOut: 1000 });
+
                         }
 
-                        if(estados.includes('success')) {
-                            principal.listaExamenes.empty();
-                            variables.exam.val([]).trigger('change.select2');
-                            variables.paquetes.val([]).trigger('change.select2');
-                            cargarExamen(IdNueva);
-                            contadorExamenes(IdNueva)
-                        }
-
+                        principal.listaExamenes.empty();
+                        variables.exam.val([]).trigger('change.select2');
+                        variables.paquetes.val([]).trigger('change.select2');
+                        cargarExamen(IdNueva);
+                        contadorExamenes(IdNueva);
+                        tablasExamenes(variables.selectClientes.val(), true, '#lstEx');
                     })
+                    .fail(function(jqXHR){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return; 
+                    });
             }
             
         });
@@ -1155,10 +1201,10 @@ $(function(){
         preloader('on');
         $.post(obsNuevaPrestacion, {
             _token: TOKEN, 
-            IdPrestacion: variables.idPrestacion.val(), 
-            Observaciones: variables.ObservacionesPresN.val(), 
-            ObsExamenes: variables.ObsExamenesN.val(),
-            Obs: variables.ObsN.val()})
+            IdPrestacion: variables.idPrestacion.val() ?? '', 
+            Observaciones: variables.ObservacionesPresN.val() ?? '', 
+            ObsExamenes: variables.ObsExamenesN.val() ?? '',
+            Obs: variables.ObsN.val() ?? ''})
             .done(function(response){
                 preloader('off');
                 toastr.success(response.msg,'',{timeOut: 1000});
@@ -1513,16 +1559,20 @@ $(function(){
 
     function verificarExamenCuenta()
     {
-        console.log("PagoLaboral: " + variables.PagoLaboral.val());
-
         if(variables.PagoLaboral.val() === 'P') {
             principal.paqueteExamen.hide();
+            principal.paqueteExCta.show();
+            principal.tituloPrestacion.text('Alta Prestación con Ex. a Cuenta');
 
         }else{
             principal.paqueteExamen.show();
+            principal.paqueteExCta.hide();
+            principal.tituloPrestacion.text('Alta Prestación');
         }
     }
 
+    async function registrarNuevaPrestacion() {
 
+    }
 
 });

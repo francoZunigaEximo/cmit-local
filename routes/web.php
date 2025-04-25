@@ -90,6 +90,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     //Rutas de Clientes
     Route::get('/clientes/check-estado', [ClientesController::class, 'cambioEstado'])->name('clientes.checkEstado');
+    Route::get('/clientes/forma-pago', [ClientesController::class, 'formaPago'])->name('clientes.formaPago');
     Route::resource('clientes', ClientesController::class);
     Route::post('cliente/down', [ClientesController::class, 'baja'])->name('baja');
     Route::post('clientes/multipleDown', [ClientesController::class, 'multipleDown'])->name('clientes.multipleDown');
@@ -264,7 +265,6 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('liberarExamen', [ItemPrestacionesController::class, 'liberarExamen'])->name('liberarExamen');
     Route::post('marcarExamenAdjunto', [ItemPrestacionesController::class, 'marcarExamenAdjunto'])->name('marcarExamenAdjunto');
     Route::get('lstExamenes', [ItemPrestacionesController::class, 'lstExamenes'])->name('lstExamenes');
-    Route::get('preExamenes', [ItemPrestacionesController::class, 'preExamenes'])->name('preExamenes');
     
    
 
@@ -333,6 +333,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('lstFacturadas', [ExamenesCuentaController::class, 'listadoUltimas'])->name('lstFacturadas');
     Route::get('saldoNoDatatable', [ExamenesCuentaController::class, 'saldoNoDatatable'])->name('saldoNoDatatable');
     Route::get('examenesCuenta/listado-examenes', [ExamenesCuentaController::class, 'listExCta'])->name('examenesCuenta.listado');
+    Route::post('examenesCuenta/actualizar-prestacion', [ExamenesCuentaController::class, 'cargarExCtaPrestacion'])->name('examenesCuenta.cargar');
     Route::resource('examenesCuenta', ExamenesCuentaController::class);
 
     //Rutas de Paquete de Estudio
