@@ -276,9 +276,8 @@ class PacientesController extends Controller
         if (! is_array($ids)) {
             $ids = [$ids];
         }
-
-        $pacientes = Paciente::with('localidad')->where('Estado', 1)->whereIn('Id', $ids)->get();
-
+        $pacientes = Paciente::join('telefonos', 'pacientes.Id', '=', 'telefonos.IdEntidad')->where('pacientes.Estado', 1)->whereIn('pacientes.Id', $ids)->get();
+        
         if($pacientes) {
             $reporte = $this->reporteExcel->crear('pacientes');
             return $reporte->generar($pacientes);

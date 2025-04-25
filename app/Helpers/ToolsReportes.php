@@ -7,11 +7,13 @@ use App\Models\ItemPrestacion;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use PhpOffice\PhpSpreadsheet\Calculation\TextData\Replace;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 trait ToolsReportes
 {
     private static $RUTATEMPORAL = "app/public/";
+    private static $RUTAPUBLICA = "/";
 
     public function AnexosFormulariosPrint(int $id): mixed
     {
@@ -56,11 +58,14 @@ trait ToolsReportes
     {
         $filePath = storage_path(self::$RUTATEMPORAL.$nombre);
  
-          $writer = new Xlsx($spreadsheet);
-          $writer->save($filePath);
-          chmod($filePath, 0777);
- 
-          return response()->json(['filePath' => $filePath, 'msg' => 'Se ha generado correctamente el reporte ', 'estado' => 'success']);
+        $writer = new Xlsx($spreadsheet);
+        $writer->save($filePath);
+        chmod($filePath, 0777);
+
+        //modificacion para que la ruta pase de /app/
+        $filePath = str_replace('/app/public','',$filePath);
+
+        return response()->json(['filePath' => $filePath, 'msg' => 'Se ha generado correctamente el reporte ', 'estado' => 'success']);
     }
 
     public function getDBDetalleYCompleto(array $ids, array $filtros): mixed

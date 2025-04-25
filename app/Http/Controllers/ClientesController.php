@@ -20,6 +20,15 @@ class ClientesController extends Controller
 
     protected $reporteExcel;
 
+    public $helper = '
+    <ul>
+        <li>Los <b class="negrita_verde">EMail Masivos</b> se usan en Clientes. Enviar</li>
+        <li>Los <b class="negrita_verde">EMail Informes</b> se usan en Prestaciones</li>
+        <li>Los <b class="negrita_verde">EMail Factura</b> se usan en Facturas. Enviar</li>
+        <li>Los <b class="negrita_verde">Email Solo Anexo</b> se usan reporte eAnexos</li>
+    </ul>
+    ';
+
     public function __construct(ReporteExcel $reporteExcel)
     {
         $this->reporteExcel = $reporteExcel;
@@ -141,7 +150,7 @@ class ClientesController extends Controller
     public function create()
     {
         if (!$this->hasPermission("clientes_add")) {abort(403);}
-        return view('layouts.clientes.create')->with('provincias', Provincia::all());
+        return view('layouts.clientes.create', ['helper' => $this->helper])->with('provincias', Provincia::all());
     }
 
 
@@ -186,7 +195,7 @@ class ClientesController extends Controller
         $detailsLocalidad = Localidad::where('Id', $cliente->IdLocalidad)->first(['Nombre', 'CP', 'Id']);
         $paraEmpresas = Cliente::where('Identificacion', $cliente->Identificacion)->get();
 
-        return view('layouts.clientes.edit', compact(['cliente', 'provincias', 'detailsLocalidad', 'paraEmpresas']));
+        return view('layouts.clientes.edit', compact(['cliente', 'provincias', 'detailsLocalidad', 'paraEmpresas']), ['helper' => $this->helper]);
     }
 
     public function update(Request $request, Cliente $cliente)

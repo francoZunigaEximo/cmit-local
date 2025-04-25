@@ -4,8 +4,9 @@
 
 @section('content')
 
-<div class="page-title-box d-sm-flex align-items-center justify-content-between">
+<div class="page-title-box d-sm-flex align-items-center justify-content-start">
     <h4 class="mb-sm-0">Usuarios</h4>
+    <x-helper>{!!$helper!!}</x-helper>
 </div>
 
 <div class="row">
@@ -38,12 +39,6 @@
         </div>
             <!-- End Filter -->
             <div class="row mt-4">
-                <div class="col-sm-9">
-                    <span class="small"><i class="ri-edit-line"></i>&nbsp;Editar correo electronico, datos personales y roles.</span> | 
-                    <span class="small"><i class="ri-delete-bin-2-line"></i>&nbsp;Dar de baja/eliminar el usuario.</span> | 
-                    <span class="small"><i class="ri-lock-2-line"></i>&nbsp;Desactivar o activar usuario.</span> |
-                    <span class="small"><i class="ri-lock-password-line"></i>&nbsp;Reset de password a 'cmit1234'.</span>
-                </div>
                 <div class="col-sm-3 d-flex justify-content-end">
                     <a href="{{ route('usuarios.create') }}" class="btn botonGeneral"><i class="ri-add-line"></i> Nuevo</a>
                 </div>

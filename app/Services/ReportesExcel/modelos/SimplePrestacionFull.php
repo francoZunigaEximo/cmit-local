@@ -46,7 +46,7 @@ class SimplePrestacionFull implements ReporteInterface
             'P1' => 'Vencimiento',
             'Q1' => 'Evaluación',
             'R1' => 'Calificación',
-            'S1' => 'Obs Resultado',
+            'S1' => 'Obs. Evaluación',
             'T1' => 'Anulada',
             'U1' => 'Obs Anulada',
             'V1' => 'Nro CE',
@@ -56,6 +56,7 @@ class SimplePrestacionFull implements ReporteInterface
             'Z1' => 'FOR',
             'AA1' => 'DEV',
             'AB1' => 'Obs Estados',
+   
         ];
 
         $columnas = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'AA', 'AB'];

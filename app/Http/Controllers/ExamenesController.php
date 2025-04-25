@@ -13,6 +13,22 @@ use App\Traits\ReporteExcel;
 class ExamenesController extends Controller
 {
     use ObserverExamenes, CheckPermission, ReporteExcel;
+    public $helper = '
+        <div class="d-flex">
+            <span class="fondo-celeste p-1 small">Con prioridad de impresión</span>
+            <span class="rojo p-1 small">Inactivo</span>
+        </div>
+    ';
+
+    public $helpeEditar = '
+        <ul>
+            <li>Los examenes <b class="negrita_verde">Exclusivos Evaluador</b> son eAnexos. No se muestran en e-estudio</li>
+            <li>Los examenes <b class="negrita_verde">Exporta con Anexos</b> se asignan a Efector pero también deben verse en pdf anexos</li>
+            <li>No se podrán <b class="negrita_verde">Cerrar</b> las Prestaciones con Examenes Ausentes</li>
+            <li>No se podrán <b class="negrita_verde">Finalizar</b> las Prestaciones con Examenes Sin Escanear, Forma o Devolución</li>
+            <li>Los que tengan <b class="negrita_verde">Prioridad</b> se imprimirán primero al generar los reportes de la Prestación</li>
+        </ul>
+    ';
 
     public function index()
     {
@@ -20,7 +36,7 @@ class ExamenesController extends Controller
             abort(403);
         }
 
-        return view("layouts.examenes.index");
+        return view("layouts.examenes.index", ['helper'=> $this->helper]);
     }
 
     public function create()
@@ -34,7 +50,7 @@ class ExamenesController extends Controller
         $proveedores = $this->getProveedor();
         $aliasexamenes = $this->getAliasExamenes();
 
-        return view("layouts.examenes.create", compact(['estudios', 'reportes', 'proveedores','aliasexamenes']));
+        return view("layouts.examenes.create", compact(['estudios', 'reportes', 'proveedores','aliasexamenes']), ['helper'=>$this->helpeEditar]);
     }
 
     public function store(Request $request)
@@ -81,7 +97,7 @@ class ExamenesController extends Controller
         $proveedores = $this->getProveedor();
         $aliasexamenes = $this->getAliasExamenes();
 
-        return view("layouts.examenes.edit", compact(['examene', 'estudios', 'reportes', 'proveedores', 'aliasexamenes']));
+        return view("layouts.examenes.edit", compact(['examene', 'estudios', 'reportes', 'proveedores', 'aliasexamenes']), ['helper'=>$this->helpeEditar]);
     }
 
     public function search(Request $request): mixed
