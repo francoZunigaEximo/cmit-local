@@ -108,7 +108,7 @@ class PrestacionesController extends Controller
         }
 
         $tipoPrestacion = PrestacionesTipo::all();
-        $paquetes = PaqueteEstudio::all();git 
+        $paquetes = PaqueteEstudio::all();
 
         return view('layouts.prestaciones.create', compact(['tipoPrestacion', 'paquetes']));
     }
