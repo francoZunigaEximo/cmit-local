@@ -243,6 +243,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('itemsprestaciones/checkid', [ItemPrestacionesController::class, 'checkPrimeraCarga'])->name('itemsprestaciones.checkId');
     Route::get('itemsprestaciones/editModal', [ItemPrestacionesController::class, 'editModal'])->name('itemsprestaciones.editModal');
     Route::get('itemsprestaciones/contador', [ItemPrestacionesController::class, 'contadorExamenes'])->name('itemsprestaciones.contador');
+    Route::get('itemsprestaciones/check-facturas', [ItemPrestacionesController::class, 'checkFacturaItemPrestacion'])->name('itemsprestaciones.checkFacturas');
     Route::resource('itemsprestaciones', ItemPrestacionesController::class);
     Route::post('updateItem', [ItemPrestacionesController::class, 'updateItem'])->name('updateItem');
     Route::post('updateAsignado', [ItemPrestacionesController::class, 'updateAsignado'])->name('updateAsignado');

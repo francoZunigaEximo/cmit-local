@@ -2,7 +2,9 @@ $(function(){
 
     let idExamen = [];
 
-    const valAbrir = [3, 4, 5], valCerrar = [0, 1, 2], valCerrarI = 3;
+    const valAbrir = [3, 4, 5], 
+          valCerrar = [0, 1, 2], 
+          valCerrarI = 3;
 
     cargarExamen();
     contadorExamenes(ID);
@@ -744,7 +746,6 @@ $(function(){
                     tipo = factura.Tipo || '',
                     sucursal = factura.Sucursal || '',
                     nroFactura = factura.NroFactura || '',
-                    facturaExamen = tipo + sucursal + nroFactura,
                     tipoNc = notaCreditoEx?.Tipo || '',
                     sucursalNc = notaCreditoEx?.Sucursal || '',
                     nroNc = notaCreditoEx?.Nro || '',
@@ -757,6 +758,7 @@ $(function(){
                 $('#ex-anulado').empty().html(anulado);
                 $('#ex-identificacion').val(itemprestaciones.Id || '');
                 $('#ex-prestacion').val(itemprestaciones.IdPrestacion || '');
+                $('#ex-idExamen').val(itemprestaciones.IdExamen || '')
                 $('#ex-prestacionTitulo').empty().text(itemprestaciones.IdPrestacion || '');
                 $('#ex-fecha').val(itemprestaciones.prestaciones.Fecha || '');
                 $('#ex-examen').val(examenes.Nombre || '');
@@ -791,8 +793,7 @@ $(function(){
                 $('#ex-EstadoInf').empty().css(colorAdjInformador);
                 $('#ex-Obs').val(stripTags(itemprestaciones?.itemsInfo?.Obs));
 
-                $('#ex-FechaFacturaVta').val(factura?.Fecha);
-                $('#ex-NroFacturaVta').val(facturaExamen);
+                checkearFacturas(); //Verifica si es Examen a cuenta o Factura de Venta
 
                 $('#ex-FechaNC').val(notaCreditoEx?.Fecha);
                 $('#ex-NumeroNC').val(notaCEx);
@@ -1665,5 +1666,33 @@ $(function(){
         });
     }
 
+    function checkearFacturas() {
+
+        if(['', 0, null].includes($('#ex-identificacion').val())) return;
+
+        $.get(checkFacturas, {IdPrestacion: $('#ex-prestacion').val(), IdExamen: $('#ex-idExamen').val()})
+            .done(function(response){
+
+                switch (response.tipo) {
+                    case 'examenCuenta':
+                         $('#ex-NroFacturaVta').val(response.data.NroFactura);
+                         $('#ex-FechaFacturaVta').val(response.data.Fecha);
+                        return;
+                    case 'facturaDeVenta':
+                         $('#ex-NroFacturaVta').val(response.data.NroFactura);
+                         $('#ex-FechaFacturaVta').val(response.data.Fecha);
+                        return 
+                    default:
+                        $('#ex-NroFacturaVta').val();
+                        $('#ex-FechaFacturaVta').val();
+                        return;
+                }
+            })
+            .fail(function(jqXHR){
+                let errorData = JSON.parse(jqXHR.responseText);
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            })
+    }
 
 });
