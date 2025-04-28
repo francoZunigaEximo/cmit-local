@@ -68,7 +68,9 @@ $(function(){
     $(document).on('click', '.atenderPaciente', function(e){
         e.preventDefault();
 
-        let id = $(this).data('id'), profesional = $(this).data('profesional'), especialidades = $(this).data('especialidades');
+        let id = $(this).data('id'), 
+            profesional = $(this).data('profesional'), 
+            especialidades = $(this).data('especialidades');
 
         variables.profesionalEfector
             .add(variables.prestacionEfector)
@@ -86,15 +88,16 @@ $(function(){
         preloader('on')
         $.get(dataPaciente, {Id: id, IdProfesional: profesional, Especialidades: especialidades})
             .done(function(response){
-                const prestacion = response.prestacion, profesional = response.profesional;
+                const prestacion = response.prestacion;
 
                 let paciente = prestacion.paciente.Apellido + ' ' + prestacion.paciente.Nombre,
                     edad = calcularEdad(prestacion.paciente.FechaNacimiento),
                     fecha = fechaNow(prestacion.Fecha,'/',0);
 
                 preloader('off');
+                let nombreProfesional = variables.profesional.find(':selected').text();
                 variables.prestacionEfector.val(prestacion.Id);
-                variables.profesionalEfector.val(profesional);
+                variables.profesionalEfector.val(nombreProfesional);
                 variables.tipoEfector.val(prestacion.TipoPrestacion);
                 variables.artEfector.val(prestacion.art.RazonSocial);
                 variables.empresaEfector.val(prestacion.empresa.RazonSocial);
