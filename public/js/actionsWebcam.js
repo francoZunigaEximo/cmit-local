@@ -1,8 +1,9 @@
-$(function(){
+$(function() {
   
     $(document).on('click', '#deleteButton', function(){
 
-        let id = $(this).data('id'), checkImagen = $('#profile-image-preview').css('background-image');
+        let id = $(this).data('id'), 
+            checkImagen = $('#profile-image-preview').css('background-image');
 
         if(checkImagen.match(/foto-default\.png/)) {
             toastr.warning('No hay imagen para eliminar','',{timeOut: 1000});
