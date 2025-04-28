@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Examen;
+use App\Models\Reporte;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Yajra\DataTables\DataTables;
@@ -29,6 +30,8 @@ class ExamenesController extends Controller
             <li>Los que tengan <b class="negrita_verde">Prioridad</b> se imprimirán primero al generar los reportes de la Prestación</li>
         </ul>
     ';
+
+    
 
     public function index()
     {
@@ -308,5 +311,14 @@ class ExamenesController extends Controller
         }
     }
 
+    public function getVistaPrevia(Request $request){
+        $id = $request->input("Id");
+        if($id){
+            $reporte = Reporte::find($request->Id);
+            return response()->json($reporte);
+        }else{
+            return response()->noContent();
+        }
+    }
 }
  

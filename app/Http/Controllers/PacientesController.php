@@ -276,8 +276,14 @@ class PacientesController extends Controller
         if (! is_array($ids)) {
             $ids = [$ids];
         }
-        $pacientes = Paciente::join('telefonos', 'pacientes.Id', '=', 'telefonos.IdEntidad')->where('pacientes.Estado', 1)->whereIn('pacientes.Id', $ids)->get();
-        
+
+        if($request->input('All')){
+            $pacientes = Paciente::join('telefonos', 'pacientes.Id', '=', 'telefonos.IdEntidad')->where('pacientes.Estado', 1)->get();
+
+        }else{
+            $pacientes = Paciente::join('telefonos', 'pacientes.Id', '=', 'telefonos.IdEntidad')->where('pacientes.Estado', 1)->whereIn('pacientes.Id', $ids)->get();
+        }
+
         if($pacientes) {
             $reporte = $this->reporteExcel->crear('pacientes');
             return $reporte->generar($pacientes);

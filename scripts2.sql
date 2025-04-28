@@ -1010,3 +1010,6 @@ SELECT
 END
 
 INSERT INTO rol_permisos (rol_id,permiso_id) VALUES(13,81); -- Permiso a administrador para imprimir Saldos y Detalles
+
+-- agregamos la columna de vista previa en la tabla reportes
+ALTER TABLE reportes ADD COLUMN VistaPrevia VARCHAR(200) DEFAULT NULL;

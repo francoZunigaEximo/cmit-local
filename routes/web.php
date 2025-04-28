@@ -160,6 +160,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('searchExamenes', [ExamenesController::class, 'searchExamenes'])->name('searchExamenes');
     Route::post('updateExamen', [ExamenesController::class, 'updateExamen'])->name('updateExamen');
     Route::get('/examenes/exportar/excel', [ExamenesController::class, 'excel'])->name('examenes.excel');
+    Route::get('/reporte/vistaprevia', [ExamenesController::class, 'getVistaPrevia'])->name('examenes.getVistaPrevia');
 
     //Ruta de Comentarios de Prestaciones
     Route::post('/comentarios/guardar', [ComentariosPrestacionesController::class, 'setComentarioPres'])->name('setComentarioPres');

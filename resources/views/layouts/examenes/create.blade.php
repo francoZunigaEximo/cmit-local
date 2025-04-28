@@ -213,6 +213,7 @@
 <script src="{{ asset('js/fancyTable.js') }}"></script>
 <script src="{{ asset('js/examenes/create.js') }}?v={{ time() }}"></script>
 <script src="{{ asset('js/examenes/validaciones.js')}}?v={{ time() }}"></script>
+<script src="{{ asset('js/examenes/vistaprevia.js')}}?v={{ time()}}"></script>
 
 @endpush
 
