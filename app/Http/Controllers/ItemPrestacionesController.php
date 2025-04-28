@@ -20,6 +20,7 @@ use App\Helpers\FileHelper;
 use App\Helpers\Tools;
 use App\Models\Profesional;
 use App\Models\User;
+use App\Services\Facturas\CheckFacturas;
 
 class ItemPrestacionesController extends Controller
 {
@@ -29,6 +30,13 @@ class ItemPrestacionesController extends Controller
     private $rutainf = '/var/IMPORTARPDF/SALIDAINFORMADOR/';
     private $rutainternaefectores = 'AdjuntosEfector';
     private $rutainternainfo = 'AdjuntosInformador';
+
+    private $checkFacturas;
+
+    public function __construct(CheckFacturas $checkFacturas)
+    {
+        $this->checkFacturas = $checkFacturas;
+    }
     
     public function edit(ItemPrestacion $itemsprestacione)
     {
@@ -1130,6 +1138,19 @@ class ItemPrestacionesController extends Controller
             return response()->json($query);
         }
         
+    }
+
+    public function checkFacturaItemPrestacion(Request $request)
+    {
+        $examenCuenta = $this->checkFacturas->examenCuenta($request->IdPrestacion, $request->IdExamen);
+        $facturaVenta = $this->checkFacturas->facturaDeVenta(($request->IdPrestacion));
+
+        if($examenCuenta) {
+            return response()->json(['data' => $examenCuenta, 'tipo' => 'examenCuenta']);
+        
+        }elseif($facturaVenta) {
+            return response()->json(['data' => $facturaVenta, 'tipo' => 'facturaDeVenta']);
+        }
     }
 
     private function generarCodigo(int $idprest, int $idex, int $idpac)

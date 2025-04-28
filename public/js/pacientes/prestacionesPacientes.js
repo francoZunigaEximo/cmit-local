@@ -436,24 +436,6 @@ $(function(){
         tablasExamenes(variables.selectClientes.val(), true, '#lstEx');
     });
 
-    // principal.precargaExamenes.on('click', function(e){
-    //     e.preventDefault();
-
-    //     let ids = [], checkAll = principal.checkAllEx.prop('checked');
-
-    //     principal.lstEx.find('input[type="checkbox"]:checked').each(function(){
-    //         ids.push($(this).val());
-    //     });
-
-    //     if(ids.length === 0 && checkAll === false) {
-    //         toastr.warning("Debe seleccionar un examen para añadirlo a la prestación",'',{timeOut: 1000});
-    //         return;
-    //     }
-
-    //     cargaPreExamenes(ids);
-    //     principal.lstEx.find('input[type="checkbox"]:checked').prop('checked', false);
-    // });
-
     $(document).on('click', '.deleteMasivo, .deleteEx', function(e){
         e.preventDefault();
 
@@ -481,48 +463,6 @@ $(function(){
         $('input[type="checkbox"][name="Id_exa"]:not(#checkAllEx)').prop('checked', this.checked);
     });
   
-
-    // function cargaPreExamenes(valor) {
-    //     preloader('on');
-        
-    //     $.get(preExamenes, {Id: valor})
-    //         .done(function(response){
-
-    //             for(let index = 0; index < response.length; index++) {
-    //                 let r = response[index], existe = false;
-
-    //                 principal.listEdicion.find('tr').each(function() {
-    
-    //                     var nombreExamen = $(this).find('td:first').text();
-    //                     if (nombreExamen === r.NombreExamen) {
-    //                         preloader('off');
-    //                         existe = true;
-    //                         toastr.warning("No pueden haber dos examenes iguales en una prestación",'',{timeOut: 1000});
-    //                         return false; 
-    //                     }
-
-    //                 });
-    
-    //                 if (!existe) {
-    //                     let contenido = `
-    //                         <tr>
-    //                             <td>${r.NombreExamen}</td>
-    //                             <td>${r.Especialidad}</td>
-    //                             <td>${r.diasVencer}</td>
-    //                             <td><input type="checkbox" name="Id_exa" data-id="${r.IdEx}"></td>
-    //                             <td>
-    //                                 <button type="button" class="btn iconGeneral deleteEx"><i class="ri-delete-bin-2-line"></i></button>
-    //                             </td>
-    //                         </tr>
-    //                     `;
-    //                     principal.listEdicion.append(contenido);
-    //                     preloader('off');
-    //                 }
-    //             }
-
-                
-    //         })
-    // }
 
     function cambioEstadoDown() {
         let borrar = principal.filapresId.data('filapres');

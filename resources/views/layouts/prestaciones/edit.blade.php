@@ -1132,6 +1132,7 @@
                                     <div class="row">
                                         <input type="hidden" id="ex-identificacion">
                                         <input type="hidden" id="ex-prestacion">
+                                        <input type="hidden" id="ex-idExamen">
                         
                                         <div class="col-6">
                                             <div class="input-group input-group-sm mb-2 size50porcent">
@@ -1584,6 +1585,7 @@ const eEnviarEspecial = "{{ route('prestaciones.reporteEspecial') }}";
 const contadorEx = "{{route('itemsprestaciones.contador')}}";
 const USER = "{{ Auth::user()->name }}";
 const getComentario = "{{ route('comentariosPriv.data') }}";
+const checkFacturas = "{{ route('itemsprestaciones.checkFacturas') }}";
 
 //Select
 const selectTipoPrestacion = "{{ $prestacione->TipoPrestacion }}";
