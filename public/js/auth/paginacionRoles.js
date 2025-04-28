@@ -1,8 +1,9 @@
-$(document).ready(()=>{
+$(function(){
 
-    $('#listaUsuarios').DataTable().clear().destroy();
+    const tabla = $('#listaUsuarios');
 
-    new DataTable("#listaUsuarios", {
+    tabla.DataTable().clear().destroy();
+    new DataTable(tabla, {
         
         searching: false,
         ordering: false,
@@ -42,7 +43,7 @@ $(document).ready(()=>{
             {
                 data: null,
                 render: function(data){
-                    return `<p class="text-${data.Inactivo === 0 ? 'success' : 'danget' }">${data.Inactivo === 0 ? 'Activo' : 'Inactivo'}</p>`;
+                    return `<p class="text-${data.Inactivo === 0 ? 'success' : 'danger' }">${data.Inactivo === 0 ? 'Activo' : 'Inactivo'}</p>`;
                 },
             },
             {
