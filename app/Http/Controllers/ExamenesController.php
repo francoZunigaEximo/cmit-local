@@ -4,15 +4,24 @@ namespace App\Http\Controllers;
 
 use App\Models\Examen;
 use App\Models\Reporte;
+use App\Services\Reportes\Estudios\PDFREPE1;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Yajra\DataTables\DataTables;
 use App\Traits\ObserverExamenes;
 use App\Traits\CheckPermission;
 use App\Traits\ReporteExcel;
+use App\Services\Reportes\ReporteService;
+use App\Helpers\Tools;
 
 class ExamenesController extends Controller
 {
+    protected $reporteService;
+    protected $outputPath;
+    protected $sendPath;
+    protected $fileNameExport;
+    private $tempFile;
+
     use ObserverExamenes, CheckPermission, ReporteExcel;
     public $helper = '
         <div class="d-flex">
@@ -31,7 +40,14 @@ class ExamenesController extends Controller
         </ul>
     ';
 
-    
+    public function __construct(ReporteService $reporteService) {
+
+        $this->reporteService = $reporteService;
+        $this->outputPath = storage_path('app/public/temp/fusionar-' . Tools::randomCode(15) . '.pdf');
+        $this->sendPath = storage_path('app/public/temp/cmit-' . Tools::randomCode(15) . '-informe.pdf');
+        $this->fileNameExport = 'reporte-' . Tools::randomCode(15);
+        $this->tempFile = 'app/public/temp/file-';
+    }
 
     public function index()
     {

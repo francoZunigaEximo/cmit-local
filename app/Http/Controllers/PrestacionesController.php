@@ -43,6 +43,7 @@ use App\Services\Reportes\Cuerpos\ControlPaciente;
 use App\Services\Reportes\Titulos\NroPrestacion;
 use App\Services\Reportes\Cuerpos\EnviarOpciones;
 use App\Services\Reportes\Titulos\EEstudio;
+use App\Services\Reportes\Cuerpos\PDFREPE1;
 
 use App\Jobs\EnviarReporteJob;
 use App\Jobs\ExamenesImpagosJob;
@@ -936,6 +937,10 @@ class PrestacionesController extends Controller
 
         }
 
+    }
+
+    public function pdfPrueba(Request $request){
+        return $this->addEstudioExamen($request->Id, $request->Examen);
     }
 
     public function uploadAdjuntoPrestacion(Request $request)
