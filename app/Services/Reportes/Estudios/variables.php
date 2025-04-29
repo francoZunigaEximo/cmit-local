@@ -93,4 +93,6 @@ $obsfl = $fichaLaboral->Observaciones;
 $telpac = "(".$telefonoPaciente->CodigoArea.") ".$telefonoPaciente->NumeroTelefono;
 $fecha = date('d/m/Y');
 $anio = date('Y');
+
+list($d,$m,$a)=explode("/",$fecha);
 ?>

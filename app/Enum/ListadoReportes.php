@@ -29,6 +29,19 @@ use App\Services\Reportes\Estudios\EXAMENREPORTE25;
 use App\Services\Reportes\Estudios\EXAMENREPORTE26;
 use App\Services\Reportes\Estudios\EXAMENREPORTE27;
 use App\Services\Reportes\Estudios\EXAMENREPORTE28;
+use App\Services\Reportes\Estudios\EXAMENREPORTE29;
+use App\Services\Reportes\Estudios\EXAMENREPORTE30;
+use App\Services\Reportes\Estudios\EXAMENREPORTE31;
+use App\Services\Reportes\Estudios\EXAMENREPORTE32;
+use App\Services\Reportes\Estudios\EXAMENREPORTE33;
+use App\Services\Reportes\Estudios\EXAMENREPORTE34;
+use App\Services\Reportes\Estudios\EXAMENREPORTE35;
+use App\Services\Reportes\Estudios\EXAMENREPORTE36;
+use App\Services\Reportes\Estudios\EXAMENREPORTE37;
+use App\Services\Reportes\Estudios\EXAMENREPORTE38;
+use App\Services\Reportes\Estudios\EXAMENREPORTE39;
+use App\Services\Reportes\Estudios\EXAMENREPORTE40;
+use App\Services\Reportes\Estudios\EXAMENREPORTE41;
 
 class ListadoReportes
 {
@@ -64,6 +77,19 @@ class ListadoReportes
             26 => EXAMENREPORTE26::class,
             27 => EXAMENREPORTE27::class,
             28 => EXAMENREPORTE28::class,
+            29 => EXAMENREPORTE29::class,
+            30 => EXAMENREPORTE30::class,
+            31 => EXAMENREPORTE31::class,
+            32 => EXAMENREPORTE32::class,
+            33 => EXAMENREPORTE33::class,
+            34 => EXAMENREPORTE34::class,
+            35 => EXAMENREPORTE35::class,
+            36 => EXAMENREPORTE36::class,
+            37 => EXAMENREPORTE37::class,
+            38 => EXAMENREPORTE38::class,
+            39 => EXAMENREPORTE39::class,
+            40 => EXAMENREPORTE40::class,
+            41 => EXAMENREPORTE41::class
         ];
 
         return $examenes[$id];
