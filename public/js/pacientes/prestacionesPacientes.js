@@ -1478,9 +1478,9 @@ $(function(){
                         `;
 
                         if (filtroId !== null) {
-
+                            console.log(examenesPorDocumento);
                             const examenesFiltrados = examenesPorDocumento.filter((examen) => examen.IdFiltro === parseInt(filtroId, 10));
-
+                            console.log(examenesFiltrados);
                             examenesFiltrados.forEach((examen) => {
                                 contenido += `
                                     <tr>
