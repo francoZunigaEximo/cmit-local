@@ -63,7 +63,6 @@ trait ToolsReportes
         chmod($filePath, 0777);
 
         //modificacion para que la ruta pase de /app/
-        $filePath = str_replace('/app/public','',$filePath);
 
         return response()->json(['filePath' => $filePath, 'msg' => 'Se ha generado correctamente el reporte ', 'estado' => 'success']);
     }
