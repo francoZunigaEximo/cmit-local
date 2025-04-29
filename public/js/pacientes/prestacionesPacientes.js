@@ -429,12 +429,7 @@ $(function(){
         }
 
         tablasExamenes(variables.selectClientes.val(), true, '#lstEx', variables.examen.val());
-
-        // Por compatibilidad de navegadores. Deberia funcionar solo con el remove.
-        if (variables.examen.data('select2')) { //Verifico la iniciacion
-            variables.examen.select2('destroy'); // Limpio
-        }
-
+        variables.examen.val('');
         variables.examen.remove();
     });
 
