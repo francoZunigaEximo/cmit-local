@@ -3881,6 +3881,22 @@
         },
         {
             "name": "phpoffice/phpspreadsheet",
+<<<<<<< HEAD
+            "version": "1.29.9",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PHPOffice/PhpSpreadsheet.git",
+                "reference": "ffb47b639649fc9c8a6fa67977a27b756592ed85"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/ffb47b639649fc9c8a6fa67977a27b756592ed85",
+                "reference": "ffb47b639649fc9c8a6fa67977a27b756592ed85",
+                "shasum": ""
+            },
+            "require": {
+                "composer/pcre": "^3.3",
+=======
             "version": "1.29.10",
             "source": {
                 "type": "git",
@@ -3895,6 +3911,7 @@
             },
             "require": {
                 "composer/pcre": "^1||^2||^3",
+>>>>>>> 68518df2d205eab24a190ac45f3061d201e604a9
                 "ext-ctype": "*",
                 "ext-dom": "*",
                 "ext-fileinfo": "*",
@@ -3981,9 +3998,15 @@
             ],
             "support": {
                 "issues": "https://github.com/PHPOffice/PhpSpreadsheet/issues",
+<<<<<<< HEAD
+                "source": "https://github.com/PHPOffice/PhpSpreadsheet/tree/1.29.9"
+            },
+            "time": "2025-01-26T04:55:00+00:00"
+=======
                 "source": "https://github.com/PHPOffice/PhpSpreadsheet/tree/1.29.10"
             },
             "time": "2025-02-08T02:56:14+00:00"
+>>>>>>> 68518df2d205eab24a190ac45f3061d201e604a9
         },
         {
             "name": "phpoption/phpoption",
@@ -8814,6 +8837,18 @@
         },
         {
             "name": "filp/whoops",
+<<<<<<< HEAD
+            "version": "2.17.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/filp/whoops.git",
+                "reference": "075bc0c26631110584175de6523ab3f1652eb28e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/filp/whoops/zipball/075bc0c26631110584175de6523ab3f1652eb28e",
+                "reference": "075bc0c26631110584175de6523ab3f1652eb28e",
+=======
             "version": "2.18.0",
             "source": {
                 "type": "git",
@@ -8824,6 +8859,7 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/filp/whoops/zipball/a7de6c3c6c3c022f5cfc337f8ede6a14460cf77e",
                 "reference": "a7de6c3c6c3c022f5cfc337f8ede6a14460cf77e",
+>>>>>>> 68518df2d205eab24a190ac45f3061d201e604a9
                 "shasum": ""
             },
             "require": {
@@ -8873,7 +8909,11 @@
             ],
             "support": {
                 "issues": "https://github.com/filp/whoops/issues",
+<<<<<<< HEAD
+                "source": "https://github.com/filp/whoops/tree/2.17.0"
+=======
                 "source": "https://github.com/filp/whoops/tree/2.18.0"
+>>>>>>> 68518df2d205eab24a190ac45f3061d201e604a9
             },
             "funding": [
                 {
@@ -8881,7 +8921,11 @@
                     "type": "github"
                 }
             ],
+<<<<<<< HEAD
+            "time": "2025-01-25T12:00:00+00:00"
+=======
             "time": "2025-03-15T12:00:00+00:00"
+>>>>>>> 68518df2d205eab24a190ac45f3061d201e604a9
         },
         {
             "name": "hamcrest/hamcrest-php",

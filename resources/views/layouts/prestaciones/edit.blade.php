@@ -335,26 +335,30 @@
             <div class="col-12 box-information mb-2">
                 <div class="listjs-table" id="customerList">
                     <div class="row">
-                    
-                        <div class="col-6">
-                            <label for="paquetes" class="form-label">Paquetes</label> <!-- select 2 de paquetes de exámenes -->
-                            <div class="mb-3">
-                                <div class="cajaExamenes">
-                                    <select class="form-select" name="paquetes" id="paquetes"></select>
-                                    <i class="addPaquete ri-play-list-add-line naranja" title="Añadir paquete completo"></i>
+            
+                        @if($prestacione->Pago !== '' && $prestacione->Pago !== null && $prestacione->Pago !== 'P')
+                        
+                            <div class="col-6">
+                                <label for="paquetes" class="form-label">Paquetes</label> <!-- select 2 de paquetes de exámenes -->
+                                <div class="mb-3">
+                                    <div class="cajaExamenes">
+                                        <select class="form-select" name="paquetes" id="paquetes"></select>
+                                        <i class="addPaquete ri-play-list-add-line naranja" title="Añadir paquete completo"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <label for="examenes" class="form-label">Examen</label> <!-- select 2 de exámenes -->
+                                <div class="mb-3">
+                                    <div class="cajaExamenes">
+                                        <select class="form-select" name ="exam" id="exam"></select>
+                                        <i class="addExamen ri-add-circle-line naranja" title="Añadir examén de la busqueda"></i>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-6">
-                            <label for="examenes" class="form-label">Examen</label> <!-- select 2 de exámenes -->
-                            <div class="mb-3">
-                                <div class="cajaExamenes">
-                                    <select class="form-select" name ="exam" id="exam"></select>
-                                    <i class="addExamen ri-add-circle-line naranja" title="Añadir examén de la busqueda"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+
+                        @endif
 
                     <div class="row text-start">
                         <div class="col-6 d-flex flex-wrap gap-2">
@@ -1128,6 +1132,7 @@
                                     <div class="row">
                                         <input type="hidden" id="ex-identificacion">
                                         <input type="hidden" id="ex-prestacion">
+                                        <input type="hidden" id="ex-idExamen">
                         
                                         <div class="col-6">
                                             <div class="input-group input-group-sm mb-2 size50porcent">
@@ -1580,6 +1585,7 @@ const eEnviarEspecial = "{{ route('prestaciones.reporteEspecial') }}";
 const contadorEx = "{{route('itemsprestaciones.contador')}}";
 const USER = "{{ Auth::user()->name }}";
 const getComentario = "{{ route('comentariosPriv.data') }}";
+const checkFacturas = "{{ route('itemsprestaciones.checkFacturas') }}";
 
 //Select
 const selectTipoPrestacion = "{{ $prestacione->TipoPrestacion }}";

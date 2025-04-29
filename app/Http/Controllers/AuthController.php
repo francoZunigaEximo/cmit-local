@@ -95,8 +95,9 @@ class AuthController extends Controller
 
     public function logout()
     {
-        Session::flush();
+        Session::flush();//Invalidamos la sesión actual
         Auth::logout();
+        request()->session()->regenerateToken();// Regenera el token CSRF
 
         return redirect()->route('login')->withSuccess('Se ha cerrado la sesion correctamente.');
     }

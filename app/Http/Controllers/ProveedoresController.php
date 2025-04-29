@@ -272,7 +272,7 @@ class ProveedoresController extends Controller
         ->orderBy('Nombre', 'ASC')    
         ->get(['Id', 'Nombre']);
 
-        return response()->json(['result' => $listado]);
+        return response()->json($listado);
     }
 
 

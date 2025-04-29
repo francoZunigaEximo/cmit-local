@@ -316,14 +316,6 @@ class PrestacionesController extends Controller
 
         $request->IdMapa && $this->updateMapeados($request->IdMapa, "quitar");
 
-        if (!in_array($request->ExamenCuenta, [0, null, ''])) {
-            $examenes = $this->registrarExamenCta($request->ExamenCuenta, $nuevoId);
-        } 
-    
-        if (isset($examenes) && is_array($examenes) && !in_array($examenes, [0, null, ''])) {
-            $this->registrarExamenes($examenes, $nuevoId);
-        }
-
         if($request->Tipo && $request->Sucursal && $request->NroFactura && $nuevoId)
         {
             $this->addFactura($request->Tipo, $request->Sucursal, $request->NroFactura, $empresa, $request->TipoPrestacion, $nuevoId);

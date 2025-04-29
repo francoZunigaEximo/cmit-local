@@ -20,6 +20,7 @@ use App\Helpers\FileHelper;
 use App\Helpers\Tools;
 use App\Models\Profesional;
 use App\Models\User;
+use App\Services\Facturas\CheckFacturas;
 
 class ItemPrestacionesController extends Controller
 {
@@ -29,6 +30,13 @@ class ItemPrestacionesController extends Controller
     private $rutainf = '/var/IMPORTARPDF/SALIDAINFORMADOR/';
     private $rutainternaefectores = 'AdjuntosEfector';
     private $rutainternainfo = 'AdjuntosInformador';
+
+    private $checkFacturas;
+
+    public function __construct(CheckFacturas $checkFacturas)
+    {
+        $this->checkFacturas = $checkFacturas;
+    }
     
     public function edit(ItemPrestacion $itemsprestacione)
     {
@@ -810,9 +818,9 @@ class ItemPrestacionesController extends Controller
 
         $examenes_filtrados = array_filter($examenes, 'is_numeric');
 
-        foreach($examenes_filtrados as $test) {
-            if($this->adjuntoEfector($test) === 1 || $this->adjuntoInformador($test)) {
-                return response()->json(['msg' => 'No se puede eliminar el examen '.$test.' porque posee archivos adjuntos.Verifique'], 409);
+        foreach($examenes_filtrados as $adjuntado) {
+            if($this->adjuntoEfector($adjuntado) === 1 || $this->adjuntoInformador($adjuntado)) {
+                return response()->json(['msg' => 'No se puede eliminar el examen '.$adjuntado.' porque posee archivos adjuntos.Verifique'], 409);
             }
         }
         
@@ -826,10 +834,10 @@ class ItemPrestacionesController extends Controller
                 ItemPrestacion::InsertarVtoPrestacion($item->IdPrestacion);
                 $this->deleteExaCuenta($item->IdPrestacion, $item->IdExamen);
                 
-                $resultado = ['message' => 'Se ha eliminado con éxito el exámen '.$item->examenes->Nombre.'', 'estado' => 'success'];
+                $resultado = ['msg' => 'Se ha eliminado con éxito el exámen '.$item->examenes->Nombre.'', 'status' => 'success'];
             
             }else{
-                $resultado = ['message' => 'No se elimino exámen '.$item->examenes->Nombre.' porque se encuentra cerrada o el exámen efectuado, informado o con profesionales asignados', 'estado' => 'fail'];
+                $resultado = ['msg' => 'No se elimino exámen '.$item->examenes->Nombre.' porque se encuentra cerrada o el exámen efectuado, informado o con profesionales asignados', 'status' => 'warning'];
             }
             $resultados[] = $resultado;   
         }
@@ -1097,31 +1105,6 @@ class ItemPrestacionesController extends Controller
         return response()->json($items);
     }
 
-    public function preExamenes(Request $request): mixed
-    {
-        $examenes = $request->Id;
-
-        if (!is_array($examenes)) {
-            $examenes = [$examenes];
-        }
-
-        $listado = [];
-
-        foreach ($examenes as $examen) {
-            $item = ExamenCuentaIt::join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')->join('proveedores', 'examenes.IdProveedor', '=', 'proveedores.Id')
-                ->select(
-                    'examenes.Nombre as NombreExamen',
-                    'proveedores.Nombre as Especialidad',
-                    'examenes.DiasVencimiento as diasVencer',
-                    'pagosacuenta_it.Id as IdEx'
-                )
-                ->where('pagosacuenta_it.Id', $examen)->first();
-                array_push($listado, $item);
-        }
-
-        return response()->json($listado);
-    }
-
     public function checkAdjunto(Request $request)
     {
         $resultado = '';
@@ -1155,6 +1138,19 @@ class ItemPrestacionesController extends Controller
             return response()->json($query);
         }
         
+    }
+
+    public function checkFacturaItemPrestacion(Request $request)
+    {
+        $examenCuenta = $this->checkFacturas->examenCuenta($request->IdPrestacion, $request->IdExamen);
+        $facturaVenta = $this->checkFacturas->facturaDeVenta(($request->IdPrestacion));
+
+        if($examenCuenta) {
+            return response()->json(['data' => $examenCuenta, 'tipo' => 'examenCuenta']);
+        
+        }elseif($facturaVenta) {
+            return response()->json(['data' => $facturaVenta, 'tipo' => 'facturaDeVenta']);
+        }
     }
 
     private function generarCodigo(int $idprest, int $idex, int $idpac)
