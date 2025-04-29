@@ -427,8 +427,14 @@ $(function(){
             toastr.warning('Debe seleccionar un exámen','',{timeOut: 1000});
             return;
         }
-        console.log("ID en Buscador: " + variables.selectClientes.val());
+
         tablasExamenes(variables.selectClientes.val(), true, '#lstEx', variables.examen.val());
+
+        // Por compatibilidad de navegadores. Deberia funcionar solo con el remove.
+        if (variables.examen.data('select2')) { //Verifico la iniciacion
+            variables.examen.select2('destroy'); // Limpio
+        }
+
         variables.examen.remove();
     });
 
@@ -1417,9 +1423,6 @@ $(function(){
     async function tablasExamenes(idCliente, checkVisible, etiquetaId, filtroId = null) { 
         preloader('on');
         let data = await $.get(getListaExCta, {Id: idCliente});
-
-        console.log(data);
-        console.log("filtroID: " + filtroId, typeof(filtroId));
     
         if (!Array.isArray(data) || data.length === 0) {
             $(etiquetaId).append('<tr><td>No hay historial de facturas disponible</td></tr>');
@@ -1478,9 +1481,9 @@ $(function(){
                         `;
 
                         if (filtroId !== null) {
-                            console.log(examenesPorDocumento);
+
                             const examenesFiltrados = examenesPorDocumento.filter((examen) => examen.IdFiltro === parseInt(filtroId, 10));
-                            console.log(examenesFiltrados);
+
                             examenesFiltrados.forEach((examen) => {
                                 contenido += `
                                     <tr>
