@@ -727,6 +727,9 @@ $(function(){
     async function tablasExamenes(idCliente, checkVisible, etiquetaId, filtroId = null) { 
         preloader('on');
         let data = await $.get(getListaExCta, {Id: idCliente});
+
+        console.log(data);
+        console.log("filtroID: " + filtroId);
     
         if (!Array.isArray(data) || data.length === 0) {
             $(etiquetaId).append('<tr><td>No hay historial de facturas disponible</td></tr>');
@@ -1509,10 +1512,6 @@ $(function(){
             principal.paqueteExCta.hide();
             principal.tituloPrestacion.text('Alta Prestación');
         }
-    }
-
-    async function registrarNuevaPrestacion() {
-
     }
 
 });
