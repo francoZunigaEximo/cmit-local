@@ -174,12 +174,12 @@ $(function(){
         preloader('on');
           $.post(cargarExCta, {Ids: ids, IdPrestacion: variables.idPrestacion.val(), _token: TOKEN})
             .done(function(response){
-                if(response[0].status !== 'warning') {
-                    principal.listaExamenes.empty();
-                    cargarExamen(variables.idPrestacion.val());
-                    contadorExamenes(variables.idPrestacion.val());
-                    tablasExamenes(variables.selectClientes.val(), true, '#lstEx');  
-                }
+
+                principal.listaExamenes.empty();
+                cargarExamen(variables.idPrestacion.val());
+                contadorExamenes(variables.idPrestacion.val());
+                tablasExamenes(variables.selectClientes.val(), true, '#lstEx');  
+          
                 preloader('off');
                 toastr[response[0].status](response[0].msg,'',{timeOut: 1000});
             })
@@ -615,18 +615,22 @@ $(function(){
             }
         });
     }
-    
-    function comprobarEstado(cerrado, finalizado, entregado) {
 
-        return (cerrado === 1 && finalizado === 0 && entregado === 0)
-        ? "Cerrado"
-        : (cerrado === 1 && finalizado === 1 && entregado === 0)
-            ? "Finalizado"
-            : (cerrado === 1 && finalizado === 1 && entregado === 1)
-                ? "Entregado"
-                : (cerrado === 0 && finalizado === 0 && entregado === 0)
-                    ? "Abierto"
-                    : "-"
+    function comprobarEstado(cerrado, finalizado, entregado) {
+        let estado = `${cerrado}${finalizado}${entregado}`;
+    
+        switch (estado) {
+            case "100":
+                return "Cerrado";
+            case "110":
+                return "Finalizado";
+            case "111":
+                return "Entregado";
+            case "000":
+                return "Abierto";
+            default:
+                return "-";
+        }
     }
 
     async function getUltimasFacturadas(id) {
@@ -1415,7 +1419,7 @@ $(function(){
         let data = await $.get(getListaExCta, {Id: idCliente});
 
         console.log(data);
-        console.log("filtroID: " + filtroId);
+        console.log("filtroID: " + filtroId, typeof(filtroId));
     
         if (!Array.isArray(data) || data.length === 0) {
             $(etiquetaId).append('<tr><td>No hay historial de facturas disponible</td></tr>');
