@@ -25,6 +25,7 @@ $Art = Cliente::where('Id', $prestacion->IdART)->first();
 
 $tipo = $prestacion->TipoPrestacion;
 $fechal = LugarFechaLargo(date('d/m/Y'));
+$idp = str_pad($prestacion->Id, 8, "0", STR_PAD_LEFT);
 
 //empresa
 $paraempresa = $prestacion->empresa->ParaEmpresa;
