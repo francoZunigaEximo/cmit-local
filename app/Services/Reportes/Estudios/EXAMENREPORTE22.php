@@ -43,6 +43,7 @@ class EXAMENREPORTE22 extends Reporte
         $pdf->AddPage();
         $pdf->Image(public_path("/archivos/reportes/E21_2.jpg"),25,20,151);
         Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+        include('paginaadicional.php');
     }
 
     private function edad($fechaNacimiento){

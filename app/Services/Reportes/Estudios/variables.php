@@ -6,8 +6,10 @@ use App\Models\Localidad;
 use App\Models\Prestacion;
 use App\Models\Provincia;
 use App\Models\Telefono;
+use App\Models\Examen;
 
 $prestacion = $this->prestacion($datos['id']);
+$examen = Examen::where('Id', $datos['idExamen'])->first();
 $datosPaciente = $this->datosPaciente($prestacion->paciente->Id);
 $telefonoPaciente = $this->telefono($prestacion->paciente->Id);
 $paciente = $prestacion->paciente->Apellido.' '.$prestacion->paciente->Nombre;
@@ -18,9 +20,11 @@ $cliente = $prestacion->empresa;
 
 $localidadCliente = Localidad::where('Id', $cliente->IdLocalidad)->first();
 $provinciaCliente = Provincia::where('Id', $localidadCliente->IdPcia)->first();
+
 $Art = Cliente::where('Id', $prestacion->IdART)->first();
 
 $tipo = $prestacion->TipoPrestacion;
+$fechal = LugarFechaLargo(date('d/m/Y'));
 
 //empresa
 $paraempresa = $prestacion->empresa->ParaEmpresa;
@@ -31,10 +35,14 @@ $cuit =  $prestacion->empresa->cuit;
 $domie = $cliente->DireccionE;
 $loce =  $localidadCliente->Nombre;
 $cpe =  $localidadCliente->CP;
+$cpempre = $cliente->CP;
 $pciae =  $provinciaCliente->Nombre;
 $rf =  $cliente->RF;
 $art =  $Art->RazonSocial;
 $ida = str_pad( $Art->Id, 6, "0", STR_PAD_LEFT);
+$telempre = $cliente->Telefono;
+$mailempre = $cliente->Email;
+
 //paciente
 
 $idpac = $prestacion->paciente->IdPaciente;
@@ -95,4 +103,26 @@ $fecha = date('d/m/Y');
 $anio = date('Y');
 
 list($d,$m,$a)=explode("/",$fecha);
+
+$nombreExamen = $examen->Nombre;
+
+
+function LugarFechaLargo($fecha){ 
+	list($d,$m,$a)=explode("/",$fecha);
+	switch ($m) {
+		case 1:	$mes="Enero";break;
+		case 2:	$mes="Febrero";break;
+		case 3:	$mes="Marzo";break;
+		case 4:	$mes="Abril";break;
+		case 5:	$mes="Mayo";break;	
+		case 6:	$mes="Junio";break;	
+		case 7:	$mes="Julio";break;	
+		case 8:	$mes="Agosto";break;	
+		case 9:	$mes="Septiembre";break;	
+		case 10:$mes="Octubre";break;	
+		case 11:$mes="Noviembre";break;	
+		case 12:$mes="Diciembre";break;	
+	}		
+	return "Neuquen, $d de $mes de $a";
+}
 ?>

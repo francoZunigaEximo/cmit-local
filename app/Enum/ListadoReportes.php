@@ -42,6 +42,22 @@ use App\Services\Reportes\Estudios\EXAMENREPORTE38;
 use App\Services\Reportes\Estudios\EXAMENREPORTE39;
 use App\Services\Reportes\Estudios\EXAMENREPORTE40;
 use App\Services\Reportes\Estudios\EXAMENREPORTE41;
+use App\Services\Reportes\Estudios\EXAMENREPORTE42;
+use App\Services\Reportes\Estudios\EXAMENREPORTE43;
+use App\Services\Reportes\Estudios\EXAMENREPORTE44;
+use App\Services\Reportes\Estudios\EXAMENREPORTE45;
+use App\Services\Reportes\Estudios\EXAMENREPORTE46;
+use App\Services\Reportes\Estudios\EXAMENREPORTE47;
+use App\Services\Reportes\Estudios\EXAMENREPORTE48;
+use App\Services\Reportes\Estudios\EXAMENREPORTE49;
+use App\Services\Reportes\Estudios\EXAMENREPORTE50;
+use App\Services\Reportes\Estudios\EXAMENREPORTE51;
+use App\Services\Reportes\Estudios\EXAMENREPORTE52;
+use App\Services\Reportes\Estudios\EXAMENREPORTE53;
+use App\Services\Reportes\Estudios\EXAMENREPORTE54;
+use App\Services\Reportes\Estudios\EXAMENREPORTE55;
+use App\Services\Reportes\Estudios\EXAMENREPORTE56;
+use App\Services\Reportes\Estudios\EXAMENREPORTE57;
 
 class ListadoReportes
 {
@@ -89,7 +105,23 @@ class ListadoReportes
             38 => EXAMENREPORTE38::class,
             39 => EXAMENREPORTE39::class,
             40 => EXAMENREPORTE40::class,
-            41 => EXAMENREPORTE41::class
+            41 => EXAMENREPORTE41::class,
+            42 => EXAMENREPORTE42::class,
+            43 => EXAMENREPORTE43::class,
+            44 => EXAMENREPORTE44::class,
+            45 => EXAMENREPORTE45::class,
+            46 => EXAMENREPORTE46::class,
+            47 => EXAMENREPORTE47::class,
+            48 => EXAMENREPORTE48::class,
+            49 => EXAMENREPORTE49::class,
+            50 => EXAMENREPORTE50::class,
+            51 => EXAMENREPORTE51::class,
+            52 => EXAMENREPORTE52::class,
+            53 => EXAMENREPORTE53::class,
+            54 => EXAMENREPORTE54::class,
+            55 => EXAMENREPORTE55::class,
+            56 => EXAMENREPORTE56::class,
+            57 => EXAMENREPORTE57::class
         ];
 
         return $examenes[$id];

@@ -17,9 +17,13 @@ class EXAMENREPORTE11 extends Reporte
 {
     public function render(FPDF $pdf, $datos = ['id', 'idExamen']): void
     {
+        include('variables.php');
+
         $prestacion = $this->prestacion($datos['id']);
         $datosPaciente = $this->datosPaciente($prestacion->paciente->Id);
-        $telefonoPaciente = $this->telefono($prestacion->paciente->Id);
+        $telefono = $this->telefono($prestacion->paciente->Id);
+        $telefonoPaciente = "(".$telefono->CodigoArea.") ".$telefono->NumeroTelefono;
+
 
         if($prestacion->empresa->RF === 1){
             $pdf->SetFont('Arial','B',14);$pdf->SetXY(170,4);$pdf->Cell(0,3,'RF',0,0,'L');$pdf->SetFont('Arial','',8);
@@ -28,6 +32,8 @@ class EXAMENREPORTE11 extends Reporte
         $paciente = $prestacion->paciente->Apellido.' '.$prestacion->paciente->Nombre;
         $localidad = $this->localidad($prestacion->paciente->IdLocalidad) ?? '';
         $fecha = $prestacion->paciente->FechaNacimiento;
+        
+    
         //$pdf->AddPage();
         //cuerpo
         $pdf->Image(public_path("/archivos/reportes/E11.jpg"),25,40,166); 
@@ -60,6 +66,19 @@ class EXAMENREPORTE11 extends Reporte
         $pdf->SetFont('Arial','',7);
         $pdf->SetXY(20,6);$pdf->Cell(0,3,'Paciente: '.$paciente.' '.$prestacion->paciente->Documento,0,0,'L');
         $pdf->SetXY(20,10);$pdf->Cell(0,3,$fecha,0,0,'L');
+        
+        include('paginaadicional.php');
+    }
+
+    private function edad($fechaNacimiento){
+        
+        $fecha_nacimiento = new DateTime($fechaNacimiento);
+        // Fecha actual
+        $hoy = new DateTime('now');
+
+        // Calcular la diferencia
+        $edad = $hoy->diff($fecha_nacimiento)->y;
+        return $edad;
     }
 
     private function prestacion(int $id): mixed
@@ -74,8 +93,7 @@ class EXAMENREPORTE11 extends Reporte
 
     private function telefono(int $idPaciente):mixed //IdEntidad
     {
-        $query = Telefono::where('IdEntidad', $idPaciente)->first(['CodigoArea', 'NumeroTelefono']);
-        return $query->CodigoArea.$query->NumeroTelefono;
+        return Telefono::where('IdEntidad', $idPaciente)->first(['CodigoArea', 'NumeroTelefono']);
     }
 
     private function localidad(int $id):mixed
