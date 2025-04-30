@@ -120,19 +120,18 @@ $(function(){
                 preloader('on');
                 $.post(deleteItemExamen, {Id: ids,  _token: TOKEN})
                     .done(function(response){
+
                         preloader('off');
                         for (let i = 0; i < response.length; i++) {
                             let data = response[i];
                             toastr[data.status](data.msg, "", { timeOut: 1000 });
-
                         }
 
-                        principal.listaExamenes.empty();
-                        variables.exam.val([]).trigger('change.select2');
-                        variables.paquetes.val([]).trigger('change.select2');
+                        $('#listaExamenes').empty();
+                        $('#exam').val([]).trigger('change.select2');
+                        $('#paquetes').val([]).trigger('change.select2');
                         cargarExamen();
                         contadorExamenes(IdNueva);
-                        tablasExamenes(variables.selectClientes.val(), true, '#lstEx');
                     })
                     .fail(function(jqXHR){
                         preloader('off');
