@@ -989,7 +989,8 @@ SELECT
         LPAD(p.Nro, 8, '0')
     ) AS Factura,
     MAX(p.Obs) as Obs,
-    MAX(pi2.Id) as IdEx
+    MAX(pi2.Id) as IdEx,
+	MAX(e.Id) as IdFiltro
 	FROM pagosacuenta_it pi2
 	INNER JOIN pagosacuenta p ON pi2.IdPago = p.Id
 	INNER JOIN clientes c ON p.IdEmpresa = c.Id
