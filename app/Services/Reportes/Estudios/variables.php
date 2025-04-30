@@ -99,12 +99,13 @@ $obsjor = $datosPaciente->ObsJornada;
 //ficha laboral
 $obsfl = $fichaLaboral->Observaciones;
 $telpac = "(".$telefonoPaciente->CodigoArea.") ".$telefonoPaciente->NumeroTelefono;
-$fecha = date('d/m/Y');
+$fecha = $prestacion->Fecha;
+
 $anio = date('Y');
 
-list($d,$m,$a)=explode("/",$fecha);
+list($a,$m,$d)=explode("-",$fecha);
 
-$nombreExamen = $examen->Nombre;
+$nombreExamen = $examen == null? "" : $examen->Nombre;
 
 
 function LugarFechaLargo($fecha){ 

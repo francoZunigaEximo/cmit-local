@@ -58,6 +58,29 @@ use App\Services\Reportes\Estudios\EXAMENREPORTE54;
 use App\Services\Reportes\Estudios\EXAMENREPORTE55;
 use App\Services\Reportes\Estudios\EXAMENREPORTE56;
 use App\Services\Reportes\Estudios\EXAMENREPORTE57;
+use App\Services\Reportes\Estudios\EXAMENREPORTE58;
+use App\Services\Reportes\Estudios\EXAMENREPORTE59;
+use App\Services\Reportes\Estudios\EXAMENREPORTE60;
+use App\Services\Reportes\Estudios\EXAMENREPORTE61;
+use App\Services\Reportes\Estudios\EXAMENREPORTE62;
+use App\Services\Reportes\Estudios\EXAMENREPORTE63;
+use App\Services\Reportes\Estudios\EXAMENREPORTE64;
+use App\Services\Reportes\Estudios\EXAMENREPORTE65;
+use App\Services\Reportes\Estudios\EXAMENREPORTE66;
+use App\Services\Reportes\Estudios\EXAMENREPORTE67;
+use App\Services\Reportes\Estudios\EXAMENREPORTE68;
+use App\Services\Reportes\Estudios\EXAMENREPORTE69;
+use App\Services\Reportes\Estudios\EXAMENREPORTE70;
+use App\Services\Reportes\Estudios\EXAMENREPORTE71;
+use App\Services\Reportes\Estudios\EXAMENREPORTE72;
+use App\Services\Reportes\Estudios\EXAMENREPORTE73;
+use App\Services\Reportes\Estudios\EXAMENREPORTE74;
+use App\Services\Reportes\Estudios\EXAMENREPORTE75;
+use App\Services\Reportes\Estudios\EXAMENREPORTE76;
+use App\Services\Reportes\Estudios\EXAMENREPORTE77;
+use App\Services\Reportes\Estudios\EXAMENREPORTE78;
+use App\Services\Reportes\Estudios\EXAMENREPORTE79;
+use App\Services\Reportes\Estudios\EXAMENREPORTE80;
 
 class ListadoReportes
 {
@@ -121,7 +144,30 @@ class ListadoReportes
             54 => EXAMENREPORTE54::class,
             55 => EXAMENREPORTE55::class,
             56 => EXAMENREPORTE56::class,
-            57 => EXAMENREPORTE57::class
+            57 => EXAMENREPORTE57::class,
+            58 => EXAMENREPORTE58::class,
+            59 => EXAMENREPORTE59::class,
+            60 => EXAMENREPORTE60::class,
+            61 => EXAMENREPORTE61::class,
+            62 => EXAMENREPORTE62::class,
+            63 => EXAMENREPORTE63::class,
+            64 => EXAMENREPORTE64::class,
+            65 => EXAMENREPORTE65::class,
+            66 => EXAMENREPORTE66::class,
+            67 => EXAMENREPORTE67::class,
+            68 => EXAMENREPORTE68::class,
+            69 => EXAMENREPORTE69::class,
+            70 => EXAMENREPORTE70::class,
+            71 => EXAMENREPORTE71::class,
+            72 => EXAMENREPORTE72::class,
+            73 => EXAMENREPORTE73::class,
+            74 => EXAMENREPORTE74::class,
+            75 => EXAMENREPORTE75::class,
+            76 => EXAMENREPORTE76::class,
+            77 => EXAMENREPORTE77::class,
+            78 => EXAMENREPORTE78::class,
+            79 => EXAMENREPORTE79::class,
+            80 => EXAMENREPORTE80::class
         ];
 
         return $examenes[$id];
