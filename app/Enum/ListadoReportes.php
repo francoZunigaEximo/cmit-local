@@ -9,11 +9,29 @@ use App\Services\Reportes\Estudios\AudiometriaCarley;
 use App\Services\Reportes\Estudios\EgresoPetreven;
 use App\Services\Reportes\Estudios\EgresoRepsol;
 use App\Services\Reportes\Estudios\EXAMENREPORTE100;
+use App\Services\Reportes\Estudios\EXAMENREPORTE101;
+use App\Services\Reportes\Estudios\EXAMENREPORTE103;
+use App\Services\Reportes\Estudios\EXAMENREPORTE104;
+use App\Services\Reportes\Estudios\EXAMENREPORTE105;
+use App\Services\Reportes\Estudios\EXAMENREPORTE106;
+use App\Services\Reportes\Estudios\EXAMENREPORTE107;
+use App\Services\Reportes\Estudios\EXAMENREPORTE108;
+use App\Services\Reportes\Estudios\EXAMENREPORTE109;
 use App\Services\Reportes\Estudios\HcPetreven;
 use App\Services\Reportes\Estudios\IngresoPetreven;
 use App\Services\Reportes\Estudios\RepsolIngreso;
 use App\Services\Reportes\Estudios\EXAMENREPORTE11;
+use App\Services\Reportes\Estudios\EXAMENREPORTE111;
+use App\Services\Reportes\Estudios\EXAMENREPORTE112;
+use App\Services\Reportes\Estudios\EXAMENREPORTE113;
+use App\Services\Reportes\Estudios\EXAMENREPORTE114;
+use App\Services\Reportes\Estudios\EXAMENREPORTE115;
+use App\Services\Reportes\Estudios\EXAMENREPORTE116;
+use App\Services\Reportes\Estudios\EXAMENREPORTE117;
+use App\Services\Reportes\Estudios\EXAMENREPORTE118;
+use App\Services\Reportes\Estudios\EXAMENREPORTE119;
 use App\Services\Reportes\Estudios\EXAMENREPORTE12;
+use App\Services\Reportes\Estudios\EXAMENREPORTE120;
 use App\Services\Reportes\Estudios\EXAMENREPORTE13;
 use App\Services\Reportes\Estudios\EXAMENREPORTE14;
 use App\Services\Reportes\Estudios\EXAMENREPORTE15;
@@ -207,7 +225,25 @@ class ListadoReportes
             97 => EXAMENREPORTE97::class,
             98 => EXAMENREPORTE98::class,
             99 => EXAMENREPORTE99::class,
-            100 => EXAMENREPORTE100::class
+            100 => EXAMENREPORTE100::class,
+            101 => EXAMENREPORTE101::class,
+            103 => EXAMENREPORTE103::class,
+            104 => EXAMENREPORTE104::class,
+            105 => EXAMENREPORTE105::class,
+            106 => EXAMENREPORTE106::class,
+            107 => EXAMENREPORTE107::class,
+            108 => EXAMENREPORTE108::class,
+            109 => EXAMENREPORTE109::class,
+            111 => EXAMENREPORTE111::class,
+            112 => EXAMENREPORTE112::class,
+            113 => EXAMENREPORTE113::class,
+            114 => EXAMENREPORTE114::class,
+            115 => EXAMENREPORTE115::class,
+            116 => EXAMENREPORTE116::class,
+            117 => EXAMENREPORTE117::class,
+            118 => EXAMENREPORTE118::class,
+            119 => EXAMENREPORTE119::class,
+            120 => EXAMENREPORTE120::class
         ];
 
         return $examenes[$id];

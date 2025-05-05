@@ -109,6 +109,14 @@ list($a,$m,$d)=explode("-",$fecha);
 $nombreExamen = $examen == null? "" : $examen->Nombre;
 
 
+$puestoestudio = '';
+if ($tipo == 'PERIODICO' or $tipo == 'EGRESO') {
+	$puestoestudio = $puesto;
+}
+if ($tipo == 'INGRESO' or $tipo == 'OCUPACIONAL') {
+	$puestoestudio = $tareas;
+}
+
 function LugarFechaLargo($fecha){ 
 	list($d,$m,$a)=explode("/",$fecha);
 	switch ($m) {
