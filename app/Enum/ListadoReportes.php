@@ -32,8 +32,33 @@ use App\Services\Reportes\Estudios\EXAMENREPORTE118;
 use App\Services\Reportes\Estudios\EXAMENREPORTE119;
 use App\Services\Reportes\Estudios\EXAMENREPORTE12;
 use App\Services\Reportes\Estudios\EXAMENREPORTE120;
+use App\Services\Reportes\Estudios\EXAMENREPORTE121;
+use App\Services\Reportes\Estudios\EXAMENREPORTE122;
+use App\Services\Reportes\Estudios\EXAMENREPORTE123;
+use App\Services\Reportes\Estudios\EXAMENREPORTE124;
+use App\Services\Reportes\Estudios\EXAMENREPORTE125;
+use App\Services\Reportes\Estudios\EXAMENREPORTE126;
+use App\Services\Reportes\Estudios\EXAMENREPORTE127;
+use App\Services\Reportes\Estudios\EXAMENREPORTE128;
+use App\Services\Reportes\Estudios\EXAMENREPORTE129;
 use App\Services\Reportes\Estudios\EXAMENREPORTE13;
+use App\Services\Reportes\Estudios\EXAMENREPORTE130;
+use App\Services\Reportes\Estudios\EXAMENREPORTE131;
+use App\Services\Reportes\Estudios\EXAMENREPORTE132;
+use App\Services\Reportes\Estudios\EXAMENREPORTE133;
+use App\Services\Reportes\Estudios\EXAMENREPORTE134;
+use App\Services\Reportes\Estudios\EXAMENREPORTE135;
+use App\Services\Reportes\Estudios\EXAMENREPORTE136;
+use App\Services\Reportes\Estudios\EXAMENREPORTE137;
+use App\Services\Reportes\Estudios\EXAMENREPORTE138;
+use App\Services\Reportes\Estudios\EXAMENREPORTE139;
 use App\Services\Reportes\Estudios\EXAMENREPORTE14;
+use App\Services\Reportes\Estudios\EXAMENREPORTE140;
+use App\Services\Reportes\Estudios\EXAMENREPORTE141;
+use App\Services\Reportes\Estudios\EXAMENREPORTE142;
+use App\Services\Reportes\Estudios\EXAMENREPORTE143;
+use App\Services\Reportes\Estudios\EXAMENREPORTE144;
+use App\Services\Reportes\Estudios\EXAMENREPORTE145;
 use App\Services\Reportes\Estudios\EXAMENREPORTE15;
 use App\Services\Reportes\Estudios\EXAMENREPORTE16;
 use App\Services\Reportes\Estudios\EXAMENREPORTE17;
@@ -243,7 +268,32 @@ class ListadoReportes
             117 => EXAMENREPORTE117::class,
             118 => EXAMENREPORTE118::class,
             119 => EXAMENREPORTE119::class,
-            120 => EXAMENREPORTE120::class
+            120 => EXAMENREPORTE120::class,
+            121 => EXAMENREPORTE121::class,
+            122 => EXAMENREPORTE122::class,
+            123 => EXAMENREPORTE123::class,
+            124 => EXAMENREPORTE124::class,
+            125 => EXAMENREPORTE125::class,
+            126 => EXAMENREPORTE126::class,
+            127 => EXAMENREPORTE127::class,
+            128 => EXAMENREPORTE128::class,
+            129 => EXAMENREPORTE129::class,
+            130 => EXAMENREPORTE130::class,
+            131 => EXAMENREPORTE131::class,
+            132 => EXAMENREPORTE132::class,
+            133 => EXAMENREPORTE133::class,
+            134 => EXAMENREPORTE134::class,
+            135 => EXAMENREPORTE135::class,
+            136 => EXAMENREPORTE136::class,
+            137 => EXAMENREPORTE137::class,
+            138 => EXAMENREPORTE138::class,
+            139 => EXAMENREPORTE139::class,
+            140 => EXAMENREPORTE140::class,
+            141 => EXAMENREPORTE141::class,
+            142 => EXAMENREPORTE142::class,
+            143 => EXAMENREPORTE143::class,
+            144 => EXAMENREPORTE144::class,
+            145 => EXAMENREPORTE145::class,
         ];
 
         return $examenes[$id];
