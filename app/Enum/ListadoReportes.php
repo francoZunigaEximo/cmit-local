@@ -59,7 +59,16 @@ use App\Services\Reportes\Estudios\EXAMENREPORTE142;
 use App\Services\Reportes\Estudios\EXAMENREPORTE143;
 use App\Services\Reportes\Estudios\EXAMENREPORTE144;
 use App\Services\Reportes\Estudios\EXAMENREPORTE145;
+use App\Services\Reportes\Estudios\EXAMENREPORTE146;
+use App\Services\Reportes\Estudios\EXAMENREPORTE147;
+use App\Services\Reportes\Estudios\EXAMENREPORTE148;
+use App\Services\Reportes\Estudios\EXAMENREPORTE149;
 use App\Services\Reportes\Estudios\EXAMENREPORTE15;
+use App\Services\Reportes\Estudios\EXAMENREPORTE150;
+use App\Services\Reportes\Estudios\EXAMENREPORTE151;
+use App\Services\Reportes\Estudios\EXAMENREPORTE152;
+use App\Services\Reportes\Estudios\EXAMENREPORTE153;
+use App\Services\Reportes\Estudios\EXAMENREPORTE154;
 use App\Services\Reportes\Estudios\EXAMENREPORTE16;
 use App\Services\Reportes\Estudios\EXAMENREPORTE17;
 use App\Services\Reportes\Estudios\EXAMENREPORTE18;
@@ -294,6 +303,15 @@ class ListadoReportes
             143 => EXAMENREPORTE143::class,
             144 => EXAMENREPORTE144::class,
             145 => EXAMENREPORTE145::class,
+            146 => EXAMENREPORTE146::class,
+            147 => EXAMENREPORTE147::class,
+            148 => EXAMENREPORTE148::class,
+            149 => EXAMENREPORTE149::class,
+            150 => EXAMENREPORTE150::class,
+            151 => EXAMENREPORTE151::class,
+            152 => EXAMENREPORTE152::class,
+            153 => EXAMENREPORTE153::class,
+            154 => EXAMENREPORTE154::class
         ];
 
         return $examenes[$id];

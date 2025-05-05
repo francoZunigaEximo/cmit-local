@@ -20,7 +20,7 @@ class EXAMENREPORTE97 extends Reporte
 {
     public function render(FPDF $pdf, $datos = ['id', 'idExamen']): void
     {
-        include('variables.php');
+include('variables.php');
 
         include ("banerlogo.php");
 

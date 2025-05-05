@@ -20,7 +20,7 @@ class EXAMENREPORTE58 extends Reporte
 {
     public function render(FPDF $pdf, $datos = ['id', 'idExamen']): void
     {
-        include('variables.php');
+include('variables.php');
         $pdf->SetMargins(22,20,22); //left/top/right
         include('banerlogo.php');
 

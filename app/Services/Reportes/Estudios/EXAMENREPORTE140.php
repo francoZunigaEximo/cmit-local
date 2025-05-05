@@ -20,7 +20,7 @@ class EXAMENREPORTE140 extends Reporte
 {
     public function render(FPDF $pdf, $datos = ['id', 'idExamen']): void
     {
-        include('variables.php');
+include('variables.php');
         
         $pdf->Image(public_path("/archivos/reportes/E140_1.jpg"),10,20,190); 
         $pdf->Image(public_path("/archivos/reportes/E140_2.jpg"),10,170,190); 

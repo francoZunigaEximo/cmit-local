@@ -8,6 +8,8 @@ use App\Models\Provincia;
 use App\Models\Telefono;
 use App\Models\Examen;
 
+include_once 'funciones.php';
+
 $prestacion = $this->prestacion($datos['id']);
 $examen = Examen::where('Id', $datos['idExamen'])->first();
 $datosPaciente = $this->datosPaciente($prestacion->paciente->Id);
@@ -77,26 +79,27 @@ $cp = $localidad->CP;
 $domipac = $prestacion->paciente->Direccion;
 $pcia = $provinciaPaciente->Nombre;
 //puesto
-$puesto = $datosPaciente->Puesto;
-$sector = $datosPaciente->Sector;
-$tareas = $datosPaciente->Tareas;
-$tareasea = $datosPaciente->TareasEmpAnterior;
-$oj = $datosPaciente->ObsJornada;
-$antigpto = $datosPaciente->AntigPuesto;
-$antig = $datosPaciente->FechaIngreso;
+
+$puesto = $datosPaciente ? $datosPaciente->Puesto : "";
+$sector = $datosPaciente ? $datosPaciente->Sector : "";
+$tareas = $datosPaciente ? $datosPaciente->Tareas : "";
+$tareasea = $datosPaciente ? $datosPaciente->TareasEmpAnterior : "";
+$oj = $datosPaciente ? $datosPaciente->ObsJornada : "" ;
+$antigpto = $datosPaciente ? $datosPaciente->AntigPuesto : "";
+$antig = $datosPaciente ? $datosPaciente->FechaIngreso : "";
 if ($antig == '00-00-0000') {
     $antig = "";
     $fi = "";
 } else {
     $fi = $antig;
-    $antig = $datosPaciente->FechaIngreso;
+    $antig = $datosPaciente ? $datosPaciente->FechaIngreso : "";
 }
-$fe = $datosPaciente->FechaEgreso;
+$fe = $datosPaciente ? $datosPaciente->FechaEgreso : "";
 if ($fe == '00-00-0000') {
     $fe = "";
 }
-$jor = $datosPaciente->TipoJornada . ' ' . $datosPaciente->Jornada;
-$obsjor = $datosPaciente->ObsJornada;
+$jor = $datosPaciente ? $datosPaciente->TipoJornada . ' ' . $datosPaciente->Jornada : "";
+$obsjor = $datosPaciente ? $datosPaciente->ObsJornada : "";
 //ficha laboral
 $obsfl = $fichaLaboral->Observaciones;
 $telpac = "(".$telefonoPaciente->CodigoArea.") ".$telefonoPaciente->NumeroTelefono;
@@ -117,22 +120,5 @@ if ($tipo == 'INGRESO' or $tipo == 'OCUPACIONAL') {
 	$puestoestudio = $tareas;
 }
 
-function LugarFechaLargo($fecha){ 
-	list($d,$m,$a)=explode("/",$fecha);
-	switch ($m) {
-		case 1:	$mes="Enero";break;
-		case 2:	$mes="Febrero";break;
-		case 3:	$mes="Marzo";break;
-		case 4:	$mes="Abril";break;
-		case 5:	$mes="Mayo";break;	
-		case 6:	$mes="Junio";break;	
-		case 7:	$mes="Julio";break;	
-		case 8:	$mes="Agosto";break;	
-		case 9:	$mes="Septiembre";break;	
-		case 10:$mes="Octubre";break;	
-		case 11:$mes="Noviembre";break;	
-		case 12:$mes="Diciembre";break;	
-	}		
-	return "Neuquen, $d de $mes de $a";
-}
+
 ?>

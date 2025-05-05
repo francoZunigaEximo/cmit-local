@@ -20,7 +20,7 @@ class EXAMENREPORTE29 extends Reporte
 {
     public function render(FPDF $pdf, $datos = ['id', 'idExamen']): void
     {
-        include('variables.php');
+include('variables.php');
 
         $pdf->SetFont('Arial','B',13);$pdf->SetXY(10,32);$pdf->Cell(200,5,'EXAMEN ODONTOLOGICO',0,0,'C');
         $pdf->Image(public_path("/archivos/reportes/E29.jpg"),25,40,172);

@@ -20,7 +20,7 @@ class EXAMENREPORTE47 extends Reporte
 {
     public function render(FPDF $pdf, $datos = ['id', 'idExamen']): void
     {
-        include('variables.php');
+include('variables.php');
         $pdf->Image(public_path("/archivos/reportes/E47_1.jpg"),5,8,200); 
         $pdf->Image(public_path("/archivos/reportes/E47_2.jpg"),5,174,200); 
         Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");

@@ -17,7 +17,7 @@ class EXAMENREPORTE11 extends Reporte
 {
     public function render(FPDF $pdf, $datos = ['id', 'idExamen']): void
     {
-        include('variables.php');
+include('variables.php');
 
         $prestacion = $this->prestacion($datos['id']);
         $datosPaciente = $this->datosPaciente($prestacion->paciente->Id);
@@ -100,5 +100,6 @@ class EXAMENREPORTE11 extends Reporte
     {
         return Localidad::find($id);
     }
+
 
 }

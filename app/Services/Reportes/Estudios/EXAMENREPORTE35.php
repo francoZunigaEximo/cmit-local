@@ -20,7 +20,7 @@ class EXAMENREPORTE35 extends Reporte
 {
     public function render(FPDF $pdf, $datos = ['id', 'idExamen']): void
     {
-        include('variables.php');
+include('variables.php');
         $pdf->SetMargins(22,20,22);
         Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
         $pdf->SetXY(22,32);$pdf->SetFont('Arial','BU',12);$pdf->Cell(0,10,"Centro de Medicina Integral del Trabajo",0,0,'L');

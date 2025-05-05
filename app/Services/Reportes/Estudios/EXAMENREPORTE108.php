@@ -20,7 +20,7 @@ class EXAMENREPORTE108 extends Reporte
 {
     public function render(FPDF $pdf, $datos = ['id', 'idExamen']): void
     {
-        include('variables.php');
+include('variables.php');
         include('banerlogo.php');
         $pdf->SetFont('Arial','',8);$pdf->SetXY(10,30);$pdf->Cell(188,3,$fecha,0,0,'R');
 
