@@ -63,7 +63,32 @@
                                         <option value="{{ $reporte->Id }}">{{ $reporte->Nombre }}</option>
                                     @endforeach
                                 </select>
-                                <button type="button" class="btn btn-sm botonGeneral" title="Vista previa"><i class="ri-search-line vistaPrevia"></i></button>
+
+                                <!-- Button trigger modal -->
+                                <button type="button" class="btn btn-sm botonGeneral" id="vistaPrevia" title="Vista previa" data-bs-toggle="modal" data-bs-target="#modalVistaPrevia">
+                                <i class="ri-search-line vistaPrevia"></i>
+                                </button>
+
+                                <!-- Modal -->
+                                <div class="modal fade" id="modalVistaPrevia" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg  modal-dialog-centered">
+                                        <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Vista Previa</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <img id="imagenVistaPrevia" src="" alt="" srcset="" class="" style="width: 100%;height: auto;" >
+                                            <div class="alert alert-light alertaModal" style="display: none;" role="alert">
+                                                Este Reporte no cuenta con una vista previa
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                        </div>
+                                        </div>
+                                    </div>
+                                </div>    
                             </div>
                         </div>
 
@@ -230,6 +255,7 @@
 <script src="{{ asset('js/fancyTable.js') }}"></script>
 <script src="{{ asset('js/examenes/edit.js') }}?v={{ time() }}"></script>
 <script src="{{ asset('js/examenes/validaciones.js')}}?v={{ time() }}"></script>
+<script src="{{ asset('js/examenes/vistaprevia.js')}}?v={{ time()}}"></script>
 @endpush
 
 @endsection

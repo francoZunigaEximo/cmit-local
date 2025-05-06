@@ -36,7 +36,7 @@
                                 <select class="form-control" id="Estudio" name="Estudio">
                                     <option value="" selected>Elija una opción...</option>
                                     @foreach($estudios as $estudio)
-                                        <option value="{{ $estudio->Id }}">{{ $estudio->Nombre }}</option>
+                                    <option value="{{ $estudio->Id }}">{{ $estudio->Nombre }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -55,10 +55,34 @@
                                 <select class="form-control" id="Reporte" name="Reporte">
                                     <option value="" selected>Elija una opción...</option>
                                     @foreach($reportes as $reporte)
-                                        <option value="{{ $reporte->Id }}">{{ $reporte->Nombre }}</option>
+                                    <option value="{{ $reporte->Id }}">{{ $reporte->Nombre }}</option>
                                     @endforeach
                                 </select>
-                                <button type="button" class="btn btn-sm botonGeneral" title="Vista previa"><i class="ri-search-line vistaPrevia"></i></button>
+                                <!-- Button trigger modal -->
+                                <button type="button" class="btn btn-sm botonGeneral" id="vistaPrevia" title="Vista previa" data-bs-toggle="modal" data-bs-target="#modalVistaPrevia">
+                                    <i class="ri-search-line vistaPrevia"></i>
+                                </button>
+
+                                <!-- Modal -->
+                                <div class="modal fade" id="modalVistaPrevia" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg  modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-5" id="exampleModalLabel">Vista Previa</h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <img id="imagenVistaPrevia" src="" alt="" srcset="" class="" style="width: 100%;height: auto;">
+                                                <div class="alert alert-light alertaModal" style="display: none;" role="alert">
+                                                    Este Reporte no cuenta con una vista previa
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -115,7 +139,7 @@
                                 <select id="ProvEfector" name="ProvEfector" class="form-control">
                                     <option value="" selected>Elija una opción...</option>
                                     @foreach($proveedores as $proveedor)
-                                        <option value="{{ $proveedor->Id ?? '' }}">{{ $proveedor->Nombre ?? '' }}</option>
+                                    <option value="{{ $proveedor->Id ?? '' }}">{{ $proveedor->Nombre ?? '' }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -127,7 +151,7 @@
                                 <select id="ProvInformador" name="ProvInformador" class="form-control">
                                     <option value="" selected>Elija una opción...</option>
                                     @foreach($proveedores as $proveedor)
-                                        <option value="{{ $proveedor->Id ?? '' }}">{{ $proveedor->Nombre ?? '' }}</option>
+                                    <option value="{{ $proveedor->Id ?? '' }}">{{ $proveedor->Nombre ?? '' }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -154,7 +178,7 @@
                                 </div>
 
                                 <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="checkbox" id="Cerrado" name="Cerrado" {{ (Auth::user()->Rol === 'Admin' && Auth::user()->profesional->T1 === 1 ? '' : 'disabled title="Debe ser Administrador y Efector"') }}>
+                                    <input class="form-check-input" type="checkbox" id="Cerrado" name="Cerrado" {{ (Auth::user()->Rol === 'Admin' && Auth::user()->profesional->T1 === 1 ? '' : 'disabled title="Debe ser Administrador y Efector"') }}>
                                     <label class="form-check-label" for="Informe">Cerrado</label>
                                 </div>
 
@@ -187,7 +211,7 @@
                                     <input class="form-check-input" type="checkbox" id="ExpAnexo" name="ExpAnexo">
                                     <label class="form-check-label" for="ExpAnexo">Exporta con anexo</label>
                                 </div>
-                    
+
                             </div>
                         </div>
                     </div>
@@ -213,6 +237,7 @@
 <script src="{{ asset('js/fancyTable.js') }}"></script>
 <script src="{{ asset('js/examenes/create.js') }}?v={{ time() }}"></script>
 <script src="{{ asset('js/examenes/validaciones.js')}}?v={{ time() }}"></script>
+<script src="{{ asset('js/examenes/vistaprevia.js')}}?v={{ time()}}"></script>
 
 @endpush
 

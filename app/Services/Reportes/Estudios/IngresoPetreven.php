@@ -29,8 +29,8 @@ class IngresoPetreven extends Reporte
         Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
 
         $paciente = $prestacion->paciente->Apellido.' '.$prestacion->paciente->Nombre;
-        $localidad = $this->localidad($datosPaciente->IdLocalidad) ?? '';
-
+        $localidad = $this->localidad($prestacion->paciente->IdLocalidad) ?? '';
+        
         $pdf->SetFont('Arial','B',8);$pdf->SetXY(26,240);$pdf->Cell(0,3,'HISTORIA CLINICA OCUPACIONAL',0,0,'L');
         $pdf->SetXY(173,240);$pdf->Cell(0,3,'Pagina 1',0,0,'L');
         $pdf->SetXY(90,55);$pdf->Cell(0,3,'Ingreso X',0,0,'L');$pdf->SetXY(130,55);$pdf->Cell(0,3,'Egreso',0,0,'L');
@@ -53,19 +53,19 @@ class IngresoPetreven extends Reporte
         $pdf->SetXY(173,240);$pdf->Cell(0,3,'Pagina 2',0,0,'L');
         //pagina 3
         $pdf->AddPage();
-        $pdf->Image(ReporteConfig::$INGRESOPETREVEN2,25,20,166);
+        $pdf->Image(public_path(ReporteConfig::$INGRESOPETREVEN2),25,20,166);
         Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
         $pdf->SetFont('Arial','B',8);$pdf->SetXY(26,240);$pdf->Cell(0,3,'HISTORIA CLINICA OCUPACIONAL',0,0,'L');
         $pdf->SetXY(173,240);$pdf->Cell(0,3,'Pagina 3',0,0,'L');
         //pagina 4
         $pdf->AddPage();
-        $pdf->Image(ReporteConfig::$INGRESOPETREVEN3,25,20,166);
+        $pdf->Image(public_path(ReporteConfig::$INGRESOPETREVEN3),25,20,166);
         Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
         $pdf->SetFont('Arial','B',8);$pdf->SetXY(26,240);$pdf->Cell(0,3,'HISTORIA CLINICA OCUPACIONAL',0,0,'L');
         $pdf->SetXY(173,240);$pdf->Cell(0,3,'Pagina 4',0,0,'L');
         //pagina 5
         $pdf->AddPage();
-        $pdf->Image(ReporteConfig::$INGRESOPETREVEN4,25,20,169);
+        $pdf->Image(public_path(ReporteConfig::$INGRESOPETREVEN4),25,20,169);
         Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
         $pdf->SetFont('Arial','',8);
         $pdf->SetXY(38,54);$pdf->Cell(0,3,$prestacion->Fecha,0,0,'L');

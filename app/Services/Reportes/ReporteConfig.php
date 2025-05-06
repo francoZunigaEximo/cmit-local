@@ -30,5 +30,5 @@ class ReporteConfig
     public static $INGRESOPETREVEN1 = "/archivos/reportes/E6_1.jpg";
     public static $INGRESOPETREVEN2 = "/archivos/reportes/E6_2.jpg";
     public static $INGRESOPETREVEN3 = "/archivos/reportes/E6_3.jpg";
-    public static $INGRESOPETREVEN4 = "/archivos/reportes/E6_4.jpg";
+    public static $INGRESOPETREVEN4 = "/archivos/reportes/E9_4.jpg";
 }

@@ -17,7 +17,8 @@ class Reporte extends Model
         'Id',
         'Nombre',
         'IdReporte',
-        'Inactivo'
+        'Inactivo',
+        'VistaPrevia'
     ];
 
     public $timestamps = false;

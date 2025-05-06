@@ -141,6 +141,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/prestaciones/listado-resultados', [PrestacionesController::class, 'getResultados'])->name('prestaciones.resultados');
     Route::get('/prestaciones/exportar-resultados', [PrestacionesController::class, 'exportResultados'])->name('prestaciones.exportarResultado');
     Route::get('/prestaciones/enviar-reporteEspecial', [PrestacionesController::class, 'enviarReporteEspecial'])->name('prestaciones.reporteEspecial');
+    Route::get('/prestaciones/pdfPrueba', [PrestacionesController::class, 'pdfPrueba'])->name('prestaciones.pdfPrueba');
     Route::resource('prestaciones', PrestacionesController::class);
 
     //Ruta Ficha Laboral
@@ -161,6 +162,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('searchExamenes', [ExamenesController::class, 'searchExamenes'])->name('searchExamenes');
     Route::post('updateExamen', [ExamenesController::class, 'updateExamen'])->name('updateExamen');
     Route::get('/examenes/exportar/excel', [ExamenesController::class, 'excel'])->name('examenes.excel');
+    Route::get('/reporte/vistaprevia', [ExamenesController::class, 'getVistaPrevia'])->name('examenes.getVistaPrevia');
 
     //Ruta de Comentarios de Prestaciones
     Route::post('/comentarios/guardar', [ComentariosPrestacionesController::class, 'setComentarioPres'])->name('setComentarioPres');
