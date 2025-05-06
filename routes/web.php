@@ -27,6 +27,7 @@ use App\Http\Controllers\MensajesController;
 use App\Http\Controllers\NotasCreditoController;
 use App\Http\Controllers\PaqueteEstudioController;
 use App\Http\Controllers\PaqueteFacturacionController;
+use App\Http\Controllers\PaquetesController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\UsuariosController;
 use App\Models\FacturaDeVenta;
@@ -408,6 +409,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('llamador/efector/llamar-paciente',[LlamadorController::class, 'controlLlamado'])->name('llamador.llamar-paciente');
     Route::get('llamador/check-status', [LlamadorController::class, 'checkLlamado'])->name('llamador.check');
 
-    
+    Route::resource('paquetes', PaquetesController::class);
+
 });
 

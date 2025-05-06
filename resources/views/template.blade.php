@@ -211,6 +211,9 @@
                                         <a href="{{ route('usuarios.index') }}" class="nav-link enlace-blanco" data-key="t-usuarios"> Usuarios </a>
                                     </li>
                                     @endcan
+                                    <li class="nav-item">
+                                        <a href="{{ route('paquetes.index') }}" class="nav-link enlace-blanco" data-key="t-usuarios"> Paquetes </a>
+                                    </li>
                                 </ul>
                             </div>
                         </li>
