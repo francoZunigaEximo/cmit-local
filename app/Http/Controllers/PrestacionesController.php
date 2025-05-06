@@ -611,7 +611,7 @@ class PrestacionesController extends Controller
         if(!empty($listado)) {
 
             return response()->json([
-                'filePath' => str_replace('/app/public','',$this->outputPath),
+                'filePath' => $this->outputPath,
                 'name' => $name,
                 'msg' => 'Reporte generado correctamente',
                 'icon' => 'success' 
