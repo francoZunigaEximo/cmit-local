@@ -78,14 +78,13 @@
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
-                                            <img id="imagenVistaPrevia" src="" alt="" srcset="" class="img-thumbnail" style="width: 100%;height: auto;" >
+                                            <img id="imagenVistaPrevia" src="" alt="" srcset="" class="" style="width: 100%;height: auto;" >
                                             <div class="alert alert-light alertaModal" style="display: none;" role="alert">
                                                 Este Reporte no cuenta con una vista previa
                                             </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                            <button type="button" class="btn btn-primary">Save changes</button>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                                         </div>
                                         </div>
                                     </div>
