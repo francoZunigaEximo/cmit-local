@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\GrillaEfectoresEvent;
+use App\Events\LstProfEfectoresEvent;
 use Illuminate\Http\Request;
 use App\Models\Llamador;
 use App\Models\Prestacion;
@@ -43,20 +44,20 @@ class LlamadorController extends Controller
     public function efector(Request $request)
     { 
         $user = Auth::user()->load('personal');
-        $nombreCompleto = $user->personal->Apellido . ' ' . $user->personal->Nombre;
 
         $efectores = null;
 
         if ($this->utilidades->checkTipoRol(Auth::user()->name, SELF::ADMIN)) {
 
             $efectores = $this->listadoProfesionales->listado('Efector');
+            event(new LstProfEfectoresEvent($efectores));   
 
         }else if($this->utilidades->checkTipoRol(Auth::user()->name, [SELF::TIPOS[0]])) {
 
             $efectores = collect([
                 (object)[
                     'Id' => Auth::user()->profesional_id,
-                    'NombreCompleto' => $nombreCompleto,
+                    'NombreCompleto' => $user->personal->nombre_completo,
                 ]
             ]);
         }
@@ -146,7 +147,6 @@ class LlamadorController extends Controller
 
     public function verPaciente(Request $request)
     {
-        $nombreCompleto = '';
         $especialidades = explode(',', $request->Especialidades);
 
         $prestacion = Prestacion::with(['paciente','empresa','art'])->where('Id', $request->Id)->first();
@@ -154,13 +154,12 @@ class LlamadorController extends Controller
 
         if (is_numeric($request->IdProfesional) && $request->IdProfesional == 'undefined') {
             $datos = User::with('personal')->where('profesional_id', $request->IdProfesional)->first();
-            $nombreCompleto = $datos->personal->Apellido.' '.$datos->personal->Nombre;
         } 
 
         if($prestacion) {
             return response()->json([
                 'prestacion' => $prestacion, 
-                'profesional' => $nombreCompleto,
+                'profesional' => $datos->personal->nombre_completo,
                 'itemsprestaciones' => $itemsprestaciones,
             ]);
         }

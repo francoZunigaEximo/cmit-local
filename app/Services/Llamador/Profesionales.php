@@ -11,6 +11,7 @@ class Profesionales
     public function listado($tipo)
     {
         return User::join('user_rol', 'users.id', '=', 'user_rol.user_id')
+                ->join('user_sessions', 'users.id', '=', 'user_sessions.user_id')
                 ->join('roles', 'user_rol.rol_id', '=', 'roles.Id')
                 ->join('datos', 'users.datos_id', '=', 'datos.Id')
                 ->select(
@@ -20,17 +21,8 @@ class Profesionales
                     
                     )
                 ->where('roles.nombre', $tipo)
+                ->whereNull('logout_at')
                 ->get();
     }
 
-    public function getNombreCompleto(int $id)
-    {
-        return Profesional::join('users', 'profesionales.Id', '=', 'users.profesional_id')
-                        ->join('datos', 'users.datos_id', '=', 'datos.Id')
-                        ->select(
-                            DB::raw("CONCAT(datos.Nombre.' '.datos.Apellido) as NombreCompleto")
-                        )
-                        ->where('profesionales.Id', $id)
-                        ->first();
-    }
 }

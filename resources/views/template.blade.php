@@ -14,11 +14,10 @@
 
     <link rel="shortcut icon" href="{{ asset('images/favicon.ico') }}">
 
-    <link href="{{ asset('libs/jsvectormap/css/jsvectormap.min.css') }}" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     @stack('styles')
 
-    <link href="{{ asset('libs/swiper/swiper-bundle.min.css') }}" rel="stylesheet" type="text/css" />
+    {{-- <link href="{{ asset('libs/swiper/swiper-bundle.min.css') }}" rel="stylesheet" type="text/css" /> --}}
     <link rel="stylesheet" href="{{ asset('css/toastr.min.css') }}">
 
     <link rel="stylesheet" type="text/css" href="{{ asset('css/multi.min.css') }}" />
@@ -30,8 +29,6 @@
     <link href="{{ asset('css/app.min.css') }}?v={{ time() }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('css/custom.min.css') }}?v={{ time() }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('css/screen.css') }}?v={{ time() }}" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
-
 
     <script src="{{ asset('js/jquery.min.js') }}"></script>
     <script src="{{ asset('js/basicos.js') }}?v={{ time() }}"></script>
@@ -395,11 +392,11 @@
     <script src="{{ asset('js/flatpickr.js') }}"></script>
     <script src="{{ asset('js/toastr.min.js') }}"></script>
 
-    <script src="{{ asset('libs/apexcharts/apexcharts.min.js') }}"></script>
+    {{-- <script src="{{ asset('libs/apexcharts/apexcharts.min.js') }}"></script>
     <script src="{{ asset('libs/jsvectormap/js/jsvectormap.min.js') }}"></script>
     <script src="{{ asset('libs/jsvectormap/maps/world-merc.js') }}"></script>
     <script src="{{ asset('libs/swiper/swiper-bundle.min.js') }}"></script>
-    <script src="{{ asset('js/pages/dashboard-ecommerce.init.js') }}"></script>
+    <script src="{{ asset('js/pages/dashboard-ecommerce.init.js') }}"></script> --}}
 
     <script src="{{ asset('js/app.js') }}"></script>
     <script src="{{ asset('js/scripts.js') }}?v={{ time() }}"></script>

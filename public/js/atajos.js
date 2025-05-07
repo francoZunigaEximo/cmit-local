@@ -8,15 +8,15 @@ $(function(){
         $("#dniPrestacion").on('focus');
     });
     
-    $("#dniPrestacion").keyup(function(event) {
-        if (event.which === 13) {
+    $("#dniPrestacion").on('keyup', function(e) {
+        if (e.which === 13) {
             $("#btnWizardPrestacion").on('click');
         }
     });
 
 
     const options = {
-        // 'a': lnkPacientes,
+        'a': lnkPacientes,
         'c': lnkClientes,
         'r': lnkPrestaciones,
         'm': lnkMapas,
@@ -26,7 +26,7 @@ $(function(){
         's': lnkEtapas
     };
 
-    $(document).keydown(function(e) {
+    $(document).on('keydown', function(e) {
         if (e.altKey && e.key === 'p') {
             e.preventDefault();
             $("#prestacionFast").offcanvas("show");

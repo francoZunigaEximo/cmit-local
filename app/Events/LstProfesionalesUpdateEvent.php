@@ -8,7 +8,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class ListadoProfesionalesEvent implements ShouldBroadcastNow
+class LstProfesionalesUpdateEvent implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -28,12 +28,12 @@ class ListadoProfesionalesEvent implements ShouldBroadcastNow
      */
     public function broadcastOn()
     {
-        return new Channel('listado-efectores');
+        return new Channel('listado-efectores-actualizacion');
     }
 
     public function broadcastAs()
     {
-        return 'ListadoProfesionalesEvent';
+        return 'LstProfesionalesUpdateEvent';
     }
 
     public function broadcastWith()

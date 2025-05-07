@@ -45,11 +45,12 @@ Route::group(['middleware' => 'guest'], function () {
 
 Route::group(['middleware' => 'auth'], function () {
 
-    Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
-    Route::get('/perfil', [AuthController::class, 'profile'])->name('perfil');
-    Route::post('actualizarPass', [AuthController::class, 'updatePass'])->name('actualizarPass');
+    Route::get('/usuario/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::get('/usuario/perfil', [AuthController::class, 'profile'])->name('perfil');
+    Route::post('/actualizarPass', [AuthController::class, 'updatePass'])->name('actualizarPass');
     Route::post('register', [AuthController::class, 'register'])->name('register');
-    Route::get('checkPassword', [AuthController::class, 'checkPassword'])->name('checkPassword');
+    Route::get('/usuario/check-password', [AuthController::class, 'checkPassword'])->name('usuario.checkPassword');
+    Route::get('/usuario/forzar-cierre', [AuthController::class, 'forzarLogout'])->name('usuario.forzarCierre');
     // Route::get('/passw', function (){
     //     return Hash::make('cmit1234');
     // });
@@ -67,7 +68,6 @@ Route::group(['middleware' => 'auth'], function () {
     });*/
 
     //Home del sitio
-    //Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::get('/home', function () {
         return redirect('/prestaciones');
     })->name('home');
