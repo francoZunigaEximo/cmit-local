@@ -32,6 +32,7 @@ use App\Http\Controllers\RolesController;
 use App\Http\Controllers\UsuariosController;
 use App\Models\FacturaDeVenta;
 use App\Models\ItemPrestacion;
+use App\Models\PaqueteEstudio;
 use App\Models\PrestacionComentario;
 //use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Route;
@@ -409,6 +410,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('llamador/efector/llamar-paciente',[LlamadorController::class, 'controlLlamado'])->name('llamador.llamar-paciente');
     Route::get('llamador/check-status', [LlamadorController::class, 'checkLlamado'])->name('llamador.check');
 
+
+    Route::get('paquetes/searchExamenes', [PaquetesController::class, 'searchExamenes'])->name('paquetes.searchExamenes');
+    Route::get('paquetes/crearPaqueteExamen', [PaquetesController::class, 'crearPaqueteExamen'])->name('paquetes.crearPaqueteExamen');
     Route::resource('paquetes', PaquetesController::class);
 
 });
