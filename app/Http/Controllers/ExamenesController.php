@@ -336,5 +336,9 @@ class ExamenesController extends Controller
             return response()->noContent();
         }
     }
+
+    public function getEmpresas(){
+        
+    }
 }
  

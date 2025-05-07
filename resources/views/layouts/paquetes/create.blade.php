@@ -28,14 +28,27 @@
         <div class="row">
             <div class="col-12 p-1">
                 <div>
-                    <label for="" class="form-label">Codigo:</label>
+                    <label for="" class="form-label">Descripcion:</label>
                     <textarea class="form-control" id="descripcion"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-6">
+                <div>
+                    <label class="form-label">Examen</label>
+                    <select name="examenSelect2" class="form-control" id="examenSelect2">
+
+                    </select>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<script>
+const getClientes = "{{ route('getEmpresas') }}";
 
+</script>
 
 @push('styles')
 <link href="{{ asset('css/hacks.css') }}?v=1.1" rel="stylesheet" type="text/css" />
@@ -43,9 +56,8 @@
 
 @push('scripts')
 <script src="{{ asset('js/jquery.validate.min.js') }}"></script>
-<script src="{{ asset('js/pacientes/validaciones.js') }}?v={{ time() }}"></script>
-<script src="{{ asset('js/pacientes/create.js') }}?v={{ time() }}"></script>
-<script src="{{ asset('js/pacientes/utils.js') }}?v={{ time() }}"></script>
+<script src="{{ asset('js/paquetes/create.js') }}?v={{ time() }}"></script>
+
 
 <script src="{{ asset('js/webcam.min.js') }}?V={{ time() }}"></script>
 <script src="{{ asset('js/webcam-picture.js') }}?v={{ time() }}"></script>
