@@ -3,10 +3,10 @@ $(document).on('click', '#vistaPrevia', function(e){
     $("#imagenVistaPrevia").attr("src", "");
     preloader('on');
     $(".alertaModal").css("display", "none");
-    $.get('../reporte/vistaprevia', {Id: parseInt(id)}).done(function(response){
+    $.get(vistaPrevia, {Id: parseInt(id)}).done(function(response){
         preloader('off');
         if(response.VistaPrevia){
-            $("#imagenVistaPrevia").attr("src", "../archivos/reportes/"+response.VistaPrevia);
+            $("#imagenVistaPrevia").attr("src", archivos+response.VistaPrevia);
         }else{
             $(".alertaModal").css("display", "block");
         }

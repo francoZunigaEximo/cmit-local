@@ -226,7 +226,10 @@
         </div>
     </form>
 </div>
-
+<script>
+    const vistaPrevia = "{{ route('examenes.getVistaPrevia')}}"
+    const archivos = "{{ url('archivos/reportes') }}"
+</script>
 @push('styles')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 <link rel="stylesheet" href="{{ asset('css/hacks.css')}}?v={{ time() }}">

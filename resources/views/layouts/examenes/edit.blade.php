@@ -243,6 +243,8 @@
     const delAlias = "{{ route('aliasExamenes.del') }}";
     const cargar = "{{ route('aliasExamenes.getList') }}";
     const optionEx = "{{ route('aliasExamenes.getExamenSelect')}}"
+    const vistaPrevia = "{{ route('examenes.getVistaPrevia')}}"
+    const archivos = "{{ url('archivos/reportes') }}"
 </script>
 
 @push('styles')
