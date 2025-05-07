@@ -6,7 +6,7 @@ $(document).on('click', '#vistaPrevia', function(e){
     $.get(vistaPrevia, {Id: parseInt(id)}).done(function(response){
         preloader('off');
         if(response.VistaPrevia){
-            $("#imagenVistaPrevia").attr("src", archivos+response.VistaPrevia);
+            $("#imagenVistaPrevia").attr("src", archivos+"/"+response.VistaPrevia);
         }else{
             $(".alertaModal").css("display", "block");
         }
