@@ -989,7 +989,8 @@ SELECT
         LPAD(p.Nro, 8, '0')
     ) AS Factura,
     MAX(p.Obs) as Obs,
-    MAX(pi2.Id) as IdEx
+    MAX(pi2.Id) as IdEx,
+	MAX(e.Id) as IdFiltro
 	FROM pagosacuenta_it pi2
 	INNER JOIN pagosacuenta p ON pi2.IdPago = p.Id
 	INNER JOIN clientes c ON p.IdEmpresa = c.Id
@@ -1013,3 +1014,17 @@ INSERT INTO rol_permisos (rol_id,permiso_id) VALUES(13,81); -- Permiso a adminis
 
 -- agregamos la columna de vista previa en la tabla reportes
 ALTER TABLE reportes ADD COLUMN VistaPrevia VARCHAR(200) DEFAULT NULL;
+CREATE TABLE user_sessions (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT UNSIGNED NOT NULL,
+    session_id VARCHAR(191) NULL,
+    ip_address VARCHAR(45) NOT NULL,
+    user_agent TEXT NULL,
+    login_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    logout_at DATETIME NULL DEFAULT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+ALTER TABLE user_sessions ADD INDEX idx_user_id (user_id);
+ALTER TABLE user_sessions ADD INDEX idx_login_at (login_at);
+ALTER TABLE user_sessions ADD INDEX idx_logout_at (logout_at);
