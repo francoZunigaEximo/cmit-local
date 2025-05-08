@@ -250,7 +250,7 @@ class ClientesController extends Controller
         return response()->json(['msg' => 'Se ha dado de baja correctamente'], 200);
     }
 
-    public function baja(Request $request): mixed
+    public function baja(Request $request)
     {
         if (!$this->hasPermission("clientes_delete")) {
             return response()->json(['msg' => 'No tiene permisos'], 403);
@@ -266,7 +266,7 @@ class ClientesController extends Controller
 
     }
 
-    public function block(Request $request): mixed
+    public function block(Request $request)
     {
         if (!$this->hasPermission("clientes_edit")) {
             return response()->json(['msg' => 'No tiene permisos'], 403);
