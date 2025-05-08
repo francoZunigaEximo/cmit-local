@@ -43,8 +43,9 @@ Route::group(['middleware' => 'guest'], function () {
     Route::post('/validate-login', [AuthController::class, 'login'])->name('validate-login');
 });
 
-Route::group(['middleware' => 'auth'], function () {
 
+// Route::group(['middleware' => 'auth'], function () {
+Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::get('/usuario/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/usuario/perfil', [AuthController::class, 'profile'])->name('perfil');
     Route::post('/actualizarPass', [AuthController::class, 'updatePass'])->name('actualizarPass');
@@ -73,9 +74,9 @@ Route::group(['middleware' => 'auth'], function () {
     })->name('home');
 
     //Rutas de Utility
-    Route::get('getLocalidades', [UtilityController::class, 'getLocalidades'])->name('getLocalidades');
-    Route::get('getCodigoPostal', [UtilityController::class, 'getCodigoPostal'])->name('getCodigoPostal');
-    Route::get('checkProvincia', [UtilityController::class, 'checkProvincia'])->name('checkProvincia');
+    Route::get('/localidades', [UtilityController::class, 'getLocalidades'])->name('getLocalidades');
+    Route::get('/codigo-postal', [UtilityController::class, 'getCodigoPostal'])->name('getCodigoPostal');
+    Route::get('/provincia', [UtilityController::class, 'checkProvincia'])->name('checkProvincia');
 
     //Rutas de Pacientes
     Route::get('/pacientes/buscar', [PacientesController::class, 'search'])->name('search');
