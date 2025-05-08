@@ -67,7 +67,7 @@ $(function(){
     .echo
     .listen(socket.onlineEfectores.canal, (response) => {
           const efectores = response.efectores;
-
+            console.log(efectores);
           variables.profesional.empty();
 
           toastr.info('Un profesional ha cambiado su estado');

@@ -49,8 +49,7 @@ class LlamadorController extends Controller
 
         if ($this->utilidades->checkTipoRol(Auth::user()->name, SELF::ADMIN)) {
 
-            $efectores = $this->listadoProfesionales->listado('Efector');
-            event(new LstProfEfectoresEvent($efectores));   
+            $efectores = $this->listadoProfesionales->listado('Efector');  
 
         }else if($this->utilidades->checkTipoRol(Auth::user()->name, [SELF::TIPOS[0]])) {
 
@@ -61,6 +60,8 @@ class LlamadorController extends Controller
                 ]
             ]);
         }
+
+        event(new LstProfEfectoresEvent($efectores)); 
 
         return view('layouts.llamador.efector', compact(['efectores']));
     }
