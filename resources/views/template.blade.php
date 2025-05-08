@@ -355,17 +355,26 @@
         const lnkNuevoPaciente = "{{ route('pacientes.create') }}";
         const lnkExistePaciente = "{{ route('pacientes.edit', ['paciente' => '__paciente__']) }}";
         const verifyWizard = "{{ route('verifyWizard') }}";
-        const SALIR = "{{ route('logout') }}";
+        const TOKEN = "{{ csrf_token() }}";
         const tiempoSesion = {{ config('session.lifetime') * 60 * 1000 }};
 
         let idleTimeout;
 
         function resetIdleTimeout() {
             clearTimeout(idleTimeout);
-            idleTimeout = setTimeout(function () {
-                
-                window.location.href = SALIR;
+            idleTimeout = setTimeout(function () {       
+                cerrarSesion();
             }, tiempoSesion);
+        }
+
+        function cerrarSesion() {
+            $.post(SALIR, {_token: TOKEN}, function(response){
+                if (response.redirect) {
+                    window.location.href = response.redirect;
+                } else {
+                    window.location.href = "{{ route('logout') }}";
+                }
+            })
         }
 
         // Reiniciar el temporizador

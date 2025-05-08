@@ -115,6 +115,14 @@ class AuthController extends Controller
         Auth::logout();
         request()->session()->regenerateToken();// Regenera el token CSRF
 
+        // Si el logout viene del temporizador de cierre automatico de sesion
+        if (request()->ajax()) {
+            return response()->json([
+                'success' => true,
+                'redirect' => route('login')
+            ]);
+        }
+
         return redirect()
                 ->route('login')
                 ->withSuccess('Se ha cerrado la sesion correctamente.');
