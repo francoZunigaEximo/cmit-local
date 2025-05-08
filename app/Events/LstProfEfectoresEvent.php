@@ -16,9 +16,6 @@ class LstProfEfectoresEvent implements ShouldBroadcastNow
 
     public $efectores;
 
-    /**
-     * Create a new event instance.
-     */
     public function __construct($efectores)
     {
         $this->efectores = $efectores;

@@ -13,19 +13,12 @@ class LstProfesionalesUpdateEvent implements ShouldBroadcastNow
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $efectores;
-    /**
-     * Create a new event instance.
-     */
+
     public function __construct($efectores)
     {
         $this->efectores = $efectores;
     }
 
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return array<int, \Illuminate\Broadcasting\Channel>
-     */
     public function broadcastOn()
     {
         return new Channel('listado-efectores-actualizacion');
