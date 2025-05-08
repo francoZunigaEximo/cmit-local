@@ -24,7 +24,7 @@
         <li class="nav-item" role="presentation">
             <a class="nav-link" data-bs-toggle="tab" href="#examenes" role="tab" aria-selected="true">
                 <i class="ri-window-line"></i>
-                Examenes
+                Estudios
             </a>
         </li>
 

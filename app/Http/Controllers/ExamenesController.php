@@ -337,8 +337,25 @@ class ExamenesController extends Controller
         }
     }
 
-    public function getEmpresas(){
+    public function getExamenes(Request $request){
+        $buscar = $request->buscar;
+        $resultados = Examen::where('Nombre', 'like', "%".$buscar."%")->get();
         
+        $retorno = [];
+
+        foreach($resultados as $examen){
+            array_push($retorno, [
+                'id' => $examen->Id,
+                'text' => $examen->Nombre
+            ]);
+        }
+
+        return response()->json($retorno);
+    }
+
+    public function getById(Request $request){
+        $id = $request->Id;
+        return response()->json( Examen::find($id));
     }
 }
  
