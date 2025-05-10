@@ -109,7 +109,6 @@ const SEARCH = "{{ route('searchClientes') }}";
 const baja = "{{ route('baja') }}";
 
 //Constantes
-const TOKEN = "{{ csrf_token() }}";
 const GOINDEX = "{{ route('clientes.index') }}";
 
 </script>

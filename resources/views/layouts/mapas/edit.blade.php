@@ -838,7 +838,6 @@ const vistaPrevia = "{{ route('mapas.vistaPrevia') }}";
 const listadoAuditorias = "{{ route('mapas.auditorias') }}";
 const exportPdf = "{{ route('prestaciones.pdf') }}";
 //Extras
-const TOKEN = "{{ csrf_token() }}";
 const MAPA = "{{ $mapa->Nro }}";
 const IDMAPA = "{{ $mapa->Id }}";
 </script>

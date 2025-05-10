@@ -86,7 +86,6 @@
 <script>
     const SEARCH = "{{ route('especialidades.index') }}";
     const especialidadExcel = "{{ route('especialidadExcel') }}";
-    const TOKEN = "{{ csrf_token() }}";
     const multiDownEspecialidad = "{{ route('multiDownEspecialidad') }}";
     const bajaEspecialidad = "{{ route('bajaEspecialidad') }}";
 </script>

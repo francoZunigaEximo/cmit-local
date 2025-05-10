@@ -389,8 +389,6 @@
 
 
 <script>
-    const TOKEN = '{{ csrf_token() }}';
-
     const IDITEMPRES = "{{ $data['itemprestacion']->Id }}";
     const updateItem = "{{ route('updateItem') }}";
     const updateAsignado = "{{ route('updateAsignado') }}";

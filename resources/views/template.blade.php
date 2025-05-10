@@ -15,11 +15,12 @@
     <link rel="shortcut icon" href="{{ asset('images/favicon.ico') }}">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     @stack('styles')
 
     <link rel="stylesheet" href="{{ asset('css/toastr.min.css') }}">
 
-    <link rel="stylesheet" type="text/css" href="{{ asset('css/multi.min.css') }}" />
+    {{-- <link rel="stylesheet" type="text/css" href="{{ asset('css/multi.min.css') }}" /> --}}
     <link rel="stylesheet" href="{{ asset('css/autoComplete.css') }}">
 
     <script src="{{ asset('js/layout.js') }}"></script>

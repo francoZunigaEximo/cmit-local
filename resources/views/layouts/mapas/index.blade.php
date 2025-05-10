@@ -149,9 +149,6 @@
     const fileExport = "{{ route('mapas.exportar') }}";
     const deleteMapa = "{{ route('deleteMapa') }}";
     const getClientes = "{{ route('getClientes') }}";
-    //Extras
-    const TOKEN = "{{ csrf_token() }}";
-
 </script>
 
 @push('styles')

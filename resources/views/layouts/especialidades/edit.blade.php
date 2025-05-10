@@ -174,7 +174,6 @@
 </div><!-- /.modal -->
 
 <script>
-    const TOKEN = "{{ csrf_token() }}";
     const updateProveedor = "{{ route('updateProveedor') }}";
     const GOINDEX = "{{ route('especialidades.index') }}";
     const getLocalidad = "{{ route('getLocalidades') }}";

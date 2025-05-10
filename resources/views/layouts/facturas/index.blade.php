@@ -132,7 +132,6 @@
 </div><!-- /.modal -->
 
 <script>
-    const TOKEN = "{{ csrf_token() }}";
     const SEARCH = "{{ route('facturas.search') }}";
     const getClientes = "{{ route('getClientes') }}";
     const checkNotaCredito = "{{ route('nota-de-credito.check') }}";

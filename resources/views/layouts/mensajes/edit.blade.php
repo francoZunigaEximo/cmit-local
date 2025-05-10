@@ -57,7 +57,6 @@
 </div>
 
 <script>
-    const TOKEN = "{{ csrf_token() }}";
     const updateEmail = "{{ route('updateEmail') }}";
     const VOLVER = "{{ route('mensajes.index') }}";
 </script>

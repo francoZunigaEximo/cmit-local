@@ -206,7 +206,6 @@
 
 
 <script>
-    const TOKEN = "{{ @csrf_token() }}";
     const ID = "{{ $examene->Id }}";
     const GOCREATE = "{{ route('examenes.create') }}";
     const GOINDEX = "{{ route('examenes.index') }}";

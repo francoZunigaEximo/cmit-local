@@ -85,7 +85,6 @@ const down = "{{ route('pacientes.down') }}";
 const getNombre = "{{ route('getNombre') }}";
 
 //Extras
-const TOKEN = "{{ csrf_token() }}";
 const GOINDEX = "{{ route('pacientes.index') }}";
 const ROUTE = "{{ route('pacientes.index') }}";
 

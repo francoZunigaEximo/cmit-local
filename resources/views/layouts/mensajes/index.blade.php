@@ -325,7 +325,6 @@
 </div><!-- /.modal -->
 
 <script>
-    const TOKEN = "{{ csrf_token() }}";
     const SEARCH = "{{ route('searchMensaje') }}";
     const loadModelos = "{{ route('loadModelos') }}";
     const loadMensaje = "{{ route('loadMensaje') }}";

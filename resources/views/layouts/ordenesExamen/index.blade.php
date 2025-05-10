@@ -1074,8 +1074,6 @@
 </div>
 
 <script>
-    const TOKEN = "{{ @csrf_token() }}";
-
     const lstProveedores = "{{ route('lstProveedores') }}";
     const listGeneral = "{{ route('listGeneral') }}";
     const getClientes = "{{ route('getClientes') }}";

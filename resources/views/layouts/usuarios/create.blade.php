@@ -67,7 +67,6 @@
     const checkUsuario = "{{ route('checkUsuario') }}";
     const checkCorreo = "{{ route('checkCorreo') }}";
     const checkMail = "{{ route('checkMail') }}";
-    const TOKEN = '{{ csrf_token() }}';
     const register = "{{ route('register') }}";
 </script>
 

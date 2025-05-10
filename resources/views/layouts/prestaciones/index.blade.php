@@ -261,7 +261,6 @@ const setComentarioPres = "{{ route('setComentarioPres') }}";
 const searchPrestaciones = "{{ route('prestaciones.index') }}";
 
 //Extras
-const TOKEN = "{{ csrf_token() }}";
 const GOPACIENTES = "{{ route('pacientes.edit', ['paciente' => '__paciente__']) }}";
 const downPrestaActiva = "{{ route('prestaciones.baja') }}";
 const blockPrestacion = "{{ route('blockPrestacion') }}";

@@ -588,7 +588,6 @@
 <script>
 
 const ID = '{{ $cliente->Id }}';
-const TOKEN = '{{ csrf_token() }}';
 let contadorFilas = 1;
 const GOINDEX = "{{ route('clientes.index') }}";
 const GOCREATE = "{{ route('clientes.create') }}";

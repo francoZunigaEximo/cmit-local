@@ -1186,7 +1186,6 @@ const editUrl = "{{ route('pacientes.edit', ['paciente' => '__paciente__']) }}";
 const ID = "{{ $paciente->Id }}";
 let checkFichaLaboral = "{{ $fichaLaboral->Id ?? ''}}";
 const getTipoPrestacion = "{{ route('getTipoPrestacion') }}";
-const TOKEN = "{{ csrf_token() }}";
 
 const checkObs = "{{ route('checkObs') }}";
 const excelPrestaciones = "{{ route('prestaciones.excel') }}";
