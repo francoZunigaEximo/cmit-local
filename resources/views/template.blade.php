@@ -394,18 +394,12 @@
     <script src="{{ asset('libs/node-waves/waves.min.js') }}"></script>
     <script src="{{ asset('libs/feather-icons/feather.min.js') }}"></script>
     <script src="{{ asset('js/pages/plugins/lord-icon-2.1.0.js') }}"></script>
-    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="{{ asset('js/sweetalert.min.js') }}"></script>
 
     <script src="{{ asset('js/toastify-js.js') }}"></script>
     <script src="{{ asset('js/choices.min.js') }}"></script>
     <script src="{{ asset('js/flatpickr.js') }}"></script>
     <script src="{{ asset('js/toastr.min.js') }}"></script>
-
-    {{-- <script src="{{ asset('libs/apexcharts/apexcharts.min.js') }}"></script>
-    <script src="{{ asset('libs/jsvectormap/js/jsvectormap.min.js') }}"></script>
-    <script src="{{ asset('libs/jsvectormap/maps/world-merc.js') }}"></script>
-    <script src="{{ asset('libs/swiper/swiper-bundle.min.js') }}"></script>
-    <script src="{{ asset('js/pages/dashboard-ecommerce.init.js') }}"></script> --}}
 
     <script src="{{ asset('js/app.js') }}"></script>
     <script src="{{ asset('js/scripts.js') }}?v={{ time() }}"></script>
