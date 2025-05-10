@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\LstProfesionalesEvent;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -10,6 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use App\Models\Provincia;
 use App\Models\UserSession;
+use App\Services\Llamador\Profesionales;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Redis;
@@ -17,6 +19,13 @@ use Illuminate\Support\Facades\Redis;
 class AuthController extends Controller
 {
     CONST PASS = "cmit1234";
+
+    protected $listadoProfesionales;
+
+    public function __construct(Profesionales $listadoProfesionales)
+    {
+        $this->listadoProfesionales = $listadoProfesionales;
+    }
 
     public function login(Request $request)
     {
@@ -64,6 +73,10 @@ class AuthController extends Controller
                 $roles = Auth::user()->role->pluck('nombre'); 
 
                 if ($roles->contains('Efector') || $roles->contains('Informador')) {
+
+                    $efectores = $this->listadoProfesionales->listado('Efector');
+                    event(new LstProfesionalesEvent($efectores));
+
                     return redirect()->route('mapas.index');
                 }
 
@@ -114,6 +127,9 @@ class AuthController extends Controller
         Session::flush();//Invalidamos la sesión actual
         Auth::logout();
         request()->session()->regenerateToken();// Regenera el token CSRF
+
+        $efectores = $this->listadoProfesionales->listado('Efector');
+        event(new LstProfesionalesEvent($efectores));
 
         // Si el logout viene del temporizador de cierre automatico de sesion
         if (request()->ajax()) {

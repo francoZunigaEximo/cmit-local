@@ -4,6 +4,7 @@ namespace App\Services\Llamador;
 
 use App\Models\Profesional;
 use App\Models\User;
+use App\Models\UserSession;
 use Illuminate\Support\Facades\DB;
 
 class Profesionales
@@ -21,8 +22,13 @@ class Profesionales
                     
                     )
                 ->where('roles.nombre', $tipo)
-                ->whereNull('logout_at')
+                ->whereNull('user_sessions.logout_at')
                 ->get();
+    }
+
+    public function listadoOnline()
+    {
+        return UserSession::whereNull('logout_at')->get();
     }
 
 }

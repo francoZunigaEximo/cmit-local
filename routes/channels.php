@@ -17,6 +17,5 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });
 //Da de baja o alta efectores
-Broadcast::channel('listado-efectores-actualizacion', fn(User $user) => $user); 
+Broadcast::channel('listado-efectores', fn(User $user) => $user); 
 Broadcast::channel('grilla-efectores', fn(User $user) => $user);
-Broadcast::channel('listado-efectores-online', fn(User $user) => $user);

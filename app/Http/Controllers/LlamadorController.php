@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\GrillaEfectoresEvent;
-use App\Events\LstProfEfectoresEvent;
+use App\Events\LstProfesionalesEvent;
 use Illuminate\Http\Request;
 use App\Models\Llamador;
 use App\Models\Prestacion;
@@ -41,27 +41,26 @@ class LlamadorController extends Controller
         $this->utilidades = $utilidades;
     }
 
-    public function efector(Request $request)
+    public function efector(Request $request) 
     { 
         $user = Auth::user()->load('personal');
 
         $efectores = null;
 
-        if ($this->utilidades->checkTipoRol(Auth::user()->name, SELF::ADMIN)) {
+        if ($this->utilidades->checkTipoRol($user->name, SELF::ADMIN)) {
 
-            $efectores = $this->listadoProfesionales->listado('Efector');  
+            $efectores = $this->listadoProfesionales->listado('Efector');
+            event(new LstProfesionalesEvent($efectores));
 
-        }else if($this->utilidades->checkTipoRol(Auth::user()->name, [SELF::TIPOS[0]])) {
+        }else if($this->utilidades->checkTipoRol($user->name, [SELF::TIPOS[0]])) {
 
             $efectores = collect([
                 (object)[
-                    'Id' => Auth::user()->profesional_id,
+                    'Id' => $user->profesional_id,
                     'NombreCompleto' => $user->personal->nombre_completo,
                 ]
             ]);
         }
-
-        event(new LstProfEfectoresEvent($efectores)); 
 
         return view('layouts.llamador.efector', compact(['efectores']));
     }

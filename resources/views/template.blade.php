@@ -17,7 +17,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     @stack('styles')
 
-    {{-- <link href="{{ asset('libs/swiper/swiper-bundle.min.css') }}" rel="stylesheet" type="text/css" /> --}}
     <link rel="stylesheet" href="{{ asset('css/toastr.min.css') }}">
 
     <link rel="stylesheet" type="text/css" href="{{ asset('css/multi.min.css') }}" />
