@@ -12,8 +12,15 @@ $(function(){
     };
 
     const variables = {
-        profesional: $('#profesional')
+        profesional: $('#profesional'),
+        llamarExamen: $('.llamarExamen')
     };
+
+    const ADMIN = [
+        'Administrador', 
+        'Admin SR', 
+        'Recepcion SR'
+    ];
 
     socket.selectEfectores
           .echo
@@ -21,14 +28,18 @@ $(function(){
                 const efectores = response.efectores;
                 variables.profesional.empty();
 
-                toastr.info('Se ha actualizado el listado de profesionales');
+                let roles = ROLESUSER.map(r => r.nombre)
+                    checkRoles = roles.some(rol => ADMIN.includes(rol)),
+                    usuarios = efectores.map(e => e.Id);
 
-                if (efectores.length === 1) {
+                if (!checkRoles && usuarios.includes(parseInt(USERACTIVO))) {
 
                     variables.profesional.append(
                         `<option value="${efectores[0].Id}" selected>${efectores[0].NombreCompleto}</option>`
                     );
-                } else if(efectores.length > 1) {
+                } else if(checkRoles) {
+
+                    toastr.info('Se ha actualizado el listado de profesionales');
 
                     variables.profesional.append('<option value="" selected>Elija una opción...</option>');
                     $.each(efectores, function(index, value){
@@ -38,6 +49,7 @@ $(function(){
                     });
 
                 } else {
+
                     variables.profesional.append(
                         `<option value="" selected>No hay efectores</option>`
                     );
@@ -49,11 +61,18 @@ $(function(){
           .echo
           .listen(socket.grillaEfectores.canal, (response) => {
                 const data = response.grilla;
+                
+                console.log(USERACTIVO, profesional.val())
+
                 let texto = data.status === 'llamado' ? 'red' : 'black';
             
                 let fila = $(`tr[data-id="${data.prestacion}"]`);
                 if (fila.length > 0) {
                     fila.css('color', texto);
+                }
+
+                if(parseInt(USERACTIVO) !== profesional.val()) {
+                    llamarExamen.prop('disabled', true);
                 }
     });
 

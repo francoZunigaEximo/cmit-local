@@ -13,22 +13,19 @@
     <link rel="mask-icon" href="{{ asset('images/safari-pinned-tab.svg') }}" color="#5bbad5">
 
     <link rel="shortcut icon" href="{{ asset('images/favicon.ico') }}">
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <link href="{{ asset('css/bootstrap.min.css') }}?v={{ time() }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('css/all.min.css') }}" rel="stylesheet" type="text/css" />
     @stack('styles')
 
-    <link rel="stylesheet" href="{{ asset('css/toastr.min.css') }}">
-
-    {{-- <link rel="stylesheet" type="text/css" href="{{ asset('css/multi.min.css') }}" /> --}}
     <link rel="stylesheet" href="{{ asset('css/autoComplete.css') }}">
 
     <script src="{{ asset('js/layout.js') }}"></script>
-    <link href="{{ asset('css/bootstrap.min.css') }}?v={{ time() }}" rel="stylesheet" type="text/css" />
+    
     <link href="{{ asset('css/icons.min.css') }}?v={{ time() }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('css/app.min.css') }}?v={{ time() }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('css/custom.min.css') }}?v={{ time() }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('css/screen.css') }}?v={{ time() }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('css/toastr.min.css') }}" rel="stylesheet">
 
     <script src="{{ asset('js/jquery.min.js') }}"></script>
     <script src="{{ asset('js/basicos.js') }}?v={{ time() }}"></script>

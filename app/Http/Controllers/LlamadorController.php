@@ -199,7 +199,7 @@ class LlamadorController extends Controller
 
     public function checkLlamado(Request $request)
     {
-        $query = Llamador::where('prestacion_id', $request->id)->exists();
+        $query = Llamador::where('prestacion_id', $request->id)->first();
         return response()->json($query);
     }
 
