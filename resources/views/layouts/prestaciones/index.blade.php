@@ -262,33 +262,31 @@
     const setComentarioPres = "{{ route('setComentarioPres') }}";
     const searchPrestaciones = "{{ route('prestaciones.index') }}";
 
+    const GOPACIENTES = "{{ route('pacientes.edit', ['paciente' => '__paciente__']) }}";
+    const downPrestaActiva = "{{ route('prestaciones.baja') }}";
+    const blockPrestacion = "{{ route('blockPrestacion') }}";
+    const SEARCH = "{{ route('prestaciones.index') }}";
+    //const SEARCH = "{{ route('searchPrestaciones') }}";
+    const porcentajeExamen = "{{ route('porcentajeExamen') }}";
+    const getClientes = "{{ route('getClientes') }}";
+
+    function exportExcel(tipo) {
+
+        var listaPrestaciones = $('#listaPrestaciones').DataTable();
+        
+        if (!listaPrestaciones.data().any() ) {
+            $('#listaPrestaciones').DataTable().destroy();
+            toastr.info('No existen registros para exportar', 'Atención');
+            return;
+        }
 
 
-const GOPACIENTES = "{{ route('pacientes.edit', ['paciente' => '__paciente__']) }}";
-const downPrestaActiva = "{{ route('prestaciones.baja') }}";
-const blockPrestacion = "{{ route('blockPrestacion') }}";
-const SEARCH = "{{ route('prestaciones.index') }}";
-//const SEARCH = "{{ route('searchPrestaciones') }}";
-const porcentajeExamen = "{{ route('porcentajeExamen') }}";
-const getClientes = "{{ route('getClientes') }}";
+        filters = "";
+        length  = $('input[name="Id"]:checked').length;
 
-function exportExcel(tipo) {
-
-    var listaPrestaciones = $('#listaPrestaciones').DataTable();
-    
-    if (!listaPrestaciones.data().any() ) {
-        $('#listaPrestaciones').DataTable().destroy();
-        toastr.info('No existen registros para exportar', 'Atención');
-        return;
-    }
-
-
-    filters = "";
-    length  = $('input[name="Id"]:checked').length;
-
-    let data = listaPrestaciones.rows({ page: 'current' }).data().toArray();
-    let ids = data.map(function(row) {
-        return row.Id;
+        let data = listaPrestaciones.rows({ page: 'current' }).data().toArray();
+        let ids = data.map(function(row) {
+            return row.Id;
     });
 
     if(!['',0, null].includes(ids)) {
