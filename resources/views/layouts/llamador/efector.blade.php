@@ -253,10 +253,11 @@
     const USERACTIVO = "{{ Auth::user()->profesional_id }}";
     const addAtencion = "{{ route('llamador.llamar-paciente') }}";
     const checkLlamado = "{{ route('llamador.check') }}";
+    const ROLESUSER = @json(Auth::user()->role);
 </script>
 
 @push('styles')
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+{{-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"> --}}
 <link rel="stylesheet" href="{{ asset('css/hacks.css')}}?v={{ time() }}">
 @endpush
 

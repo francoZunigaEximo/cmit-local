@@ -148,8 +148,14 @@ $(function(){
 
                 let status = await $.get(checkLlamado, {id: data.prestacion})
 
+                console.log(status);
+
                 if (status && status === true) {
                     $(row).css('color', 'red');
+                    $('.llamarExamen')
+                        .removeClass('llamarExamen')
+                        .addClass('liberarExamen')
+                        .html('<i class="ri-edit-line"></i> Liberar')
                 }
 
                 $(row).attr('data-id', data.prestacion);

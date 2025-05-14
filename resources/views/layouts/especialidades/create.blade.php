@@ -112,7 +112,6 @@
 
 <script>
     const getLocalidad ="{{ route('getLocalidades') }}";
-    const TOKEN = "{{ csrf_token() }}";
 
     let editUrl = "{{ route('especialidades.edit', ['especialidade' => '__especialidades__']) }}";
     const checkProveedor = "{{ route('checkProveedor') }}";

@@ -8,24 +8,17 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class ListadoProfesionalesEvent implements ShouldBroadcastNow
+class LstProfesionalesEvent implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $efectores;
-    /**
-     * Create a new event instance.
-     */
+
     public function __construct($efectores)
     {
         $this->efectores = $efectores;
     }
 
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return array<int, \Illuminate\Broadcasting\Channel>
-     */
     public function broadcastOn()
     {
         return new Channel('listado-efectores');
@@ -33,7 +26,7 @@ class ListadoProfesionalesEvent implements ShouldBroadcastNow
 
     public function broadcastAs()
     {
-        return 'ListadoProfesionalesEvent';
+        return 'LstProfesionalesEvent';
     }
 
     public function broadcastWith()

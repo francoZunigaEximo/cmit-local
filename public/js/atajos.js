@@ -1,16 +1,16 @@
-$(document).ready(() => {
+$(function(){
     
-    $("#prestacionButton").click(function() {
+    $("#prestacionButton").on('click', function() {
         $("#prestacionFast").offcanvas("show");
     });
 
     $("#prestacionFast").on('shown.bs.offcanvas', function() {
-        $("#dniPrestacion").focus();
+        $("#dniPrestacion").on('focus');
     });
     
-    $("#dniPrestacion").keyup(function(event) {
-        if (event.which === 13) {
-            $("#btnWizardPrestacion").click();
+    $("#dniPrestacion").on('keyup', function(e) {
+        if (e.which === 13) {
+            $("#btnWizardPrestacion").on('click');
         }
     });
 
@@ -26,11 +26,11 @@ $(document).ready(() => {
         's': lnkEtapas
     };
 
-    $(document).keydown(function(e) {
+    $(document).on('keydown', function(e) {
         if (e.altKey && e.key === 'p') {
             e.preventDefault();
             $("#prestacionFast").offcanvas("show");
-            $("#dniPrestacion").focus();
+            $("#dniPrestacion").on('focus');
         }
 
         if (e.altKey) {

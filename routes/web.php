@@ -43,13 +43,15 @@ Route::group(['middleware' => 'guest'], function () {
     Route::post('/validate-login', [AuthController::class, 'login'])->name('validate-login');
 });
 
-Route::group(['middleware' => 'auth'], function () {
 
-    Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
-    Route::get('/perfil', [AuthController::class, 'profile'])->name('perfil');
-    Route::post('actualizarPass', [AuthController::class, 'updatePass'])->name('actualizarPass');
+// Route::group(['middleware' => 'auth'], function () {
+Route::middleware(['auth', 'auth.session'])->group(function() {
+    Route::get('/usuario/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::get('/usuario/perfil', [AuthController::class, 'profile'])->name('perfil');
+    Route::post('/actualizarPass', [AuthController::class, 'updatePass'])->name('actualizarPass');
     Route::post('register', [AuthController::class, 'register'])->name('register');
-    Route::get('checkPassword', [AuthController::class, 'checkPassword'])->name('checkPassword');
+    Route::get('/usuario/check-password', [AuthController::class, 'checkPassword'])->name('usuario.checkPassword');
+    Route::get('/usuario/forzar-cierre', [AuthController::class, 'forzarLogout'])->name('usuario.forzarCierre');
     // Route::get('/passw', function (){
     //     return Hash::make('cmit1234');
     // });
@@ -67,15 +69,14 @@ Route::group(['middleware' => 'auth'], function () {
     });*/
 
     //Home del sitio
-    //Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::get('/home', function () {
         return redirect('/prestaciones');
     })->name('home');
 
     //Rutas de Utility
-    Route::get('getLocalidades', [UtilityController::class, 'getLocalidades'])->name('getLocalidades');
-    Route::get('getCodigoPostal', [UtilityController::class, 'getCodigoPostal'])->name('getCodigoPostal');
-    Route::get('checkProvincia', [UtilityController::class, 'checkProvincia'])->name('checkProvincia');
+    Route::get('/localidades', [UtilityController::class, 'getLocalidades'])->name('getLocalidades');
+    Route::get('/codigo-postal', [UtilityController::class, 'getCodigoPostal'])->name('getCodigoPostal');
+    Route::get('/provincia', [UtilityController::class, 'checkProvincia'])->name('checkProvincia');
 
     //Rutas de Pacientes
     Route::get('/pacientes/buscar', [PacientesController::class, 'search'])->name('search');

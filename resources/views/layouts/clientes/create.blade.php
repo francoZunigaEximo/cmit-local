@@ -213,7 +213,6 @@ let editUrl = "{{ route('clientes.edit', ['cliente' => '__cliente__']) }}";
 let contadorFilas = 1;
 
 //Rutas
-const TOKEN = '{{ csrf_token() }}';
 const getLocalidad = "{{ route('getLocalidades') }}";
 const getCodigoPostal = "{{ route('getCodigoPostal') }}";
 const checkProvincia = "{{ route('checkProvincia') }}";

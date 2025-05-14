@@ -156,7 +156,6 @@
     const getPacientes = "{{ route('getPacientes') }}";
     const searchExamen = "{{ route('searchExamen') }}";
     const saveExamenCuenta = "{{ route('saveExamenCuenta') }}";
-    const TOKEN = "{{ csrf_token() }}";
     const INDEX = "{{ route('examenesCuenta.index') }}";
     const getPaquetes = "{{ route('getPaquetes') }}";
     const getPaqueteFact = "{{ route('getPaqueteFact') }}";

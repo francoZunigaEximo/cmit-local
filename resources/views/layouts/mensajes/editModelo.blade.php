@@ -38,7 +38,6 @@
     </form>
 
 <script>
-    const TOKEN = "{{ csrf_token() }}";
     const actualizarModelo = "{{ route('mensajes.modelos.update') }}";
     const listadoModelo = "{{ route('mensajes.modelos') }}";
 </script>

@@ -13,25 +13,21 @@
     <link rel="mask-icon" href="{{ asset('images/safari-pinned-tab.svg') }}" color="#5bbad5">
 
     <link rel="shortcut icon" href="{{ asset('images/favicon.ico') }}">
-
-    <link href="{{ asset('libs/jsvectormap/css/jsvectormap.min.css') }}" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="{{ asset('css/bootstrap.min.css') }}?v={{ time() }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('css/all.min.css') }}" rel="stylesheet" type="text/css" />
     @stack('styles')
 
-    <link href="{{ asset('libs/swiper/swiper-bundle.min.css') }}" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" href="{{ asset('css/toastr.min.css') }}">
-
-    <link rel="stylesheet" type="text/css" href="{{ asset('css/multi.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('css/autoComplete.css') }}">
 
     <script src="{{ asset('js/layout.js') }}"></script>
-    <link href="{{ asset('css/bootstrap.min.css') }}?v={{ time() }}" rel="stylesheet" type="text/css" />
+    
     <link href="{{ asset('css/icons.min.css') }}?v={{ time() }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('css/app.min.css') }}?v={{ time() }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('css/custom.min.css') }}?v={{ time() }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('css/screen.css') }}?v={{ time() }}" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=help" />
+    <link href="{{ asset('css/toastr.min.css') }}" rel="stylesheet">
+
 
     <script src="{{ asset('js/jquery.min.js') }}"></script>
     <script src="{{ asset('js/basicos.js') }}?v={{ time() }}"></script>
@@ -358,17 +354,26 @@
         const lnkNuevoPaciente = "{{ route('pacientes.create') }}";
         const lnkExistePaciente = "{{ route('pacientes.edit', ['paciente' => '__paciente__']) }}";
         const verifyWizard = "{{ route('verifyWizard') }}";
-        const SALIR = "{{ route('logout') }}";
+        const TOKEN = "{{ csrf_token() }}";
         const tiempoSesion = {{ config('session.lifetime') * 60 * 1000 }};
 
         let idleTimeout;
 
         function resetIdleTimeout() {
             clearTimeout(idleTimeout);
-            idleTimeout = setTimeout(function () {
-                
-                window.location.href = SALIR;
+            idleTimeout = setTimeout(function () {       
+                cerrarSesion();
             }, tiempoSesion);
+        }
+
+        function cerrarSesion() {
+            $.post(SALIR, {_token: TOKEN}, function(response){
+                if (response.redirect) {
+                    window.location.href = response.redirect;
+                } else {
+                    window.location.href = "{{ route('logout') }}";
+                }
+            })
         }
 
         // Reiniciar el temporizador
@@ -388,18 +393,12 @@
     <script src="{{ asset('libs/node-waves/waves.min.js') }}"></script>
     <script src="{{ asset('libs/feather-icons/feather.min.js') }}"></script>
     <script src="{{ asset('js/pages/plugins/lord-icon-2.1.0.js') }}"></script>
-    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="{{ asset('js/sweetalert.min.js') }}"></script>
 
     <script src="{{ asset('js/toastify-js.js') }}"></script>
     <script src="{{ asset('js/choices.min.js') }}"></script>
     <script src="{{ asset('js/flatpickr.js') }}"></script>
     <script src="{{ asset('js/toastr.min.js') }}"></script>
-
-    <script src="{{ asset('libs/apexcharts/apexcharts.min.js') }}"></script>
-    <script src="{{ asset('libs/jsvectormap/js/jsvectormap.min.js') }}"></script>
-    <script src="{{ asset('libs/jsvectormap/maps/world-merc.js') }}"></script>
-    <script src="{{ asset('libs/swiper/swiper-bundle.min.js') }}"></script>
-    <script src="{{ asset('js/pages/dashboard-ecommerce.init.js') }}"></script>
 
     <script src="{{ asset('js/app.js') }}"></script>
     <script src="{{ asset('js/scripts.js') }}?v={{ time() }}"></script>

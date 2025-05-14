@@ -331,7 +331,6 @@
 </div><!-- /.modal -->
 
 <script>
-    const TOKEN = "{{ csrf_token() }}";
     const getClientes = "{{ route('getClientes') }}";
     const lstTipoPrestacion = "{{ route('lstTipoPrestacion') }}";
     const paginacionAlta = "{{ route('facturas.paginacion')}}";

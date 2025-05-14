@@ -1570,7 +1570,6 @@ const exResultado = "{{ route('prestaciones.exportarResultado') }}";
 const mapaPrestacion = "{{ route('prestaciones.mapaPrestacionId') }}";
 
 //Extras
-const TOKEN = "{{ csrf_token() }}";
 const UBICACION = "{{ request()->query('location') }}";
 const ID = "{{ $prestacione->Id }}";
 const IDPACIENTE = "{{ $prestacione->IdPaciente }}";

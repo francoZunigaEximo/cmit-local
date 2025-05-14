@@ -934,7 +934,6 @@ const editarComentario = "{{ route('comentariosPriv.editar') }}";
 const getComentario = "{{ route('comentariosPriv.data') }}";
 const cacheDelete = "{{ route('prestaciones.cacheDelete') }}";
 //Extras
-const TOKEN = "{{ csrf_token() }}";
 const MAPA = "{{ $mapa->Nro }}";
 const IDMAPA = "{{ $mapa->Id }}";
 const USER = "{{ Auth::user()->name }}";

@@ -220,7 +220,6 @@
     const getClientes = "{{ route('getClientes') }}";
     const lstExDisponibles = "{{ route('lstExDisponibles') }}";
     const saveFichaAlta = "{{ route('saveFichaAlta') }}";
-    const TOKEN = "{{ csrf_token() }}";
 </script>
 
 

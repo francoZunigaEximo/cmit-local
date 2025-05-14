@@ -227,28 +227,24 @@ class ClientesController extends Controller
             $ids = [$ids];
         }
 
-        $messages = [];
+        Cliente::whereIn('id', $ids)->update(['Estado' => 0]);
+        return response()->json(['msg' => 'Se ha dado de baja correctamente'], 200);
+    }
 
-        foreach($ids as $id)
-        {
-            $cliente = Cliente::find($id);
-
-            if($cliente)
-            {
-                if($this->checkPrestaciones($id))
-                {
-                    $messages [] = ['msg' => 'No se puede dar de baja al cliente '. $cliente->RazonSocial .' porque posee prestaciones asociadas', 'estado' => 'warning'];
-                }else {
-
-                    $cliente->Estado = 0;
-                    $cliente->save();
-
-                    $messages [] = ['msg' => 'Se dado de baja al cliente '. $cliente->RazonSocial .' correctamente', 'estado' => 'success'];
-                }  
-            }
+    public function baja(Request $request): mixed
+    {
+        if (!$this->hasPermission("clientes_delete")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
         }
 
-        return response()->json($messages);
+        $cliente = Cliente::find($request->Id);
+        
+        if($cliente)
+        {
+            $cliente->update(['Estado' => 0]);
+            return response()->json(['msg' => 'Se ha dado de baja correctamente'], 200);
+        }
+
     }
 
     public function block(Request $request)
