@@ -146,17 +146,28 @@ $(function(){
             },
             createdRow: async function(row, data, dataIndex) {
 
-                let status = await $.get(checkLlamado, {id: data.prestacion})
+                let response = await $.get(checkLlamado, { id: data.prestacion });
 
-                console.log(status);
-
-                if (status && status === true) {
+                if (response && Object.keys(response).length !== 0) {
                     $(row).css('color', 'red');
-                    $('.llamarExamen')
+
+                    $('.llamarExamen', row)
                         .removeClass('llamarExamen')
                         .addClass('liberarExamen')
-                        .html('<i class="ri-edit-line"></i> Liberar')
+                        .html('<i class="ri-edit-line"></i> Liberar');
                 }
+
+                $('button[data-id]').each(function () {
+                    let boton = $(this), botonId = boton.data('id');
+
+                    if (botonId == response.prestacion_id) {
+                        let fila = boton.closest('tr, div.row, div.fila');
+
+                        if (parseInt(USERACTIVO) !== parseInt(response.profesional_id)) {
+                            $('.llamarExamen, .liberarExamen, .atenderPaciente', fila).hide();
+                        }
+                    }
+                });
 
                 $(row).attr('data-id', data.prestacion);
             }

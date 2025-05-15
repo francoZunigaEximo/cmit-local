@@ -176,7 +176,8 @@ class LlamadorController extends Controller
             
             $data = [
                 'status' => 'liberado', 
-                'msg' => "Se ha liberado la prestación {$query->Id } del paciente {$query->prestacion->paciente->nombre_completo} "
+                'msg' => "Se ha liberado la prestación {$query->Id } del paciente {$query->prestacion->paciente->nombre_completo} ",
+                'prestacion' => $request->prestacion
             ];
         
         }else{
