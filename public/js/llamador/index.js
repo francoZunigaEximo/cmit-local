@@ -151,13 +151,13 @@ $(function(){
         fila.css('color', boton[accion].textoFila);
 
         $(this).empty()
-               .html(boton[accion].texto)
-               .removeClass(boton[accion].remover)
-               .addClass(boton[accion].agregar);
+            .html(boton[accion].texto)
+            .removeClass(boton[accion].remover)
+            .addClass(boton[accion].agregar);
         
         $.get(addAtencion, {prestacion: $(this).data('id'), profesional: variables.profesional.val()})
             .done(function(){
-                console.log("registro exitoso")
+                toastr.success('Cambio de estado realizado correctamente','',{timeOut: 1000})
             })
             .fail(function(jqXHR){
                 preloader('off');

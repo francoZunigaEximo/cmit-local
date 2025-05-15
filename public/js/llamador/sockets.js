@@ -13,7 +13,8 @@ $(function(){
 
     const variables = {
         profesional: $('#profesional'),
-        llamarExamen: $('.llamarExamen')
+        llamarExamen: $('.llamarExamen'),
+        liberarExamen: $('.liberarExamen')
     };
 
     const ADMIN = [
@@ -59,21 +60,52 @@ $(function(){
    
     socket.grillaEfectores
           .echo
-          .listen(socket.grillaEfectores.canal, (response) => {
+          .listen(socket.grillaEfectores.canal, async(response) => {
                 const data = response.grilla;
-                
-                console.log(USERACTIVO, profesional.val())
 
-                let texto = data.status === 'llamado' ? 'red' : 'black';
-            
-                let fila = $(`tr[data-id="${data.prestacion}"]`);
+                let texto = data.status === 'llamado' ? 'red' : 'black',
+                    fila = $(`tr[data-id="${data.prestacion}"]`);
+                
                 if (fila.length > 0) {
                     fila.css('color', texto);
+                    
+                     let boton = fila.find('.llamarExamen, .liberarExamen');
+
+                    if (data.status === 'llamado') {
+                        boton.removeClass('llamarExamen')
+                            .addClass('liberarExamen')
+                            .html('<i class="ri-edit-line"></i> Liberar');
+                    } else {
+                        boton.removeClass('liberarExamen')
+                            .addClass('llamarExamen')
+                            .html('<i class="ri-edit-line"></i> Llamar');
+                    }
                 }
 
-                if(parseInt(USERACTIVO) !== profesional.val()) {
-                    llamarExamen.prop('disabled', true);
+                let result = await $.get(checkLlamado, { id: data.prestacion });
+
+                let botones = $('button[data-id]');
+
+                for (let i = 0; i < botones.length; i++) {
+                    let boton = $(botones[i]),
+                        botonId = boton.data('id'),
+                        fila = boton.closest('tr, div.row, div.fila');
+
+                    if (botonId == result.prestacion_id) {
+                        if (parseInt(USERACTIVO) !== parseInt(result.profesional_id)) {
+
+                            const botones = $('.llamarExamen, .liberarExamen, .atenderPaciente', fila);
+                            botones.hide();
+
+                            if (!fila.find('.mensaje-ocupado').length) {
+                                botones.last().after('<span class="mensaje-ocupado rojo text-center fs-bolder">Ocupado</span>');
+                            }
+                        }
+                    } else {
+                        fila.find('.mensaje-ocupado').remove();
+                        $('.llamarExamen, .liberarExamen, .atenderPaciente', fila).show();
+                    }
                 }
-    });
+            });
 
 });
