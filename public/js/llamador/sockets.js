@@ -13,9 +13,14 @@ $(function(){
 
     const variables = {
         profesional: $('#profesional'),
-        llamarExamen: $('.llamarExamen'),
-        liberarExamen: $('.liberarExamen')
     };
+
+    const principal = {
+        atenderPaciente: $('.atenderPaciente'),
+        llamarExamen: $('.llamarExamen'),
+        liberarExamen: $('.liberarExamen'),
+        mensajeOcupado: $('.mensaje-ocupado')
+    }
 
     const ADMIN = [
         'Administrador', 
@@ -50,7 +55,6 @@ $(function(){
                     });
 
                 } else {
-
                     variables.profesional.append(
                         `<option value="" selected>No hay efectores</option>`
                     );
@@ -63,21 +67,21 @@ $(function(){
           .listen(socket.grillaEfectores.canal, async(response) => {
                 const data = response.grilla;
 
-                let texto = data.status === 'llamado' ? 'red' : 'black',
+                let texto = data.status === 'llamado' ? 'red' : 'green',
                     fila = $(`tr[data-id="${data.prestacion}"]`);
                 
                 if (fila.length > 0) {
                     fila.css('color', texto);
                     
-                     let boton = fila.find('.llamarExamen, .liberarExamen');
+                     let boton = fila.find(principal.llamarExamen + ', ' + principal.liberarExamen);
 
                     if (data.status === 'llamado') {
-                        boton.removeClass('llamarExamen')
-                            .addClass('liberarExamen')
+                        boton.removeClass(principal.llamarExamen)
+                            .addClass(principal.liberarExamen)
                             .html('<i class="ri-edit-line"></i> Liberar');
                     } else {
-                        boton.removeClass('liberarExamen')
-                            .addClass('llamarExamen')
+                        boton.removeClass(principal.liberarExamen)
+                            .addClass(principal.llamarExamen)
                             .html('<i class="ri-edit-line"></i> Llamar');
                     }
                 }
@@ -94,16 +98,18 @@ $(function(){
                     if (botonId == result.prestacion_id) {
                         if (parseInt(USERACTIVO) !== parseInt(result.profesional_id)) {
 
-                            const botones = $('.llamarExamen, .liberarExamen, .atenderPaciente', fila);
+                            const botones = $(principal.llamarExamen + ',' + principal.liberarExamen + ',' + principal.atenderPaciente + ',' + fila);
                             botones.hide();
 
-                            if (!fila.find('.mensaje-ocupado').length) {
+                            if (!fila.find(principal.mensajeOcupado).length) {
                                 botones.last().after('<span class="mensaje-ocupado rojo text-center fs-bolder">Ocupado</span>');
+                                fila.find('td').css('color', 'red')
                             }
                         }
                     } else {
-                        fila.find('.mensaje-ocupado').remove();
-                        $('.llamarExamen, .liberarExamen, .atenderPaciente', fila).show();
+                        fila.find(principal.mensajeOcupado).remove();
+                        $(principal.llamarExamen + ',' + principal.liberarExamen + ',' + principal.atenderPaciente + ',' + fila).show();
+                        fila.find('td').css('color', 'green')
                     }
                 }
             });

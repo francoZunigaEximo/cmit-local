@@ -144,9 +144,14 @@ $(function(){
                 },
                 info: "Mostrando _START_ a _END_ de _TOTAL_ de prestaciones",
             },
+            // rowCallback: function(row, data, dataIndex) {
+                
+            // },
             createdRow: async function(row, data, dataIndex) {
 
                 let response = await $.get(checkLlamado, { id: data.prestacion });
+
+                
 
                 if (response && Object.keys(response).length !== 0) {
                     $(row).css('color', 'red');
@@ -155,6 +160,8 @@ $(function(){
                         .removeClass('llamarExamen')
                         .addClass('liberarExamen')
                         .html('<i class="ri-edit-line"></i> Liberar');
+                } else {
+                    $(row).find('td').css('color', 'green');
                 }
 
                 $('button[data-id]').each(function () {

@@ -2,7 +2,8 @@ $(function(){
 
     const principal = {
         grillaEfector: $('#listaLlamadaEfector'),
-        grillaExamenes: $('#tablasExamenes')
+        grillaExamenes: $('#tablasExamenes'),
+        atenderPaciente: $('.atenderPaciente')
     };
 
     const variables = {
@@ -23,6 +24,8 @@ $(function(){
 
     variables.fechaHasta.val(fechaNow(null, "-", 0));
     variables.estado.val('abierto');
+
+    principal.atenderPaciente.hide();
 
     $(document).on('click', '.verPrestacion', function(e){
         e.preventDefault();
@@ -69,7 +72,7 @@ $(function(){
         e.preventDefault();
 
         let id = $(this).data('id'), 
-            profesional = $(this).data('profesional'), 
+            profesional =  
             especialidades = $(this).data('especialidades');
 
         variables.profesionalEfector
@@ -86,7 +89,7 @@ $(function(){
         variables.fotoEfector.attr('src', '');
 
         preloader('on')
-        $.get(dataPaciente, {Id: id, IdProfesional: profesional, Especialidades: especialidades})
+        $.get(dataPaciente, {Id: id, IdProfesional: variables.profesional.val(), Especialidades: especialidades})
             .done(function(response){
                 const prestacion = response.prestacion;
 
@@ -143,12 +146,14 @@ $(function(){
                         texto: '<i class="ri-edit-line"></i> Llamar',
                         remover: 'liberarExamen',
                         agregar: 'llamarExamen',
-                        textoFila: 'black'
+                        textoFila: 'green'
                     }
             };
 
         let fila = $(this).closest('tr');
         fila.css('color', boton[accion].textoFila);
+
+        accion === 'liberar' ? principal.atenderPaciente.show() : principal.atenderPaciente.hide();
 
         $(this).empty()
             .html(boton[accion].texto)

@@ -152,14 +152,14 @@ class LlamadorController extends Controller
         $prestacion = Prestacion::with(['paciente','empresa','art'])->where('Id', $request->Id)->first();
         $itemsprestaciones = $this->getExamenes->getAllItemsprestaciones($request->Id, $especialidades);
 
-        if (is_numeric($request->IdProfesional) && $request->IdProfesional == 'undefined') {
+        if (is_numeric($request->IdProfesional) && $request->IdProfesional !== 'undefined') {
             $datos = User::with('personal')->where('profesional_id', $request->IdProfesional)->first();
         } 
 
         if($prestacion) {
             return response()->json([
                 'prestacion' => $prestacion, 
-                'profesional' => $datos->personal->nombre_completo,
+                'profesional' => $datos->personal->nombre_completo ?? '',
                 'itemsprestaciones' => $itemsprestaciones,
             ]);
         }
