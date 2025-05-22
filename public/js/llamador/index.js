@@ -151,7 +151,7 @@ $(function(){
         fila.css('color', boton[accion].textoFila);
 
         accion === 'liberar' ? principal.atenderPaciente.show() : principal.atenderPaciente.hide();
-        console.log(accion)
+
         $(this).empty()
             .html(boton[accion].texto)
             .removeClass(boton[accion].remover)
@@ -236,32 +236,39 @@ $(function(){
     }
 
     function estado(data) {
-        
-        if([0,1,2].includes(data)){
-            return `<span class="rojo">Abierto <i class="fs-6 ri-lock-unlock-line"></i><span>`;
-        
-        }else if([3,4,5].includes(data)){
-            return `<span class="verde">Cerrado <i class="fs-6 ri-lock-2-line"></i><span>`;
-        }          
+        switch (true) {
+            case [0, 1, 2].includes(data):
+                return `<span class="rojo">Abierto <i class="fs-6 ri-lock-unlock-line"></i></span>`;
+
+            case [3, 4, 5].includes(data):
+                return `<span class="verde">Cerrado <i class="fs-6 ri-lock-2-line"></i></span>`;
+
+            default:
+                return '';
+        }
     }
 
     //No Imprime: saber si es fisico o digital / adjunto: si acepta o no adjuntos / condicion: pendiente o adjuntado
-    function checkAdjunto(noImprime, adjunto, condicion) {
-        // console.log(noImprime, adjunto, condicion)
-        if (adjunto === 0) {
-            return ``;
-        }else if(adjunto === 1 && condicion > 0 && noImprime === 0) {
-            return `<span class="verde">Adjuntado <i class="fs-6 ri-map-pin-line"></i><span>`;
-        }else if(adjunto === 1 && condicion === 0 && noImprime === 0) {
-            return `<span class="rojo d-flex align-items-center justify-content-between w-100">
-                        <span class="me-auto">Pendiente</span>
-                        <i class="fs-6 ri-map-pin-line mx-auto"></i>
-                        <i class="fs-6 ri-folder-add-line ms-auto"></i>
-                    </span>`;
-        }else if(adjunto === 1 && noImprime === 1){
-            return `<span class="mx-auto"><i class="gris fs-6 ri-map-pin-line"></i><span>`;
-        }else{
-            return ``;
+    function generarEstadoAdjunto(adjunto, condicion, noImprime) {
+        switch (true) {
+            case adjunto === 0:
+                return '';
+
+            case adjunto === 1 && condicion > 0 && noImprime === 0:
+                return `<span class="verde">Adjuntado <i class="fs-6 ri-map-pin-line"></i><span>`;
+
+            case adjunto === 1 && condicion === 0 && noImprime === 0:
+                return `<span class="rojo d-flex align-items-center justify-content-between w-100">
+                            <span class="me-auto">Pendiente</span>
+                            <i class="fs-6 ri-map-pin-line mx-auto"></i>
+                            <i class="fs-6 ri-folder-add-line ms-auto"></i>
+                        </span>`;
+
+            case adjunto === 1 && noImprime === 1:
+                return `<span class="mx-auto"><i class="gris fs-6 ri-map-pin-line"></i><span>`;
+
+            default:
+                return '';
         }
     }
 
