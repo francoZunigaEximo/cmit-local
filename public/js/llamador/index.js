@@ -25,8 +25,6 @@ $(function(){
     variables.fechaHasta.val(fechaNow(null, "-", 0));
     variables.estado.val('abierto');
 
-    principal.atenderPaciente.hide();
-
     $(document).on('click', '.verPrestacion', function(e){
         e.preventDefault();
 
@@ -71,8 +69,7 @@ $(function(){
     $(document).on('click', '.atenderPaciente', function(e){
         e.preventDefault();
 
-        let id = $(this).data('id'), 
-            profesional =  
+        let id = $(this).data('id'),  
             especialidades = $(this).data('especialidades');
 
         variables.profesionalEfector
@@ -154,7 +151,7 @@ $(function(){
         fila.css('color', boton[accion].textoFila);
 
         accion === 'liberar' ? principal.atenderPaciente.show() : principal.atenderPaciente.hide();
-
+        console.log(accion)
         $(this).empty()
             .html(boton[accion].texto)
             .removeClass(boton[accion].remover)

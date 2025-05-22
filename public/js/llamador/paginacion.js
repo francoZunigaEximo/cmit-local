@@ -149,9 +149,11 @@ $(function(){
             // },
             createdRow: async function(row, data, dataIndex) {
 
+                $('.atenderPaciente').hide();
+
                 let response = await $.get(checkLlamado, { id: data.prestacion });
 
-                
+                preloader('on');
 
                 if (response && Object.keys(response).length !== 0) {
                     $(row).css('color', 'red');
@@ -160,21 +162,29 @@ $(function(){
                         .removeClass('llamarExamen')
                         .addClass('liberarExamen')
                         .html('<i class="ri-edit-line"></i> Liberar');
-                } else {
-                    $(row).find('td').css('color', 'green');
+
+                        $('.atenderPaciente', row).show();
+                }else{
+                     $(row).find('td').css('color', 'green');
+                     $('.atenderPaciente', row).hide();
                 }
 
                 $('button[data-id]').each(function () {
                     let boton = $(this), botonId = boton.data('id');
 
                     if (botonId == response.prestacion_id) {
-                        let fila = boton.closest('tr, div.row, div.fila');
+                        let fila = boton.closest('tr, div.row, div.fila'),
+                            botones = $('.llamarExamen, .liberarExamen, .atenderPaciente', fila);
 
-                        if (parseInt(USERACTIVO) !== parseInt(response.profesional_id)) {
-                            $('.llamarExamen, .liberarExamen, .atenderPaciente', fila).hide();
+                        if (!fila.find('.mensaje-ocupado').length && parseInt(USERACTIVO) !== parseInt(response.profesional_id)) {
+                            botones.hide();
+                            botones.last().after('<span class="mensaje-ocupado rojo text-center fs-bolder">Ocupado</span>');
+                            fila.find('td').css('color', 'red')
                         }
                     }
                 });
+
+                preloader('off');
 
                 $(row).attr('data-id', data.prestacion);
             }
