@@ -118,7 +118,7 @@
 
 <!-- Modales -->
 <div id="atenderEfector" class="modal fadeInUp" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog modal-fullscreen-xxl-down">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="myModalLabel"> Atender Paciente - Efector</h5>
@@ -254,10 +254,10 @@
     const addAtencion = "{{ route('llamador.llamar-paciente') }}";
     const checkLlamado = "{{ route('llamador.check') }}";
     const ROLESUSER = @json(Auth::user()->role);
+    const asignacionProfesional = "{{ route('llamador.asignarPaciente') }}";
 </script>
 
 @push('styles')
-{{-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"> --}}
 <link rel="stylesheet" href="{{ asset('css/hacks.css')}}?v={{ time() }}">
 @endpush
 
@@ -269,6 +269,7 @@
 <script src="{{ asset('/js/llamador/index.js')}}?v={{ time() }}"></script>
 <script src="{{ asset('/js/llamador/paginacion.js')}}?v={{ time() }}"></script>
 <script src="{{ asset('/js/llamador/sockets.js')}}?v={{ time() }}"></script>
+<script src="{{ asset('/js/llamador/atenderPaciente.js') }}?v={{ time() }}"></script>
 
 
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>

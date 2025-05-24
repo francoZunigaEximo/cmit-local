@@ -169,7 +169,8 @@ $(function(){
             });
     });
 
-    function tablasExamenes(data) { 
+    function tablasExamenes(data) {
+        console.log(data)
         principal.grillaExamenes.empty();
         preloader('on');
 
@@ -215,10 +216,10 @@ $(function(){
                             <td>${estado(examen.CAdj)}</td>
                             <td>${checkAdjunto(examen.NoImprime, examen.Adjunto, examen.Archivo)}</td>
                             <td>${[null, undefined, ''].includes(examen.ObsExamen) ? '' : examen.ObsExamen}</td>
-                            <td>Efector</td>
-                            <td>Informador</td>
+                            <td>${verificarProfesional(examen, "efector")}</td>
+                            <td>${verificarProfesional(examen, "informador")}</td>
                             <td>
-                                <input type="checkbox" name="Id_examenes" value="${examen.IdItem}">
+                                <input type="checkbox" name="Id_examenes_${examen.IdExamen}" value="${examen.IdItem}"  ${checkboxCheck(examen.NombreInformador)}>
                             </td>
                         </tr>
                     `;
@@ -249,7 +250,7 @@ $(function(){
     }
 
     //No Imprime: saber si es fisico o digital / adjunto: si acepta o no adjuntos / condicion: pendiente o adjuntado
-    function generarEstadoAdjunto(adjunto, condicion, noImprime) {
+    function checkAdjunto(adjunto, condicion, noImprime) {
         switch (true) {
             case adjunto === 0:
                 return '';
@@ -272,6 +273,39 @@ $(function(){
         }
     }
 
+    function checkboxCheck(informador) {
+
+        switch (true) {
+            case informador !== undefined:
+                return 'disabled';
+        
+            case variables.profesional.val() === parseInt(USERACTIVO):
+                return 'checked';
+         
+            default:
+                return '';
+        }
+    }
+
+    function verificarProfesional(data, tipoProfesional) {
+        
+        if(data.length === 0) return;
+
+        switch (true) {
+            case tipoProfesional === 'efector':
+                return data.nombreEfector !== undefined && data.nombreEfector  !== null && data.nombreEfector  !== '' 
+                    ? data.EfectorHistorico !== undefined && data.EfectorHistorico !== null && data.EfectorHistorico !== ''
+                        ? data.EfectorHistorico
+                        : data.nombreEfector
+                    : '';
+            
+            case tipoProfesional === 'informador':
+                return data.nombreInformador ?? data.InformadorHistorico ?? '';
+            
+            default:
+                return '';
+        }
+    }
 
 
 });
