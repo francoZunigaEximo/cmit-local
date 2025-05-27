@@ -2,7 +2,8 @@ $(function(){
 
     const principal = {
         grillaEfector: $('#listaLlamadaEfector'),
-        grillaExamenes: $('#tablasExamenes')
+        grillaExamenes: $('#tablasExamenes'),
+        atenderPaciente: $('.atenderPaciente')
     };
 
     const variables = {
@@ -68,8 +69,7 @@ $(function(){
     $(document).on('click', '.atenderPaciente', function(e){
         e.preventDefault();
 
-        let id = $(this).data('id'), 
-            profesional = $(this).data('profesional'), 
+        let id = $(this).data('id'),  
             especialidades = $(this).data('especialidades');
 
         variables.profesionalEfector
@@ -86,7 +86,7 @@ $(function(){
         variables.fotoEfector.attr('src', '');
 
         preloader('on')
-        $.get(dataPaciente, {Id: id, IdProfesional: profesional, Especialidades: especialidades})
+        $.get(dataPaciente, {Id: id, IdProfesional: variables.profesional.val(), Especialidades: especialidades})
             .done(function(response){
                 const prestacion = response.prestacion;
 
@@ -143,12 +143,14 @@ $(function(){
                         texto: '<i class="ri-edit-line"></i> Llamar',
                         remover: 'liberarExamen',
                         agregar: 'llamarExamen',
-                        textoFila: 'black'
+                        textoFila: 'green'
                     }
             };
 
         let fila = $(this).closest('tr');
         fila.css('color', boton[accion].textoFila);
+
+        accion === 'liberar' ? principal.atenderPaciente.show() : principal.atenderPaciente.hide();
 
         $(this).empty()
             .html(boton[accion].texto)
@@ -167,7 +169,8 @@ $(function(){
             });
     });
 
-    function tablasExamenes(data) { 
+    function tablasExamenes(data) {
+        console.log(data)
         principal.grillaExamenes.empty();
         preloader('on');
 
@@ -213,10 +216,10 @@ $(function(){
                             <td>${estado(examen.CAdj)}</td>
                             <td>${checkAdjunto(examen.NoImprime, examen.Adjunto, examen.Archivo)}</td>
                             <td>${[null, undefined, ''].includes(examen.ObsExamen) ? '' : examen.ObsExamen}</td>
-                            <td>Efector</td>
-                            <td>Informador</td>
+                            <td>${verificarProfesional(examen, "efector")}</td>
+                            <td>${verificarProfesional(examen, "informador")}</td>
                             <td>
-                                <input type="checkbox" name="Id_examenes" value="${examen.IdItem}">
+                                <input type="checkbox" name="Id_examenes_${examen.IdExamen}" value="${examen.IdItem}"  ${checkboxCheck(examen.NombreInformador)}>
                             </td>
                         </tr>
                     `;
@@ -234,32 +237,53 @@ $(function(){
     }
 
     function estado(data) {
-        
-        if([0,1,2].includes(data)){
-            return `<span class="rojo">Abierto <i class="fs-6 ri-lock-unlock-line"></i><span>`;
-        
-        }else if([3,4,5].includes(data)){
-            return `<span class="verde">Cerrado <i class="fs-6 ri-lock-2-line"></i><span>`;
-        }          
+        switch (true) {
+            case [0, 1, 2].includes(data):
+                return `<span class="rojo">Abierto <i class="fs-6 ri-lock-unlock-line"></i></span>`;
+
+            case [3, 4, 5].includes(data):
+                return `<span class="verde">Cerrado <i class="fs-6 ri-lock-2-line"></i></span>`;
+
+            default:
+                return '';
+        }
     }
 
     //No Imprime: saber si es fisico o digital / adjunto: si acepta o no adjuntos / condicion: pendiente o adjuntado
-    function checkAdjunto(noImprime, adjunto, condicion) {
-        // console.log(noImprime, adjunto, condicion)
-        if (adjunto === 0) {
-            return ``;
-        }else if(adjunto === 1 && condicion > 0 && noImprime === 0) {
-            return `<span class="verde">Adjuntado <i class="fs-6 ri-map-pin-line"></i><span>`;
-        }else if(adjunto === 1 && condicion === 0 && noImprime === 0) {
-            return `<span class="rojo d-flex align-items-center justify-content-between w-100">
-                        <span class="me-auto">Pendiente</span>
-                        <i class="fs-6 ri-map-pin-line mx-auto"></i>
-                        <i class="fs-6 ri-folder-add-line ms-auto"></i>
-                    </span>`;
-        }else if(adjunto === 1 && noImprime === 1){
-            return `<span class="mx-auto"><i class="gris fs-6 ri-map-pin-line"></i><span>`;
-        }else{
-            return ``;
+    function checkAdjunto(adjunto, condicion, noImprime) {
+        switch (true) {
+            case adjunto === 0:
+                return '';
+
+            case adjunto === 1 && condicion > 0 && noImprime === 0:
+                return `<span class="verde">Adjuntado <i class="fs-6 ri-map-pin-line"></i><span>`;
+
+            case adjunto === 1 && condicion === 0 && noImprime === 0:
+                return `<span class="rojo d-flex align-items-center justify-content-between w-100">
+                            <span class="me-auto">Pendiente</span>
+                            <i class="fs-6 ri-map-pin-line mx-auto"></i>
+                            <i class="fs-6 ri-folder-add-line ms-auto"></i>
+                        </span>`;
+
+            case adjunto === 1 && noImprime === 1:
+                return `<span class="mx-auto"><i class="gris fs-6 ri-map-pin-line"></i><span>`;
+
+            default:
+                return '';
+        }
+    }
+
+    function checkboxCheck(informador) {
+
+        switch (true) {
+            case informador !== undefined:
+                return 'disabled';
+        
+            case variables.profesional.val() === parseInt(USERACTIVO):
+                return 'checked';
+         
+            default:
+                return '';
         }
     }
 
@@ -296,6 +320,25 @@ $(function(){
     });
 
    
+    function verificarProfesional(data, tipoProfesional) {
+        
+        if(data.length === 0) return;
+
+        switch (true) {
+            case tipoProfesional === 'efector':
+                return data.nombreEfector !== undefined && data.nombreEfector  !== null && data.nombreEfector  !== '' 
+                    ? data.EfectorHistorico !== undefined && data.EfectorHistorico !== null && data.EfectorHistorico !== ''
+                        ? data.EfectorHistorico
+                        : data.nombreEfector
+                    : '';
+            
+            case tipoProfesional === 'informador':
+                return data.nombreInformador ?? data.InformadorHistorico ?? '';
+            
+            default:
+                return '';
+        }
+    }
     
 
 });

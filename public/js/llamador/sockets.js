@@ -13,9 +13,14 @@ $(function(){
 
     const variables = {
         profesional: $('#profesional'),
-        llamarExamen: $('.llamarExamen'),
-        liberarExamen: $('.liberarExamen')
     };
+
+    const principal = {
+        atenderPaciente: $('.atenderPaciente'),
+        llamarExamen: $('.llamarExamen'),
+        liberarExamen: $('.liberarExamen'),
+        mensajeOcupado: $('.mensaje-ocupado')
+    }
 
     const ADMIN = [
         'Administrador', 
@@ -50,7 +55,6 @@ $(function(){
                     });
 
                 } else {
-
                     variables.profesional.append(
                         `<option value="" selected>No hay efectores</option>`
                     );
@@ -59,53 +63,51 @@ $(function(){
 
    
     socket.grillaEfectores
-          .echo
-          .listen(socket.grillaEfectores.canal, async(response) => {
-                const data = response.grilla;
+        .echo
+        .listen(socket.grillaEfectores.canal, async(response) => {
+        
+            const data = response.grilla;
 
-                let texto = data.status === 'llamado' ? 'red' : 'black',
-                    fila = $(`tr[data-id="${data.prestacion}"]`);
+        let fila = $(`tr[data-id="${data.prestacion}"]`);
+
+        if (fila.length === 0) return;
+
+        let botonLlamada = fila.find('.llamarExamen, .liberarExamen'),
+            botonAtender = fila.find('.atenderPaciente'),
+            mensajeOcupado = fila.find('.mensaje-ocupado'),
+            result = await $.get(checkLlamado, { id: data.prestacion });
+
+        if (data.status === 'llamado') {
+
+            botonLlamada.removeClass(principal.llamarExamen)
+                    .addClass(principal.liberarExamen)
+                    .html('<i class="ri-edit-line"></i> Liberar');
+            botonAtender.show();
+            fila.find('td').css('color', 'red');
+
+            if (parseInt(USERACTIVO) !== parseInt(result.profesional_id)) {
+                botonLlamada.add(botonAtender)
+                    .hide();
                 
-                if (fila.length > 0) {
-                    fila.css('color', texto);
-                    
-                     let boton = fila.find('.llamarExamen, .liberarExamen');
-
-                    if (data.status === 'llamado') {
-                        boton.removeClass('llamarExamen')
-                            .addClass('liberarExamen')
-                            .html('<i class="ri-edit-line"></i> Liberar');
-                    } else {
-                        boton.removeClass('liberarExamen')
-                            .addClass('llamarExamen')
-                            .html('<i class="ri-edit-line"></i> Llamar');
-                    }
+                if (!mensajeOcupado.length) {
+                    botonLlamada.last().after('<span class="mensaje-ocupado rojo text-center fs-bolder">Ocupado</span>');
                 }
+            } else {
+                mensajeOcupado.remove();
+                botonLlamada.show();
+            }
 
-                let result = await $.get(checkLlamado, { id: data.prestacion });
+        } else {
 
-                let botones = $('button[data-id]');
+            botonLlamada.removeClass(principal.liberarExamen)
+                    .addClass(principal.llamarExamen)
+                    .html('<i class="ri-edit-line"></i> Llamar');
 
-                for (let i = 0; i < botones.length; i++) {
-                    let boton = $(botones[i]),
-                        botonId = boton.data('id'),
-                        fila = boton.closest('tr, div.row, div.fila');
-
-                    if (botonId == result.prestacion_id) {
-                        if (parseInt(USERACTIVO) !== parseInt(result.profesional_id)) {
-
-                            const botones = $('.llamarExamen, .liberarExamen, .atenderPaciente', fila);
-                            botones.hide();
-
-                            if (!fila.find('.mensaje-ocupado').length) {
-                                botones.last().after('<span class="mensaje-ocupado rojo text-center fs-bolder">Ocupado</span>');
-                            }
-                        }
-                    } else {
-                        fila.find('.mensaje-ocupado').remove();
-                        $('.llamarExamen, .liberarExamen, .atenderPaciente', fila).show();
-                    }
-                }
-            });
+            mensajeOcupado.remove();
+            botonAtender.hide();
+            fila.find('td').css('color', 'green');
+            botonLlamada.show();
+        }
+    });
 
 });

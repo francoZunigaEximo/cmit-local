@@ -39,6 +39,12 @@
         </div>
             <!-- End Filter -->
             <div class="row mt-4">
+                <div class="col-sm-9">
+                    <span class="small"><a class="btn btn-sm botonGeneral small p-1"><i class="ri-edit-line p-1"></i></a>&nbsp;Editar correo electronico, datos personales y roles.</span> &nbsp; 
+                    <span class="small"><a class="btn btn-sm botonGeneral small p-1"><i class="ri-delete-bin-2-line p-1"></a></i>&nbsp;Dar de baja/eliminar el usuario.</span> &nbsp; 
+                    <span class="small"><a class="btn btn-sm botonGeneral small p-1"><i class="ri-lock-2-line p-1"></i></a>&nbsp;Desactivar o activar usuario.</span> &nbsp;
+                    <span class="small"><a class="btn btn-sm botonGeneral small p-1"><i class="ri-key-2-line p-1"></i></a>&nbsp;Reset de password a 'cmit1234'.</span>
+                </div>
                 <div class="col-sm-3 d-flex justify-content-end">
                     <a href="{{ route('usuarios.create') }}" class="btn botonGeneral"><i class="ri-add-line"></i> Nuevo</a>
                 </div>
@@ -52,10 +58,11 @@
                     <table id="listaUsuarios" class="display table table-bordered ">
                         <thead class="table-light">
                             <tr>
-                                <th class="sort">User</th>
-                                <th class="sort">Nombre</th>
-                                <th class="sort">Rol Activo</th>
+                                <th class="sort">Usuario</th>
+                                <th class="sort">Apellido y Nombre</th>
+                                <th class="sort">Roles</th>
                                 <th>Estado</th>
+                                <th>Status</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>

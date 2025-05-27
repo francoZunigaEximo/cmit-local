@@ -55,9 +55,12 @@
             </a>
         </li>
 
-        
-
-        
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" data-bs-toggle="tab" href="#sesiones" role="tab" aria-selected="false" tabindex="-1">
+                <i class="ri-window-line"></i>
+                Historial Sesiones
+            </a>
+        </li> 
     </ul>
 </div>
 
@@ -342,6 +345,25 @@
           
         </div>
     </div>
+
+    <div class="tab-pane" id="sesiones" role="tabpanel">
+
+        <h3>Historial de sesiones del usuario</h3>
+        <p class="text muted">Listado ordenado cronologicamente</p>
+
+        <table class="table table-nowrap">
+            <thead>
+                <tr>
+                    <th scope="col">IP</th>
+                    <th scope="col">Dispositivo</th>
+                    <th scope="col">Fecha/Hora Conexión</th>
+                    <th scope="col">Fecha/Hora Desconexión</th>
+                </tr>
+            </thead>
+            <tbody id="lstSesionesUsuario"></tbody>
+        </table>
+        
+    </div>
 </div>
 
 <div id="previsualizarModal" class="modal fadeInUp" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
@@ -388,6 +410,7 @@
     const datosProf = "{{ route('usuarios.updateProfesional') }}";
     const checkRoles = "{{ route('checkRoles') }}";
     const seguroProf = "{{ route('profesionales.seguro') }}";
+    const lstSesionesUs = "{{ route('usuarios.listaSesionesUsuarios') }}";
 </script>
 
 @push('styles')
@@ -409,6 +432,7 @@
 <script src="{{ asset('js/auth/validaciones.js')}}?v={{ time() }}"></script>
 <script src="{{ asset('js/richText/jquery.richtext.js') }}?v={{ time() }}"></script>
 <script src="{{ asset('js/profesionales/utils.js') }}?v={{ time() }}"></script>
+<script src="{{ asset('js/auth/sesiones.js') }}?v={{ time() }}"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/i18n/es.js"></script>

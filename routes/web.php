@@ -28,6 +28,7 @@ use App\Http\Controllers\NotasCreditoController;
 use App\Http\Controllers\PaqueteEstudioController;
 use App\Http\Controllers\PaqueteFacturacionController;
 use App\Http\Controllers\RolesController;
+use App\Http\Controllers\UserSessionsController;
 use App\Http\Controllers\UsuariosController;
 use App\Models\FacturaDeVenta;
 use App\Models\ItemPrestacion;
@@ -52,6 +53,7 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::post('register', [AuthController::class, 'register'])->name('register');
     Route::get('/usuario/check-password', [AuthController::class, 'checkPassword'])->name('usuario.checkPassword');
     Route::get('/usuario/forzar-cierre', [AuthController::class, 'forzarLogout'])->name('usuario.forzarCierre');
+    Route::get('usuarios/cierre-automatico', [AuthController::class, 'logoutId'])->name('usuario.cierreAutomatico');
     // Route::get('/passw', function (){
     //     return Hash::make('cmit1234');
     // });
@@ -400,6 +402,7 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::get('alias-examenes/delete', [AliasExamenesController::class, 'deleteAlias'])->name('aliasExamenes.del');
     Route::get('alias-examenes/getExamenSelect', [AliasExamenesController::class, 'getAliasSelect'])->name('aliasExamenes.getExamenSelect');
 
+    //Ruta de llamador
     Route::get('llamador/efector', [LlamadorController::class, 'efector'])->name('llamador.efector');
     Route::get('llamador/informador', [LlamadorController::class, 'informador'])->name('llamador.informador');
     Route::get('llamador/evaluador', [LlamadorController::class, 'evaluador'])->name('llamador.evaluador');
@@ -408,7 +411,10 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::get('llamador/ver-paciente', [LlamadorController::class, 'verPaciente'])->name('llamador.verPaciente');
     Route::get('llamador/efector/llamar-paciente',[LlamadorController::class, 'controlLlamado'])->name('llamador.llamar-paciente');
     Route::get('llamador/check-status', [LlamadorController::class, 'checkLlamado'])->name('llamador.check');
+    Route::get('llamador/asignar-profesional', [LlamadorController::class, 'asignarProfesional'])->name('llamador.asignarPaciente');
 
+    //Ruta de Sesiones
+    Route::get('usuarios/sesiones-usuarios', [UserSessionsController::class, 'getSessiones'])->name('usuarios.listaSesionesUsuarios');
     
 });
 
