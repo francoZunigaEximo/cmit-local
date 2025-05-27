@@ -22,6 +22,7 @@ use App\Http\Controllers\NoticiasController;
 use App\Http\Controllers\PrestacionesObsFasesController;
 use App\Http\Controllers\OrdenesExamenController;
 use App\Http\Controllers\ExamenesCuentaController;
+use App\Http\Controllers\GrupoClientesController;
 use App\Http\Controllers\LlamadorController;
 use App\Http\Controllers\MensajesController;
 use App\Http\Controllers\NotasCreditoController;
@@ -31,9 +32,12 @@ use App\Http\Controllers\PaquetesController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\UsuariosController;
 use App\Models\FacturaDeVenta;
+use App\Models\GrupoClientes;
 use App\Models\ItemPrestacion;
 use App\Models\PaqueteEstudio;
+use App\Models\PaqueteFacturacion;
 use App\Models\PrestacionComentario;
+use App\Models\Rol;
 //use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Hash;
@@ -232,7 +236,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('listGeneral', [ProfesionalesController::class, 'listGeneral'])->name('listGeneral');
 
     //Rutas de Proveedores
-    Route::get('/especialidades/listado', [ProveedoresController::class, 'getProveedores'])->name('getProveedores');
+    Route::get('/especialidades/select', [ProveedoresController::class, 'getProveedores'])->name('getProveedores');
     Route::get('/especialidades/buscar', [ProveedoresController::class, 'search'])->name('searchEspecialidad');
     Route::get('/especialidades/exportar/excel', [ProveedoresController::class, 'excel'])->name('especialidadExcel');
     Route::post('/especialidades/baja-multiple', [ProveedoresController::class, 'multiDown'])->name('multiDownEspecialidad');
@@ -348,7 +352,9 @@ Route::group(['middleware' => 'auth'], function () {
 
     //RUtas de Paquete de Facturación
     Route::get('getPaqueteFact', [PaqueteFacturacionController::class, 'paquetes'])->name('getPaqueteFact');
+    Route::post('getPaqueteFacturacionId', [PaqueteFacturacionController::class, 'paqueteId'])->name('paqueteFactId');
 
+    
     //Rutas de Paquete usuarios
     Route::get('/usuarios/buscar', [UsuariosController::class, 'NombreUsuario'])->name('searchNombreUsuario');
     Route::get('usuarios/delete', [UsuariosController::class, 'baja'])->name('usuarios.delete');
@@ -414,7 +420,46 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::get('paquetes/searchExamenes', [PaquetesController::class, 'searchExamenes'])->name('paquetes.searchExamenes');
     Route::get('paquetes/crearPaqueteExamen', [PaquetesController::class, 'crearPaqueteExamen'])->name('paquetes.crearPaqueteExamen');
+    Route::get('paquetes/editPaqueteExamen/{id}', [PaquetesController::class, 'editPaqueteExamen'])->name('paquetes.editPaqueteExamen');
+    Route::post('paquetes/postPaqueteEstudio', [PaquetesController::class, 'postPaqueteExamen'])->name('paquetes.postPaqueteExamen');
+    Route::post('paquetes/postEditPaqueteExamen', [PaquetesController::class, 'postEditPaqueteExamen'])->name('paquetes.postEditPaqueteExamen');
+    Route::get('paquetes/getPaqueteExamen', [PaquetesController::class, 'getPaqueteExamen'])->name('paquetes.getPaqueteExamen');
+    Route::get('paquetes/exportExcel', [PaquetesController::class, 'exportExcel'])->name('paquetes.exportExcel');
+    Route::get('paquetes/detallesPaquetesEstudios', [PaquetesController::class, 'detalleEstudios'])->name('paquetes.detalleEstudios');
+    Route::post('paquetes/eliminarPaqueteExamen', [PaquetesController::class, 'eliminarPaqueteEstudio'])->name('paquetes.eliminarPaqueteEstudio');
+
+    Route::get('paquetes/getEstudiosPaqueteEstudios', [PaquetesController::class, 'getEstudiosPaqueteEstudio'])->name('paquetes.getEstudiosPaqueteEstudio');
+
+    Route::get('paquetes/searchDetallesPaquetesEstudios', [PaquetesController::class, 'searchDetalleEstudios'])->name('paquetes.searchDetalleEstudios');
+    Route::get('paquetes/exportEstudioDetalleExcel', [PaquetesController::class, 'exportDetalleExcel'])->name('paquetes.exportDetalleExcel');
+
+    Route::get('paquetes/searchPaquetesFacturacion', [PaquetesController::class, 'searchPaquetesFacturacion'])->name('paquetes.searchPaquetesFacturacion');
+    Route::get('paquetes/createPaqueteFacturacion', [PaquetesController::class, 'createPaqueteFacturacion'])->name('paquetes.createPaqueteFacturacion');
+    Route::post('paquetes/postPaqueteFacturacionCreate', [PaquetesController::class, 'postPaqueteFacturacionCreate'])->name('paquetes.postPaqueteFacturacionCreate');
+    Route::get('paquetes/editPaqueteFacturacion/{id}', [PaquetesController::class, 'editPaqueteFacturacion'])->name('paquetes.editPaqueteFacturacion');
+    Route::post('paquetes/postEditPaqueteFacturacion', [PaquetesController::class, 'postEditPaqueteFactutacion'])->name('paquetes.postEditPaqueteFactutacion');
+
+    Route::get('paquetes/getEstudiosPaqueteFacturacion', [PaquetesController::class, 'getEstudiosPaqueteFacturacion'])->name('paquetes.getEstudiosPaqueteFacturacion');
+
     Route::resource('paquetes', PaquetesController::class);
 
+    //grupos
+    Route::get('grupos/search', [GrupoClientesController::class, 'searchGrupos'])->name('grupos.search');
+    Route::get('grupos/exportarExcel', [GrupoClientesController::class, 'exportExcel'])->name('grupos.exportExcel');
+    Route::get('grupos/create', [GrupoClientesController::class, 'create'])->name('grupos.create');
+    Route::get('grupos/getCliente', [GrupoClientesController::class, 'getCliente'])->name('grupos.getCliente');
+    Route::get('grupos/getGrupo', [GrupoClientesController::class, 'getGrupo'])->name('grupos.getGrupo');
+    Route::post('grupos/postGrupoCliente', [GrupoClientesController::class, 'postGrupoCliente'])->name('grupos.postGrupoCliente');
+    Route::get('grupos/edit/{id}', [GrupoClientesController::class, 'edit'])->name('grupos.edit');
+    Route::post('grupos/getEmpresasGrupo' ,[GrupoClientesController::class, 'getEmpresasGrupoCliente'])->name('grupos.getEmpresasGrupoCliente');
+    Route::post('grupos/postEditGrupoCliente', [GrupoClientesController::class, 'postEditGrupoCliente'])->name('grupos.postEditGrupoCliente');
+    Route::post('grupos/deleteGrupoCliente', [GrupoClientesController::class, 'deleteGrupoCliente'])->name('grupos.deleteGrupoCliente');
+
+    Route::get('grupos/detalle', [GrupoClientesController::class, 'detalle'])->name('grupos.detalle');
+    Route::get('grupos/searchDetalle', [GrupoClientesController::class, 'detalleSearch'])->name('grupos.detalleSearch');
+    Route::get('grupos/exportDetalleExcel', [GrupoClientesController::class, 'exportDetalleExcel'])->name('grupos.exportDetalleExcel');
+    Route::get('getGrupos', [GrupoClientesController::class, 'grupos'])->name('getGrupos');
+
+    Route::resource('grupos', GrupoClientesController::class);
 });
 

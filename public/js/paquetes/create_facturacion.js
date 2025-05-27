@@ -5,34 +5,74 @@ let tabla = new DataTable("#listaExamenesPaquetes");
 const params = new URLSearchParams(window.location.search);
 
 $(function () {
+    $('#empresaSelect2').select2({
+        language: {
+            noResults: function () {
 
-    if (params.get("id")) {
-        preloader('on');
+                return "No hay empresas con esos datos";
+            },
+            searching: function () {
 
-        $.get(getPaquete, {
-            id: params.get("id")
-        })
-            .done(function (result) {
-                console.log(result);
-                $("#nombre").val(result.Paquete.Nombre);
-                $("#descripcion").val(result.Paquete.Descripcion);
-                $("#alias").val(result.Paquete.Alias);
+                return "Buscando..";
+            },
+            inputTooShort: function () {
+                return "Por favor, ingrese 2 o más caracteres";
+            }
+        },
+        placeholder: 'Nombre Empresa, Alias o ParaEmpresa',
+        allowClear: true,
+        ajax: {
+            url: getClientes,
+            dataType: 'json',
+            data: function (params) {
+                return {
+                    buscar: params.term,
+                    tipo: 'E'
+                };
+            },
+            processResults: function (data) {
+                return {
+                    results: data.clientes
+                };
+            },
+            cache: true
+        },
+        minimumInputLength: 2
+    });
 
-                result.Estudios.forEach(x => {
-                    cargarExamen(x.IdExamen);
-                });
-                examenes = examenes.concat(estudiosRenderizar);
-                renderizarEstudios(estudiosRenderizar);
-                estudiosRenderizar = [];
-                preloader('off');
+    $('#grupoSelect2').select2({
+        language: {
+            noResults: function () {
 
-            })
-            .fail(function (jqXHR) {
-                let errorData = JSON.parse(jqXHR.responseText);
-                checkError(jqXHR.status, errorData.msg);
-                return;
-            });
-    }
+                return "No hay grupos con esos datos";
+            },
+            searching: function () {
+
+                return "Buscando..";
+            },
+            inputTooShort: function () {
+                return "Por favor, ingrese 2 o más caracteres";
+            }
+        },
+        placeholder: 'Nombre grupo clientes',
+        allowClear: true,
+        ajax: {
+            url: getGrupos,
+            dataType: 'json',
+            data: function (params) {
+                return {
+                    buscar: params.term
+                };
+            },
+            processResults: function (data) {
+                return {
+                    results: data.grupo
+                };
+            },
+            cache: true
+        },
+        minimumInputLength: 2
+    });
 
     $('#examenSelect2').select2({
         language: {
@@ -184,7 +224,6 @@ $(function () {
             }
         });
     });
-
 });
 
 function cargarExamen(idExamen) {
@@ -226,3 +265,50 @@ function renderizarEstudios(estudios) {
     });
     preloader('off');
 }
+
+$('#btnRegistrar').on('click', function (e) {
+    e.preventDefault();
+    preloader('on');
+    //registramos el paquete de facturacion
+    let nombre = $("#nombre").val();
+    let descricpion = $("#descripcion").val();
+    let alias = $("#alias").val();
+    let codigo = $("#codigo").val();
+    let idGrupo = $("#grupoSelect2").val();
+    let idEmpresa = $("#empresaSelect2").val();
+
+    if (nombre && descricpion && alias && codigo && (idGrupo || idEmpresa)) {
+        if (!(idGrupo && idEmpresa)) {
+            $.ajax({
+                url: postPaqueteFacturacionCreate,
+                type: 'POST',
+                data: {
+                    _token: TOKEN,
+                    Nombre: nombre,
+                    Descripcion: descricpion,
+                    Alias: alias,
+                    Codigo: codigo,
+                    Examenes: examenes,
+                    IdGrupo: idGrupo,
+                    IdEmpresa: idEmpresa
+                },
+                success: function (response) {
+                    preloader('off');
+                    toastr.success('Se ha cargado al paquete correctamente', '', { timeOut: 1000 });
+                },
+                error: function (jqXHR) {
+                    preloader('off');
+                    let errorData = JSON.parse(jqXHR.responseText);
+                    checkError(jqXHR.status, errorData.msg);
+                    return;
+                }
+            });
+        } else {
+            preloader('off');
+            toastr.warning("Si selecciona una empresa no puede seleccionar un grupo y viseversa.", '', { timeOut: 3000 });
+        }
+    } else {
+        preloader('off');
+        toastr.warning("Tiene que ingresar nombre, descricpion , alias, codigo , y seleccionar un grupo o una empresa", '', { timeOut: 3000 });
+    }
+})

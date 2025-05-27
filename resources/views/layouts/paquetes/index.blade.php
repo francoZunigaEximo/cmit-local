@@ -42,13 +42,14 @@
                                     <div class="row">
                                         <div class="col-2 p-1">
                                             <div>
-                                                <label for="fechaHasta" class="form-label">Paquete:</label>
-                                                <input type="text" class="form-control" id="nombrepaquetefacturacion">
+                                                <label for="paqueteFacturacionSelect2" class="form-label">Paquete:</label>
+                                                <select name="paqueteFacturacionSelect2" class="form-control" id="paqueteFacturacionSelect2">
+                                                </select>
                                             </div>
                                         </div>
                                         <div class="col-2 p-1">
                                             <div>
-                                                <label for="fechaHasta" class="form-label">Grupo:</label>
+                                                <label for="grupoSelect2" class="form-label">Grupo:</label>
                                                 <select name="grupoSelect2" class="form-control" id="grupoSelect2">
                                                 </select>
                                             </div>
@@ -70,10 +71,30 @@
                                             <button type="button" class="btn botonGeneral buscarPaquetesFacturacion"><i class="ri-zoom-in-line"></i>&nbsp;Buscar</button>
                                         </div>
                                     </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <a href="{{ route('paquetes.createPaqueteFacturacion') }}" class="btn botonGeneral">
+                                                <i class="ri-add-line align-bottom me-1"></i> Nuevo
+                                            </a>
+                                        </div>
+                                    </div>
                                 </div>
                             </form>
                             <div class="table w-100 mt-3 mb-1">
                                 <table id="listaPaquetesFacturacion" class="table nowrap align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th class="sort">Nombre</th>
+                                            <th class="sort">Examenes</th>
+                                            <th class="sort">Empresa</th>
+                                            <th class="sort">Grupo</th>
+                                            <th class="sort">Codigo</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="list form-check-all">
+
+                                    </tbody>
                                 </table>
                             </div>
                         </div>
@@ -85,11 +106,19 @@
                             <form id="form-index">
                                 <div class="col-12 p-3 border border-1 border-color" style="border-color: #666666;">
                                     <div class="row">
-                                        <div class="col-10 p-1">
-                                            <label for="fechaHasta" class="form-label">Paquete</label>
+                                        <div class="col-3 p-1">
+                                            <label for="nombrepaquete" class="form-label">Paquete</label>
                                             <input type="text" class="form-control" id="nombrepaquete">
                                         </div>
-                                        <div class="col-2 p-1 d-flex align-items-center justify-content-center">
+                                        <div class="col-3 p-1">
+                                            <label for="codigopaquete" class="form-label">Codigo</label>
+                                            <input type="number" class="form-control" id="codigopaquete">
+                                        </div>
+                                        <div class="col-3 p-1">
+                                            <label for="aliaspaquete" class="form-label">Alias</label>
+                                            <input type="text" class="form-control" id="aliaspaquete">
+                                        </div>
+                                        <div class="col-3 p-1 d-flex align-items-center justify-content-center">
                                             <button type="button" class="btn botonGeneral buscarPaquetesExamenes"><i class="ri-zoom-in-line"></i>&nbsp;Buscar</button>
                                         </div>
                                     </div>
@@ -98,9 +127,15 @@
                             <br/>
                             <div class="col-12">
                                 <div>
-                                    <button type="button" class="btn botonGeneral add-btn" data-bs-toggle="offcanvas">
+                                    <a href="{{ route('paquetes.crearPaqueteExamen') }}" class="btn botonGeneral">
                                         <i class="ri-add-line align-bottom me-1"></i> Nuevo
+                                    </a>
+                                    <button type="button" class="btn botonGeneral btnExcelEstudios">
+                                        <i class="ri-file-excel-line align-bottom me-1"></i> Exportar
                                     </button>
+                                    <a href="{{ route('paquetes.detalleEstudios') }}" class="btn botonGeneral">
+                                        Detalles
+                                    </a>
                                 </div>
                             </div>
                             <div class="table w-100 mt-3 mb-1">
@@ -109,6 +144,8 @@
                                         <tr>
                                             <th class="sort">Codigo</th>
                                             <th class="sort">Nombre</th>
+                                            <th class="sort">Alias</th>
+                                            <th>Acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody class="list form-check-all">
@@ -123,10 +160,16 @@
     </div>
 </div>
 <script>
-
+const TOKEN = "{{ csrf_token() }}";
 const getClientes = "{{ route('getClientes') }}";
 const SEARCH_EXAMENES = "{{ route('paquetes.searchExamenes')}}";
+const exportarExcel = "{{ route('paquetes.exportExcel') }}";
+const eliminarPaqueteEstudioRoute = "{{ route('paquetes.eliminarPaqueteEstudio') }}";
 
+const search_paquetes_studio = "{{route('paquetes.searchPaquetesFacturacion')}}";
+const getGrupos = "{{route('getGrupos')}}";
+
+const getPaqueteFact = "{{route('getPaqueteFact')}}";
 </script>
 @push('styles')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">

@@ -15,6 +15,10 @@ use App\Services\ReportesExcel\modelos\ResumenTotal;
 use App\Services\ReportesExcel\modelos\SimplePrestacion;
 use App\Services\ReportesExcel\modelos\SimplePrestacionFull;
 use App\Services\ReportesExcel\modelos\CompletoPrestacionFull;
+use App\Services\ReportesExcel\modelos\GrupoClientesDetalleFull;
+use App\Services\ReportesExcel\modelos\GrupoClientesFull;
+use App\Services\ReportesExcel\modelos\PaqueteEstudio;
+use App\Services\ReportesExcel\modelos\PaqueteEstudioDetalle;
 
 class ReporteExcel
 {
@@ -47,6 +51,14 @@ class ReporteExcel
                 return new DetalladaPrestacionFull();
             case 'completoPrestacionFull':
                 return new CompletoPrestacionFull();
+            case 'paqueteEstudiosFull':
+                return new PaqueteEstudio();
+            case 'paqueteEstudiosDetalleFull':
+                return new PaqueteEstudioDetalle();
+            case 'grupoClienteFull':
+                return new GrupoClientesFull();
+            case 'grupoClienteDestalleFull':
+                return new GrupoClientesDetalleFull();
             default:
                 return response()->json(['msg' => 'Tipo de reporte no válido'], 400);
         }

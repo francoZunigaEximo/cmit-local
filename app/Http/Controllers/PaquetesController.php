@@ -2,17 +2,45 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\Tools;
+use App\Models\Cliente;
+use App\Models\Estudio;
+use App\Models\Examen;
+use App\Models\GrupoClientes;
 use App\Models\PaqueteEstudio;
 use App\Models\PaqueteFacturacion;
+use App\Models\RelacionPaqueteEstudio;
+use App\Models\RelacionPaqueteFacturacion;
+use App\Services\Reportes\ReporteService;
+use App\Services\Reportes\Titulos\Empresa;
+use App\Services\ReportesExcel\ReporteExcel;
+use GuzzleHttp\Psr7\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
 
 class PaquetesController extends Controller
 {
+    protected $reporteService;
+    protected $outputPath;
+    protected $sendPath;
+    protected $fileNameExport;
+    private $tempFile;
+    protected $reporteExcel;
+    
+    public function __construct(ReporteService $reporteService, ReporteExcel $reporteExcel)
+    {
+        $this->reporteService = $reporteService;
+        $this->outputPath = storage_path('app/public/temp/fusionar.pdf');
+        $this->sendPath = storage_path('app/public/temp/cmit-'.Tools::randomCode(15).'-informe.pdf');
+        $this->fileNameExport = 'reporte-'.Tools::randomCode(15);
+        $this->tempFile = 'app/public/temp/file-';
+        $this->reporteExcel = $reporteExcel;
+    }
+
     public function index()
     {
-        
         return view('layouts.paquetes.index');
     }
 
@@ -24,10 +52,307 @@ class PaquetesController extends Controller
     }
 
     private function buildQuery(Request $request){
-        return PaqueteEstudio::where('Nombre', 'LIKE', '%'.$request->buscar.'%');
+        $consulta = PaqueteEstudio::where('Nombre', 'LIKE', '%'.$request->buscar.'%')->where('Baja', '=', 0);
+        if($request->alias){
+            $consulta->where('Alias', 'LIKE', '%'.$request->alias.'%');
+        }
+
+        if($request->id){
+            $consulta->where('Id', '=', $request->id);
+        }
+
+        return $consulta;
+
+    }
+
+    private function buildQueryDetalleEstudio(Request $request){
+         $consulta = DB::table('paqestudios')
+         ->join('relpaqest', 'paqestudios.id', '=', 'relpaqest.IdPaquete')
+         ->join('estudios', 'relpaqest.IdEstudio', '=', 'estudios.id')
+         ->join('examenes', 'relpaqest.IdExamen', '=', 'examenes.id')
+         ->join('proveedores', 'examenes.IdProveedor', '=', 'proveedores.Id')
+         ->where('paqestudios.Baja', '=', 0);
+
+        if($request->examen){
+            $consulta->where('estudios.id', '=', $request->examen);
+        }
+        if($request->paquete){
+             $consulta->where('relpaqest.IdPaquete', '=', $request->paquete);
+        }
+
+        if($request->especialidad){
+            $consulta->where('examenes.IdProveedor', '=', $request->especialidad);
+        }
+
+        $consulta->select('paqestudios.Id as Id','paqestudios.Nombre as Nombre', 'examenes.Nombre as NombreExamen', 'proveedores.Nombre as Especialidad');
+        return $consulta;
     }
 
     public function crearPaqueteExamen(){
-        return view('layouts.paquetes.create');
+        $codigo = PaqueteEstudio::max('Id') + 1;
+        return view('layouts.paquetes.create_paquete_estudios',['Codigo'=>$codigo]);
+    }
+
+    public function postPaqueteExamen(Request $request){
+        $nombre = $request->nombre;
+        $descripcion = $request->descripcion == null ? "" : $request->descripcion ;
+        $alias = $request->alias == null ? "" : $request->alias ;
+        $estudios = $request->estudios;
+        
+        //cargamos el paquete
+        $nuevoId = PaqueteEstudio::max('Id') + 1;
+        PaqueteEstudio::create([
+            'Id' => $nuevoId,
+            'Nombre' => $nombre,
+            'Descripcion' => $descripcion,
+            'Alias' => $alias
+        ]);
+
+        // cargamos los estudios de paquete
+        foreach($estudios as $estudio){
+            $id = RelacionPaqueteEstudio::max('Id') + 1;
+            RelacionPaqueteEstudio::create([
+                'Id' => $id,
+                'IdPaquete' => $nuevoId,
+                'IdEstudio' => $estudio['IdEstudio'],
+                'IdExamen' => $estudio['Id']
+            ]);
+        }
+
+    }
+
+    public function editPaqueteExamen($id){
+        $paquete = PaqueteEstudio::find($id);
+        return view('layouts.paquetes.edit_paquete_estudios', compact(['paquete']));
+    }
+
+    public function postEditPaqueteExamen(Request $request){
+        
+        $idPaquete = $request->id;
+        $nombre = $request->nombre;
+        $descripcion = $request->descripcion == null ? "" : $request->descripcion ;
+        $alias = $request->alias == null ? "" : $request->alias ;
+        $estudios = $request->estudios == null ? [] : $request->estudios;
+        $estudiosEliminar = $request->estudiosEliminar == null ? [] : $request->estudiosEliminar;
+        
+        PaqueteEstudio::find($idPaquete)
+        ->update(['Nombre'=>$nombre, 'Descripcion'=>$descripcion, 'Alias'=>$alias]);
+
+        //eliminamos los paquetes viejos
+        foreach($estudiosEliminar as $idEliminar){
+            $estudioEliminar = RelacionPaqueteEstudio::where('IdExamen', '=', $idEliminar)->where('IdPaquete', '=', $idPaquete)->first();
+            if($estudioEliminar) $estudioEliminar->update(['Baja'=>1]);
+        }
+
+        // cargamos los estudios de paquete
+        foreach($estudios as $estudio){
+            $id = RelacionPaqueteEstudio::max('Id') + 1;
+            RelacionPaqueteEstudio::create([
+                'Id' => $id,
+                'IdPaquete' => $idPaquete,
+                'IdEstudio' => $estudio['IdEstudio'],
+                'IdExamen' => $estudio['Id']
+            ]);
+        }
+    }
+
+    public function getPaqueteExamen(Request $request){
+        $id = $request->id;
+        $paquete = PaqueteEstudio::find($id);
+        $estudiosPaquete = RelacionPaqueteEstudio::where('IdPaquete', '=', $id)
+        ->where("Baja", "=", 0)
+        ->get();
+            
+        return response()->json(['Paquete'=>$paquete, 'Estudios'=>$estudiosPaquete]);
+    }
+
+    public function exportExcel(Request $request){
+        $query = $this->buildQuery($request);
+        $reporte = $this->reporteExcel->crear('paqueteEstudiosFull');
+        return $reporte->generar($query->get());
+    }
+
+    public function eliminarPaqueteEstudio(Request $request){
+        $id = $request->id;
+        if($id){
+            PaqueteEstudio::find($id)->update(['Baja'=>1]);
+        }
+    }
+
+    public function detalleEstudios(){
+        return view('layouts.paquetes.detalles_paquete_estudios');
+    }
+
+    public function searchDetalleEstudios(Request $request){
+          if ($request->ajax()) {
+            $query = $this->buildQueryDetalleEstudio($request);
+            return DataTables::of($query)->make(true);
+        }
+    }
+    public function exportDetalleExcel(Request $request){
+        $query = $this->buildQueryDetalleEstudio($request);
+        $reporte = $this->reporteExcel->crear('paqueteEstudiosDetalleFull');
+        return $reporte->generar($query->get());
+    }
+
+    public function searchPaquetesFacturacion(Request $request){
+        if ($request->ajax()) {
+            $query = $this->buildQueryPaqueteFacturacion($request);
+            return DataTables::of($query)->make(true);
+        }
+    }
+
+    public function buildQueryPaqueteFacturacion(Request $request){
+        $consulta = DB::table('paqfacturacion')
+        ->leftJoin('clientesgrupos', 'paqfacturacion.IdGrupo', '=', 'clientesgrupos.Id')
+        ->leftJoin('clientes', 'paqfacturacion.IdEmpresa', '=', 'clientes.Id');
+
+        if($request->IdPaquete){
+            $consulta->where('paqfacturacion.Id', '=', $request->IdPaquete);
+        }
+
+        if($request->IdGrupo){
+            $consulta->where('paqfacturacion.IdGrupo', '=', $request->IdGrupo);
+        }else if($request->IdEmpresa){
+            $consulta->where('paqfacturacion.IdEmpresa', '=', $request->IdEmpresa);
+        }
+        
+        if($request->Codigo){
+            $consulta->where('paqfacturacion.Cod','=', $request->Codigo);
+        }
+
+        $consulta->select('paqfacturacion.Id as Id','paqfacturacion.Cod as Codigo','paqfacturacion.Nombre as Nombre', 'paqfacturacion.CantExamenes as CantExamenes', 'clientesgrupos.Nombre as NombreGrupo', 'clientes.ParaEmpresa as NombreEmpresa');
+        
+        return $consulta;
+    }
+
+    public function createPaqueteFacturacion(){
+        $codigo = PaqueteFacturacion::max('Id') + 1;
+        return view('layouts.paquetes.create_paquete_facturacion',compact(['codigo']));
+    }
+
+    public function postPaqueteFacturacionCreate(Request $request){
+        $nombre = $request->Nombre;
+        $codigo = $request->Codigo;
+        $alias = $request->Alias;
+        $descripcion = $request->Descripcion;
+        $idEmpresa = $request->IdEmpresa;
+        $idGrupo = $request->IdGrupo;
+
+        $estudios = $request->Examenes;
+
+        $nuevoId = PaqueteFacturacion::max('Id') + 1;
+
+        //realizamos las operaciones de creacion
+        PaqueteFacturacion::create([
+            'Id' => $nuevoId,
+            'Nombre'=> $nombre,
+            'Descripcion' => $descripcion,
+            'Alias' => $alias,
+            'Cod' => $codigo,
+            'IdEmpresa' => ($idEmpresa != null && $idGrupo == null) ? $idEmpresa : 0,
+            'IdGrupo'=>  ($idGrupo != null && $idEmpresa == null) ? $idGrupo : 0,
+            'Baja' => 0
+        ]);
+
+        //cargamos las empresa
+         // cargamos los estudios de paquete
+        foreach($estudios as $estudio){
+            $id = RelacionPaqueteFacturacion::max('Id') + 1;
+            RelacionPaqueteFacturacion::create([
+                'Id' => $id,
+                'IdPaquete' => $nuevoId,
+                'IdEstudio' => $estudio['IdEstudio'],
+                'IdExamen' => $estudio['Id']
+            ]);
+        }
+    }
+
+    public function editPaqueteFacturacion($id){
+        $paquete = PaqueteFacturacion::find($id);
+        $grupo = $paquete->IdGrupo;
+        $empresa = $paquete->IdEmpresa;
+
+        return view('layouts.paquetes.edit_paquete_facturacion', compact(['paquete', 'grupo', 'empresa']));
+    }
+
+    public function getCliente(Request $request){
+        $cliente = Cliente::where('id', '=', $request->id)->first();
+        return response()->json($cliente);
+    }
+
+     public function getGrupo(Request $request){
+        $grupo = GrupoClientes::where('id', '=', $request->id)->first();
+        return response()->json($grupo);
+    }
+
+
+    public function getEstudiosPaqueteEstudio(Request $request){
+        $paqueteRelacion = RelacionPaqueteEstudio::where('idPaquete', '=', $request->id)->where('baja', '=', 0)->get();
+        $estudios = [];
+
+        foreach($paqueteRelacion as $r){
+            $estudio = Examen::find($r->IdExamen);
+            array_push($estudios, $estudio);
+        }
+
+        return response()->json($estudios);
+    }
+
+    public function getEstudiosPaqueteFacturacion(Request $request){
+        $paqueteRelacion = RelacionPaqueteFacturacion::where('idPaquete', '=', $request->id)->where('baja', '=', 0)->get();
+        
+        $estudios = [];
+        foreach($paqueteRelacion as $r){
+            $estudio = Examen::find($r->IdExamen);
+            array_push($estudios, $estudio);
+        }
+
+        return response()->json($estudios);
+    }
+
+    
+    public function postEditPaqueteFactutacion(Request $request){
+        
+        $idPaquete = $request->id;
+        $nombre = $request->nombre;
+        $descripcion = $request->descripcion == null ? "" : $request->descripcion ;
+        $alias = $request->alias == null ? "" : $request->alias ;
+        $codigo = $request->codigo == null? "" : $request->codigo;
+        $idEmpresa = $request->IdEmpresa;
+        $idGrupo = $request->IdGrupo;
+        
+        $estudios = $request->estudios == null ? [] : $request->estudios;
+        $estudiosEliminar = $request->estudiosEliminar == null ? [] : $request->estudiosEliminar;
+        
+        PaqueteFacturacion::find($idPaquete)
+        ->update(['Nombre'=>$nombre, 'Descripcion'=>$descripcion, 'Alias'=>$alias, 'Codigo'=>$codigo]);
+
+        if($idEmpresa != null && $idGrupo == null){
+            PaqueteFacturacion::find($idPaquete)
+            ->update(['IdEmpresa'=>$idEmpresa, 'IdGrupo'=>0]);
+        }
+
+        if($idGrupo != null && $idEmpresa == null){
+            PaqueteFacturacion::find($idPaquete)
+            ->update(['IdEmpresa'=>0, 'IdGrupo'=>$idGrupo]);
+        }
+
+        //eliminamos los paquetes viejos
+        foreach($estudiosEliminar as $idEliminar){
+            $estudioEliminar = RelacionPaqueteFacturacion::where('IdExamen', '=', $idEliminar)->where('IdPaquete', '=', $idPaquete)->first();
+            if($estudioEliminar) $estudioEliminar->update(['Baja'=>1]);
+        }
+
+        // cargamos los estudios de paquete
+        foreach($estudios as $estudio){
+            $id = RelacionPaqueteFacturacion::max('Id') + 1;
+            RelacionPaqueteFacturacion::create([
+                'Id' => $id,
+                'IdPaquete' => $idPaquete,
+                'IdEstudio' => $estudio['IdEstudio'],
+                'IdExamen' => $estudio['Id']
+            ]);
+        }
     }
 }
