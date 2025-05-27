@@ -353,36 +353,64 @@
         const lnkExistePaciente = "{{ route('pacientes.edit', ['paciente' => '__paciente__']) }}";
         const verifyWizard = "{{ route('verifyWizard') }}";
         const TOKEN = "{{ csrf_token() }}";
-        const tiempoSesion = {{ config('session.lifetime') * 60 * 1000 }};
 
-        let idleTimeout;
+        const IDLE_TIMEOUT = 300 * 60 * 1000;
+        const CHECK_INTERVAL = 1000; //1 segundo
+        const finalizarSesion = "{{ route('usuario.cierreAutomatico') }}";
+        const sessionUser = "{{ auth()->user()?->id }}"; 
 
-        function resetIdleTimeout() {
-            clearTimeout(idleTimeout);
-            idleTimeout = setTimeout(function () {       
-                cerrarSesion();
-            }, tiempoSesion);
+        let ultimaActividad = Date.now(),
+            idInterval = null,
+            sesionCerrada = false;
+
+        function resetUltimaActividad() {
+            ultimaActividad = Date.now();
+        }
+
+        function iniciarIdMonitor() {
+            setInterval(() => {
+                const tiempoInactividad = Date.now() - ultimaActividad;
+
+                if(tiempoInactividad >= IDLE_TIMEOUT) {
+                    cerrarSesion();
+                }
+            }, CHECK_INTERVAL);
         }
 
         function cerrarSesion() {
-            $.post(SALIR, {_token: TOKEN}, function(response){
-                if (response.redirect) {
-                    window.location.href = response.redirect;
-                } else {
-                    window.location.href = "{{ route('logout') }}";
-                }
-            })
+            if (!sessionUser || sesionCerrada) return;
+
+            sesionCerrada = true;
+
+            localStorage.setItem("cerrar_sesion", Date.now());
+
+            if(idInterval) {
+                clearInterval(idInterval);
+                idInterval = null;
+            }
+
+            $.get(finalizarSesion, { Id: parseInt(sessionUser) }, function(response) {
+                toastr.warning(response.msg);
+                setTimeout(()=>  {
+                    window.location.href = "{{ route('login') }}";
+                }, 5000)
+                
+            });
         }
 
-        // Reiniciar el temporizador
-        $(document).on('mousemove keydown scroll', function () {
-            resetIdleTimeout();
+
+        window.addEventListener("storage", function (event) {
+            if (event.key === "cerrar_sesion") {
+                cerrarSesion(); // ejecuta en esta pestaña también
+            }
         });
 
-        // Iniciar el temporizador con Hack
-        $(document).ready(function () {
-            resetIdleTimeout();
+        ['mousemove', 'keydown', 'scroll', 'click'].forEach(event => {
+            $(document).on(event, resetUltimaActividad);
         });
+
+        iniciarIdMonitor();
+        resetUltimaActividad(); 
 
     </script>
 

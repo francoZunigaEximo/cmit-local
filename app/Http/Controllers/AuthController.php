@@ -14,7 +14,10 @@ use App\Models\UserSession;
 use App\Services\Llamador\Profesionales;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
+
+use function PHPUnit\Framework\isEmpty;
 
 class AuthController extends Controller
 {
@@ -29,7 +32,6 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-
         if (Auth::attempt([
             'name' => $request->usuario,
             'password' => $request->password,
@@ -64,29 +66,26 @@ class AuthController extends Controller
             }
 
             $request->session()->regenerate();
+            
+            $this->session_user(); //registramos el inicio de sesión
+            $this->session_user_duplicados($request->password); //eliminamos sesiones duplicadas
 
-            if(Auth::check()){
-                
-                $this->session_user(); //registramos el inicio de sesión
-                $this->session_user_duplicados($request->password); //eliminamos sesiones duplicadas
-                
-                $roles = Auth::user()->role->pluck('nombre'); 
+            $roles = Auth::user()->role->pluck('nombre'); 
 
-                if ($roles->contains('Efector') || $roles->contains('Informador')) {
+            if ($roles->contains('Efector') || $roles->contains('Informador')) {
 
-                    $efectores = $this->listadoProfesionales->listado('Efector');
-                    event(new LstProfesionalesEvent($efectores));
+                $efectores = $this->listadoProfesionales->listado('Efector');
+                event(new LstProfesionalesEvent($efectores));
 
-                    return redirect()->route('mapas.index');
-                }
-
-                if ($roles->contains('Evaluador') || $roles->contains('Evaluador ART')) {
-                    return redirect()->route('mapas.index');
-                }
+                return redirect()->route('mapas.index');
             }
 
-            //return redirect('/home');
+            if ($roles->contains('Evaluador') || $roles->contains('Evaluador ART')) {
+                return redirect()->route('mapas.index');
+            }
+            
             return redirect()->route('noticias.index');
+            
         } else {
 
             return redirect()
@@ -120,24 +119,47 @@ class AuthController extends Controller
             ], 500);
         }
     }
+
+    public function logoutId(Request $request)
+    {
+        $sessions = Redis::keys("session:*");
+        $userId = intval($request->Id);
+
+
+        $this->session_user_logout($userId);
+
+        $efectores = $this->listadoProfesionales->listado('Efector');
+        event(new LstProfesionalesEvent($efectores));
+
+        foreach ($sessions as $session) {
+            $user = Redis::hget($session, 'user_id'); //En redis obtengo la sesion
+
+            if($user === intval($request->Id)) {
+                Redis::del($session);
+            }
+        }
+
+        //Sesion temporal para hacer el logout
+        if (Auth::check() && Auth::id() === $userId) {
+            
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+        } 
+
+        return response()->json(['msg' => 'Se ha cerrado la sesión por inactividad'], 200);
+    }
     
     public function logout()
     {
-        $this->session_user_logout();
+        $this->session_user_logout(Auth::user()->id);
         Session::flush();//Invalidamos la sesión actual
         Auth::logout();
         request()->session()->regenerateToken();// Regenera el token CSRF
 
         $efectores = $this->listadoProfesionales->listado('Efector');
         event(new LstProfesionalesEvent($efectores));
-
-        // Si el logout viene del temporizador de cierre automatico de sesion
-        if (request()->ajax()) {
-            return response()->json([
-                'success' => true,
-                'redirect' => route('login')
-            ]);
-        }
 
         return redirect()
                 ->route('login')
@@ -191,8 +213,6 @@ class AuthController extends Controller
     private function session_user()
     {
         $getId = auth()->user()->id;
-        Redis::set("cmit_user:{$getId}:online", now());
-        Redis::expire("cmit_user:{$getId}:online", 60); //Expira en 60 segundos
 
         return UserSession::create([
             'user_id' => $getId,
@@ -203,12 +223,11 @@ class AuthController extends Controller
         ]);
     }
 
-    private function session_user_logout()
+    private function session_user_logout($user)
     {
-        $getId = auth()->user()->id;
-        Redis::del("user:{$getId}:online");
+        Log::info("Intentando cerrar sesión del usuario ID: " . $user); 
 
-        return UserSession::where('session_id', session()->getId())
+        return UserSession::where('user_id', $user)
             ->whereNull('logout_at')
             ->update([
                 'logout_at' => now()
@@ -218,8 +237,6 @@ class AuthController extends Controller
     private function session_user_duplicados(string $password)
     {
         $userId = auth()->user()->id;
-
-        Redis::del("user:{$userId}:online");
         Auth::logoutOtherDevices($password); //cerramos todas las sesiones duplicadas
 
         return UserSession::where('user_id',$userId)

@@ -99,6 +99,8 @@ class UsuariosController extends Controller
         return view('layouts.usuarios.edit', compact(['query', 'provincias', 'roles', 'lstProveedor', 'contador']));
     }
 
+    public function show() {}
+
     public function buscar(Request $request) 
     {
         if(!$this->hasPermission("usuarios_show")){
@@ -107,19 +109,31 @@ class UsuariosController extends Controller
 
         if ($request->ajax()) {
 
+            $sessionStatus = DB::table('user_sessions')
+                ->select('user_id', DB::raw('MAX(CASE WHEN logout_at IS NULL THEN 1 ELSE 0 END) AS is_online'))
+                ->groupBy('user_id');
+
             $query = User::leftJoin('user_rol', 'users.id', '=', 'user_rol.user_id')
                 ->leftJoin('roles', 'user_rol.rol_id', '=', 'roles.Id')
                 ->leftJoin('datos', 'users.datos_id', '=', 'datos.Id')
+                ->leftJoinSub($sessionStatus, 'session_status', function ($join) {
+                    $join->on('users.id', '=', 'session_status.user_id');
+                })
                 ->select(
                     'users.id as IdUser',
                     'users.name as usuario',
-                    'datos.Nombre as Nombre',
-                    'datos.Apellido as Apellido',
-                    DB::raw("GROUP_CONCAT(roles.nombre SEPARATOR ', ') as RolUsuario"),
+                    DB::raw("CONCAT(datos.Apellido, ' ', datos.Nombre) as nombreCompleto"),
+                    DB::raw("GROUP_CONCAT(DISTINCT roles.nombre SEPARATOR ', ') as RolUsuario"),
                     'users.inactivo as Inactivo',
+                    DB::raw("CASE 
+                        WHEN session_status.is_online = 1 THEN 'online'
+                        ELSE 'offline'
+                    END as status")
                 )
                 ->where('users.Anulado', 0)
-                ->groupBy('users.id');
+                ->groupBy('users.id', 'users.name', 'datos.Apellido', 'datos.Nombre', 'users.inactivo', 'session_status.is_online');
+
+
         
             $query->when(!empty($request->nombre), function ($query) use ($request) {
                 $query->where('datos.Id', $request->nombre);
