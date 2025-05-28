@@ -954,6 +954,9 @@ CREATE TABLE llamador(
 	PRIMARY KEY(Id)
 );
 
+#Optimizacion de redis - agregar a los env
+SESSION_CONNECTION=default
+
 ALTER TABLE fichaslaborales MODIFY COLUMN FechaUltPeriod VARCHAR(15) DEFAULT NULL NULL;
 ALTER TABLE fichaslaborales MODIFY COLUMN FechaExArt VARCHAR(15) DEFAULT NULL NULL;
 ALTER TABLE proveedores ADD COLUMN Obs TEXT NULL;

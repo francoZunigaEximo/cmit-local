@@ -38,9 +38,11 @@ class UsuariosController extends Controller
     {
         if(!$this->hasPermission("usuarios_show")) {
             abort(403);
-        } 
+        }
 
-        return view('layouts.usuarios.index', ['helper'=>$this->helper]);
+        $id = Auth::user()->id;
+
+        return view('layouts.usuarios.index', compact(['id']), ['helper'=>$this->helper]);
     }
 
     public function create()
