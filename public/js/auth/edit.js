@@ -1,8 +1,12 @@
-$(document).ready(function(){
+$(function(){
 
-    let IdProfesional = $('#IdProfesional').val();
-    let resizing = false, startWidth, startHeight, startX, startY; //variables de ancho de imagen
-    $('.verOpciones').hide();
+    let IdProfesional = $('#IdProfesional').val(),
+        resizing = false, startWidth, startHeight, startX, startY; //variables de ancho de imagen
+    let tabla = $('#listaUsuarios');
+
+    
+    
+        $('.verOpciones').hide();
     $('.verAlerta').show();
 
     quitarDuplicados("#provincia");
@@ -323,7 +327,7 @@ $(document).ready(function(){
             }
         });           
     });
-  
+
     function listadoRoles() {
         preloader('on');
 

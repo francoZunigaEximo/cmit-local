@@ -14,10 +14,12 @@ use App\Models\UserSession;
 use App\Services\Llamador\Profesionales;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 
 use function PHPUnit\Framework\isEmpty;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -122,33 +124,21 @@ class AuthController extends Controller
 
     public function logoutId(Request $request)
     {
-        $sessions = Redis::keys("session:*");
-        $userId = intval($request->Id);
+        if($request->forzar) {
+            $this->cierreForzado($request->Id);
+        
+        }else{
+            $this->cierreAutomatico($request->Id, $request);
+        }
 
-
-        $this->session_user_logout($userId);
+        $this->session_user_logout($request->Id);
 
         $efectores = $this->listadoProfesionales->listado('Efector');
         event(new LstProfesionalesEvent($efectores));
 
-        foreach ($sessions as $session) {
-            $user = Redis::hget($session, 'user_id'); //En redis obtengo la sesion
-
-            if($user === intval($request->Id)) {
-                Redis::del($session);
-            }
-        }
-
-        //Sesion temporal para hacer el logout
-        if (Auth::check() && Auth::id() === $userId) {
-            
-            Auth::logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-
-        } 
-
-        return response()->json(['msg' => 'Se ha cerrado la sesión por inactividad'], 200);
+        return $request->forzar 
+            ? response()->json(['msg' => 'Ha cerrado la sesión del usuario de manera correcta'], 200)
+            : response()->json(['msg' => 'Se ha cerrado la sesión por inactividad'], 200);
     }
     
     public function logout()
@@ -200,16 +190,6 @@ class AuthController extends Controller
         return response()->json(Hash::check($request->password, Auth::user()->password));
     }
 
-    public function forzarLogout($userId)
-    {
-        Artisan::call('session:clear-user-sessions', [$userId]);
-        UserSession::where('user_id', $userId)
-            ->whereNull('logout_at')
-            ->update(['logout_at' => now()]);
-
-        return response()->json(['msg' => 'Sesion cerrada correctamente'], 200);
-    }
-
     private function session_user()
     {
         $getId = auth()->user()->id;
@@ -225,8 +205,6 @@ class AuthController extends Controller
 
     private function session_user_logout($user)
     {
-        Log::info("Intentando cerrar sesión del usuario ID: " . $user); 
-
         return UserSession::where('user_id', $user)
             ->whereNull('logout_at')
             ->update([
@@ -272,5 +250,29 @@ class AuthController extends Controller
                 "localidades.Nombre as NombreLocalidad"
             )->find($id);
     }
+
+    private function cierreForzado(int $id):void
+    {
+        if(!empty($id)) {
+
+            $idRedis = UserSession::where('user_id', $id)->orderBy('Id', 'desc')->first(['session_id']);
+        
+            $keyRedis = 'cmit:' . $idRedis['session_id'];
+            Redis::del($keyRedis);
+
+        }   
+    }
+
+    private function cierreAutomatico(int $id, $request):void
+    {
+        if (Auth::check() && Auth::id() === $id) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
+    }
+
+
+
 
 }

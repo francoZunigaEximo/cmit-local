@@ -933,3 +933,6 @@ CREATE TABLE llamador(
 	CONSTRAINT FK_ItemprestacionLlamador FOREIGN KEY (itemprestacion_id) REFERENCES itemsprestaciones(Id),
 	PRIMARY KEY(Id)
 );
+
+#Optimizacion de redis - agregar a los env
+SESSION_CONNECTION=default

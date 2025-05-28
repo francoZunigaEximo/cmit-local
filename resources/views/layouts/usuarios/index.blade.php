@@ -13,7 +13,7 @@
         <div class="d-flex justify-content-center align-items-center">
             <div class="col-sm-8 mt-5 mt-lg-0">
                 <div class="row g-3 mb-0 justify-content-center">
-
+                    <input type="hidden" id="ID" value="{{ $id }}" /> 
                     <div class="col-sm-3">
                         <label for="nombre">Nombre y apellido: </label>
                         <select name="nombre" id="nombre" class="form-control"></select>
@@ -87,6 +87,7 @@
     const bajaUsuario = "{{ route('usuarios.delete')}}";
     const bloquearUsuario = "{{ route('bloquearUsuario') }}";
     const cambiarPassUsuario = "{{ route('cambiarPassUsuario') }}";
+    const btnCerrarSesion = "{{ route('usuario.cierreAutomatico') }}";
 </script>
 
 @push('styles')

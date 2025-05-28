@@ -1,7 +1,8 @@
 let nombre = $('#nombre').val(), 
     usuario = $('#usua').val(), 
     rol = $('#rol').val(), 
-    condiciones = [nombre, usuario, rol];
+    condiciones = [nombre, usuario, rol],
+    idSesion = $('#ID').val();
 
 $(function() {
 
@@ -72,9 +73,12 @@ $(function() {
                     let editar = `<a class="btn btn-sm botonGeneral small p-1" title="Editar" href="${location.href}/${data.IdUser}/edit"><i class="ri-edit-line p-1"></i></a>`,
                         eliminar = `<button data-id="${data.IdUser}" title="Eliminar" type="button" class="btn btn-sm botonGeneral baja small p-1"><i class="ri-delete-bin-2-line p-1"></i></button>`,
                         bloquear = `<button title="${data.Inactivo === 1 ? 'Activar usuario' : 'Desactivar usuario'}" data-id="${data.IdUser}" class="btn btn-sm p-1 botonGeneral bloquear small"><i class="ri-lock-unlock-line p-1"></i></button>`,
-                        cambiar = `<button title="Restablecer password" data-id="${data.IdUser}" class="btn btn-sm botonGeneral p-1 cambiarPass"><i class="ri-key-2-line p-1"></i></button>`;
+                        cambiar = `<button title="Restablecer password" data-id="${data.IdUser}" class="btn btn-sm botonGeneral p-1 cambiarPass"><i class="ri-key-2-line p-1"></i></button>`,
+                        expulsar = `<button title="Forzar cierre de sesión" data-id="${data.IdUser}" class="btn btn-sm botonGeneral p-1 forzarCierre"><i class="ri-logout-box-line p-1"></i></button>`;
     
-                    return `${editar} ${bloquear} ${cambiar} ${eliminar}`;
+
+
+                    return `${editar} ${bloquear} ${cambiar} ${eliminar} ${(parseInt(idSesion) !== data.IdUser) && data.status === 'online' ? expulsar : ''}`;
                 }
             }
         ],
