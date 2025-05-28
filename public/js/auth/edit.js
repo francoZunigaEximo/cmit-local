@@ -1,4 +1,4 @@
-$(function(){
+$(document).ready(()=>{
 
     let IdProfesional = $('#IdProfesional').val();
     let resizing = false, startWidth, startHeight, startX, startY; //variables de ancho de imagen
@@ -323,8 +323,7 @@ $(function(){
             }
         });           
     });
-
-    
+  
     function listadoRoles() {
         preloader('on');
 
@@ -477,6 +476,8 @@ $(function(){
                 return; 
             });
     }
+
+
 
     
 

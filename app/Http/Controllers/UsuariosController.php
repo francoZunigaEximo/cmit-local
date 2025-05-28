@@ -8,6 +8,7 @@ use App\Models\Proveedor;
 use App\Models\Provincia;
 use App\Models\Rol;
 use App\Models\User;
+use App\Models\UserSession;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -15,6 +16,7 @@ use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use App\Traits\CheckPermission;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class UsuariosController extends Controller
@@ -397,6 +399,7 @@ class UsuariosController extends Controller
 
         return response()->json($query->role);
     }
+
 
 }
 

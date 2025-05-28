@@ -8,12 +8,10 @@ $(function(){
         // if([null, undefined, ''].includes(id)) return;
 
         preloader('on');
-        $.get(lstSesionesUs, {Id: id})
+        $.get(cargarSessiones, {Id: id})
             .done(function(response) {
                 let contenido = '';
                 preloader('off');
-  
-                console.log(response)
 
                 if(response && response.length > 0){
 
@@ -22,9 +20,9 @@ $(function(){
                         contenido += `
                         <tr>
                             <td>${data.ip}</td>
-                            <td>${data.dispositivo}</td>
-                            <td>${data.ingreso}</td>
-                            <td>${data.salida}</td>
+                            <td>${limpiarUserAgent(data.dispositivo)}</td>
+                            <td>${fechaCompleta(data.ingreso)}</td>
+                            <td>${fechaCompleta(data.salida)}</td>
                         </tr>
                         `;
                     });
@@ -40,6 +38,14 @@ $(function(){
                 }
 
                 $('#lstSesionesUsuario').append(contenido); 
+
+                $("#listaSesionesUsuario").fancyTable({
+                    pagination: true,
+                    perPage: 15,
+                    searchable: false,
+                    globalSearch: false,
+                    sortable: false, 
+                });
             })
             .fail(function(jqXHR){
                 preloader('off');

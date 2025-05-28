@@ -242,3 +242,34 @@ function calcularEdad(fechaNacimiento) {
 function removerCeroSelect2(selector) {
     $(selector).find('option[value="0"]').remove();
 }
+
+
+function limpiarUserAgent(data) {
+    let navegador = 'Desconocido',
+        version = '',
+        sistema = 'Desconocido';
+
+    const sistemaMatch = data.match(/\((.*?)\)/);
+    
+    if(sistemaMatch && sistemaMatch[1]) {
+        sistema = sistemaMatch[1]; // Ej: "X11; Linux x86_64"
+    }
+
+    // Navegador y versión
+    if (data.includes('Edg/')) {
+        navegador = 'Edge';
+        version = data.match(/Edg\/([\d\.]+)/)?.[1] || '';
+    } else if (data.includes('Chrome/')) {
+        navegador = 'Chrome';
+        version = data.match(/Chrome\/([\d\.]+)/)?.[1] || '';
+    } else if (data.includes('Firefox/')) {
+        navegador = 'Firefox';
+        version = data.match(/Firefox\/([\d\.]+)/)?.[1] || '';
+    } else if (data.includes('Safari/') && !data.includes('Chrome')) {
+        navegador = 'Safari';
+        version = data.match(/Version\/([\d\.]+)/)?.[1] || '';
+    }
+
+    return `Navegador: ${navegador} | Sistema Operativo: ${sistema}`;
+
+}
