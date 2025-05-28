@@ -349,6 +349,7 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::get('/usuario/checkear/telefono', [UsuariosController::class, 'checkTelefono'])->name('checkTelefono');
     Route::post('/usuarios/update/profesional', [UsuariosController::class, 'updateProfesional'])->name('usuarios.updateProfesional');
     Route::get('usuarios/roles/checkear', [UsuariosController::class, 'checkRoles'])->name('checkRoles');
+    
     Route::resource('usuarios', UsuariosController::class);
     Route::get('buscarUsuario', [UsuariosController::class, 'buscar'])->name('buscarUsuario');
     Route::get('checkMail', [UsuariosController::class, 'checkMail'])->name('checkMail');
@@ -403,7 +404,7 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::get('llamador/asignar-profesional', [LlamadorController::class, 'asignarProfesional'])->name('llamador.asignarPaciente');
 
     //Ruta de Sesiones
-    Route::get('usuarios/sesiones-usuarios', [UserSessionsController::class, 'getSessiones'])->name('usuarios.listaSesionesUsuarios');
+    Route::get('sesiones/sesiones-usuarios', [UserSessionsController::class, 'getSessiones'])->name('sesiones.listaSesiones');
     
 });
 

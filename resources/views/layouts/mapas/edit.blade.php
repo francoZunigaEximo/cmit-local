@@ -335,7 +335,7 @@
                         </div>
                         <div class="card-body">
                             <div class="table-responsive table-card mt-3 mb-1">
-                                <table id="lstPrivCerrados" class="display table table-bordered" style="100%">
+                                <table id="lstPrivCerrados" class="display table table-bordered" style="width: 100%">
                                     <thead class="table-light">
                                         <tr>
                                             <th class="sort">Fecha</th>
@@ -498,7 +498,7 @@
                         </div>
                         <div class="card-body">
                             <div class="table-responsive table-card mb-1">
-                                <table id="lstAuditorias" class="display table table-bordered" style="100%">
+                                <table id="lstAuditorias" class="display table table-bordered" style="width: 100%">
                                     <thead class="table-light">
                                         <tr>
                                             <th>Fecha y hora</th>

@@ -224,7 +224,7 @@
                     <button type="button" class="previsualizar btn btn-soft-info waves-effect waves-light" data-bs-toggle="modal" data-bs-target="#z">Vista Previa Firma</button>
 
                     <div class="d-flex justify-content-center">
-                        <img id="vistaPrevia" src="@fileUrl('lectura')/Prof/{{$query->Foto ?? 'foto-default.png' }}?v={{ time() }}" alt="Previsualización de imagen" style="{{ $query->Foto ? '' : 'display: none;' }} max-width: 150px; max-height: 150px;">
+                        <img id="vistaPrevia" src="@fileUrl('lectura')/Prof/{{$query->Foto ?? 'foto-default.png' }}?v={{ time() }}" alt="Previsualización de imagen" style="{{ $query->Foto ? 'max-width: 150px; max-height: 150px;' : 'display: none; max-width: 150px; max-height: 150px;' }}">
                     </div>
                     
                     <input type="hidden" name="wImage" id="wImage" value="{{ $query->wImage ?? ''}}">
@@ -351,7 +351,7 @@
         <h3>Historial de sesiones del usuario</h3>
         <p class="text muted">Listado ordenado cronologicamente</p>
 
-        <table class="table table-nowrap">
+        <table class="table table-nowrap" id="listaSesionesUsuario">
             <thead>
                 <tr>
                     <th scope="col">IP</th>
@@ -410,7 +410,7 @@
     const datosProf = "{{ route('usuarios.updateProfesional') }}";
     const checkRoles = "{{ route('checkRoles') }}";
     const seguroProf = "{{ route('profesionales.seguro') }}";
-    const lstSesionesUs = "{{ route('usuarios.listaSesionesUsuarios') }}";
+    const cargarSessiones = "{{ route('sesiones.listaSesiones') }}";
 </script>
 
 @push('styles')
@@ -437,7 +437,7 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/i18n/es.js"></script>
 <script src="{{ asset('js/pages/select2.init.js') }}"></script>
-
+<script src="{{ asset('js/fancyTable.js') }}"></script>
 @endpush
 
 @endsection

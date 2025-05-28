@@ -9,16 +9,15 @@ class UserSessionsController extends Controller
 {
     public function getSessiones(Request $request)
     {
-        $userId = intval($request->Id);
-
-        $query = UserSession::where('user_id', $userId)
+        $query = UserSession::where('user_id', $request->Id)
             ->select(
                 'ip_address as ip',
                 'user_agent as dispositivo',
                 'login_at as ingreso',
                 'logout_at as salida'
             )
-            // ->whereNotNull('logout_at')
+            ->whereNotNull('logout_at')
+            ->orderBy('login_at', 'desc')
             ->get();
 
         return response()->json($query);
