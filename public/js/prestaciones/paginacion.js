@@ -1,4 +1,7 @@
-$(document).ready(()=>{
+$(function(){
+
+    const url = location.href.replace(/\/$/, '');
+    const urlOriginal = url.replace('/prestaciones', '');
 
     $('th.sort').off("click"); // Se coloca provisoriamente, cuando se defina el modelo de ordenado a utilizar se puede quitar.
 
@@ -267,7 +270,8 @@ $(document).ready(()=>{
                     width: 100,
                     targets: 16,
                     render: function(data){
-                        let editar = `<a title="Editar" href="${location.href}/${data.Id}/edit"><button type="button" class="btn btn-sm iconGeneralNegro"><i class="ri-edit-line"></i></button></a>`,
+
+                        let editar = `<a title="Editar" href="${url}/${data.Id}/edit" target="_blank"><button type="button" class="btn btn-sm iconGeneralNegro"><i class="ri-edit-line"></i></button></a>`,
                         
                         bloquear = `<button type="button" data-id="${data.Id}" class="btn btn-sm iconGeneralNegro bloquearPrestacion" title="${(data.Anulado == 1 ? "Bloqueado" : "Bloquear")}" ${ (data.Anulado == 1 ? "disabled" : "")}><i class="ri-forbid-2-line"></i></button>`,
 
@@ -278,7 +282,7 @@ $(document).ready(()=>{
                 }
             ],
             language: {
-                processing: "<div style='text-align: center; margin-top: 20px;'><img src='./images/spinner.gif' /><p>Cargando...</p></div>",
+                processing: "<div style='text-align: center; margin-top: 20px;'><img src='" + urlOriginal + "/images/spinner.gif' /><p>Cargando...</p></div>",
                 emptyTable: "No hay prestaciones con los datos buscados",
                 paginate: {
                     first: "Primera",
