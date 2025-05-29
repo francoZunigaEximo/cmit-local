@@ -187,7 +187,7 @@
                         <div class="col-10 mt-2">
                             <div class="input-group input-group-sm">
                                 <span class="input-group-text">Forma de Pago</span>
-                                <select class="form-select" id="pago">
+                                <select class="form-select" id="pago" style="pointer-events: none; background-color: #e9ecef;">>
                                     <option value="{{ $prestacione->Pago === '' || $prestacione->Pago === null ? 'P' : $prestacione->Pago }}" selected>{{ ($prestacione->Pago === "B" || $prestacione->Pago === "C")? 'Contado' : (($prestacione->Pago === 'A' || empty($prestacione->Pago))? 'Cuenta Corriente' : (($prestacione->Pago === 'P')? 'Examenes a cuenta' : 'Elija una opción...')) }}</option>
                                     <option value="B">Contado</option>
                                     <option value="A">Cuenta Corriente</option>
@@ -336,7 +336,7 @@
                 <div class="listjs-table" id="customerList">
                     <div class="row">
             
-                        @if($prestacione->Pago !== '' && $prestacione->Pago !== null && $prestacione->Pago !== 'P')
+                        @if($prestacione->Pago !== 'P')
                         
                             <div class="col-6">
                                 <label for="paquetes" class="form-label">Paquetes</label> <!-- select 2 de paquetes de exámenes -->
@@ -356,9 +356,16 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        @endif
+
+                        @if($prestacione->Pago === 'P')
+                            
+                            <span>Aca van EX CUENTA</span>
 
                         @endif
+                    </div>
+
+                        
 
                     <div class="row text-start">
                         <div class="col-6 d-flex flex-wrap gap-2">
