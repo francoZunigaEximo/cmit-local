@@ -166,8 +166,9 @@ $(function () {
 
                 $.get(getFormaPagoART, {Id: variables.selectArt.val()}, function(response){
                     let formaPago = ['', null, undefined].includes(response.FPago) ? 'A' : response.FPago;
+                    
                     variables.PagoLaboral.val(formaPago);
-                    variables.PagoLaboral.css('color', 'green');
+                    variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde'); // color solo a la opcion requerida
                 });
             } 
 
@@ -188,6 +189,7 @@ $(function () {
                 <option value="A">Cuenta Corriente</option>
                 <option value="P">Exámen a Cuenta</option>`);
             variables.PagoLaboral.css('color', 'black');
+            $('input[name="TipoPrestacion"]').prop('checked', false); //Quitamos todos los checks y dejamos de cero
             return;
         };
 
@@ -317,6 +319,29 @@ $(function () {
                 .removeAttr('title', 'Botón habilitado')
                 .removeAttr('data-toggle', 'tooltip')
                 .removeAttr('data-placement', 'top');
+        }
+    });
+
+    variables.selectClientes.on('change', function(){
+        let value = $(this).val();
+
+        if([0,null,undefined,'0'].includes(value)) {
+            $('input[name="TipoPrestacion"]').prop('checked', false);
+            variables.PagoLaboral.val('');
+            principal.SPago
+                .add(principal.Tipo)
+                .add(principal.Sucursal)
+                .add(principal.Factura)
+                .add(principal.NroFactProv)
+                .add(principal.Autoriza)
+                .hide();
+            
+            variables.SPago
+                .add(variables.Tipo)
+                .add(variables.Sucursal)
+                .add(variables.NroFactura)
+                .add(variables.NroFactProv)
+                .val('');
         }
     });
 

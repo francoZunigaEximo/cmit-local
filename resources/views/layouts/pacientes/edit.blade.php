@@ -125,7 +125,7 @@
                             <label for="profile-img-file-input" class="profile-photo-edit avatar-xs">
                                 <span class="avatar-title rounded-circle bg-light text-body">
                                     <i class="ri-camera-fill"></i>
-                                </span
+                                </span>
                             </label>
                         </div> 
                     </div>
@@ -285,13 +285,13 @@
                         <div class="col-sm-4"></div>
                         <div class="col-sm-4 text-center"><h3 class="ff-secondary fw-bold mt-1 text-center">Ficha Laboral</h3></div>
                         <div class="col-sm-4 text-center">
-                            <button type="button" class=" btn btn-sm botonGeneral verListadoExCta"><i class="ri-list-unordered"></i> Examenes a cuenta</button>
-                            
+                            <button type="button" class=" btn btn-sm botonGeneral verListadoExCta"><i class="ri-list-unordered"></i> Examenes a cuenta</button>   
                         </div>
                     </div>
                    
-                    <div class="row">
-                        <div class="col-9 mx-auto box-information">
+                    <div class="row justify-center-content">
+                        <div class="col-2"></div>
+                        <div class="col-8 box-information">
                             <div class="row">
                                
                                 <div class="col-6">
@@ -353,7 +353,7 @@
                                         <input class="form-check-input" type="radio" name="TipoPrestacion" id="TipoPrestacion" id="MAS" value="MAS">
                                         <label class="form-check-label" for="mas">MAS</label>
                                     </div>
-                                    <div class="form-check form-check-inline" id="divtipoPrestacionPresOtros" style="display: ">
+                                    <div class="form-check form-check-inline" id="divtipoPrestacionPresOtros">
                                         <select class="form-select" id="tipoPrestacionPresOtros">
                                             <option selected value="">Elija una opción...</option>
                                             @foreach ($tiposPrestacionOtros as $tipo)
@@ -537,7 +537,7 @@
                                 </div>
                                 
                             </div>
-                        </div>
+                        <div class="col-2"></div>
                     </div>
                     
                     <div class="row observacionesModal">
