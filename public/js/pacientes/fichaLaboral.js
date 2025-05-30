@@ -454,7 +454,7 @@ $(function () {
         document.querySelector(".select2-container--open .select2-search__field").focus()
     });
     
-    principal.verListadoExCta.on('click', function(e){
+    $(document).on('click', '.verListadoExCta', function(e){
         e.preventDefault();
         principal.listadoExCta.show();
         principal.fichaLaboralModal.hide();

@@ -58,6 +58,8 @@ class ExamenesController extends Controller
         return view("layouts.examenes.index", ['helper'=> $this->helper]);
     }
 
+    public function show() {}
+
     public function create()
     {
         if(!$this->hasPermission("examenes_add")) {

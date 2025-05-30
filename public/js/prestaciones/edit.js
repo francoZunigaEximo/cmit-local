@@ -1,6 +1,11 @@
 $(function() {
 
-    let fecha = $('#FechaVto').val(), opcion = $('#pago').val(), opcionPago = $('#SPago').val(), empresa = $('#empresa').val(), art = $('#art').val();
+    let fecha = $('#FechaVto').val(), 
+        opcion = $('#pago').val(), 
+        opcionPago = $('#SPago').val(), 
+        empresa = $('#empresa').val(), 
+        art = $('#art').val(),
+        paraEmpresa =$('#paraEmpresa').val();
 
     precargaMapa(empresa, art);
     examenesCta(empresa);
@@ -1359,4 +1364,6 @@ $(function() {
     function borrarCache() {
         $.post(cacheDelete, {_token: TOKEN}, function(){});
     }
+
+  
 });

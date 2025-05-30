@@ -157,9 +157,9 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::resource('fichalaboral', FichaAltaController::class);
 
     //Ruta Examenes
-    Route::get('examenes/buscar/{buscar}', [ExamenesController::class, 'search'])->name('searchExamen');
-    Route::post('examenes/{IdExamen}', [ExamenesController::class, 'getId'])->name('IdExamen');
-    Route::post('examenes/eliminar/{Id}', [ExamenesController::class, 'deleteEx'])->name('deleteExamen');
+    Route::get('searchExamen', [ExamenesController::class, 'search'])->name('searchExamen');
+    Route::post('examenes/Id', [ExamenesController::class, 'getId'])->name('IdExamen');
+    Route::post('examenes/eliminar', [ExamenesController::class, 'deleteEx'])->name('deleteExamen');
     Route::post('examenes/guardar',[ExamenesController::class, 'saveExamen'])->name('saveExamen');
     Route::get('examenes/buscar', [ExamenesController::class, 'searchExamenes'])->name('searchExamenes');
     Route::post('examenes/actualizar', [ExamenesController::class, 'updateExamen'])->name('updateExamen');
@@ -168,21 +168,21 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::resource('examenes', ExamenesController::class);
     
     //Ruta de Comentarios de Prestaciones
-    Route::post('/comentarios/guardar', [ComentariosPrestacionesController::class, 'setComentarioPres'])->name('setComentarioPres');
-    Route::get('/comentarios', [ComentariosPrestacionesController::class, 'getComentarioPres'])->name('getComentarioPres');
+    Route::post('comentarios/guardar', [ComentariosPrestacionesController::class, 'setComentarioPres'])->name('setComentarioPres');
+    Route::get('comentarios', [ComentariosPrestacionesController::class, 'getComentarioPres'])->name('getComentarioPres');
 
     //Rutas de Autorizados
-    Route::post('/autorizados/eliminar', [AutorizadoController::class, 'delete'])->name('deleteAutorizado');
-    Route::get('/autorizados/listado', [AutorizadoController::class, 'getAut'])->name('getAutorizados');
-    Route::post('/autorizados/alta', [AutorizadoController::class, 'alta'])->name('clientes.altaAutorizado');
+    Route::post('autorizados/eliminar', [AutorizadoController::class, 'delete'])->name('deleteAutorizado');
+    Route::get('autorizados/listado', [AutorizadoController::class, 'getAut'])->name('getAutorizados');
+    Route::post('autorizados/alta', [AutorizadoController::class, 'alta'])->name('clientes.altaAutorizado');
 
     //Rutas de Telefonos
-    Route::get('/telefonos', [TelefonosController::class, 'getTelefonos'])->name('getTelefonos');
-    Route::post('/telefonos/eliminar', [TelefonosController::class, 'deleteTelefono'])->name('deleteTelefono');
-    Route::post('/telefonos/guardar', [TelefonosController::class, 'saveTelefono'])->name('saveTelefono');
+    Route::get('telefonos', [TelefonosController::class, 'getTelefonos'])->name('getTelefonos');
+    Route::post('telefonos/eliminar', [TelefonosController::class, 'deleteTelefono'])->name('deleteTelefono');
+    Route::post('telefonos/guardar', [TelefonosController::class, 'saveTelefono'])->name('saveTelefono');
 
     //Rutas de Localidades
-    Route::get('/localidades/buscar', [LocalidadController::class, 'searchLocalidad'])->name('searchLocalidad');
+    Route::get('localidades/buscar', [LocalidadController::class, 'searchLocalidad'])->name('searchLocalidad');
 
     //Rutas de Mapas
     Route::get('/mapas/excel', [MapasController::class, 'export'])->name('mapas.exportar');
@@ -242,6 +242,7 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::post('/especialidades/actualizar', [ProveedoresController::class, 'updateProveedor'])->name('updateProveedor');
     Route::get('/especialidades/listado', [ProveedoresController::class, 'lstProveedores'])->name('lstProveedores');
     Route::resource('especialidades', ProveedoresController::class);
+    
     //Rutas de ItemsPrestaciones
     Route::get('itemsprestaciones/lista-examenes', [ItemPrestacionesController::class, 'getExamenes'])->name('itemsprestaciones.listadoexamenes');
     Route::get('itemsprestaciones/check-adjuntos', [ItemPrestacionesController::class, 'checkAdjunto'])->name('itemsprestaciones.checkAdjuntos');
@@ -272,8 +273,6 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::post('marcarExamenAdjunto', [ItemPrestacionesController::class, 'marcarExamenAdjunto'])->name('marcarExamenAdjunto');
     Route::get('lstExamenes', [ItemPrestacionesController::class, 'lstExamenes'])->name('lstExamenes');
     
-   
-
     //Rutas de FacturasdeVenta
     Route::get('getFactura', [FacturasVentaController::class, 'getFactura'])->name('getFactura');
     Route::get('/facturas/search', [FacturasVentaController::class, 'search'])->name('facturas.search');
@@ -335,11 +334,12 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::get('exportExcel', [ExamenesCuentaController::class, 'excel'])->name('exportExcel');
     Route::get('exportPDF', [ExamenesCuentaController::class, 'pdf'])->name('exportPDF');
     Route::get('exportGeneral', [ExamenesCuentaController::class, 'reporteGeneral'])->name('exportGeneral');
-    Route::get('/examenes-cuenta/disponibilidad', [ExamenesCuentaController::class, 'disponibilidad'])->name('lstExDisponibles');
+    Route::get('/examenesCuenta/disponibilidad', [ExamenesCuentaController::class, 'disponibilidad'])->name('lstExDisponibles');
     Route::get('lstFacturadas', [ExamenesCuentaController::class, 'listadoUltimas'])->name('lstFacturadas');
     Route::get('saldoNoDatatable', [ExamenesCuentaController::class, 'saldoNoDatatable'])->name('saldoNoDatatable');
     Route::get('examenesCuenta/listado-examenes', [ExamenesCuentaController::class, 'listExCta'])->name('examenesCuenta.listado');
     Route::post('examenesCuenta/actualizar-prestacion', [ExamenesCuentaController::class, 'cargarExCtaPrestacion'])->name('examenesCuenta.cargar');
+    Route::get('examenesCuenta/lista-examenes-cuenta', [ExamenesCuentaController::class, 'listaExCtaEmpresa'])->name('examenesCuenta.listaEmpresa');
     Route::resource('examenesCuenta', ExamenesCuentaController::class);
 
     //Rutas de Paquete de Estudio
