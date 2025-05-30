@@ -311,7 +311,6 @@
         window.location = exportExcel;
     }
 
-    const porcentajeExamen = "{{ route('porcentajeExamen') }}";
     const getClientes = "{{ route('getClientes') }}";
     const sendExcel = "{{ route('prestaciones.excel') }}";
 </script>

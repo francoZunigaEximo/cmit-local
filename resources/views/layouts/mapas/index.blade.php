@@ -89,7 +89,7 @@
                             </div>
                             <div class="row">
                                
-                                <div class="col-sm-3" style="text-align: right;">
+                                <div class="col-sm-12" style="text-align: right;">
                                     <button type="button" id="reset" class="btn botonGeneral">Reiniciar</button>
                                     <button type="button" id="buscar" class="btn botonGeneral">Buscar</button>
                                 </div>

@@ -118,7 +118,7 @@
                 </div>
                 <div class="col-3 box-information mx-auto">
                     <div class="profile-user position-relative d-inline-block mx-auto mb-2">
-                        <div id="profile-image-preview" class="img-thumbnail user-profile-image" style="width: 200px; height: 140px; background-image: url('@fileUrl('lectura')/Fotos/{{ $paciente->Foto}}?v={{ time() }}'); background-size: cover; background-position: center;"></div>
+                        <div id="profile-image-preview" class="img-thumbnail user-profile-image" style="background-size: cover; background-position: center; width: 200px; height: 140px; background-image: url('@fileUrl('lectura')/Fotos/{{ $paciente->Foto}}?v={{ time() }}') "></div>
                     <div class="avatar-xs p-0 rounded-circle profile-photo-edit">
                             <input id="profile-img-file-input" type="button" class="profile-img-file-input" value="Tomar foto" onClick="takeSnapshot()">
                             <input type="hidden" name="Foto" class="image-tag">
@@ -280,18 +280,18 @@
         <div class="modal-content">
             <div class="modal-header"></div>
             <div class="modal-body">
-                <div class="row fichaLaboralModal">
+                 <div class="row fichaLaboralModal ">
                     <div class="row">
                         <div class="col-sm-4"></div>
                         <div class="col-sm-4 text-center"><h3 class="ff-secondary fw-bold mt-1 text-center">Ficha Laboral</h3></div>
                         <div class="col-sm-4 text-center">
-                            <button type="button" class=" btn btn-sm botonGeneral verListadoExCta"><i class="ri-list-unordered"></i> Examenes a cuenta</button>   
+                            <button type="button" class=" btn btn-sm botonGeneral verListadoExCta"><i class="ri-list-unordered"></i> Examenes a cuenta</button>
+                            
                         </div>
                     </div>
                    
-                    <div class="row justify-center-content">
-                        <div class="col-2"></div>
-                        <div class="col-8 box-information">
+                    <div class="row d-flex justify-content-center">
+                        <div class="col-9 box-information">
                             <div class="row">
                                
                                 <div class="col-6">
@@ -353,7 +353,7 @@
                                         <input class="form-check-input" type="radio" name="TipoPrestacion" id="TipoPrestacion" id="MAS" value="MAS">
                                         <label class="form-check-label" for="mas">MAS</label>
                                     </div>
-                                    <div class="form-check form-check-inline" id="divtipoPrestacionPresOtros">
+                                    <div class="form-check form-check-inline" id="divtipoPrestacionPresOtros" style="display: ">
                                         <select class="form-select" id="tipoPrestacionPresOtros">
                                             <option selected value="">Elija una opción...</option>
                                             @foreach ($tiposPrestacionOtros as $tipo)
@@ -537,14 +537,14 @@
                                 </div>
                                 
                             </div>
-                        <div class="col-2"></div>
+                        </div>
                     </div>
                     
                     <div class="row observacionesModal">
                         <h3 class="ff-secondary fw-bold mt-1 text-center">Alerta de prestación</h3>
 
-                        <div class="row">
-                            <div class="col-9 mx-auto box-information">
+                        <div class="row d-flex justify-content-center">
+                            <div class="col-9 box-information">
                                 <div class="row">
     
                                     <div class="col-12 ObBloqueoEmpresa">
@@ -592,8 +592,8 @@
                     <div class="row nuevaPrestacion">
                         <h3 class="ff-secondary fw-bold mt-1 text-center">Alta Prestación</h3>
 
-                        <div class="row">
-                            <div class="col-9 mx-auto box-information">
+                        <div class="row d-flex justify-content-center">
+                            <div class="col-9 box-information">
                                 <div class="messagePrestacion"></div>
                                 <div class="row">
                                     <div class="col-6">
@@ -769,14 +769,14 @@
                 </div>
 
                 <div class="row listadoExCta">
-                    <div class="row">
+                    <div class="row ">
                         <div class="col-sm-4"></div>
                         <div class="col-sm-4 text-center"><h3 class="ff-secondary fw-bold mt-1 text-center">Listado de examenes a cuenta</h3></div>
                         <div class="col-sm-4 text-center"></div>
                     </div>
                    
-                    <div class="row">
-                        <div class="col-9 mx-auto box-information">
+                    <div class="row d-flex justify-content-center">
+                        <div class="col-9  box-information">
                             <div class="row">
                                 <div class="col-sm-12 text-end">
                                     <button type="button" class="btn btn-sm botonGeneral cerrarlstExCta">Cerrar</button>
@@ -1042,13 +1042,10 @@
                                 </div>
                                 <div class="col-sm-4"></div>
                             </div>
-
                         </div>
                     </div>
-
-
-
                 </div>
+           
 
                 <div class="row resultadosPaciente">
                     <h3 class="ff-secondary fw-bold mt-1 text-center">Resultados</h3>

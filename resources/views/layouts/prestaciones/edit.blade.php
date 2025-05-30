@@ -360,7 +360,15 @@
 
                         @if($prestacione->Pago === 'P')
                             
-                            <span>Aca van EX CUENTA</span>
+                            <label for="exaCtaDisp" class="form-label">Examenes a Cuenta</label> <!-- select 2 de examenes a cuenta -->
+                                <div class="mb-3">
+                                    <div class="d-flex align-items-center gap-2 mx-auto" style="max-width: 400px;">
+                                        <select class="form-select" name="exaCtaDisp" id="exaCtaDisp">
+                                            ...
+                                        </select>
+                                        <i class="addExamenCta ri-play-list-add-line naranja fs-4" style="cursor: pointer;"></i>
+                                    </div>
+                                </div>
 
                         @endif
                     </div>
@@ -1575,6 +1583,7 @@ const loadlistadoAdjPres = "{{ route('prestaciones.listaAdjPres') }}";
 const loadResultadosPres = "{{ route('prestaciones.resultados') }}";
 const exResultado = "{{ route('prestaciones.exportarResultado') }}";
 const mapaPrestacion = "{{ route('prestaciones.mapaPrestacionId') }}";
+const listaExCuenta = "{{ route('examenesCuenta.listaEmpresa') }}";
 
 //Extras
 const UBICACION = "{{ request()->query('location') }}";
