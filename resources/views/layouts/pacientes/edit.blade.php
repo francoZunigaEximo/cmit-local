@@ -116,7 +116,7 @@
                     </div>
 
                 </div>
-                <div class="col-3 box-information mx-auto">
+                <div class="col-4 box-information mx-auto">
                     <div class="profile-user position-relative d-inline-block mx-auto mb-2">
                         <div id="profile-image-preview" class="img-thumbnail user-profile-image" style="background-size: cover; background-position: center; width: 200px; height: 140px; background-image: url('@fileUrl('lectura')/Fotos/{{ $paciente->Foto}}?v={{ time() }}') "></div>
                     <div class="avatar-xs p-0 rounded-circle profile-photo-edit">
