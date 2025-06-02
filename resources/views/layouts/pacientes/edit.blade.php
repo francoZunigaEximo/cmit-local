@@ -192,7 +192,7 @@
                             </div>
                         </div>
                         
-                        <div class="table mt-3 mb-1 mx-auto">
+                        <div class="table-responsive mt-3 mb-1 mx-auto">
                             <table id="listaPacientes" class="table table-bordered">
                                 <thead class="table-light">
                                     <tr>
@@ -725,7 +725,7 @@
                                             <h4 class="card-title mb-0">Ultimas prestaciones facturadas</h4>
                                         </div>
                                         <div class="card-body">
-                                            <div class="table mb-1 col-sm-12">
+                                            <div class="table-resposive mb-1 col-sm-12">
                                                 <table id="lstDisponibles" class="table table-bordered">
                                                     <thead class="table-light">
                                                     </thead>
@@ -745,7 +745,7 @@
                                             <h4 class="card-title mb-0">Examenes a cuenta disponibles <span class="small">(Total: <span id="totalCantidad"></span>)</span></h4>
                                         </div>
                                         <div class="card-body">
-                                            <div class="col-sm-12">
+                                            <div class="table-responsive col-sm-12">
                                                 <table id="lstDisponibles" class="table table-bordered dt-responsive nowrap table-striped align-middle dataTable no-footer dtr-inline collapsed">
                                                     <thead class="table-light">
                                                         <tr>
@@ -993,7 +993,7 @@
                                             <h4 class="card-title mb-0">Observaciones privadas</h4>
                                         </div>
                                         <div class="card-body">
-                                            <div class="table-card mb-1">
+                                            <div class="table-responsive table-card mb-1">
                                                 <table id="lstPrivPrestaciones" class="table table-bordered">
                                                     <thead class="table-light">
                                                         <tr>
@@ -1057,7 +1057,7 @@
                             <i class="ri-arrow-left-line"></i> Volver a la prestación
                         </button>
                         <div class="row auto-mx mb-3">
-                            <div class="table mt-3 mb-1 mx-auto col-sm-7">
+                            <div class="table-responsive mt-3 mb-1 mx-auto col-sm-7">
                                 <table id="listadoResultadosPres" class="table table-bordered">
                                     <thead class="table-light">
                                         <tr>

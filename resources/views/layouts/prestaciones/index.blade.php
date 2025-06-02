@@ -171,7 +171,7 @@
                         </div>
                     </div>
 
-                    <div class="table w-100 mt-3 mb-1">
+                    <div class="table-responsive w-100 mt-3 mb-1">
 
                         <table id="listaPrestaciones" class="table nowrap align-middle">
                             <thead class="table-light">
