@@ -193,36 +193,6 @@ $(function () {
             .draw();
     });
 
-    $('#btnRegistrar').on('click', function (e) {
-        e.preventDefault();
-        preloader('on');
-        let nombre = $("#nombre").val();
-        let descripcion = $("#descripcion").val();
-        let alias = $("#alias").val();
-
-        if (nombre && descripcion) {
-            $.post(postPaquetesEstudios, {
-                _token: TOKEN,
-                Nombre: nombre,
-                Empresas: clientes
-            })
-                .done(function () {
-                    preloader('off');
-                    toastr.success('Se ha editado al paquete correctamente', '', { timeOut: 1000 });
-
-                })
-                .fail(function (jqXHR) {
-                    preloader('off');
-                    let errorData = JSON.parse(jqXHR.responseText);
-                    checkError(jqXHR.status, errorData.msg);
-                    return;
-                });
-
-        } else {
-            toastr.warning("Tiene que ingresar nombre, descricpion y seleccionar al menos un examen", '', { timeOut: 1000 });
-        }
-    });
-
     $('.agregarPaquete').on('click', function (e) {
         e.preventDefault();
         //buscamos los examenes del paquete seleccionado

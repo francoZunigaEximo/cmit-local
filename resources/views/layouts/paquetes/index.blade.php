@@ -168,6 +168,7 @@ const getClientes = "{{ route('getClientes') }}";
 const SEARCH_EXAMENES = "{{ route('paquetes.searchExamenes')}}";
 const exportarExcel = "{{ route('paquetes.exportExcel') }}";
 const eliminarPaqueteEstudioRoute = "{{ route('paquetes.eliminarPaqueteEstudio') }}";
+const eliminarPaqueteFacturacionRoute = "{{route('paquetes.eliminarPaqueteFacturacion')}}"
 
 const search_paquetes_studio = "{{route('paquetes.searchPaquetesFacturacion')}}";
 const getGrupos = "{{route('getGrupos')}}";

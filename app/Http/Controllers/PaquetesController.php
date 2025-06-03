@@ -220,7 +220,8 @@ class PaquetesController extends Controller
         if($request->Codigo){
             $consulta->where('paqfacturacion.Cod','=', $request->Codigo);
         }
-
+        $consulta->where('paqfacturacion.Baja', '=', 0);
+        
         $consulta->select('paqfacturacion.Id as Id','paqfacturacion.Cod as Codigo','paqfacturacion.Nombre as Nombre', 'paqfacturacion.CantExamenes as CantExamenes', 'clientesgrupos.Nombre as NombreGrupo', 'clientes.ParaEmpresa as NombreEmpresa');
         
         return $consulta;
@@ -411,4 +412,12 @@ class PaquetesController extends Controller
         $reporte = $this->reporteExcel->crear('paqueteFacturacionDetalle');
         return $reporte->generar($query->get());
     }
+
+    public function eliminarPaqueteFacturacion(Request $request){
+        $id = $request->id;
+        if($id){
+            PaqueteFacturacion::find($id)->update(['Baja'=>1]);
+        }
+    }
+
 }

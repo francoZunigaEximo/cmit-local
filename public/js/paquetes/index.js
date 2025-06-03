@@ -155,3 +155,29 @@ function eliminarPaqueteEstudio(id) {
         };
     });
 }
+
+function eliminarPaqueteFacturacion(id) {
+    swal({
+        title: "¿Está seguro que desea eliminar el paquete facturacion?",
+        icon: "danger",
+        buttons: ["Cancelar", "Eliminar"],
+    }).then((aceptar) => {
+        if (aceptar) {
+            preloader('on');
+            $.post(eliminarPaqueteFacturacionRoute,{
+                _token: TOKEN,
+                id: id
+            })
+            .done(function(){
+                preloader('off');
+                $('.buscarPaquetesFacturacion').trigger("click");
+
+            }).fail(function (jqXHR) {
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            });
+        };
+    });
+}

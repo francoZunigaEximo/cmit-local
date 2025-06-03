@@ -439,6 +439,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('paquetes/editPaqueteFacturacion/{id}', [PaquetesController::class, 'editPaqueteFacturacion'])->name('paquetes.editPaqueteFacturacion');
     Route::post('paquetes/postEditPaqueteFacturacion', [PaquetesController::class, 'postEditPaqueteFactutacion'])->name('paquetes.postEditPaqueteFactutacion');
     Route::get('paquetes/getPaqueteFacturacion', [PaquetesController::class, 'getPaqueteFacturacion'])->name('paquetes.getPaqueteFacturacion');
+    Route::post('paquetes/eliminarPaqueteFacturacion', [PaquetesController::class, 'eliminarPaqueteFacturacion'])->name('paquetes.eliminarPaqueteFacturacion');
 
     Route::get('paquetes/getEstudiosPaqueteFacturacion', [PaquetesController::class, 'getEstudiosPaqueteFacturacion'])->name('paquetes.getEstudiosPaqueteFacturacion');
 
