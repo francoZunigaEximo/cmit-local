@@ -19,6 +19,7 @@ use App\Services\ReportesExcel\modelos\GrupoClientesDetalleFull;
 use App\Services\ReportesExcel\modelos\GrupoClientesFull;
 use App\Services\ReportesExcel\modelos\PaqueteEstudio;
 use App\Services\ReportesExcel\modelos\PaqueteEstudioDetalle;
+use App\Services\ReportesExcel\modelos\PaqueteFacturacionDetalle;
 
 class ReporteExcel
 {
@@ -59,6 +60,8 @@ class ReporteExcel
                 return new GrupoClientesFull();
             case 'grupoClienteDestalleFull':
                 return new GrupoClientesDetalleFull();
+            case 'paqueteFacturacionDetalle':
+                return new PaqueteFacturacionDetalle();
             default:
                 return response()->json(['msg' => 'Tipo de reporte no válido'], 400);
         }

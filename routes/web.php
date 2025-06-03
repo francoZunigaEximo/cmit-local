@@ -438,8 +438,13 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('paquetes/postPaqueteFacturacionCreate', [PaquetesController::class, 'postPaqueteFacturacionCreate'])->name('paquetes.postPaqueteFacturacionCreate');
     Route::get('paquetes/editPaqueteFacturacion/{id}', [PaquetesController::class, 'editPaqueteFacturacion'])->name('paquetes.editPaqueteFacturacion');
     Route::post('paquetes/postEditPaqueteFacturacion', [PaquetesController::class, 'postEditPaqueteFactutacion'])->name('paquetes.postEditPaqueteFactutacion');
+    Route::get('paquetes/getPaqueteFacturacion', [PaquetesController::class, 'getPaqueteFacturacion'])->name('paquetes.getPaqueteFacturacion');
 
     Route::get('paquetes/getEstudiosPaqueteFacturacion', [PaquetesController::class, 'getEstudiosPaqueteFacturacion'])->name('paquetes.getEstudiosPaqueteFacturacion');
+
+    Route::get('paquetes/detallesFacturacion', [PaquetesController::class, 'detallesFacturacion'])->name('paquetes.detallesFacturacion');
+    Route::get('paquetes/searchDetalleFacturacion', [PaquetesController::class, 'searchDetalleFacturacion'])->name('paquetes.searchDetalleFacturacion');
+    Route::get('paquetes/exportDetalleFacturacionExcel', [PaquetesController::class, 'exportDetalleFacturacionExcel'])->name('paquetes.exportDetalleFacturacionExcel');
 
     Route::resource('paquetes', PaquetesController::class);
 

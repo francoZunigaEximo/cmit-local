@@ -76,6 +76,9 @@
                                             <a href="{{ route('paquetes.createPaqueteFacturacion') }}" class="btn botonGeneral">
                                                 <i class="ri-add-line align-bottom me-1"></i> Nuevo
                                             </a>
+                                            <a href="{{route('paquetes.detallesFacturacion')}}" class="btn botonGeneral">
+                                                Detalles
+                                            </a>
                                         </div>
                                     </div>
                                 </div>

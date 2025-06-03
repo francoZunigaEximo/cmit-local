@@ -129,14 +129,19 @@
 <script>
     const TOKEN = "{{ csrf_token() }}";
     const getExamenes = "{{ route('examenes.getExamenes') }}";
+    const getExamenesByIdPaquete = "{{ route('paquetes.getEstudiosPaqueteFacturacion') }}";
+
+
     const getExamenId = "{{ route('examenes.getById') }}"
     const getPaquetes = "{{ route('getPaquetes') }}";
     const postPaquetesEstudios = "{{ route('paquetes.postPaqueteExamen')}}";
     const paqueteId = "{{ route('paqueteId') }}";
-    const getPaquete = "{{route('paquetes.getPaqueteExamen')}}";
+    const getPaquete = "{{route('paquetes.getPaqueteFacturacion')}}";
 
     const getClientes = "{{ route('getClientes') }}";
+    const getCliente = "{{route('grupos.getCliente')}}";
     const getGrupos = "{{route('getGrupos')}}";
+    const getGrupo = "{{route('grupos.getGrupo')}}";
 
     const postPaqueteFacturacionCreate = "{{route('paquetes.postPaqueteFacturacionCreate')}}";
 </script>

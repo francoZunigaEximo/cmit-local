@@ -5,8 +5,8 @@
 @section('content')
 
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-    <h4 class="mb-sm-0">Nuevo Paquete de Facturacion</h4>
-
+    <h4 class="mb-sm-0">Editar Paquete de Facturacion</h4>
+    <a href="{{ route('paquetes.createPaqueteFacturacion') }}?id={{$paquete->Id}}" class="btn botonGeneral">Copiar</a>
 </div>
 
 <div class="container-fluid">
@@ -142,6 +142,7 @@
 
     const grupo = "{{ $grupo }}";
     const empresa = "{{ $empresa }}";
+
 </script>
 
 @push('styles')

@@ -5,6 +5,37 @@ let tabla = new DataTable("#listaExamenesPaquetes");
 const params = new URLSearchParams(window.location.search);
 
 $(function () {
+    if (params.get("id")) {
+        preloader('on');
+
+        $.get(getPaquete, {
+            id: params.get("id")
+        })
+            .done(function (result) {
+                console.log(result);
+                $("#nombre").val(result.Paquete.Nombre);
+                $("#descripcion").val(result.Paquete.Descripcion);
+                $("#alias").val(result.Paquete.Alias);
+                $("#codigo").val(result.Paquete.Cod);
+
+                $("#grupoSelect2").val();
+                $("#empresaSelect2").val();
+
+                cargarGrupo(result.Paquete.IdGrupo);
+                cargarEmpresa(result.Paquete.IdEmpresa);
+
+                cargarExamenes(params.get("id"));
+
+                preloader('off');
+
+            })
+            .fail(function (jqXHR) {
+                let errorData = JSON.parse(jqXHR.responseText);
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            });
+    }
+
     $('#empresaSelect2').select2({
         language: {
             noResults: function () {
@@ -225,6 +256,85 @@ $(function () {
         });
     });
 });
+
+function cargarExamenes(id) {
+    $.ajax({
+        url: getExamenesByIdPaquete,
+        type: 'get',
+        data: {
+            _token: TOKEN,
+            id: id,
+        },
+
+        success: function (response) {
+
+            examenes = response;
+            estudiosRenderizar = examenes;
+            renderizarEstudios(estudiosRenderizar);
+            estudiosRenderizar = [];
+
+            preloader('off');
+        },
+        error: function (jqXHR) {
+            preloader('off');
+            let errorData = JSON.parse(jqXHR.responseText);
+            checkError(jqXHR.status, errorData.msg);
+            return;
+        }
+    });
+}
+
+function cargarGrupo(grupo) {
+    if (grupo != '0') {
+        $.ajax({
+            url: getGrupo,
+            type: 'GET',
+            data: {
+                _token: TOKEN,
+                id: grupo,
+            },
+
+            success: function (response) {
+                console.log(response);
+                let newOption = new Option(response.Nombre, response.Id, true, true);
+                $('#grupoSelect2').append(newOption).trigger('change');
+                preloader('off');
+            },
+            error: function (jqXHR) {
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            }
+        });
+    }
+}
+
+function cargarEmpresa(empresa) {
+    if (empresa != '0') {
+        $.ajax({
+            url: getCliente,
+            type: 'GET',
+            data: {
+                _token: TOKEN,
+                id: empresa,
+            },
+
+            success: function (response) {
+                console.log(response);
+                let newOption = new Option(response.ParaEmpresa, response.Id, true, true);
+                $('#empresaSelect2').append(newOption).trigger('change');
+                preloader('off');
+            },
+            error: function (jqXHR) {
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            }
+        });
+    }
+}
 
 function cargarExamen(idExamen) {
     preloader('on');

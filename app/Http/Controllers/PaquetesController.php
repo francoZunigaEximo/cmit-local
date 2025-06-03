@@ -318,7 +318,7 @@ class PaquetesController extends Controller
         $nombre = $request->nombre;
         $descripcion = $request->descripcion == null ? "" : $request->descripcion ;
         $alias = $request->alias == null ? "" : $request->alias ;
-        $codigo = $request->codigo == null? "" : $request->codigo;
+        $codigo = $request->codigo == null ? "" : $request->codigo;
         $idEmpresa = $request->IdEmpresa;
         $idGrupo = $request->IdGrupo;
         
@@ -326,7 +326,7 @@ class PaquetesController extends Controller
         $estudiosEliminar = $request->estudiosEliminar == null ? [] : $request->estudiosEliminar;
         
         PaqueteFacturacion::find($idPaquete)
-        ->update(['Nombre'=>$nombre, 'Descripcion'=>$descripcion, 'Alias'=>$alias, 'Codigo'=>$codigo]);
+        ->update(['Nombre'=>$nombre, 'Descripcion'=>$descripcion, 'Alias'=>$alias, 'Cod'=>$codigo]);
 
         if($idEmpresa != null && $idGrupo == null){
             PaqueteFacturacion::find($idPaquete)
@@ -354,5 +354,61 @@ class PaquetesController extends Controller
                 'IdExamen' => $estudio['Id']
             ]);
         }
+    }
+
+    public function getPaqueteFacturacion(Request $request){
+        $id = $request->id;
+        $paquete = PaqueteFacturacion::find($id);
+        $estudiosPaquete = RelacionPaqueteFacturacion::where('IdPaquete', '=', $id)
+        ->where("Baja", "=", 0)
+        ->get();
+            
+        return response()->json(['Paquete'=>$paquete, 'Estudios'=>$estudiosPaquete]);
+    }
+
+    public function detallesFacturacion(){
+        return view('layouts.paquetes.detalles_paquete_facturacion');
+    }
+
+    public function searchDetalleFacturacion(Request $request){
+        if ($request->ajax()) {
+            $query = $this->buildQueryDetalleFacturacion($request);
+            return DataTables::of($query)->make(true);
+        }
+    }
+
+    private function buildQueryDetalleFacturacion(Request $request){
+         $consulta = DB::table('paqfacturacion')
+         ->join('relpaqfact', 'paqfacturacion.id', '=', 'relpaqfact.IdPaquete')
+         ->join('estudios', 'relpaqfact.IdEstudio', '=', 'estudios.id')
+         ->join('examenes', 'relpaqfact.IdExamen', '=', 'examenes.id')
+         ->join('proveedores', 'examenes.IdProveedor', '=', 'proveedores.Id')
+         ->leftJoin('clientes', 'clientes.Id', '=', 'paqfacturacion.IdEmpresa')
+         ->leftJoin('clientesgrupos', 'clientesgrupos.Id', '=', 'paqfacturacion.IdGrupo')
+         ->where('paqfacturacion.Baja', '=', 0);
+
+        if($request->examen){
+            $consulta->where('estudios.id', '=', $request->examen);
+        }
+        if($request->paquete){
+             $consulta->where('relpaqfact.IdPaquete', '=', $request->paquete);
+        }
+
+        if($request->empresa){
+            $consulta->where('clientes.Id', '=', $request->empresa);
+        }
+
+        if($request->grupo){
+            $consulta->where('clientesgrupos.Id', '=', $request->grupo);
+        }
+
+        $consulta->select('paqfacturacion.Id as Id','paqfacturacion.Nombre as Nombre', 'examenes.Nombre as NombreExamen', 'proveedores.Nombre as Especialidad', 'clientes.ParaEmpresa as Empresa', 'clientesgrupos.Nombre as Grupo');
+        return $consulta;
+    }
+
+    public function exportDetalleFacturacionExcel(Request $request){
+        $query = $this->buildQueryDetalleFacturacion($request);
+        $reporte = $this->reporteExcel->crear('paqueteFacturacionDetalle');
+        return $reporte->generar($query->get());
     }
 }
