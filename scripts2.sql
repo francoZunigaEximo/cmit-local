@@ -1201,3 +1201,37 @@ UPDATE reportes SET VistaPrevia = NULL WHERE Id = 164;
 UPDATE reportes SET VistaPrevia = NULL WHERE Id = 165;
 UPDATE reportes SET VistaPrevia = NULL WHERE Id = 166;
 UPDATE reportes SET VistaPrevia = NULL WHERE Id = 167;
+ALTER TABLE reportes ADD COLUMN VistaPrevia VARCHAR(200) DEFAULT NULL;
+
+
+-- alias al paquete estudios
+ALTER TABLE paqestudios ADD COLUMN Alias VARCHAR(200) DEFAULT NULL;		
+ALTER TABLE paqestudios ADD COLUMN Baja BIT DEFAULT 0;		
+
+ALTER TABLE relpaqest ADD COLUMN Baja BIT DEFAULT 0;
+
+-- rel tabla grupocliente - cliente
+ALTER TABLE clientesgrupos_it ADD COLUMN Baja BIT DEFAULT 0;		
+
+ALTER TABLE clientesgrupos ADD COLUMN Baja BIT DEFAULT 0;
+
+-- modificamos la tabla de paquetes de facturacion
+
+ALTER TABLE paqfacturacion ADD COLUMN Alias VARCHAR(200) DEFAULT NULL;	
+ALTER TABLE paqfacturacion ADD COLUMN Baja BIT DEFAULT 0;
+
+-- modificamos la tabla de la relacion entre paquetes de facturacion y los estudios
+ALTER TABLE relpaqfact ADD COLUMN Baja BIT DEFAULT 0;
+
+
+DROP PROCEDURE IF EXISTS db_cmit.getExamenesPaqueteFac;
+
+DELIMITER $$
+$$
+CREATE PROCEDURE db_cmit.getExamenesPaqueteFac()
+BEGIN
+	SELECT e.Id FROM relpaqfact r
+	INNER JOIN examenes e ON r.IdExamen = e.Id 
+	WHERE r.IdPaquete = IdPaquete AND r.Baja = 0;
+END$$
+DELIMITER ;

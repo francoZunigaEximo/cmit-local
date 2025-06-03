@@ -5,26 +5,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class PaqueteEstudio extends Model
-{
-    use HasFactory;
+class RelacionGrupoCliente extends Model{
+ use HasFactory;
 
-    protected $table = 'paqestudios';
+    protected $table = 'clientesgrupos_it';
 
     protected $primaryKey = 'Id';
 
     protected $fillable = [
         'Id',
-        'Nombre',
-        'Descripcion',
-        'Alias',
+        'IdGrupo',
+        'IdCliente',
         'Baja'
     ];
 
     public $timestamps = false;
 
-    public function examenes()
-    {
-        return $this->hasOne(Examen::class, 'Id', 'IdEstudio');
-    }
 }
+?>
