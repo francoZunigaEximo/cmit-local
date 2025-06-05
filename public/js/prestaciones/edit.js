@@ -1101,7 +1101,7 @@ $(function() {
                 
                 $.get(checkTipoFactExCta, {Id: id}, function(response) {
                      $('.NroFactExCta').show();
-
+                    console.log(response);
                     if(response[0].contador > 1) {
                         $('#NroFactExCta').val("Multi Examen");
 
