@@ -957,8 +957,8 @@ CREATE TABLE llamador(
 #Optimizacion de redis - agregar a los env
 SESSION_CONNECTION=default
 
-ALTER TABLE fichaslaborales MODIFY COLUMN FechaUltPeriod VARCHAR(15) DEFAULT NULL NULL;
-ALTER TABLE fichaslaborales MODIFY COLUMN FechaExArt VARCHAR(15) DEFAULT NULL NULL;
+ALTER TABLE fichaslaborales MODIFY COLUMN FechaUltPeriod VARCHAR(15) DEFAULT NULL;
+ALTER TABLE fichaslaborales MODIFY COLUMN FechaExArt VARCHAR(15) DEFAULT NULL;
 ALTER TABLE proveedores ADD COLUMN Obs TEXT NULL;
 
 DROP PROCEDURE IF EXISTS getExamenesPaquete;
@@ -1201,6 +1201,60 @@ UPDATE reportes SET VistaPrevia = NULL WHERE Id = 164;
 UPDATE reportes SET VistaPrevia = NULL WHERE Id = 165;
 UPDATE reportes SET VistaPrevia = NULL WHERE Id = 166;
 UPDATE reportes SET VistaPrevia = NULL WHERE Id = 167;
+
+CREATE TABLE fichaprestacion_factura(
+	id INT AUTO_INCREMENT NOT NULL,
+	prestacion_id INT,
+	fichalaboral_id INT,
+	Tipo CHAR(1),
+	Sucursal INT,
+	NroFactura INT,
+	NroFactProv TEXT,
+	UNIQUE(id) 
+);
+
+ALTER TABLE fichaslaborales DROP COLUMN Tipo, DROP COLUMN Sucursal, DROP COLUMN NroFactura, DROP COLUMN NroFactProv;
+
+ALTER TABLE prestaciones DROP COLUMN NroFactProv;
+
+ALTER TABLE fichaslaborales ADD COLUMN datos_facturacion_id INT NULL;
+ALTER TABLE prestaciones ADD COLUMN datos_facturacion_id INT NULL;
+
+ALTER TABLE prestaciones ADD CONSTRAINT fk_prestacion_datos_facturacion FOREIGN KEY (datos_facturacion_id) REFERENCES fichaprestacion_factura(id);
+ALTER TABLE fichaslaborales ADD CONSTRAINT fk_fichalaboral_datos_facturacion FOREIGN KEY(datos_facturacion_id) REFERENCES fichaprestacion_factura(id);
+
+DELIMITER //
+
+CREATE TRIGGER autocomplete_fichaslaborales
+BEFORE INSERT ON fichaslaborales
+FOR EACH ROW
+BEGIN
+    IF NEW.Jornada IS NULL OR NEW.Jornada = '' THEN
+        SET NEW.Jornada = '';
+    END IF;
+
+    IF NEW.Observaciones IS NULL OR NEW.Observaciones = '' THEN
+        SET NEW.Observaciones = '';
+    END IF;
+
+    IF NEW.TareasEmpAnterior IS NULL OR NEW.TareasEmpAnterior = '' THEN
+        SET NEW.TareasEmpAnterior = '';
+    END IF;
+
+    IF NEW.Puesto IS NULL OR NEW.Puesto = '' THEN
+        SET NEW.Puesto = '';
+    END IF;
+END;
+//
+
+DELIMITER ;
+
+ALTER TABLE facturasdeventa ADD CONSTRAINT fk_facturadeventa_prestacion FOREIGN KEY(IdPrestacion) REFERENCES prestaciones(Id);
+ALTER TABLE fichaprestacion_factura MODIFY COLUMN NroFactProv TEXT DEFAULT NULL NULL;
+
+
+
+
 ALTER TABLE reportes ADD COLUMN VistaPrevia VARCHAR(200) DEFAULT NULL;
 
 

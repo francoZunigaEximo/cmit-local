@@ -83,7 +83,7 @@
                                     </div>
                                 </div>
 
-                                <div class="table mt-3 mb-1 mx-auto">
+                                <div class="table-responsive table mt-3 mb-1 mx-auto">
                                     <table id="listaLlamadaEfector" class="table table-bordered">
                                         <thead class="table-light">
                                             <tr>

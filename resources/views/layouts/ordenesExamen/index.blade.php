@@ -195,7 +195,7 @@
             
                                 </div>
             
-                                <div class="table mt-3 mb-1 mx-auto" style="overflow-x: auto;">
+                                <div class="table-responsive mt-3 mb-1 mx-auto" style="overflow-x: auto;">
                                     <table id="listaOrdenesPrestaciones" class="table table-striped">
                                         <thead class="table-light">
                                             <tr>
@@ -349,7 +349,7 @@
                     
                                         </div>
                     
-                                        <div class="table mt-3 mb-1 mx-auto">
+                                        <div class="table-responsive mt-3 mb-1 mx-auto">
                                             <table id="listaOrdenesEfectores" class="table table-bordered">
                                                 <thead class="table-light">
                                                     <tr>
@@ -471,7 +471,7 @@
                     
                                         </div>
                     
-                                        <div class="table mt-3 mb-1 mx-auto">
+                                        <div class="table-responsive mt-3 mb-1 mx-auto">
                                             <table id="listaOrdenesEfectoresAsig" class="table table-bordered">
                                                 <thead class="table-light">
                                                     <tr>
@@ -571,7 +571,7 @@
                                             <div class="preloader"></div>
                                         </div>
                     
-                                        <div class="table mt-3 mb-1 mx-auto">
+                                        <div class="table-responsive mt-3 mb-1 mx-auto">
                                             <table id="listaOrdenesEfectoresAdj" class="table table-bordered"">
                                                 <thead class="table-light">
                                                     <tr>
@@ -721,7 +721,7 @@
                     
                                         </div>
                     
-                                        <div class="table mt-3 mb-1 mx-auto">
+                                        <div class="table-responsive mt-3 mb-1 mx-auto">
                                             <table id="listaOrdenesInformadores" class="table table-bordered">
                                                 <thead class="table-light">
                                                     <tr>
@@ -831,7 +831,7 @@
                     
                                         </div>
                     
-                                        <div class="table mt-3 mb-1 mx-auto">
+                                        <div class="table-responsive mt-3 mb-1 mx-auto">
                                             <table id="listaOrdenesInformadoresAsig" class="table table-bordered">
                                                 <thead class="table-light">
                                                     <tr>
@@ -931,7 +931,7 @@
                                             </div>
                                         </div>
                     
-                                        <div class="table mt-3 mb-1 mx-auto">
+                                        <div class="table-responsive mt-3 mb-1 mx-auto">
                                             <table id="listaOrdenesInformadoresAdj" class="table table-bordered">
                                                 <thead class="table-light">
                                                     <tr>
@@ -1034,7 +1034,7 @@
                                                 </div>
                                             </div>
 
-                                            <div class="table mt-3 mb-1 mx-auto">
+                                            <div class="table-responsive mt-3 mb-1 mx-auto">
                                                 <table id="listaOrdenesEEnviar" class="table table-bordered">
                                                     <thead class="table-light">
                                                         <tr>

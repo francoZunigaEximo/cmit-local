@@ -188,7 +188,11 @@
                             <div class="input-group input-group-sm">
                                 <span class="input-group-text">Forma de Pago</span>
                                 <select class="form-select" id="pago" style="pointer-events: none; background-color: #e9ecef;">>
-                                    <option value="{{ $prestacione->Pago === '' || $prestacione->Pago === null ? 'P' : $prestacione->Pago }}" selected>{{ ($prestacione->Pago === "B" || $prestacione->Pago === "C")? 'Contado' : (($prestacione->Pago === 'A' || empty($prestacione->Pago))? 'Cuenta Corriente' : (($prestacione->Pago === 'P')? 'Examenes a cuenta' : 'Elija una opción...')) }}</option>
+                                    <option value="{{ 
+                                        empty($prestacione->Pago)
+                                            ? 'A' 
+                                            : $prestacione->Pago }}" selected>{{ ($prestacione->Pago === "B" || $prestacione->Pago === "C") ? 'Contado' : (($prestacione->Pago === 'A' || empty($prestacione->Pago)) ? 'Cuenta Corriente' : (($prestacione->Pago === 'P') ? 'Examenes a cuenta' : 'Elija una opción...')) }}
+                                    </option>
                                     <option value="B">Contado</option>
                                     <option value="A">Cuenta Corriente</option>
                                     <option value="P">Examen a cuenta</option>
@@ -224,7 +228,7 @@
                             <div class="input-group input-group-sm">
                                 <span class="input-group-text">N. Factura</span>
                                 <select class="form-select" id="Tipo" style="width: 4%">
-                                    <option value="" selected>Tipo</option>
+                                    <option value="{{ $prestacione->facturadeventa->Tipo ?? '' }}" selected>{{ $prestacione->facturadeventa->Tipo ?? 'Tipo' }}</option>
                                     <option value="A">A</option>
                                     <option value="B">B</option>
                                     <option value="E">E</option>
@@ -232,15 +236,22 @@
                                     <option value="R">R</option>
                                     <option value="Z">Z</option>
                                 </select>
-                                <input type="number" class="form-control" style="width: 20%" placeholder="nro sucursal" id="Sucursal">
-                                <input type="number" class="form-control" style="width: 20%" placeholder="nro de factura" id="NroFactura">
+                                <input type="number" class="form-control" style="width: 20%" placeholder="nro sucursal" id="Sucursal" value="{{ $prestacione->facturadeventa->Sucursal ?? '' }}">
+                                <input type="number" class="form-control" style="width: 20%" placeholder="nro de factura" id="NroFactura" value="{{ $prestacione->facturadeventa->NroFactura ?? '' }}">
                             </div>
                         </div>
 
                         <div class="col-10 mt-2 NroFactProv">
                             <div class="input-group input-group-sm">
                                 <span class="input-group-text">Nro Factura Provisoria</span>
-                                <input type="text" class="form-control" id="NroFactProv" name="NroFactProv" value="{{ $prestacione->NroFactProv ?? ''}}">
+                                <input type="text" class="form-control" id="NroFactProv" name="NroFactProv" value="{{ $prestacione->detalleFactura->NroFactProv ?? ''}}">
+                            </div>
+                        </div>
+
+                        <div class="col-10 mt-2 NroFactExCta">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text">Factura ExCta</span>
+                                <input type="text" class="form-control" id="NroFactExCta" name="NroFactExCta">
                             </div>
                         </div>
 
@@ -446,7 +457,7 @@
                                     <h4 class="card-title mb-0">Observaciones privadas</h4><button type="button" class="btn bt-sm botonGeneral agregarComentario">Añadir</button>
                                 </div>
                                 <div class="card-body">
-                                    <div class="table-card mb-1">
+                                    <div class="table-responsive table-card mb-1">
                                         <table id="lstPrivPrestaciones" class="table table-bordered">
                                             <thead class="table-light">
                                                 <tr>
@@ -473,7 +484,7 @@
                                     <h4 class="card-title mb-0">Autorizados</h4>
                                 </div>
                                 <div class="card-body">
-                                    <div class="table mb-1">
+                                    <div class="table-responsive mb-1">
                                         <table id="lstAutorizados" class="table table-bordered">
                                             <thead class="table-light">
                                                 <tr>
@@ -498,7 +509,7 @@
                                     <h4 class="card-title mb-0">Adjuntos Generales de la Prestación</h4><button type="button" class="btn bt-sm botonGeneral" data-bs-toggle="modal" data-bs-target="#addAdjPres">Añadir</button>
                                 </div>
                                 <div class="card-body">
-                                    <div class="table mb-1">
+                                    <div class="table-responsive mb-1">
                                         <table id="lstAuditorias" class="table table-bordered" style="100%">
                                             <thead class="table-light">
                                                 <tr>
@@ -523,7 +534,7 @@
                                     <h4 class="card-title mb-0">Auditoria</h4>
                                 </div>
                                 <div class="card-body">
-                                    <div class="table mb-1">
+                                    <div class="table-responsive mb-1">
                                         <table id="lstAuditorias" class="table table-bordered" style="100%">
                                             <thead class="table-light">
                                                 <tr>
@@ -1098,7 +1109,7 @@
             </div>
             <div class="modal-body" class="text-center p-3">
                 <div class="row auto-mx mb-3">
-                    <div class="table mt-3 mb-1 mx-auto col-sm-7">
+                    <div class="table-responsive mt-3 mb-1 mx-auto col-sm-7">
                         <table id="listadoSaldos" class="table table-bordered">
                             <thead class="table-light">
                                 <tr>
@@ -1406,7 +1417,7 @@
                 <button class="btn btn-sm botonGeneral exportSimple" data-id="{{ $prestacione->IdPaciente ?? '' }}"><i class="ri-file-excel-line"></i> Exportar Simple</button>
                 <button class="btn btn-sm botonGeneral exportDetallado" data-id="{{ $prestacione->IdPaciente ?? '' }}"><i class="ri-file-excel-line"></i> Exportar Detallado</button>
                 <div class="row auto-mx mb-3">
-                    <div class="table mt-3 mb-1 mx-auto col-sm-7">
+                    <div class="table-responsive mt-3 mb-1 mx-auto col-sm-7">
                         <table id="listadoResultadosPrestacion" class="table table-bordered">
                             <thead class="table-light">
                                 <tr>
@@ -1601,6 +1612,7 @@ const contadorEx = "{{route('itemsprestaciones.contador')}}";
 const USER = "{{ Auth::user()->name }}";
 const getComentario = "{{ route('comentariosPriv.data') }}";
 const checkFacturas = "{{ route('itemsprestaciones.checkFacturas') }}";
+const checkTipoFactExCta = "{{ route('examenesCuenta.contadoPagos') }}";
 
 //Select
 const selectTipoPrestacion = "{{ $prestacione->TipoPrestacion }}";

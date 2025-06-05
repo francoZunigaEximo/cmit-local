@@ -63,7 +63,7 @@ $(function(){
         checkAllExa: $('#checkAllExa'),
         paqueteExamen: $('.paqueteExamen'),
         tituloPrestacion: $('.tituloPrestacion'),
-        paqueteExCta: $('.paqueteExCta'),
+        paqueteExCta: $('.paqueteExCta')
     };
 
     const variables = {
@@ -106,7 +106,13 @@ $(function(){
         paquetes: $('#paquetes'),
         exam: $("#exam"),
         ObsExamenesN: $('#ObsExamenesN'),
-        ObservacionesPresN: $('#ObservacionesPresN')
+        ObservacionesPresN: $('#ObservacionesPresN'),
+        NroFactPrestacion: $('#NroFactPrestacion'),
+        hoy: new Date().toLocaleDateString('en-CA'),
+        facturacion_id: $('#facturacion_id'),
+        ElTipo: $('#ElTipo'),
+        ElSucursal: $('#ElSucursal'),
+        ElNroFactura: $('#ElNroFactura')
     };
 
     variables.ElPago
@@ -118,14 +124,15 @@ $(function(){
         .add(variables.ElAutorizado)
         .prop('disabled', true);
 
-    let IdNueva, hoy = new Date().toLocaleDateString('en-CA');
+    let IdNueva;
     
     principal.Fecha
         .add(principal.FechaN)
-        .val(hoy);
+        .val(variables.hoy);
 
     principal.seleccionExCta
         .add(principal.editarComentario)
+        .add(principal.NroFactPrestacion)
         .hide();
 
     
@@ -212,20 +219,21 @@ $(function(){
         if (alta && Object.keys(alta).length > 0) {
 
             $.get(savePrestacion, {
-                IdPaciente: variables.IdPaciente,
-                Fecha: variables.Fecha.val(),
-                TipoPrestacion: variables.TipoPrestacion.val(),
+                IdPaciente: variables.IdPaciente ?? '',
+                TipoPrestacion: variables.TipoPrestacion.val() ?? '',
                 IdMapa: variables.IdMapa.val() ?? 0,
                 Pago: variables.PagoLaboral.val() ?? '',
-                SPago: variables.SPago.val() ?? '',
+                SPago: variables.ElSPago.val() ?? '',
                 Observaciones: variables.Observaciones.val() ?? '',
                 AutorizaSC: variables.AutorizaSC.val() ?? '',
+                IdART: alta.clienteArt.Id ?? 0,
+                IdEmpresa: alta.cliente.Id ?? 0,
+                datos_facturacion_id: ['B', 'A'].includes(variables.PagoLaboral.val()) ? variables.facturacion_id.val() : null,
                 Tipo: variables.ElTipo.val(),
                 Sucursal: variables.ElSucursal.val(),
                 NroFactura: variables.ElNroFactura.val(),
-                NroFactProv: variables.ElNroFactProv.val(),
-                IdART: alta.clienteArt.Id ?? 0,
-                IdEmpresa: alta.cliente.Id ?? 0,
+                NroFactProv: variables.ElNroFactProv.val()
+
             })
             .done(function(response){
                 toastr.success(response.msg,'',{timeOut: 1000});
