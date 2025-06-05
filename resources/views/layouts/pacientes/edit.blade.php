@@ -675,13 +675,13 @@
                                                 <option value="R">R</option>
                                                 <option value="Z">Z</option>
                                             </select>
-                                            <input type="text"  class="form-control" placeholder="nro sucursal" id="ElSucursal">
-                                            <input type="text"  class="form-control" placeholder="nro de factura" id="ElNroFactura">
+                                            <input type="text"  class="form-control" placeholder="nro sucursal" id="ElSucursal" name="ElSucursal">
+                                            <input type="text"  class="form-control" placeholder="nro de factura" id="ElNroFactura" name="ElNroFactura">
                                         </div>
 
                                         <div class="input-group input-group-sm mb-2 NroFactProv">
                                             <span class="input-group-text">Nro Factura Provisoria</span>
-                                            <input type="text" class="form-control" placeholder="Numero de factura provisoria" id="ElNroFactProv">
+                                            <input type="text" class="form-control" placeholder="Numero de factura provisoria" id="ElNroFactProv" name="ElNroFactProv">
                                         </div>
 
                                         <div class="input-group input-group-sm mb-2 Autoriza">
@@ -691,6 +691,7 @@
                                                 <option value="Lucas Grunmann">Lucas Grunmann</option>
                                             </select>
                                         </div>
+                                        <input type="hidden" id="facturacion_id">
 
                                     </div>
                             </div>
@@ -1057,7 +1058,7 @@
                             <i class="ri-arrow-left-line"></i> Volver a la prestación
                         </button>
                         <div class="row auto-mx mb-3">
-                            <div class="table-responsive mt-3 mb-1 mx-auto col-sm-7">
+                            <div class="table-responsive mt-3 mb-1 mx-auto col-sm-12">
                                 <table id="listadoResultadosPres" class="table table-bordered">
                                     <thead class="table-light">
                                         <tr>

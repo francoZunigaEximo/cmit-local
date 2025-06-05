@@ -787,3 +787,7 @@ tr.enlace-negro button.btn i {
 :root {
 	--vz-border-color: #887c78 !important;
 }
+
+.navbar-brand-box {
+	width: 68px !important;
+}

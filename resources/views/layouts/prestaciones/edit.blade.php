@@ -244,13 +244,13 @@
                         <div class="col-10 mt-2 NroFactProv">
                             <div class="input-group input-group-sm">
                                 <span class="input-group-text">Nro Factura Provisoria</span>
-                                <input type="text" class="form-control" id="NroFactProv" name="NroFactProv" value="{{ $prestacione->NroFactProv ?? ''}}">
+                                <input type="text" class="form-control" id="NroFactProv" name="NroFactProv" value="{{ $prestacione->detalleFactura->NroFactProv ?? ''}}">
                             </div>
                         </div>
 
                         <div class="col-10 mt-2 NroFactExCta">
                             <div class="input-group input-group-sm">
-                                <span class="input-group-text">Nro Factura Examen a Cuenta</span>
+                                <span class="input-group-text">Factura ExCta</span>
                                 <input type="text" class="form-control" id="NroFactExCta" name="NroFactExCta">
                             </div>
                         </div>
@@ -1612,6 +1612,7 @@ const contadorEx = "{{route('itemsprestaciones.contador')}}";
 const USER = "{{ Auth::user()->name }}";
 const getComentario = "{{ route('comentariosPriv.data') }}";
 const checkFacturas = "{{ route('itemsprestaciones.checkFacturas') }}";
+const checkTipoFactExCta = "{{ route('examenesCuenta.contadoPagos') }}";
 
 //Select
 const selectTipoPrestacion = "{{ $prestacione->TipoPrestacion }}";
