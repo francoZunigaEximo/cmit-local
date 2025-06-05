@@ -1101,17 +1101,15 @@ $(function() {
                 
                 $.get(checkTipoFactExCta, {Id: id}, function(response) {
                      $('.NroFactExCta').show();
-                    console.log(response);
-                    if(response[0].contador > 1) {
+
+                    if(response.length > 1) {
                         $('#NroFactExCta').val("Multi Examen");
 
-                    }else if(response[0].contador === 1){
+                    }else if(response.length === 1){
                         
                         let factura = `${response[0].Tipo}` +
                             `${response[0].Sucursal}`.padStart(4, '0') +
                             `${response[0].NroFactura}`.padStart(8, '0');
-
-                        console.log("Factura: " + factura);
 
                             $('#NroFactExCta').val(factura);
                     }
