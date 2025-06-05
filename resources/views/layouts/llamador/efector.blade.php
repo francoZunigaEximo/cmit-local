@@ -68,7 +68,7 @@
                                         </select>
                                     </div>
 
-                                    <div class="col-sm-1 mb-3 d-flex align-items-center justify-content-end">
+                                    <div class="col-sm-1 d-flex align-items-center justify-content-end">
                                         <button class="btn btn-sm botonGeneral" id="buscar">
                                             <i class="ri-zoom-in-line"></i>Buscar
                                         </button>
