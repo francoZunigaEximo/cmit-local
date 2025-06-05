@@ -183,7 +183,7 @@
                                 </div>
 
                                 <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="checkbox" id="Cerrado" name="Cerrado" {{ ($examene->Cerrado === 1 ? 'checked' : '') }} {{ (Auth::user()->Rol === 'Admin' && Auth::user()->profesional->T1 === 1 ? '' : 'disabled title="Debe ser Administrador y Efector"') }}>
+                                        <input class="form-check-input" type="checkbox" id="Cerrado" name="Cerrado" {{ ($examene->Cerrado === 1 ? 'checked' : '') }} {{ (Auth::user()->role()->where('nombre', 'Administrador')->exists() ? '' : 'disabled title="Debe ser Administrador y Efector"') }}>
                                     <label class="form-check-label" for="Informe">Cerrado</label>
                                 </div>
 
