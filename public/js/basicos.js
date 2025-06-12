@@ -267,3 +267,10 @@ function limpiarUserAgent(data) {
     return `Navegador: ${navegador} | Sistema Operativo: ${sistema}`;
 
 }
+
+function limpiarAcentosEspacios(data) {
+    return data.trim()
+            .replace(/\s+/g, '_')
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, ""); //eliminar marcas diacriticas
+}

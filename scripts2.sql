@@ -936,3 +936,18 @@ CREATE TABLE llamador(
 
 #Optimizacion de redis - agregar a los env
 SESSION_CONNECTION=default
+
+CREATE TABLE `user_sessions` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint(20) unsigned NOT NULL,
+  `session_id` varchar(191) DEFAULT NULL,
+  `ip_address` varchar(45) NOT NULL,
+  `user_agent` text DEFAULT NULL,
+  `login_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `logout_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_user_id` (`user_id`),
+  KEY `idx_login_at` (`login_at`),
+  KEY `idx_logout_at` (`logout_at`),
+  CONSTRAINT `user_sessions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+);

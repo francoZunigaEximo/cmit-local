@@ -3,7 +3,8 @@ $(function(){
     const principal = {
         grillaEfector: $('#listaLlamadaEfector'),
         grillaExamenes: $('#tablasExamenes'),
-        atenderPaciente: $('.atenderPaciente')
+        atenderPaciente: $('.atenderPaciente'),
+        chekAllExamenes: $('.checkAllExamenes')
     };
 
     const variables = {
@@ -19,7 +20,8 @@ $(function(){
         edadEfector: $('#edadEfector'),
         fechaEfector: $('#fechaEfector'),
         fotoEfector: $('#fotoEfector'),
-        profesional: $('#profesional')
+        profesional: $('#profesional'),
+        descargaFoto: $('#descargaFoto')
     };
 
     variables.fechaHasta.val(fechaNow(null, "-", 0));
@@ -106,6 +108,7 @@ $(function(){
                 variables.edadEfector.val(edad);
                 variables.fechaEfector.val(fecha);
                 variables.fotoEfector.attr('src', FOTO + prestacion.paciente.Foto);
+                variables.descargaFoto.attr('href', FOTO + prestacion.paciente.Foto);
 
                 tablasExamenes(response.itemsprestaciones);
 
@@ -169,6 +172,35 @@ $(function(){
             });
     });
 
+    $(document).on('change', '.checkAllExamenes', function(){
+        let nombreCheckAll = $(this).attr('name');
+        if(!nombreCheckAll || !nombreCheckAll.startsWith('Id_')) return;
+
+        let grupo = nombreCheckAll.replace('Id_', ''),
+            seleccion = `input[type="checkbox"][name^="Id_${grupo}_"]`,
+            isChecked = $(this).prop('checked');
+
+        $(seleccion).each(function () {
+            let $checkbox = $(this);
+
+            if ($checkbox.prop('checked') !== isChecked) {
+                $checkbox.prop('checked', isChecked);
+
+                // $checkbox.prop('checked', isChecked).trigger('click');
+
+                // if ($checkbox.prop('checked') !== isChecked) {
+                //     $checkbox.prop('checked', isChecked);
+                //     $checkbox[0].click(); //Disparo el evento
+                // }
+
+                //console.log($checkbox[0])
+
+                //Usar JS en lugar de Jquery
+                $checkbox[0].dispatchEvent(new Event('click', { bubbles: true }));
+            }
+        });
+    });
+
     function tablasExamenes(data) {
         console.log(data)
         principal.grillaExamenes.empty();
@@ -201,25 +233,27 @@ $(function(){
                                     <th style="width: 150px">Efector</th>
                                     <th style="width: 150px">Informador</th>
                                     <th style="width: 50px">
-                                        <input type="checkbox" class="checkAllExamenes" name="Id_examenes">
+                                        <input type="checkbox" class="checkAllExamenes" name="Id_${limpiarAcentosEspacios(especialidad)}">
                                     </th>
                                 </tr>
                             </thead>
                             <tbody>
                 `;
     
-       
+                
+
                 examenes.forEach(function (examen) {
+
                     contenido += `
-                        <tr>
+                        <tr class="listadoAtencion" data-id="${examen.IdItem}">
                             <td>${examen.NombreExamen}</td>
                             <td>${estado(examen.CAdj)}</td>
-                            <td>${checkAdjunto(examen.NoImprime, examen.Adjunto, examen.Archivo)}</td>
+                            <td title="NoImprime: ${examen.NoImprime} | Adjunto: ${examen.Adjunto} | Archivo: ${examen.Archivo}">${checkAdjunto(examen.NoImprime, examen.Adjunto, examen.Archivo)}</td>
                             <td>${[null, undefined, ''].includes(examen.ObsExamen) ? '' : examen.ObsExamen}</td>
                             <td>${verificarProfesional(examen, "efector")}</td>
                             <td>${verificarProfesional(examen, "informador")}</td>
                             <td>
-                                <input type="checkbox" name="Id_examenes_${examen.IdExamen}" value="${examen.IdItem}"  ${checkboxCheck(examen.NombreInformador)}>
+                                <input type="checkbox" name="Id_${limpiarAcentosEspacios(especialidad)}_${examen.IdExamen}" value="${examen.IdItem}"  ${checkboxCheck(examen)}>
                             </td>
                         </tr>
                     `;
@@ -273,14 +307,17 @@ $(function(){
         }
     }
 
-    function checkboxCheck(informador) {
+    function checkboxCheck(data) {
 
         switch (true) {
-            case informador !== undefined:
+            case data.informadorId !== 0:
                 return 'disabled';
         
-            case variables.profesional.val() === parseInt(USERACTIVO):
+            case parseInt(data.efectorId) !== 0 && parseInt(data.efectorId) === parseInt(USERACTIVO):
                 return 'checked';
+
+            case parseInt(data.efectorId) !== 0 && parseInt(data.efectorId) !== parseInt(USERACTIVO):
+                return 'checked disabled';
          
             default:
                 return '';
@@ -288,24 +325,21 @@ $(function(){
     }
 
     function verificarProfesional(data, tipoProfesional) {
-        
         if(data.length === 0) return;
 
         switch (true) {
             case tipoProfesional === 'efector':
-                return data.nombreEfector !== undefined && data.nombreEfector  !== null && data.nombreEfector  !== '' 
-                    ? data.EfectorHistorico !== undefined && data.EfectorHistorico !== null && data.EfectorHistorico !== ''
-                        ? data.EfectorHistorico
-                        : data.nombreEfector
-                    : '';
+                return data.nombreEfector || data.EfectorHistorico || '';
             
             case tipoProfesional === 'informador':
-                return data.nombreInformador ?? data.InformadorHistorico ?? '';
+                return data.nombreInformador || data.InformadorHistorico || '';
             
             default:
                 return '';
         }
     }
+
+
 
 
 });

@@ -118,7 +118,7 @@
 
 <!-- Modales -->
 <div id="atenderEfector" class="modal fadeInUp" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-    <div class="modal-dialog modal-fullscreen-xxl-down">
+    <div class="modal-dialog modal-fullscreen">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="myModalLabel"> Atender Paciente - Efector</h5>
@@ -215,9 +215,17 @@
                             
                             <div class="col-md-3">
                                 <img class="round mx-auto d-block img-fluid" id="fotoEfector" src="" alt="Foto del paciente" width="150px">
+                                <span class="d-flex justify-content-center mt-1">
+                                    <a id="descargaFoto" class="descargaFoto" href="" download>
+                                        <button class="descargarImagen btn btn-sm botonGeneral">Descargar</button>
+                                    </a>
+                                </span>
+                                
                             </div>
                             
                         </div>
+
+                        <hr size="1">
                    
                         <div class="row">
                             <div class="col-md-12 text-end">
