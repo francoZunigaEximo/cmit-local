@@ -4,7 +4,7 @@ $(function(){
         profesional: $('#profesional')
     };
 
-    $(document).on('click', 'input[type="checkbox"][name^="Id_examenes_"]', function () {
+    $(document).on('click', 'input[type="checkbox"][name^="Id_"]', function () {
 
         let chequeado = $(this).is(':checked'),
             idCheck = $(this).val();
@@ -15,8 +15,8 @@ $(function(){
         preloader('on')
         $.get(asignacionProfesional, {Id: idCheck, Profesional: variables.profesional.val(), estado: chequeado})
             .done(function(response) {
-
                 preloader('off')
+                toastr.success(response.msg);
             })
             .fail(function(jqXHR) {
                 preloader('off');

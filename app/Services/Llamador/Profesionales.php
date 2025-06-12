@@ -2,6 +2,7 @@
 
 namespace App\Services\Llamador;
 
+use App\Models\Llamador;
 use App\Models\Profesional;
 use App\Models\User;
 use App\Models\UserSession;
@@ -29,6 +30,32 @@ class Profesionales
     public function listadoOnline()
     {
         return UserSession::whereNull('logout_at')->get();
+    }
+
+    public function desocuparPaciente(int $idUsuario)
+    {
+        $query = User::find($idUsuario, ['profesional_id']);
+        $ids = [];
+
+        if($query) {
+            $llamados = Llamador::whereIn('profesional_id', $query)->get();
+
+            foreach($llamados as $paciente) {
+                 array_push($ids, $paciente->prestacion_id);
+                $paciente->delete();
+            }  
+        }
+        return $ids;
+    }
+
+    public function getProfesional(int $idProfesional)
+    {
+        return User::join('datos', 'users.datos_id', '=', 'datos.Id')
+            ->where('profesional_id', $idProfesional)
+            ->select(
+                DB::raw("CONCAT(datos.Apellido,' ',datos.Nombre) as NombreCompleto"),
+            )
+            ->first();
     }
 
 }

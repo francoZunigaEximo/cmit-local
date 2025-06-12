@@ -23,6 +23,8 @@ class Examenes
             ->select(
                 'itemsprestaciones.Id as IdItem',
                 'itemsprestaciones.CAdj as CAdj',
+                'itemsprestaciones.IdProfesional as efectorId',
+                'itemsprestaciones.IdProfesional2 as informadorId',
                 'itemsprestaciones.CInfo as CInfo',
                 'proveedores.Nombre as NombreEspecialidad',
                 'examenes.Nombre as NombreExamen',
