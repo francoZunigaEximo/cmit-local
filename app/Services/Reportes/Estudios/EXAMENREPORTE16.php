@@ -18,7 +18,7 @@ use DateTime;
 
 class EXAMENREPORTE16 extends Reporte
 {
-    public function render(FPDF $pdf, $datos = ['id', 'idExamen']): void
+    public function render(FPDF $pdf, $datos = ['id', 'idExamen'], $vistaPrevia = false): void
     {   
         $prestacion = $this->prestacion($datos['id']);
         $datosPaciente = $this->datosPaciente($prestacion->paciente->Id);
@@ -109,7 +109,8 @@ class EXAMENREPORTE16 extends Reporte
         }
         $pdf->Image(public_path("/archivos/reportes/E16.jpg"),25,25,168); 
         $pdf->Image(public_path("/archivos/reportes/E16_1.jpg"),25,119,168);
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+        if(!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);        
         $pdf->Rect(145,30,40,15); $pdf->SetFont('Arial','B',8);
         $pdf->SetXY(148,33);$pdf->Cell(0,3,'CUIT: '.$cuit,0,0,'L');
         $pdf->SetXY(148,37);if($cuil!=''){$pdf->Cell(0,3,'CUIL: '.$cuil,0,0,'L');}else{$pdf->Cell(0,3,'CUIL: '.$doc,0,0,'L');}
@@ -127,7 +128,8 @@ class EXAMENREPORTE16 extends Reporte
         $pdf->AddPage();
         $pdf->Image(public_path("/archivos/reportes/E16_2.jpg"),25,30,165); 
         $pdf->SetY(20);$pdf->SetFont('Arial','B',13);$pdf->Cell(0,5,'EXAMEN FISICO',0,0,'C');
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+        if(!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
     }
 
     private function edad($fechaNacimiento){

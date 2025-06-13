@@ -18,7 +18,7 @@ use DateTime;
 
 class EXAMENREPORTE23 extends Reporte
 {
-    public function render(FPDF $pdf, $datos = ['id', 'idExamen']): void
+    public function render(FPDF $pdf, $datos = ['id', 'idExamen'], $vistaPrevia = false): void
     {   
 include('variables.php');
 
@@ -34,7 +34,8 @@ include('variables.php');
         }
         $pdf->SetFont('Arial','B',13);$pdf->SetXY(10,32);$pdf->Cell(200,5,'ELECTROCARDIOGRAMA EN REPOSO',0,0,'C');
         $pdf->Image(public_path("/archivos/reportes/E23.jpg"),25,40,169);
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+        if(!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
         $pdf->SetFont('Arial','',8);
         $pdf->SetXY(51,75);$pdf->Cell(0,3,$paciente,0,0,'L');$pdf->SetXY(157,75);$pdf->Cell(0,3,$fechanac,0,0,'L');
         $pdf->SetXY(39,81);$pdf->Cell(0,3,$puesto,0,0,'L');$pdf->SetXY(124,81);$pdf->Cell(0,3,$antig,0,0,'L');

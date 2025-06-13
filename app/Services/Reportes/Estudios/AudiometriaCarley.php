@@ -25,7 +25,7 @@ class AudiometriaCarley extends Reporte
             $pdf->SetFont('Arial','B',14);$pdf->SetXY(170,4);$pdf->Cell(0,3,'RF',0,0,'L');$pdf->SetFont('Arial','',8);
         }
 
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+        $pdf->Image(Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr"),25,200,100,100);
 
         $paciente = $prestacion->paciente->Apellido.' '.$prestacion->paciente->Nombre;
         $localidad = $this->localidad($datosPaciente->IdLocalidad) ?? '';

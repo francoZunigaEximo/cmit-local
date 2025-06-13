@@ -18,7 +18,7 @@ use DateTime;
 
 class EXAMENREPORTE12 extends Reporte
 {
-    public function render(FPDF $pdf, $datos = ['id', 'idExamen']): void
+    public function render(FPDF $pdf, $datos = ['id', 'idExamen'], $vistaPrevia = false): void
     {
 include('variables.php');
         
@@ -28,7 +28,8 @@ include('variables.php');
 
         //pagina 1
         $pdf->Image(public_path("/archivos/reportes/E5.jpg"),25,44,170); 
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+        if(!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
         $pdf->SetFont('Arial','B',12);$pdf->SetXY(60,32);$pdf->Cell(0,4,'REGISTRO DE HISTORIA CLINICA OCUPACIONAL',0,0,'L');
         $pdf->SetFont('Arial','B',10);$pdf->SetXY(90,36);$pdf->Cell(0,4,'EXAMEN PERIODICO',0,0,'L');
         $pdf->SetFont('Arial','B',8);$pdf->SetXY(95,40);$pdf->Cell(0,3,'SECRETO MEDICO',0,0,'L');
@@ -54,9 +55,12 @@ include('variables.php');
         //pagina 2
         $pdf->SetFont('Arial','',7);
         $pdf->AddPage();
-        $pdf->Image(public_path("/archivos/reportes/E5_1.jpg"),20,18,180);
-        $pdf->Image(public_path("/archivos/reportes/E5_2.jpg"),20,182,180);
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+        $pdf->Image(public_path("/archivos/reportes/E5_1.jpg"),20,21,180);
+        $pdf->Image(public_path("/archivos/reportes/E5_2.jpg"),20,184,180);
+
+        if(!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
+        
         $pdf->SetFont('Arial','',7);
         $pdf->SetXY(20,6);$pdf->Cell(0,3,'Paciente: '.$paciente.' '.$doc,0,0,'L');$pdf->SetXY(20,10);$pdf->Cell(0,3,$fecha,0,0,'L');
         include('paginaadicional.php');

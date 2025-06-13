@@ -18,16 +18,17 @@ use DateTime;
 
 class EXAMENREPORTE24 extends Reporte
 {
-    public function render(FPDF $pdf, $datos = ['id', 'idExamen']): void
+    public function render(FPDF $pdf, $datos = ['id', 'idExamen'], $vistaPrevia = false): void
     {   
-include('variables.php');
+        include('variables.php');
 
         if($prestacion->empresa->RF === 1){
             $pdf->SetFont('Arial','B',14);$pdf->SetXY(170,4);$pdf->Cell(0,3,'RF',0,0,'L');$pdf->SetFont('Arial','',8);
         }
         $pdf->SetFont('Arial','B',13);$pdf->SetXY(10,32);$pdf->Cell(200,5,'ELECTROCARDIOGRAMA EN REPOSO',0,0,'C');
         $pdf->Image(public_path("/archivos/reportes/E24.jpg"),25,40,161);
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+        if(!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
         $pdf->SetFont('Arial','',8);
         $pdf->Line(25,38,186,38);
         $pdf->SetXY(50,45);$pdf->Cell(0,3,$paciente,0,0,'L');

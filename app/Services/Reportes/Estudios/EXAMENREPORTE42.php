@@ -18,14 +18,15 @@ use DateTime;
 
 class EXAMENREPORTE42 extends Reporte
 {
-    public function render(FPDF $pdf, $datos = ['id', 'idExamen']): void
+    public function render(FPDF $pdf, $datos = ['id', 'idExamen'], $vistaPrevia=false): void
     {
-include('variables.php');
-        $pdf->Image(public_path("/archivos/reportes/E42.jpg"),25,20,160);
+        include('variables.php');
+        $pdf->Image(public_path("/archivos/reportes/E42.jpg"),25,25,160);
         $pdf->Image(public_path("/archivos/reportes/E42_P1_1.jpg"),25,48,160); 
         $pdf->Image(public_path("/archivos/reportes/E42_P1_2.jpg"),25,210,160); 
         $pdf->Image(public_path("/archivos/reportes/E42_1.jpg"),25,275,160);
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+        if(!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
         $pdf->SetFont('Arial','',7);
         $pdf->SetXY(185,273);$pdf->Cell(0,3,'1',0,0,'L'); 
         $pdf->SetXY(44,56);$pdf->Cell(0,3,'CMIT de Irigoyen Miguel Antonio',0,0,'L');$pdf->SetXY(147,56);$pdf->Cell(0,3,$fecha,0,0,'L');
@@ -44,7 +45,8 @@ include('variables.php');
         $pdf->Image(public_path("/archivos/reportes/E42_P2_2.jpg"),25,233,160); 
         $pdf->Image(public_path("/archivos/reportes/E42_1.jpg"),25,275,160); 
         $pdf->SetXY(185,273);$pdf->Cell(0,3,'2',0,0,'L');
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+        if(!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
         //pagina 3
         $pdf->AddPage();
         $pdf->Image(public_path("/archivos/reportes/E42.jpg"),25,20,160); 
@@ -52,7 +54,8 @@ include('variables.php');
         $pdf->Image(public_path("/archivos/reportes/E42_P3_2.jpg"),25,124,160); 
         $pdf->Image(public_path("/archivos/reportes/E42_1.jpg"),25,275,160); 
         $pdf->SetXY(185,273);$pdf->Cell(0,3,'3',0,0,'L');
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+        if(!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
         //pagina 4
         $pdf->AddPage();
         $pdf->Image(public_path("/archivos/reportes/E42.jpg"),25,20,160); 
@@ -60,7 +63,8 @@ include('variables.php');
         $pdf->Image(public_path("/archivos/reportes/E42_P4_2.jpg"),25,206,160); 
         $pdf->Image(public_path("/archivos/reportes/E42_1.jpg"),25,275,160); 
         $pdf->SetXY(185,273);$pdf->Cell(0,3,'4',0,0,'L');
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+        if(!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
     }
 
     private function edad($fechaNacimiento)

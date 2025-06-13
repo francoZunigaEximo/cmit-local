@@ -4,7 +4,7 @@
 use App\Helpers\Tools;
 
 $pdf->AddPage();
-$y=14;
+$y=18;
 $z='........................';
 $z2=$z.$z.$z.$z.$z.$z.$z.$z.$z.$z.'.................';
 //title
@@ -81,7 +81,7 @@ $pdf->Line(155,$y-1,185,$y-1);$pdf->SetXY(155,$y);$pdf->Cell(30,3,'FIRMA',0,0,'C
 $y=$y+6;
 
 //header 
-Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
 $pdf->SetFont('Arial','',7);
 $pdf->SetXY(15,6);$pdf->Cell(0,3,'Paciente: '.$paciente.' '.$doc,0,0,'L');
 $pdf->SetXY(15,10);$pdf->Cell(0,3,$fecha,0,0,'L');

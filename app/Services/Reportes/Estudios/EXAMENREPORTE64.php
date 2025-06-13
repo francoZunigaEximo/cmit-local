@@ -18,13 +18,14 @@ use DateTime;
 
 class EXAMENREPORTE64 extends Reporte
 {
-    public function render(FPDF $pdf, $datos = ['id', 'idExamen']): void
+    public function render(FPDF $pdf, $datos = ['id', 'idExamen'], $vistaPrevia=false): void
     {
 include('variables.php');
        
         $pdf->Image(public_path("/archivos/reportes/E64_1.jpg"),10,13,184); 
         $pdf->Image(public_path("/archivos/reportes/E64_2.jpg"),10,188,184); 
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+        if(!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
         $pdf->SetFont('Arial','',7);
         $pdf->SetXY(158,49);$pdf->Cell(0,3,$fecha,0,0,'L');
         $pdf->SetXY(33,57);$pdf->Cell(0,3,substr($paraempresa,0,40),0,0,'L');$pdf->SetXY(135,57);$pdf->Cell(0,3,$cuit,0,0,'L');
@@ -39,7 +40,8 @@ include('variables.php');
         $pdf->Image(public_path("/archivos/reportes/E64_3.jpg"),10,9,184); 
         $pdf->Image(public_path("/archivos/reportes/E64_4.jpg"),10,25,184); 
         $pdf->Image(public_path("/archivos/reportes/E64_5.jpg"),10,205,184); 
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+         if(!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
         $pdf->SetFont('Arial','',7);$pdf->SetXY(35,19);$pdf->Cell(0,3,$fecha,0,0,'L');
     }
 

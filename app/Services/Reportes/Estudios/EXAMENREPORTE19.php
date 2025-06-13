@@ -18,7 +18,7 @@ use DateTime;
 
 class EXAMENREPORTE19 extends Reporte
 {
-    public function render(FPDF $pdf, $datos = ['id', 'idExamen']): void
+    public function render(FPDF $pdf, $datos = ['id', 'idExamen'], $vistaPrevia = false): void
     {   
         $prestacion = $this->prestacion($datos['id']);
         $datosPaciente = $this->datosPaciente($prestacion->paciente->Id);
@@ -108,7 +108,8 @@ class EXAMENREPORTE19 extends Reporte
             $pdf->SetFont('Arial','B',14);$pdf->SetXY(170,4);$pdf->Cell(0,3,'RF',0,0,'L');$pdf->SetFont('Arial','',8);
         }
         $pdf->Image(public_path("/archivos/reportes/E6.jpg"),25,20,169); 
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+        if(!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
         $pdf->SetFont('Arial','B',8);$pdf->SetXY(26,240);$pdf->Cell(0,3,'HISTORIA CLINICA OCUPACIONAL',0,0,'L');
         $pdf->SetXY(173,240);$pdf->Cell(0,3,'Pagina 1',0,0,'L');
         $pdf->SetXY(85,55);$pdf->Cell(0,3,'Ingreso',0,0,'L');$pdf->SetXY(110,55);$pdf->Cell(0,3,'Periodico X',0,0,'L');
@@ -129,19 +130,24 @@ class EXAMENREPORTE19 extends Reporte
         $pdf->Image(public_path("/archivos/reportes/E6_1.jpg"),25,20,166);
         $pdf->SetFont('Arial','B',8);$pdf->SetXY(26,240);$pdf->Cell(0,3,'HISTORIA CLINICA OCUPACIONAL',0,0,'L');
         $pdf->SetXY(173,240);$pdf->Cell(0,3,'Pagina 2',0,0,'L');
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+        
+        if(!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
         //pagina 3
         $pdf->AddPage();
         $pdf->Image(public_path("/archivos/reportes/E6_2.jpg"),25,20,166);
         $pdf->SetFont('Arial','B',8);$pdf->SetXY(26,240);$pdf->Cell(0,3,'HISTORIA CLINICA OCUPACIONAL',0,0,'L');
         $pdf->SetXY(173,240);$pdf->Cell(0,3,'Pagina 3',0,0,'L');
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+        if(!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
         //pagina 4
         $pdf->AddPage();
         $pdf->Image(public_path("/archivos/reportes/E6_3.jpg"),25,20,166);
         $pdf->SetFont('Arial','B',8);$pdf->SetXY(26,240);$pdf->Cell(0,3,'HISTORIA CLINICA OCUPACIONAL',0,0,'L');
         $pdf->SetXY(173,240);$pdf->Cell(0,3,'Pagina 4',0,0,'L');
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+        if(!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
+    
     }
 
     private function edad($fechaNacimiento){

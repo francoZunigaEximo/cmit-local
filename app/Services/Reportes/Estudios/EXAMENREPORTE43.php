@@ -20,7 +20,7 @@ class EXAMENREPORTE43 extends Reporte
 {
     public function render(FPDF $pdf, $datos = ['id', 'idExamen']): void
     {
-include('variables.php');
+        include('variables.php');
         $pdf->Image(public_path("/archivos/reportes/E43.jpg"), 25, 15, 162);
         $pdf->SetXY(174, 31);
         $pdf->Cell(0, 3, '1', 0, 0, 'L');
@@ -38,7 +38,7 @@ include('variables.php');
                 $pdf->Cell(0, 3, 'X', 0, 0, 'L');
                 break;
         }
-        list($d, $m, $a) = explode("/", $fecha);
+        list($a, $m, $d) = explode("-", $fecha);
         $pdf->SetXY(143, 48);
         $pdf->Cell(0, 3, $d, 0, 0, 'L');
         $pdf->SetXY(160, 48);
@@ -51,7 +51,6 @@ include('variables.php');
         $pdf->Cell(0, 3, $doc, 0, 0, 'L');
         $pdf->SetXY(49, 75);
         $pdf->Cell(0, 3, $nac, 0, 0, 'L');
-        
         list($d, $m, $a) = explode("-", $fechanac);
         $pdf->SetXY(75, 79);
         $pdf->Cell(0, 3, $d, 0, 0, 'L');
