@@ -1,7 +1,10 @@
 let examenes = [];
 let estudiosRenderizar = [];
 
-let tabla = new DataTable("#listaExamenesPaquetes");
+let tabla = new DataTable("#listaExamenesPaquetes",{
+    searching: false,
+    lengthChange: false,
+});
 const params = new URLSearchParams(window.location.search);
 
 $(function () {
@@ -357,7 +360,7 @@ $('#btnRegistrar').on('click', function (e) {
     let idGrupo = $("#grupoSelect2").val();
     let idEmpresa = $("#empresaSelect2").val();
 
-    if (nombre && descricpion && alias && codigo && (idGrupo || idEmpresa)) {
+    if ( validaciones()) {
         if (!(idGrupo && idEmpresa)) {
             $.ajax({
                 url: postPaqueteFacturacionCreate,
@@ -387,8 +390,31 @@ $('#btnRegistrar').on('click', function (e) {
             preloader('off');
             toastr.warning("Si selecciona una empresa no puede seleccionar un grupo y viseversa.", '', { timeOut: 3000 });
         }
-    } else {
-        preloader('off');
-        toastr.warning("Tiene que ingresar nombre, descricpion , alias, codigo , y seleccionar un grupo o una empresa", '', { timeOut: 3000 });
     }
-})
+});
+
+
+function validaciones(){
+    let mensaje = "";
+    if (!$("#nombre").val()) {
+        mensaje += "Debe ingresar un nombre para el paquete.\n";
+    }
+    if (!$("#alias").val()) {
+        mensaje += "Debe ingresar un alias para el paquete.\n";
+    }
+    if (!$("#codigo").val()) {
+        mensaje += "Debe ingresar un código para el paquete.\n";
+    }
+    if (!$("#grupoSelect2").val() && !$("#empresaSelect2").val()) {
+        mensaje += "Debe seleccionar un grupo o una empresa.\n";
+    }
+    if (examenes.length === 0) {
+        mensaje += "Debe agregar al menos un examen al paquete.\n";
+    }
+    if (mensaje) {
+        preloader('off');
+        toastr.warning(mensaje, '', { timeOut: 3000 });
+        return false;
+    }
+    return true;
+}

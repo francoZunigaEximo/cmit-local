@@ -1046,3 +1046,5 @@ BEGIN
 	WHERE r.IdPaquete = IdPaquete AND r.Baja = 0;
 END$$
 DELIMITER ;
+
+ALTER TABLE clientesgrupos_it DROP INDEX IdCliente_2;

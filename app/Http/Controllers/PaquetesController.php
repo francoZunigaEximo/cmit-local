@@ -248,7 +248,7 @@ class PaquetesController extends Controller
         PaqueteFacturacion::create([
             'Id' => $nuevoId,
             'Nombre'=> $nombre,
-            'Descripcion' => $descripcion,
+            'Descripcion' => $descripcion != null? $descripcion : "",
             'Alias' => $alias,
             'Cod' => $codigo,
             'IdEmpresa' => ($idEmpresa != null && $idGrupo == null) ? $idEmpresa : 0,
@@ -258,14 +258,16 @@ class PaquetesController extends Controller
 
         //cargamos las empresa
          // cargamos los estudios de paquete
-        foreach($estudios as $estudio){
-            $id = RelacionPaqueteFacturacion::max('Id') + 1;
-            RelacionPaqueteFacturacion::create([
-                'Id' => $id,
-                'IdPaquete' => $nuevoId,
-                'IdEstudio' => $estudio['IdEstudio'],
-                'IdExamen' => $estudio['Id']
-            ]);
+        if($estudios != null){
+            foreach($estudios as $estudio){
+                $id = RelacionPaqueteFacturacion::max('Id') + 1;
+                RelacionPaqueteFacturacion::create([
+                    'Id' => $id,
+                    'IdPaquete' => $nuevoId,
+                    'IdEstudio' => $estudio['IdEstudio'],
+                    'IdExamen' => $estudio['Id']
+                ]);
+            }
         }
     }
 
@@ -346,14 +348,16 @@ class PaquetesController extends Controller
         }
 
         // cargamos los estudios de paquete
-        foreach($estudios as $estudio){
-            $id = RelacionPaqueteFacturacion::max('Id') + 1;
-            RelacionPaqueteFacturacion::create([
-                'Id' => $id,
-                'IdPaquete' => $idPaquete,
-                'IdEstudio' => $estudio['IdEstudio'],
-                'IdExamen' => $estudio['Id']
-            ]);
+        if($estudios != null){
+            foreach($estudios as $estudio){
+                $id = RelacionPaqueteFacturacion::max('Id') + 1;
+                RelacionPaqueteFacturacion::create([
+                    'Id' => $id,
+                    'IdPaquete' => $idPaquete,
+                    'IdEstudio' => $estudio['IdEstudio'],
+                    'IdExamen' => $estudio['Id']
+                ]);
+            }
         }
     }
 

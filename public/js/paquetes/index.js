@@ -133,7 +133,7 @@ $(function () {
 function eliminarPaqueteEstudio(id) {
     swal({
         title: "¿Está seguro que desea eliminar el paquete de estudios?",
-        icon: "danger",
+        icon: "warning",
         buttons: ["Cancelar", "Eliminar"],
     }).then((aceptar) => {
         if (aceptar) {
@@ -159,7 +159,7 @@ function eliminarPaqueteEstudio(id) {
 function eliminarPaqueteFacturacion(id) {
     swal({
         title: "¿Está seguro que desea eliminar el paquete facturacion?",
-        icon: "danger",
+        icon: "warning",
         buttons: ["Cancelar", "Eliminar"],
     }).then((aceptar) => {
         if (aceptar) {

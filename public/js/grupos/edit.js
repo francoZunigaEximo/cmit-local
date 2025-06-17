@@ -3,7 +3,10 @@ let clientesNuevos = [];
 let clientesRenderizar = [];
 let clientesEliminar = [];
 
-let tabla = new DataTable("#listaEmpresas");
+let tabla = new DataTable("#listaEmpresas", {
+    searching: false,
+    lengthChange: false,
+});
 
 $(document).ready(() => {
 
@@ -145,7 +148,7 @@ $("#btnRegistrar").on('click', function (e) {
     preloader('on');
     let id = $("#idGrupo").val();
     let nombre = $("#nombregrupo").val();
-    
+
 
     if (nombre) {
         $.post(postEditGrupoCliente, {

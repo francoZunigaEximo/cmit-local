@@ -1,7 +1,10 @@
 let examenes = [];
 let estudiosRenderizar = [];
 
-let tabla = new DataTable("#listaExamenesPaquetes");
+let tabla = new DataTable("#listaExamenesPaquetes",{
+    searching: false,
+    lengthChange: false,
+});
 const params = new URLSearchParams(window.location.search);
 
 $(function () {
@@ -129,11 +132,13 @@ $(function () {
         let descripcion = $("#descripcion").val();
         let alias = $("#alias").val();
 
-        if (nombre && descripcion) {
+        if (validaciones()) {
             $.post(postPaquetesEstudios, {
                 _token: TOKEN,
-                Nombre: nombre,
-                Empresas: clientes
+                nombre: nombre,
+                alias: alias,
+                descripcion: descripcion,
+                estudios: examenes
             })
                 .done(function () {
                     preloader('off');
@@ -147,8 +152,6 @@ $(function () {
                     return;
                 });
 
-        } else {
-            toastr.warning("Tiene que ingresar nombre, descricpion y seleccionar al menos un examen", '', { timeOut: 1000 });
         }
     });
 
@@ -225,4 +228,25 @@ function renderizarEstudios(estudios) {
         ]).draw();
     });
     preloader('off');
+}
+
+function validaciones(){
+    let mensaje = "";
+    if (!$("#nombre").val()) {
+        mensaje += "Debe ingresar un nombre para el paquete.\n";
+    }
+
+    if(!$("#alias").val()){
+        mensaje += "Debe ingresar un alias para el paquete.\n";
+    }
+    
+    if (examenes.length === 0) {
+        mensaje += "Debe agregar al menos un examen al paquete.\n";
+    }
+    if (mensaje) {
+        preloader('off');
+        toastr.warning(mensaje, '', { timeOut: 3000 });
+        return false;
+    }
+    return true;
 }
