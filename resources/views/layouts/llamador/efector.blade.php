@@ -68,7 +68,7 @@
                                         </select>
                                     </div>
 
-                                    <div class="col-sm-1 mb-3 d-flex align-items-center justify-content-end">
+                                    <div class="col-sm-1 d-flex align-items-center justify-content-end">
                                         <button class="btn btn-sm botonGeneral" id="buscar">
                                             <i class="ri-zoom-in-line"></i>Buscar
                                         </button>
@@ -83,7 +83,7 @@
                                     </div>
                                 </div>
 
-                                <div class="table mt-3 mb-1 mx-auto">
+                                <div class="table-responsive table mt-3 mb-1 mx-auto">
                                     <table id="listaLlamadaEfector" class="table table-bordered">
                                         <thead class="table-light">
                                             <tr>
@@ -118,7 +118,7 @@
 
 <!-- Modales -->
 <div id="atenderEfector" class="modal fadeInUp" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-    <div class="modal-dialog modal-fullscreen-xxl-down">
+    <div class="modal-dialog modal-fullscreen">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="myModalLabel"> Atender Paciente - Efector</h5>
@@ -215,9 +215,17 @@
                             
                             <div class="col-md-3">
                                 <img class="round mx-auto d-block img-fluid" id="fotoEfector" src="" alt="Foto del paciente" width="150px">
+                                <span class="d-flex justify-content-center mt-1">
+                                    <a id="descargaFoto" class="descargaFoto" href="" download>
+                                        <button class="descargarImagen btn btn-sm botonGeneral">Descargar</button>
+                                    </a>
+                                </span>
+                                
                             </div>
                             
                         </div>
+
+                        <hr size="1">
                    
                         <div class="row">
                             <div class="col-md-12 text-end">

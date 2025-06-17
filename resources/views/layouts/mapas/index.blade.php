@@ -110,7 +110,7 @@
                         </div>
                     </div>
 
-                    <div class="table mt-3 mb-1 mx-auto">
+                    <div class="table-responsive mt-3 mb-1 mx-auto">
                         <table id="listaMapas" class="table table-bordered">
                             <thead class="table-light">
                                 <tr>

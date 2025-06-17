@@ -965,6 +965,23 @@ class ExamenesCuentaController extends Controller
         return response()->json($query);
     }
 
+    public function contadorPagos(Request $request)
+    {
+        $query = ExamenCuentaIt::join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
+            ->select(
+                'pagosacuenta.Tipo as Tipo',
+                'pagosacuenta.Suc as Sucursal',
+                'pagosacuenta.Nro as NroFactura',
+                 DB::raw('COUNT(DISTINCT pagosacuenta_it.IdPago) as contador')
+            )
+            ->where('pagosacuenta_it.IdPrestacion', $request->Id)
+            ->distinct()
+            ->groupBy('pagosacuenta.Tipo', 'pagosacuenta.Suc', 'pagosacuenta.Nro')
+            ->get();
+
+        return response()->json($query);
+    }
+
     private function tituloReporte(?int $id): mixed
     {
         return ExamenCuenta::join('clientes', 'pagosacuenta.IdEmpresa', '=', 'clientes.Id')

@@ -8,6 +8,14 @@ $(function(){
         grillaEfectores:  {
             echo: window.Echo.channel('grilla-efectores'),
             canal: '.GrillaEfectoresEvent'
+        },
+        liberarAtencion: {
+            echo: window.Echo.channel('liberar-atencion'),
+            canal: '.LiberarPacientesEvent'
+        },
+        asignarProfesional: {
+            echo: window.Echo.channel('asignar-profesional'),
+            canal: '.AsignarProfesionalEvent'
         }
     };
 
@@ -48,11 +56,14 @@ $(function(){
                     toastr.info('Se ha actualizado el listado de profesionales');
 
                     variables.profesional.append('<option value="" selected>Elija una opción...</option>');
-                    $.each(efectores, function(index, value){
-                        let contenido = `<option value="${value.Id}">${value.NombreCompleto}</option>`;
+
+                    for(let index = 0; index <= efectores.length; index++) {
+                        let value = efectores[index],
+                            contenido = `<option value="${value.Id}">${value.NombreCompleto}</option>`;
 
                         variables.profesional.append(contenido);
-                    });
+
+                    }
 
                 } else {
                     variables.profesional.append(
@@ -109,5 +120,44 @@ $(function(){
             botonLlamada.show();
         }
     });
+
+    socket.liberarAtencion
+        .echo
+        .listen(socket.liberarAtencion.canal, async function(response) {
+
+            let idsAtencion = response.liberar;
+
+            idsAtencion = [...new Set(idsAtencion)];
+
+            for (let index = 0; index < idsAtencion.length; index++) {
+
+                let id = idsAtencion[index],
+                    fila = $(`tr[data-id="${id}"]`),
+                    botonLlamada = fila.find('.llamarExamen, .liberarExamen'),
+                    botonAtender = fila.find('.atenderPaciente'),
+                    mensajeOcupado = fila.find('.mensaje-ocupado');
+
+                     botonLlamada.removeClass(principal.liberarExamen)
+                        .addClass(principal.llamarExamen)
+                        .html('<i class="ri-edit-line"></i> Llamar');
+                    
+                    botonAtender.hide();
+                    fila.find('td').css('color', 'green');
+                    mensajeOcupado.remove();
+                    botonLlamada.show();
+            }
+        });
+
+    socket.asignarProfesional
+        .echo
+        .listen(socket.asignarProfesional.canal, async function(response) {
+            let data = response.profesional,
+                fila = $(`tr.listadoAtencion[data-id="${data.itemprestacion}"]`);
+
+            if(!fila.length) return;
+
+            let celda = fila.find('td').eq(4);
+            celda.empty().text(data.profesional);
+        });
 
 });

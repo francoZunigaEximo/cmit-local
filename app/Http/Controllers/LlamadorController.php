@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\AsignarProfesionalEvent;
 use App\Events\GrillaEfectoresEvent;
 use App\Events\LstProfesionalesEvent;
+use App\Models\ItemPrestacion;
 use Illuminate\Http\Request;
 use App\Models\Llamador;
 use App\Models\Prestacion;
@@ -20,7 +22,7 @@ use App\Services\Roles\Utilidades;
 
 class LlamadorController extends Controller
 {
-    protected $listadoProfesionales;
+    protected $profesionales;
     protected $reporteExcel;
     protected $getExamenes;
     protected $utilidades;
@@ -29,13 +31,13 @@ class LlamadorController extends Controller
     const TIPOS = ['Efector', 'Informador'];
 
     public function __construct(
-        Profesionales $listadoProfesionales, 
+        Profesionales $profesionales, 
         ReporteExcel $reporteExcel,
         Examenes $getExamenes,
         Utilidades $utilidades
         )
     {
-        $this->listadoProfesionales = $listadoProfesionales;
+        $this->profesionales = $profesionales;
         $this->reporteExcel = $reporteExcel;
         $this->getExamenes = $getExamenes;
         $this->utilidades = $utilidades;
@@ -49,7 +51,7 @@ class LlamadorController extends Controller
 
         if ($this->utilidades->checkTipoRol($user->name, SELF::ADMIN)) {
 
-            $efectores = $this->listadoProfesionales->listado('Efector');
+            $efectores = $this->profesionales->listado('Efector');
             event(new LstProfesionalesEvent($efectores));
 
         }else if($this->utilidades->checkTipoRol($user->name, [SELF::TIPOS[0]])) {
@@ -202,6 +204,31 @@ class LlamadorController extends Controller
     {
         $query = Llamador::where('prestacion_id', $request->id)->first();
         return response()->json($query);
+    }
+
+    public function asignarProfesional(Request $request)
+    {
+        $query = ItemPrestacion::find($request->Id);
+
+        if($query)  {
+            $query->IdProfesional = $request->estado == 'true' ? $request->Profesional : 0;
+            $query->save();
+
+            $msg = $request->estado == 'true'
+                ? 'Se ha asignado el profesional al exámen'
+                : 'Se ha desasignado el profesional al exámen';
+
+            $profesional = $request->estado == 'true' ? $this->profesionales->getProfesional($request->Profesional) : null;
+
+            $data = [
+                'itemprestacion' => $request->Id,
+                'profesional' => $profesional?->NombreCompleto
+            ];
+
+                event(new AsignarProfesionalEvent($data));
+
+            return response()->json(['msg' => $msg], 200);
+        }
     }
 
     private function queryBasico(?int $idProfesional = null)

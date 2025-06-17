@@ -116,7 +116,7 @@
                     </div>
 
                 </div>
-                <div class="col-3 box-information mx-auto">
+                <div class="col-4 box-information mx-auto">
                     <div class="profile-user position-relative d-inline-block mx-auto mb-2">
                         <div id="profile-image-preview" class="img-thumbnail user-profile-image" style="background-size: cover; background-position: center; width: 200px; height: 140px; background-image: url('@fileUrl('lectura')/Fotos/{{ $paciente->Foto}}?v={{ time() }}') "></div>
                     <div class="avatar-xs p-0 rounded-circle profile-photo-edit">
@@ -192,7 +192,7 @@
                             </div>
                         </div>
                         
-                        <div class="table mt-3 mb-1 mx-auto">
+                        <div class="table-responsive mt-3 mb-1 mx-auto">
                             <table id="listaPacientes" class="table table-bordered">
                                 <thead class="table-light">
                                     <tr>
@@ -675,13 +675,13 @@
                                                 <option value="R">R</option>
                                                 <option value="Z">Z</option>
                                             </select>
-                                            <input type="text"  class="form-control" placeholder="nro sucursal" id="ElSucursal">
-                                            <input type="text"  class="form-control" placeholder="nro de factura" id="ElNroFactura">
+                                            <input type="text"  class="form-control" placeholder="nro sucursal" id="ElSucursal" name="ElSucursal">
+                                            <input type="text"  class="form-control" placeholder="nro de factura" id="ElNroFactura" name="ElNroFactura">
                                         </div>
 
                                         <div class="input-group input-group-sm mb-2 NroFactProv">
                                             <span class="input-group-text">Nro Factura Provisoria</span>
-                                            <input type="text" class="form-control" placeholder="Numero de factura provisoria" id="ElNroFactProv">
+                                            <input type="text" class="form-control" placeholder="Numero de factura provisoria" id="ElNroFactProv" name="ElNroFactProv">
                                         </div>
 
                                         <div class="input-group input-group-sm mb-2 Autoriza">
@@ -691,6 +691,7 @@
                                                 <option value="Lucas Grunmann">Lucas Grunmann</option>
                                             </select>
                                         </div>
+                                        <input type="hidden" id="facturacion_id">
 
                                     </div>
                             </div>
@@ -725,7 +726,7 @@
                                             <h4 class="card-title mb-0">Ultimas prestaciones facturadas</h4>
                                         </div>
                                         <div class="card-body">
-                                            <div class="table mb-1 col-sm-12">
+                                            <div class="table-resposive mb-1 col-sm-12">
                                                 <table id="lstDisponibles" class="table table-bordered">
                                                     <thead class="table-light">
                                                     </thead>
@@ -745,7 +746,7 @@
                                             <h4 class="card-title mb-0">Examenes a cuenta disponibles <span class="small">(Total: <span id="totalCantidad"></span>)</span></h4>
                                         </div>
                                         <div class="card-body">
-                                            <div class="col-sm-12">
+                                            <div class="table-responsive col-sm-12">
                                                 <table id="lstDisponibles" class="table table-bordered dt-responsive nowrap table-striped align-middle dataTable no-footer dtr-inline collapsed">
                                                     <thead class="table-light">
                                                         <tr>
@@ -993,7 +994,7 @@
                                             <h4 class="card-title mb-0">Observaciones privadas</h4>
                                         </div>
                                         <div class="card-body">
-                                            <div class="table-card mb-1">
+                                            <div class="table-responsive table-card mb-1">
                                                 <table id="lstPrivPrestaciones" class="table table-bordered">
                                                     <thead class="table-light">
                                                         <tr>
@@ -1057,7 +1058,7 @@
                             <i class="ri-arrow-left-line"></i> Volver a la prestación
                         </button>
                         <div class="row auto-mx mb-3">
-                            <div class="table mt-3 mb-1 mx-auto col-sm-7">
+                            <div class="table-responsive mt-3 mb-1 mx-auto col-sm-12">
                                 <table id="listadoResultadosPres" class="table table-bordered">
                                     <thead class="table-light">
                                         <tr>

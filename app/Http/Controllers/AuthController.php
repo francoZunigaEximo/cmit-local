@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\LiberarPacientesEvent;
 use App\Events\LstProfesionalesEvent;
 use App\Models\User;
 use Carbon\Carbon;
@@ -18,18 +19,16 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 
-use function PHPUnit\Framework\isEmpty;
-use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
     CONST PASS = "cmit1234";
 
-    protected $listadoProfesionales;
+    protected $profesional;
 
-    public function __construct(Profesionales $listadoProfesionales)
+    public function __construct(Profesionales $profesional)
     {
-        $this->listadoProfesionales = $listadoProfesionales;
+        $this->profesional = $profesional;
     }
 
     public function login(Request $request)
@@ -76,7 +75,7 @@ class AuthController extends Controller
 
             if ($roles->contains('Efector') || $roles->contains('Informador')) {
 
-                $efectores = $this->listadoProfesionales->listado('Efector');
+                $efectores = $this->profesional->listado('Efector');
                 event(new LstProfesionalesEvent($efectores));
 
                 return redirect()->route('mapas.index');
@@ -132,8 +131,13 @@ class AuthController extends Controller
         }
 
         $this->session_user_logout($request->Id);
+        $idsPacientes = $this->profesional->desocuparPaciente($request->Id);
 
-        $efectores = $this->listadoProfesionales->listado('Efector');
+        if(!empty($idsPacientes)) {
+            event(new LiberarPacientesEvent($idsPacientes));
+        }
+
+        $efectores = $this->profesional->listado('Efector');
         event(new LstProfesionalesEvent($efectores));
 
         return $request->forzar 
@@ -148,7 +152,7 @@ class AuthController extends Controller
         Auth::logout();
         request()->session()->regenerateToken();// Regenera el token CSRF
 
-        $efectores = $this->listadoProfesionales->listado('Efector');
+        $efectores = $this->profesional->listado('Efector');
         event(new LstProfesionalesEvent($efectores));
 
         return redirect()
