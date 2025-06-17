@@ -17,7 +17,7 @@ $(document).ready(() => {
     preloader('on');
 
     $.ajax({
-        url: getExamenes,
+        url: getPaqueteFacturacionId,
         type: 'get',
         data: {
             _token: TOKEN,
@@ -360,9 +360,6 @@ $("#btnRegistrar").on('click', function (e) {
                 return;
             });
 
-    } else {
-        preloader('off');
-        toastr.warning("Tiene que ingresar nombre, descricpion y seleccionar al menos un examen", '', { timeOut: 1000 });
     }
 });
 
@@ -381,7 +378,7 @@ function validaciones(){
     if (!$("#grupoSelect2").val() && !$("#empresaSelect2").val()) {
         mensaje += "Debe seleccionar un grupo o una empresa.\n";
     }
-    if (examenes.length === 0) {
+    if (examenes.length == examenesEliminar.length && examenesNuevos.length === 0) {
         mensaje += "Debe agregar al menos un examen al paquete.\n";
     }
     if (mensaje) {

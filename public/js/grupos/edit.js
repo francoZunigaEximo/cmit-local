@@ -150,7 +150,7 @@ $("#btnRegistrar").on('click', function (e) {
     let nombre = $("#nombregrupo").val();
 
 
-    if (nombre) {
+    if (validaciones()) {
         $.post(postEditGrupoCliente, {
             _token: TOKEN,
             Id: id,
@@ -169,8 +169,21 @@ $("#btnRegistrar").on('click', function (e) {
                 return;
             });
 
-    } else {
-        preloader('off');
-        toastr.warning("Tiene que ingresar nombre, descricpion y seleccionar al menos un examen", '', { timeOut: 1000 });
     }
 });
+
+function validaciones() {
+    let mensaje = "";
+    if (!$("#nombregrupo").val()) {
+        mensaje += "Debe ingresar un nombre para el grupo.\n";
+    }
+    if (clientesEliminar.length == clientes.length && clientesNuevos.length == 0) {
+        mensaje += "Debe seleccionar al menos un cliente.\n";
+    }
+    if (mensaje) {
+        preloader('off');
+        toastr.warning(mensaje, '', { timeOut: 1000 });
+        return false;
+    }
+    return true;
+}

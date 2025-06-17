@@ -15,13 +15,13 @@
         <div class="row">
             <div class="col-2 p-1">
                 <div>
-                    <label for="" class="form-label">Codigo:</label>
+                    <label for="" class="form-label">Codigo  <span class="required" aria-required="true">(*)</span>:</label>
                     <input type="text" class="form-control" id="codigo" value="{{$Codigo}}" disabled>
                 </div>
             </div>
             <div class="col-10 p-1">
                 <div>
-                    <label for="" class="form-label">Nombre:</label>
+                    <label for="" class="form-label">Nombre  <span class="required" aria-required="true">(*)</span>:</label>
                     <input type="text" class="form-control" id="nombregrupo">
                 </div>
             </div>

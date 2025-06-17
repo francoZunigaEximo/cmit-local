@@ -113,7 +113,7 @@ $('.agregarCliente').on('click', function (e) {
         preloader('on');
         let nombre = $("#nombregrupo").val();
 
-        if (nombre) {
+        if (validaciones()) {
             $.post(postGrupoCliente, {
                 _token: TOKEN,
                 Nombre: nombre,
@@ -130,8 +130,23 @@ $('.agregarCliente').on('click', function (e) {
                     return;
                 });
 
-        } else {
-            preloader('off');
-            toastr.warning("Tiene que ingresar nombre", '', { timeOut: 1000 });
         }
     });
+
+function validaciones() {
+    let mensaje = "";
+    if (!$("#nombre").val()) {
+        mensaje += "Debe ingresar un nombre para el grupo.\n";
+    }
+
+    if (clientes.length === 0) {
+        mensaje += "Debe agregar al menos un cliente al grupo.\n";
+    }
+
+    if (mensaje) {
+        preloader('off');
+        toastr.warning(mensaje, '', { timeOut: 3000 });
+        return false;
+    }
+    return true;
+}

@@ -386,9 +386,6 @@ $('#btnRegistrar').on('click', function (e) {
                     return;
                 }
             });
-        } else {
-            preloader('off');
-            toastr.warning("Si selecciona una empresa no puede seleccionar un grupo y viseversa.", '', { timeOut: 3000 });
         }
     }
 });
