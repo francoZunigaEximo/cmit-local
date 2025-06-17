@@ -403,7 +403,7 @@ class ProfesionalesController extends Controller
                 'roles.Id as Id'
             )
             ->where('users.profesional_id', $request->Id)
-            ->whereIn('roles.nombre', ["Efector", "Informador", "Evaluador", "Combinado", "Evaluador ART"])
+            ->whereIn('roles.nombre', ["Administrador", "Efector", "Informador", "Evaluador", "Combinado", "Evaluador ART"])
             ->groupBy('roles.nombre')
             ->get(); 
     }
@@ -413,7 +413,7 @@ class ProfesionalesController extends Controller
 
         $especialidad = ProfesionalProv::join('proveedores', 'profesionales_prov.IdProv', '=', 'proveedores.Id')
             ->where('profesionales_prov.IdProf', $request->Id)
-            ->where('profesionales_prov.Tipo', $request->Tipo)
+            ->where('profesionales_prov.IdRol', $request->Tipo)
             ->select('proveedores.Nombre')
         ->get();
 
@@ -422,7 +422,7 @@ class ProfesionalesController extends Controller
 
     public function savePrestador(Request $request)
     {
-        $arr = ['t1' => 'Efector', 't2' => 'Informador', 't3' => 'Evaluador', 't4' => 'Combinado'];
+        $arr = ['efector' => 'Efector', 'informador' => 'Informador', 'evaluador' => 'Evaluador', 'combinado' => 'Combinado', 'evaluador art' => 'Evaluador ART'];
         $prestador = $arr[$request->perfil]. '|' . $request->especialidad;
         session()->put('mProf', '1');
         session()->put('choiseT', $prestador);

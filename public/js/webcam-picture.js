@@ -26,6 +26,7 @@ function toggleWebcam() {
 }
 
 function takeSnapshot() {
+
     Webcam.snap(function (data_uri) {
         let imageTag = document.querySelector('.image-tag');
         let imagePreview = document.getElementById('profile-image-preview');
@@ -34,10 +35,9 @@ function takeSnapshot() {
         imagePreview.style.backgroundImage = "url('" + data_uri + "')";
         imagePreview.style.backgroundSize = 'cover';
         imagePreview.style.backgroundPosition = 'center';
- 
+
         // Desactivar la webcam después de tomar la foto
         Webcam.reset();
         isWebcamActive = false;
     });
-
 }

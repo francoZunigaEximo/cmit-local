@@ -95,9 +95,13 @@
                         <div class="dropdown ms-sm-3 header-item topbar-user">
                             <button type="button" class="btn" id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span class="d-flex align-items-center">
-                                    <img class="rounded-circle header-profile-user" src="{{ asset('images/users/cmit.jpg') }}" alt="Header Avatar">
                                     <span class="text-start ms-xl-2">
-                                        <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text">{{ ucfirst(Auth::user()->name) }} 
+                                        <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text">{{ ucfirst(Auth::user()->name) }} <h6><span class="badge text-bg-info">{{ (session('choiseT') === '0' ? strtoupper(Auth::user()->role) : session('choiseT')) }}</span></h6>
+                                        
+                                        @if(Auth::user()->Rol === 'Prestador' && Auth::user()->profesional->TLP === 1)
+                                            
+                                        <button type="button" data-bs-toggle="modal" data-bs-target="#choisePModal" class="btn btn-primary btn-label rounded-pill"><i class=" ri-anticlockwise-line label-icon align-middle rounded-pill fs-16 me-2"></i> Cambiar perfil</button>
+                                        @endif
                                         </span>
                                     </span>
                                 </span>
@@ -322,6 +326,40 @@
 
     @stack('modal')
 
+    <div id="choisePModal" class="modal fadeInUp" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myModalLabel">Seleccione el perfil del profesional</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>   
+                </div>
+                <div class="modal-body">
+                    <div class="message-sesion"></div>
+                    <form>
+                        <div class="mb-3">
+                            <label for="choisePerfil" class="col-form-label">Perfil</label>
+                            <select class="form-control" name="choisePerfil" id="choisePerfil">
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="choiseEspecialidad" class="col-form-label">Especialidad</label>
+                            <select class="form-control" name="choiseEspecialidad" id="choiseEspecialidad">
+                                <option value="" selected>Elija una opción...</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <button type="button" class="btn btn-primary cargarPrestador">Seleccionar</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                </div>
+    
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
     <div class="offcanvas offcanvas-top" tabindex="-1" id="prestacionFast" aria-labelledby="prestacionFastLabel">
         <div class="offcanvas-header">
             <h5 class="offcanvas-title" id="prestacionFastLabel">Prestación rápida:</h5>
@@ -343,6 +381,12 @@
     </div>
 
     <script>
+
+        const mprof = "{{ session('mProf') }}";
+        const choiseT = "{{ session('choiseT') }}";
+
+        const IDSESSION = "{{ Auth::user()->profesional_id }}";
+        const tlp = "{{ Auth::user()->profesional->TLP }}";
 
         const choisePerfil = "{{ route('choisePerfil')}}";
         const choiseEspecialidad = "{{ route('choiseEspecialidad') }}";
