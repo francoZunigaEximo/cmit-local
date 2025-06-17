@@ -1,4 +1,7 @@
-let tabla = new DataTable("#listaExamenesPaquetes");
+let tabla = new DataTable("#listaExamenesPaquetes",{
+    searching: false,
+    lengthChange: false,
+});
 
 let examenes = [];
 let examenesNuevos = [];
@@ -333,7 +336,7 @@ $("#btnRegistrar").on('click', function (e) {
     let idGrupo = $("#grupoSelect2").val();
     let idEmpresa = $("#empresaSelect2").val();
 
-    if (nombre && descripcion) {
+    if ( validaciones() ) {
         $.post(postEditPaqueteFactutacion, {
             _token: TOKEN,
             id: id,
@@ -362,3 +365,29 @@ $("#btnRegistrar").on('click', function (e) {
         toastr.warning("Tiene que ingresar nombre, descricpion y seleccionar al menos un examen", '', { timeOut: 1000 });
     }
 });
+
+
+function validaciones(){
+    let mensaje = "";
+    if (!$("#nombre").val()) {
+        mensaje += "Debe ingresar un nombre para el paquete.\n";
+    }
+    if (!$("#alias").val()) {
+        mensaje += "Debe ingresar un alias para el paquete.\n";
+    }
+    if (!$("#codigo").val()) {
+        mensaje += "Debe ingresar un código para el paquete.\n";
+    }
+    if (!$("#grupoSelect2").val() && !$("#empresaSelect2").val()) {
+        mensaje += "Debe seleccionar un grupo o una empresa.\n";
+    }
+    if (examenes.length === 0) {
+        mensaje += "Debe agregar al menos un examen al paquete.\n";
+    }
+    if (mensaje) {
+        preloader('off');
+        toastr.warning(mensaje, '', { timeOut: 3000 });
+        return false;
+    }
+    return true;
+}

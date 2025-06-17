@@ -91,7 +91,10 @@ class GrupoClientesController extends Controller
         ]);
 
         foreach ($empresas as $empresa) {
+            $idRegulacionGrupo = RelacionGrupoCliente::max('Id') + 1;
+
             RelacionGrupoCliente::create([
+                'Id' => $idRegulacionGrupo,
                 'IdGrupo' => $id,
                 'IdCliente' => $empresa['Id'],
                 'Baja' => 0
@@ -125,7 +128,9 @@ class GrupoClientesController extends Controller
         ]);
 
         foreach ($nuevosClientes as $nuevos) {
+            $idRegulacionGrupo = RelacionGrupoCliente::max('Id') + 1;
             RelacionGrupoCliente::create([
+                'Id' => $idRegulacionGrupo,
                 'IdGrupo' => $id,
                 'IdCliente' => $nuevos['Id'],
                 'Baja' => 0

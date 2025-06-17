@@ -1,7 +1,10 @@
 let clientes = [];
 let clientesRenderizar = [];
 
-let tabla = new DataTable("#listaEmpresas");
+let tabla = new DataTable("#listaEmpresas",{
+    searching: false,
+    lengthChange: false,
+});
 const params = new URLSearchParams(window.location.search);
 
 $(function () {

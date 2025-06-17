@@ -17,13 +17,13 @@
             <div class="row">
                 <div class="col-2 p-1">
                     <div>
-                        <label for="" class="form-label">Codigo:</label>
+                        <label for="" class="form-label">Codigo <span class="required" aria-required="true">(*)</span>:</label>
                         <input type="text" class="form-control"  value="{{$codigo}}" disabled>
                     </div>
                 </div>
                 <div class="col-10 p-1">
                     <div>
-                        <label for="" class="form-label">Nombre:</label>
+                        <label for="" class="form-label">Nombre <span class="required" aria-required="true">(*)</span>:</label>
                         <input type="text" class="form-control" id="nombre">
                     </div>
                 </div>
@@ -31,7 +31,7 @@
             <div class="row">
                 <div class="col-12 p-1">
                     <div>
-                        <label for="" class="form-label">Codigo:</label>
+                        <label for="" class="form-label">Codigo <span class="required" aria-required="true">(*)</span>:</label>
                         <input type="text" class="form-control" id="codigo">
                     </div>
                 </div>
@@ -39,7 +39,7 @@
             <div class="row">
                 <div class="col-12 p-1">
                     <div>
-                        <label for="" class="form-label">Alias:</label>
+                        <label for="" class="form-label">Alias <span class="required" aria-required="true">(*)</span>:</label>
                         <input type="text" class="form-control" id="alias">
                     </div>
                 </div>
@@ -56,6 +56,9 @@
         </div>
     </form>
     <div class="col-12 p-3 border border-1 border-color mt-1" style="border-color: #666666;">
+        <div class="row">
+            <label for="" class="form-label">Obligatorio <span class="required" aria-required="true">(*)</span>:</label>
+        </div>
         <div class="row">
             <div class="col-6 p-1">
                 <div>

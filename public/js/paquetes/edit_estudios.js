@@ -1,4 +1,7 @@
-let tabla = new DataTable("#listaExamenesPaquetes");
+let tabla = new DataTable("#listaExamenesPaquetes",{
+    searching: false,
+    lengthChange: false,
+});
 
 let examenes = [];
 let examenesNuevos = [];

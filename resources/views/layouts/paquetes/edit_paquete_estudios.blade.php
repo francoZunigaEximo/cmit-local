@@ -6,7 +6,7 @@
 
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
     <h4 class="mb-sm-0">Editar Paquete de Estudios</h4>
-    <a href="{{ route('paquetes.crearPaqueteExamen') }}?id={{$paquete->Id}}" class="btn botonGeneral">Copiar</a>
+    <a href="{{ route('paquetes.crearPaqueteExamen') }}?id={{$paquete->Id}}" class="btn botonGeneral">Clonar</a>
 </div>
 
 <div class="container-fluid">
