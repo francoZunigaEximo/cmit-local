@@ -183,7 +183,7 @@
                                 </div>
 
                                 <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="checkbox" id="Cerrado" name="Cerrado" {{ ($examene->Cerrado === 1 ? 'checked' : '') }} {{ (Auth::user()->Rol === 'Admin' && Auth::user()->profesional->T1 === 1 ? '' : 'disabled title="Debe ser Administrador y Efector"') }}>
+                                        <input class="form-check-input" type="checkbox" id="Cerrado" name="Cerrado" {{ ($examene->Cerrado === 1 ? 'checked' : '') }} {{ (Auth::user()->role()->where('nombre', 'Administrador')->exists() ? '' : 'disabled title="Debe ser Administrador y Efector"') }}>
                                     <label class="form-check-label" for="Informe">Cerrado</label>
                                 </div>
 
@@ -233,7 +233,6 @@
 
 
 <script>
-    const TOKEN = "{{ @csrf_token() }}";
     const ID = "{{ $examene->Id }}";
     const GOCREATE = "{{ route('examenes.create') }}";
     const GOINDEX = "{{ route('examenes.index') }}";
@@ -243,6 +242,8 @@
     const delAlias = "{{ route('aliasExamenes.del') }}";
     const cargar = "{{ route('aliasExamenes.getList') }}";
     const optionEx = "{{ route('aliasExamenes.getExamenSelect')}}"
+    const vistaPrevia = "{{ route('examenes.getVistaPrevia')}}"
+    const archivos = "{{ url('archivos/reportes') }}"
 </script>
 
 @push('styles')

@@ -13,7 +13,7 @@ class EEstudio extends Reporte
     {
         $prestacion = $this->prestacion($datos['id']);
         
-        $pdf->Image(public_path(ReporteConfig::$URLPORTADA),1,0,209); 
+        $pdf->Image(url('/').ReporteConfig::$URLPORTADA,1,0,209); 
             $y=220;
         $pdf->SetFont('Arial','B',14);
         $pdf->SetTextColor(255, 255, 255, 255);//white

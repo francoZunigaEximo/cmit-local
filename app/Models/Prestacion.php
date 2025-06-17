@@ -49,7 +49,7 @@ class Prestacion extends Model
         'FechaFact',
         'Evaluacion',
         'Anulado',
-        'NroFactProv'
+        'datos_facturacion_id'
     ];
 
     public $timestamps = false;
@@ -111,7 +111,7 @@ class Prestacion extends Model
 
     public function facturadeventa()
     {
-        return $this->hasMany(FacturaDeVenta::class, 'IdPrestacion', 'Id');
+        return $this->hasOne(FacturaDeVenta::class, 'IdPrestacion', 'Id');
     }
 
     public function datoPaciente()
@@ -122,5 +122,10 @@ class Prestacion extends Model
     public function llamador()
     {
         return $this->belongsTo(Llamador::class, 'profesional_id', 'Id');
+    }
+
+    public function detalleFactura()
+    {
+        return $this->hasOne(FichaPrestacionFactura::class, 'id', 'datos_facturacion_id');
     }
 }

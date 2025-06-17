@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\AsignarProfesionalEvent;
 use App\Events\GrillaEfectoresEvent;
+use App\Events\LstProfesionalesEvent;
+use App\Models\ItemPrestacion;
 use Illuminate\Http\Request;
 use App\Models\Llamador;
 use App\Models\Prestacion;
@@ -19,7 +22,7 @@ use App\Services\Roles\Utilidades;
 
 class LlamadorController extends Controller
 {
-    protected $listadoProfesionales;
+    protected $profesionales;
     protected $reporteExcel;
     protected $getExamenes;
     protected $utilidades;
@@ -28,35 +31,35 @@ class LlamadorController extends Controller
     const TIPOS = ['Efector', 'Informador'];
 
     public function __construct(
-        Profesionales $listadoProfesionales, 
+        Profesionales $profesionales, 
         ReporteExcel $reporteExcel,
         Examenes $getExamenes,
         Utilidades $utilidades
         )
     {
-        $this->listadoProfesionales = $listadoProfesionales;
+        $this->profesionales = $profesionales;
         $this->reporteExcel = $reporteExcel;
         $this->getExamenes = $getExamenes;
         $this->utilidades = $utilidades;
     }
 
-    public function efector(Request $request)
+    public function efector(Request $request) 
     { 
         $user = Auth::user()->load('personal');
-        $nombreCompleto = $user->personal->Apellido . ' ' . $user->personal->Nombre;
 
         $efectores = null;
 
-        if ($this->utilidades->checkTipoRol(Auth::user()->name, SELF::ADMIN)) {
+        if ($this->utilidades->checkTipoRol($user->name, SELF::ADMIN)) {
 
-            $efectores = $this->listadoProfesionales->listado('Efector');
+            $efectores = $this->profesionales->listado('Efector');
+            event(new LstProfesionalesEvent($efectores));
 
-        }else if($this->utilidades->checkTipoRol(Auth::user()->name, [SELF::TIPOS[0]])) {
+        }else if($this->utilidades->checkTipoRol($user->name, [SELF::TIPOS[0]])) {
 
             $efectores = collect([
                 (object)[
-                    'Id' => Auth::user()->profesional_id,
-                    'NombreCompleto' => $nombreCompleto,
+                    'Id' => $user->profesional_id,
+                    'NombreCompleto' => $user->personal->nombre_completo,
                 ]
             ]);
         }
@@ -146,21 +149,19 @@ class LlamadorController extends Controller
 
     public function verPaciente(Request $request)
     {
-        $nombreCompleto = '';
         $especialidades = explode(',', $request->Especialidades);
 
         $prestacion = Prestacion::with(['paciente','empresa','art'])->where('Id', $request->Id)->first();
         $itemsprestaciones = $this->getExamenes->getAllItemsprestaciones($request->Id, $especialidades);
 
-        if (is_numeric($request->IdProfesional) && $request->IdProfesional == 'undefined') {
+        if (is_numeric($request->IdProfesional) && $request->IdProfesional !== 'undefined') {
             $datos = User::with('personal')->where('profesional_id', $request->IdProfesional)->first();
-            $nombreCompleto = $datos->personal->Apellido.' '.$datos->personal->Nombre;
         } 
 
         if($prestacion) {
             return response()->json([
                 'prestacion' => $prestacion, 
-                'profesional' => $nombreCompleto,
+                'profesional' => $datos->personal->nombre_completo ?? '',
                 'itemsprestaciones' => $itemsprestaciones,
             ]);
         }
@@ -177,7 +178,8 @@ class LlamadorController extends Controller
             
             $data = [
                 'status' => 'liberado', 
-                'msg' => "Se ha liberado la prestación {$query->Id } del paciente {$query->prestacion->paciente->nombre_completo} "
+                'msg' => "Se ha liberado la prestación {$query->Id } del paciente {$query->prestacion->paciente->nombre_completo} ",
+                'prestacion' => $request->prestacion
             ];
         
         }else{
@@ -200,8 +202,33 @@ class LlamadorController extends Controller
 
     public function checkLlamado(Request $request)
     {
-        $query = Llamador::where('prestacion_id', $request->id)->exists();
+        $query = Llamador::where('prestacion_id', $request->id)->first();
         return response()->json($query);
+    }
+
+    public function asignarProfesional(Request $request)
+    {
+        $query = ItemPrestacion::find($request->Id);
+
+        if($query)  {
+            $query->IdProfesional = $request->estado == 'true' ? $request->Profesional : 0;
+            $query->save();
+
+            $msg = $request->estado == 'true'
+                ? 'Se ha asignado el profesional al exámen'
+                : 'Se ha desasignado el profesional al exámen';
+
+            $profesional = $request->estado == 'true' ? $this->profesionales->getProfesional($request->Profesional) : null;
+
+            $data = [
+                'itemprestacion' => $request->Id,
+                'profesional' => $profesional?->NombreCompleto
+            ];
+
+                event(new AsignarProfesionalEvent($data));
+
+            return response()->json(['msg' => $msg], 200);
+        }
     }
 
     private function queryBasico(?int $idProfesional = null)

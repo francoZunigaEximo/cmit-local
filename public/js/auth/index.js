@@ -1,5 +1,7 @@
 $(function(){
 
+    const tabla = $('#listaUsuarios');
+
     $('#nombre').select2({
         language: {
             noResults: function() {
@@ -205,6 +207,39 @@ $(function(){
             $('.dataTables_processing').hide();
         }, false);
 
+    });
+
+    $(document).on('click', '.forzarCierre', function(e){
+        e.preventDefault();
+
+        let id = $(this).data('id');
+
+        if([null, 0, undefined, ''].includes(id)) return;
+
+        swal({
+            title: "¿Esta seguro que deseas cerrar la sesion del usuario?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) =>{
+            if(confirmar){
+
+                preloader('on');
+                $.get(btnCerrarSesion, {Id: id, forzar: true})
+                    .done(function(response){
+                        preloader('off');
+                        toastr.success(response.msg);
+                        tabla.DataTable().draw(false);
+
+                    })
+                    .fail(function(jqXHR){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
+                    })
+
+            }
+        });
     });
 
 });

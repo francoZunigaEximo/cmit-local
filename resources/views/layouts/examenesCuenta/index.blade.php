@@ -208,7 +208,6 @@
     const getClientes = "{{ route('getClientes') }}";
     const searchExamen = "{{ route('searchExamen') }}";
     const getPacientes = "{{ route('getPacientes') }}";
-    const TOKEN = "{{ @csrf_token() }}";
     const SEARCH = "{{ route('searchExCuenta') }}";
     const INDEX = "{{ route('examenesCuenta.index') }}";
     const SALDOS = "{{ route('searchSaldo') }}";

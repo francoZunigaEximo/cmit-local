@@ -17,13 +17,13 @@
             <div class="row">
                 <div class="col-2 p-1">
                     <div>
-                        <label for="" class="form-label">Codigo:</label>
+                        <label for="" class="form-label">Codigo <span class="required" aria-required="true">(*)</span>:</label>
                         <input type="text" class="form-control" id="codigo" value="{{$paquete->Id}}" disabled>
                     </div>
                 </div>
                 <div class="col-10 p-1">
                     <div>
-                        <label for="" class="form-label">Nombre:</label>
+                        <label for="" class="form-label">Nombre <span class="required" aria-required="true">(*)</span>:</label>
                         <input type="text" class="form-control" id="nombre" value="{{$paquete->Nombre}}">
                     </div>
                 </div>
@@ -31,7 +31,7 @@
             <div class="row">
                 <div class="col-12 p-1">
                     <div>
-                        <label for="" class="form-label">Alias:</label>
+                        <label for="" class="form-label">Alias <span class="required" aria-required="true">(*)</span>:</label>
                         <input type="text" class="form-control" id="alias" value="{{$paquete->Alias}}">
                     </div>
                 </div>

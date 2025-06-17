@@ -171,7 +171,7 @@
                         </div>
                     </div>
 
-                    <div class="table w-100 mt-3 mb-1">
+                    <div class="table-responsive w-100 mt-3 mb-1">
 
                         <table id="listaPrestaciones" class="table nowrap align-middle">
                             <thead class="table-light">
@@ -262,14 +262,55 @@
     const setComentarioPres = "{{ route('setComentarioPres') }}";
     const searchPrestaciones = "{{ route('prestaciones.index') }}";
 
-    //Extras
-    const TOKEN = "{{ csrf_token() }}";
     const GOPACIENTES = "{{ route('pacientes.edit', ['paciente' => '__paciente__']) }}";
     const downPrestaActiva = "{{ route('prestaciones.baja') }}";
     const blockPrestacion = "{{ route('blockPrestacion') }}";
     const SEARCH = "{{ route('prestaciones.index') }}";
+    // const SEARCH = "{{ route('searchPrestaciones') }}";
 
-    const porcentajeExamen = "{{ route('porcentajeExamen') }}";
+    function exportExcel(tipo) {
+
+        var listaPrestaciones = $('#listaPrestaciones').DataTable();
+        
+        if (!listaPrestaciones.data().any() ) {
+            $('#listaPrestaciones').DataTable().destroy();
+            toastr.info('No existen registros para exportar', 'Atención');
+            return;
+        }
+
+
+        filters = "";
+        length  = $('input[name="Id"]:checked').length;
+
+        let data = listaPrestaciones.rows({ page: 'current' }).data().toArray();
+        let ids = data.map(function(row) {
+            return row.Id;
+    });
+
+        if(!['',0, null].includes(ids)) {
+            filters += "nroprestacion:" + $('#nroprestacion').val() + ",";
+            filters += "paciente:" + $('#pacienteSearch').val() + ",";
+            filters += "empresa:" + $('#empresaSearch').val() + ",";
+            filters += "art:" + $('#artSearch').val() + ",";
+            filters += "tipoPrestacion:" + $('#TipoPrestacion').val() + ",";
+            filters += "fechaDesde:" + $('#fechaDesde').val() + ",";
+            filters += "fechaHasta:" + $('#fechaHasta').val() + ",";
+            filters += "estado:" + $('#Estado').val() + ",";
+
+            if((fechaDesde == '' || fechaHasta == '') && nroprestacion == ''){
+                swal('Alerta','La fecha "Desde" y "Hasta" son obligatorias.', 'warning');
+                return;
+            }
+        }
+
+        var exportExcel = "{{ route('prestaciones.excel', ['ids' =>  'idsContent', 'filters' => 'filtersContent', 'tipo' => 'tipoContent']) }}";
+        exportExcel     = exportExcel.replace('idsContent', ids);
+        exportExcel     = exportExcel.replace('filtersContent', filters);
+        exportExcel     = exportExcel.replace('tipoContent', tipo);
+        exportExcel     = exportExcel.replaceAll('amp;', '');
+        window.location = exportExcel;
+    }
+
     const getClientes = "{{ route('getClientes') }}";
     const sendExcel = "{{ route('prestaciones.excel') }}";
 </script>

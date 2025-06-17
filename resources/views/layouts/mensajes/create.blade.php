@@ -40,7 +40,6 @@
 <script>
     const crearModelo = "{{ route('mensajes.modelos.save') }}";
     const listadoModelo = "{{ route('mensajes.modelos') }}";
-    const TOKEN = "{{ csrf_token() }}";
 </script>
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/hacks.css')}}?v=?v={{ time() }}">

@@ -17,13 +17,13 @@
             <div class="row">
                 <div class="col-2 p-1">
                     <div>
-                        <label for="" class="form-label">Codigo:</label>
+                        <label for="" class="form-label">Codigo <span class="required" aria-required="true">(*)</span>:</label>
                         <input type="text" class="form-control"  value="{{$paquete->Id}}" disabled>
                     </div>
                 </div>
                 <div class="col-10 p-1">
                     <div>
-                        <label for="" class="form-label">Nombre:</label>
+                        <label for="" class="form-label">Nombre <span class="required" aria-required="true">(*)</span>:</label>
                         <input type="text" class="form-control" value="{{$paquete->Nombre}}" id="nombre">
                     </div>
                 </div>
@@ -31,7 +31,7 @@
             <div class="row">
                 <div class="col-12 p-1">
                     <div>
-                        <label for="" class="form-label">Codigo:</label>
+                        <label for="" class="form-label">Codigo <span class="required" aria-required="true">(*)</span>:</label>
                         <input type="text" class="form-control" id="codigo" value="{{$paquete->Cod}}" >
                     </div>
                 </div>
@@ -39,7 +39,7 @@
             <div class="row">
                 <div class="col-12 p-1">
                     <div>
-                        <label for="" class="form-label">Alias:</label>
+                        <label for="" class="form-label">Alias <span class="required" aria-required="true">(*)</span>:</label>
                         <input type="text" class="form-control" id="alias" value="{{$paquete->Alias}}" >
                     </div>
                 </div>
@@ -126,11 +126,12 @@
     </div>
 </div>
 <script>
-    const TOKEN = "{{ csrf_token() }}";
-    const getExamenes = "{{ route('paquetes.getEstudiosPaqueteFacturacion') }}";
+    //const TOKEN = "{{ csrf_token() }}";
+    const getPaqueteFacturacionId = "{{ route('paquetes.getEstudiosPaqueteFacturacion') }}";
     const getPaquetes = "{{ route('getPaquetes') }}";
     const paqueteId = "{{ route('paqueteId') }}";
-    const getExamenId = "{{ route('examenes.getById') }}";
+    const getExamenes = "{{ route('examenes.getExamenes') }}";
+    const getExamenId = "{{ route('examenes.getById') }}"
 
     const postEditPaqueteFactutacion = "{{ route('paquetes.postEditPaqueteFactutacion') }}"
 
@@ -144,7 +145,6 @@
     const empresa = "{{ $empresa }}";
 
 </script>
-
 @push('styles')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 <link rel="stylesheet" href="{{ asset('css/hacks.css')}}?v={{ time() }}">
@@ -160,6 +160,7 @@
 
 <script src="{{ asset('js/jquery.validate.min.js') }}"></script>
 <script src="{{ asset('js/paquetes/edit_facturacion.js') }}?v={{ time() }}"></script>
+
 
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/i18n/es.js"></script>

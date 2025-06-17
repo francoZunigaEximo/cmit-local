@@ -626,7 +626,6 @@ public function searchPrestacion(Request $request)
         $writer = new Xlsx($spreadsheet);
         $writer->save($filePath);
         chmod($filePath, 0777);
-        $filePath = str_replace('/app/public','',$filePath);
 
         // Devolver la ruta del archivo generado
         return response()->json(['filePath' => $filePath]);  

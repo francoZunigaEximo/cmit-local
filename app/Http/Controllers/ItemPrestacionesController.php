@@ -985,6 +985,8 @@ class ItemPrestacionesController extends Controller
                     'Honorarios' => $honorarios == 'true' ? $honorarios->Honorarios : 0
                 ]);
 
+                !empty($request->idExaCta) || is_numeric($request->idExaCta) <> 0 ? $this->registrarPagoaCuenta($request->idExaCta, $request->idPrestacion) : null;
+
                 ItemPrestacion::InsertarVtoPrestacion($request->idPrestacion);
             }   
         }
@@ -1299,4 +1301,13 @@ class ItemPrestacionesController extends Controller
     }
 
 
+    private function registrarPagoaCuenta(int $IdPagoCtaIt, int $idPrestacion): void
+    {
+        $query = ExamenCuentaIt::find($IdPagoCtaIt);
+
+        if($query) {
+            $query->IdPrestacion = $idPrestacion;
+            $query->save();
+        }
+    }
 }

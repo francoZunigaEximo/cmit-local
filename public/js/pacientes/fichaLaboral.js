@@ -28,6 +28,7 @@ $(function () {
         guardarPrestacion: $('#guardarPrestacion'),
         selectMapaPres: $('.selectMapaPres'),
         selectMapaPresN: $('.selectMapaPresN'),
+        NroFactPrestacion: $('.NroFactPrestacion')
     };
 
     const variables = {
@@ -60,6 +61,8 @@ $(function () {
         ElNroFactura: $('#ElNroFactura'),
         ElAutorizado: $('#ElAutorizado'),
         ElNroFactProv: $('#ElNroFactProv'),
+        NroFactPrestacion: $('#NroFactPrestacion'),
+        facturacion_id: $('#facturacion_id')
     };
 
     const listOpciones = {
@@ -166,8 +169,9 @@ $(function () {
 
                 $.get(getFormaPagoART, {Id: variables.selectArt.val()}, function(response){
                     let formaPago = ['', null, undefined].includes(response.FPago) ? 'A' : response.FPago;
+                    
                     variables.PagoLaboral.val(formaPago);
-                    variables.PagoLaboral.css('color', 'green');
+                    variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde'); // color solo a la opcion requerida
                 });
             } 
 
@@ -188,6 +192,7 @@ $(function () {
                 <option value="A">Cuenta Corriente</option>
                 <option value="P">Exámen a Cuenta</option>`);
             variables.PagoLaboral.css('color', 'black');
+            $('input[name="TipoPrestacion"]').prop('checked', false); //Quitamos todos los checks y dejamos de cero
             return;
         };
 
@@ -320,6 +325,29 @@ $(function () {
         }
     });
 
+    variables.selectClientes.on('change', function(){
+        let value = $(this).val();
+
+        if([0,null,undefined,'0'].includes(value)) {
+            $('input[name="TipoPrestacion"]').prop('checked', false);
+            variables.PagoLaboral.val('');
+            principal.SPago
+                .add(principal.Tipo)
+                .add(principal.Sucursal)
+                .add(principal.Factura)
+                .add(principal.NroFactProv)
+                .add(principal.Autoriza)
+                .hide();
+            
+            variables.SPago
+                .add(variables.Tipo)
+                .add(variables.Sucursal)
+                .add(variables.NroFactura)
+                .add(variables.NroFactProv)
+                .val('');
+        }
+    });
+
     //Guardar FichaLaboral
     principal.guardarFicha.on('click', function(e){
         e.preventDefault();
@@ -354,7 +382,6 @@ $(function () {
             Autoriza: $('#Autorizado').val()
         };
     
-
         //Validamos la factura
         if (data.Spago === 'G' && data.Autoriza === ''){
             toastr.warning('Si el medio de pago es gratuito, debe seleccionar quien autoriza.', '', {timeOut: 1000});
@@ -429,7 +456,7 @@ $(function () {
         document.querySelector(".select2-container--open .select2-search__field").focus()
     });
     
-    principal.verListadoExCta.on('click', function(e){
+    $(document).on('click', '.verListadoExCta', function(e){
         e.preventDefault();
         principal.listadoExCta.show();
         principal.fichaLaboralModal.hide();
@@ -598,46 +625,55 @@ $(function () {
 
     function selectMedioPago(opcion){
 
-        if(opcion === 'B'){
+        variables.Tipo
+                .add(variables.Sucursal)
+                .add(variables.NroFactura)
+                .add(variables.NroFactProv)
+                .val('');
 
-            const contenido = `
-                <option value="" selected>Elija una opción...</option>
-                <option value="A">Efectivo</option>
-                <option value="B">Débito</option>
-                <option value="C">Crédito</option>
-                <option value="D">Cheque</option>
-                <option value="E">Otro</option>
-                <option value="F">Transferencia</option>
-                <option value="G">Sin Cargo</option>
-            `;
+        switch (opcion) {
+            case 'B':
+                 const contenido = `
+                    <option value="" selected>Elija una opción...</option>
+                    <option value="A">Efectivo</option>
+                    <option value="B">Débito</option>
+                    <option value="C">Crédito</option>
+                    <option value="D">Cheque</option>
+                    <option value="E">Otro</option>
+                    <option value="F">Transferencia</option>
+                    <option value="G">Sin Cargo</option>
+                `;
 
-            principal.SPago
-                .add(principal.Factura)
-                .add(principal.NroFactProv)
-                .add(principal.ObsPres)
-                .show();
-                
-            variables.SPago
-                .empty()
-                .append(contenido);
-       
-        }else if(opcion === 'C') {
-            principal.ObsPres
-                .add(principal.Factura)
+                principal.SPago
+                    .add(principal.Factura)
+                    .add(principal.NroFactProv)
+                    .add(principal.ObsPres)
+                    .show();
+                    
+                variables.SPago
+                    .empty()
+                    .append(contenido);
+                break;
+            
+            case 'A':
+                principal.ObsPres
                 .add(principal.NroFactProv)
                 .add(principal.SPago)
                 .hide();
             
-            principal.Autoriza.show();
-        }else{
-            principal.SPago
-                .add(principal.Autoriza)
-                .add(principal.ObsPres)
-                .add(principal.Factura)
-                .add(principal.NroFactProv)
-                .hide();
+                principal.Factura.show();
+                break;
+        
+            default:
+                principal.SPago
+                    .add(principal.Autoriza)
+                    .add(principal.ObsPres)
+                    .add(principal.Factura)
+                    .add(principal.NroFactProv)
+                    .hide();
+                break;
         }
-    };
+    }
 
     async function checkObservaciones() {
 
@@ -856,9 +892,9 @@ $(function () {
             IdART: data.art === '' ? 0 : data.art,
             tareaRealizar: data.tareaRealizar === '' ? '' : data.tareaRealizar,
             TipoPrestacion: data.tipoPrestacion === '' ? '' : data.tipoPrestacion,
-            TipoJornada: data.tipo === '' ? '' : data.tipo,
+            TipoJornada: data.tipo ?? '',
             Pago: data.pago === '' ? '' : data.pago,
-            Jornada: data.horario === '' ? '' : data.horario,
+            Jornada: data.horario ?? '',
             Observaciones: data.observaciones === '' ? '' : data.observaciones,
             TareasEmpAnterior: data.ultimoPuesto === '' ? '' : data.ultimoPuesto,
             Puesto: data.puestoActual === '' ? '' : data.puestoActual,
@@ -873,7 +909,7 @@ $(function () {
             FechaExArt: data.fechaExArt === '' ? '' : data.fechaExArt,
             Id: data.Id,
             SPago: data.Spago === '' ? '' : data.Spago,
-            Tipo: data.TipoF === '' ? '' : data.TipoF,
+            Tipo: data.Tipo === '' ? '' : data.TipoF,
             Sucursal: data.SucursalF === '' ? '' : data.SucursalF,
             NroFactura: data.NumeroF === '' ? '' : data.NumeroF,
             NroFactProv: data.NumeroProvF === '' ? '' : data.NumeroProvF,
@@ -884,18 +920,27 @@ $(function () {
                 preloader('off');
                 toastr.success(response.msg,'',{timeOut: 1000});
 
+                variables.facturacion_id.val(response.datos_facturacion_id);
+                console.log(response);
                 mostrarFinanciador();
                 selectMedioPago(variables.PagoLaboral.val());
 
-                variables.PagoLaboral.val() === 'A' ? variables.ElPago.val("C") : variables.ElPago.val(variables.PagoLaboral.val());
+                variables.PagoLaboral.val() === 'A' 
+                    ? variables.ElPago.val("C") 
+                    : variables.ElPago.val(variables.PagoLaboral.val());
+
+                variables.PagoLaboral.val() === 'A'
+                    ? principal.NroFactPrestacion.show()
+                    : principal.NroFactPrestacion.hide()
+                
                 variables.ElSPago.val(data.Spago);
                 variables.ElTipo.val(data.TipoF);
                 variables.ElSucursal.val(data.SucursalF);
                 variables.ElNroFactura.val(data.NumeroF);
                 variables.ElAutorizado.val(data.Autoriza);
-                variables.ElNroFactura.val(data.NumeroProvF);
+                variables.ElNroFactura.val(data.NumeroF);
                 variables.ElNroFactProv.val(data.NumeroProvF);
-                
+
                 selectorPago(data.pago);
                 getMap(data.cliente, data.art);
                 setTimeout(() => {
@@ -918,21 +963,9 @@ $(function () {
     }
 
     function marcarPago(pago) {
-
-        switch (pago) {
-            case 'P':
-                variables.PagoLaboral.val(pago);
-                break;
-            case 'A':
-                variables.PagoLaboral.val(pago);
-                break;
-            case 'B':
-                $variables.PagoLaboral.val(pago);
-                break;
-            default:
-                variables.PagoLaboral.val('');
-                break;
-        }
+        return ['A','B','P'].includes(pago)
+            ? variables.PagoLaboral.val(pago)
+            : variables.PagoLaboral.val('');     
     }
 
     function getMap(idEmpresa, idArt){

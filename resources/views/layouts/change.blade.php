@@ -184,10 +184,9 @@
     const ROUTE = "{{ route('listadoRoles') }}";
     const getLocalidad = "{{ route('getLocalidades') }}";
     const getCodigoPostal = "{{ route('getCodigoPostal') }}";
-    const TOKEN = '{{ csrf_token() }}';
     const actualizarDatos = "{{ route('actualizarDatos') }}";
     const actualizarPass = "{{ route('actualizarPass') }}";
-    const checkPassword = "{{ route('checkPassword') }}";
+    const checkPassword = "{{ route('usuario.checkPassword') }}";
     const checkTelefono = "{{ route('checkTelefono') }}";
     const checkCorreo = "{{ route('checkCorreo') }}";
 </script>

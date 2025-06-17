@@ -130,7 +130,7 @@
     </div>
 </div>
 <script>
-    const TOKEN = "{{ csrf_token() }}";
+    //const TOKEN = "{{ csrf_token() }}";
     const getExamenes = "{{ route('examenes.getExamenes') }}";
     const getExamenesByIdPaquete = "{{ route('paquetes.getEstudiosPaqueteFacturacion') }}";
 

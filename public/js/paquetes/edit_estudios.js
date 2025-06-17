@@ -215,7 +215,7 @@ $("#btnRegistrar").on('click', function (e) {
     let alias = $("#alias").val();
     let id = $("#idPaquete").val();
 
-    if (nombre && descripcion) {
+    if (validaciones()) {
         $.post(postPaquetesEstudiosEditar, {
             _token: TOKEN,
             id: id,
@@ -236,8 +236,26 @@ $("#btnRegistrar").on('click', function (e) {
                 return;
             });
 
-    } else {
-        preloader('off');
-        toastr.warning("Tiene que ingresar nombre, descricpion y seleccionar al menos un examen", '', { timeOut: 1000 });
     }
 });
+
+function validaciones(){
+    let mensaje = "";
+    if (!$("#nombre").val()) {
+        mensaje += "Debe ingresar un nombre para el paquete.\n";
+    }
+
+    if(!$("#alias").val()){
+        mensaje += "Debe ingresar un alias para el paquete.\n";
+    }
+    
+    if ( examenes.length == examenesEliminar.length && examenesNuevos.length === 0) {
+        mensaje += "Debe agregar al menos un examen al paquete.\n";
+    }
+    if (mensaje) {
+        preloader('off');
+        toastr.warning(mensaje, '', { timeOut: 3000 });
+        return false;
+    }
+    return true;
+}

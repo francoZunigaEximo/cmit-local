@@ -4,42 +4,40 @@ namespace App\Events;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Broadcasting\PresenceChannel;
+use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class ListadoProfesionalesEvent implements ShouldBroadcastNow
+class LiberarPacientesEvent implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $efectores;
-    /**
-     * Create a new event instance.
-     */
-    public function __construct($efectores)
+    public $liberar;
+
+    public function __construct($liberar)
     {
-        $this->efectores = $efectores;
+        $this->liberar = $liberar;
     }
 
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return array<int, \Illuminate\Broadcasting\Channel>
-     */
     public function broadcastOn()
     {
-        return new Channel('listado-efectores');
+        return new Channel('liberar-atencion');
     }
 
     public function broadcastAs()
     {
-        return 'ListadoProfesionalesEvent';
+        return 'LiberarPacientesEvent';
     }
 
     public function broadcastWith()
     {
         return [
-            'efectores' => $this->efectores
+            'liberar' => $this->liberar
         ];
     }
+
+
 }

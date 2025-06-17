@@ -16,6 +16,8 @@ use App\Models\User;
 Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });
-
-Broadcast::channel('listado-efectores', fn(User $user) => $user);
+//Da de baja o alta efectores
+Broadcast::channel('listado-efectores', fn(User $user) => $user); 
 Broadcast::channel('grilla-efectores', fn(User $user) => $user);
+Broadcast::channel('liberar-atencion', fn(User $user) => $user);
+Broadcast::channel('asignar-profesional', fn(User $user) => $user);

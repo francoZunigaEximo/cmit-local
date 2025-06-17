@@ -27,7 +27,7 @@
                 <div class="col-sm-2 mb-3">
                     <label for="empresa" class="form-label fw-bolder">Empresa: <span class="required small">(*)</span></label>
                     <select class="form-control" name="empresa" id="empresa">
-                        <option value="{{ $examenesCuentum->IdEmpresa ?? '' }}">{{ $examenesCuentum->empresa[0]->RazonSocial ?? '' }}</option>
+                        <option value="{{ $examenesCuentum->IdEmpresa ?? '' }}">{{ $examenesCuentum->empresa->RazonSocial ?? '' }}</option>
                     </select>
                 </div>
 
@@ -156,7 +156,6 @@
     const getPacientes = "{{ route('getPacientes') }}";
     const searchExamen = "{{ route('searchExamen') }}";
     const saveExamenCuenta = "{{ route('saveExamenCuenta') }}";
-    const TOKEN = "{{ csrf_token() }}";
     const INDEX = "{{ route('examenesCuenta.index') }}";
     const getPaquetes = "{{ route('getPaquetes') }}";
     const getPaqueteFact = "{{ route('getPaqueteFact') }}";

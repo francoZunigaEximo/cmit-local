@@ -2,7 +2,9 @@ $(function(){
 
     const principal = {
         grillaEfector: $('#listaLlamadaEfector'),
-        grillaExamenes: $('#tablasExamenes')
+        grillaExamenes: $('#tablasExamenes'),
+        atenderPaciente: $('.atenderPaciente'),
+        chekAllExamenes: $('.checkAllExamenes')
     };
 
     const variables = {
@@ -18,7 +20,8 @@ $(function(){
         edadEfector: $('#edadEfector'),
         fechaEfector: $('#fechaEfector'),
         fotoEfector: $('#fotoEfector'),
-        profesional: $('#profesional')
+        profesional: $('#profesional'),
+        descargaFoto: $('#descargaFoto')
     };
 
     variables.fechaHasta.val(fechaNow(null, "-", 0));
@@ -68,8 +71,7 @@ $(function(){
     $(document).on('click', '.atenderPaciente', function(e){
         e.preventDefault();
 
-        let id = $(this).data('id'), 
-            profesional = $(this).data('profesional'), 
+        let id = $(this).data('id'),  
             especialidades = $(this).data('especialidades');
 
         variables.profesionalEfector
@@ -86,7 +88,7 @@ $(function(){
         variables.fotoEfector.attr('src', '');
 
         preloader('on')
-        $.get(dataPaciente, {Id: id, IdProfesional: profesional, Especialidades: especialidades})
+        $.get(dataPaciente, {Id: id, IdProfesional: variables.profesional.val(), Especialidades: especialidades})
             .done(function(response){
                 const prestacion = response.prestacion;
 
@@ -106,6 +108,7 @@ $(function(){
                 variables.edadEfector.val(edad);
                 variables.fechaEfector.val(fecha);
                 variables.fotoEfector.attr('src', FOTO + prestacion.paciente.Foto);
+                variables.descargaFoto.attr('href', FOTO + prestacion.paciente.Foto);
 
                 tablasExamenes(response.itemsprestaciones);
 
@@ -143,21 +146,23 @@ $(function(){
                         texto: '<i class="ri-edit-line"></i> Llamar',
                         remover: 'liberarExamen',
                         agregar: 'llamarExamen',
-                        textoFila: 'black'
+                        textoFila: 'green'
                     }
             };
 
         let fila = $(this).closest('tr');
         fila.css('color', boton[accion].textoFila);
 
+        accion === 'liberar' ? principal.atenderPaciente.show() : principal.atenderPaciente.hide();
+
         $(this).empty()
-               .html(boton[accion].texto)
-               .removeClass(boton[accion].remover)
-               .addClass(boton[accion].agregar);
+            .html(boton[accion].texto)
+            .removeClass(boton[accion].remover)
+            .addClass(boton[accion].agregar);
         
         $.get(addAtencion, {prestacion: $(this).data('id'), profesional: variables.profesional.val()})
             .done(function(){
-                console.log("registro exitoso")
+                toastr.success('Cambio de estado realizado correctamente','',{timeOut: 1000})
             })
             .fail(function(jqXHR){
                 preloader('off');
@@ -167,7 +172,37 @@ $(function(){
             });
     });
 
-    function tablasExamenes(data) { 
+    $(document).on('change', '.checkAllExamenes', function(){
+        let nombreCheckAll = $(this).attr('name');
+        if(!nombreCheckAll || !nombreCheckAll.startsWith('Id_')) return;
+
+        let grupo = nombreCheckAll.replace('Id_', ''),
+            seleccion = `input[type="checkbox"][name^="Id_${grupo}_"]`,
+            isChecked = $(this).prop('checked');
+
+        $(seleccion).each(function () {
+            let $checkbox = $(this);
+
+            if ($checkbox.prop('checked') !== isChecked) {
+                $checkbox.prop('checked', isChecked);
+
+                // $checkbox.prop('checked', isChecked).trigger('click');
+
+                // if ($checkbox.prop('checked') !== isChecked) {
+                //     $checkbox.prop('checked', isChecked);
+                //     $checkbox[0].click(); //Disparo el evento
+                // }
+
+                //console.log($checkbox[0])
+
+                //Usar JS en lugar de Jquery
+                $checkbox[0].dispatchEvent(new Event('click', { bubbles: true }));
+            }
+        });
+    });
+
+    function tablasExamenes(data) {
+        console.log(data)
         principal.grillaExamenes.empty();
         preloader('on');
 
@@ -198,25 +233,27 @@ $(function(){
                                     <th style="width: 150px">Efector</th>
                                     <th style="width: 150px">Informador</th>
                                     <th style="width: 50px">
-                                        <input type="checkbox" class="checkAllExamenes" name="Id_examenes">
+                                        <input type="checkbox" class="checkAllExamenes" name="Id_${limpiarAcentosEspacios(especialidad)}">
                                     </th>
                                 </tr>
                             </thead>
                             <tbody>
                 `;
     
-       
+                
+
                 examenes.forEach(function (examen) {
+
                     contenido += `
-                        <tr>
+                        <tr class="listadoAtencion" data-id="${examen.IdItem}">
                             <td>${examen.NombreExamen}</td>
                             <td>${estado(examen.CAdj)}</td>
-                            <td>${checkAdjunto(examen.NoImprime, examen.Adjunto, examen.Archivo)}</td>
+                            <td title="NoImprime: ${examen.NoImprime} | Adjunto: ${examen.Adjunto} | Archivo: ${examen.Archivo}">${checkAdjunto(examen.NoImprime, examen.Adjunto, examen.Archivo)}</td>
                             <td>${[null, undefined, ''].includes(examen.ObsExamen) ? '' : examen.ObsExamen}</td>
-                            <td>Efector</td>
-                            <td>Informador</td>
+                            <td>${verificarProfesional(examen, "efector")}</td>
+                            <td>${verificarProfesional(examen, "informador")}</td>
                             <td>
-                                <input type="checkbox" name="Id_examenes" value="${examen.IdItem}">
+                                <input type="checkbox" name="Id_${limpiarAcentosEspacios(especialidad)}_${examen.IdExamen}" value="${examen.IdItem}"  ${checkboxCheck(examen)}>
                             </td>
                         </tr>
                     `;
@@ -234,32 +271,56 @@ $(function(){
     }
 
     function estado(data) {
-        
-        if([0,1,2].includes(data)){
-            return `<span class="rojo">Abierto <i class="fs-6 ri-lock-unlock-line"></i><span>`;
-        
-        }else if([3,4,5].includes(data)){
-            return `<span class="verde">Cerrado <i class="fs-6 ri-lock-2-line"></i><span>`;
-        }          
+        switch (true) {
+            case [0, 1, 2].includes(data):
+                return `<span class="rojo">Abierto <i class="fs-6 ri-lock-unlock-line"></i></span>`;
+
+            case [3, 4, 5].includes(data):
+                return `<span class="verde">Cerrado <i class="fs-6 ri-lock-2-line"></i></span>`;
+
+            default:
+                return '';
+        }
     }
 
     //No Imprime: saber si es fisico o digital / adjunto: si acepta o no adjuntos / condicion: pendiente o adjuntado
-    function checkAdjunto(noImprime, adjunto, condicion) {
-        // console.log(noImprime, adjunto, condicion)
-        if (adjunto === 0) {
-            return ``;
-        }else if(adjunto === 1 && condicion > 0 && noImprime === 0) {
-            return `<span class="verde">Adjuntado <i class="fs-6 ri-map-pin-line"></i><span>`;
-        }else if(adjunto === 1 && condicion === 0 && noImprime === 0) {
-            return `<span class="rojo d-flex align-items-center justify-content-between w-100">
-                        <span class="me-auto">Pendiente</span>
-                        <i class="fs-6 ri-map-pin-line mx-auto"></i>
-                        <i class="fs-6 ri-folder-add-line ms-auto"></i>
-                    </span>`;
-        }else if(adjunto === 1 && noImprime === 1){
-            return `<span class="mx-auto"><i class="gris fs-6 ri-map-pin-line"></i><span>`;
-        }else{
-            return ``;
+    function checkAdjunto(adjunto, condicion, noImprime) {
+        switch (true) {
+            case adjunto === 0:
+                return '';
+
+            case adjunto === 1 && condicion > 0 && noImprime === 0:
+                return `<span class="verde">Adjuntado <i class="fs-6 ri-map-pin-line"></i><span>`;
+
+            case adjunto === 1 && condicion === 0 && noImprime === 0:
+                return `<span class="rojo d-flex align-items-center justify-content-between w-100">
+                            <span class="me-auto">Pendiente</span>
+                            <i class="fs-6 ri-map-pin-line mx-auto"></i>
+                            <i class="fs-6 ri-folder-add-line ms-auto"></i>
+                        </span>`;
+
+            case adjunto === 1 && noImprime === 1:
+                return `<span class="mx-auto"><i class="gris fs-6 ri-map-pin-line"></i><span>`;
+
+            default:
+                return '';
+        }
+    }
+
+    function checkboxCheck(data) {
+
+        switch (true) {
+            case data.informadorId !== 0:
+                return 'disabled';
+        
+            case parseInt(data.efectorId) !== 0 && parseInt(data.efectorId) === parseInt(USERACTIVO):
+                return 'checked';
+
+            case parseInt(data.efectorId) !== 0 && parseInt(data.efectorId) !== parseInt(USERACTIVO):
+                return 'checked disabled';
+         
+            default:
+                return '';
         }
     }
 
@@ -296,6 +357,22 @@ $(function(){
     });
 
    
+    function verificarProfesional(data, tipoProfesional) {
+        if(data.length === 0) return;
+
+        switch (true) {
+            case tipoProfesional === 'efector':
+                return data.nombreEfector || data.EfectorHistorico || '';
+            
+            case tipoProfesional === 'informador':
+                return data.nombreInformador || data.InformadorHistorico || '';
+            
+            default:
+                return '';
+        }
+    }
     
+
+
 
 });

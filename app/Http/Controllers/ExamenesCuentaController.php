@@ -823,7 +823,9 @@ class ExamenesCuentaController extends Controller
             ->select(
                 'pagosacuenta.Id as Id',
                 'pagosacuenta_it.Obs as Precarga',
-                'examenes.Nombre as NombreExamen', 
+                'examenes.Nombre as NombreExamen',
+                'examenes.Id as IdExamen',
+                'pagosacuenta_it.Id as Id'
                 //DB::raw('COUNT(pagosacuenta_it.IdExamen) as Cantidad')
             )
             ->where('pagosacuenta.IdEmpresa', $request->Id)
@@ -926,6 +928,58 @@ class ExamenesCuentaController extends Controller
         }
 
         return response()->json($resultados);
+    }
+
+    public function listaExCtaEmpresa(Request $request)
+    {
+         $subquery = DB::table('pagosacuenta_it')
+            ->join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
+            ->join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
+            ->select(
+                'examenes.Id',
+                DB::raw('COUNT(*) as total_examenes')
+            )
+            ->where('pagosacuenta_it.IdPrestacion', 0)
+            ->where('pagosacuenta_it.Obs', '!=', 'provisorio')
+            ->where('pagosacuenta.IdEmpresa', $request->Id)
+            ->groupBy('examenes.Id');
+
+        $query = ExamenCuenta::join('pagosacuenta_it', 'pagosacuenta.Id', '=', 'pagosacuenta_it.IdPago')
+            ->join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
+            ->joinSub($subquery, 'conteo', function ($join) {
+                $join->on('examenes.Id', '=', 'conteo.Id');
+            })
+            ->select(
+                'examenes.Id as IdExamen',
+                'examenes.Nombre as NombreExamen',
+                'pagosacuenta_it.Id as IdPagoCuenta',
+                'conteo.total_examenes as total'
+            )
+            ->where('pagosacuenta.IdEmpresa', $request->Id)
+            ->where('pagosacuenta_it.IdPrestacion', 0)
+            ->whereNot('pagosacuenta_it.Obs', 'provisorio')
+            ->groupBy('examenes.Nombre')
+            ->orderBy('examenes.Nombre', 'desc')
+            ->get();
+
+        return response()->json($query);
+    }
+
+    public function contadorPagos(Request $request)
+    {
+        $query = ExamenCuentaIt::join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
+            ->select(
+                'pagosacuenta.Tipo as Tipo',
+                'pagosacuenta.Suc as Sucursal',
+                'pagosacuenta.Nro as NroFactura',
+                 DB::raw('COUNT(DISTINCT pagosacuenta_it.IdPago) as contador')
+            )
+            ->where('pagosacuenta_it.IdPrestacion', $request->Id)
+            ->distinct()
+            ->groupBy('pagosacuenta.Tipo', 'pagosacuenta.Suc', 'pagosacuenta.Nro')
+            ->get();
+
+        return response()->json($query);
     }
 
     private function tituloReporte(?int $id): mixed
