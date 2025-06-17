@@ -14,7 +14,8 @@
 
     <link rel="shortcut icon" href="{{ asset('images/favicon.ico') }}">
     <link href="{{ asset('css/bootstrap.min.css') }}?v={{ time() }}" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('css/all.min.css') }}" rel="stylesheet" type="text/css" />
+    {{-- <link href="{{ asset('css/all.min.css') }}" rel="stylesheet" type="text/css" /> --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     @stack('styles')
 
     <link rel="stylesheet" href="{{ asset('css/autoComplete.css') }}">
