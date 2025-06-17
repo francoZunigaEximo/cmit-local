@@ -5,7 +5,7 @@ $(function(){
     });
 
     $("#prestacionFast").on('shown.bs.offcanvas', function() {
-        $("#dniPrestacion").on('focus');
+        ("#dniPrestacion").focus();
     });
     
     $("#dniPrestacion").on('keyup', function(e) {
@@ -30,7 +30,7 @@ $(function(){
         if (e.altKey && e.key === 'p') {
             e.preventDefault();
             $("#prestacionFast").offcanvas("show");
-            $("#dniPrestacion").on('focus');
+            $("#dniPrestacion").focus();
         }
 
         if (e.altKey) {

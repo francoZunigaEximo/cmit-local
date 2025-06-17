@@ -24,8 +24,15 @@ $(function(){
                 checkError(jqXHR.status, errorData.msg);
                 return;
             });
+    });
 
+    $(document).on('click', '.abrir, .cerrar', function(e){
+        e.preventDefault();
+        accion = $(this).hasClass('abrir') ? 'abrir' : 'cerrar';
 
+        if(['', 0, undefined, null].includes(accion));
+
+        console.log(accion);
     });
 
 });
