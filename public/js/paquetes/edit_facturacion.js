@@ -241,10 +241,19 @@ function cargarEstudio(idExamen) {
         .done(function (result) {
             let enExamenes = examenes.find(x => x.Id == result.Id);
             let enExamenesNuevos = examenesNuevos.find(x => x.Id == result.Id);
+            let enEliminado = examenesEliminar.indexOf(examenesEliminar.find(x => x == result.Id));
+
             if (!enExamenesNuevos && !enExamenes) {
                 estudiosRenderizar.push(result);
             } else {
-                toastr.warning("El examen ya se encuentra cargado", "", { timeout: 1000 });
+                 if(enEliminado >= 0 && enExamenes){
+                    estudiosRenderizar.push(result);
+                    renderizarEstudios(estudiosRenderizar);
+                    estudiosRenderizar = [];
+                    examenesEliminar.splice(enEliminado, 1);
+                }else{
+                    toastr.warning("El examen ya se encuentra cargado", "", { timeout: 1000 });
+                }
             }
         })
         .fail(function (jqXHR) {
@@ -381,6 +390,7 @@ function validaciones(){
     if (examenes.length == examenesEliminar.length && examenesNuevos.length === 0) {
         mensaje += "Debe agregar al menos un examen al paquete.\n";
     }
+    
     if (mensaje) {
         preloader('off');
         toastr.warning(mensaje, '', { timeOut: 3000 });
