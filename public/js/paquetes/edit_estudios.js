@@ -122,10 +122,20 @@ function cargarEstudio(idExamen) {
         .done(function (result) {
             let enExamenes = examenes.find(x => x.Id == result.Id);
             let enExamenesNuevos = examenesNuevos.find(x => x.Id == result.Id);
+            let enEliminado = examenesEliminar.indexOf(examenesEliminar.find(x => x == result.Id));
+
+            console.log(enExamenes, enExamenesNuevos, enEliminado);
             if (!enExamenesNuevos && !enExamenes) {
                 estudiosRenderizar.push(result);
             } else {
-                toastr.warning("El examen ya se encuentra cargado", "", { timeout: 1000 });
+                if(enEliminado >= 0 && enExamenes){
+                    estudiosRenderizar.push(result);
+                    renderizarEstudios(estudiosRenderizar);
+                    estudiosRenderizar = [];
+                    examenesEliminar.splice(enEliminado, 1);
+                }else{
+                    toastr.warning("El examen ya se encuentra cargado", "", { timeout: 1000 });
+                }
             }
         })
         .fail(function (jqXHR) {
@@ -196,11 +206,13 @@ $('.agregarPaquete').on('click', function (e) {
 tabla.on('click', 'button.remove-item-btn', function () {
     let id = $(this).data().id;
     index = examenes.indexOf(examenes.find(x => x.Id == id));
-    if (index) {
+    console.log(index);
+    if (index != null) {
         examenesEliminar.push(id);
     } else {
         examenesNuevos.splice(index, 1);
     }
+
     tabla
         .row($(this).parents('tr'))
         .remove()

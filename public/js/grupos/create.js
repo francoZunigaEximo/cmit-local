@@ -135,7 +135,7 @@ $('.agregarCliente').on('click', function (e) {
 
 function validaciones() {
     let mensaje = "";
-    if (!$("#nombre").val()) {
+    if (!$("#nombregrupo").val()) {
         mensaje += "Debe ingresar un nombre para el grupo.\n";
     }
 
