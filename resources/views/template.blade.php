@@ -98,11 +98,24 @@
                                 <span class="d-flex align-items-center">
                                     <img class="rounded-circle header-profile-user" src="{{ asset('images/users/cmit.jpg') }}" alt="Header Avatar">
                                     <span class="text-start ms-xl-2">
-                                        <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text">{{ ucfirst(Auth::user()->name) }} <h6><span class="badge text-bg-info">{{ (session('choiseT') === '0' ? strtoupper(Auth::user()->role) : session('choiseT')) }}</span></h6>
+                                        <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text">{{ ucfirst(Auth::user()->personal->nombre_completo) }}<h6><span class="badge text-bg-info">
+                                            @php
+                                                $rolesPermitidos = ['Efector', 'Informador', 'Combinado', 'Evaluador', 'Evaluador ART'];
+                                                $rolesUsuario = Auth::user()->role->pluck('nombre')->toArray();
+                                                $tieneRol = !empty(array_intersect($rolesPermitidos, $rolesUsuario));
+                                            @endphp
+
+                                            @if(!$tieneRol && empty(session('Profesional')) || session('Profesional') == '0')
+                                                @foreach(Auth::user()->role as $rol)
+                                                    {{ strtoupper($rol->nombre) }}<br>
+                                                @endforeach
+                                            @else
+                                                {{ session('Profesional') }} | {{ session('Especialidad') }}
+                                            @endif
+                                        </span></h6>
                                         
-                                        @if(Auth::user()->Rol === 'Prestador' && Auth::user()->profesional->TLP === 1)
-                                            
-                                        <button type="button" data-bs-toggle="modal" data-bs-target="#choisePModal" class="btn btn-primary btn-label rounded-pill"><i class=" ri-anticlockwise-line label-icon align-middle rounded-pill fs-16 me-2"></i> Cambiar perfil</button>
+                                        @if($tieneRol)
+                                            <button type="button" data-bs-toggle="modal" data-bs-target="#choisePModal" class="btn btn-primary btn-label rounded-pill"><i class=" ri-anticlockwise-line label-icon align-middle rounded-pill fs-16 me-2"></i> Cambiar perfil</button>
                                         @endif
                                         </span>
                                     </span>
@@ -110,10 +123,7 @@
                             </button>
                             <div class="dropdown-menu dropdown-menu-end">
                                 <!-- item-->
-                                <h6 class="dropdown-header">Bienvenido {{ Auth::user()->name }}!</h6>
-                                @foreach (Auth::user()->role as $rol)
-                                    <h6><span class="dropdown-item badge text-bg-info small fw-bolder">{{ $rol->nombre }}</span></h6>
-                                @endforeach
+                                <h6 class="dropdown-header">Bienvenido {{ Auth::user()->personal->nombre_completo }}!</h6>
                                 <a class="dropdown-item" href="{{ route('perfil')}}"><i class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Perfil</span></a>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="{{ route('logout') }}"><i class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-key="t-logout">Salir</span></a>
@@ -384,11 +394,10 @@
 
     <script>
 
-        const mprof = "{{ session('mProf') }}";
-        const choiseT = "{{ session('choiseT') }}";
+        const PROFESIONAL = "{{ session('Profesional') }}";
+        const ESPECIALIDAD = "{{ session('Especialidad') }}";
 
-        const IDSESSION = "{{ Auth::user()->profesional_id }}";
-        const tlp = "{{ Auth::user()->profesional->TLP }}";
+        const IDPROFESIONAL = "{{ Auth::user()->profesional_id }}";
 
         const choisePerfil = "{{ route('choisePerfil')}}";
         const choiseEspecialidad = "{{ route('choiseEspecialidad') }}";

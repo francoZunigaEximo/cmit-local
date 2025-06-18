@@ -347,14 +347,14 @@ $(function(){
             Id = $('#IdProfesional').val();
 
         let formData = new FormData();
-        formData.append('_token', TOKEN);
-        formData.append('Pago', Pago);
-        formData.append('InfAdj', InfAdj);
-        formData.append('Firma', Firma);
-        if (Foto) formData.append('Foto', Foto);
-        formData.append('wImage', wImage);
-        formData.append('hImage', hImage);
-        formData.append('Id', Id);
+            formData.append('_token', TOKEN);
+            formData.append('Pago', Pago);
+            formData.append('InfAdj', InfAdj);
+            formData.append('Firma', Firma);
+            if (Foto) formData.append('Foto', Foto);
+            formData.append('wImage', wImage);
+            formData.append('hImage', hImage);
+            formData.append('Id', Id);
 
         swal({
             title: "¿Está seguro que desea actualizar los datos",
@@ -414,8 +414,8 @@ $(function(){
 
     $(document).mousemove(function (e) {
         if (resizing) {
-            let newWidth = startWidth + (e.clientX - startX);
-            let newHeight = startHeight + (e.clientY - startY);
+            let newWidth = startWidth + (e.clientX - startX),
+                newHeight = startHeight + (e.clientY - startY);
 
             // Aplica nuevas dimensiones
             $('#imagenModal').width(newWidth);
@@ -507,7 +507,6 @@ $(function(){
                                 badges += '<br>';  // Inserta un salto de línea cada 7 badges
                             }
                         });
-
                     }
 
                     let contenido = `
@@ -534,8 +533,7 @@ $(function(){
             },
             success: function(response) {
                 let localidades = response.localidades;
-                $('#localidad').empty();
-                $('#localidad').append('<option selected>Elija una opción...</option>');
+                $('#localidad').empty().append('<option selected>Elija una opción...</option>');
                 localidades.forEach(function(localidad) {
                     $('#localidad').append('<option value="' + localidad.id + '">' + localidad.nombre + '</option>');
                 });
@@ -562,8 +560,7 @@ $(function(){
     {
         if([0, null, undefined, ''].includes(id)) return;
 
-        $("#perfiles").empty();
-        $("#perfiles").append('<option value="" selected>Elija una opción...</option>');
+        $("#perfiles").empty().append('<option value="" selected>Elija una opción...</option>');
 
         $.get(choisePerfil, {Id: id})
             .done(function(response){
@@ -577,24 +574,19 @@ $(function(){
     function checkRol(id) {
         $.get(checkRoles, { Id: id }, function(response) {
            
-            let arr = ['Efector', 'Informador', 'Evaluador', 'Combinado', 'Evaluador ART'];
-            let buscados = response.map(item => item.nombre);
-
-            let resultados = buscados.some(e => arr.includes(e));
+            let arr = ['Efector', 'Informador', 'Evaluador', 'Combinado', 'Evaluador ART'],
+                buscados = response.map(item => item.nombre),
+                resultados = buscados.some(e => arr.includes(e));
 
             if (resultados) {
                 $('.verOpciones').css('display', ''); 
                 $('.verAlerta').hide();
-                $('.addPerfilProf').show();
-                $('.saveOpciones').show();
-                $('.saveSeguro').show();
+                $('.addPerfilProf, .saveOpciones, .saveSeguro').show();
             } else {
                 //$('.verOpciones').css('display', 'none');
                 $('.verOpciones').css('display', ''); 
                 $('.verAlerta').show();
-                $('.addPerfilProf').hide();
-                $('.saveOpciones').hide();
-                $('.saveSeguro').hide();
+                $('.addPerfilProf, .saveOpciones, .saveSeguro').hide();
             }
         });
     }
@@ -623,9 +615,7 @@ $(function(){
                     `;
                 
                     $('#listaProfesionales').append(contenido);
-                    $('#perfiles').val(''),
-                    $('#listaEspecialidad').val('');
-                    
+                    $('#perfiles, #listaEspecialidad').val('');
                 });
             })
             .fail(function(jqXHR){
