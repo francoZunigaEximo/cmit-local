@@ -338,13 +338,19 @@
 
     @stack('modal')
 
-    <div id="choisePModal" class="modal fadeInUp" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div id="choisePModal" 
+        class="modal fadeInUp" 
+        tabindex="-1" 
+        aria-labelledby="myModalLabel" 
+        aria-hidden="true" 
+        data-bs-backdrop="static" 
+        data-bs-keyboard="false"
+        style="display: none;">
         <div class="modal-dialog">
             <div class="modal-content">
                 
                 <div class="modal-header">
                     <h5 class="modal-title" id="myModalLabel">Seleccione el perfil del profesional</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>   
                 </div>
                 <div class="modal-body">
                     <div class="message-sesion"></div>
