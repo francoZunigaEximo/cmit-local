@@ -2,10 +2,6 @@ $(function() {
 
     const profesionales =  ["Efector", "Informador", "Evaluador", "Combinado", "Evaluador ART"];
 
-    console.log("Profesional: " + PROFESIONAL);
-    console.log("Especialidad: " + ESPECIALIDAD);
-    console.log("IDSESSION: " + IDPROFESIONAL);
-
     seleccionPerfil(PROFESIONAL, ESPECIALIDAD, IDPROFESIONAL);
     opcionesChoise(IDPROFESIONAL);
 

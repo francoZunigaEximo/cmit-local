@@ -573,7 +573,7 @@ $(function(){
 
     function checkRol(id) {
         $.get(checkRoles, { Id: id }, function(response) {
-           
+ 
             let arr = ['Efector', 'Informador', 'Evaluador', 'Combinado', 'Evaluador ART'],
                 buscados = response.map(item => item.nombre),
                 resultados = buscados.some(e => arr.includes(e));
@@ -597,6 +597,7 @@ $(function(){
 
         $.get(getPerfiles, {Id: IDPROF})
             .done(function(response){
+                console.log(response)
                 preloader('off')
                 let data = response.data;
                 data.forEach(function (d) {
