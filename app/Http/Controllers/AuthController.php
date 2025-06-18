@@ -140,6 +140,10 @@ class AuthController extends Controller
         $efectores = $this->profesional->listado('Efector');
         event(new LstProfesionalesEvent($efectores));
 
+        //Elimina la sesion de los profesionales
+        Session::forget('Profesional'); 
+        Session::forget('Especialidad'); 
+
         return $request->forzar 
             ? response()->json(['msg' => 'Ha cerrado la sesión del usuario de manera correcta'], 200)
             : response()->json(['msg' => 'Se ha cerrado la sesión por inactividad'], 200);
@@ -154,6 +158,10 @@ class AuthController extends Controller
 
         $efectores = $this->profesional->listado('Efector');
         event(new LstProfesionalesEvent($efectores));
+
+        //Elimina la sesion de los profesionales
+        Session::forget('Profesional'); 
+        Session::forget('Especialidad'); 
 
         return redirect()
                 ->route('login')
