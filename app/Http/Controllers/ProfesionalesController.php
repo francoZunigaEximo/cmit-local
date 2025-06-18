@@ -223,6 +223,7 @@ class ProfesionalesController extends Controller
             $query->save();
         }
         $rol = Rol::find($request->perfil);
+   
         $consulta = ProfesionalProv::where('IdProf', $request->Id)
             ->where('IdProv', $request->especialidad)
             ->where('IdRol', $rol->nombre)
