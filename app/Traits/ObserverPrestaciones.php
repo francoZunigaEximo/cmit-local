@@ -105,7 +105,6 @@ trait ObserverPrestaciones
         foreach($array as $examen){
            
             ItemPrestacion::create([
-                'Id' => ItemPrestacion::max('Id') + 1,
                 'IdPrestacion' => $id,
                 'IdExamen' => intval($examen),
                 'Fecha' => now()->format('Y-m-d'),       

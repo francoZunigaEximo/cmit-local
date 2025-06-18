@@ -967,7 +967,6 @@ class ItemPrestacionesController extends Controller
                 $honorarios = $this->honorarios($examen->Id, $examen->IdProveedor);
 
                 ItemPrestacion::create([
-                    'Id' => ItemPrestacion::max('Id') + 1,
                     'IdPrestacion' => $request->idPrestacion,
                     'IdExamen' => $examen->Id,
                     'Fecha' => now()->format('Y-m-d'),
