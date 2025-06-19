@@ -110,11 +110,12 @@ function createFile(tipo, array, name){
 
 function convertToUrl(filePath) {
     // Remueve el prefijo absoluto del sistema
-    const relativePath = filePath.replace('/app/storage/app/public', '');
+    const match = filePath.match(/temp\/file-[^/]+\.pdf/);
+    
     let url = new URL(location.href);
     let checkPublic = url.href.includes("public") ? '/cmit/public/storage' : '/storage';
     // Construye la URL completa
-    return `${url.origin}${checkPublic}${relativePath}`;
+    return `${url.origin}${checkPublic}/${match[0]}`;
 }
 
 
