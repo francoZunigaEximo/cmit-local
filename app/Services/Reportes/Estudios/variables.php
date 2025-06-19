@@ -10,10 +10,15 @@ use App\Models\Examen;
 
 include_once 'funciones.php';
 
+$prestacion = new Prestacion();
+$examen = new Examen(   );
+$datosPaciente = new DatoPaciente();
+$telefonoPaciente = new Telefono();
+
 if($vistaPrevia){
     //modificamos los valores par la vista previa
     $ide = '000000';
-    $ide = str_pad( $prestacion->empresa->IdEmpresa, 6, "0", STR_PAD_LEFT);
+    $ide = str_pad( 0, 6, "0", STR_PAD_LEFT);
     $rsempresa = 'Empresa de Prueba';
     $actividad = 'Actividad de Prueba';
     $cuit = '20-12345678-9';
