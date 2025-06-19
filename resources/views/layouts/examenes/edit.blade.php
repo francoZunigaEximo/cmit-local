@@ -221,6 +221,7 @@
     const optionEx = "{{ route('aliasExamenes.getExamenSelect')}}"
 
     const getReportes = "{{ Route('examenes.getReportes') }}";
+    const getReporte = "{{ Route('prestaciones.pdfPrueba')}}";
     const reporte = JSON.parse('{!! json_encode($reporte) !!}');
 </script>
 
