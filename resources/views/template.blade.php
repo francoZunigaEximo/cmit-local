@@ -14,7 +14,8 @@
 
     <link rel="shortcut icon" href="{{ asset('images/favicon.ico') }}">
     <link href="{{ asset('css/bootstrap.min.css') }}?v={{ time() }}" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('css/all.min.css') }}" rel="stylesheet" type="text/css" />
+    {{-- <link href="{{ asset('css/all.min.css') }}" rel="stylesheet" type="text/css" /> --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     @stack('styles')
 
     <link rel="stylesheet" href="{{ asset('css/autoComplete.css') }}">
@@ -97,17 +98,32 @@
                                 <span class="d-flex align-items-center">
                                     <img class="rounded-circle header-profile-user" src="{{ asset('images/users/cmit.jpg') }}" alt="Header Avatar">
                                     <span class="text-start ms-xl-2">
-                                        <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text">{{ ucfirst(Auth::user()->name) }} 
+                                        <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text">{{ ucfirst(Auth::user()->personal->nombre_completo) }}<h6><span class="badge text-bg-info">
+                                            @php
+                                                $rolesPermitidos = ['Efector', 'Informador', 'Combinado', 'Evaluador', 'Evaluador ART'];
+                                                $rolesUsuario = Auth::user()->role->pluck('nombre')->toArray();
+                                                $tieneRol = !empty(array_intersect($rolesPermitidos, $rolesUsuario));
+                                            @endphp
+
+                                            @if(!$tieneRol && empty(session('Profesional')) || session('Profesional') == '0')
+                                                @foreach(Auth::user()->role as $rol)
+                                                    {{ strtoupper($rol->nombre) }}<br>
+                                                @endforeach
+                                            @else
+                                                {{ session('Profesional') }} | {{ session('Especialidad') }}
+                                            @endif
+                                        </span></h6>
+                                        
+                                        @if($tieneRol)
+                                            <button type="button" data-bs-toggle="modal" data-bs-target="#choisePModal" class="btn btn-primary btn-label rounded-pill"><i class=" ri-anticlockwise-line label-icon align-middle rounded-pill fs-16 me-2"></i> Cambiar perfil</button>
+                                        @endif
                                         </span>
                                     </span>
                                 </span>
                             </button>
                             <div class="dropdown-menu dropdown-menu-end">
                                 <!-- item-->
-                                <h6 class="dropdown-header">Bienvenido {{ Auth::user()->name }}!</h6>
-                                @foreach (Auth::user()->role as $rol)
-                                    <h6><span class="dropdown-item badge text-bg-info small fw-bolder">{{ $rol->nombre }}</span></h6>
-                                @endforeach
+                                <h6 class="dropdown-header">Bienvenido {{ Auth::user()->personal->nombre_completo }}!</h6>
                                 <a class="dropdown-item" href="{{ route('perfil')}}"><i class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Perfil</span></a>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="{{ route('logout') }}"><i class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-key="t-logout">Salir</span></a>
@@ -322,6 +338,46 @@
 
     @stack('modal')
 
+    <div id="choisePModal" 
+        class="modal fadeInUp" 
+        tabindex="-1" 
+        aria-labelledby="myModalLabel" 
+        aria-hidden="true" 
+        data-bs-backdrop="static" 
+        data-bs-keyboard="false"
+        style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myModalLabel">Seleccione el perfil del profesional</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="message-sesion"></div>
+                    <form>
+                        <div class="mb-3">
+                            <label for="choisePerfil" class="col-form-label">Perfil</label>
+                            <select class="form-control" name="choisePerfil" id="choisePerfil">
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="choiseEspecialidad" class="col-form-label">Especialidad</label>
+                            <select class="form-control" name="choiseEspecialidad" id="choiseEspecialidad">
+                                <option value="" selected>Elija una opción...</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <button type="button" class="btn btn-primary cargarPrestador">Seleccionar</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                </div>
+    
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
     <div class="offcanvas offcanvas-top" tabindex="-1" id="prestacionFast" aria-labelledby="prestacionFastLabel">
         <div class="offcanvas-header">
             <h5 class="offcanvas-title" id="prestacionFastLabel">Prestación rápida:</h5>
@@ -343,6 +399,11 @@
     </div>
 
     <script>
+
+        const PROFESIONAL = "{{ session('Profesional') }}";
+        const ESPECIALIDAD = "{{ session('Especialidad') }}";
+
+        const IDPROFESIONAL = "{{ Auth::user()->profesional_id }}";
 
         const choisePerfil = "{{ route('choisePerfil')}}";
         const choiseEspecialidad = "{{ route('choiseEspecialidad') }}";

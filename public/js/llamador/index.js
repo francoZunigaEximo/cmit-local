@@ -31,7 +31,7 @@ $(function(){
         e.preventDefault();
 
         let prestacion = $(this).data('prestacion');
-        window.open(lnkPrestaciones.replace('__item__', prestacion), '_blank');
+        window.open(lnkPres.replace('__item__', prestacion), '_blank');
     });
 
     $(document).on('click','.exportar, .detalles', function(e){
@@ -273,10 +273,10 @@ $(function(){
     function estado(data) {
         switch (true) {
             case [0, 1, 2].includes(data):
-                return `<span class="rojo">Abierto <i class="fs-6 ri-lock-unlock-line"></i></span>`;
+                return `<span class="rojo">Abierto <i class="fs-6 ri-lock-unlock-line cerrar"></i></span>`;
 
             case [3, 4, 5].includes(data):
-                return `<span class="verde">Cerrado <i class="fs-6 ri-lock-2-line"></i></span>`;
+                return `<span class="verde">Cerrado <i class="fs-6 ri-lock-2-line abrir"></i></span>`;
 
             default:
                 return '';
