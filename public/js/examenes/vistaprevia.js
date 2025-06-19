@@ -49,7 +49,7 @@ $(document).on('click', '#vistaPrevia', function(e){
     }).done(function(response){
         preloader('off');
         if(response){
-            let vistaPrevia = convertToUrl(response);
+            let vistaPrevia = convertToUrl(response, "temp");
             window.open(vistaPrevia, '_blank');
         }
     }).fail(function(err){

@@ -108,9 +108,10 @@ function createFile(tipo, array, name){
     }, 100);
 }
 
-function convertToUrl(filePath) {
+function convertToUrl(filePath, path) {
     // Remueve el prefijo absoluto del sistema
-    const match = filePath.match(/temp\/file-[^/]+\.pdf/);
+    const regex = new RegExp(`${path}/file-[^/]+\\.pdf`);
+    const match = filePath.match(regex);
     
     let url = new URL(location.href);
     let checkPublic = url.href.includes("public") ? '/cmit/public/storage' : '/storage';
