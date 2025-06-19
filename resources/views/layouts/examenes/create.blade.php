@@ -205,8 +205,13 @@
     </form>
 </div>
 <script>
+    const vistaPrevia = "{{ route('examenes.getVistaPrevia')}}"
+    const archivos = "{{ url('archivos/reportes') }}"
     const TOKEN = "{{ @csrf_token() }}";
     const getReportes = "{{ Route('examenes.getReportes') }}";
+    const getReporte = "{{ Route('prestaciones.pdfPrueba')}}";
+    const reporte = '';
+
 </script>
 @push('styles')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">

@@ -36,7 +36,8 @@ class Fichalaboral extends Model
         'FechaPreocupacional',
         'FechaUltPeriod',
         'FechaExArt',
-        'SPago'
+        'SPago',
+        'datos_facturacion_id'
     ];
 
     public $timestamps = false;

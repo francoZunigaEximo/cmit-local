@@ -1,10 +1,10 @@
-$(document).ready(function() {
+$(function() {
     $('#form-change').submit(function(e) {
       e.preventDefault(); 
       
-      var passactual = $('#passactual').val();
-      var newpass = $('#newpass').val();
-      var renewpass = $('#renewpass').val();
+      let passactual = $('#passactual').val(),
+          newpass = $('#newpass').val(),
+          renewpass = $('#renewpass').val();
       
       // Validación del campo Contraseña Actual
       if (passactual.length == 0) {

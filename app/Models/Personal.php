@@ -31,6 +31,11 @@ class Personal extends Model
 
     public $timestamps = false;
 
+    public function getNombreCompletoAttribute()
+    {
+        return "{$this->Nombre} {$this->Apellido}";
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class, 'Id', 'datos_id');

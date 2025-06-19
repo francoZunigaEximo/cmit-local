@@ -42,7 +42,7 @@ $(document).on('click', '#vistaPrevia', function(e){
     let id = $("#Reporte").val();
     preloader('on');
 
-    $.get('/prestaciones/pdfPrueba', {
+    $.get(getReporte, {
         Id: 0,
         Examen:  parseInt(id),
         vistaPrevia: true

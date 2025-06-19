@@ -13,7 +13,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Services\Llamador\Profesionales;
 use App\Services\Roles\Utilidades;
 
-use App\Events\ListadoProfesionalesEvent;
+use App\Events\LstProfesionalesEvent;
+
 class RolesController extends Controller
 {
     private array $lstRoles;
@@ -151,7 +152,7 @@ class RolesController extends Controller
             }
 
             $efectores = $this->listadoProfesionales->listado('Efector');
-            event(new ListadoProfesionalesEvent($efectores));
+            event(new LstProfesionalesEvent($efectores));
             //Bus::dispatch(new ListadoProfesionalesEvent($efectores))->onQueue('correos');
 
             $user->profesional->save();
@@ -171,7 +172,7 @@ class RolesController extends Controller
             ProfesionalProv::where('IdProf', $user->profesional_id)->delete();
 
             $efectores = $this->listadoProfesionales->listado('Efector');
-            event(new ListadoProfesionalesEvent($efectores));
+            event(new LstProfesionalesEvent($efectores));
 
         }
     }

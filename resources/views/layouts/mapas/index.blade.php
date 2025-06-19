@@ -89,7 +89,7 @@
                             </div>
                             <div class="row">
                                
-                                <div class="col-sm-3" style="text-align: right;">
+                                <div class="col-sm-12" style="text-align: right;">
                                     <button type="button" id="reset" class="btn botonGeneral">Reiniciar</button>
                                     <button type="button" id="buscar" class="btn botonGeneral">Buscar</button>
                                 </div>
@@ -110,7 +110,7 @@
                         </div>
                     </div>
 
-                    <div class="table mt-3 mb-1 mx-auto">
+                    <div class="table-responsive mt-3 mb-1 mx-auto">
                         <table id="listaMapas" class="table table-bordered">
                             <thead class="table-light">
                                 <tr>
@@ -144,9 +144,6 @@
     const fileExport = "{{ route('mapas.exportar') }}";
     const deleteMapa = "{{ route('deleteMapa') }}";
     const getClientes = "{{ route('getClientes') }}";
-    //Extras
-    const TOKEN = "{{ csrf_token() }}";
-
 </script>
 
 @push('styles')

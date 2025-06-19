@@ -55,9 +55,12 @@
             </a>
         </li>
 
-        
-
-        
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" data-bs-toggle="tab" href="#sesiones" role="tab" aria-selected="false" tabindex="-1">
+                <i class="ri-window-line"></i>
+                Historial Sesiones
+            </a>
+        </li> 
     </ul>
 </div>
 
@@ -221,7 +224,7 @@
                     <button type="button" class="previsualizar btn btn-soft-info waves-effect waves-light" data-bs-toggle="modal" data-bs-target="#z">Vista Previa Firma</button>
 
                     <div class="d-flex justify-content-center">
-                        <img id="vistaPrevia" src="@fileUrl('lectura')/Prof/{{$query->Foto ?? 'foto-default.png' }}?v={{ time() }}" alt="Previsualización de imagen" style="{{ $query->Foto ? '' : 'display: none;' }} max-width: 150px; max-height: 150px;">
+                        <img id="vistaPrevia" src="@fileUrl('lectura')/Prof/{{$query->Foto ?? 'foto-default.png' }}?v={{ time() }}" alt="Previsualización de imagen" style="{{ $query->Foto ? 'max-width: 150px; max-height: 150px;' : 'display: none; max-width: 150px; max-height: 150px;' }}">
                     </div>
                     
                     <input type="hidden" name="wImage" id="wImage" value="{{ $query->wImage ?? ''}}">
@@ -342,6 +345,25 @@
           
         </div>
     </div>
+
+    <div class="tab-pane" id="sesiones" role="tabpanel">
+
+        <h3>Historial de sesiones del usuario</h3>
+        <p class="text muted">Listado ordenado cronologicamente</p>
+
+        <table class="table table-nowrap" id="listaSesionesUsuario">
+            <thead>
+                <tr>
+                    <th scope="col">IP</th>
+                    <th scope="col">Dispositivo</th>
+                    <th scope="col">Fecha/Hora Conexión</th>
+                    <th scope="col">Fecha/Hora Desconexión</th>
+                </tr>
+            </thead>
+            <tbody id="lstSesionesUsuario"></tbody>
+        </table>
+        
+    </div>
 </div>
 
 <div id="previsualizarModal" class="modal fadeInUp" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
@@ -373,7 +395,6 @@
     const ROUTE = "{{ route('listadoRoles') }}";
     const getLocalidad = "{{ route('getLocalidades') }}";
     const getCodigoPostal = "{{ route('getCodigoPostal') }}";
-    const TOKEN = '{{ csrf_token() }}';
     const actualizarDatos = "{{ route('actualizarDatos') }}";
     const ID = "{{ $query->UserId }}";
     const IDPROF = "{{ $query->IdProfesional }}";
@@ -389,14 +410,15 @@
     const datosProf = "{{ route('usuarios.updateProfesional') }}";
     const checkRoles = "{{ route('checkRoles') }}";
     const seguroProf = "{{ route('profesionales.seguro') }}";
+    const cargarSessiones = "{{ route('sesiones.listaSesiones') }}";
 </script>
 
 @push('styles')
+<link rel="stylesheet" href="{{ asset('css/richtext.min.css') }}">
 <link rel="stylesheet" href="{{ asset('css/hacks.css')}}?v={{ time() }}">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
 
 <link rel="stylesheet" href="{{ asset('css/fixSelect2.css') }}">
-<link rel="stylesheet" href="{{ asset('css/richtext.min.css') }}">
 @endpush
 
 @push('scripts')
@@ -410,11 +432,12 @@
 <script src="{{ asset('js/auth/validaciones.js')}}?v={{ time() }}"></script>
 <script src="{{ asset('js/richText/jquery.richtext.js') }}?v={{ time() }}"></script>
 <script src="{{ asset('js/profesionales/utils.js') }}?v={{ time() }}"></script>
+<script src="{{ asset('js/auth/sesiones.js') }}?v={{ time() }}"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/i18n/es.js"></script>
 <script src="{{ asset('js/pages/select2.init.js') }}"></script>
-
+<script src="{{ asset('js/fancyTable.js') }}"></script>
 @endpush
 
 @endsection

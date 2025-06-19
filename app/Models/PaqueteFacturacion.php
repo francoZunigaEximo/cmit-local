@@ -20,8 +20,11 @@ class PaqueteFacturacion extends Model
         'CantExamenes',
         'IdGrupo',
         'IdEmpresa',
-        'Cod'
+        'Cod',
+        'Alias',
+        'Baja'
     ];
+    public $timestamps = false;
 
     public function examenes()
     {

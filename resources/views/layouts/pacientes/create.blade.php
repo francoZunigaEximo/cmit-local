@@ -174,7 +174,6 @@ const getLocalidades = "{{ route('getLocalidades') }}";
 const getCodigoPostal = "{{ route('getCodigoPostal') }}";
 
 //Extras
-const TOKEN = "{{ csrf_token() }}";
 let editUrl = "{{ route('pacientes.edit', ['paciente' => '__paciente__']) }}";
 
 </script>

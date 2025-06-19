@@ -17,6 +17,8 @@ class PaqueteEstudio extends Model
         'Id',
         'Nombre',
         'Descripcion',
+        'Alias',
+        'Baja'
     ];
 
     public $timestamps = false;

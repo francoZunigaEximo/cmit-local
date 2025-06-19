@@ -20,7 +20,9 @@ class PaqueteEstudioController extends Controller
 
         $resultados = Cache::remember('Paquete'.$buscar, 5, function () use ($buscar) {
 
-            $paquetes = PaqueteEstudio::where('Nombre', 'LIKE', '%'.$buscar.'%')->get();
+            $paquetes = PaqueteEstudio::where('Nombre', 'LIKE', '%'.$buscar.'%')
+            ->where('Baja', '=', 0)
+            ->get();
 
             $resultados = [];
 

@@ -75,7 +75,6 @@ $(function(){
                 }
             ],
             language: {
-                processing: "<div style='text-align: center; margin-top: 20px;'><img src='./images/spinner.gif' /><p>Cargando...</p></div>",
                 emptyTable: "No hay pacientes con los datos buscados",
                 paginate: {
                     first: "Primera",

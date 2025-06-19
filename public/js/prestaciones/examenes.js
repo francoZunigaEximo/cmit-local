@@ -1,11 +1,15 @@
 $(function(){
 
-    let idExamen = [];
+    let idExamen = [],
+        empresa = $('#empresa').val();
 
-    const valAbrir = [3, 4, 5], valCerrar = [0, 1, 2], valCerrarI = 3;
+    const valAbrir = [3, 4, 5], 
+          valCerrar = [0, 1, 2], 
+          valCerrarI = 3;
 
     cargarExamen();
     contadorExamenes(ID);
+    listadoSelectExCta(empresa);
 
     $('#exam').select2({
         placeholder: 'Seleccionar exámen...',
@@ -116,44 +120,28 @@ $(function(){
             if (confirmar){
 
                 preloader('on');
-                $.ajax({
-                    url: deleteItemExamen,
-                    type: 'POST',
-                    data: {
-                        Id: ids,
-                        _token: TOKEN
-                    },
-                    success: function(response){
+                $.post(deleteItemExamen, {Id: ids,  _token: TOKEN})
+                    .done(function(response){
+
                         preloader('off');
-                        var estados = [];
-
-                        for(let index = 0; index < response.length; index++){
-                            let msg = response[index],
-                                tipoRespuesta = {
-                                    success: 'success',
-                                    fail: 'info'
-                                }
-                                toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 });
-                                estados.push(msg.estado);
+                        for (let i = 0; i < response.length; i++) {
+                            let data = response[i];
+                            toastr[data.status](data.msg, "", { timeOut: 1000 });
                         }
 
-                        if(estados.includes('success')) {
-                            $('#listaExamenes').empty();
-                            $('#exam').val([]).trigger('change.select2');
-                            $('#addPaquete').val([]).trigger('change.select2');
-                            cargarExamen();
-                            contadorExamenes(ID);
-                            checkExamenes(ID);
-                        }
-
-                    },
-                    error: function(jqXHR){
+                        $('#listaExamenes').empty();
+                        $('#exam').val([]).trigger('change.select2');
+                        $('#paquetes').val([]).trigger('change.select2');
+                        cargarExamen();
+                        listadoSelectExCta(empresa);
+                        contadorExamenes(ID);
+                    })
+                    .fail(function(jqXHR){
                         preloader('off');
                         let errorData = JSON.parse(jqXHR.responseText);            
                         checkError(jqXHR.status, errorData.msg);
                         return; 
-                    }
-                });
+                    });
             }
             
         });
@@ -410,16 +398,20 @@ $(function(){
         });     
     });
 
-    $(document).on('click', '.addExamen', function(e){
+    $(document).on('click', '.addExamen, .addExamenCta', function(e){
         e.preventDefault();
 
-        let id = $("#exam").val();
+        let id = $(this).hasClass('addExamen') ? $("#exam").val() : $('#exaCtaDisp').val(),
+            idExaCta = $('#exaCtaDisp option:selected').data('id');
         
+        console.log(idExaCta)
+
         if(['', null, undefined].includes(id)) {
             toastr.warning("Debe seleccionar un examen para poder añadirlo a la lista",'',{timeOut: 1000});
             return;
         }
-        saveExamen(id);
+
+        saveExamen(id, idExaCta);
     });
 
     $(window).on('popstate', function() {
@@ -466,7 +458,7 @@ $(function(){
     });
 
     
-    function saveExamen(id){
+    function saveExamen(id, idExaCta = null){
 
         idExamen = [];
         if (Array.isArray(id)) {
@@ -489,7 +481,8 @@ $(function(){
             data: {
                 _token: TOKEN,
                 idPrestacion: ID,
-                idExamen: idExamen
+                idExamen: idExamen,
+                idExaCta: idExaCta
             },
             success: function(){
                 preloader('off');
@@ -498,6 +491,7 @@ $(function(){
                 $('#addPaquete').val([]).trigger('change.select2');
                 cargarExamen();
                 contadorExamenes(ID);
+                listadoSelectExCta(empresa)
         },
             error: function(jqXHR){
                 preloader('off');
@@ -760,7 +754,6 @@ $(function(){
                     tipo = factura.Tipo || '',
                     sucursal = factura.Sucursal || '',
                     nroFactura = factura.NroFactura || '',
-                    facturaExamen = tipo + sucursal + nroFactura,
                     tipoNc = notaCreditoEx?.Tipo || '',
                     sucursalNc = notaCreditoEx?.Sucursal || '',
                     nroNc = notaCreditoEx?.Nro || '',
@@ -773,6 +766,7 @@ $(function(){
                 $('#ex-anulado').empty().html(anulado);
                 $('#ex-identificacion').val(itemprestaciones.Id || '');
                 $('#ex-prestacion').val(itemprestaciones.IdPrestacion || '');
+                $('#ex-idExamen').val(itemprestaciones.IdExamen || '')
                 $('#ex-prestacionTitulo').empty().text(itemprestaciones.IdPrestacion || '');
                 $('#ex-fecha').val(itemprestaciones.prestaciones.Fecha || '');
                 $('#ex-examen').val(examenes.Nombre || '');
@@ -807,8 +801,7 @@ $(function(){
                 $('#ex-EstadoInf').empty().css(colorAdjInformador);
                 $('#ex-Obs').val(stripTags(itemprestaciones?.itemsInfo?.Obs));
 
-                $('#ex-FechaFacturaVta').val(factura?.Fecha);
-                $('#ex-NroFacturaVta').val(facturaExamen);
+                checkearFacturas(); //Verifica si es Examen a cuenta o Factura de Venta
 
                 $('#ex-FechaNC').val(notaCreditoEx?.Fecha);
                 $('#ex-NumeroNC').val(notaCEx);
@@ -1681,5 +1674,65 @@ $(function(){
         });
     }
 
+    function checkearFacturas() {
+
+        if(['', 0, null].includes($('#ex-identificacion').val())) return;
+
+        $.get(checkFacturas, {IdPrestacion: $('#ex-prestacion').val(), IdExamen: $('#ex-idExamen').val()})
+            .done(function(response){
+
+                switch (response.tipo) {
+                    case 'examenCuenta':
+                         $('#ex-NroFacturaVta').val(response.data.NroFactura);
+                         $('#ex-FechaFacturaVta').val(response.data.Fecha);
+                        return;
+                    case 'facturaDeVenta':
+                         $('#ex-NroFacturaVta').val(response.data.NroFactura);
+                         $('#ex-FechaFacturaVta').val(response.data.Fecha);
+                        return 
+                    default:
+                        $('#ex-NroFacturaVta').val();
+                        $('#ex-FechaFacturaVta').val();
+                        return;
+                }
+            })
+            .fail(function(jqXHR){
+                let errorData = JSON.parse(jqXHR.responseText);
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            })
+    }
+
+        function listadoSelectExCta(id) {
+        $('#exaCtaDisp').empty()
+
+        if([null, undefined, 0, ''].includes(id)) return;
+
+        preloader('on');
+        $.get(listaExCuenta, {Id: id})
+            .done(function(response){
+             
+                let contenido = '';
+                if(response && response.length > 0) {
+
+                    $('#exaCtaDisp').append('<option selected value="">Examenes disponibles..</option>');
+
+                    $.each(response, function(index, data){
+                        contenido += `<option value="${data.IdExamen}" data-id="${data.IdPagoCuenta}">${data.NombreExamen} (Cantidad: ${data.total})</option>`;
+                    });
+
+                    $('#exaCtaDisp').append(contenido);
+
+                }else{
+                    $('#exaCtaDisp').append('<option selected value="">Sin examenes disponibles</option>');
+                }  
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return; 
+            })
+    }
 
 });

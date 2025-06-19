@@ -58,6 +58,8 @@ class ExamenesController extends Controller
         return view("layouts.examenes.index", ['helper'=> $this->helper]);
     }
 
+    public function show() {}
+
     public function create()
     {
         if(!$this->hasPermission("examenes_add")) {
@@ -93,6 +95,7 @@ class ExamenesController extends Controller
             'Ausente' => $request->Ausente ?? 0,
             'Devol' => ($request->Devolucion === 'on' ? '1' : '0'),
             'Informe' => ($request->Informe === 'on' ? '1' : '0'),
+            'Cerrado' => ($request->Cerrado === 'on' ? '1' : '0'),
             'Adjunto' => ($request->Adjunto === 'on' ? '1' : '0'),
             'NoImprime' => ($request->Fisico === 'on' ? '1' : '0'),
             'PI' => ($request->priImpresion === 'on' ? '1' : '0'),
@@ -298,6 +301,7 @@ class ExamenesController extends Controller
             $examen->Ausente = $request->Ausente ?? 0;
             $examen->Devol = ($request->Devol === 'true' ? '1' : '0');
             $examen->Informe = ($request->Informe === 'true' ? '1' : '0');
+            $examen->Cerrado = ($request->Cerrado === 'true' ? '1' : '0');
             $examen->Adjunto = ($request->Adjunto === 'true' ? '1' : '0');
             $examen->NoImprime = ($request->NoImprime === 'true' ? '1' : '0');
             $examen->PI = ($request->PI === 'true' ? '1' : '0');
@@ -337,6 +341,27 @@ class ExamenesController extends Controller
         }else{
             return response()->noContent();
         }
+    }
+
+    public function getExamenes(Request $request){
+        $buscar = $request->buscar;
+        $resultados = Examen::where('Nombre', 'like', "%".$buscar."%")->get();
+        
+        $retorno = [];
+
+        foreach($resultados as $examen){
+            array_push($retorno, [
+                'id' => $examen->Id,
+                'text' => $examen->Nombre
+            ]);
+        }
+
+        return response()->json($retorno);
+    }
+
+    public function getById(Request $request){
+        $id = $request->Id;
+        return response()->json( Examen::find($id));
     }
 
     public function getReportes(Request $request): mixed

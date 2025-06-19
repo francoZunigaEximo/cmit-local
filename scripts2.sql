@@ -954,8 +954,29 @@ CREATE TABLE llamador(
 	PRIMARY KEY(Id)
 );
 
-ALTER TABLE fichaslaborales MODIFY COLUMN FechaUltPeriod VARCHAR(15) DEFAULT NULL NULL;
-ALTER TABLE fichaslaborales MODIFY COLUMN FechaExArt VARCHAR(15) DEFAULT NULL NULL;
+#Optimizacion de redis - agregar a los env
+SESSION_CONNECTION=default
+
+CREATE TABLE `user_sessions` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint(20) unsigned NOT NULL,
+  `session_id` varchar(191) DEFAULT NULL,
+  `ip_address` varchar(45) NOT NULL,
+  `user_agent` text DEFAULT NULL,
+  `login_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `logout_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_user_id` (`user_id`),
+  KEY `idx_login_at` (`login_at`),
+  KEY `idx_logout_at` (`logout_at`),
+  CONSTRAINT `user_sessions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+);
+
+ALTER TABLE profesionales_prov MODIFY COLUMN IdRol varchar(20) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT '0' NULL;
+
+
+ALTER TABLE fichaslaborales MODIFY COLUMN FechaUltPeriod VARCHAR(15) DEFAULT NULL;
+ALTER TABLE fichaslaborales MODIFY COLUMN FechaExArt VARCHAR(15) DEFAULT NULL;
 ALTER TABLE proveedores ADD COLUMN Obs TEXT NULL;
 
 DROP PROCEDURE IF EXISTS getExamenesPaquete;
@@ -989,7 +1010,8 @@ SELECT
         LPAD(p.Nro, 8, '0')
     ) AS Factura,
     MAX(p.Obs) as Obs,
-    MAX(pi2.Id) as IdEx
+    MAX(pi2.Id) as IdEx,
+	MAX(e.Id) as IdFiltro
 	FROM pagosacuenta_it pi2
 	INNER JOIN pagosacuenta p ON pi2.IdPago = p.Id
 	INNER JOIN clientes c ON p.IdEmpresa = c.Id
@@ -1012,4 +1034,278 @@ END
 INSERT INTO rol_permisos (rol_id,permiso_id) VALUES(13,81); -- Permiso a administrador para imprimir Saldos y Detalles
 
 -- agregamos la columna de vista previa en la tabla reportes
+CREATE TABLE user_sessions (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT UNSIGNED NOT NULL,
+    session_id VARCHAR(191) NULL,
+    ip_address VARCHAR(45) NOT NULL,
+    user_agent TEXT NULL,
+    login_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    logout_at DATETIME NULL DEFAULT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+ALTER TABLE user_sessions ADD INDEX idx_user_id (user_id);
+ALTER TABLE user_sessions ADD INDEX idx_login_at (login_at);
+ALTER TABLE user_sessions ADD INDEX idx_logout_at (logout_at);
+
+
+-- vista previa reportes
 ALTER TABLE reportes ADD COLUMN VistaPrevia VARCHAR(200) DEFAULT NULL;
+
+
+UPDATE reportes SET VistaPrevia = NULL WHERE Id = 0;
+UPDATE reportes SET VistaPrevia = 'E1.jpg' WHERE Id = 1;
+UPDATE reportes SET VistaPrevia = 'E2.jpg' WHERE Id = 2;
+UPDATE reportes SET VistaPrevia = 'E3.jpg' WHERE Id = 3;
+UPDATE reportes SET VistaPrevia = 'E4.jpg' WHERE Id = 4;
+UPDATE reportes SET VistaPrevia = 'E5.jpg' WHERE Id = 5;
+UPDATE reportes SET VistaPrevia = 'E6.jpg' WHERE Id = 6;
+UPDATE reportes SET VistaPrevia = 'E10.jpg' WHERE Id = 7;
+UPDATE reportes SET VistaPrevia = 'E8.jpg' WHERE Id = 8;
+UPDATE reportes SET VistaPrevia = 'E6.jpg' WHERE Id = 9;
+UPDATE reportes SET VistaPrevia = 'E10.jpg' WHERE Id = 10;
+UPDATE reportes SET VistaPrevia = 'E11.jpg' WHERE Id = 11;
+UPDATE reportes SET VistaPrevia = 'E5.jpg' WHERE Id = 12;
+UPDATE reportes SET VistaPrevia = 'E13.jpg' WHERE Id = 13;
+UPDATE reportes SET VistaPrevia = 'E14.jpg' WHERE Id = 14;
+UPDATE reportes SET VistaPrevia = 'E15.jpg' WHERE Id = 15;
+UPDATE reportes SET VistaPrevia = 'E16.jpg' WHERE Id = 16;
+UPDATE reportes SET VistaPrevia = 'E17.jpg' WHERE Id = 17;
+UPDATE reportes SET VistaPrevia = 'E18.jpg' WHERE Id = 18;
+UPDATE reportes SET VistaPrevia = 'E6.jpg' WHERE Id = 19;
+UPDATE reportes SET VistaPrevia = 'E20.jpg' WHERE Id = 20;
+UPDATE reportes SET VistaPrevia = 'E10.jpg' WHERE Id = 21;
+UPDATE reportes SET VistaPrevia = 'E22.jpg' WHERE Id = 22;
+UPDATE reportes SET VistaPrevia = 'E23.jpg' WHERE Id = 23;
+UPDATE reportes SET VistaPrevia = 'E24.jpg' WHERE Id = 24;
+UPDATE reportes SET VistaPrevia = 'E25.jpg' WHERE Id = 25;
+UPDATE reportes SET VistaPrevia = 'E25.jpg' WHERE Id = 26;
+UPDATE reportes SET VistaPrevia = 'E25.jpg' WHERE Id = 27;
+UPDATE reportes SET VistaPrevia = 'E28.jpg' WHERE Id = 28;
+UPDATE reportes SET VistaPrevia = 'E29.jpg' WHERE Id = 29;
+UPDATE reportes SET VistaPrevia = 'E30.jpg' WHERE Id = 30;
+UPDATE reportes SET VistaPrevia = 'E31.jpg' WHERE Id = 31;
+UPDATE reportes SET VistaPrevia = 'E31.jpg' WHERE Id = 32;
+UPDATE reportes SET VistaPrevia = 'E33.jpg' WHERE Id = 33;
+UPDATE reportes SET VistaPrevia = 'E34.jpg' WHERE Id = 34;
+UPDATE reportes SET VistaPrevia = 'E35.jpg' WHERE Id = 35;
+UPDATE reportes SET VistaPrevia = 'E36.jpg' WHERE Id = 36;
+UPDATE reportes SET VistaPrevia = 'E37.jpg' WHERE Id = 37;
+UPDATE reportes SET VistaPrevia = 'E38.jpg' WHERE Id = 38;
+UPDATE reportes SET VistaPrevia = 'E39.jpg' WHERE Id = 39;
+UPDATE reportes SET VistaPrevia = 'E40.jpg' WHERE Id = 40;
+UPDATE reportes SET VistaPrevia = 'E41.jpg' WHERE Id = 41;
+UPDATE reportes SET VistaPrevia = 'E42.jpg' WHERE Id = 42;
+UPDATE reportes SET VistaPrevia = 'E43.jpg' WHERE Id = 44;
+UPDATE reportes SET VistaPrevia = 'E45.jpg' WHERE Id = 45;
+UPDATE reportes SET VistaPrevia = 'E46.jpg' WHERE Id = 46;
+UPDATE reportes SET VistaPrevia = 'E47_1.jpg' WHERE Id = 47;
+UPDATE reportes SET VistaPrevia = 'E48_1.jpg' WHERE Id = 48;
+UPDATE reportes SET VistaPrevia = 'E49_1.jpg' WHERE Id = 49;
+UPDATE reportes SET VistaPrevia = 'E50_1.jpg' WHERE Id = 50;
+UPDATE reportes SET VistaPrevia = 'E51_1.jpg' WHERE Id = 51;
+UPDATE reportes SET VistaPrevia = 'E52_1.jpg' WHERE Id = 52;
+UPDATE reportes SET VistaPrevia = 'E53_1.jpg' WHERE Id = 53;
+UPDATE reportes SET VistaPrevia = 'E54_1.jpg' WHERE Id = 54;
+UPDATE reportes SET VistaPrevia = 'E55_1.jpg' WHERE Id = 55;
+UPDATE reportes SET VistaPrevia = NULL WHERE Id = 56;
+UPDATE reportes SET VistaPrevia = NULL WHERE Id = 57;
+UPDATE reportes SET VistaPrevia = NULL WHERE Id = 58;
+UPDATE reportes SET VistaPrevia = 'E59_1.jpg' WHERE Id = 59;
+UPDATE reportes SET VistaPrevia = 'E60_1.jpg' WHERE Id = 60;
+UPDATE reportes SET VistaPrevia = 'E61_1.jpg' WHERE Id = 61;
+UPDATE reportes SET VistaPrevia = 'E62_1.jpg' WHERE Id = 62;
+UPDATE reportes SET VistaPrevia = 'E63_1.jpg' WHERE Id = 63;
+UPDATE reportes SET VistaPrevia = 'E64_3.jpg' WHERE Id = 64;
+UPDATE reportes SET VistaPrevia = 'E65_1.jpg' WHERE Id = 65;
+UPDATE reportes SET VistaPrevia = 'E66_1.jpg' WHERE Id = 66;
+UPDATE reportes SET VistaPrevia = 'E67.jpg' WHERE Id = 67;
+UPDATE reportes SET VistaPrevia = 'E68.jpg' WHERE Id = 68;
+UPDATE reportes SET VistaPrevia = 'E69_1.jpg' WHERE Id = 69;
+UPDATE reportes SET VistaPrevia = 'E70.jpg' WHERE Id = 70;
+UPDATE reportes SET VistaPrevia = 'E71.jpg' WHERE Id = 71;
+UPDATE reportes SET VistaPrevia = 'E72_1.jpg' WHERE Id = 72;
+UPDATE reportes SET VistaPrevia = 'E72_1.jpg' WHERE Id = 73;
+UPDATE reportes SET VistaPrevia = 'E74_1.jpg' WHERE Id = 74;
+UPDATE reportes SET VistaPrevia = 'E75_1.jpg' WHERE Id = 75;
+UPDATE reportes SET VistaPrevia = 'E76_1.jpg' WHERE Id = 76;
+UPDATE reportes SET VistaPrevia = 'E77_1.jpg' WHERE Id = 77;
+UPDATE reportes SET VistaPrevia = 'E78_1.jpg' WHERE Id = 78;
+UPDATE reportes SET VistaPrevia = 'E79_1.jpg' WHERE Id = 79;
+UPDATE reportes SET VistaPrevia = 'E80_1.jpg' WHERE Id = 80;
+UPDATE reportes SET VistaPrevia = 'E81_1.jpg' WHERE Id = 81;
+UPDATE reportes SET VistaPrevia = 'E82_1.jpg' WHERE Id = 82;
+UPDATE reportes SET VistaPrevia = 'E83_1.jpg' WHERE Id = 83;
+UPDATE reportes SET VistaPrevia = 'E84_1.jpg' WHERE Id = 84;
+UPDATE reportes SET VistaPrevia = 'E85_1.jpg' WHERE Id = 85;
+UPDATE reportes SET VistaPrevia = 'E86_1.jpg' WHERE Id = 86;
+UPDATE reportes SET VistaPrevia = 'E87_1.jpg' WHERE Id = 87;
+UPDATE reportes SET VistaPrevia = 'E88_1.jpg' WHERE Id = 88;
+UPDATE reportes SET VistaPrevia = 'E89_1.jpg' WHERE Id = 89;
+UPDATE reportes SET VistaPrevia = 'E90_1.jpg' WHERE Id = 90;
+UPDATE reportes SET VistaPrevia = 'E91_1.jpg' WHERE Id = 91;
+UPDATE reportes SET VistaPrevia = 'E92_1.jpg' WHERE Id = 92;
+UPDATE reportes SET VistaPrevia = 'E93_1.jpg' WHERE Id = 93;
+UPDATE reportes SET VistaPrevia = 'E94_1.jpg' WHERE Id = 94;
+UPDATE reportes SET VistaPrevia = 'E95_1.jpg' WHERE Id = 95;
+UPDATE reportes SET VistaPrevia = NULL WHERE Id = 96;
+UPDATE reportes SET VistaPrevia = NULL WHERE Id = 97;
+UPDATE reportes SET VistaPrevia = NULL WHERE Id = 98;
+UPDATE reportes SET VistaPrevia = 'E99_1.jpg' WHERE Id = 99;
+UPDATE reportes SET VistaPrevia = 'E100_1.jpg' WHERE Id = 100;
+UPDATE reportes SET VistaPrevia = 'E101_1.jpg' WHERE Id = 101;
+UPDATE reportes SET VistaPrevia = NULL WHERE Id = 103;
+UPDATE reportes SET VistaPrevia = NULL WHERE Id = 104;
+UPDATE reportes SET VistaPrevia = NULL WHERE Id = 105;
+UPDATE reportes SET VistaPrevia = 'E106_1.jpg' WHERE Id = 106;
+UPDATE reportes SET VistaPrevia = 'E102_1.jpg' WHERE Id = 107;
+UPDATE reportes SET VistaPrevia = NULL WHERE Id = 108;
+UPDATE reportes SET VistaPrevia = 'E109_1.jpg' WHERE Id = 109;
+UPDATE reportes SET VistaPrevia = 'E109_1.jpg' WHERE Id = 111;
+UPDATE reportes SET VistaPrevia = NULL WHERE Id = 112;
+UPDATE reportes SET VistaPrevia = 'E113_1.jpg' WHERE Id = 113;
+UPDATE reportes SET VistaPrevia = 'E114_1.jpg' WHERE Id = 114;
+UPDATE reportes SET VistaPrevia = 'E115_1.jpg' WHERE Id = 115;
+UPDATE reportes SET VistaPrevia = 'E116_1.jpg' WHERE Id = 116;
+UPDATE reportes SET VistaPrevia = 'E117_1.jpg' WHERE Id = 117;
+UPDATE reportes SET VistaPrevia = 'E118_1.jpg' WHERE Id = 118;
+UPDATE reportes SET VistaPrevia = NULL WHERE Id = 119;
+UPDATE reportes SET VistaPrevia = NULL WHERE Id = 120;
+UPDATE reportes SET VistaPrevia = NULL WHERE Id = 121;
+UPDATE reportes SET VistaPrevia = NULL WHERE Id = 122;
+UPDATE reportes SET VistaPrevia = 'E123_1.jpg' WHERE Id = 123;
+UPDATE reportes SET VistaPrevia = 'E124_1.jpg' WHERE Id = 124;
+UPDATE reportes SET VistaPrevia = 'E125_1.jpg' WHERE Id = 125;
+UPDATE reportes SET VistaPrevia = 'E126_1.jpg' WHERE Id = 126;
+UPDATE reportes SET VistaPrevia = NULL WHERE Id = 127;
+UPDATE reportes SET VistaPrevia = 'E128_1.jpg' WHERE Id = 128;
+UPDATE reportes SET VistaPrevia = 'E129_1.jpg' WHERE Id = 129;
+UPDATE reportes SET VistaPrevia = 'E130_1.jpg' WHERE Id = 130;
+UPDATE reportes SET VistaPrevia = 'E131_1.jpg' WHERE Id = 131;
+UPDATE reportes SET VistaPrevia = 'E132_1.jpg' WHERE Id = 132;
+UPDATE reportes SET VistaPrevia = 'E133_1.jpg' WHERE Id = 133;
+UPDATE reportes SET VistaPrevia = 'E134_1.jpg' WHERE Id = 134;
+UPDATE reportes SET VistaPrevia = 'E135_1.jpg' WHERE Id = 135;
+UPDATE reportes SET VistaPrevia = 'E136_1.jpg' WHERE Id = 136;
+UPDATE reportes SET VistaPrevia = 'E137_1.jpg' WHERE Id = 137;
+UPDATE reportes SET VistaPrevia = 'E138_1.jpg' WHERE Id = 138;
+UPDATE reportes SET VistaPrevia = 'E139_1.jpg' WHERE Id = 139;
+UPDATE reportes SET VistaPrevia = 'E140_1.jpg' WHERE Id = 140;
+UPDATE reportes SET VistaPrevia = 'E141.jpg' WHERE Id = 141;
+UPDATE reportes SET VistaPrevia = 'E144_1.jpg' WHERE Id = 142;
+UPDATE reportes SET VistaPrevia = NULL WHERE Id = 143;
+UPDATE reportes SET VistaPrevia = NULL WHERE Id = 144;
+UPDATE reportes SET VistaPrevia = NULL WHERE Id = 145;
+UPDATE reportes SET VistaPrevia = 'E146_1.jpg' WHERE Id = 146;
+UPDATE reportes SET VistaPrevia = 'E146_1.jpg' WHERE Id = 147;
+UPDATE reportes SET VistaPrevia = 'E148_1.jpg' WHERE Id = 148;
+UPDATE reportes SET VistaPrevia = 'E149_1.jpg' WHERE Id = 149;
+UPDATE reportes SET VistaPrevia = 'E150_1.jpg' WHERE Id = 150;
+UPDATE reportes SET VistaPrevia = 'E151_1.jpg' WHERE Id = 151;
+UPDATE reportes SET VistaPrevia = 'E152_1.jpg' WHERE Id = 152;
+UPDATE reportes SET VistaPrevia = 'E153_1.jpg' WHERE Id = 153;
+UPDATE reportes SET VistaPrevia = NULL WHERE Id = 154;
+UPDATE reportes SET VistaPrevia = NULL WHERE Id = 155;
+UPDATE reportes SET VistaPrevia = NULL WHERE Id = 156;
+UPDATE reportes SET VistaPrevia = NULL WHERE Id = 157;
+UPDATE reportes SET VistaPrevia = NULL WHERE Id = 158;
+UPDATE reportes SET VistaPrevia = NULL WHERE Id = 159;
+UPDATE reportes SET VistaPrevia = NULL WHERE Id = 160;
+UPDATE reportes SET VistaPrevia = NULL WHERE Id = 161;
+UPDATE reportes SET VistaPrevia = NULL WHERE Id = 162;
+UPDATE reportes SET VistaPrevia = NULL WHERE Id = 163;
+UPDATE reportes SET VistaPrevia = NULL WHERE Id = 164;
+UPDATE reportes SET VistaPrevia = NULL WHERE Id = 165;
+UPDATE reportes SET VistaPrevia = NULL WHERE Id = 166;
+UPDATE reportes SET VistaPrevia = NULL WHERE Id = 167;
+
+CREATE TABLE fichaprestacion_factura(
+	id INT AUTO_INCREMENT NOT NULL,
+	prestacion_id INT,
+	fichalaboral_id INT,
+	Tipo CHAR(1),
+	Sucursal INT,
+	NroFactura INT,
+	NroFactProv TEXT,
+	UNIQUE(id) 
+);
+
+ALTER TABLE fichaslaborales DROP COLUMN Tipo, DROP COLUMN Sucursal, DROP COLUMN NroFactura, DROP COLUMN NroFactProv;
+
+ALTER TABLE prestaciones DROP COLUMN NroFactProv;
+
+ALTER TABLE fichaslaborales ADD COLUMN datos_facturacion_id INT NULL;
+ALTER TABLE prestaciones ADD COLUMN datos_facturacion_id INT NULL;
+
+ALTER TABLE prestaciones ADD CONSTRAINT fk_prestacion_datos_facturacion FOREIGN KEY (datos_facturacion_id) REFERENCES fichaprestacion_factura(id);
+ALTER TABLE fichaslaborales ADD CONSTRAINT fk_fichalaboral_datos_facturacion FOREIGN KEY(datos_facturacion_id) REFERENCES fichaprestacion_factura(id);
+
+DELIMITER //
+
+CREATE TRIGGER autocomplete_fichaslaborales
+BEFORE INSERT ON fichaslaborales
+FOR EACH ROW
+BEGIN
+    IF NEW.Jornada IS NULL OR NEW.Jornada = '' THEN
+        SET NEW.Jornada = '';
+    END IF;
+
+    IF NEW.Observaciones IS NULL OR NEW.Observaciones = '' THEN
+        SET NEW.Observaciones = '';
+    END IF;
+
+    IF NEW.TareasEmpAnterior IS NULL OR NEW.TareasEmpAnterior = '' THEN
+        SET NEW.TareasEmpAnterior = '';
+    END IF;
+
+    IF NEW.Puesto IS NULL OR NEW.Puesto = '' THEN
+        SET NEW.Puesto = '';
+    END IF;
+END;
+//
+
+DELIMITER ;
+
+ALTER TABLE facturasdeventa ADD CONSTRAINT fk_facturadeventa_prestacion FOREIGN KEY(IdPrestacion) REFERENCES prestaciones(Id);
+ALTER TABLE fichaprestacion_factura MODIFY COLUMN NroFactProv TEXT DEFAULT NULL NULL;
+
+
+
+
+ALTER TABLE reportes ADD COLUMN VistaPrevia VARCHAR(200) DEFAULT NULL;
+
+
+-- alias al paquete estudios
+ALTER TABLE paqestudios ADD COLUMN Alias VARCHAR(200) DEFAULT NULL;		
+ALTER TABLE paqestudios ADD COLUMN Baja BIT DEFAULT 0;		
+
+ALTER TABLE relpaqest ADD COLUMN Baja BIT DEFAULT 0;
+
+-- rel tabla grupocliente - cliente
+ALTER TABLE clientesgrupos_it ADD COLUMN Baja BIT DEFAULT 0;		
+
+ALTER TABLE clientesgrupos ADD COLUMN Baja BIT DEFAULT 0;
+
+-- modificamos la tabla de paquetes de facturacion
+
+ALTER TABLE paqfacturacion ADD COLUMN Alias VARCHAR(200) DEFAULT NULL;	
+ALTER TABLE paqfacturacion ADD COLUMN Baja BIT DEFAULT 0;
+
+-- modificamos la tabla de la relacion entre paquetes de facturacion y los estudios
+ALTER TABLE relpaqfact ADD COLUMN Baja BIT DEFAULT 0;
+
+
+DROP PROCEDURE IF EXISTS db_cmit.getExamenesPaqueteFac;
+
+DELIMITER $$
+$$
+CREATE PROCEDURE db_cmit.getExamenesPaqueteFac()
+BEGIN
+	SELECT e.Id FROM relpaqfact r
+	INNER JOIN examenes e ON r.IdExamen = e.Id 
+	WHERE r.IdPaquete = IdPaquete AND r.Baja = 0;
+END$$
+DELIMITER ;
+
+ALTER TABLE clientesgrupos_it DROP INDEX IdCliente_2;

@@ -358,7 +358,6 @@ label {
 	border: 1px #eee solid !important; 
 	padding: 0.5em !important; 
 	border-radius:10px !important; 
-	margin-right: 2em !important;
 	background-color: rgba(144, 144, 144, 0.055) !important;
 }
 
@@ -787,4 +786,8 @@ tr.enlace-negro button.btn i {
 
 :root {
 	--vz-border-color: #887c78 !important;
+}
+
+.navbar-brand-box {
+	width: 68px !important;
 }

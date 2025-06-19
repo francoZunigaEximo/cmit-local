@@ -107,7 +107,7 @@ $(function(){
         });
     });
 
-    principal.downPaciente.on('click', function(e){
+    $(document).on('click', '.downPaciente', function(e){
         e.preventDefault();
         let paciente = $(this).data('id'), fullName = $(this).data('nombrecompleto');
 

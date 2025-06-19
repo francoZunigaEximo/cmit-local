@@ -63,7 +63,6 @@
 <script>
     const getClientes = "{{ route('getClientes') }}";
     const saveExamenCuenta = "{{ route('saveExamenCuenta') }}";
-    const TOKEN = "{{ csrf_token() }}";
 </script>
 
 @push('styles')

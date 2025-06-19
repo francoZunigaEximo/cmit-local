@@ -116,16 +116,16 @@
                     </div>
 
                 </div>
-                <div class="col-3 box-information mx-auto">
+                <div class="col-4 box-information mx-auto">
                     <div class="profile-user position-relative d-inline-block mx-auto mb-2">
-                        <div id="profile-image-preview" class="img-thumbnail user-profile-image" style="width: 200px; height: 140px; background-image: url('@fileUrl('lectura')/Fotos/{{ $paciente->Foto}}?v={{ time() }}'); background-size: cover; background-position: center;"></div>
+                        <div id="profile-image-preview" class="img-thumbnail user-profile-image" style="background-size: cover; background-position: center; width: 200px; height: 140px; background-image: url('@fileUrl('lectura')/Fotos/{{ $paciente->Foto}}?v={{ time() }}') "></div>
                     <div class="avatar-xs p-0 rounded-circle profile-photo-edit">
                             <input id="profile-img-file-input" type="button" class="profile-img-file-input" value="Tomar foto" onClick="takeSnapshot()">
                             <input type="hidden" name="Foto" class="image-tag">
                             <label for="profile-img-file-input" class="profile-photo-edit avatar-xs">
                                 <span class="avatar-title rounded-circle bg-light text-body">
                                     <i class="ri-camera-fill"></i>
-                                </span
+                                </span>
                             </label>
                         </div> 
                     </div>
@@ -192,7 +192,7 @@
                             </div>
                         </div>
                         
-                        <div class="table mt-3 mb-1 mx-auto">
+                        <div class="table-responsive mt-3 mb-1 mx-auto">
                             <table id="listaPacientes" class="table table-bordered">
                                 <thead class="table-light">
                                     <tr>
@@ -280,7 +280,7 @@
         <div class="modal-content">
             <div class="modal-header"></div>
             <div class="modal-body">
-                <div class="row fichaLaboralModal">
+                 <div class="row fichaLaboralModal ">
                     <div class="row">
                         <div class="col-sm-4"></div>
                         <div class="col-sm-4 text-center"><h3 class="ff-secondary fw-bold mt-1 text-center">Ficha Laboral</h3></div>
@@ -290,8 +290,8 @@
                         </div>
                     </div>
                    
-                    <div class="row">
-                        <div class="col-9 mx-auto box-information">
+                    <div class="row d-flex justify-content-center">
+                        <div class="col-9 box-information">
                             <div class="row">
                                
                                 <div class="col-6">
@@ -350,8 +350,8 @@
                                     </div>
 
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="TipoPrestacion" id="OTRO" value="OTRO">
-                                        <label class="form-check-label" for="otro">OTRO</label>
+                                        <input class="form-check-input" type="radio" name="TipoPrestacion" id="TipoPrestacion" id="MAS" value="MAS">
+                                        <label class="form-check-label" for="mas">MAS</label>
                                     </div>
                                     <div class="form-check form-check-inline" id="divtipoPrestacionPresOtros" style="display: ">
                                         <select class="form-select" id="tipoPrestacionPresOtros">
@@ -543,8 +543,8 @@
                     <div class="row observacionesModal">
                         <h3 class="ff-secondary fw-bold mt-1 text-center">Alerta de prestación</h3>
 
-                        <div class="row">
-                            <div class="col-9 mx-auto box-information">
+                        <div class="row d-flex justify-content-center">
+                            <div class="col-9 box-information">
                                 <div class="row">
     
                                     <div class="col-12 ObBloqueoEmpresa">
@@ -592,8 +592,8 @@
                     <div class="row nuevaPrestacion">
                         <h3 class="ff-secondary fw-bold mt-1 text-center">Alta Prestación</h3>
 
-                        <div class="row">
-                            <div class="col-9 mx-auto box-information">
+                        <div class="row d-flex justify-content-center">
+                            <div class="col-9 box-information">
                                 <div class="messagePrestacion"></div>
                                 <div class="row">
                                     <div class="col-6">
@@ -675,13 +675,13 @@
                                                 <option value="R">R</option>
                                                 <option value="Z">Z</option>
                                             </select>
-                                            <input type="text"  class="form-control" placeholder="nro sucursal" id="ElSucursal">
-                                            <input type="text"  class="form-control" placeholder="nro de factura" id="ElNroFactura">
+                                            <input type="text"  class="form-control" placeholder="nro sucursal" id="ElSucursal" name="ElSucursal">
+                                            <input type="text"  class="form-control" placeholder="nro de factura" id="ElNroFactura" name="ElNroFactura">
                                         </div>
 
                                         <div class="input-group input-group-sm mb-2 NroFactProv">
                                             <span class="input-group-text">Nro Factura Provisoria</span>
-                                            <input type="text" class="form-control" placeholder="Numero de factura provisoria" id="ElNroFactProv">
+                                            <input type="text" class="form-control" placeholder="Numero de factura provisoria" id="ElNroFactProv" name="ElNroFactProv">
                                         </div>
 
                                         <div class="input-group input-group-sm mb-2 Autoriza">
@@ -691,6 +691,7 @@
                                                 <option value="Lucas Grunmann">Lucas Grunmann</option>
                                             </select>
                                         </div>
+                                        <input type="hidden" id="facturacion_id">
 
                                     </div>
                             </div>
@@ -725,7 +726,7 @@
                                             <h4 class="card-title mb-0">Ultimas prestaciones facturadas</h4>
                                         </div>
                                         <div class="card-body">
-                                            <div class="table mb-1 col-sm-12">
+                                            <div class="table-resposive mb-1 col-sm-12">
                                                 <table id="lstDisponibles" class="table table-bordered">
                                                     <thead class="table-light">
                                                     </thead>
@@ -745,7 +746,7 @@
                                             <h4 class="card-title mb-0">Examenes a cuenta disponibles <span class="small">(Total: <span id="totalCantidad"></span>)</span></h4>
                                         </div>
                                         <div class="card-body">
-                                            <div class="col-sm-12">
+                                            <div class="table-responsive col-sm-12">
                                                 <table id="lstDisponibles" class="table table-bordered dt-responsive nowrap table-striped align-middle dataTable no-footer dtr-inline collapsed">
                                                     <thead class="table-light">
                                                         <tr>
@@ -769,14 +770,14 @@
                 </div>
 
                 <div class="row listadoExCta">
-                    <div class="row">
+                    <div class="row ">
                         <div class="col-sm-4"></div>
                         <div class="col-sm-4 text-center"><h3 class="ff-secondary fw-bold mt-1 text-center">Listado de examenes a cuenta</h3></div>
                         <div class="col-sm-4 text-center"></div>
                     </div>
                    
-                    <div class="row">
-                        <div class="col-9 mx-auto box-information">
+                    <div class="row d-flex justify-content-center">
+                        <div class="col-9  box-information">
                             <div class="row">
                                 <div class="col-sm-12 text-end">
                                     <button type="button" class="btn btn-sm botonGeneral cerrarlstExCta">Cerrar</button>
@@ -798,95 +799,10 @@
                     </div>
                 </div>
 
-                <div class="row seleccionExCta">
-                    <div class="row">
-                        <div class="col-sm-4"></div>
-                        <div class="col-sm-4 text-center"><h3 class="ff-secondary fw-bold mt-1 text-center">Agregar examenes a cuenta</h3></div>
-                        <div class="col-sm-4 text-center"></div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-12 mx-auto box-information">
-                            <div class="row">
-                                <div class="col-sm-12 text-end">
-                                    <button type="button" class="btn btn-sm botonGeneral volverPrestacion"><i class="ri-arrow-left-line"></i>Volver</button>
-                                </div>
-                            </div>
-
-                            <div class="d-flex justify-content-center align-items-center">
-                                <div class="col-sm-6 mt-5 mt-lg-0">
-                                    <div class="row g-3 mb-0 justify-content-center">
-                                        <div class="col-sm-6">
-                                            <select name="examen" id="examen" class="form-control"></select>
-                                        </div>
-                                        <div class="col-auto">
-                                            <button type="button" class="btn btn-sm botonGeneral buscarExamen"><i class="ri-search-line"></i> Buscar</button>
-                                            <button type="button" class="btn btn-sm botonGeneral reiniciarExamen"><i class="ri-arrow-go-forward-fill"></i> Reiniciar</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-
-                            <div class="row mx-auto">
-                                <div class="table-responsive table-card mt-3 mb-1 mx-auto col-sm-8">
-                                    <table id="lstExCta" class="display table table-bordered">
-                                        <tbody class="list form-check-all" id="lstEx">
-                                            
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-
-                            <div class="row mb-2">
-                                <div class="col-sm-12 text-center">
-                                    <button type="button" class="btn btn-sm botonGeneral precargaExamenes"><i class="ri-arrow-up-circle-line"></i>&nbsp;Cargar</button>
-                                </div>
-                            </div>
-
-                            <hr class="mt-1 mb-1">
-
-                            <div class="row mx-auto">
-                                <div class="col-sm-7 text-end mt-2 p-2 mx-auto">
-                                    <button type="button" class="btn btn-sm botonGeneral deleteMasivo"><i class="ri-delete-bin-6-line"></i>&nbsp;Eliminar</button>
-                                </div>
-                            </div>
-
-                            <div class="row mx-auto mb-3">
-                                <div class="table-responsive table-card mt-3 mb-1 mx-auto col-sm-7">
-                                    <table id="listadoSaldos" class="display table table-bordered">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th class="sort">Examen</th>
-                                                <th>Especialidad</th>
-                                                <th>Dias a Vencer</th>
-                                                <th><input type="checkbox" id="checkAllEx" name="Id_exa"></th>
-                                                <th>Acciones</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="list form-check-all" id="listEdicion">
-                            
-                                        </tbody>
-                                    </table>
-                            
-                                </div>
-                            </div>
-
-                            <div class="row mb-2">
-                                <div class="col-sm-12 text-center">
-                                    <button type="button" class="btn btn-sm botonGeneral cargarExPrestacion"><i class="ri-save-line"></i>&nbsp;Guardar</button>
-                                </div>
-                            </div>
-
-
-                        </div>
-                    </div>
-                </div>
-
                 <div class="row prestacionLimpia">
-                    <h3 class="ff-secondary fw-bold mt-1 text-center">Alta Prestación</h3>
-                    <div class="row">
-                        <div class="col-9 mx-auto box-information">
+                    <h3 class="ff-secondary fw-bold mt-1 text-center tituloPrestacion">Alta Prestación</h3>
+                    <div class="row d-flex justify-content-center">
+                        <div class="col-9 box-information">
                             <div class="messagePrestacion"></div>
                             
                             <div class="row">
@@ -983,6 +899,7 @@
 
                             </div>
 
+
                             <div class="row mt-2 paqueteExamen">
                         
                                 <div class="col-6">
@@ -1023,6 +940,43 @@
 
                             <hr class="mt-3 mb-3">
 
+                            <div class="row paqueteExCta">
+                                
+                                <div class="d-flex justify-content-center align-items-center">
+                                    <div class="col-sm-12 mt-5 mt-lg-0">
+                                        <div class="row g-3 mb-0 justify-content-center">
+                                            <div class="col-sm-6">
+                                                <select name="examen" id="examen" class="form-control"></select>
+                                            </div>
+                                            <div class="col-auto">
+                                                <button type="button" class="btn btn-sm botonGeneral buscarExamen"><i class="ri-search-line"></i> Buscar</button>
+                                                <button type="button" class="btn btn-sm botonGeneral reiniciarExamen"><i class="ri-arrow-go-forward-fill"></i> Reiniciar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+    
+                                <div class="row mx-auto">
+                                    <div class="table-responsive table-card mt-3 mb-1 mx-auto col-sm-8">
+                                        <table id="lstExCta" class="display table table-bordered">
+                                            <tbody class="list form-check-all" id="lstEx">
+                                                
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+    
+                            </div>
+
+                            <div class="row mb-2 paqueteExCta">
+                                <div class="col-sm-12 text-center">
+                                    <button type="button" class="btn btn-sm botonGeneral cargarExPrestacion"><i class="ri-save-line"></i>&nbsp;Añadir Ex a Cuenta</button>
+                                </div>
+                            </div>
+
+                            <hr class="mt-3 mb-3">
+
                             <div class="row">
                                 <div class="col-lg-12 mb-2">
                                     <p>Escriba un comentario de la cuestión o situación:</p>
@@ -1040,7 +994,7 @@
                                             <h4 class="card-title mb-0">Observaciones privadas</h4>
                                         </div>
                                         <div class="card-body">
-                                            <div class="table-card mb-1">
+                                            <div class="table-responsive table-card mb-1">
                                                 <table id="lstPrivPrestaciones" class="table table-bordered">
                                                     <thead class="table-light">
                                                         <tr>
@@ -1089,13 +1043,10 @@
                                 </div>
                                 <div class="col-sm-4"></div>
                             </div>
-
                         </div>
                     </div>
-
-
-
                 </div>
+           
 
                 <div class="row resultadosPaciente">
                     <h3 class="ff-secondary fw-bold mt-1 text-center">Resultados</h3>
@@ -1107,7 +1058,7 @@
                             <i class="ri-arrow-left-line"></i> Volver a la prestación
                         </button>
                         <div class="row auto-mx mb-3">
-                            <div class="table mt-3 mb-1 mx-auto col-sm-7">
+                            <div class="table-responsive mt-3 mb-1 mx-auto col-sm-12">
                                 <table id="listadoResultadosPres" class="table table-bordered">
                                     <thead class="table-light">
                                         <tr>
@@ -1272,7 +1223,6 @@ const listPrecarga = "{{ route('listPrecarga') }}";
 const listExCta = "{{ route('listExCta') }}";
 const lstExClientes = "{{ route('lstExClientes') }}";
 const searchExamen = "{{ route('searchExamen') }}";
-const preExamenes = "{{ route('preExamenes') }}";
 const IDFICHA = "{{ $fichaLaboral->empresa->Id ?? ''}}";
 const pagoInput = "{{ $fichaLaboral->Pago ?? ''}} ";
 const checkItemExamen = "{{ route('checkItemExamen') }}";
@@ -1285,6 +1235,7 @@ const privateComment = "{{ route('comentariosPriv') }}";
 const savePrivComent = "{{ route('savePrivComent') }}";
 const bloquearItemExamen = "{{ route('bloquearItemExamen') }}";
 const obsNuevaPrestacion = "{{ route('obsNuevaPrestacion') }}";
+const getFormaPagoART = "{{ route('clientes.formaPago') }}";
 
 const getMapas = "{{ route('getMapas') }}";
 
@@ -1298,7 +1249,6 @@ const editUrl = "{{ route('pacientes.edit', ['paciente' => '__paciente__']) }}";
 const ID = "{{ $paciente->Id }}";
 let checkFichaLaboral = "{{ $fichaLaboral->Id ?? ''}}";
 const getTipoPrestacion = "{{ route('getTipoPrestacion') }}";
-const TOKEN = "{{ csrf_token() }}";
 
 const checkObs = "{{ route('checkObs') }}";
 const excelPrestaciones = "{{ route('prestaciones.excel') }}";
@@ -1315,6 +1265,7 @@ const impRepo = "{{ route('prestaciones.pdf') }}";
 const sendExcel = "{{ route('prestaciones.excel') }}";
 const contadorEx = "{{route('itemsprestaciones.contador')}}";
 const getListaExCta = "{{ route('examenesCuenta.listado') }}";
+const cargarExCta = "{{ route('examenesCuenta.cargar') }}";
 </script>
 
 @push('styles')

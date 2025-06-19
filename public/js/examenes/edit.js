@@ -24,6 +24,7 @@ $(function(){
             ProvEfector = $('#ProvEfector').val(),
             ProvInformador = $('#ProvInformador').val(),
             Informe = $('#Informe').prop('checked'),
+            Cerrado = $('#Cerrado').prop('checked'),
             Fisico = $('#Fisico').prop('checked'),
             Adjunto = $('#Adjunto').prop('checked'),
             Ausente = $('#Ausente').prop('checked'),
@@ -40,7 +41,7 @@ $(function(){
                 }).then((confirmar) => {
                     if(confirmar) {
                         preloader('on');
-                        $.post(updateExamen, {_token: TOKEN, Id: ID, Examen:Examen, IdEstudio: Estudio, Descripcion: Descripcion, IdReporte: Reporte, Cod: CodigoEx, Cod2: CodigoE, IdForm: Formulario, DiasVencimiento: DiasVencimiento, Inactivo: Inactivo, PI: priImpresion, IdProveedor: ProvEfector, IdProveedor2: ProvInformador, Informe: Informe, NoImprime: Fisico, Adjunto: Adjunto, Ausente: Ausente, Devol: Devolucion, Evaluador: EvalExclusivo, EvalCopia: ExpAnexo, aliasexamen: aliasexamen})
+                        $.post(updateExamen, {_token: TOKEN, Id: ID, Examen:Examen, IdEstudio: Estudio, Descripcion: Descripcion, IdReporte: Reporte, Cod: CodigoEx, Cod2: CodigoE, IdForm: Formulario, DiasVencimiento: DiasVencimiento, Inactivo: Inactivo, PI: priImpresion, IdProveedor: ProvEfector, IdProveedor2: ProvInformador, Informe: Informe, NoImprime:  Fisico, Cerrado: Cerrado, Adjunto: Adjunto, Ausente: Ausente, Devol: Devolucion, Evaluador: EvalExclusivo, EvalCopia: ExpAnexo, aliasexamen: aliasexamen})
                         .done(function(response){
                             preloader('off')
                             toastr.success(response.msg, '', {timeOut: 1000});
@@ -75,6 +76,7 @@ $(function(){
             ProvEfector = $('#ProvEfector').val(),
             ProvInformador = $('#ProvInformador').val(),
             Informe = $('#Informe').prop('checked'),
+            Cerrado = $('#Cerrado').prop('checked'),
             Fisico = $('#Fisico').prop('checked'),
             Adjunto = $('#Adjunto').prop('checked'),
             Ausente = $('#Ausente').prop('checked'),
@@ -101,6 +103,7 @@ $(function(){
                 localStorage.setItem('clon_ProvEfector', ProvEfector);
                 localStorage.setItem('clon_ProvInformador', ProvInformador);
                 localStorage.setItem('clon_Informe', Informe);
+                localStorage.setItem('clon_Cerrado', Cerrado);
                 localStorage.setItem('clon_Fisico', Fisico);
                 localStorage.setItem('clon_Adjunto', Adjunto);
                 localStorage.setItem('clon_Ausente', Ausente);

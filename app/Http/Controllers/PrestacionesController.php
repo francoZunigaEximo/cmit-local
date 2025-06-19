@@ -60,7 +60,7 @@ use App\Models\HistorialPrestacion;
 use App\Services\ReportesExcel\ReporteExcel;
 
 use Illuminate\Support\Facades\File;
-
+use App\Services\Facturas\PrestaFichaFactura;
 
 class PrestacionesController extends Controller
 {
@@ -77,6 +77,7 @@ class PrestacionesController extends Controller
     protected $sendFile3;
 
     protected $reporteExcel;
+    protected $detalleFactura;
 
     public $helper = '
         <ul>
@@ -100,7 +101,11 @@ class PrestacionesController extends Controller
         </ul>
     ';
 
-    public function __construct(ReporteService $reporteService, ReporteExcel $reporteExcel)
+    public function __construct(
+        ReporteService $reporteService, 
+        ReporteExcel $reporteExcel,
+        PrestaFichaFactura $detalleFactura
+        )
     {
         $this->reporteService = $reporteService;
         $this->outputPath = storage_path('app/public/temp/fusionar.pdf');
@@ -108,6 +113,7 @@ class PrestacionesController extends Controller
         $this->fileNameExport = 'reporte-'.Tools::randomCode(15);
         $this->tempFile = 'app/public/temp/file-';
         $this->reporteExcel = $reporteExcel;
+        $this->detalleFactura = $detalleFactura;
     }
 
     public function index(Request $request): mixed
@@ -296,39 +302,39 @@ class PrestacionesController extends Controller
         }
 
         $nuevoId = Prestacion::max('Id') + 1;
-
-        Prestacion::create([
-            'Id' => $nuevoId,
-            'IdPaciente' => $request->IdPaciente,
-            'TipoPrestacion' => $request->TipoPrestacion,
-            'IdMapa' => $request->TipoPrestacion <> 'ART' ? 0 : ($request->IdMapa ?? 0),
-            'Pago' => $request->Pago,
-            'SPago' => $request->SPago ?? '',
-            'Observaciones' => $request->Observaciones ??  '',
-            'IdEmpresa' => $request->IdEmpresa,
-            'IdART' => $request->IdART,
-            'Fecha' => now()->format('Y-m-d'),
-            'NroFactProv' => $request->NroFactProv
+        $data = $request->only([
+            'IdPaciente',
+            'TipoPrestacion',
+            'Pago',
+            'SPago',
+            'Observaciones',
+            'IdEmpresa',
+            'IdART',
+            'datos_facturacion_id'
         ]);
 
+        $data['Id'] = $nuevoId;
+        $data['Fecha'] = now()->format('Y-m-d');
+        $data['IdMapa'] = $request->TipoPrestacion != 'ART' ? 0 : ($request->IdMapa ?? 0);
+
+        Prestacion::create($data);
         Auditor::setAuditoria($nuevoId, 1, 44, Auth::user()->name);
 
         $empresa = ($request->TipoPrestacion === 'ART' ? $request->IdART : $request->IdEmpresa);
 
         $request->IdMapa && $this->updateMapeados($request->IdMapa, "quitar");
 
-        if (!in_array($request->ExamenCuenta, [0, null, ''])) {
-            $examenes = $this->registrarExamenCta($request->ExamenCuenta, $nuevoId);
-        } 
-    
-        if (isset($examenes) && is_array($examenes) && !in_array($examenes, [0, null, ''])) {
-            $this->registrarExamenes($examenes, $nuevoId);
-        }
-
-        if($request->Tipo && $request->Sucursal && $request->NroFactura && $nuevoId)
+        if ($request->Tipo && 
+            $request->Sucursal && 
+            $request->NroFactura && 
+            $nuevoId && 
+            in_array($request->Pago, ['A', 'B'])
+            )
         {
             $this->addFactura($request->Tipo, $request->Sucursal, $request->NroFactura, $empresa, $request->TipoPrestacion, $nuevoId);
-        }
+            $this->detalleFactura->modificar(['prestacion_id' => intval($nuevoId)], intval($request->datos_facturacion_id));
+
+        } 
     
         return response()->json(['nuevoId' => $nuevoId, 'msg' => 'Se ha generado la prestación del paciente.'], 200);
     }
@@ -619,7 +625,7 @@ class PrestacionesController extends Controller
         if(!empty($listado)) {
 
             return response()->json([
-                'filePath' => str_replace('/app/public','',$this->outputPath),
+                'filePath' => $this->outputPath,
                 'name' => $name,
                 'msg' => 'Reporte generado correctamente',
                 'icon' => 'success' 
@@ -1501,24 +1507,17 @@ class PrestacionesController extends Controller
 
                 $this->updateMapeados($prestacion->IdMapa, "agregar");
             } 
-        
-            $prestacion->IdEmpresa = $request->Empresa ?? 0;
-            $prestacion->IdART = $request->Art ?? 0;
-            $prestacion->Fecha = $request->Fecha ?? '';
-            $prestacion->TipoPrestacion = $request->TipoPrestacion ?? '';
-            $prestacion->IdMapa = $mapa;
-            $prestacion->Pago = $request->Pago ?? '';
-            $prestacion->SPago = $request->SPago ?? '';
+
+            $prestacion->fill($request->all());
             $prestacion->Financiador = ($request->TipoPrestacion == 'ART' ? $request->Art : $request->Empresa) ?? 0;
-            $prestacion->Observaciones = $request->Observaciones ?? '';
-            $prestacion->NumeroFacturaVta = $request->NumeroFacturaVta ?? 0;
-            $prestacion->IdEvaluador = $request->IdEvaluador ?? 0;
-            $prestacion->Evaluacion = $request->Evaluacion ?? 0;
-            $prestacion->Calificacion = $request->Calificacion ?? 0;
-            $prestacion->ObsExamenes = $request->ObsExamenes ?? '';
             $prestacion->FechaAnul = $request->FechaAnul ?? '0000-00-00';
-            $prestacion->NroFactProv = $request->NroFactProv ?? '';
+            $prestacion->IdMapa = $mapa;
             $prestacion->save();
+            $prestacion->refresh();
+
+            $guardar = [
+                'prestacion_id' => $prestacion->Id
+            ];
             
             $request->SinEval && $this->setPrestacionAtributo($request->Id, $request->SinEval);
             $request->Obs && $this->setPrestacionComentario($request->Id, $request->Obs);
@@ -1527,6 +1526,11 @@ class PrestacionesController extends Controller
 
             $this->updateFichaLaboral($request->IdPaciente, $request->Art, $request->Empresa);
             $this->addFactura($request->tipo, $request->sucursal, $request->nroFactura, $empresa, $request->tipoPrestacion, $request->Id);
+            
+            if(!empty($request->datos_facturacion_id)) {
+                $this->detalleFactura->modificar($guardar, $request->datos_facturacion_id);
+            }
+
             Auditor::setAuditoria($request->Id, 1, 2, Auth::user()->name);
         }
 

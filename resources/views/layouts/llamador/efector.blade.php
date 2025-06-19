@@ -43,6 +43,11 @@
                                     </div>
 
                                     <div class="col-sm-2 mb-3">
+                                        <label for="especialidad" class="form-label fw-bolder">Especialidad <span class="required">(*)</span></label>
+                                        <input type="text" class="form-control" name="especialidad" id="especialidad">
+                                    </div>
+
+                                    <div class="col-sm-2 mb-3">
                                         <label for="fechaDesde" class="form-label fw-bolder">Fecha Desde <span class="required">(*)</span></label>
                                         <input type="date" class="form-control" id="fechaDesde">
                                     </div>
@@ -68,7 +73,7 @@
                                         </select>
                                     </div>
 
-                                    <div class="col-sm-1 mb-3 d-flex align-items-center justify-content-end">
+                                    <div class="col-sm-1 d-flex align-items-center justify-content-end">
                                         <button class="btn btn-sm botonGeneral" id="buscar">
                                             <i class="ri-zoom-in-line"></i>Buscar
                                         </button>
@@ -83,7 +88,7 @@
                                     </div>
                                 </div>
 
-                                <div class="table mt-3 mb-1 mx-auto">
+                                <div class="table-responsive table mt-3 mb-1 mx-auto">
                                     <table id="listaLlamadaEfector" class="table table-bordered">
                                         <thead class="table-light">
                                             <tr>
@@ -118,7 +123,7 @@
 
 <!-- Modales -->
 <div id="atenderEfector" class="modal fadeInUp" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog modal-fullscreen">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="myModalLabel"> Atender Paciente - Efector</h5>
@@ -141,67 +146,67 @@
 
                         <div class="row">
 
-                            <div class="col-md-9">
+                            <div class="col-md-9 d-flex justify-content-center align-content-center">
 
-                                <div class="row">
+                                <div class="row d-flex align-content-center">
 
-                                    <div class="col-md-4">
+                                    <div class="col-md-4 p-2">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text">Profesional</span>
                                             <input type="text" class="form-control" id="profesionalEfector" name="profesionalEfector" readonly="true">
                                         </div>
                                     </div>
                                     
-                                    <div class="col-md-4">
+                                    <div class="col-md-4 p-2">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text">Prestación</span>
                                             <input type="text" class="form-control" id="prestacionEfector" name="prestacionEfector" readonly="true">
                                         </div>
                                     </div>
         
-                                    <div class="col-md-4">
+                                    <div class="col-md-4 p-2">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text">Tipo Exámen</span>
                                             <input type="text" class="form-control" id="tipoEfector" name="tipoEfector" readonly="true">
                                         </div>
                                     </div>
 
-                                    <div class="col-md-4">
+                                    <div class="col-md-4 p-2">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text">ART</span>
                                             <input type="text" class="form-control" id="artEfector" name="artEfector" readonly="true">
                                         </div>
                                     </div>
 
-                                    <div class="col-md-4">
+                                    <div class="col-md-4 p-2">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text">Empresa</span>
                                             <input type="text" class="form-control" id="empresaEfector" name="empresaEfector" readonly="true">
                                         </div>
                                     </div>
 
-                                    <div class="col-md-4 mt-1">
+                                    <div class="col-md-4 p-2">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text">Para Empresa</span>
                                             <input type="text" class="form-control" id="paraEmpresaEfector" name="paraEmpresaEfector" readonly="true">
                                         </div>
                                     </div>
 
-                                    <div class="col-md-4 mt-1">
+                                    <div class="col-md-4 p-2 mt-1">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text">Paciente</span>
                                             <input type="text" class="form-control" id="pacienteEfector" name="pacienteEfector" readonly="true">
                                         </div>
                                     </div>
 
-                                    <div class="col-md-4 mt-1">
+                                    <div class="col-md-4 p-2 mt-1">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text">Edad</span>
                                             <input type="text" class="form-control" id="edadEfector" name="edadEfector" readonly="true">
                                         </div>
                                     </div>
 
-                                    <div class="col-md-4 mt-1">
+                                    <div class="col-md-4 p-2 mt-1">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text">Fecha Prestación</span>
                                             <input type="text" class="form-control" id="fechaEfector" name="fechaEfector" readonly="true">
@@ -215,9 +220,17 @@
                             
                             <div class="col-md-3">
                                 <img class="round mx-auto d-block img-fluid" id="fotoEfector" src="" alt="Foto del paciente" width="150px">
+                                <span class="d-flex justify-content-center mt-1">
+                                    <a id="descargaFoto" class="descargaFoto" href="" download>
+                                        <button class="descargarImagen btn btn-sm botonGeneral">Descargar</button>
+                                    </a>
+                                </span>
+                                
                             </div>
                             
                         </div>
+
+                        <hr size="1">
                    
                         <div class="row">
                             <div class="col-md-12 text-end">
@@ -246,17 +259,18 @@
 
 <script>
     const SEARCH = "{{ route('llamador.buscarEfector') }}";
-    const lnkPrestaciones = "{{ route('prestaciones.edit', ['prestacione' => '__item__']) }}";
+    const lnkPres = "{{ route('prestaciones.edit', ['prestacione' => '__item__']) }}";
     const printExportar = "{{ route('llamador.excelEfector') }}";
     const FOTO = "@fileUrl('lectura')/Fotos/";
     const dataPaciente = "{{ route('llamador.verPaciente') }}";
     const USERACTIVO = "{{ Auth::user()->profesional_id }}";
     const addAtencion = "{{ route('llamador.llamar-paciente') }}";
     const checkLlamado = "{{ route('llamador.check') }}";
+    const ROLESUSER = @json(Auth::user()->role);
+    const asignacionProfesional = "{{ route('llamador.asignarPaciente') }}";
 </script>
 
 @push('styles')
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 <link rel="stylesheet" href="{{ asset('css/hacks.css')}}?v={{ time() }}">
 @endpush
 
@@ -268,6 +282,7 @@
 <script src="{{ asset('/js/llamador/index.js')}}?v={{ time() }}"></script>
 <script src="{{ asset('/js/llamador/paginacion.js')}}?v={{ time() }}"></script>
 <script src="{{ asset('/js/llamador/sockets.js')}}?v={{ time() }}"></script>
+<script src="{{ asset('/js/llamador/atenderPaciente.js') }}?v={{ time() }}"></script>
 
 
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>

@@ -1,6 +1,11 @@
 $(function() {
 
-    let fecha = $('#FechaVto').val(), opcion = $('#pago').val(), opcionPago = $('#SPago').val(), empresa = $('#empresa').val(), art = $('#art').val();
+    let fecha = $('#FechaVto').val(), 
+        opcion = $('#pago').val(), 
+        opcionPago = $('#SPago').val(), 
+        empresa = $('#empresa').val(), 
+        art = $('#art').val(),
+        paraEmpresa =$('#paraEmpresa').val();
 
     precargaMapa(empresa, art);
     examenesCta(empresa);
@@ -17,9 +22,10 @@ $(function() {
     quitarDuplicados("#Calificacion");
     quitarDuplicados("#TipoPrestacion");
     quitarDuplicados("#mapas");
+    quitarDuplicados("#Tipo");
 
     cambiosVencimiento(fecha);
-    selectMedioPago(opcion);
+    selectMedioPago(opcion, ID);
     getFact();
     checkBloq();
     comentariosPrivados();
@@ -434,9 +440,7 @@ $(function() {
     });
 
     $(document).on('change', '#pago', function(){
-        
-        let option = $(this).val();
-        selectMedioPago(option);
+        selectMedioPago($(this).val());
     });
 
     $('#TipoPrestacion').change(function(empresa, art){
@@ -1081,13 +1085,36 @@ $(function() {
         }
     }
 
-    function selectMedioPago(opcion)
+    function selectMedioPago(opcion, id = null)
     {
-        if(opcion === 'B'){
-            $('.SPago, .Factura, .NroFactProv').show();
-            $('.Autoriza').hide();
-        }else {
-            $('.SPago, .ObsPres, .Factura, .NroFactProv, .Autoriza').hide();
+         $('.SPago, .ObsPres, .Factura, .NroFactProv, .Autoriza, .NroFactExCta').hide();
+        
+         switch (opcion) {
+            case 'B':
+                $('.SPago, .Factura, .NroFactProv').show();
+                $('.Autoriza').hide();
+                break;
+            case 'A':
+                $('.Factura').show();
+                break;
+            case 'P':
+                
+                $.get(checkTipoFactExCta, {Id: id}, function(response) {
+                     $('.NroFactExCta').show();
+
+                    if(response.length > 1) {
+                        $('#NroFactExCta').val("Multi Examen");
+
+                    }else if(response.length === 1){
+                        
+                        let factura = `${response[0].Tipo}` +
+                            `${response[0].Sucursal}`.padStart(4, '0') +
+                            `${response[0].NroFactura}`.padStart(8, '0');
+
+                            $('#NroFactExCta').val(factura);
+                    }
+                })
+                break;
         }
     }
 
@@ -1359,4 +1386,6 @@ $(function() {
     function borrarCache() {
         $.post(cacheDelete, {_token: TOKEN}, function(){});
     }
+
+  
 });

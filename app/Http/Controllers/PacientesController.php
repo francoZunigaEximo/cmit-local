@@ -164,7 +164,7 @@ class PacientesController extends Controller
     {
         if(!$this->hasPermission("pacientes_edit")){abort(403);}
 
-        $tiposPrestacionPrincipales = ['ART', 'INGRESO', 'PERIODICO', 'OCUPACIONAL', 'EGRESO', 'OTRO'];
+        $tiposPrestacionPrincipales = ['ART', 'INGRESO', 'PERIODICO', 'OCUPACIONAL', 'EGRESO'];
 
         return view('layouts.pacientes.edit', with([
                 'paciente' => $paciente,

@@ -26,6 +26,7 @@ class ProfesionalesController extends Controller
     use ObserverProfesionales, ObserverPacientes, CheckPermission;
 
     protected $folder = "Prof";
+    private $profesionales = ['efector', 'informador', 'combinado', 'evaluador', 'evaluador art'];
 
     public function index()
     {
@@ -222,6 +223,7 @@ class ProfesionalesController extends Controller
             $query->save();
         }
         $rol = Rol::find($request->perfil);
+   
         $consulta = ProfesionalProv::where('IdProf', $request->Id)
             ->where('IdProv', $request->especialidad)
             ->where('IdRol', $rol->nombre)
@@ -403,7 +405,7 @@ class ProfesionalesController extends Controller
                 'roles.Id as Id'
             )
             ->where('users.profesional_id', $request->Id)
-            ->whereIn('roles.nombre', ["Efector", "Informador", "Evaluador", "Combinado", "Evaluador ART"])
+            ->whereIn('roles.nombre', ["Administrador", "Efector", "Informador", "Evaluador", "Combinado", "Evaluador ART"])
             ->groupBy('roles.nombre')
             ->get(); 
     }
@@ -413,7 +415,7 @@ class ProfesionalesController extends Controller
 
         $especialidad = ProfesionalProv::join('proveedores', 'profesionales_prov.IdProv', '=', 'proveedores.Id')
             ->where('profesionales_prov.IdProf', $request->Id)
-            ->where('profesionales_prov.Tipo', $request->Tipo)
+            ->where('profesionales_prov.IdRol', $request->Tipo)
             ->select('proveedores.Nombre')
         ->get();
 
@@ -422,10 +424,17 @@ class ProfesionalesController extends Controller
 
     public function savePrestador(Request $request)
     {
-        $arr = ['t1' => 'Efector', 't2' => 'Informador', 't3' => 'Evaluador', 't4' => 'Combinado'];
-        $prestador = $arr[$request->perfil]. '|' . $request->especialidad;
-        session()->put('mProf', '1');
-        session()->put('choiseT', $prestador);
+        if(empty($request->especialidad) || empty($request->perfil)) {
+            return response()->json(['msg' => 'Debe seleccionar su perfil y especialidad'], 409);
+        }
+
+        if(in_array($request->perfil, $this->profesionales)) {
+            session()->put('Profesional',  strtoupper($request->perfil));
+            session()->put('Especialidad', $request->especialidad);
+        }else{
+            session()->put('Profesional',  0);
+            session()->put('Especialidad', 0);
+        }
     }
 
     public function listGeneral(Request $request): mixed
