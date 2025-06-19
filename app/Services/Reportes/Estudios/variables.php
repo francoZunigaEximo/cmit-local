@@ -18,6 +18,8 @@ $telefonoPaciente = new Telefono();
 if($vistaPrevia){
     //modificamos los valores par la vista previa
     $ide = '000000';
+    $paraempresa = 'Empresa de Prueba';
+
     $ide = str_pad( 0, 6, "0", STR_PAD_LEFT);
     $rsempresa = 'Empresa de Prueba';
     $actividad = 'Actividad de Prueba';
