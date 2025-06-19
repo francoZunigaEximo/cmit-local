@@ -18,12 +18,13 @@ use DateTime;
 
 class EXAMENREPORTE107 extends Reporte
 {
-    public function render(FPDF $pdf, $datos = ['id', 'idExamen']): void
+    public function render(FPDF $pdf, $datos = ['id', 'idExamen'], $vistaPrevia = false): void
     {
 include('variables.php');
         
         $pdf->Image(public_path("/archivos/reportes/E102_1.jpg"),10,10,35); 
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+        if (!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
         $pdf->SetFont('Arial','B',12);
         $pdf->SetY(25);$pdf->Cell(0,4,'Declaracion Jurada de Examenes Psicofisicos Anuales Periodicos ("EPAP")',0,0,'C');
         $pdf->SetFont('Arial','B',10);
@@ -96,7 +97,8 @@ include('variables.php');
         //pagina 2
         $pdf->AddPage();
         $pdf->Image(public_path("/archivos/reportes/E102_1.jpg"),10,10,35); 
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+        if (!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
         $pdf->SetFont('Arial','B',12);
         $pdf->SetY(24);$pdf->Cell(0,4,'Declaracion Jurada de Examenes Psicofisicos Anuales Periodicos ("EPAP")',0,0,'C');
         $pdf->SetFont('Arial','',10);$y=30;

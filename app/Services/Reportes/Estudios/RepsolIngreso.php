@@ -50,12 +50,14 @@ class RepsolIngreso extends Reporte
         $pdf->AddPage();
         $pdf->Image(public_path("/archivos/reportes/E10_1.jpg"),25,20,149);
         $pdf->SetFont('Arial','B',8);$pdf->SetXY(168,230);$pdf->Cell(0,3,'2',0,0,'L');
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+        if (!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
         //pagina 3
         $pdf->AddPage();
         $pdf->Image(public_path("/archivos/reportes/E10_2.jpg"),25,20,150);
         $pdf->SetFont('Arial','B',12);$pdf->SetXY(95,28);$pdf->Cell(0,4,'Examen Medico Preocupacional',0,0,'L');
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+        if (!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
     }
 
     private function prestacion(int $id): mixed

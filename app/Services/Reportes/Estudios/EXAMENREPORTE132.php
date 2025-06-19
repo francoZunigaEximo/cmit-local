@@ -18,14 +18,15 @@ use DateTime;
 
 class EXAMENREPORTE132 extends Reporte
 {
-    public function render(FPDF $pdf, $datos = ['id', 'idExamen']): void
+    public function render(FPDF $pdf, $datos = ['id', 'idExamen'], $vistaPrevia = false): void
     {
 include('variables.php');
         
         $pdf->Image(public_path("/archivos/reportes/E132_1.jpg"),5,26,210); 
         $pdf->Image(public_path("/archivos/reportes/E132_2.jpg"),5,140,210); 
         $pdf->Image(public_path("/archivos/reportes/E132_3.jpg"),5,275,210); 
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+        if (!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
         //datos
         $pdf->SetFont('Arial','',8);
         $pdf->SetXY(29,49);$pdf->Cell(0,3,'CMIT de Irigoyen Miguel Antonio',0,0,'L');
@@ -43,7 +44,8 @@ include('variables.php');
         $pdf->Image(public_path("/archivos/reportes/E132_4.jpg"),5,26,210); 
         $pdf->Image(public_path("/archivos/reportes/E132_5.jpg"),5,110,210); 
         $pdf->Image(public_path("/archivos/reportes/E132_6.jpg"),5,235,210); 
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+        if (!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
     }
 
     private function edad($fechaNacimiento)

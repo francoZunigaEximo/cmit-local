@@ -15,9 +15,9 @@ use DateTime;
 
 class EXAMENREPORTE11 extends Reporte
 {
-    public function render(FPDF $pdf, $datos = ['id', 'idExamen']): void
-    {
-include('variables.php');
+    public function render(FPDF $pdf, $datos = ['id', 'idExamen'], $vistaPrevia = false): void
+    {   
+        include('variables.php');
 
         $prestacion = $this->prestacion($datos['id']);
         $datosPaciente = $this->datosPaciente($prestacion->paciente->Id);
@@ -32,13 +32,14 @@ include('variables.php');
         $paciente = $prestacion->paciente->Apellido.' '.$prestacion->paciente->Nombre;
         $localidad = $this->localidad($prestacion->paciente->IdLocalidad) ?? '';
         $fecha = $prestacion->paciente->FechaNacimiento;
-        
     
         //$pdf->AddPage();
         //cuerpo
-        $pdf->Image(public_path("/archivos/reportes/E11.jpg"),25,40,166); 
-       
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+        $pdf->Image(public_path("/archivos/reportes/E11.jpg"),25,43,166); 
+
+        if(!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
+
         $pdf->SetFont('Arial','B',12);$pdf->SetXY(60,31);$pdf->Cell(0,4,'REGISTRO DE HISTORIA CLINICA OCUPACIONAL',0,0,'L');
         $pdf->SetFont('Arial','B',8);$pdf->SetXY(95,36);$pdf->Cell(0,3,'SECRETO MEDICO',0,0,'L');
         $pdf->SetFont('Arial','',8);
@@ -60,9 +61,12 @@ include('variables.php');
         //if($foto!=''){$pdf->Image($foto,155,55,52,38);}
         //pagina 2
         $pdf->AddPage();
-        $pdf->Image(public_path("/archivos/reportes/E5_1.jpg"),20,18,180);
+        $pdf->Image(public_path("/archivos/reportes/E5_1.jpg"),20,30,180);
         $pdf->Image(public_path("/archivos/reportes/E5_2.jpg"),20,182,180);
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+       
+        if(!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
+        
         $pdf->SetFont('Arial','',7);
         $pdf->SetXY(20,6);$pdf->Cell(0,3,'Paciente: '.$paciente.' '.$prestacion->paciente->Documento,0,0,'L');
         $pdf->SetXY(20,10);$pdf->Cell(0,3,$fecha,0,0,'L');

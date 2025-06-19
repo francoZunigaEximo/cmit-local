@@ -108,6 +108,16 @@ function createFile(tipo, array, name){
     }, 100);
 }
 
+function convertToUrl(filePath) {
+    // Remueve el prefijo absoluto del sistema
+    const relativePath = filePath.replace('/app/storage/app/public', '');
+    let url = new URL(location.href);
+    let checkPublic = url.href.includes("public") ? '/cmit/public/storage' : '/storage';
+    // Construye la URL completa
+    return `${url.origin}${checkPublic}${relativePath}`;
+}
+
+
 function generarCodigoAleatorio() {
 
     let codigo = Math.floor(Math.random() * 9000000) + 1000000;

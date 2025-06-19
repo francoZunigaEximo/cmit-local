@@ -18,14 +18,15 @@ use DateTime;
 
 class EXAMENREPORTE30 extends Reporte
 {
-    public function render(FPDF $pdf, $datos = ['id', 'idExamen']): void
+    public function render(FPDF $pdf, $datos = ['id', 'idExamen'], $vistaPrevia=false): void
     {
 include('variables.php');
         $pdf->SetFont('Arial', 'B', 13);
         $pdf->SetXY(10, 32);
         $pdf->Cell(200, 5, 'SOBRECARGA DEL USO DE LA VOZ', 0, 0, 'C');
         $pdf->Image(public_path("/archivos/reportes/E30.jpg"), 25, 40, 170);
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+        if(!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
         $pdf->SetFont('Arial', '', 8);
         $pdf->SetXY(40, 57);
         $pdf->Cell(0, 3, substr($paraempresa, 0, 50), 0, 0, 'L');

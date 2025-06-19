@@ -18,13 +18,14 @@ use DateTime;
 
 class EXAMENREPORTE100 extends Reporte
 {
-    public function render(FPDF $pdf, $datos = ['id', 'idExamen']): void
+    public function render(FPDF $pdf, $datos = ['id', 'idExamen'], $vistaPrevia = false): void
     {
 include('variables.php');
 
         $pdf->Image(public_path("/archivos/reportes/E100_1.jpg"),10,5,180); 
         $pdf->Image(public_path("/archivos/reportes/E100_2.jpg"),10,132,180); 
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+        if (!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
         $pdf->SetFont('Arial','',8);
         $pdf->SetXY(30,80);$pdf->Cell(0,3,substr($paraempresa,0,23),0,0,'L');
         $pdf->SetXY(97,80);$pdf->Cell(0,4,$fecha,0,0,'L');
@@ -41,22 +42,26 @@ include('variables.php');
         $pdf->AddPage();
         $pdf->Image(public_path("/archivos/reportes/E100_3.jpg"),5,5,180); 
         $pdf->Image(public_path("/archivos/reportes/E100_4.jpg"),5,168,180); 
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+        if (!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
         //pagina 3
         $pdf->AddPage();
         $pdf->Image(public_path("/archivos/reportes/E100_5.jpg"),5,5,180); 
         $pdf->Image(public_path("/archivos/reportes/E100_6.jpg"),5,168,180); 
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+        if (!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
         //pagina 4
         $pdf->AddPage();
         $pdf->Image(public_path("/archivos/reportes/E100_7.jpg"),5,5,180); 
         $pdf->Image(public_path("/archivos/reportes/E100_8.jpg"),5,171,180); 
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+        if (!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
         //pagina 5
         $pdf->AddPage();
         $pdf->Image(public_path("/archivos/reportes/E100_9.jpg"),5,5,180); 
         $pdf->Image(public_path("/archivos/reportes/E100_10.jpg"),5,240,180); 
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+        if (!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
 }
 
     private function edad($fechaNacimiento)

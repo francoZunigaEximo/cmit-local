@@ -18,21 +18,22 @@ use DateTime;
 
 class EXAMENREPORTE51 extends Reporte
 {
-    public function render(FPDF $pdf, $datos = ['id', 'idExamen']): void
+    public function render(FPDF $pdf, $datos = ['id', 'idExamen'], $vistaPrevia=false): void
     {
 include('variables.php');
-        
-        $pdf->Image(public_path("/archivos/reportes/E51_1.jpg"),14,10,180); 
-        $pdf->Image(public_path("/archivos/reportes/E51_2.jpg"),14,195,180); 
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+        $y=10;
+        $pdf->Image(public_path("/archivos/reportes/E51_1.jpg"),14,$y+10,180); 
+        $pdf->Image(public_path("/archivos/reportes/E51_2.jpg"),14,$y+195,180); 
+        if(!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
         $pdf->SetFont('Arial','',7);
-        $pdf->SetXY(30,25);$pdf->Cell(0,3,$fecha,0,0,'L');
-        $pdf->SetXY(33,33);$pdf->Cell(0,3,$paraempresa,0,0,'L');
-        $pdf->SetXY(33,41);$pdf->Cell(0,3,$paciente,0,0,'L');
-        $pdf->SetXY(155,41);if($cuil!=''){$pdf->Cell(0,3,$cuil,0,0,'L');}else{$pdf->Cell(0,3,$doc,0,0,'L');}
-        $pdf->SetXY(28,49);$pdf->Cell(0,3,$edad,0,0,'L');
-        $pdf->SetXY(82,49);$pdf->Cell(0,3,$puesto,0,0,'L');
-        $pdf->SetXY(150,49);$pdf->Cell(0,3,$fi,0,0,'L');
+        $pdf->SetXY(30,$y+25);$pdf->Cell(0,3,$fecha,0,0,'L');
+        $pdf->SetXY(33,$y+33);$pdf->Cell(0,3,$paraempresa,0,0,'L');
+        $pdf->SetXY(33,$y+41);$pdf->Cell(0,3,$paciente,0,0,'L');
+        $pdf->SetXY(155,$y+41);if($cuil!=''){$pdf->Cell(0,3,$cuil,0,0,'L');}else{$pdf->Cell(0,3,$doc,0,0,'L');}
+        $pdf->SetXY(28,$y+49);$pdf->Cell(0,3,$edad,0,0,'L');
+        $pdf->SetXY(82,$y+49);$pdf->Cell(0,3,$puesto,0,0,'L');
+        $pdf->SetXY(150,$y+49);$pdf->Cell(0,3,$fi,0,0,'L');
     }
 
     private function edad($fechaNacimiento)

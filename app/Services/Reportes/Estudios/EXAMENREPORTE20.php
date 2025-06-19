@@ -18,7 +18,7 @@ use DateTime;
 
 class EXAMENREPORTE20 extends Reporte
 {
-    public function render(FPDF $pdf, $datos = ['id', 'idExamen']): void
+    public function render(FPDF $pdf, $datos = ['id', 'idExamen'], $vistaPrevia = false): void
     {   
         $prestacion = $this->prestacion($datos['id']);
         $datosPaciente = $this->datosPaciente($prestacion->paciente->Id);
@@ -109,7 +109,8 @@ class EXAMENREPORTE20 extends Reporte
         }
         $pdf->Image(public_path("/archivos/reportes/E3_1.jpg"),25,20,60);
         $pdf->Image(public_path("/archivos/reportes/E20.jpg"),25,40,169); 
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+        if(!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
         $pdf->SetFont('Arial','',8);
         $pdf->SetXY(100,21);$pdf->Cell(0,3,'Nro Examen:',0,0,'L');
         $pdf->SetXY(100,25);$pdf->Cell(0,3,'Apellido y Nombres: '.substr($paciente,0,30),0,0,'L');
@@ -126,9 +127,11 @@ class EXAMENREPORTE20 extends Reporte
         $pdf->SetXY(56,91);$pdf->Cell(0,3,$antigpto,0,0,'L');
         //pagina 2
         $pdf->AddPage();
-        $pdf->Image(public_path("/archivos/reportes/E20_1.jpg"),25,15,167); 
+        $pdf->Image(public_path("/archivos/reportes/E20_1.jpg"),25,23,167); 
         $pdf->Image(public_path("/archivos/reportes/E20_2.jpg"),25,210,167);
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+
+        if(!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
     }
 
     private function edad($fechaNacimiento){

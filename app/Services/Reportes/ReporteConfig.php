@@ -15,7 +15,7 @@ class ReporteConfig
     public static $AUDIOMETRIALIBERTY = '/archivos/reportes/E2.jpg';
     public static $AUDIOMETRIAPREMEDICA0 = '/archivos/reportes/E3.jpg';
     public static $AUDIOMETRIAPREMEDICA1 = '/archivos/reportes/E3_1.jpg';
-    public static $AUDIOMETRIACARLEY = '/archivos/reportes/E4.jpg';
+    public static $AUDIOMETRIACARLEY = '/archivos/reportes/E4___.jpg';
     public static $EGRESOPETREVEN = '/archivos/reportes/E6.jpg';
     public static $REPSOL = '/archivos/reportes/E10.jpg';
     public static $REPSOL1 = '/archivos/reportes/E10_1.jpg';

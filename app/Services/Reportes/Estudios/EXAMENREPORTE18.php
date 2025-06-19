@@ -18,7 +18,7 @@ use DateTime;
 
 class EXAMENREPORTE18 extends Reporte
 {
-    public function render(FPDF $pdf, $datos = ['id', 'idExamen']): void
+    public function render(FPDF $pdf, $datos = ['id', 'idExamen'],$vistaPrevia = false): void
     {   
         $prestacion = $this->prestacion($datos['id']);
         $datosPaciente = $this->datosPaciente($prestacion->paciente->Id);
@@ -107,10 +107,12 @@ class EXAMENREPORTE18 extends Reporte
         if($prestacion->empresa->RF === 1){
             $pdf->SetFont('Arial','B',14);$pdf->SetXY(170,4);$pdf->Cell(0,3,'RF',0,0,'L');$pdf->SetFont('Arial','',8);
         }
-        $pdf->Image(public_path("/archivos/reportes/E18.jpg"),25,15,167);
-        $pdf->Image(public_path("/archivos/reportes/E18_0.jpg"),105,5,45);
-        $pdf->Image(public_path("/archivos/reportes/E18_1.jpg"),25,220,167); 
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+        $pdf->Image(public_path("/archivos/reportes/E18.jpg"),25,20,167);
+        $pdf->Image(public_path("/archivos/reportes/E18_0.jpg"),105,10,45);
+        $pdf->Image(public_path("/archivos/reportes/E18_1.jpg"),25,230,167); 
+        if(!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
+        
         $pdf->SetFont('Arial','',8);
         $pdf->SetXY(45,27);$pdf->Cell(0,3,$apellido,0,0,'L');
         $pdf->SetXY(45,32);$pdf->Cell(0,3,$nombre,0,0,'L');

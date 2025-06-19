@@ -12,7 +12,7 @@ use FPDF;
 
 class EgresoRepsol extends Reporte
 {
-    public function render(FPDF $pdf, $datos = ['id', 'idExamen']): void
+    public function render(FPDF $pdf, $datos = ['id', 'idExamen'], $vistaPrevia = false): void
     {
         $pdf->AddPage();
         $pdf->Image(public_path(ReporteConfig::$REPSOL),25,20,154); //E10.jpg
@@ -28,8 +28,9 @@ class EgresoRepsol extends Reporte
             $pdf->SetFont('Arial','B',14);$pdf->SetXY(170,4);$pdf->Cell(0,3,'RF',0,0,'L');$pdf->SetFont('Arial','',8);
         }
 
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
-
+        if(!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
+        
         $paciente = $prestacion->paciente->Apellido.' '.$prestacion->paciente->Nombre;
 
         $pdf->SetFont('Arial','B',12);$pdf->SetXY(98,28);$pdf->Cell(0,4,'Examen Medico de Egreso',0,0,'L');
@@ -42,11 +43,13 @@ class EgresoRepsol extends Reporte
         //pagina 2
         $pdf->AddPage();
         $pdf->Image(public_path(ReporteConfig::$REPSOL1),25,20,149); //E10_1.jpg
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+        if(!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
         $pdf->SetFont('Arial','B',8);$pdf->SetXY(168,230);$pdf->Cell(0,3,'2',0,0,'L');
         //pagina 3
         $pdf->AddPage();$pdf->Image(public_path(ReporteConfig::$REPSOL2),25,20,150); //E10_2.jpg
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+        if(!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
         $pdf->SetFont('Arial','B',12);$pdf->SetXY(95,28);$pdf->Cell(0,4,'Examen Medico de Egreso',0,0,'L');
     }
 

@@ -14,7 +14,7 @@ use Carbon\Carbon;
 
 class EgresoPetreven extends Reporte
 {
-    public function render(FPDF $pdf, $datos = ['id', 'idExamen']):void
+    public function render(FPDF $pdf, $datos = ['id', 'idExamen'],  $vistaPrevia = false):void
     {
         $pdf->AddPage();
         $pdf->Image(public_path(ReporteConfig::$EGRESOPETREVEN),25,20,169);
@@ -27,7 +27,8 @@ class EgresoPetreven extends Reporte
             $pdf->SetFont('Arial','B',14);$pdf->SetXY(170,4);$pdf->Cell(0,3,'RF',0,0,'L');$pdf->SetFont('Arial','',8);
         }
 
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+        if(!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
 
         $paciente = $prestacion->paciente->Apellido.' '.$prestacion->paciente->Nombre;
         $localidad = $this->localidad($datosPaciente->IdLocalidad) ?? '';
@@ -49,19 +50,22 @@ class EgresoPetreven extends Reporte
         //pagina 2
         $pdf->AddPage();
         $pdf->Image("../CSS/Imagenes/Reportes/E6_1.jpg",25,20,166);
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+        if(!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
         $pdf->SetFont('Arial','B',8);$pdf->SetXY(26,240);$pdf->Cell(0,3,'HISTORIA CLINICA OCUPACIONAL',0,0,'L');
         $pdf->SetXY(173,240);$pdf->Cell(0,3,'Pagina 2',0,0,'L');
         //pagina 3
         $pdf->AddPage();
         $pdf->Image("../CSS/Imagenes/Reportes/E6_2.jpg",25,20,166);
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+        if(!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
         $pdf->SetFont('Arial','B',8);$pdf->SetXY(26,240);$pdf->Cell(0,3,'HISTORIA CLINICA OCUPACIONAL',0,0,'L');
         $pdf->SetXY(173,240);$pdf->Cell(0,3,'Pagina 3',0,0,'L');
         //pagina 4
         $pdf->AddPage();
         $pdf->Image("../CSS/Imagenes/Reportes/E6_3.jpg",25,20,166);
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+        if(!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
         $pdf->SetFont('Arial','B',8);$pdf->SetXY(26,240);$pdf->Cell(0,3,'HISTORIA CLINICA OCUPACIONAL',0,0,'L');
         $pdf->SetXY(173,240);$pdf->Cell(0,3,'Pagina 4',0,0,'L');
     }
