@@ -36,8 +36,6 @@ class EXAMENREPORTE11 extends Reporte
         //$pdf->AddPage();
         //cuerpo
         $pdf->Image(public_path("/archivos/reportes/E11.jpg"),25,43,166); 
-        
-        $vistaPrevia=true;
 
         if(!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
         else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);

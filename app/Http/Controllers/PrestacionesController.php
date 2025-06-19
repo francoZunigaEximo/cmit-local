@@ -940,7 +940,8 @@ class PrestacionesController extends Controller
     }
 
     public function pdfPrueba(Request $request){
-        return $this->addEstudioExamen($request->Id, $request->Examen);
+        
+        return $this->addEstudioExamen($request->Id, $request->Examen, $request->vistaPrevia == "true" ? true : false);
     }
 
     public function uploadAdjuntoPrestacion(Request $request)
@@ -1531,7 +1532,7 @@ class PrestacionesController extends Controller
 
     }
 
-    private function addEstudioExamen(int $idPrestacion, int $idExamen): mixed
+    private function addEstudioExamen(int $idPrestacion, int $idExamen, bool $vistaPrevia = false): mixed
     {
 
         return $this->reporteService->generarReporte(
@@ -1546,7 +1547,8 @@ class PrestacionesController extends Controller
             [],
             [],
             [],
-            null
+            null,
+            $vistaPrevia
         );
     }
 

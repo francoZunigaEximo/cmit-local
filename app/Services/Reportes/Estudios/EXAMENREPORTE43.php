@@ -18,7 +18,7 @@ use DateTime;
 
 class EXAMENREPORTE43 extends Reporte
 {
-    public function render(FPDF $pdf, $datos = ['id', 'idExamen']): void
+    public function render(FPDF $pdf, $datos = ['id', 'idExamen'], $vistaPrevia=false): void
     {
         include('variables.php');
         $pdf->Image(public_path("/archivos/reportes/E43.jpg"), 25, 15, 162);

@@ -18,14 +18,15 @@ use DateTime;
 
 class EXAMENREPORTE108 extends Reporte
 {
-    public function render(FPDF $pdf, $datos = ['id', 'idExamen']): void
+    public function render(FPDF $pdf, $datos = ['id', 'idExamen'], $vistaPrevia = false): void
     {
 include('variables.php');
         include('banerlogo.php');
         $pdf->SetFont('Arial','',8);$pdf->SetXY(10,30);$pdf->Cell(188,3,$fecha,0,0,'R');
 
         //nuevo
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+        if (!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
         $pdf->SetMargins(20,20,20); //left/top/right
         //titulo
         $pdf->SetFont('Arial','BU',12);$pdf->SetXY(10,37);$pdf->Cell(0,4,"CONSTANCIA DE RECONOCIMIENTO MEDICO",0,0,'C');$pdf->Ln(12);

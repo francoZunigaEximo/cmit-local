@@ -65,11 +65,10 @@ class ExamenesController extends Controller
         }
 
         $estudios = $this->getEstudios();
-        $reportes = $this->getReportes();
         $proveedores = $this->getProveedor();
         $aliasexamenes = $this->getAliasExamenes();
 
-        return view("layouts.examenes.create", compact(['estudios', 'reportes', 'proveedores','aliasexamenes']), ['helper'=>$this->helpeEditar]);
+        return view("layouts.examenes.create", compact(['estudios', 'proveedores','aliasexamenes']), ['helper'=>$this->helpeEditar]);
     }
 
     public function store(Request $request)
@@ -112,11 +111,10 @@ class ExamenesController extends Controller
         }
         
         $estudios = $this->getEstudios();
-        $reportes = $this->getReportes();
         $proveedores = $this->getProveedor();
         $aliasexamenes = $this->getAliasExamenes();
 
-        return view("layouts.examenes.edit", compact(['examene', 'estudios', 'reportes', 'proveedores', 'aliasexamenes']), ['helper'=>$this->helpeEditar]);
+        return view("layouts.examenes.edit", compact(['examene', 'estudios', 'proveedores', 'aliasexamenes']), ['helper'=>$this->helpeEditar]);
     }
 
     public function search(Request $request): mixed
@@ -335,6 +333,27 @@ class ExamenesController extends Controller
         }else{
             return response()->noContent();
         }
+    }
+
+    public function getReportes(Request $request): mixed
+    {
+
+        $buscar = $request->buscar;
+
+        $reportes = Reporte::where('Nombre', 'LIKE', '%' . $buscar . '%')->get();
+
+        $resultados = [];
+
+        foreach ($reportes as $reporte) {
+            $resultados[] = [
+                'id' => $reporte->Id,
+                'text' => $reporte->Nombre,
+            ];
+        }
+
+        return $resultados;
+
+        return response()->json(['paquete' => $resultados]);
     }
 }
  

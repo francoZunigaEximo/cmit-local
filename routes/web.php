@@ -152,6 +152,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('fichalaboral', FichaAltaController::class);
 
     //Ruta Examenes
+    Route::get('/examenes/getReportes', [ExamenesController::class, 'getReportes'])->name('examenes.getReportes');
     Route::resource('examenes', ExamenesController::class);
     Route::get('searchExamen', [ExamenesController::class, 'search'])->name('searchExamen');
     Route::post('IdExamen', [ExamenesController::class, 'getId'])->name('IdExamen');
@@ -162,6 +163,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('updateExamen', [ExamenesController::class, 'updateExamen'])->name('updateExamen');
     Route::get('/examenes/exportar/excel', [ExamenesController::class, 'excel'])->name('examenes.excel');
     Route::get('/reporte/vistaprevia', [ExamenesController::class, 'getVistaPrevia'])->name('examenes.getVistaPrevia');
+    
 
     //Ruta de Comentarios de Prestaciones
     Route::post('/comentarios/guardar', [ComentariosPrestacionesController::class, 'setComentarioPres'])->name('setComentarioPres');

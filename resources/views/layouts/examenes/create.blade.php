@@ -52,37 +52,15 @@
                         <div class="col-6 mt-3">
                             <div class="input-group input-group-sm size80porcent mx-auto">
                                 <span class="input-group-text">Reporte</span></span>
-                                <select class="form-control" id="Reporte" name="Reporte">
-                                    <option value="" selected>Elija una opción...</option>
-                                    @foreach($reportes as $reporte)
-                                    <option value="{{ $reporte->Id }}">{{ $reporte->Nombre }}</option>
-                                    @endforeach
+                                <div style="width: 65% !important;">
+                                <select id="Reporte" name="Reporte">
+                                        
                                 </select>
+                                </div>
                                 <!-- Button trigger modal -->
-                                <button type="button" class="btn btn-sm botonGeneral" id="vistaPrevia" title="Vista previa" data-bs-toggle="modal" data-bs-target="#modalVistaPrevia">
+                                <button type="button" class="btn btn-sm botonGeneral" id="vistaPrevia" title="Vista previa">
                                     <i class="ri-search-line vistaPrevia"></i>
                                 </button>
-
-                                <!-- Modal -->
-                                <div class="modal fade" id="modalVistaPrevia" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog modal-lg  modal-dialog-centered">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h1 class="modal-title fs-5" id="exampleModalLabel">Vista Previa</h1>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <img id="imagenVistaPrevia" src="" alt="" srcset="" class="" style="width: 100%;height: auto;">
-                                                <div class="alert alert-light alertaModal" style="display: none;" role="alert">
-                                                    Este Reporte no cuenta con una vista previa
-                                                </div>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
 
@@ -226,15 +204,26 @@
         </div>
     </form>
 </div>
-
+<script>
+    const TOKEN = "{{ @csrf_token() }}";
+    const getReportes = "{{ Route('examenes.getReportes') }}";
+</script>
 @push('styles')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 <link rel="stylesheet" href="{{ asset('css/hacks.css')}}?v={{ time() }}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
+
+<link rel="stylesheet" href="{{ asset('css/fixSelect2.css') }}">
 @endpush
 
 @push('scripts')
 <script src="{{ asset('js/jquery.validate.min.js') }}"></script>
 <script src="{{ asset('js/fancyTable.js') }}"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/i18n/es.js"></script>
+<script src="{{ asset('js/pages/select2.init.js') }}"></script>
+
 <script src="{{ asset('js/examenes/create.js') }}?v={{ time() }}"></script>
 <script src="{{ asset('js/examenes/validaciones.js')}}?v={{ time() }}"></script>
 <script src="{{ asset('js/examenes/vistaprevia.js')}}?v={{ time()}}"></script>
