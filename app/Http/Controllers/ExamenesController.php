@@ -116,8 +116,12 @@ class ExamenesController extends Controller
         $estudios = $this->getEstudios();
         $proveedores = $this->getProveedor();
         $aliasexamenes = $this->getAliasExamenes();
-
-        return view("layouts.examenes.edit", compact(['examene', 'estudios', 'proveedores', 'aliasexamenes']), ['helper'=>$this->helpeEditar]);
+        if($examene->IdReporte > 0) {
+            $reporte = Reporte::find($examene->IdReporte);
+        } else {
+            $reporte = null ;
+        }
+        return view("layouts.examenes.edit", compact(['examene', 'estudios', 'proveedores', 'aliasexamenes', 'reporte']), ['helper'=>$this->helpeEditar]);
     }
 
     public function search(Request $request): mixed

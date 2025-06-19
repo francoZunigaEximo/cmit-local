@@ -33,6 +33,11 @@ $("#Reporte").select2({
         minimumInputLength: 2
     });
 
+if(reporte){
+    let option = new Option(reporte.Nombre, reporte.Id, true, true);
+    $("#Reporte").append(option).trigger('change');
+}
+
 $(document).on('click', '#vistaPrevia', function(e){
     let id = $("#Reporte").val();
     preloader('on');
@@ -44,7 +49,7 @@ $(document).on('click', '#vistaPrevia', function(e){
     }).done(function(response){
         preloader('off');
         if(response){
-            vistaPrevia = convertToUrl(response);
+            let vistaPrevia = convertToUrl(response);
             window.open(vistaPrevia, '_blank');
         }
     }).fail(function(err){
