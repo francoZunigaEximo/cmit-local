@@ -13,14 +13,10 @@ use FPDF;
 
 class IngresoPetreven extends Reporte
 {
-    public function render(FPDF $pdf, $datos = ['id', 'idExamen']): void
+    public function render(FPDF $pdf, $datos = ['id', 'idExamen'], $vistaPrevia=false): void
     {
-        $pdf->AddPage();
+        include('variables.php');
         $pdf->Image(public_path(ReporteConfig::$INGRESOPETREVEN),25,20,169);
-
-        $prestacion = $this->prestacion($datos['id']);
-        $datosPaciente = $this->datosPaciente($datos['id']);
-        $telefonoPaciente = $this->telefono($prestacion->paciente->Id);
 
         if($prestacion->empresa->RF === 1){
             $pdf->SetFont('Arial','B',14);$pdf->SetXY(170,4);$pdf->Cell(0,3,'RF',0,0,'L');$pdf->SetFont('Arial','',8);
@@ -29,9 +25,6 @@ class IngresoPetreven extends Reporte
         if (!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
         else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
 
-        $paciente = $prestacion->paciente->Apellido.' '.$prestacion->paciente->Nombre;
-        $localidad = $this->localidad($prestacion->paciente->IdLocalidad) ?? '';
-        
         $pdf->SetFont('Arial','B',8);$pdf->SetXY(26,240);$pdf->Cell(0,3,'HISTORIA CLINICA OCUPACIONAL',0,0,'L');
         $pdf->SetXY(173,240);$pdf->Cell(0,3,'Pagina 1',0,0,'L');
         $pdf->SetXY(90,55);$pdf->Cell(0,3,'Ingreso X',0,0,'L');$pdf->SetXY(130,55);$pdf->Cell(0,3,'Egreso',0,0,'L');
