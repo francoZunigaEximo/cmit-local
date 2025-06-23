@@ -3,7 +3,11 @@
 @section('title', 'Craer grupo clientes')
 
 @section('content')
-
+<div class="row mb-4">
+    <div class="col-12 text-end">
+        <button onclick="window.history.back()" class="btn btn-warning"><i class="ri-arrow-left-line"></i>&nbsp;Volver</button>
+    </div>
+</div>
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
     <h4 class="mb-sm-0">Nuevo Grupo Clientes</h4>
     <a href="{{ route('paquetes.index') }}" class="btn botonGeneral">Volver</a>

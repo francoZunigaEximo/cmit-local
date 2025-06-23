@@ -14,7 +14,7 @@ $(document).ready(()=>{
             ordering: false,
             processing: true,
             lengthChange: false,
-            pageLength: 150,
+            pageLength: 100,
             responsive: false,
             serverSide: true,
             deferRender: true,

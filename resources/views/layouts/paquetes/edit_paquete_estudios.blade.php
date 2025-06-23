@@ -3,7 +3,11 @@
 @section('title', 'Editar Paquete Estudios')
 
 @section('content')
-
+<div class="row mb-4">
+    <div class="col-12 text-end">
+        <button onclick="window.history.back()" class="btn btn-warning"><i class="ri-arrow-left-line"></i>&nbsp;Volver</button>
+    </div>
+</div>
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
     <h4 class="mb-sm-0">Editar Paquete de Estudios</h4>
     <a href="{{ route('paquetes.crearPaqueteExamen') }}?id={{$paquete->Id}}" class="btn botonGeneral">Clonar</a>
@@ -44,6 +48,9 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="col-12 box-information mt-2 text-center">
+            <button type="submit" id="btnRegistrar" class="btn botonGeneral">Editar</button>
         </div>
         <div class="col-12 p-3 border border-1 border-color mt-1" style="border-color: #666666;">
             <div class="row">
@@ -93,10 +100,7 @@
 
             </tbody>
         </table>
-        <div class="col-12 box-information mt-2 text-center">
-            <a href="{{ route('paquetes.index') }}" class="btn botonGeneral">Volver</a>
-            <button type="submit" id="btnRegistrar" class="btn botonGeneral">Editar</button>
-        </div>
+        
     </div>
 </div>
 

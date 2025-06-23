@@ -3,7 +3,11 @@
 @section('title', 'Pacientes')
 
 @section('content')
-
+<div class="row mb-4">
+    <div class="col-12 text-end">
+        <button onclick="window.history.back()" class="btn btn-warning"><i class="ri-arrow-left-line"></i>&nbsp;Volver</button>
+    </div>
+</div>
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
     <h4 class="mb-sm-0">Grupo Clientes</h4>
 </div>
@@ -16,30 +20,29 @@
             <form id="form-index">
                 <div class="col-12 p-3 border border-1 border-color" style="border-color: #666666;">
                     <div class="row">
-                        <div class="col-9 p-1">
+                        <div class="col-10 p-1">
                             <label for="nombregrupo" class="form-label">Grupo</label>
                             <input type="text" class="form-control" id="nombregrupo">
                         </div>
-                        <div class="col-3 p-1 d-flex align-items-center justify-content-center">
+                        <div class="col-2 p-1 d-flex align-items-end justify-content-end">
                             <button type="button" class="btn botonGeneral buscarGrupos"><i class="ri-zoom-in-line"></i>&nbsp;Buscar</button>
+                        </div>
+                        <div class="col-12 p-2">
+                            <a href="{{ route('grupos.create') }}" class="btn botonGeneral">
+                                <i class="ri-add-line align-bottom me-1"></i> Nuevo
+                            </a>
+                            <button type="button" class="btn botonGeneral btnExcel">
+                                <i class="ri-file-excel-line align-bottom me-1"></i> Exportar
+                            </button>
+                            <a href="{{ route('grupos.detalle') }}" class="btn botonGeneral">
+                                Detalles
+                            </a>
                         </div>
                     </div>
                 </div>
             </form>
             <br />
-            <div class="col-12">
-                <div>
-                    <a href="{{ route('grupos.create') }}" class="btn botonGeneral">
-                        <i class="ri-add-line align-bottom me-1"></i> Nuevo
-                    </a>
-                    <button type="button" class="btn botonGeneral btnExcel">
-                        <i class="ri-file-excel-line align-bottom me-1"></i> Exportar
-                    </button>
-                    <a href="{{ route('grupos.detalle') }}" class="btn botonGeneral">
-                        Detalles
-                    </a>
-                </div>
-            </div>
+         
             <table id="listaGrupoClientes" class="table nowrap align-middle">
                 <thead class="table-light">
                     <tr>

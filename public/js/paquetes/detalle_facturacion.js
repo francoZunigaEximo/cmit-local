@@ -68,6 +68,7 @@ $(function () {
         minimumInputLength: 2
     });
 
+    
     $('#examenSelect2').select2({
         language: {
             noResults: function () {
@@ -137,6 +138,8 @@ $(function () {
         },
         minimumInputLength: 2
     });
+
+
 
     $('.buscarDetallesEstudios').on('click', function(e) {
         e.preventDefault();

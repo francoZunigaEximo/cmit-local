@@ -110,6 +110,30 @@ $(document).ready(() => {
         minimumInputLength: 2
     });
 
+ //verificaciones extras
+    $('#grupoSelect2').on('change', verificarSelectGrupo);
+    $('#empresaSelect2').on('change', verificarSelectEmpresa);
+
+
+    // Función para verificar el valor
+    function verificarSelectGrupo() {
+        const valor = $('#grupoSelect2').val();
+        if (valor === null || valor === '') {
+            $('#empresaSelect2').prop("disabled", false);
+        } else {
+            $('#empresaSelect2').prop("disabled", true);
+        }
+    }
+
+    function verificarSelectEmpresa() {
+        const valor = $('#empresaSelect2').val();
+        if (valor === null || valor === '') {
+            $('#grupoSelect2').prop("disabled", false);
+        } else {
+            $('#grupoSelect2').prop('disabled', true);
+        }
+    }
+
     $('#examenSelect2').select2({
         language: {
             noResults: function () {
