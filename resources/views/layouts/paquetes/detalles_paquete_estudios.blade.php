@@ -3,9 +3,13 @@
 @section('title', 'Pacientes')
 
 @section('content')
-
+<div class="row mb-4">
+    <div class="col-12 text-end">
+        <button onclick="window.history.back()" class="btn btn-warning"><i class="ri-arrow-left-line"></i>&nbsp;Volver</button>
+    </div>
+</div>
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-    <h4 class="mb-sm-0">Paquetes Detalles</h4>
+    <h4 class="mb-sm-0">Paquetes Estudios Detalles</h4>
 
     <div class="page-title-right">
         <ol class="breadcrumb m-0">
@@ -33,7 +37,7 @@
                         <select name="especialidadSelect2" class="form-control" id="especialidadSelect2">
                         </select>
                     </div>
-                    <div class="col-3 p-1 d-flex align-items-center justify-content-center">
+                    <div class="col-3 p-1 d-flex align-items-end justify-content-center">
                         <button type="button" class="btn botonGeneral buscarDetallesEstudios"><i class="ri-zoom-in-line"></i>&nbsp;Buscar</button>
                     </div>
                 </div>

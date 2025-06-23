@@ -4,9 +4,14 @@
 
 @section('content')
 
+<div class="row mb-4">
+    <div class="col-12 text-end">
+        <button onclick="window.history.back()" class="btn btn-warning"><i class="ri-arrow-left-line"></i>&nbsp;Volver</button>
+    </div>
+</div>
+
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
     <h4 class="mb-sm-0">Nuevo Paquete de Facturacion</h4>
-
 </div>
 
 <div class="container-fluid">
@@ -56,9 +61,7 @@
         </div>
     </form>
     <div class="col-12 p-3 border border-1 border-color mt-1" style="border-color: #666666;">
-        <div class="row">
-            <label for="" class="form-label">Obligatorio <span class="required" aria-required="true">(*)</span>:</label>
-        </div>
+        
         <div class="row">
             <div class="col-6 p-1">
                 <div>
@@ -76,6 +79,11 @@
             </div>
         </div>
     </div>
+
+    <div class="col-12 box-information mt-2 text-center">
+        <button type="submit" id="btnRegistrar" class="btn botonGeneral">Registrar</button>
+    </div>
+
     <div class="col-12 p-3 border border-1 border-color mt-1" style="border-color: #666666;">
         <div class="row">
             <div class="col-5">
@@ -124,10 +132,7 @@
 
         </tbody>
     </table>
-    <div class="col-12 box-information mt-2 text-center">
-        <a href="{{ route('paquetes.index') }}" class="btn botonGeneral">Volver</a>
-        <button type="submit" id="btnRegistrar" class="btn botonGeneral">Registrar</button>
-    </div>
+    
 </div>
 <script>
     //const TOKEN = "{{ csrf_token() }}";

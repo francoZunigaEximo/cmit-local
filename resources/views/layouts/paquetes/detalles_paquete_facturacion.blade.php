@@ -3,7 +3,11 @@
 @section('title', 'Detalles Paquete Facturacion')
 
 @section('content')
-
+<div class="row mb-4">
+    <div class="col-12 text-end">
+        <button onclick="window.history.back()" class="btn btn-warning"><i class="ri-arrow-left-line"></i>&nbsp;Volver</button>
+    </div>
+</div>
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
     <h4 class="mb-sm-0">Detalle paquete facturacion</h4>
 
@@ -38,13 +42,14 @@
                         <select name="empresaSelect2" class="form-control" id="empresaSelect2">
                         </select>
                     </div>
+                    <div class="col-12 p-1 d-flex justify-content-end">
+                        <button type="button" class="btn botonGeneral buscarDetallesEstudios"><i class="ri-zoom-in-line"></i>&nbsp;Buscar</button>
+                    </div>
                 </div>
             </div>
         </form>
         <div class="col-12">
-            <div>
-                <button type="button" class="btn botonGeneral buscarDetallesEstudios"><i class="ri-zoom-in-line"></i>&nbsp;Buscar</button>
-
+            <div class="mt-3">
                 <button type="button" class="btn botonGeneral btnExcelEstudios">
                     <i class="ri-file-excel-line align-bottom me-1"></i> Exportar
                 </button>

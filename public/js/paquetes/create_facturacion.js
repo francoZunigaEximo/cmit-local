@@ -108,6 +108,30 @@ $(function () {
         minimumInputLength: 2
     });
 
+    //verificaciones extras
+    $('#grupoSelect2').on('change', verificarSelectGrupo);
+    $('#empresaSelect2').on('change', verificarSelectEmpresa);
+
+
+    // Función para verificar el valor
+    function verificarSelectGrupo() {
+        const valor = $('#grupoSelect2').val();
+        if (valor === null || valor === '') {
+            $('#empresaSelect2').prop("disabled", false);
+        } else {
+            $('#empresaSelect2').prop("disabled", true);
+        }
+    }
+
+    function verificarSelectEmpresa() {
+        const valor = $('#empresaSelect2').val();
+        if (valor === null || valor === '') {
+            $('#grupoSelect2').prop("disabled", false);
+        } else {
+            $('#grupoSelect2').prop('disabled', true);
+        }
+    }
+
     $('#examenSelect2').select2({
         language: {
             noResults: function () {
@@ -361,8 +385,7 @@ $('#btnRegistrar').on('click', function (e) {
     let idEmpresa = $("#empresaSelect2").val();
 
     if ( validaciones()) {
-        if (!(idGrupo && idEmpresa)) {
-            $.ajax({
+        $.ajax({
                 url: postPaqueteFacturacionCreate,
                 type: 'POST',
                 data: {
@@ -386,7 +409,6 @@ $('#btnRegistrar').on('click', function (e) {
                     return;
                 }
             });
-        }
     }
 });
 
@@ -402,9 +424,7 @@ function validaciones(){
     if (!$("#codigo").val()) {
         mensaje += "Debe ingresar un código para el paquete.\n";
     }
-    if (!$("#grupoSelect2").val() && !$("#empresaSelect2").val()) {
-        mensaje += "Debe seleccionar un grupo o una empresa.\n";
-    }
+    
     if (examenes.length === 0) {
         mensaje += "Debe agregar al menos un examen al paquete.\n";
     }
