@@ -21,6 +21,8 @@ use App\Helpers\Tools;
 use App\Models\Profesional;
 use App\Models\User;
 use App\Services\Facturas\CheckFacturas;
+use App\Services\ItemsPrestaciones\Helper;
+use App\Services\ItemsPrestaciones\Crud;
 
 class ItemPrestacionesController extends Controller
 {
@@ -32,10 +34,18 @@ class ItemPrestacionesController extends Controller
     private $rutainternainfo = 'AdjuntosInformador';
 
     private $checkFacturas;
+    private $itemsHelper;
+    private $crud;
 
-    public function __construct(CheckFacturas $checkFacturas)
+    public function __construct(
+        CheckFacturas $checkFacturas, 
+        Helper $itemsHelper,
+        Crud $crud
+        )
     {
         $this->checkFacturas = $checkFacturas;
+        $this->itemsHelper = $itemsHelper;
+        $this->crud = $crud;
     }
     
     public function edit(ItemPrestacion $itemsprestacione)
@@ -931,10 +941,9 @@ class ItemPrestacionesController extends Controller
                 'userInformador.id as IdUserInformador'
             );                
 
-        if ($request->tipo === 'listado' && is_array($request->IdExamen)) {
+        if ($request->tipo === 'listado') {
 
-                $query->whereIn('examenes.Id', $request->IdExamen)
-                        ->where('itemsprestaciones.IdPrestacion', $request->Id);
+                $query->where('itemsprestaciones.IdPrestacion', $request->Id);
         } 
 
         $result = $query->orderBy('efector.IdProveedor', 'ASC')
@@ -950,46 +959,13 @@ class ItemPrestacionesController extends Controller
 
     public function save(Request $request): void
     {
-
         $examenes = $request->idExamen;
 
         if (!is_array($examenes)) {
             $examenes = [$examenes];
         }
 
-        foreach ($examenes as $examen) {
-            
-            $itemPrestacion = ItemPrestacion::where('IdPrestacion', $request->idPrestacion)->where('IdExamen', $examen)->first();
-
-            if(!$itemPrestacion){
-
-                $examen = Examen::find($examen);
-                $honorarios = $this->honorarios($examen->Id, $examen->IdProveedor);
-
-                ItemPrestacion::create([
-                    'Id' => ItemPrestacion::max('Id') + 1,
-                    'IdPrestacion' => $request->idPrestacion,
-                    'IdExamen' => $examen->Id,
-                    'Fecha' => now()->format('Y-m-d'),
-                    'CAdj' => $examen->Cerrado === 1 
-                               ? ($examen->Adjunto === 0 ? 3 : 4) 
-                               : 1,
-                    'CInfo' => $examen->Informe,
-                    'IdProveedor' => $examen->IdProveedor,
-                    'VtoItem' => $examen->DiasVencimiento,
-                    'SinEsc' => $examen->SinEsc,
-                    'Forma' => $examen->Forma,
-                    'Ausente' => $examen->Ausente,
-                    'Devol' => $examen->Devol,
-                    'IdProfesional' => $examen->Cerrado === 1 ? 26 : 0,
-                    'Honorarios' => $honorarios == 'true' ? $honorarios->Honorarios : 0
-                ]);
-
-                !empty($request->idExaCta) || is_numeric($request->idExaCta) <> 0 ? $this->registrarPagoaCuenta($request->idExaCta, $request->idPrestacion) : null;
-
-                ItemPrestacion::InsertarVtoPrestacion($request->idPrestacion);
-            }   
-        }
+        $this->crud->create($examenes, $request->idPrestacion, $request->idExaCta);
     }
 
     public function check(Request $request): mixed
@@ -1005,9 +981,6 @@ class ItemPrestacionesController extends Controller
         foreach ($examenes as $examen) {
             $idExamenes[] = $examen->IdExamen;
         }
-
-
-
         return response()->json($idExamenes);
     }
 
@@ -1136,10 +1109,7 @@ class ItemPrestacionesController extends Controller
     public function contadorExamenes(Request $request)
     {
         $query = ItemPrestacion::where('IdPrestacion', $request->Id)->count();
-        if ($query) {
-            return response()->json($query);
-        }
-        
+        return response()->json($query);  
     }
 
     public function checkFacturaItemPrestacion(Request $request)
@@ -1160,22 +1130,6 @@ class ItemPrestacionesController extends Controller
         return 'A'.str_pad($idprest, 9, "0", STR_PAD_LEFT).str_pad($idex, 5, "0", STR_PAD_LEFT).str_pad($idpac, 7, "0", STR_PAD_LEFT).".pdf";
     }
 
-    private function HoraAsegundos($hora){
-        list($h,$m,$s) = explode(":",$hora);
-        $segundos = ($h*3600)+($m*60) + $s;
-        return $segundos;
-    }
-
-    private function SegundosAminutos($segundos){
-        $horas = floor($segundos / 3600);
-        $minutos = floor(($segundos - ($horas * 3600)) / 60);
-        return str_pad($horas,2, "0", STR_PAD_LEFT).':'.str_pad($minutos,2, "0", STR_PAD_LEFT);
-    }
-    
-    private function honorarios(int $idExamen, int $idProveedor)
-    {
-        return ExamenPrecioProveedor::where('IdExamen', $idExamen)->where('IdProveedor', $idProveedor)->first(['Honorarios']);
-    }
 
     private function deleteExaCuenta($prestacion, $examen)
     {
@@ -1301,13 +1255,5 @@ class ItemPrestacionesController extends Controller
     }
 
 
-    private function registrarPagoaCuenta(int $IdPagoCtaIt, int $idPrestacion): void
-    {
-        $query = ExamenCuentaIt::find($IdPagoCtaIt);
 
-        if($query) {
-            $query->IdPrestacion = $idPrestacion;
-            $query->save();
-        }
-    }
 }
