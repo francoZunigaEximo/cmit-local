@@ -854,13 +854,13 @@
                             <div class="row">
                                 <div class="col-12">
                                     <hr class="mt-3 mb-3">
-                                    <div class="input-group input-group-sm mb-2">
+                                    <div class="input-group input-group-sm mb-2 d-none">
                                         <span class="input-group-text">Observaciones</span>
                                         <input type="text" class="form-control" id="ObservacionesPresN" name="ObservacionesPresN">
                                     </div>
 
                                     <div class="input-group input-group">
-                                        <span class="input-group-text">Obs prestaciones</span>
+                                        <span class="input-group-text">Obs. prestacion</span>
                                         <input type="text" class="form-control" placeholder="Observaciones" id="ObsExamenesN" name="ObsExamenesN">
                                     </div>
                     
@@ -979,7 +979,7 @@
 
                             <div class="row">
                                 <div class="col-lg-12 mb-2">
-                                    <p>Escriba un comentario de la cuestión o situación:</p>
+                                    <p>ESCRIBA UN COMENTARIO O ALERTA:</p>
                                     <textarea name="Comentario" id="Comentario" class="form-control" rows="10"></textarea>
                                     <div class="text-center mt-2">
                                         <button type="button" class="btn botonGeneral confirmarComentarioPriv">Confirmar</button>
