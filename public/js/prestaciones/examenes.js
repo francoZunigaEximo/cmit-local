@@ -66,16 +66,14 @@ $(function(){
             data: {
                 _token: TOKEN,
                 IdPaquete: paquete,
+                IdPrestacion: ID
             },
 
             success:function(response){
-
                 preloader('off');
-                let data = response.examenes,
-                    ids = data.map(function(item) {
-                    return item.Id;
-                  });
-                saveExamen(ids);  
+                cargarExamen();
+                contadorExamenes(ID);
+                listadoSelectExCta(empresa)
                 $('.addPaquete').val([]).trigger('change.select2');
             },
             error: function(jqXHR){
@@ -403,8 +401,6 @@ $(function(){
 
         let id = $(this).hasClass('addExamen') ? $("#exam").val() : $('#exaCtaDisp').val(),
             idExaCta = $('#exaCtaDisp option:selected').data('id');
-        
-        console.log(idExaCta)
 
         if(['', null, undefined].includes(id)) {
             toastr.warning("Debe seleccionar un examen para poder añadirlo a la lista",'',{timeOut: 1000});
@@ -453,7 +449,7 @@ $(function(){
 
     $('#modalExamen').on('hidden.bs.modal', function () {
         $('#listaExamenes').empty();
-        cargarExamen(ID);
+        cargarExamen();
         contadorExamenes(ID);
     });
 
@@ -555,150 +551,138 @@ $(function(){
     async function cargarExamen() {
         preloader('on');
     
-        try {
-            const result = await $.ajax({
-                url: checkItemExamen,
-                method: 'GET',
-                data: { Id: ID },
+        try {    
+            preloader('on');
+            const response = await $.ajax({
+                url: getItemExamenes,
+                type: 'GET',
+                data: {
+                    Id: ID,
+                    tipo: 'listado'
+                },
             });
-    
+
+            const cargaEfector = await primeraCarga(ID, "efector");
+            const cargaInformador = await primeraCarga(ID, "informador");
+            
+            checkExamenes(ID);
+            contadorExamenes(ID);
+            
+
+            let filas = '';
+
             preloader('off');
-            let examenes = result;
-    
-            if (examenes.length > 0) {
-                preloader('on');
-                const response = await $.ajax({
-                    url: getItemExamenes,
-                    type: 'GET',
-                    data: {
-                        IdExamen: examenes,
-                        Id: ID,
-                        tipo: 'listado'
-                    },
-                });
+            for (let i = 0; i < response.length; i++) {
+                const examen = response[i];
 
-                const cargaEfector = await primeraCarga(ID, "efector");
-                const cargaInformador = await primeraCarga(ID, "informador");
-                
-                let registros = response;
-                checkExamenes(ID);
-                contadorExamenes(ID);
-                
-                let filas = '';
-
-                preloader('off');
-                for (let i = 0; i < registros.length; i++) {
-                    const examen = registros[i];
-
-                    let titleEfector = examen.RegHis === 1 
-                        ? ![undefined,null,0].includes(examen.EfectorFullName) && (examen.EfectorFullName).length > 0 
-                            ? examen.EfectorFullName 
-                            : (examen.IdEfector  === 0 ? '' : examen.DatosEfectorFullName)
-                        : ![undefined,null,0].includes(examen.DatosEfectorFullName) && (examen.DatosEfectorFullName).length > 0 
-                            ? (examen.IdEfector === 0 ? '' : examen.DatosEfectorFullName)
-                            : '',
-                        
-                        fullNameEfector = examen.RegHis === 1 
-                            ? ![undefined,null,0].includes(examen.EfectorApellido) && (examen.EfectorApellido).length > 0 
-                                ? examen.EfectorApellido 
-                                : (examen.IdEfector === 0 ? '' : examen.DatosEfectorApellido)
-                            : ![undefined,null,0].includes(examen.DatosEfectorApellido) && (examen.DatosEfectorApellido).length > 0 
-                                ? (examen.IdEfector === 0 ? '' : examen.DatosEfectorApellido)
-                                : '';
-
-                    let titleInformador = examen.Informe === 1 
-                        ? examen.RegHis === 1 
-                            ? ![undefined,null,0].includes(examen.InformadorFullName) && (examen.InformadorFullName).length > 0 
-                                ? examen.InformadorFullName
-                                : (examen.IdInformador === 0 ? '' : examen.DatosInformadorFullName)
-                            : ![undefined,null,0].includes(examen.DatosInformadorFullName) && (examen.DatosInformadorFullName).length > 0 ? (examen.IdInformador === 0 ? '' : examen.DatosInformadorFullName) : ''
+                let titleEfector = examen.RegHis === 1 
+                    ? ![undefined,null,0].includes(examen.EfectorFullName) && (examen.EfectorFullName).length > 0 
+                        ? examen.EfectorFullName 
+                        : (examen.IdEfector  === 0 ? '' : examen.DatosEfectorFullName)
+                    : ![undefined,null,0].includes(examen.DatosEfectorFullName) && (examen.DatosEfectorFullName).length > 0 
+                        ? (examen.IdEfector === 0 ? '' : examen.DatosEfectorFullName)
                         : '',
+                    
+                    fullNameEfector = examen.RegHis === 1 
+                        ? ![undefined,null,0].includes(examen.EfectorApellido) && (examen.EfectorApellido).length > 0 
+                            ? examen.EfectorApellido 
+                            : (examen.IdEfector === 0 ? '' : examen.DatosEfectorApellido)
+                        : ![undefined,null,0].includes(examen.DatosEfectorApellido) && (examen.DatosEfectorApellido).length > 0 
+                            ? (examen.IdEfector === 0 ? '' : examen.DatosEfectorApellido)
+                            : '';
 
-                        fullNameInformador = examen.Informe === 1
-                        ? examen.RegHis === 1
-                            ? ![undefined,null,0].includes(examen.InformadorApellido) && (examen.InformadorApellido).length > 0 
-                                ? examen.InformadorApellido
-                                : (examen.IdInformador === 0 ? '' : examen.DatosInformadorApellido)
-                            : ![undefined,null,0].includes(examen.DatosInformadorApellido) && (examen.DatosInformadorApellido).length > 0 ? (examen.IdInformador === 0 ?  '' : examen.DatosInformadorApellido) : ''
-                        : '';
+                let titleInformador = examen.Informe === 1 
+                    ? examen.RegHis === 1 
+                        ? ![undefined,null,0].includes(examen.InformadorFullName) && (examen.InformadorFullName).length > 0 
+                            ? examen.InformadorFullName
+                            : (examen.IdInformador === 0 ? '' : examen.DatosInformadorFullName)
+                        : ![undefined,null,0].includes(examen.DatosInformadorFullName) && (examen.DatosInformadorFullName).length > 0 ? (examen.IdInformador === 0 ? '' : examen.DatosInformadorFullName) : ''
+                    : '',
 
-                    filas += `
-                        <tr ${examen.Anulado === 1 ? 'class="filaBaja"' : ''}>
-                            <td><input type="checkbox" name="Id_examenes" value="${examen.IdItem}" checked></td>
-                            <td data-idexam="${examen.IdExamen}" id="${examen.IdItem}" style="text-align:left">${examen.Nombre} ${examen.Anulado === 1 ? '<span class="custom-badge rojo">Bloqueado</span>' : ''} ${cargaEfector.includes(examen.IdItem) ? '<i title="Carga multiple, efector, desde este exámen" class="ri-file-mark-line verde"></i>' : ''} ${cargaInformador.includes(examen.IdItem) ? '<i title="Carga multiple, informador, desde este exámen" class="ri-file-mark-line naranja"></i>' : ''}</td>
-                            <td>
-                                <span id="incompleto" class="${(examen.Incompleto === 0 || examen.Incompleto === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
-                                    <i class="ri-flag-2-line ${examen.Anulado === 0 ? 'incompleto' : ''}"></i>
-                                </span>
-                            </td>
-                            <td>
-                                <span id="ausente" class="${(examen.Ausente === 0 || examen.Ausente === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
-                                    <i class="ri-flag-2-line ${examen.Anulado === 0 ? 'ausente' : ''}"></i>
-                                </span>
-                            </td>
-                            <td>
-                                <span id="forma" class="${(examen.Forma === 0 || examen.Forma === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
-                                    <i class="ri-flag-2-line ${examen.Anulado === 0 ? 'forma' : ''}"></i>
-                                </span>
-                            </td>
-                            <td>
-                                <span id="sinesc" class="${(examen.SinEsc === 0 || examen.SinEsc === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
-                                    <i class="ri-flag-2-line ${examen.Anulado === 0 ? 'sinesc' : ''}"></i>
-                                </span>
-                            </td>
-                            <td>
-                                <span id="devol" class="${(examen.Devol === 0 || examen.Devol === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
-                                    <i class="ri-flag-2-line ${examen.Anulado === 0 ? 'devol' : ''}"></i>
-                                </span>
-                            </td>
-                            <td class="date text-center capitalize" title="${titleEfector}">${fullNameEfector}
-                                <span class="badge badge-soft-${([0,1,2].includes(examen.CAdj) ? 'danger': ([3,4,5].includes(examen.CAdj) ? 'success' : ''))}">
-                                    ${([0,1,2].includes(examen.CAdj) ? 'Abierto': ([3,4,5].includes(examen.CAdj) ? 'Cerrado' : ''))}
-                                </span>
-                                ${examen.ExaAdj === 1 ? `<i class="ri-attachment-line ${examen.archivos > 0 ? 'verde' : 'gris'}"></i>`: ``}    
-                            </td>
-                            <td class="date text-center capitalize" title="${titleInformador}">${fullNameInformador}
-                                <span class="badge badge-soft-${(examen.CInfo === 0 ? 'dark' :(examen.CInfo === 3 ? 'success' : ([1,2].includes(examen.CInfo)) ? 'danger' : ''))}">${(examen.CInfo === 0 || examen.InfAdj === 0 ? '' : (examen.CInfo === 3 ? 'Cerrado' : (examen.CInfo == 2 ? 'Borrador' : (examen.CInfo === 1 ? 'Pendiente': ''))))}</span>
-                                ${examen.InfAdj === 1 ? (examen.CInfo !== 0 ? `<i class="ri-attachment-line ${examen.archivosI > 0 ? 'verde' : 'gris'}"></i>`: ``) : ''}   
-                            </td>
-                            <td class="phone"><span class="${examen.Facturado === 1 ? 'badge badge-soft-success' : 'custom-badge rojo'}"><i class="ri-check-line"></i></span></td>
-                            <td>
-                                <div class="d-flex gap-2">
-                                    <div class="edit">
-                                        <button data-id="${examen.IdItem}" type="button" class="btn btn-sm iconGeneral verExamen" title="Ver" data-bs-toggle="modal" data-bs-target="#modalExamen"><i class="ri-search-eye-line"></i></button>
-                                    </div>
-                                    ${examen.Anulado === 0 ? `
-                                        <div class="bloquear">
-                                            <button data-bloquear="${examen.IdItem}" class="btn btn-sm iconGeneral bloquearExamen" title="Baja">
-                                                <i class="ri-forbid-2-line"></i>
-                                            </button>
-                                        </div>
-                                    ` : ''}
-                                    <div class="remove">
-                                        <button data-delete="${examen.IdItem}" class="btn btn-sm iconGeneral deleteExamen" title="Eliminar">
-                                            <i class="ri-delete-bin-2-line"></i>
-                                        </button>
-                                    </div>  
+                    fullNameInformador = examen.Informe === 1
+                    ? examen.RegHis === 1
+                        ? ![undefined,null,0].includes(examen.InformadorApellido) && (examen.InformadorApellido).length > 0 
+                            ? examen.InformadorApellido
+                            : (examen.IdInformador === 0 ? '' : examen.DatosInformadorApellido)
+                        : ![undefined,null,0].includes(examen.DatosInformadorApellido) && (examen.DatosInformadorApellido).length > 0 ? (examen.IdInformador === 0 ?  '' : examen.DatosInformadorApellido) : ''
+                    : '';
+
+                filas += `
+                    <tr ${examen.Anulado === 1 ? 'class="filaBaja"' : ''}>
+                        <td><input type="checkbox" name="Id_examenes" value="${examen.IdItem}" checked></td>
+                        <td data-idexam="${examen.IdExamen}" id="${examen.IdItem}" style="text-align:left">${examen.Nombre} ${examen.Anulado === 1 ? '<span class="custom-badge rojo">Bloqueado</span>' : ''} ${cargaEfector.includes(examen.IdItem) ? '<i title="Carga multiple, efector, desde este exámen" class="ri-file-mark-line verde"></i>' : ''} ${cargaInformador.includes(examen.IdItem) ? '<i title="Carga multiple, informador, desde este exámen" class="ri-file-mark-line naranja"></i>' : ''}</td>
+                        <td>
+                            <span id="incompleto" class="${(examen.Incompleto === 0 || examen.Incompleto === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
+                                <i class="ri-flag-2-line ${examen.Anulado === 0 ? 'incompleto' : ''}"></i>
+                            </span>
+                        </td>
+                        <td>
+                            <span id="ausente" class="${(examen.Ausente === 0 || examen.Ausente === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
+                                <i class="ri-flag-2-line ${examen.Anulado === 0 ? 'ausente' : ''}"></i>
+                            </span>
+                        </td>
+                        <td>
+                            <span id="forma" class="${(examen.Forma === 0 || examen.Forma === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
+                                <i class="ri-flag-2-line ${examen.Anulado === 0 ? 'forma' : ''}"></i>
+                            </span>
+                        </td>
+                        <td>
+                            <span id="sinesc" class="${(examen.SinEsc === 0 || examen.SinEsc === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
+                                <i class="ri-flag-2-line ${examen.Anulado === 0 ? 'sinesc' : ''}"></i>
+                            </span>
+                        </td>
+                        <td>
+                            <span id="devol" class="${(examen.Devol === 0 || examen.Devol === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
+                                <i class="ri-flag-2-line ${examen.Anulado === 0 ? 'devol' : ''}"></i>
+                            </span>
+                        </td>
+                        <td class="date text-center capitalize" title="${titleEfector}">${fullNameEfector}
+                            <span class="badge badge-soft-${([0,1,2].includes(examen.CAdj) ? 'danger': ([3,4,5].includes(examen.CAdj) ? 'success' : ''))}">
+                                ${([0,1,2].includes(examen.CAdj) ? 'Abierto': ([3,4,5].includes(examen.CAdj) ? 'Cerrado' : ''))}
+                            </span>
+                            ${examen.ExaAdj === 1 ? `<i class="ri-attachment-line ${examen.archivos > 0 ? 'verde' : 'gris'}"></i>`: ``}    
+                        </td>
+                        <td class="date text-center capitalize" title="${titleInformador}">${fullNameInformador}
+                            <span class="badge badge-soft-${(examen.CInfo === 0 ? 'dark' :(examen.CInfo === 3 ? 'success' : ([1,2].includes(examen.CInfo)) ? 'danger' : ''))}">${(examen.CInfo === 0 || examen.InfAdj === 0 ? '' : (examen.CInfo === 3 ? 'Cerrado' : (examen.CInfo == 2 ? 'Borrador' : (examen.CInfo === 1 ? 'Pendiente': ''))))}</span>
+                            ${examen.InfAdj === 1 ? (examen.CInfo !== 0 ? `<i class="ri-attachment-line ${examen.archivosI > 0 ? 'verde' : 'gris'}"></i>`: ``) : ''}   
+                        </td>
+                        <td class="phone"><span class="${examen.Facturado === 1 ? 'badge badge-soft-success' : 'custom-badge rojo'}"><i class="ri-check-line"></i></span></td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <div class="edit">
+                                    <button data-id="${examen.IdItem}" type="button" class="btn btn-sm iconGeneral verExamen" title="Ver" data-bs-toggle="modal" data-bs-target="#modalExamen"><i class="ri-search-eye-line"></i></button>
                                 </div>
-                            </td>
-                        </tr>`;
-                }
-    
-                        $('#listaExamenes').append(filas);
-                        $("#listado").fancyTable({
-                            pagination: true,
-                            perPage: 50,
-                            searchable: false,
-                            globalSearch: false,
-                            sortable: false,
-                        });
-                    } else {
-                        console.warn('No hay registros disponibles');
-                    }
-                } catch (error) {
-            preloader('off');
-            console.error('Error en la carga del examen:', error);
-        }
+                                ${examen.Anulado === 0 ? `
+                                    <div class="bloquear">
+                                        <button data-bloquear="${examen.IdItem}" class="btn btn-sm iconGeneral bloquearExamen" title="Baja">
+                                            <i class="ri-forbid-2-line"></i>
+                                        </button>
+                                    </div>
+                                ` : ''}
+                                <div class="remove">
+                                    <button data-delete="${examen.IdItem}" class="btn btn-sm iconGeneral deleteExamen" title="Eliminar">
+                                        <i class="ri-delete-bin-2-line"></i>
+                                    </button>
+                                </div>  
+                            </div>
+                        </td>
+                    </tr>`;
+            }
+
+                    $('#listaExamenes').append(filas);
+                    $("#listado").fancyTable({
+                        pagination: true,
+                        perPage: 50,
+                        searchable: false,
+                        globalSearch: false,
+                        sortable: false,
+                    });
+            } catch (error) {
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;  
+            }
     }
     
     

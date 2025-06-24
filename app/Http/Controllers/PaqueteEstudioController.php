@@ -7,10 +7,18 @@ use App\Models\PaqueteEstudio;
 use Illuminate\Support\Facades\Cache;
 use App\Traits\ObserverExamenes;
 use Illuminate\Support\Facades\DB;
+use App\Services\ItemsPrestaciones\Crud;
 
 class PaqueteEstudioController extends Controller
 {
+    private $itemCrud;
+
     use ObserverExamenes;
+
+    public function __construct(Crud $itemCrud)
+    {
+       $this->itemCrud = $itemCrud;     
+    }
 
     //Listado de Paquete de estudios
     public function paquetes(Request $request): mixed
@@ -47,8 +55,9 @@ class PaqueteEstudioController extends Controller
         }
 
         $examenes = DB::select('CALL getExamenesPaquete(?)', [$request->IdPaquete]);
-            
-        return response()->json(['examenes' => $examenes], 200);
+        $ids = array_map(fn($e) => $e->Id, $examenes);
+
+        $this->itemCrud->create($ids, $request->IdPrestacion, null);
          
     }
     

@@ -932,19 +932,21 @@ $(function(){
             toastr.warning("Debe seleccionar un paquete para poder añadirlo en su totalidad",'',{timeOut: 1000});
             return;
         }
+
+        let idPrestacion = variables.idPrestacion.val();
+
         preloader('on');
-       $.post(paqueteId,{_token: TOKEN, IdPaquete: variables.paquetes.val()})
+
+        
+       $.post(paqueteId,{_token: TOKEN, IdPaquete: variables.paquetes.val(), IdPrestacion: idPrestacion})
             .done(function(response){
 
-                let data = response.examenes,
-                    ids = [];
- 
-                for (let i = 0; i < data.length; i++) {
-                    ids.push(data[i].Id);
-                }
-                saveExamen(ids, variables.idPrestacion.val()); 
- 
-                variables.paquetes.val([]).trigger('change.select2');
+                principal.listaExamenes.empty();
+                variables.exam.val([]).trigger('change.select2');
+                variables.paquetes.trigger('change.select2');
+                cargarExamen(idPrestacion);
+                contadorExamenes(idPrestacion);
+                preloader('off');
             })
             .fail(function(jqXHR){
                 preloader('off');
@@ -1257,72 +1259,58 @@ $(function(){
         try {
             preloader('on');
 
-            let result = await $.ajax({
-                url: checkItemExamen,
+            let response = await $.ajax({
+                url: getItemExamenes,
                 method: 'GET',
-                data: { Id: id }
+                data: {
+                    Id: id,
+                    tipo: 'listado'
+                }
             });
 
-            let examenes = result;
-            
-            if (examenes.length > 0) {
-
-                let response = await $.ajax({
-                    url: getItemExamenes,
-                    method: 'GET',
-                    data: {
-                        IdExamen: examenes,
-                        Id: id,
-                        tipo: 'listado'
-                    }
-                });
-    
-                preloader('off');
-                let registros = response;
-
-                for(let index = 0; index < registros.length; index++){
-                    let examen = registros[index],
-                    fila = `
-                        <tr ${examen.Anulado === 1 ? 'class="filaBaja"' : ''}>
-                            <td>
-                                <input type="checkbox" name="Id_examenes" value="${examen.IdItem}" checked ${examen.Anulado === 1 ? 'disabled' : ''}>
-                            </td>
-                            <td data-idexam="${examen.IdExamen}" id="${examen.IdItem}" style="text-align:left;">${examen.Nombre} ${examen.Anulado === 1 ? '<span class="custom-badge rojo">Bloqueado</span>' : ''}</td>
-                            <td style="width: 100px">    
-                                <div class="d-flex gap-2">
-                                     <div class="bloquear">
-                                        <button data-id="${examen.IdItem}" class="btn btn-sm iconGeneral openExamen" title="Ver">
-                                            <i class="ri-zoom-in-line"></i>
-                                        </button>
-                                    </div>
-                                    ${examen.Anulado === 0 ? `
-                                         <div class="bloquear">
-                                                    <button data-bloquear="${examen.IdItem}" class="btn btn-sm iconGeneral bloquearExamen" title="Baja">
-                                                        <i class="ri-forbid-2-line"></i>
-                                                    </button>
-                                                </div>
-                                    ` : ''}
-                                    <div class="remove">
-                                        <button data-delete="${examen.IdItem}" class="btn btn-sm iconGeneral deleteExamen" title="Eliminar">
-                                            <i class="ri-delete-bin-2-line"></i>
-                                        </button>
-                                    </div>  
-                                    
+            preloader('off');
+            for(let index = 0; index < response.length; index++){
+                let examen = response[index],
+                fila = `
+                    <tr ${examen.Anulado === 1 ? 'class="filaBaja"' : ''}>
+                        <td>
+                            <input type="checkbox" name="Id_examenes" value="${examen.IdItem}" checked ${examen.Anulado === 1 ? 'disabled' : ''}>
+                        </td>
+                        <td data-idexam="${examen.IdExamen}" id="${examen.IdItem}" style="text-align:left;">${examen.Nombre} ${examen.Anulado === 1 ? '<span class="custom-badge rojo">Bloqueado</span>' : ''}</td>
+                        <td style="width: 100px">    
+                            <div class="d-flex gap-2">
+                                    <div class="bloquear">
+                                    <button data-id="${examen.IdItem}" class="btn btn-sm iconGeneral openExamen" title="Ver">
+                                        <i class="ri-zoom-in-line"></i>
+                                    </button>
                                 </div>
-                            </td>
-                        </tr>`;
-    
-                    principal.listaExamenes.append(fila);
-                }
-    
-                principal.listado.fancyTable({
-                    pagination: true,
-                    perPage: 50,
-                    searchable: false,
-                    globalSearch: false,
-                    sortable: false, 
-                });
+                                ${examen.Anulado === 0 ? `
+                                        <div class="bloquear">
+                                                <button data-bloquear="${examen.IdItem}" class="btn btn-sm iconGeneral bloquearExamen" title="Baja">
+                                                    <i class="ri-forbid-2-line"></i>
+                                                </button>
+                                            </div>
+                                ` : ''}
+                                <div class="remove">
+                                    <button data-delete="${examen.IdItem}" class="btn btn-sm iconGeneral deleteExamen" title="Eliminar">
+                                        <i class="ri-delete-bin-2-line"></i>
+                                    </button>
+                                </div>  
+                                
+                            </div>
+                        </td>
+                    </tr>`;
+
+                principal.listaExamenes.append(fila);
             }
+
+            principal.listado.fancyTable({
+                pagination: true,
+                perPage: 50,
+                searchable: false,
+                globalSearch: false,
+                sortable: false, 
+            });
             
     
         } catch (error) {
@@ -1336,8 +1324,8 @@ $(function(){
 
     async function checkExamenesCuenta(id){
 
-        $.get(lstExDisponibles, {Id: id})
-            .done(await function(response){
+        $.get(await lstExDisponibles, {Id: id})
+            .done(function(response){
                 // let data = selectorPago(pagoInput);
 
                 if(response && response.length > 0) {
