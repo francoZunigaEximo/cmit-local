@@ -1309,3 +1309,14 @@ END$$
 DELIMITER ;
 
 ALTER TABLE clientesgrupos_it DROP INDEX IdCliente_2;
+
+ALTER TABLE itemsprestaciones MODIFY COLUMN IdProfesional2 INT NOT NULL DEFAULT 0;
+
+-- CREATE DEFINER=`db_cmit`@`%` TRIGGER autocomplete_itemsprestaciones
+-- BEFORE INSERT ON itemsprestaciones
+-- FOR EACH ROW
+-- BEGIN
+--     IF NEW.IdProfesional2 IS NULL OR NEW.IdProfesional2 = '' THEN
+--         SET NEW.IdProfesional2 = 0;
+--     END IF;
+-- END

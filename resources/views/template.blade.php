@@ -423,24 +423,26 @@
         const verifyWizard = "{{ route('verifyWizard') }}";
         const TOKEN = "{{ csrf_token() }}";
 
-        const IDLE_TIMEOUT = 300 * 60 * 1000;
+        const IDLE_TIMEOUT = 300 * 60 * 1000; //5 horas
         const CHECK_INTERVAL = 1000; //1 segundo
         const finalizarSesion = "{{ route('usuario.cierreAutomatico') }}";
         const sessionUser = "{{ auth()->user()?->id }}"; 
 
-        let ultimaActividad = Date.now(),
-            idInterval = null,
-            sesionCerrada = false;
+        let sesionCerrada = false,
+            idInterval = null
+            ultimaActividad = parseInt(localStorage.getItem('ultima_actividad')) || Date.now(); // Inicializa con un ahora
+;
 
         function resetUltimaActividad() {
             ultimaActividad = Date.now();
+            localStorage.setItem('ultima_actividad', ultimaActividad); //Sincroniza las pestañas
         }
 
         function iniciarIdMonitor() {
-            setInterval(() => {
+            idInterval = setInterval(() => {
                 const tiempoInactividad = Date.now() - ultimaActividad;
 
-                if(tiempoInactividad >= IDLE_TIMEOUT) {
+                if (tiempoInactividad >= IDLE_TIMEOUT) {
                     cerrarSesion();
                 }
             }, CHECK_INTERVAL);
@@ -471,6 +473,10 @@
         window.addEventListener("storage", function (event) {
             if (event.key === "cerrar_sesion") {
                 cerrarSesion(); // ejecuta en esta pestaña también
+            }
+
+            if (event.key === "ultima_actividad") {
+                ultimaActividad = parseInt(event.newValue) || Date.now();
             }
         });
 

@@ -2,13 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Examen;
 use App\Models\ExamenCuenta;
 use App\Models\ExamenCuentaIt;
 use App\Models\ItemPrestacion;
 use App\Models\Relpaqest;
 use App\Models\Relpaqfact;
-use App\Services\ItemsPrestaciones\Helper;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use App\Traits\ObserverExamenesCuenta;
@@ -22,6 +20,7 @@ use App\Traits\CheckPermission;
 
 use App\Services\Reportes\ReporteService;
 use App\Services\ItemsPrestaciones\Helper as ItemSupport;
+use App\Services\ItemsPrestaciones\Crud;
 use App\Services\Reportes\Titulos\Basico;
 use App\Services\Reportes\Titulos\Empresa;
 use App\Services\Reportes\Cuerpos\ExamenCuenta as ExCuenta;
@@ -30,13 +29,19 @@ class ExamenesCuentaController extends Controller
 {
     use ObserverExamenesCuenta, CheckPermission;
 
-    protected $reporteService;
-    protected $itemSupport;
+    private $reporteService;
+    private $itemSupport;
+    private $itemCrud;
+    
 
-    public function __construct(ReporteService $reporteService, ItemSupport $itemSupport)
+    public function __construct(
+        ReporteService $reporteService, 
+        ItemSupport $itemSupport,
+        Crud $itemCrud)
     {
         $this->reporteService = $reporteService;
         $this->itemSupport = $itemSupport;
+        $this->itemCrud = $itemCrud;
     }
 
     public function index(Request $request)
@@ -1101,27 +1106,12 @@ class ExamenesCuentaController extends Controller
 
     private function addItemPrestacion(int $idPrestacion, int $idExamen)
     {
-        $examen = Examen::find($idExamen);
-        $honorarios = $this->itemSupport->honorarios($examen->Id, $examen->IdProveedor);
+        $examenes = $idExamen;
 
-        ItemPrestacion::create([
-            'IdPrestacion' => $idPrestacion,
-            'IdExamen' => $examen->Id,
-            'Fecha' => now()->format('Y-m-d'),
-            'CAdj' => $examen->Cerrado === 1 
-                        ? ($examen->Adjunto === 0 ? 3 : 4) 
-                        : 1,
-            'CInfo' => $examen->Informe,
-            'IdProveedor' => $examen->IdProveedor,
-            'VtoItem' => $examen->DiasVencimiento,
-            'SinEsc' => $examen->SinEsc,
-            'Forma' => $examen->Forma,
-            'Ausente' => $examen->Ausente,
-            'Devol' => $examen->Devol,
-            'IdProfesional' => $examen->Cerrado === 1 ? 26 : 0,
-            'Honorarios' => $honorarios == 'true' ? $honorarios->Honorarios : 0
-        ]);
+        if (!is_array($examenes)) {
+            $examenes = [$examenes];
+        }
 
-        ItemPrestacion::InsertarVtoPrestacion($idPrestacion);
+        $this->itemCrud->create($examenes, $idPrestacion, null);
     }
 }
