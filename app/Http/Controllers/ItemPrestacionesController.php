@@ -267,14 +267,15 @@ class ItemPrestacionesController extends Controller
 
     public function updateAdjunto(Request $request):mixed 
     {
+        if (!$request->has('Id')) {
+            return response()->json(['msg' => 'No se proporcionó un ID.'], 400);
+        }
 
-        $adjunto = ItemPrestacion::find($request->Id);
+        $adjunto = ItemPrestacion::find($request->Id)
+            ->update(['CAdj' => $request->CAdj ?? '']);
 
         if ($adjunto)
         {   
-            $adjunto->CAdj = $request->CAdj ?? '';
-            $adjunto->save();
-            
             return response()->json(['msg' => 'Se ha actualizado el efector de manera correcta'], 200);
         }else{
             return response()->json(['msg' => 'No se ha podido actualizar el efector'], 500);
@@ -1067,13 +1068,9 @@ class ItemPrestacionesController extends Controller
 
     private function deleteExaCuenta($prestacion, $examen)
     {
-        $exaCuenta = ExamenCuentaIt::where('IdPrestacion', $prestacion)->where('IdExamen', $examen)->first();
-
-        if($exaCuenta) {
-            $exaCuenta->IdPrestacion = 0;
-            $exaCuenta->save();
-
-        } 
+        return ExamenCuentaIt::where('IdPrestacion', $prestacion)
+                  ->where('IdExamen', $examen)
+                  ->update(['IdPrestacion' => 0]);
     }
 
     private function multiEfector(int $idPrestacion, int $idProfesional, int $idProveedor): mixed
