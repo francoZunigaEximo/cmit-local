@@ -106,7 +106,7 @@
 
 <script>
     const TOKEN = "{{ csrf_token() }}";
-    const paqueteId = "{{ route('paqueteId') }}";
+    const paqueteId = "{{ route('paquetes.examenesPaqueteFacturacionId') }}";
     const getExamenId = "{{ route('examenes.getById') }}";
     const getPaquetes = "{{ route('getPaquetes') }}";
     const postPaquetesEstudios = "{{ route('paquetes.postPaqueteExamen')}}";
