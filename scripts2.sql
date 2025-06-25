@@ -1392,3 +1392,22 @@ ALTER TABLE itemsprestaciones_info ADD CONSTRAINT itemsprestaciones_info_ibfk_1 
 ALTER TABLE notascredito_it ADD CONSTRAINT notascredito_it_ibfk_3 FOREIGN KEY (IdIP) REFERENCES itemsprestaciones(Id);
 ALTER TABLE archivosinformador ADD CONSTRAINT archivosinformador_ibfk_1 FOREIGN KEY (IdEntidad) REFERENCES itemsprestaciones(Id);
 ALTER TABLE archivosefector ADD CONSTRAINT archivosefector_ibfk_1 FOREIGN KEY (IdEntidad) REFERENCES itemsprestaciones(Id);
+
+CREATE PROCEDURE getExamenesEstandar(IN id_prestacion INT, IN tipo VARCHAR(10))
+BEGIN
+	SELECT 
+	    examenes.Nombre AS Nombre,
+	    examenes.Id AS IdExamen,
+	    itemsprestaciones.Id AS IdItem,
+	    itemsprestaciones.Anulado AS Anulado
+	FROM itemsprestaciones
+	JOIN examenes ON itemsprestaciones.IdExamen = examenes.Id
+	WHERE (
+	    (tipo != 'listado') OR 
+	    (tipo = 'listado' AND itemsprestaciones.IdPrestacion = id_prestacion)
+	)
+	GROUP BY itemsprestaciones.Id
+	ORDER BY 
+	    examenes.Nombre ASC,
+	    itemsprestaciones.Fecha ASC;
+END
