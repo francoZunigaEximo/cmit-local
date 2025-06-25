@@ -896,7 +896,6 @@ class ItemPrestacionesController extends Controller
 
     }
 
-        
     public function getExamenes(Request $request)
     {
         if (!$this->hasPermission("prestaciones_edit")) {
@@ -904,7 +903,6 @@ class ItemPrestacionesController extends Controller
         }
 
         return DB::Select("CALL getExamenes(?,?)", [$request->Id, $request->tipo]);
-   
     }
 
     public function show(){}
