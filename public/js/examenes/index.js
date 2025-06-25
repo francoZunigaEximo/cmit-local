@@ -131,7 +131,7 @@ $(function(){
 
             especialidad.empty().append('<option value="" selected>Elige una opción...</option>');
 
-            for(let index = 0; index < response; index++) {
+            for(let index = 0; index < response.length; index++) {
                 let r = response[index],
                 contenido = `<option value="${r.Id}">${r.Nombre}</option>`;
                 especialidad.append(contenido);
