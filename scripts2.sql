@@ -1320,3 +1320,75 @@ ALTER TABLE itemsprestaciones MODIFY COLUMN IdProfesional2 INT NOT NULL DEFAULT 
 --         SET NEW.IdProfesional2 = 0;
 --     END IF;
 -- END
+
+CREATE PROCEDURE getExamenes(IN id_prestacion INT, IN tipo VARCHAR(10))
+BEGIN
+	SELECT 
+	    examenes.Nombre AS Nombre,
+	    examenes.Id AS IdExamen,
+	    examenes.Adjunto AS ExaAdj,
+	    examenes.Informe AS Informe,
+	    informador.InfAdj AS InfAdj,
+	    examenes.NoImprime AS ExaNI,
+	    CONCAT(efector.Apellido,' ', efector.Nombre) AS EfectorFullName,
+	    CONCAT(informador.Apellido,' ', informador.Nombre) AS InformadorFullName,
+	    CONCAT(datosEfector.Apellido,' ', datosEfector.Nombre) AS DatosEfectorFullName,
+	    CONCAT(datosInformador.Apellido,' ', datosInformador.Nombre) AS DatosInformadorFullName,
+	    efector.Apellido AS EfectorApellido,
+	    informador.Apellido AS InformadorApellido,
+	    datosEfector.Apellido AS DatosEfectorApellido,
+	    datosInformador.Apellido AS DatosInformadorApellido,
+	    efector.RegHis AS RegHis,
+	    itemsprestaciones.Ausente AS Ausente,
+	    itemsprestaciones.Forma AS Forma,
+	    itemsprestaciones.Incompleto AS Incompleto,
+	    itemsprestaciones.SinEsc AS SinEsc,
+	    itemsprestaciones.Devol AS Devol,
+	    itemsprestaciones.CAdj AS CAdj,
+	    itemsprestaciones.CInfo AS CInfo,
+	    itemsprestaciones.Id AS IdItem,
+	    itemsprestaciones.Anulado AS Anulado,
+	    (SELECT COUNT(*) FROM archivosefector WHERE IdEntidad = itemsprestaciones.Id) AS archivos,
+	    (SELECT COUNT(*) FROM archivosinformador WHERE IdEntidad = itemsprestaciones.Id) AS archivosI,
+	    efector.Id AS IdEfector,
+	    informador.Id AS IdInformador,
+	    userEfector.id AS IdUserEfector,
+	    userInformador.id AS IdUserInformador
+	FROM itemsprestaciones
+	LEFT JOIN profesionales AS efector ON itemsprestaciones.IdProfesional = efector.Id
+	LEFT JOIN users AS userEfector ON efector.Id = userEfector.profesional_id
+	LEFT JOIN datos AS datosEfector ON userEfector.datos_id = datosEfector.Id
+	LEFT JOIN profesionales AS informador ON itemsprestaciones.IdProfesional2 = informador.Id
+	LEFT JOIN users AS userInformador ON informador.Id = userInformador.profesional_id
+	LEFT JOIN datos AS datosInformador ON userInformador.datos_id = datosInformador.Id
+	JOIN examenes ON itemsprestaciones.IdExamen = examenes.Id
+	JOIN proveedores AS proveedor2 ON examenes.IdProveedor = proveedor2.Id
+	JOIN prestaciones ON itemsprestaciones.IdPrestacion = prestaciones.Id
+	LEFT JOIN archivosefector ON itemsprestaciones.Id = archivosefector.IdEntidad
+	LEFT JOIN archivosinformador ON itemsprestaciones.Id = archivosinformador.IdEntidad
+	WHERE 1=1
+	AND (
+	    (tipo != 'listado') OR 
+	    (tipo = 'listado' AND itemsprestaciones.IdPrestacion = id_prestacion)
+	)
+	GROUP BY itemsprestaciones.Id
+	ORDER BY 
+	    efector.IdProveedor ASC,
+	    examenes.Nombre ASC,
+	    itemsprestaciones.Fecha ASC;
+END
+
+ALTER TABLE itemsfacturacompra DROP FOREIGN KEY itemsfacturacompra_ibfk_2; --IdItemPrestacion
+ALTER TABLE itemsfacturacompra2 DROP FOREIGN KEY itemsfacturacompra2_ibfk_2; --IdItemPrestacion
+ALTER TABLE itemsprestaciones_info DROP FOREIGN KEY itemsprestaciones_info_ibfk_1; --IdIP
+ALTER TABLE notascredito_it DROP FOREIGN KEY notascredito_it_ibfk_3; --IdIP
+ALTER TABLE archivosinformador DROP FOREIGN KEY archivosinformador_ibfk_1; --IdEntidad
+ALTER TABLE archivosefector DROP FOREIGN KEY archivosefector_ibfk_1; --IdEntidad
+ALTER TABLE itemsprestaciones MODIFY COLUMN Id int(11) auto_increment NOT NULL;
+
+ALTER TABLE itemsfacturacompra ADD CONSTRAINT itemsfacturacompra_ibfk_2 FOREIGN KEY (IdItemPrestacion) REFERENCES itemsprestaciones(Id);
+ALTER TABLE itemsfacturacompra2 ADD CONSTRAINT itemsfacturacompra2_ibfk_2 FOREIGN KEY (IdItemPrestacion) REFERENCES itemsprestaciones(Id);
+ALTER TABLE itemsprestaciones_info ADD CONSTRAINT itemsprestaciones_info_ibfk_1 FOREIGN KEY (IdIP) REFERENCES itemsprestaciones(Id);
+ALTER TABLE notascredito_it ADD CONSTRAINT notascredito_it_ibfk_3 FOREIGN KEY (IdIP) REFERENCES itemsprestaciones(Id);
+ALTER TABLE archivosinformador ADD CONSTRAINT archivosinformador_ibfk_1 FOREIGN KEY (IdEntidad) REFERENCES itemsprestaciones(Id);
+ALTER TABLE archivosefector ADD CONSTRAINT archivosefector_ibfk_1 FOREIGN KEY (IdEntidad) REFERENCES itemsprestaciones(Id);
