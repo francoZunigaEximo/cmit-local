@@ -99,6 +99,10 @@ class PaquetesController extends Controller
         $alias = $request->alias == null ? "" : $request->alias ;
         $estudios = $request->estudios;
         
+         if(PaqueteEstudio::where('Nombre', '=', $nombre)->where('Baja', '=', 0)->exists()){
+            return response()->json(['error' => 'El nombre del paquete ya existe.'], 400);
+        }
+
         //cargamos el paquete
         $nuevoId = PaqueteEstudio::max('Id') + 1;
         PaqueteEstudio::create([
@@ -135,6 +139,10 @@ class PaquetesController extends Controller
         $estudios = $request->estudios == null ? [] : $request->estudios;
         $estudiosEliminar = $request->estudiosEliminar == null ? [] : $request->estudiosEliminar;
         
+        if(PaqueteEstudio::where('Nombre', '=', $nombre)->where('Baja', '=', 0)->where('Id', '<>', $idPaquete)->exists()){
+            return response()->json(['error' => 'El nombre del paquete ya existe (pertenece a otro paquete).'], 400);
+        }
+
         PaqueteEstudio::find($idPaquete)
         ->update(['Nombre'=>$nombre, 'Descripcion'=>$descripcion, 'Alias'=>$alias]);
 
@@ -254,6 +262,11 @@ class PaquetesController extends Controller
 
         $estudios = $request->Examenes;
 
+        if(PaqueteFacturacion::where('Nombre', '=', $nombre)->where('Baja', '=', 0)->exists()){
+            return response()->json(['error' => 'El nombre del paquete ya existe.'], 400);
+        }
+
+
         $nuevoId = PaqueteFacturacion::max('Id') + 1;
 
         //realizamos las operaciones de creacion
@@ -340,6 +353,10 @@ class PaquetesController extends Controller
         $estudios = $request->estudios == null ? [] : $request->estudios;
         $estudiosEliminar = $request->estudiosEliminar == null ? [] : $request->estudiosEliminar;
         
+        if(PaqueteFacturacion::where('Nombre', '=', $nombre)->where('Baja', '=', 0)->where('Id', '<>', $idPaquete)->exists()){
+            return response()->json(['error' => 'El nombre del paquete ya existe (pertenece a otro paquete).'], 400);
+        }
+
         PaqueteFacturacion::find($idPaquete)
         ->update(['Nombre'=>$nombre, 'Descripcion'=>$descripcion, 'Alias'=>$alias, 'Cod'=>$codigo]);
 

@@ -1306,3 +1306,9 @@ END$$
 DELIMITER ;
 
 ALTER TABLE clientesgrupos_it DROP INDEX IdCliente_2;
+
+
+-- indice unico de nombre, ya que se tiene que validar cuando tambien esta dado de baja
+
+ALTER TABLE paqfacturacion DROP INDEX Nombre;
+ALTER TABLE paqestudios DROP INDEX Nombre;
