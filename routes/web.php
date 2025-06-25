@@ -469,6 +469,9 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::get('paquetes/searchDetalleFacturacion', [PaquetesController::class, 'searchDetalleFacturacion'])->name('paquetes.searchDetalleFacturacion');
     Route::get('paquetes/exportDetalleFacturacionExcel', [PaquetesController::class, 'exportDetalleFacturacionExcel'])->name('paquetes.exportDetalleFacturacionExcel');
 
+    //ruta paquete estudios id
+    Route::post('paquetes/examenesPaqueteId', [PaquetesController::class, 'getExamenesPaqueteId'])->name('paquetes.examenesPaqueteId');
+
     Route::resource('paquetes', PaquetesController::class);
 
     //grupos

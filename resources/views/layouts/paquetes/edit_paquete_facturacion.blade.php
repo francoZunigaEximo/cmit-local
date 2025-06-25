@@ -135,7 +135,7 @@
     //const TOKEN = "{{ csrf_token() }}";
     const getPaqueteFacturacionId = "{{ route('paquetes.getEstudiosPaqueteFacturacion') }}";
     const getPaquetes = "{{ route('getPaquetes') }}";
-    const paqueteId = "{{ route('paqueteId') }}";
+    const paqueteId = "{{ route('paquetes.examenesPaqueteId') }}";
     const getExamenes = "{{ route('examenes.getExamenes') }}";
     const getExamenId = "{{ route('examenes.getById') }}"
 

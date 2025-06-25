@@ -143,7 +143,7 @@
     const getExamenId = "{{ route('examenes.getById') }}"
     const getPaquetes = "{{ route('getPaquetes') }}";
     const postPaquetesEstudios = "{{ route('paquetes.postPaqueteExamen')}}";
-    const paqueteId = "{{ route('paqueteId') }}";
+    const paqueteId = "{{ route('paquetes.examenesPaqueteId') }}";
     const getPaquete = "{{route('paquetes.getPaqueteFacturacion')}}";
 
     const getClientes = "{{ route('getClientes') }}";
