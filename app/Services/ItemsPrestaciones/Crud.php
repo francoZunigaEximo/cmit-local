@@ -23,45 +23,60 @@ class Crud
             return response()->json(['msg' => 'No hay examenes para procesar'], 409);
         }
 
-        foreach ($examenes as $examen) {
+        $listadoExamenes = ItemPrestacion::where('IdPrestacion', $idPrestacion)->whereIn('IdExamen', $examenes)->pluck('IdExamen')->all();
+
+        $limpiezaExamenes = array_diff($examenes, $listadoExamenes);
+
+        if(empty($limpiezaExamenes)) {
+            return response()->json(['msg' => 'No hay datos para procesar'], 409);
+        }
+
+        $data = Examen::whereIn('Id', $limpiezaExamenes)->get()->keyBy('Id');
+
+        $insertarExamenes = [];
+
+        foreach ($limpiezaExamenes as $examenId) {
+            $examen = $data->get($examenId);
             
-            $itemPrestacion = ItemPrestacion::where('IdPrestacion', $idPrestacion)->where('IdExamen', $examen)->first();
+            if(!$examen) {
+                continue;
+            }
 
-            if(!$itemPrestacion){
+            $honorarios = $this->itemsHelper->honorarios($examen->Id, $examen->IdProveedor);
 
-                $examen = Examen::find($examen);
-                $honorarios = $this->itemsHelper->honorarios($examen->Id, $examen->IdProveedor);
+            $insertarExamenes[] = [
+                'IdPrestacion' => $idPrestacion,
+                'IdExamen' => $examen->Id,
+                'Fecha' => now()->format('Y-m-d'),
+                'CAdj'=> $examen->Cerrado === 1 ? ($examen->Adjunto === 0 ? 3 : 4) : 1,
+                'CInfo'=> $examen->Informe,
+                'IdProveedor' => $examen->IdProveedor,
+                'VtoItem' => $examen->DiasVencimiento,
+                'SinEsc' => $examen->SinEsc,
+                'Forma' => $examen->Forma,
+                'Ausente' => $examen->Ausente,
+                'Devol' => $examen->Devol,
+                'IdProfesional' => $examen->Cerrado === 1 ? 26 : 0,
+                'IdProfesional2' => 0,
+                'Honorarios' => $honorarios == 'true' ? $honorarios : 0
+            ];
+        }
 
-               DB::insert('
-                    INSERT INTO itemsprestaciones (
-                        Id, IdPrestacion, IdExamen, Fecha, CAdj, CInfo, IdProveedor,
-                        VtoItem, SinEsc, Forma, Ausente, Devol, IdProfesional,
-                        IdProfesional2, Honorarios
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                ', [
-                    ItemPrestacion::max('Id') + 1,
-                    $idPrestacion,
-                    $examen->Id,
-                    now()->format('Y-m-d'),
-                    $examen->Cerrado === 1 
-                        ? ($examen->Adjunto === 0 ? 3 : 4) 
-                        : 1,
-                    $examen->Informe,
-                    $examen->IdProveedor,
-                    $examen->DiasVencimiento,
-                    $examen->SinEsc,
-                    $examen->Forma,
-                    $examen->Ausente,
-                    $examen->Devol,
-                    $examen->Cerrado === 1 ? 26 : 0,
-                    0,
-                    $honorarios == 'true' ? $honorarios : 0
-                ]);
+        if(!empty($insertarExamenes)) {
+            DB::table('itemsprestaciones')->insert($insertarExamenes);
+        }else{
+            return response()->json(['msg' => 'No hay examenes para insertar'], 409);
+        }
 
-                !empty($request->idExaCta) || is_numeric($idExaCta) <> 0 ? $this->registrarPagoaCuenta($idExaCta, $idPrestacion) : null;
+        foreach ($limpiezaExamenes as $examenId) {
 
+            if (!empty($idExaCta)) { 
+                $this->registrarPagoaCuenta($idExaCta, $idPrestacion);
+            }
+            
+            if (!empty($itemsToInsert)) {
                 ItemPrestacion::InsertarVtoPrestacion($idPrestacion);
-            }   
+            }
         }
     }
 
