@@ -164,12 +164,14 @@ $(function () {
         $.ajax({
             url: paqueteId,
             type: 'POST',
+            async: false,
             data: {
                 _token: TOKEN,
                 IdPaquete: id,
             },
 
             success: function (response) {
+                console.log(response);
                 let data = response.examenes;
                 data.forEach(examen => {
                     cargarExamen(examen.Id);

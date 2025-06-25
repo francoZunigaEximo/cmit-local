@@ -183,7 +183,7 @@ $('.agregarPaquete').on('click', function (e) {
             _token: TOKEN,
             IdPaquete: id,
         },
-
+        async: false,
         success: function (response) {
             let data = response.examenes;
             data.forEach(examen => {
