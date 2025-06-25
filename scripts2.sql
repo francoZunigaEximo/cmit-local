@@ -1320,3 +1320,8 @@ ALTER TABLE itemsprestaciones MODIFY COLUMN IdProfesional2 INT NOT NULL DEFAULT 
 --         SET NEW.IdProfesional2 = 0;
 --     END IF;
 -- END
+
+-- notas de credito
+ALTER TABLE notascredito_it ADD Estado INT NOT NULL DEFAULT 0;
+ALTER TABLE notascredito_it ADD FechaAnulado DATE NULL DEFAULT NULL;
+ALTER TABLE notascredito_it ADD Baja BIT DEFAULT 0;
