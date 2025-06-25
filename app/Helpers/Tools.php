@@ -24,16 +24,20 @@ class Tools
         $pacienteId = str_pad($pacienteId, 7, "0", STR_PAD_LEFT);
 
         $path = storage_path('app/public/temp/qr_image.png');
+        $paciente = Paciente::find($pacienteId);
+        $prestacion = Prestacion::find($prestacionId);
 
         $code = strtoupper($tipo) . $prestacionId . $examenId . $pacienteId;
 
         QrCode::size(300)->format('png')->generate($code, $path);
 
-        $pdf->SetXY(100,5);$pdf->Cell(85,3,$paciente->Apellido.' '.$paciente->Nombre,0,0,'R');
-        $pdf->SetXY(100,10);$pdf->Cell(85,3,$paciente->Documento,0,0,'R');
-        $pdf->SetXY(100,15);$pdf->Cell(85,3,$prestacion->Fecha,0,0,'R');
-        
-        $pdf->Image($path, 190, 5, 15, 15);
+        if($pdf !== null) {
+            $pdf->SetXY(100,5);$pdf->Cell(85,3,$paciente->Apellido.' '.$paciente->Nombre,0,0,'R');
+            $pdf->SetXY(100,10);$pdf->Cell(85,3,$paciente->Documento,0,0,'R');
+            $pdf->SetXY(100,15);$pdf->Cell(85,3,$prestacion->Fecha,0,0,'R');
+            
+            $pdf->Image($path, 190, 5, 15, 15);
+        }
 
         return $out === 'texto' ? $code : $path;
     }
