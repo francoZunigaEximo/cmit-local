@@ -88,6 +88,8 @@ class PaquetesController extends Controller
         return $consulta;
     }
 
+    //paquetes examenes
+
     public function crearPaqueteExamen(){
         $codigo = PaqueteEstudio::max('Id') + 1;
         return view('layouts.paquetes.create_paquete_estudios',['Codigo'=>$codigo]);
@@ -245,6 +247,17 @@ class PaquetesController extends Controller
             
         return response()->json(['examenes' => $examenes], 200);
          
+    }
+
+    public function getExamenesPaqueteEstudio(Request $request){
+        if(empty($request->IdPaquete)){
+            return response()->json(['msg' => 'No se pudo obtener el paquete'], 500);
+        }
+
+        $examenes = DB::select('CALL getExamenesPaquete(?)', [$request->IdPaquete]);
+            
+        return response()->json(['examenes' => $examenes], 200);
+        
     }
 
     public function createPaqueteFacturacion(){
