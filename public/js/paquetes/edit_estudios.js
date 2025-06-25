@@ -243,6 +243,7 @@ $("#btnRegistrar").on('click', function (e) {
 
             })
             .fail(function (jqXHR) {
+                preloader('off');
                 let errorData = JSON.parse(jqXHR.responseText);
                 checkError(jqXHR.status, errorData.msg);
                 return;
