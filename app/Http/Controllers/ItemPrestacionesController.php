@@ -1177,7 +1177,7 @@ class ItemPrestacionesController extends Controller
             $data = [
                 'itemprestacion' => $query,
                 'paciente' => $paciente,
-                'qrTexto' => Tools::generarQR('A', $query->IdPrestacion, $query->IdExamen, $paciente->Id, 'texto'),
+                'qrTexto' => Tools::generarQR('A', $query->IdPrestacion, $query->IdExamen, $paciente->Id, 'texto', null),
                 'adjuntoEfector' => $this->adjuntoEfector($query->Id),
                 'adjuntoInformador' => $this->adjuntoInformador($query->Id),
                 'multiEfector' => $this->multiEfector($query->IdPrestacion, $query->IdProfesional, $query->examenes->IdProveedor),
