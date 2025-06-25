@@ -171,18 +171,11 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::post('examenes/actualizar', [ExamenesController::class, 'updateExamen'])->name('updateExamen');
     Route::get('examenes/exportar/excel', [ExamenesController::class, 'excel'])->name('examenes.excel');
     Route::get('reporte/vistaprevia', [ExamenesController::class, 'getVistaPrevia'])->name('examenes.getVistaPrevia');
+    Route::get('porcentajeExamen', [ExamenesController::class, 'porcentajeExamen'])->name('porcentajeExamen');
+    Route::get('examenes/listar', [ExamenesController::class, 'getExamenes'])->name('examenes.getExamenes');
+    Route::get('examenes/listar/Id', [ExamenesController::class, 'getById'])->name('examenes.getById');
     Route::resource('examenes', ExamenesController::class);
     
-    Route::post('IdExamen', [ExamenesController::class, 'getId'])->name('IdExamen');
-    Route::post('deleteExamen', [ExamenesController::class, 'deleteEx'])->name('deleteExamen');
-    Route::post('saveExamen',[ExamenesController::class, 'saveExamen'])->name('saveExamen');
-    Route::get('porcentajeExamen', [ExamenesController::class, 'porcentajeExamen'])->name('porcentajeExamen');
-    Route::get('searchExamenes', [ExamenesController::class, 'searchExamenes'])->name('searchExamenes');
-    Route::post('updateExamen', [ExamenesController::class, 'updateExamen'])->name('updateExamen');
-    Route::get('/examenes/exportar/excel', [ExamenesController::class, 'excel'])->name('examenes.excel');
-    Route::get('/reporte/vistaprevia', [ExamenesController::class, 'getVistaPrevia'])->name('examenes.getVistaPrevia');
-    Route::get('getExamenes', [ExamenesController::class, 'getExamenes'])->name('examenes.getExamenes');
-    Route::get('getExamenById', [ExamenesController::class, 'getById'])->name('examenes.getById');
     //Ruta de Comentarios de Prestaciones
     Route::post('comentarios/guardar', [ComentariosPrestacionesController::class, 'setComentarioPres'])->name('setComentarioPres');
     Route::get('comentarios', [ComentariosPrestacionesController::class, 'getComentarioPres'])->name('getComentarioPres');
