@@ -171,7 +171,6 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::post('examenes/actualizar', [ExamenesController::class, 'updateExamen'])->name('updateExamen');
     Route::get('examenes/exportar/excel', [ExamenesController::class, 'excel'])->name('examenes.excel');
     Route::get('reporte/vistaprevia', [ExamenesController::class, 'getVistaPrevia'])->name('examenes.getVistaPrevia');
-    Route::get('/examenes/getReportes', [ExamenesController::class, 'getReportes'])->name('examenes.getReportes');
     Route::resource('examenes', ExamenesController::class);
     
     Route::post('IdExamen', [ExamenesController::class, 'getId'])->name('IdExamen');
@@ -184,8 +183,6 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::get('/reporte/vistaprevia', [ExamenesController::class, 'getVistaPrevia'])->name('examenes.getVistaPrevia');
     Route::get('getExamenes', [ExamenesController::class, 'getExamenes'])->name('examenes.getExamenes');
     Route::get('getExamenById', [ExamenesController::class, 'getById'])->name('examenes.getById');
-    
-
     //Ruta de Comentarios de Prestaciones
     Route::post('comentarios/guardar', [ComentariosPrestacionesController::class, 'setComentarioPres'])->name('setComentarioPres');
     Route::get('comentarios', [ComentariosPrestacionesController::class, 'getComentarioPres'])->name('getComentarioPres');
