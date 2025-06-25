@@ -263,7 +263,6 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::resource('especialidades', ProveedoresController::class);
     
     //Rutas de ItemsPrestaciones
-    Route::resource('itemsprestaciones', ItemPrestacionesController::class);
     Route::get('itemsprestaciones/lista-examenes', [ItemPrestacionesController::class, 'getExamenes'])->name('itemsprestaciones.listadoexamenes');
     Route::get('itemsprestaciones/lista-examenes/estandar', [ItemPrestacionesController::class, 'getExamenesStd'])->name('itemsprestaciones.lstExamenesEstandar');
     Route::get('itemsprestaciones/check-adjuntos', [ItemPrestacionesController::class, 'checkAdjunto'])->name('itemsprestaciones.checkAdjuntos');
@@ -291,6 +290,7 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::post('liberarExamen', [ItemPrestacionesController::class, 'liberarExamen'])->name('liberarExamen');
     Route::post('marcarExamenAdjunto', [ItemPrestacionesController::class, 'marcarExamenAdjunto'])->name('marcarExamenAdjunto');
     Route::get('lstExamenes', [ItemPrestacionesController::class, 'lstExamenes'])->name('lstExamenes');
+    Route::resource('itemsprestaciones', ItemPrestacionesController::class);
     
     
     //Rutas de FacturasdeVenta

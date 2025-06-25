@@ -937,7 +937,6 @@ $(function(){
 
         preloader('on');
 
-       console.log(idPrestacion);
        $.post(paqueteId,{_token: TOKEN, IdPaquete: variables.paquetes.val(), IdPrestacion: idPrestacion})
             .done(function(){
                 principal.listaExamenes.empty();
@@ -1259,7 +1258,6 @@ $(function(){
             preloader('on');
 
             let response = await $.get(getExamenesEstandar,{Id: id, tipo: 'listado'});
-            console.log("datos: " + response);
 
             preloader('off');
             for(let index = 0; index < response.length; index++){

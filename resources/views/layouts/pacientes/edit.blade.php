@@ -1226,7 +1226,6 @@ const searchExamen = "{{ route('searchExamen') }}";
 const IDFICHA = "{{ $fichaLaboral->empresa->Id ?? ''}}";
 const pagoInput = "{{ $fichaLaboral->Pago ?? ''}} ";
 const saveItemExamenes = "{{ route('saveItemExamenes') }}";
-const getItemExamenes = "{{ route('itemsprestaciones.listadoexamenes') }}";
 const getExamenesEstandar = "{{ route('itemsprestaciones.lstExamenesEstandar') }}";
 const getPaquetes = "{{ route('getPaquetes') }}";
 const paqueteId = "{{ route('paqueteId') }}";
