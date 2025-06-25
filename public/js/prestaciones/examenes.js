@@ -7,7 +7,7 @@ $(function(){
           valCerrar = [0, 1, 2], 
           valCerrarI = 3;
 
-    cargarExamen();
+    cargarExamen(ID);
     contadorExamenes(ID);
     listadoSelectExCta(empresa);
 
@@ -71,7 +71,7 @@ $(function(){
 
             success:function(response){
                 preloader('off');
-                cargarExamen();
+                cargarExamen(ID);
                 contadorExamenes(ID);
                 listadoSelectExCta(empresa)
                 $('.addPaquete').val([]).trigger('change.select2');
@@ -130,7 +130,7 @@ $(function(){
                         $('#listaExamenes').empty();
                         $('#exam').val([]).trigger('change.select2');
                         $('#paquetes').val([]).trigger('change.select2');
-                        cargarExamen();
+                        cargarExamen(ID);
                         listadoSelectExCta(empresa);
                         contadorExamenes(ID);
                     })
@@ -205,7 +205,7 @@ $(function(){
                             $('#listaExamenes').empty();
                             $('#exam').val([]).trigger('change.select2');
                             $('#addPaquete').val([]).trigger('change.select2');
-                            cargarExamen();
+                            cargarExamen(ID);
                             contadorExamenes(ID);
                         }
                     }
@@ -264,7 +264,7 @@ $(function(){
                             $('#listaExamenes').empty();
                             $('#exam').val([]).trigger('change.select2');
                             $('#addPaquete').val([]).trigger('change.select2');
-                            cargarExamen();
+                            cargarExamen(ID);
                         }
 
                     }
@@ -326,7 +326,7 @@ $(function(){
                             $('#listaExamenes').empty();
                             $('#exam').val([]).trigger('change.select2');
                             $('#addPaquete').val([]).trigger('change.select2');
-                            cargarExamen();
+                            cargarExamen(ID);
                             contadorExamenes(ID);
                         }
 
@@ -386,7 +386,7 @@ $(function(){
                             $('#listaExamenes').empty();
                             $('#exam').val([]).trigger('change.select2');
                             $('#addPaquete').val([]).trigger('change.select2');
-                            cargarExamen();
+                            cargarExamen(ID);
                             contadorExamenes(ID);
                         }
 
@@ -449,7 +449,7 @@ $(function(){
 
     $('#modalExamen').on('hidden.bs.modal', function () {
         $('#listaExamenes').empty();
-        cargarExamen();
+        cargarExamen(ID);
         contadorExamenes(ID);
     });
 
@@ -485,7 +485,7 @@ $(function(){
                 $('#listaExamenes').empty();
                 $('#exam').val([]).trigger('change.select2');
                 $('#addPaquete').val([]).trigger('change.select2');
-                cargarExamen();
+                cargarExamen(ID);
                 contadorExamenes(ID);
                 listadoSelectExCta(empresa)
         },
@@ -548,27 +548,21 @@ $(function(){
         });
     }
 
-    async function cargarExamen() {
-        preloader('on');
+    async function cargarExamen(id) {
     
         try {    
             preloader('on');
-            const response = await $.ajax({
-                url: getItemExamenes,
-                type: 'GET',
-                data: {
-                    Id: ID,
-                    tipo: 'listado'
-                },
-            });
 
-            const cargaEfector = await primeraCarga(ID, "efector");
-            const cargaInformador = await primeraCarga(ID, "informador");
-            
-            checkExamenes(ID);
-            contadorExamenes(ID);
-            
+            let response = await $.get(getExamenes,{Id: id, tipo: 'listado'});
 
+            console.log(response);
+
+            const cargaEfector = await primeraCarga(id, "efector");
+            const cargaInformador = await primeraCarga(id, "informador");
+            
+            checkExamenes(id);
+            contadorExamenes(id);
+            
             let filas = '';
 
             preloader('off');

@@ -937,10 +937,8 @@ $(function(){
 
         preloader('on');
 
-        
        $.post(paqueteId,{_token: TOKEN, IdPaquete: variables.paquetes.val(), IdPrestacion: idPrestacion})
-            .done(function(response){
-
+            .done(function(){
                 principal.listaExamenes.empty();
                 variables.exam.val([]).trigger('change.select2');
                 variables.paquetes.trigger('change.select2');
@@ -1259,14 +1257,7 @@ $(function(){
         try {
             preloader('on');
 
-            let response = await $.ajax({
-                url: getItemExamenes,
-                method: 'GET',
-                data: {
-                    Id: id,
-                    tipo: 'listado'
-                }
-            });
+            let response = await $.get(getExamenesEstandar,{Id: id, tipo: 'listado'});
 
             preloader('off');
             for(let index = 0; index < response.length; index++){

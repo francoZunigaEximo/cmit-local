@@ -267,14 +267,15 @@ class ItemPrestacionesController extends Controller
 
     public function updateAdjunto(Request $request):mixed 
     {
+        if (!$request->has('Id')) {
+            return response()->json(['msg' => 'No se proporcionó un ID.'], 400);
+        }
 
-        $adjunto = ItemPrestacion::find($request->Id);
+        $adjunto = ItemPrestacion::find($request->Id)
+            ->update(['CAdj' => $request->CAdj ?? '']);
 
         if ($adjunto)
         {   
-            $adjunto->CAdj = $request->CAdj ?? '';
-            $adjunto->save();
-            
             return response()->json(['msg' => 'Se ha actualizado el efector de manera correcta'], 200);
         }else{
             return response()->json(['msg' => 'No se ha podido actualizar el efector'], 500);
@@ -886,73 +887,23 @@ class ItemPrestacionesController extends Controller
         return response()->json($resultados);
     }
 
-        
+    public function getExamenesStd(Request $request)
+    {
+        if (!$this->hasPermission("prestaciones_edit")) {
+            return response()->json(['msg' => 'No tienes permisos'], 403);
+        }
+
+        return DB::Select("CALL getExamenesEstandar(?,?)", [intval($request->Id), $request->tipo]);
+
+    }
+
     public function getExamenes(Request $request)
     {
         if (!$this->hasPermission("prestaciones_edit")) {
             return response()->json(['msg' => 'No tienes permisos'], 403);
         }
 
-        // $IdExamen = implode(',', $request->IdExamen);
-        // $result = DB::Select("CALL getExamenes(?,?,?)", [$request->Id, $request->tipo, $IdExamen]);
-
-        $query = DB::table('itemsprestaciones')
-            ->leftJoin('profesionales as efector', 'itemsprestaciones.IdProfesional', '=', 'efector.Id') //ok
-            ->leftJoin('users as userEfector', 'efector.Id', '=', 'userEfector.profesional_id') // ok
-            ->leftJoin('datos as datosEfector', 'userEfector.datos_id', '=', 'datosEfector.Id') // ok
-            ->leftJoin('profesionales as informador', 'itemsprestaciones.IdProfesional2', '=', 'informador.Id')
-            ->leftJoin('users as userInformador', 'informador.Id', '=', 'userInformador.profesional_id') // Relación directa con usuarios
-            ->leftJoin('datos as datosInformador', 'userInformador.datos_id', '=', 'datosInformador.Id') // Relación con datos de informador
-            ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
-            ->join('proveedores as proveedor2', 'examenes.IdProveedor', '=', 'proveedor2.Id')
-            ->join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
-            ->leftJoin('archivosefector', 'itemsprestaciones.Id', '=', 'archivosefector.IdEntidad')
-            ->leftJoin('archivosinformador', 'itemsprestaciones.Id', '=', 'archivosinformador.IdEntidad')
-            ->select(
-                'examenes.Nombre as Nombre',
-                'examenes.Id as IdExamen',
-                'examenes.Adjunto as ExaAdj',
-                'examenes.Informe as Informe',
-                'informador.InfAdj as InfAdj',
-                'examenes.NoImprime as ExaNI',
-                DB::raw('CONCAT(efector.Apellido, " ", efector.Nombre) as EfectorFullName'), //ok
-                DB::raw('CONCAT(informador.Apellido, " ", informador.Nombre) as InformadorFullName'),
-                DB::raw('CONCAT(datosEfector.Apellido, " ", datosEfector.Nombre) as DatosEfectorFullName'),
-                DB::raw('CONCAT(datosInformador.Apellido, " ", datosInformador.Nombre) as DatosInformadorFullName'),
-                'efector.Apellido as EfectorApellido', // ok
-                'informador.Apellido as InformadorApellido',
-                'datosEfector.Apellido as DatosEfectorApellido',
-                'datosInformador.Apellido as DatosInformadorApellido',
-                'efector.RegHis as RegHis',
-                'itemsprestaciones.Ausente as Ausente',
-                'itemsprestaciones.Forma as Forma',
-                'itemsprestaciones.Incompleto as Incompleto',
-                'itemsprestaciones.SinEsc as SinEsc',
-                'itemsprestaciones.Devol as Devol',
-                'itemsprestaciones.CAdj as CAdj',
-                'itemsprestaciones.CInfo as CInfo',
-                'itemsprestaciones.Id as IdItem',
-                'itemsprestaciones.Anulado as Anulado',
-                DB::raw('(SELECT COUNT(*) FROM archivosefector WHERE IdEntidad = itemsprestaciones.Id) as archivos'),
-                DB::raw('(SELECT COUNT(*) FROM archivosinformador WHERE IdEntidad = itemsprestaciones.Id) as archivosI'),
-                'efector.Id as IdEfector',
-                'informador.Id as IdInformador',
-                'userEfector.id as IdUserEfector',
-                'userInformador.id as IdUserInformador'
-            );                
-
-        if ($request->tipo === 'listado') {
-
-                $query->where('itemsprestaciones.IdPrestacion', $request->Id);
-        } 
-
-        $result = $query->orderBy('efector.IdProveedor', 'ASC')
-            ->orderBy('examenes.Nombre', 'ASC')
-            ->orderBy('itemsprestaciones.Fecha', 'ASC')
-            ->groupBy('itemsprestaciones.Id')->get();
- 
-        return $result;
-   
+        return DB::Select("CALL getExamenes(?,?)", [$request->Id, $request->tipo]);
     }
 
     public function show(){}
@@ -966,22 +917,6 @@ class ItemPrestacionesController extends Controller
         }
 
         $this->crud->create($examenes, $request->idPrestacion, $request->idExaCta);
-    }
-
-    public function check(Request $request): mixed
-    {
-        if (!$this->hasPermission("prestaciones_edit")) {
-            return response()->json(['msg' => 'No tienes permisos'], 403);
-        }
-
-        $examenes = ItemPrestacion::where('IdPrestacion', $request->Id)->get() ?? '';
-
-        $idExamenes = [];
-
-        foreach ($examenes as $examen) {
-            $idExamenes[] = $examen->IdExamen;
-        }
-        return response()->json($idExamenes);
     }
 
     public function itemExamen(Request $request)
@@ -1133,13 +1068,9 @@ class ItemPrestacionesController extends Controller
 
     private function deleteExaCuenta($prestacion, $examen)
     {
-        $exaCuenta = ExamenCuentaIt::where('IdPrestacion', $prestacion)->where('IdExamen', $examen)->first();
-
-        if($exaCuenta) {
-            $exaCuenta->IdPrestacion = 0;
-            $exaCuenta->save();
-
-        } 
+        return ExamenCuentaIt::where('IdPrestacion', $prestacion)
+                  ->where('IdExamen', $examen)
+                  ->update(['IdPrestacion' => 0]);
     }
 
     private function multiEfector(int $idPrestacion, int $idProfesional, int $idProveedor): mixed
@@ -1241,7 +1172,7 @@ class ItemPrestacionesController extends Controller
             $data = [
                 'itemprestacion' => $query,
                 'paciente' => $paciente,
-                'qrTexto' => Tools::generarQR('A', $query->IdPrestacion, $query->IdExamen, $paciente->Id, 'texto'),
+                'qrTexto' => Tools::generarQR('A', $query->IdPrestacion, $query->IdExamen, $paciente->Id, 'texto', null),
                 'adjuntoEfector' => $this->adjuntoEfector($query->Id),
                 'adjuntoInformador' => $this->adjuntoInformador($query->Id),
                 'multiEfector' => $this->multiEfector($query->IdPrestacion, $query->IdProfesional, $query->examenes->IdProveedor),

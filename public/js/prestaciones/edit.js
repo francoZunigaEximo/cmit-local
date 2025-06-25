@@ -1348,7 +1348,7 @@ $(function() {
                 for(let index = 0; index < response.length; index++){
                     let r = response[index],
                         icon = r.Evaluacion === 0 ? `<span class="custom-badge generalNegro">Antiguo</span>` : '',
-                        evaluacion = r.Evaluacion === 0 ? '' : r.Evaluacion.slice(2),
+                        evaluacion = r.Evaluacion ? r.Evaluacion.slice(2) : '',
                         calificacion = r.Calificacion ? r.Calificacion.slice(2) : '',
                         boton = r.Evaluacion !== 0 ? `<button data-id="${r.Id}" class="btn btn-sm iconGeneral verPrestacion" title="Ver">
                                     <i class="ri-search-eye-line"></i>

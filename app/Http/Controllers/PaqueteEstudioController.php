@@ -54,10 +54,9 @@ class PaqueteEstudioController extends Controller
             return response()->json(['msg' => 'No se pudo obtener el paquete'], 500);
         }
 
-        $examenes = DB::select('CALL getExamenesPaquete(?)', [$request->IdPaquete]);
-        $ids = array_map(fn($e) => $e->Id, $examenes);
-
-        $this->itemCrud->create($ids, $request->IdPrestacion, null);
+        $examenes = DB::select('CALL getExamenesPaquete(?)', [intval($request->IdPaquete)]);
+        $ids = collect($examenes)->pluck('Id')->toArray();
+        $this->itemCrud->create($ids, intval($request->IdPrestacion), null);
          
     }
     

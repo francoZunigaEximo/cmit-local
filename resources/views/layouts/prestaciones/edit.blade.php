@@ -1546,8 +1546,7 @@ const marcarExamenAdjunto = "{{ route('marcarExamenAdjunto') }}";
 
 const getPaquetes = "{{ route('getPaquetes') }}";
 const searchExamen = "{{ route('searchExamen') }}";
-const getItemExamenes = "{{ route('itemsprestaciones.listadoexamenes') }}";
-const checkItemExamen = "{{ route('checkItemExamen') }}";
+const getExamenes = "{{ route('itemsprestaciones.listadoexamenes') }}";
 const saveItemExamenes = "{{ route('saveItemExamenes') }}";
 const getId = "{{ route('IdExamen') }}";
 const deleteItemExamen = "{{ route('deleteItemExamen')}}";

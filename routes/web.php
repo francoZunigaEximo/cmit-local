@@ -264,12 +264,12 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     
     //Rutas de ItemsPrestaciones
     Route::get('itemsprestaciones/lista-examenes', [ItemPrestacionesController::class, 'getExamenes'])->name('itemsprestaciones.listadoexamenes');
+    Route::get('itemsprestaciones/lista-examenes/estandar', [ItemPrestacionesController::class, 'getExamenesStd'])->name('itemsprestaciones.lstExamenesEstandar');
     Route::get('itemsprestaciones/check-adjuntos', [ItemPrestacionesController::class, 'checkAdjunto'])->name('itemsprestaciones.checkAdjuntos');
     Route::get('itemsprestaciones/checkid', [ItemPrestacionesController::class, 'checkPrimeraCarga'])->name('itemsprestaciones.checkId');
     Route::get('itemsprestaciones/editModal', [ItemPrestacionesController::class, 'editModal'])->name('itemsprestaciones.editModal');
     Route::get('itemsprestaciones/contador', [ItemPrestacionesController::class, 'contadorExamenes'])->name('itemsprestaciones.contador');
     Route::get('itemsprestaciones/check-facturas', [ItemPrestacionesController::class, 'checkFacturaItemPrestacion'])->name('itemsprestaciones.checkFacturas');
-    Route::resource('itemsprestaciones', ItemPrestacionesController::class);
     Route::post('updateItem', [ItemPrestacionesController::class, 'updateItem'])->name('updateItem');
     Route::post('updateAsignado', [ItemPrestacionesController::class, 'updateAsignado'])->name('updateAsignado');
     Route::post('updateAdjunto', [ItemPrestacionesController::class, 'updateAdjunto'])->name('updateAdjunto');
@@ -280,7 +280,6 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::post('replaceIdAdjunto', [ItemPrestacionesController::class, 'replaceIdAdjunto'])->name('replaceIdAdjunto');
     Route::post('deleteItemExamen', [ItemPrestacionesController::class, 'deleteEx'])->name('deleteItemExamen');
     Route::post('saveItemExamenes', [ItemPrestacionesController::class, 'save'])->name('saveItemExamenes');
-    Route::get('checkItemExamen', [ItemPrestacionesController::class, 'check'])->name('checkItemExamen');
     Route::post('itemExamen', [ItemPrestacionesController::class, 'itemExamen'])->name('itemExamen');
     Route::post('bloquearItemExamen', [ItemPrestacionesController::class, 'bloquearEx'])->name('bloquearItemExamen');
     Route::post('asignarProfesional', [ItemPrestacionesController::class, 'asignarProfesional'])->name('asignarProfesional');
@@ -291,6 +290,8 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::post('liberarExamen', [ItemPrestacionesController::class, 'liberarExamen'])->name('liberarExamen');
     Route::post('marcarExamenAdjunto', [ItemPrestacionesController::class, 'marcarExamenAdjunto'])->name('marcarExamenAdjunto');
     Route::get('lstExamenes', [ItemPrestacionesController::class, 'lstExamenes'])->name('lstExamenes');
+    Route::resource('itemsprestaciones', ItemPrestacionesController::class);
+    
     
     //Rutas de FacturasdeVenta
     Route::get('getFactura', [FacturasVentaController::class, 'getFactura'])->name('getFactura');
