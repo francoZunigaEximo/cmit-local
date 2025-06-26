@@ -1416,3 +1416,6 @@ END
 
 ALTER TABLE paqfacturacion DROP INDEX Nombre;
 ALTER TABLE paqestudios DROP INDEX Nombre;
+
+-- indice unico de nombre en grupos clientes
+ALTER TABLE clientesgrupos DROP INDEX Nombre;
