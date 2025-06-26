@@ -238,15 +238,17 @@ $("#btnRegistrar").on('click', function (e) {
             estudiosEliminar: examenesEliminar
         })
             .done(function () {
-                preloader('off');
                 toastr.success('Se ha cargado el paquete correctamente', '', { timeOut: 1000 });
 
             })
             .fail(function (jqXHR) {
-                preloader('off');
+                // Manejo de errores
                 let errorData = JSON.parse(jqXHR.responseText);
-                checkError(jqXHR.status, errorData.msg);
-                return;
+                checkError(jqXHR.status, errorData.error || errorData.msg);
+                
+            })
+            .always(function () {
+                preloader('off');
             });
 
     }

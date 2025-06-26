@@ -119,7 +119,10 @@ function renderizarClientes(clientesRenderizar) {
 $('.agregarCliente').on('click', function (e) {
     e.preventDefault();
     let id = $("#empresaSelect2").val();
-
+    if(!id) {
+        toastr.warning("Debe seleccionar una empresa", "", { timeout: 1000 });
+        return;
+    }
     cargarCliente(id);
     clientesNuevos = clientesNuevos.concat(clientesRenderizar);
     renderizarClientes(clientesRenderizar);
@@ -165,7 +168,7 @@ $("#btnRegistrar").on('click', function (e) {
             })
             .fail(function (jqXHR) {
                 let errorData = JSON.parse(jqXHR.responseText);
-                checkError(jqXHR.status, errorData.msg);
+                checkError(jqXHR.status, errorData.error || errorData.msg);
                 return;
             });
 

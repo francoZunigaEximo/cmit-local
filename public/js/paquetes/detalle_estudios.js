@@ -38,7 +38,7 @@ $(function () {
         language: {
             noResults: function () {
 
-                return "No hay especialidades con esos datos";
+                return "No hay examen con esos datos";
             },
             searching: function () {
 
@@ -48,7 +48,7 @@ $(function () {
                 return "Por favor, ingrese 2 o más caracteres";
             }
         },
-        placeholder: 'Nombre Especialidad',
+        placeholder: 'Nombre Examen',
         allowClear: true,
         ajax: {
             url: getExamenes,
@@ -73,7 +73,7 @@ $(function () {
         language: {
             noResults: function () {
 
-                return "No hay especialidades con esos datos";
+                return "No hay paquetes de estudio con esos datos";
             },
             searching: function () {
 
@@ -83,7 +83,7 @@ $(function () {
                 return "Por favor, ingrese 2 o más caracteres";
             }
         },
-        placeholder: 'Nombre Especialidad',
+        placeholder: 'Nombre Paquete Estudio',
         allowClear: true,
         ajax: {
             url: getPaquetes,
