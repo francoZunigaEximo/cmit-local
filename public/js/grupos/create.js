@@ -101,7 +101,10 @@ tabla.on('click', 'button.remove-item-btn', function () {
 $('.agregarCliente').on('click', function (e) {
     e.preventDefault();
     let id = $("#empresaSelect2").val();
-
+    if(!id) {
+        toastr.warning("Debe seleccionar una empresa", "", { timeout: 1000 });
+        return;
+    }
     cargarCliente(id);
     clientes = clientes.concat(clientesRenderizar);
     renderizarClientes(clientesRenderizar);
@@ -126,7 +129,8 @@ $('.agregarCliente').on('click', function (e) {
                 .fail(function (jqXHR) {
                     preloader('off');
                     let errorData = JSON.parse(jqXHR.responseText);
-                    checkError(jqXHR.status, errorData.msg);
+                    console.log(errorData);
+                    checkError(jqXHR.status, errorData.error || errorData.msg);
                     return;
                 });
 

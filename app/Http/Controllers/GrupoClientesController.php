@@ -84,6 +84,10 @@ class GrupoClientesController extends Controller
         $nombre = $request->Nombre;
         $empresas = $request->Empresas;
 
+        if(GrupoClientes::where('Nombre', '=', $nombre)->where('Baja', '=', 0)->exists()) {
+            return response()->json(['error' => 'El nombre del grupo ya existe.'], 400);
+        }
+
         $id = GrupoClientes::max('Id') + 1;
         GrupoClientes::create([
             'Id' => $id,

@@ -384,14 +384,19 @@ $("#btnRegistrar").on('click', function (e) {
             estudiosEliminar: examenesEliminar
         })
             .done(function () {
-                preloader('off');
+                
                 toastr.success('Se ha cargado el paquete correctamente', '', { timeOut: 1000 });
 
             })
             .fail(function (jqXHR) {
+                
+                // Manejo de errores
                 let errorData = JSON.parse(jqXHR.responseText);
-                checkError(jqXHR.status, errorData.msg);
+                checkError(jqXHR.status, errorData.error || errorData.msg);
                 return;
+            })
+            .always(function () {
+                preloader('off');
             });
 
     }

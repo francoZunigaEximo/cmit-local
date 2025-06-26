@@ -148,7 +148,7 @@ $(function () {
                 .fail(function (jqXHR) {
                     preloader('off');
                     let errorData = JSON.parse(jqXHR.responseText);
-                    checkError(jqXHR.status, errorData.msg);
+                    checkError(jqXHR.status, errorData.error || errorData.msg);
                     return;
                 });
 
