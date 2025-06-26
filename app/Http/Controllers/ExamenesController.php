@@ -23,6 +23,7 @@ class ExamenesController extends Controller
     private $tempFile;
 
     use ObserverExamenes, CheckPermission, ReporteExcel;
+
     public $helper = '
         <div class="d-flex">
             <span class="fondo-celeste p-1 small">Con prioridad de impresión</span>

@@ -423,10 +423,18 @@
         const verifyWizard = "{{ route('verifyWizard') }}";
         const TOKEN = "{{ csrf_token() }}";
 
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': TOKEN
+            }
+        });
+
         const IDLE_TIMEOUT = 300 * 60 * 1000; //5 horas
         const CHECK_INTERVAL = 1000; //1 segundo
         const finalizarSesion = "{{ route('usuario.cierreAutomatico') }}";
         const sessionUser = "{{ auth()->user()?->id }}"; 
+
+        console.log("Total Horas: " + IDLE_TIMEOUT);
 
         let sesionCerrada = false,
             idInterval = null
@@ -441,7 +449,7 @@
         function iniciarIdMonitor() {
             idInterval = setInterval(() => {
                 const tiempoInactividad = Date.now() - ultimaActividad;
-
+                // console.log("Tiempo inactividad: " + tiempoInactividad);
                 if (tiempoInactividad >= IDLE_TIMEOUT) {
                     cerrarSesion();
                 }
@@ -479,6 +487,7 @@
                 ultimaActividad = parseInt(event.newValue) || Date.now();
             }
         });
+        
 
         ['mousemove', 'keydown', 'scroll', 'click'].forEach(event => {
             $(document).on(event, resetUltimaActividad);

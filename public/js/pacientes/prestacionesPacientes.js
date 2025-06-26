@@ -63,7 +63,11 @@ $(function(){
         checkAllExa: $('#checkAllExa'),
         paqueteExamen: $('.paqueteExamen'),
         tituloPrestacion: $('.tituloPrestacion'),
-        paqueteExCta: $('.paqueteExCta')
+        paqueteExCta: $('.paqueteExCta'),
+        btnExamen: $('.btnExamen'),
+        examenesCantidad: $('#examenesCantidad'),
+        lstExamenesCtd: $('#lstExamenesCtd'),
+        listadoExamenesCtd: $('#listadoExamenesCtd')
     };
 
     const variables = {
@@ -112,7 +116,11 @@ $(function(){
         facturacion_id: $('#facturacion_id'),
         ElTipo: $('#ElTipo'),
         ElSucursal: $('#ElSucursal'),
-        ElNroFactura: $('#ElNroFactura')
+        ElNroFactura: $('#ElNroFactura'),
+        inputExCtd: $('#inputExCtd'),
+        buscarExCtd: $('#buscarExCtd'),
+        examenCheck: $('#examenCheck'),
+        addExaCtd: $('#addExaCtd')
     };
 
     variables.ElPago
@@ -268,6 +276,80 @@ $(function(){
                 .append(getListado($(this).val()));
         }
     });
+    
+    principal.btnExamen.on('click', function(e){
+        e.preventDefault();
+        principal.examenesCantidad.modal('show');
+    });
+
+    variables.buscarExCtd.on('click', function(e){
+        e.preventDefault();
+
+        if(['', 0, null, undefined].includes(variables.inputExCtd.val())) {
+            toastr.warning("El campo se encuentra vacío o contiene datos incorrectos");
+            return;
+        }
+        preloader('on')
+        $.get(searchExamen, {buscar: variables.inputExCtd.val()})
+            .done(function(response){
+                preloader('off');
+                tablaExaCantidad(response);
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return; 
+            })
+    });
+
+
+    variables.examenCheck.on('click', function(e){
+        e.preventDefault();
+
+        let checkboxes = $('input[name="itemCheckbox"]:not(#examenCheck)'),
+            total = checkboxes.length,
+            checked = checkboxes.filter(':checked').length;
+
+        if (checked < total) {
+            checkboxes.prop('checked', true);
+        } else {
+            checkboxes.prop('checked', false);
+        }
+    });
+
+    variables.addExaCtd.on('click', function(e){
+
+        let examenes = [],
+            idPrestacion = variables.idPrestacion.val();
+
+        $('input[name="itemCheckbox"][type="checkbox"]:checked').each(function(){
+            examenes.push($(this).val());
+        })
+
+        if(examenes.length === 0) {
+            toastr.warning("Debe seleccionar algun examen para añadirlo a la prestación");
+            return;
+        }
+
+        preloader('on');
+        $.post(saveItemExamenes, {idPrestacion: idPrestacion, idExamen: examenes, _token: TOKEN})
+            .done(function(){
+                cargarExamen(idPrestacion);
+                contadorExamenes(idPrestacion);
+                preloader('off');
+                toastr.success('Examenes cargados a la prestación correctamente','',{timeOut: 1000});
+
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return; 
+            });
+    });
+
+    
 
     //Bloqueo de prestación
     $(document).on('click', '#blockPrestPaciente', function(e){
@@ -1503,5 +1585,34 @@ $(function(){
         
             checkboxes.prop('checked', $(this).is(':checked'));
     });
+
+    function tablaExaCantidad(data)
+    {
+        principal.lstExamenesCtd.empty();
+
+        const examenes = data.examen;
+
+        for(let index = 1; index < examenes.length; index++) {
+            let examen = examenes[index],
+                contenido = `
+                <tr>
+                    <td>${examen.text}</td>
+                    <td><input type="checkbox" name="itemCheckbox" value="${examen.id}"></td>
+                </tr>
+                `;
+
+                principal.lstExamenesCtd.append(contenido);
+        }
+
+        principal.listadoExamenesCtd.fancyTable({
+            pagination: true,
+            perPage: 15,
+            searchable: false,
+            globalSearch: false,
+            sortable: false, 
+        });
+
+
+    }
 
 });

@@ -555,8 +555,6 @@ $(function(){
 
             let response = await $.get(getExamenes,{Id: id, tipo: 'listado'});
 
-            console.log(response);
-
             const cargaEfector = await primeraCarga(id, "efector");
             const cargaInformador = await primeraCarga(id, "informador");
             
