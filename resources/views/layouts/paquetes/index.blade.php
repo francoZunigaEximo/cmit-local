@@ -114,14 +114,15 @@
                                 <div class="col-12 p-3 border border-1 border-color" style="border-color: #666666;">
                                     <div class="row">
                                         <div class="col-4 p-1">
-                                            <label for="nombrepaquete" class="form-label">Paquete</label>
-                                            <input type="text" class="form-control" id="nombrepaquete">
+                                            <label for="paqueteEstudioSelect2" class="form-label">Paquete:</label>
+                                            <select name="paqueteEstudioSelect2" class="form-control" id="paqueteEstudioSelect2">
+                                            </select>
                                         </div>
                                         <div class="col-4 p-1">
                                             <label for="codigopaquete" class="form-label">Codigo</label>
                                             <input type="number" class="form-control" id="codigopaquete">
                                         </div>
-                                        <div class="col-4 p-1">
+                                        <div class="col-4 p-1 d-none">
                                             <label for="aliaspaquete" class="form-label">Alias</label>
                                             <input type="text" class="form-control" id="aliaspaquete">
                                         </div>
@@ -177,6 +178,7 @@ const search_paquetes_studio = "{{route('paquetes.searchPaquetesFacturacion')}}"
 const getGrupos = "{{route('getGrupos')}}";
 
 const getPaqueteFact = "{{route('getPaqueteFact')}}";
+const getPaqueteEstudio = "{{route('getPaquetes')}}";
 </script>
 @push('styles')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
