@@ -819,39 +819,65 @@ class ItemPrestacionesController extends Controller
 
     }
 
-    public function deleteEx(Request $request): mixed
-    {
-        $examenes = $request->Id;
+    public function deleteEx(Request $request)
+    {   
+        $resultados = [];
+        $idsParaEliminar = [];
 
-        if (!is_array($examenes)) {
-            $examenes = [$examenes];
+        $examenIds = $request->Id;
+        if(!is_array($examenIds)) {
+            $examenIds = [$examenIds];
         }
 
-        $examenes_filtrados = array_filter($examenes, 'is_numeric');
+        $examenIds = array_filter($examenIds, 'is_numeric');
+        if(empty($examenIds)) {
+            return response()->json(['msg' => 'No se proporcionaron IDs válidos.'], 400);
+        }
 
-        foreach($examenes_filtrados as $adjuntado) {
-            if($this->adjuntoEfector($adjuntado) === 1 || $this->adjuntoInformador($adjuntado)) {
-                return response()->json(['msg' => 'No se puede eliminar el examen '.$adjuntado.' porque posee archivos adjuntos.Verifique'], 409);
+        $items = ItemPrestacion::with(['prestaciones', 'examenes'])->whereIn('Id', $examenIds)->get();
+        
+        [$itemsConReglas, $itemsValidos] = $items->partition(function ($item) {
+            return $item->prestaciones->Cerrado !== 0 
+                && $item->CInfo === 3 
+                && in_array($item->CAdj, [3, 5]) 
+                && $item->IdProfesional !== 0 
+                && $item->IdProfesional2 !== 0;
+        });
+
+        foreach ($itemsConReglas as $item) {
+            $resultados[] = ['id' => $item->Id, 'msg' => 'No se eliminó exámen ' . ($item->examenes->Nombre ?? '') . ' porque no cumple las condiciones (prestacion cerrada, examenes efectuados e informados, profesionales asignados).', 'status' => 'warning'];
+        }
+
+        foreach ($itemsValidos as $item) {
+            if ($this->adjuntoEfector($item->Id) === 1 || $this->adjuntoInformador($item->Id)) {
+                $resultados[] = ['id' => $item->Id, 'msg' => 'No se puede eliminar el examen ' . $item->Id . ' porque posee archivos adjuntos.', 'status' => 'warning'];
+            } else {
+                $idsParaEliminar[] = $item->Id;
             }
         }
         
-        foreach ($examenes as $examen) {
+        if (!empty($idsParaEliminar)) {
+            $itemsAEliminar = $itemsValidos->whereIn('Id', $idsParaEliminar);
+            $itemsAEliminar->map(fn($item) => ['IdPrestacion' => $item->IdPrestacion, 'IdExamen' => $item->IdExamen])->all();
 
-            $item = ItemPrestacion::with(['prestaciones','examenes'])->find($examen);
-           
-            if ($item && ($item->prestaciones->Cerrado === 0 && $item->CInfo != 3 && !in_array($item->CAdj,[3,5]) && $item->IdProfesional === 0 && $item->IdProfesional2 === 0)) {
-
-                $item->delete();
-                ItemPrestacion::InsertarVtoPrestacion($item->IdPrestacion);
+            foreach($itemsAEliminar as $item) {
                 $this->deleteExaCuenta($item->IdPrestacion, $item->IdExamen);
-                
-                $resultado = ['msg' => 'Se ha eliminado con éxito el exámen '.$item->examenes->Nombre.'', 'status' => 'success'];
-            
-            }else{
-                $resultado = ['msg' => 'No se elimino exámen '.$item->examenes->Nombre.' porque se encuentra cerrada o el exámen efectuado, informado o con profesionales asignados', 'status' => 'warning'];
             }
-            $resultados[] = $resultado;   
+
+            $prestacionesIdsUnicos = $itemsAEliminar->pluck('IdPrestacion')->unique()->all();
+            foreach ($prestacionesIdsUnicos as $prestacionId) {
+                ItemPrestacion::InsertarVtoPrestacion($prestacionId);
+            }
+
+            ItemPrestacion::whereIn('Id', $idsParaEliminar)->delete();
+
+            $resultados[] = ['msg' => count($idsParaEliminar) . ' examen(es) eliminado(s) correctamente.', 'status' => 'success'];
         }
+
+        if (empty($itemsConReglas) && empty($idsParaEliminar)) {
+            $resultados[] = ['msg' => 'Ningún examen fue procesado o no se encontraron los IDs.', 'status' => 'info'];
+        }
+
         return response()->json($resultados);
     }
 
@@ -971,7 +997,6 @@ class ItemPrestacionesController extends Controller
     
     public function asignarProfesional(Request $request): mixed
     {
-
         $examenes = $request->Ids;
 
         if (!is_array($examenes)) {

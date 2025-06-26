@@ -577,8 +577,6 @@ $(function () {
                         variables.tipoPrestacionPres
                             .add(variables.tipoPrestacionPresN)
                             .val(result);
-
-                        console.log(result); 
                     }
 
                     if (estado !== 'ART' || estado === '') {
@@ -921,7 +919,7 @@ $(function () {
                 toastr.success(response.msg,'',{timeOut: 1000});
 
                 variables.facturacion_id.val(response.datos_facturacion_id);
-                console.log(response);
+
                 mostrarFinanciador();
                 selectMedioPago(variables.PagoLaboral.val());
 

@@ -902,7 +902,7 @@
 
                             <div class="row mt-2 paqueteExamen">
                         
-                                <div class="col-6">
+                                <div class="col-5">
                                     <label for="paquetes" class="form-label">Paquetes</label> <!-- select 2 de paquetes de exámenes -->
                                     <div class="mb-3">
                                         <div class="cajaExamenes">
@@ -912,12 +912,20 @@
                                     </div>
                                 </div>
 
-                                <div class="col-6">
+                                <div class="col-5">
                                     <label for="examenes" class="form-label">Examen</label> <!-- select 2 de exámenes -->
                                     <div class="mb-3">
                                         <div class="cajaExamenes">
                                             <select class="form-select" name ="exam" id="exam"></select>
                                             <i class="addExamen ri-add-circle-line naranja" title="Añadir examén de la busqueda"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-2 d-flex justify-content-center align-items-center">
+                                    <div class="mb-3">
+                                        <div class="cajaExamenes">
+                                            <button class="btn botonGeneral btnExamen">Examenes Masivo</button>
                                         </div>
                                     </div>
                                 </div>
@@ -1194,6 +1202,53 @@
                 </div>
             </div>
             
+        </div>
+    </div>
+</div>
+
+<div id="examenesCantidad" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidde="true" style="display: none">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel"> Examenes por Cantidad</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>
+            </div>
+            <div class="modal-body" class="text-center p-3">
+                <div class="search-box d-flex align-items-center gap-2">
+                    <input type="text" class="form-control bg-light border-light" placeholder="Buscar examen" name="inputExCtd" id="inputExCtd">
+                    <i class="ri-search-2-line search-icon"></i>
+                    <button class="btn btn-sm botonGeneral" id="buscarExCtd">
+                        <i class="ri-search-line"></i>
+                        Buscar
+                    </button>
+                </div>
+
+                <div class="row auto-mx mb-3">
+                    <div class="table-responsive mt-3 mb-1 mx-auto col-sm-12">
+                        <table id="listadoExamenesCtd" class="table table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Nombre del examen</th>
+                                    <th><input type="checkbox" name="examenCheck" id="examenCheck"></th>
+                                </tr>
+                            </thead>
+                            <tbody class="list form-check-all" id="lstExamenesCtd">
+                
+                            </tbody>
+                        </table>
+                
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-12 text-center">
+                        <button class="btn btn-sm botonGeneral" id="addExaCtd">
+                            <i class=" ri-save-line"></i>
+                            Añadir a la prestación
+                        </button>
+                    </div>
+                </div>
+
+            </div>            
         </div>
     </div>
 </div>
