@@ -3,8 +3,8 @@ $(document).ready(()=>{
     $('.buscarPaquetesExamenes').on('click', function(e) {
         e.preventDefault();
         
-        buscar = $('#nombrepaquete').val();
-        alias = $('#aliaspaquete').val();
+        buscar = $('#paqueteEstudioSelect2').val();
+        //alias = $('#aliaspaquete').val();
         id = $('#codigopaquete').val();
 
         $('#listaPaquetesExamenes').DataTable().clear().destroy();
@@ -28,7 +28,6 @@ $(document).ready(()=>{
                 data: function(e) {
                     e.buscar = buscar;
                     e.id = id;
-                    e.alias = alias;
                 }
             },
             dataType: 'json',

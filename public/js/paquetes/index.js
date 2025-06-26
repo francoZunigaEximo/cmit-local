@@ -102,6 +102,38 @@ $(function () {
         minimumInputLength: 2
     });
 
+    $('#paqueteEstudioSelect2').select2({
+        language: {
+            noResults: function () {
+                return "No hay paquetes de estudio con esos datos";
+            },
+            searching: function () {
+                return "Buscando..";
+            },
+            inputTooShort: function () {
+                return "Por favor, ingrese 2 o más caracteres";
+            }
+        },
+        placeholder: 'Nombre paquete estudio',
+        allowClear: true,
+        ajax: {
+            url: getPaqueteEstudio,
+            dataType: 'json',
+            data: function (params) {
+                return {
+                    buscar: params.term
+                };
+            },
+            processResults: function (data) {
+                return {
+                    results: data.paquete
+                };
+            },
+            cache: true
+        },
+        minimumInputLength: 2
+    });
+
     $(".btnExcelEstudios").on("click", function (e) {
         preloader('on');
         buscar = $('#nombrepaquete').val();

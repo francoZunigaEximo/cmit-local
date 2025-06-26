@@ -52,7 +52,11 @@ class PaquetesController extends Controller
     }
 
     private function buildQuery(Request $request){
-        $consulta = PaqueteEstudio::where('Nombre', 'LIKE', '%'.$request->buscar.'%')->where('Baja', '=', 0);
+        $consulta = PaqueteEstudio::where('Baja', '=', 0);
+        if($request->buscar){
+            $consulta->where('Id', '=', $request->buscar);
+        }
+
         if($request->alias){
             $consulta->where('Alias', 'LIKE', '%'.$request->alias.'%');
         }
