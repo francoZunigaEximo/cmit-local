@@ -178,7 +178,7 @@ $(function(){
 
         let ids = [];
 
-        principal.lstEx.find('input[type="checkbox"][id^="Id_"]:checked').each(function(){
+        principal.lstEx.find('.item-checkbox:checked').each(function(){
             ids.push($(this).val());
         });
 
@@ -459,8 +459,6 @@ $(function(){
         principal.guardarPrestacion.trigger('click');
 
         verificarExamenCuenta();
-
-
     });
 
     $(document).on('click', '.volverPrestacion', function(e){
@@ -676,13 +674,11 @@ $(function(){
                                     <div class="text-center">${(papre.Devol === 1 ? `<i class="ri-check-line"></i>` : `-`)}</div>
                                 </td>
                                 <td>
-                                    ${(papre.Pago == "B" 
-                                        ? 'Ctdo.' 
-                                        : papre.Pago == "C" 
-                                            ? "Ctdo" 
-                                            : papre.Pago == "P" 
-                                                ? "ExCta" 
-                                                : "CC")}
+                                    ${(["B","C"].includes(papre.Pago)
+                                        ? "Ctdo" 
+                                        : papre.Pago == "P" 
+                                            ? "ExCta" 
+                                            : "CC")}
                                 </td>
                                 <td>
                                    <div class="text-center"> ${(papre.Facturado === 1 ? `<i class="ri-check-line"></i>` : `-`)}</div>
@@ -1484,106 +1480,116 @@ $(function(){
         }
     }
 
-    async function tablasExamenes(idCliente, checkVisible, etiquetaId, filtroId = null) { 
+    async function tablasExamenes(idCliente, checkVisible, etiquetaId, filtroId = null) {
         preloader('on');
-        let data = await $.get(getListaExCta, {Id: idCliente});
-    
-        if (!Array.isArray(data) || data.length === 0) {
-            $(etiquetaId).append('<tr><td>No hay historial de facturas disponible</td></tr>');
-            return;
-        }
-    
-        $(etiquetaId).empty();
-    
-        const factura = {};
-        
-        data.forEach(function (item) {
-            if (!factura[item.Factura]) {
-                factura[item.Factura] = [];
-            }
-            factura[item.Factura].push(item);
-        });
-    
-        for (const grupoFactura in factura) {
-            if (factura.hasOwnProperty(grupoFactura)) {
-                const examenes = factura[grupoFactura];
-    
-                const documentos = {};
-                examenes.forEach((examen) => {
-                    const documentoKey = examen.Documento || "Sin precarga";
-                    if (!documentos[documentoKey]) {
-                        documentos[documentoKey] = [];
-                    }
-                    documentos[documentoKey].push({
-                        IdEx: examen.IdEx,
-                        CantidadExamenes: examen.CantidadExamenes,
-                        NombreExamen: examen.NombreExamen,
-                        IdFiltro: examen.IdFiltro
+
+        try {
+            let data = await $.get(getListaExCta, { Id: idCliente });
+
+            $(etiquetaId).empty();
+
+            const factura = {};
+            data.forEach(function (item) {
+                if (!factura[item.Factura]) {
+                    factura[item.Factura] = [];
+                }
+                factura[item.Factura].push(item);
+            });
+
+            let tablaCompleta = '';
+
+            for (const grupoFactura in factura) {
+                if (factura.hasOwnProperty(grupoFactura)) {
+                    const examenes = factura[grupoFactura];
+                    const documentos = {};
+
+                    examenes.forEach((examen) => {
+                        const documentoKey = examen.Documento || "Sin precarga";
+                        if (!documentos[documentoKey]) {
+                            documentos[documentoKey] = [];
+                        }
+                        documentos[documentoKey].push(examen);
                     });
-                });
-    
-                let contenido = `
-                    <tr class="fondo-gris">
-                        <td colspan="5">
-                            <span class="fw-bolder text-capitalize">fact </span> ${grupoFactura}
-                        </td>
-                        ${checkVisible === true ? `<td style="width:5px"><input type="checkbox" class="form-check-input" id="checkAll-${grupoFactura}"></td>` : ''}
-                    </tr>
-                `;
-    
-                for (const documentoKey in documentos) {
-                    if (documentos.hasOwnProperty(documentoKey)) {
-                        const examenesPorDocumento = documentos[documentoKey];
-    
-                        contenido += `
-                            <tr class="fondo-grisClaro mb-2">
-                                <td colspan="6" class="fw-bolder">
-                                    <span class="fw-bolder">${documentoKey === "Sin precarga" ? "" : "DNI Precargado: "}</span> 
-                                    ${documentoKey}
-                                </td>
-                            </tr>
-                        `;
 
-                        if (filtroId !== null) {
+                    let contenidoFactura = `
+                        <tr class="fondo-gris">
+                            <td colspan="5">
+                                <span class="fw-bolder text-capitalize">fact </span> ${grupoFactura}
+                            </td>
+                            ${checkVisible ? `<td style="width:5px"><input type="checkbox" class="form-check-input" id="checkAll-${grupoFactura}"></td>` : ''}
+                        </tr>
+                    `;
 
-                            const examenesFiltrados = examenesPorDocumento.filter((examen) => examen.IdFiltro === parseInt(filtroId, 10));
+                    for (const documentoKey in documentos) {
+                        if (documentos.hasOwnProperty(documentoKey)) {
+                            const examenesPorDocumento = documentos[documentoKey];
+                            const idSubgrupo = documentoKey === "Sin precarga" ? `sin_precarga-${grupoFactura}` : documentoKey;
 
-                            examenesFiltrados.forEach((examen) => {
-                                contenido += `
+                            contenidoFactura += `
+                                <tr class="fondo-grisClaro mb-2">
+                                    <td colspan="5" class="fw-bolder">
+                                        <span class="fw-bolder precarga">${documentoKey === "Sin precarga" ? "" : "DNI Precargado: "}</span> 
+                                        ${documentoKey}
+                                    </td>
+                                    ${checkVisible ? `<td style="width:5px"><input type="checkbox" class="form-check-input" id="checkAll-${idSubgrupo}"></td>` : ''}
+                                </tr>
+                            `;
+
+                            const listaParaRenderizar = filtroId !== null 
+                                ? examenesPorDocumento.filter((examen) => examen.IdFiltro === parseInt(filtroId, 10))
+                                : examenesPorDocumento;
+
+                            listaParaRenderizar.forEach((examen) => {
+                                contenidoFactura += `
                                     <tr>
                                         <td>${examen.CantidadExamenes}</td>
                                         <td colspan="4">${examen.NombreExamen}</td>
-                                        ${checkVisible === true ? `<td style="width:5px"><input type="checkbox" class="form-check-input" id="Id_${grupoFactura}" value="${examen.IdEx}"></td>` : ''}
+                                        ${checkVisible ? `
+                                        <td style="width:5px">
+                                            <input type="checkbox" 
+                                                class="form-check-input item-checkbox" 
+                                                data-factura="${grupoFactura}" 
+                                                data-subgrupo="${idSubgrupo}"
+                                                value="${examen.IdEx}">
+                                        </td>
+                                        ` : ''}
                                     </tr>`;
                             });
-
-                        }else{
-
-                            examenesPorDocumento.forEach((examen) => {
-                                contenido += `
-                                    <tr>
-                                        <td>${examen.CantidadExamenes}</td>
-                                        <td colspan="4">${examen.NombreExamen}</td>
-                                        ${checkVisible === true ? `<td style="width:5px"><input type="checkbox" class="form-check-input" id="Id_${grupoFactura}" value="${examen.IdEx}"></td>` : ''}
-                                    </tr>`;
-                            });
-
                         }
                     }
+                    tablaCompleta += contenidoFactura;
                 }
-                preloader('off');
-                $(etiquetaId).append(contenido);
             }
+            $(etiquetaId).append(tablaCompleta);
+
+        } catch (error) {
+            let errorData = JSON.parse(error.responseText);
+            checkError(error.status, errorData.msg);
+        } finally {
+            preloader('off');
         }
     }
 
-    $('tbody').on('click', '.form-check-input[id^="checkAll"]', function () {
-        let checkAll = $(this).attr('id'),
-            nroFactura = checkAll.split('-')[1] + '-' + checkAll.split('-')[2];
-            checkPrincipal = $(this).closest('tr'),
-            checkboxes = checkPrincipal.nextUntil('tr.fondo-gris').find(`input[id^="Id_${nroFactura}"]`);
-        
-            checkboxes.prop('checked', $(this).is(':checked'));
+     principal.lstEx.on('click', 'input.form-check-input[id^="checkAll"]', function () {
+        let checkAll = $(this), 
+            isChecked = checkAll.is(':checked'), 
+            fila = checkAll.closest('tr');
+
+        if(fila.hasClass('fondo-gris')) {
+            
+            let rangoFactura = fila.nextUntil('tr.fondo-gris'),
+                checkboxesHijos = rangoFactura.find('input.form-check-input');
+            
+            checkboxesHijos.prop('checked', isChecked);
+        } 
+
+        else if(fila.hasClass('fondo-grisClaro')) {
+
+            let rangoSubgrupo = fila.nextUntil('tr.fondo-gris, tr.fondo-grisClaro'),
+                checkboxesHijos = rangoSubgrupo.find('input.item-checkbox');
+            
+            checkboxesHijos.prop('checked', isChecked);
+        }
     });
 
     function tablaExaCantidad(data)
