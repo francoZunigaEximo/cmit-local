@@ -236,8 +236,8 @@ class ItemPrestacionesController extends Controller
 
         if($item)
         {
-            $horaFin = $this->HoraAsegundos(date("H:i:s")) + ($item->proveedores->Min * 60);
-            $horaAsigFin = $this->SegundosAminutos($horaFin).':00';
+            $horaFin = $this->itemsHelper->HoraAsegundos(date("H:i:s")) + ($item->proveedores->Min * 60);
+            $horaAsigFin = $this->itemsHelper->SegundosAminutos($horaFin).':00';
 
             if($request->Para === 'asignar'){
                 $item->IdProfesional = $request->IdProfesional;

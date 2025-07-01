@@ -71,6 +71,7 @@ $(function(){
 
             success:function(response){
                 preloader('off');
+                $('#listaExamenes').empty();
                 cargarExamen(ID);
                 contadorExamenes(ID);
                 listadoSelectExCta(empresa)
