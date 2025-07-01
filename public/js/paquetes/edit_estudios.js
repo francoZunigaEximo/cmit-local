@@ -1,4 +1,4 @@
-let tabla = new DataTable("#listaExamenesPaquetes",{
+let tabla = new DataTable("#listaExamenesPaquetes", {
     searching: false,
     lengthChange: false,
 });
@@ -128,12 +128,12 @@ function cargarEstudio(idExamen) {
             if (!enExamenesNuevos && !enExamenes) {
                 estudiosRenderizar.push(result);
             } else {
-                if(enEliminado >= 0 && enExamenes){
+                if (enEliminado >= 0 && enExamenes) {
                     estudiosRenderizar.push(result);
                     renderizarEstudios(estudiosRenderizar);
                     estudiosRenderizar = [];
                     examenesEliminar.splice(enEliminado, 1);
-                }else{
+                } else {
                     toastr.warning("El examen ya se encuentra cargado", "", { timeout: 1000 });
                 }
             }
@@ -162,11 +162,14 @@ function renderizarEstudios(estudios) {
 $('.agregarExamen').on('click', function (e) {
     e.preventDefault();
     let id = $("#examenSelect2").val();
-
-    cargarEstudio(id);
-    examenesNuevos = examenesNuevos.concat(estudiosRenderizar);
-    renderizarEstudios(estudiosRenderizar);
-    estudiosRenderizar = [];
+    if(id){
+        cargarEstudio(id);
+        examenesNuevos = examenesNuevos.concat(estudiosRenderizar);
+        renderizarEstudios(estudiosRenderizar);
+        estudiosRenderizar = [];
+    }else{
+        toastr.warning('Debe seleccionar un examen para agregar.', '', { timeOut: 1000 });
+    }
 
 });
 
@@ -174,33 +177,38 @@ $('.agregarPaquete').on('click', function (e) {
     e.preventDefault();
     //buscamos los examenes del paquete seleccionado
     let id = $("#paqueteSelect2").val();
-    preloader('on');
+    if(id){
+            
+        preloader('on');
 
-    $.ajax({
-        url: paqueteId,
-        type: 'POST',
-        data: {
-            _token: TOKEN,
-            IdPaquete: id,
-        },
-        async: false,
-        success: function (response) {
-            let data = response.examenes;
-            data.forEach(examen => {
-                cargarEstudio(examen.Id);
-            });
-            examenesNuevos = examenesNuevos.concat(estudiosRenderizar);
-            renderizarEstudios(estudiosRenderizar);
-            estudiosRenderizar = [];
-            preloader('off');
-        },
-        error: function (jqXHR) {
-            preloader('off');
-            let errorData = JSON.parse(jqXHR.responseText);
-            checkError(jqXHR.status, errorData.msg);
-            return;
-        }
-    });
+        $.ajax({
+            url: paqueteId,
+            type: 'POST',
+            data: {
+                _token: TOKEN,
+                IdPaquete: id,
+            },
+            async: false,
+            success: function (response) {
+                let data = response.examenes;
+                data.forEach(examen => {
+                    cargarEstudio(examen.Id);
+                });
+                examenesNuevos = examenesNuevos.concat(estudiosRenderizar);
+                renderizarEstudios(estudiosRenderizar);
+                estudiosRenderizar = [];
+                preloader('off');
+            },
+            error: function (jqXHR) {
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            }
+        });
+    } else {
+        toastr.warning('Debe seleccionar un paquete de estudios para agregar.', '', { timeOut: 1000 });
+    }
 });
 
 tabla.on('click', 'button.remove-item-btn', function () {
@@ -239,13 +247,15 @@ $("#btnRegistrar").on('click', function (e) {
         })
             .done(function () {
                 toastr.success('Se ha cargado el paquete correctamente', '', { timeOut: 1000 });
-
+                setTimeout(function () {
+                    history.back();
+                }, 1000);
             })
             .fail(function (jqXHR) {
                 // Manejo de errores
                 let errorData = JSON.parse(jqXHR.responseText);
                 checkError(jqXHR.status, errorData.error || errorData.msg);
-                
+
             })
             .always(function () {
                 preloader('off');
@@ -254,17 +264,17 @@ $("#btnRegistrar").on('click', function (e) {
     }
 });
 
-function validaciones(){
+function validaciones() {
     let mensaje = "";
     if (!$("#nombre").val()) {
         mensaje += "Debe ingresar un nombre para el paquete.\n";
     }
 
-    if(!$("#alias").val()){
+    if (!$("#alias").val()) {
         mensaje += "Debe ingresar un alias para el paquete.\n";
     }
-    
-    if ( examenes.length == examenesEliminar.length && examenesNuevos.length === 0) {
+
+    if (examenes.length == examenesEliminar.length && examenesNuevos.length === 0) {
         mensaje += "Debe agregar al menos un examen al paquete.\n";
     }
     if (mensaje) {

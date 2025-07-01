@@ -73,7 +73,7 @@ $(function () {
         language: {
             noResults: function () {
 
-                return "No hay especialidades con esos datos";
+                return "No hay examenes con esos datos";
             },
             searching: function () {
 
@@ -83,7 +83,7 @@ $(function () {
                 return "Por favor, ingrese 2 o más caracteres";
             }
         },
-        placeholder: 'Nombre Especialidad',
+        placeholder: 'Nombre Examen',
         allowClear: true,
         ajax: {
             url: getExamenes,

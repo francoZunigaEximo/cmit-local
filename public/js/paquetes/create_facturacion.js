@@ -203,11 +203,15 @@ $(function () {
     $('.agregarExamen').on('click', function (e) {
         e.preventDefault();
         let id = $("#examenSelect2").val();
-
-        cargarExamen(id);
-        renderizarEstudios(estudiosRenderizar);
-        examenes = examenes.concat(estudiosRenderizar);
-        estudiosRenderizar = [];
+        if(id){
+            cargarExamen(id);
+            renderizarEstudios(estudiosRenderizar);
+            examenes = examenes.concat(estudiosRenderizar);
+            estudiosRenderizar = [];
+        }else{
+            toastr.warning('Debe seleccionar un examen para agregar.', '', { timeOut: 1000 });
+        }
+        
     })
 
     tabla.on('click', 'button.remove-item-btn', function () {
@@ -224,6 +228,7 @@ $(function () {
         e.preventDefault();
         //buscamos los examenes del paquete seleccionado
         let id = $("#paqueteSelect2").val();
+        if (id) {
         preloader('on');
 
         $.ajax({
@@ -251,7 +256,11 @@ $(function () {
                 return;
             }
         });
+        }else{
+            toastr.warning('Debe seleccionar un paquete de estudios para agregar.', '', { timeOut: 1000 });
+        }
     });
+    
 });
 
 function cargarExamenes(id) {
@@ -401,6 +410,9 @@ $('#btnRegistrar').on('click', function (e) {
                 success: function (response) {
                     preloader('off');
                     toastr.success('Se ha cargado al paquete correctamente', '', { timeOut: 1000 });
+                    setTimeout(function() {
+                        history.back();
+                    }, 1000);
                 },
                 error: function (jqXHR) {
                     preloader('off');

@@ -108,11 +108,14 @@ $(function () {
     $('.agregarExamen').on('click', function (e) {
         e.preventDefault();
         let id = $("#examenSelect2").val();
-
-        cargarExamen(id);
-        renderizarEstudios(estudiosRenderizar);
-        examenes = examenes.concat(estudiosRenderizar);
-        estudiosRenderizar = [];
+        if(id){
+            cargarExamen(id);
+            renderizarEstudios(estudiosRenderizar);
+            examenes = examenes.concat(estudiosRenderizar);
+            estudiosRenderizar = [];
+        }else{
+            toastr.warning('Debe seleccionar un examen para agregar.', '', { timeOut: 1000 });
+        }
     })
 
     tabla.on('click', 'button.remove-item-btn', function () {
@@ -143,7 +146,9 @@ $(function () {
                 .done(function () {
                     preloader('off');
                     toastr.success('Se ha editado al paquete correctamente', '', { timeOut: 1000 });
-
+                    setTimeout(function() {
+                        history.back();
+                    }, 1000);
                 })
                 .fail(function (jqXHR) {
                     preloader('off');
@@ -159,35 +164,39 @@ $(function () {
         e.preventDefault();
         //buscamos los examenes del paquete seleccionado
         let id = $("#paqueteSelect2").val();
-        preloader('on');
+        if(id){
+            preloader('on');
 
-        $.ajax({
-            url: paqueteId,
-            type: 'POST',
-            async: false,
-            data: {
-                _token: TOKEN,
-                IdPaquete: id,
-            },
+            $.ajax({
+                url: paqueteId,
+                type: 'POST',
+                async: false,
+                data: {
+                    _token: TOKEN,
+                    IdPaquete: id,
+                },
 
-            success: function (response) {
-                console.log(response);
-                let data = response.examenes;
-                data.forEach(examen => {
-                    cargarExamen(examen.Id);
-                });
-                examenes = examenes.concat(estudiosRenderizar);
-                renderizarEstudios(estudiosRenderizar);
-                estudiosRenderizar = [];
-                preloader('off');
-            },
-            error: function (jqXHR) {
-                preloader('off');
-                let errorData = JSON.parse(jqXHR.responseText);
-                checkError(jqXHR.status, errorData.msg);
-                return;
-            }
-        });
+                success: function (response) {
+                    console.log(response);
+                    let data = response.examenes;
+                    data.forEach(examen => {
+                        cargarExamen(examen.Id);
+                    });
+                    examenes = examenes.concat(estudiosRenderizar);
+                    renderizarEstudios(estudiosRenderizar);
+                    estudiosRenderizar = [];
+                    preloader('off');
+                },
+                error: function (jqXHR) {
+                    preloader('off');
+                    let errorData = JSON.parse(jqXHR.responseText);
+                    checkError(jqXHR.status, errorData.msg);
+                    return;
+                }
+            });
+        }else{
+            toastr.warning('Debe seleccionar un paquete de estudios para agregar.', '', { timeOut: 1000 });
+        }
     });
 
 });

@@ -1419,3 +1419,7 @@ ALTER TABLE paqestudios DROP INDEX Nombre;
 
 -- indice unico de nombre en grupos clientes
 ALTER TABLE clientesgrupos DROP INDEX Nombre;
+
+-- damos de baja estas dos primeras filas de las tablas de paquetes
+UPDATE paqestudios p SET p.Baja = 1 WHERE p.Id  = 0;
+UPDATE paqfacturacion f SET f.Baja = 1 WHERE f.Id = 0; 
