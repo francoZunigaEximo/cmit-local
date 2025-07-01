@@ -822,7 +822,6 @@ class ItemPrestacionesController extends Controller
     public function deleteEx(Request $request)
     {   
         $resultados = [];
-        $idsParaEliminar = [];
 
         $examenIds = $request->Id;
         if(!is_array($examenIds)) {
@@ -838,23 +837,19 @@ class ItemPrestacionesController extends Controller
         
         [$itemsConReglas, $itemsValidos] = $items->partition(function ($item) {
             return $item->prestaciones->Cerrado !== 0 
-                && $item->CInfo === 3 
-                && in_array($item->CAdj, [3, 5]) 
-                && $item->IdProfesional !== 0 
-                && $item->IdProfesional2 !== 0;
+                || $item->CInfo === 3 
+                || in_array($item->CAdj, [3, 5]) 
+                || $item->IdProfesional !== 0 
+                || $item->IdProfesional2 !== 0
+                || $this->adjuntoEfector($item->Id) === 1 
+                || $this->adjuntoInformador($item->Id) === 1;
         });
 
         foreach ($itemsConReglas as $item) {
-            $resultados[] = ['id' => $item->Id, 'msg' => 'No se eliminó exámen ' . ($item->examenes->Nombre ?? '') . ' porque no cumple las condiciones (prestacion cerrada, examenes efectuados e informados, profesionales asignados).', 'status' => 'warning'];
+            $resultados[] = ['id' => $item->Id, 'msg' => 'No se eliminó exámen ' . ($item->examenes->Nombre ?? '') . ' porque no cumple las condiciones (prestacion cerrada, examenes efectuados e informados, profesionales asignados o archivos adjuntos).', 'status' => 'warning'];
         }
 
-        foreach ($itemsValidos as $item) {
-            if ($this->adjuntoEfector($item->Id) === 1 || $this->adjuntoInformador($item->Id)) {
-                $resultados[] = ['id' => $item->Id, 'msg' => 'No se puede eliminar el examen ' . $item->Id . ' porque posee archivos adjuntos.', 'status' => 'warning'];
-            } else {
-                $idsParaEliminar[] = $item->Id;
-            }
-        }
+        $idsParaEliminar = $itemsValidos->map(fn($itemValido) => $itemValido->Id);
         
         if (!empty($idsParaEliminar)) {
             $itemsAEliminar = $itemsValidos->whereIn('Id', $idsParaEliminar);
@@ -871,7 +866,10 @@ class ItemPrestacionesController extends Controller
 
             ItemPrestacion::whereIn('Id', $idsParaEliminar)->delete();
 
-            $resultados[] = ['msg' => count($idsParaEliminar) . ' examen(es) eliminado(s) correctamente.', 'status' => 'success'];
+            if(count($idsParaEliminar) > 0) {
+                $resultados[] = ['msg' => count($idsParaEliminar) . ' examen(es) eliminado(s) correctamente.', 'status' => 'success'];
+            }
+            
         }
 
         if (empty($itemsConReglas) && empty($idsParaEliminar)) {
