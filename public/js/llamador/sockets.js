@@ -5,6 +5,18 @@ $(function(){
             echo: window.Echo.channel('listado-efectores'),
             canal: '.LstProfesionalesEvent'
         },
+        selectInformadores: {
+            echo: window.Echo.channel('listado-informadores'),
+            canal: '.LstProfInformadorEvent'
+        },
+        selectCombinado: {
+            echo: window.Echo.channel('listado-combinado'),
+            canal: '.LstProfCombinadoEvent'
+        },
+        selectEvaluador: {
+            echo: window.Echo.channel('listado-evaluador'),
+            canal: '.LstProfEvaluadorEvent'
+        },
         grillaEfectores:  {
             echo: window.Echo.channel('grilla-efectores'),
             canal: '.GrillaEfectoresEvent'
@@ -21,6 +33,9 @@ $(function(){
 
     const variables = {
         profesional: $('#profesional'),
+        profesionalInf: $('#profesionalInf'),
+        profesionalComb: $('#profesionalComb'),
+        profesionalEva: $('#profesionalEva')
     };
 
     const principal = {

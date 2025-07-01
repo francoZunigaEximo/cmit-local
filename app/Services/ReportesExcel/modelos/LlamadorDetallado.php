@@ -8,7 +8,7 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Illuminate\Support\Str;
 use App\Helpers\ToolsReportes;
 
-class EfectorDetallado implements ReporteInterface
+class LlamadorDetallado implements ReporteInterface
 {
     protected $spreadsheet;
     protected $sheet;

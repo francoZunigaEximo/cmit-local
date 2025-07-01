@@ -14,17 +14,18 @@ use App\Services\Llamador\Profesionales;
 use App\Services\Roles\Utilidades;
 
 use App\Events\LstProfesionalesEvent;
+use App\Events\LstProfInformadorEvent;
 
 class RolesController extends Controller
 {
     private array $lstRoles;
-    protected $listadoProfesionales;
+    protected $profesionales;
     protected $utilidades;
 
     const ADMIN = ['Administrador', 'Admin SR', 'Recepcion SR'];
     const TIPOS = ['Efector', 'Informador'];
 
-    public function __construct(Profesionales $listadoProfesionales, Utilidades $utilidades)
+    public function __construct(Profesionales $profesionales, Utilidades $utilidades)
     {
         $this->lstRoles = [
             "Efector" => "T1", 
@@ -34,7 +35,7 @@ class RolesController extends Controller
             "Evaluador ART" => "T5"
         ];
 
-        $this->listadoProfesionales = $listadoProfesionales;
+        $this->profesionales = $profesionales;
         $this->utilidades = $utilidades;
     }
 
@@ -151,8 +152,10 @@ class RolesController extends Controller
                 $user->profesional->$value = in_array($key, $buscar) ? 1 : 0;
             }
 
-            $efectores = $this->listadoProfesionales->listado('Efector');
+            $efectores = $this->profesionales->listado('Efector');
+            $informadores = $this->profesionales->listado('Informador');
             event(new LstProfesionalesEvent($efectores));
+            event(new LstProfInformadorEvent($informadores));
             //Bus::dispatch(new ListadoProfesionalesEvent($efectores))->onQueue('correos');
 
             $user->profesional->save();
@@ -171,9 +174,11 @@ class RolesController extends Controller
             $user->profesional->save();
             ProfesionalProv::where('IdProf', $user->profesional_id)->delete();
 
-            $efectores = $this->listadoProfesionales->listado('Efector');
-            event(new LstProfesionalesEvent($efectores));
+            $efectores = $this->profesionales->listado('Efector');
+            $informadores = $this->profesionales->listado('Informador');
 
+            event(new LstProfesionalesEvent($efectores));
+            event(new LstProfInformadorEvent($informadores));
         }
     }
 

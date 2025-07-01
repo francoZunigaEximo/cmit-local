@@ -386,6 +386,7 @@
 
         const PROFESIONAL = "{{ session('Profesional') }}";
         const ESPECIALIDAD = "{{ session('Especialidad') }}";
+        const IDESPECIALIDAD = "{{ session('IdEspecialidad') }}";
 
         const IDPROFESIONAL = "{{ Auth::user()->profesional_id }}";
 

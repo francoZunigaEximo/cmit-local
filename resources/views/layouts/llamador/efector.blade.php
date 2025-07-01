@@ -21,7 +21,7 @@
 
                                 <div class="row">
 
-                                    <div class="col-sm-3 mb-3">
+                                    <div class="col-sm-2 mb-3">
                                         <label for="profesional" class="form-label fw-bolder">Profesional <span class="required">(*)</span></label>
                                         <select class="form-control" name="profesional" id="profesional">
                                             @if(!is_null($efectores) && $efectores->count() === 1)
@@ -44,7 +44,7 @@
 
                                     <div class="col-sm-2 mb-3">
                                         <label for="especialidad" class="form-label fw-bolder">Especialidad <span class="required">(*)</span></label>
-                                        <input type="text" class="form-control" name="especialidad" id="especialidad">
+                                        <input type="text" class="form-control" name="especialidad" id="especialidad" data-id="{{ session('IdEspecialidad') }}" value="{{ session('Profesional') === 'EFECTOR' ? session('Especialidad') : 'Sin Especialidad'}}">
                                     </div>
 
                                     <div class="col-sm-2 mb-3">
@@ -72,13 +72,16 @@
                                             <option value="todos">Todos</option>
                                         </select>
                                     </div>
+                                </div>
 
-                                    <div class="col-sm-1 d-flex align-items-center justify-content-end">
-                                        <button class="btn btn-sm botonGeneral" id="buscar">
-                                            <i class="ri-zoom-in-line"></i>Buscar
-                                        </button>
+                                <div class="row">
+                                    <div class="col-12 text-end">
+                                        <div class="d-flex align-items-center justify-content-end">
+                                            <button class="btn btn-sm botonGeneral" id="buscar">
+                                                <i class="ri-zoom-in-line"></i>Buscar
+                                            </button>
+                                        </div>
                                     </div>
-
                                 </div>
 
                                 <div class="row">

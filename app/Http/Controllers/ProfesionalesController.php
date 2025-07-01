@@ -429,8 +429,11 @@ class ProfesionalesController extends Controller
         }
 
         if(in_array($request->perfil, $this->profesionales)) {
+            $IdEspecialidad = Proveedor::where('Nombre', $request->especialidad)->first('Id'); 
+
             session()->put('Profesional',  strtoupper($request->perfil));
             session()->put('Especialidad', $request->especialidad);
+            session()->put('IdEspecialidad', $IdEspecialidad);
         }else{
             session()->put('Profesional',  0);
             session()->put('Especialidad', 0);

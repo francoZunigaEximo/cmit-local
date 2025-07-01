@@ -994,7 +994,7 @@ class ItemPrestacionesController extends Controller
         return response()->json(['respuesta' => ! $examenes->isEmpty(), 'examenes' => $idExamenes]);
     }
 
-    public function itemExamen(Request $request): mixed
+    public function itemExamen(Request $request)
     {
         if (!$this->hasPermission("prestaciones_edit")) {
             return response()->json(['msg' => 'No tienes permisos'], 403);

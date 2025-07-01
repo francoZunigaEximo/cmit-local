@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Events\AsignarProfesionalEvent;
 use App\Events\GrillaEfectoresEvent;
 use App\Events\LstProfesionalesEvent;
+use App\Events\LstProfInformadorEvent;
 use App\Models\ItemPrestacion;
 use Illuminate\Http\Request;
 use App\Models\Llamador;
@@ -49,7 +50,7 @@ class LlamadorController extends Controller
 
         $efectores = null;
 
-        if ($this->utilidades->checkTipoRol($user->name, SELF::ADMIN)) {
+        if($this->utilidades->checkTipoRol($user->name, SELF::ADMIN)) {
 
             $efectores = $this->profesionales->listado('Efector');
             event(new LstProfesionalesEvent($efectores));
@@ -67,9 +68,29 @@ class LlamadorController extends Controller
         return view('layouts.llamador.efector', compact(['efectores']));
     }
 
+
     public function informador()
     {
-        return view('layouts.llamador.informador');
+        $user = Auth::user()->load('personal');
+
+        $informadores = null;
+
+        if($this->utilidades->checkTipoRol($user->name, SELF::ADMIN)) {
+            
+            $informadores = $this->profesionales->listado('Informador');
+            event(new LstProfInformadorEvent($informadores));
+
+        } else if($this->utilidades->checkTipoRol($user->name, [SELF::TIPOS[0]])) {
+
+            $efectores = collect([
+                (object)[
+                    'Id' => $user->profesional_id,
+                    'NombreCompleto' => $user->personal->nombre_completo,
+                ]
+            ]);
+        }
+
+        return view('layouts.llamador.informador', compact(['informadores']));
     }
 
     public function evaluador()
@@ -125,21 +146,21 @@ class LlamadorController extends Controller
 
     public function imprimirExcel(Request $request)
     {
-        if($request->tipo === 'efector' && $request->modo === 'basico') {
+        if($request->modo === 'basico') {
             $prestaciones = $this->queryBasico()->whereIn('prestaciones.Id', $request->Ids)->groupBy('prestaciones.Id')->get();
 
             if($prestaciones) {
-                $reporte = $this->reporteExcel->crear('efectorExportar');
+                $reporte = $this->reporteExcel->crear('llamadorExportar');
                 return $reporte->generar($prestaciones);
             }else{
                 return response()->json(['msg' => 'No existen prestaciones para exportar'], 409);
             }
 
-        }elseif ($request->tipo === 'efector' && $request->modo === 'full') {
+        }elseif ($request->modo === 'full') {
             $prestaciones = $this->queryFull()->whereIn('prestaciones.Id', $request->Ids)->groupBy('itemsprestaciones.Id')->get();
 
             if($prestaciones) {
-                $reporte = $this->reporteExcel->crear('efectorDetalle');
+                $reporte = $this->reporteExcel->crear('llamadorDetalle');
                 return $reporte->generar($prestaciones);
             }else{
                 return response()->json(['msg' => 'No existen prestaciones para exportar'], 409);
