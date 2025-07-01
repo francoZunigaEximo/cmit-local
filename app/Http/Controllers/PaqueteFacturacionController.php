@@ -15,7 +15,7 @@ class PaqueteFacturacionController extends Controller
 
         $resultados = Cache::remember('Paquete_fact_'.$buscar, 5, function () use ($buscar) {
 
-            $paquetes = PaqueteFacturacion::where('Nombre', 'LIKE', '%'.$buscar.'%')->get();
+            $paquetes = PaqueteFacturacion::where('Nombre', 'LIKE', '%'.$buscar.'%')->where('Baja', '=', 0)->get();
 
             $resultados = [];
 

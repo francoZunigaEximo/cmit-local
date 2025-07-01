@@ -1,4 +1,4 @@
-let tabla = new DataTable("#listaExamenesPaquetes",{
+let tabla = new DataTable("#listaExamenesPaquetes", {
     searching: false,
     lengthChange: false,
 });
@@ -110,7 +110,7 @@ $(document).ready(() => {
         minimumInputLength: 2
     });
 
- //verificaciones extras
+    //verificaciones extras
     $('#grupoSelect2').on('change', verificarSelectGrupo);
     $('#empresaSelect2').on('change', verificarSelectEmpresa);
 
@@ -270,12 +270,12 @@ function cargarEstudio(idExamen) {
             if (!enExamenesNuevos && !enExamenes) {
                 estudiosRenderizar.push(result);
             } else {
-                 if(enEliminado >= 0 && enExamenes){
+                if (enEliminado >= 0 && enExamenes) {
                     estudiosRenderizar.push(result);
                     renderizarEstudios(estudiosRenderizar);
                     estudiosRenderizar = [];
                     examenesEliminar.splice(enEliminado, 1);
-                }else{
+                } else {
                     toastr.warning("El examen ya se encuentra cargado", "", { timeout: 1000 });
                 }
             }
@@ -316,33 +316,37 @@ $('.agregarPaquete').on('click', function (e) {
     e.preventDefault();
     //buscamos los examenes del paquete seleccionado
     let id = $("#paqueteSelect2").val();
-    preloader('on');
+    if(id){
+        preloader('on');
 
-    $.ajax({
-        url: paqueteId,
-        type: 'POST',
-        data: {
-            _token: TOKEN,
-            IdPaquete: id,
-        },
-        async: false,
-        success: function (response) {
-            let data = response.examenes;
-            data.forEach(examen => {
-                cargarEstudio(examen.Id);
-            });
-            examenesNuevos = examenesNuevos.concat(estudiosRenderizar);
-            renderizarEstudios(estudiosRenderizar);
-            estudiosRenderizar = [];
-            preloader('off');
-        },
-        error: function (jqXHR) {
-            preloader('off');
-            let errorData = JSON.parse(jqXHR.responseText);
-            checkError(jqXHR.status, errorData.msg);
-            return;
-        }
-    });
+        $.ajax({
+            url: paqueteId,
+            type: 'POST',
+            data: {
+                _token: TOKEN,
+                IdPaquete: id,
+            },
+            async: false,
+            success: function (response) {
+                let data = response.examenes;
+                data.forEach(examen => {
+                    cargarEstudio(examen.Id);
+                });
+                examenesNuevos = examenesNuevos.concat(estudiosRenderizar);
+                renderizarEstudios(estudiosRenderizar);
+                estudiosRenderizar = [];
+                preloader('off');
+            },
+            error: function (jqXHR) {
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            }
+        });
+    } else {
+        toastr.warning('Debe seleccionar un paquete de estudios para agregar.', '', { timeOut: 1000 });
+    }
 });
 
 tabla.on('click', 'button.remove-item-btn', function () {
@@ -370,7 +374,7 @@ $("#btnRegistrar").on('click', function (e) {
     let idGrupo = $("#grupoSelect2").val();
     let idEmpresa = $("#empresaSelect2").val();
 
-    if ( validaciones() ) {
+    if (validaciones()) {
         $.post(postEditPaqueteFactutacion, {
             _token: TOKEN,
             id: id,
@@ -384,12 +388,14 @@ $("#btnRegistrar").on('click', function (e) {
             estudiosEliminar: examenesEliminar
         })
             .done(function () {
-                
-                toastr.success('Se ha cargado el paquete correctamente', '', { timeOut: 1000 });
 
+                toastr.success('Se ha cargado el paquete correctamente', '', { timeOut: 1000 });
+                setTimeout(function () {
+                    history.back();
+                }, 1000);
             })
             .fail(function (jqXHR) {
-                
+
                 // Manejo de errores
                 let errorData = JSON.parse(jqXHR.responseText);
                 checkError(jqXHR.status, errorData.error || errorData.msg);
@@ -403,7 +409,7 @@ $("#btnRegistrar").on('click', function (e) {
 });
 
 
-function validaciones(){
+function validaciones() {
     let mensaje = "";
     if (!$("#nombre").val()) {
         mensaje += "Debe ingresar un nombre para el paquete.\n";
@@ -420,7 +426,7 @@ function validaciones(){
     if (examenes.length == examenesEliminar.length && examenesNuevos.length === 0) {
         mensaje += "Debe agregar al menos un examen al paquete.\n";
     }
-    
+
     if (mensaje) {
         preloader('off');
         toastr.warning(mensaje, '', { timeOut: 3000 });
