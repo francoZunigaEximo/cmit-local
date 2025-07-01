@@ -220,7 +220,6 @@ $(function() {
                             $('.cerrar').html('<i class="ri-lock-line"></i>&nbsp;Cerrado');
                             $('.FechaFinalizado').find('span').removeAttr('title').removeClass().addClass('input-group-text finalizar');
                             $('#cerrar').val(fechaNow(response.FechaCierre, '/', 0)).prop('readonly', true);
-                            
                         } else {
                             
                             if(response.Cerrado === 0 && response.Finalizado === 0 && response.Entregado === 0){

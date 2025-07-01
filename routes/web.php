@@ -493,5 +493,6 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     //notas credito
     Route::get('notasCredito/getClientes', [NotasCreditoController::class, 'getClientes'])->name('notasCredito.getClientes');
     Route::get('notasCredito/itemsanulados/{id}', [NotasCreditoController::class, 'getItemsAnulados'])->name('paquetes.itemsAnulados');
+    Route::get('notasCredito/getItemsAnuladosClientes', [NotasCreditoController::class, 'getItemsFacturaVenta'])->name('notasCredito.getItemsAnuladosClientes');
     Route::resource('notasCredito', NotasCreditoController::class);
 });

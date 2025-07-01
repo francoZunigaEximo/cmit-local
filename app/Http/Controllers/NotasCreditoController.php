@@ -20,14 +20,7 @@ class NotasCreditoController extends Controller
 
     public function getItemsAnulados($id)
     {
-        $items_facturas = DB::table('notascredito_it')
-        ->join('itemsprestaciones', 'notascredito_it.IdIP', '=', 'itemsprestaciones.IdPrestacion')
-        ->join('prestaciones','itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
-        ->where('prestaciones.Facturado', '=', 1)
-        ->where('prestaciones.IdEmpresa', '=', $id)
-        ->get();
-        
-        return view('layouts.notasCredito.itemsanulados',['items_facturas' => $items_facturas]);
+        return view('layouts.notasCredito.itemsanulados',['idEmpresa'=> $id]);
     }
 
     public function getClientes(Request $request)
@@ -41,7 +34,12 @@ class NotasCreditoController extends Controller
 
     public function buildQueryClientes(){
         //cuando tenga datos completo esta parte
-        $prestacionesFacturadas = DB::table('prestaciones')->select('IdEmpresa')->where('prestaciones.Facturado','=', 1);
+        $prestacionesFacturadas = DB::table('prestaciones')
+        ->select('prestaciones.IdEmpresa')
+        ->join('facturasventa', 'prestaciones.Id', '=', 'facturasventa.IdPrestacion')
+        ->join('itemsprestaciones','prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
+        ->where('prestaciones.Id', '<>', 0)
+        ->where('itemsprestaciones.Anulado', '=', 1);
         
         $query = DB::table('clientes')
         ->whereIn('clientes.Id', $prestacionesFacturadas)
@@ -54,5 +52,19 @@ class NotasCreditoController extends Controller
     {
         $query = NotaCredito::where('Id', $request->Id)->exits();
         return response()->json($query, 200); 
+    }
+
+    public function getItemsFacturaVenta(Request $request)
+    {
+        $items_facturas = DB::table('itemsprestaciones')
+            ->join('prestaciones','itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
+            ->join('facturasventa', 'prestaciones.Id', '=', 'facturasventa.IdPrestacion')
+            ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
+            ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+            ->where('prestaciones.IdEmpresa', '=', $request->IdEmpresa)
+            ->where('itemsprestaciones.Anulado', '=', 1)
+            ->select('itemsprestaciones.Id as Id','itemsprestaciones.NumeroFacturaVta as NroFactura', 'itemsprestaciones.FechaPagado as FechaAnulado', 'prestaciones.Id as Prestacion', 'examenes.Nombre as Examen', 'pacientes.Nombre as Paciente');
+        
+        return DataTables::of($items_facturas)->make(true);
     }
 }
