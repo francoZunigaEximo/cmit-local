@@ -1289,7 +1289,7 @@ const privateComment = "{{ route('comentariosPriv') }}";
 const savePrivComent = "{{ route('savePrivComent') }}";
 const bloquearItemExamen = "{{ route('bloquearItemExamen') }}";
 const obsNuevaPrestacion = "{{ route('obsNuevaPrestacion') }}";
-const getFormaPagoART = "{{ route('clientes.formaPago') }}";
+const getFormaPagoCli = "{{ route('clientes.formaPago') }}";
 
 const getMapas = "{{ route('getMapas') }}";
 

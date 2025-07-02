@@ -167,7 +167,7 @@ $(function () {
             
             }else if (!['0', null, undefined, ''].includes(variables.selectArt.val())) {
 
-                $.get(getFormaPagoART, {Id: variables.selectArt.val()}, function(response){
+                $.get(getFormaPagoCli, {Id: variables.selectArt.val()}, function(response){
                     let formaPago = ['', null, undefined].includes(response.FPago) ? 'A' : response.FPago;
                     
                     variables.PagoLaboral.val(formaPago);
@@ -176,29 +176,53 @@ $(function () {
             } 
 
         }else {
+             $.get(getFormaPagoCli, {Id: variables.selectClientes.val()}, function(response){
+                    let formaPago = ['', null, undefined].includes(response.FPago) ? 'A' : response.FPago;
+                    
+                    variables.PagoLaboral.val(formaPago);
+                    variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde'); // color solo a la opcion requerida
+                });
+        }
+    });
+
+    variables.selectClientes.on('change', function(){
+
+        if(['0', null, undefined, '', 0].includes(variables.selectClientes.val())) {
             variables.PagoLaboral.empty().append(`<option selected="" value="">Elija una opción...</option>
                 <option value="B">Contado</option>
-                <option value="A">Cuenta Corriente</option>
-                <option value="P">Exámen a Cuenta</option>`);
+                <option value="A">Cuenta Corriente</option>`);
             variables.PagoLaboral.css('color', 'black');
+            $('input[name="TipoPrestacion"]').prop('checked', false); //Quitamos todos los checks y dejamos de cero
+            return;
         }
+
+         if(variables.TipoPrestacion.filter(':checked').val() !== 'ART') {
+
+            $.get(getFormaPagoCli, {Id: variables.selectClientes.val()}, function(response){
+                let formaPago = ['', null, undefined].includes(response.FPago) ? 'A' : response.FPago;
+                variables.PagoLaboral.val(formaPago);
+                variables.PagoLaboral.css('color', 'green');
+                selectMedioPago(response.FPago);
+                response.FPago === 'B' ? variables.PagoLaboral.val('B').prop('disabled', true) : variables.PagoLaboral.val('B').prop('disabled', false);
+            });
+
+         }
     });
 
     variables.selectArt.on('change', function(){
 
-        if(['0', null, undefined, '', 0].includes(variables.selectArt.val())) {
+        if(['0', null, undefined, '', 0].includes(variables.selectArt.val()) && ['0', null, undefined, '', 0].includes(variables.selectClientes.val())) {
             variables.PagoLaboral.empty().append(`<option selected="" value="">Elija una opción...</option>
                 <option value="B">Contado</option>
-                <option value="A">Cuenta Corriente</option>
-                <option value="P">Exámen a Cuenta</option>`);
+                <option value="A">Cuenta Corriente</option>`);
             variables.PagoLaboral.css('color', 'black');
             $('input[name="TipoPrestacion"]').prop('checked', false); //Quitamos todos los checks y dejamos de cero
             return;
-        };
+        }
 
         if(variables.TipoPrestacion.filter(':checked').val() === 'ART') {
 
-            $.get(getFormaPagoART, {Id: variables.selectArt.val()}, function(response){
+            $.get(getFormaPagoCli, {Id: variables.selectArt.val()}, function(response){
                 let formaPago = ['', null, undefined].includes(response.FPago) ? 'A' : response.FPago;
                 variables.PagoLaboral.val(formaPago);
                 variables.PagoLaboral.css('color', 'green');
