@@ -953,3 +953,4 @@ CREATE TABLE `user_sessions` (
 );
 
 ALTER TABLE profesionales_prov MODIFY COLUMN IdRol varchar(20) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT '0' NULL;
+ALTER TABLE llamador ADD COLUMN tipo_profesional TEXT NOT NULL;

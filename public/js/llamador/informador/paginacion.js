@@ -8,12 +8,13 @@ $(function(){
             fechaHasta = $('#fechaHasta').val(),
             prestacion = $('#prestacion').val(),
             estado = $('#estado').val(),
-            table = $('#listaLlamadaEfector');
+            especialidad = $('#especialidad').data('id'),
+            table = $('#listaLlamadaInformador');
 
         //La prestacion es individual y no acepta otros filtros
         if(prestacion === ''){
 
-            if([0,'',null].includes(profesional)){ 
+            if(!profesional){ 
                 toastr.warning('El campo profesional no puede estar vacío');
                 return;
             }
@@ -44,6 +45,7 @@ $(function(){
                     d.fechaDesde = fechaDesde;
                     d.fechaHasta = fechaHasta;
                     d.prestacion = prestacion;
+                    d.especialidad = especialidad
                     d.estado = estado;
                 }
             },

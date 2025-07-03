@@ -1,17 +1,20 @@
 $(function(){
 
+    const profesionales = ['EFECTOR', 'INFORMADOR', 'COMBINADO'];
+
     const principal = {
         grillaEfector: $('#listaLlamadaEfector'),
         grillaExamenes: $('#tablasExamenes'),
         atenderPaciente: $('.atenderPaciente'),
-        chekAllExamenes: $('.checkAllExamenes')
+        chekAllExamenes: $('.checkAllExamenes'),
+        buscar: $('#buscar')
     };
 
     const variables = {
         fechaHasta: $('#fechaHasta'),
         estado: $('#estado'),
-        profesionalEfector: $('#profesionalEfector'),
-        prestacionEfector: $('#prestacionEfector'),
+        profesional: $('#profesional'),
+        prestacion: $('#prestacion'),
         tipoEfector: $('#tipoEfector'),
         artEfector: $('#artEfector'),
         empresaEfector: $('#empresaEfector'),
@@ -26,6 +29,8 @@ $(function(){
 
     variables.fechaHasta.val(fechaNow(null, "-", 0));
     variables.estado.val('abierto');
+
+    habilitarBoton(sessionProfesional); 
 
     $(document).on('click', '.verPrestacion', function(e){
         e.preventDefault();
@@ -340,6 +345,13 @@ $(function(){
     }
 
 
+    function habilitarBoton(profesional) {
+        if(!profesional) return principal.buscar.hide();
+
+        return (profesionales[0] === profesional) 
+            ? principal.buscar.show()
+            : principal.buscar.hide();
+    }
 
 
 });

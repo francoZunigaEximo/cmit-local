@@ -27,7 +27,7 @@ trait ObserverItemsPrestaciones
     public function updateItemPrestacionInfo(int $id, string $observacion)
     {
         $query = ItemPrestacionInfo::where('IdIP', $id)->first();
-        $query->Obs = $observacion ?? '';
+        $query->Obs = $observacion;
         $query->save();
 
     }
@@ -122,17 +122,15 @@ trait ObserverItemsPrestaciones
         }
     }
 
-    public function adjuntoEfector(?int $id): ?int 
+    public function adjunto(?int $id, string $tipo): bool
     {
-        return ArchivoEfector::where('IdEntidad', $id)->exists() === true ? 1 : 0;
+        return $tipo === 'Efector'
+            ? ArchivoEfector::where('IdEntidad', $id)->exists()
+            : ArchivoInformador::where('IdEntidad', $id)->exists();
     }
 
-    public function adjuntoInformador(?int $id): ?int 
-    {
-        return ArchivoInformador::where('IdEntidad', $id)->exists() ===  true ? 1 : 0;
-    }
 
-    public function getDatosProfesional(int $id): string
+    public function getDatosProfesional(int $id)
     {
         $profesional = Profesional::find($id);
 

@@ -44,7 +44,7 @@
 
                                     <div class="col-sm-2 mb-3">
                                         <label for="especialidad" class="form-label fw-bolder">Especialidad <span class="required">(*)</span></label>
-                                        <input type="text" class="form-control" name="especialidad" id="especialidad" data-id="{{ session('IdEspecialidad') }}" value="{{ session('Profesional') === 'EFECTOR' ? session('Especialidad') : 'Sin Especialidad'}}">
+                                        <input type="text" class="form-control" name="especialidad" id="especialidad" data-id="{{ session('IdEspecialidad')->Id ?? ''}}" value="{{ session('Profesional') === 'EFECTOR' ? session('Especialidad') : 'Sin Especialidad'}}">
                                     </div>
 
                                     <div class="col-sm-2 mb-3">
@@ -261,9 +261,9 @@
 </div><!-- /.modal -->
 
 <script>
-    const SEARCH = "{{ route('llamador.buscarEfector') }}";
+    const SEARCH = "{{ route('llamador.buscar') }}";
     const lnkPres = "{{ route('prestaciones.edit', ['prestacione' => '__item__']) }}";
-    const printExportar = "{{ route('llamador.excelEfector') }}";
+    const printExportar = "{{ route('llamador.exportar') }}";
     const FOTO = "@fileUrl('lectura')/Fotos/";
     const dataPaciente = "{{ route('llamador.verPaciente') }}";
     const USERACTIVO = "{{ Auth::user()->profesional_id }}";
@@ -271,6 +271,7 @@
     const checkLlamado = "{{ route('llamador.check') }}";
     const ROLESUSER = @json(Auth::user()->role);
     const asignacionProfesional = "{{ route('llamador.asignarPaciente') }}";
+    const sessionProfesional = "{{ session('Profesional') }}";
 </script>
 
 @push('styles')
@@ -282,8 +283,8 @@
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
 
-<script src="{{ asset('/js/llamador/index.js')}}?v={{ time() }}"></script>
-<script src="{{ asset('/js/llamador/paginacion.js')}}?v={{ time() }}"></script>
+<script src="{{ asset('/js/llamador/efector/index.js')}}?v={{ time() }}"></script>
+<script src="{{ asset('/js/llamador/efector/paginacion.js')}}?v={{ time() }}"></script>
 <script src="{{ asset('/js/llamador/sockets.js')}}?v={{ time() }}"></script>
 <script src="{{ asset('/js/llamador/atenderPaciente.js') }}?v={{ time() }}"></script>
 

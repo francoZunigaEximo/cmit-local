@@ -22,7 +22,8 @@
 
                                     <div class="col-sm-2 mb-3">
                                         <label for="profesionalInf" class="form-label fw-bolder">Profesional <span class="required">(*)</span></label>
-                                        <select class="form-control" name="profesionalInf" id="profesionalInf">
+                                        <select class="form-control" name="profesional" id="profesional">
+
                                             @if(!is_null($informadores) && $informadores->count() === 1)
                                                 <option value="{{ $informadores->first()->Id ?? 0}}">{{ $informadores->first()->NombreCompleto ?? '' }}</option>
                                             @elseif(!is_null($informadores))
@@ -43,27 +44,27 @@
 
                                     <div class="col-sm-2 mb-3">
                                         <label for="especialidad" class="form-label fw-bolder">Especialidad <span class="required">(*)</span></label>
-                                        <input type="text" class="form-control" name="especialidadInf" id="especialidadInf">
+                                        <input type="text" class="form-control" name="especialidad" id="especialidad" value="{{ session('Profesional') === 'INFORMADOR' ? session('Especialidad') : 'Sin Especialidad'}}" data-id="{{ session('IdEspecialidad')->Id ?? ''}}">
                                     </div>
 
                                     <div class="col-sm-2 mb-3">
                                         <label for="fechaDesde" class="form-label fw-bolder">Fecha Desde <span class="required">(*)</span></label>
-                                        <input type="date" class="form-control" name="fechaDesdeInf" id="fechaDesdeInf">
+                                        <input type="date" class="form-control" name="fechaDesde" id="fechaDesde">
                                     </div>
 
                                     <div class="col-sm-2 mb-3">
-                                        <label for="fechaHastaInf" class="form-label fw-bolder">Fecha Hasta <span class="required">(*)</span></label>
-                                        <input type="date" class="form-control" name="fechaHastaInf" id="fechaHastaInf">
+                                        <label for="fechaHasta" class="form-label fw-bolder">Fecha Hasta <span class="required">(*)</span></label>
+                                        <input type="date" class="form-control" name="fechaHasta" id="fechaHasta">
                                     </div>
 
                                     <div class="col-sm-2 mb-3">
-                                        <label for="prestacionInf" class="form-label fw-bolder">Prestación</label>
-                                        <input type="text" class="form-control" name="prestacionInf" id="prestacionInf">
+                                        <label for="prestacion" class="form-label fw-bolder">Prestación</label>
+                                        <input type="text" class="form-control" name="prestacion" id="prestacion">
                                     </div>
 
                                     <div class="col-sm-2 mb-3">
                                         <label for="estadoInf" class="form-label fw-bolder">Estado</label>
-                                        <select name="estadoInf" id="estadoInf" class="form-control">
+                                        <select name="estado" id="estado" class="form-control">
                                             <option value=""selected>Elija una opción...</option>
                                             <option value="abierto">Abiertos</option>
                                             <option value="cerrado">Cerrados</option>
@@ -76,7 +77,7 @@
                                 <div class="row">
                                     <div class="col-12 text-end">
                                         <div class="d-flex align-items-center justify-content-end">
-                                            <button class="btn btn-sm botonGeneral" id="buscarInf">
+                                            <button class="btn btn-sm botonGeneral" id="buscar">
                                                 <i class="ri-zoom-in-line"></i>Buscar
                                             </button>
                                         </div>
@@ -124,9 +125,9 @@
 </div>
 
 <script>
-    const SEARCH = "{{ route('llamador.buscarInformador') }}";
+    const SEARCH = "{{ route('llamador.buscar') }}";
     const lnkPres = "{{ route('prestaciones.edit', ['prestacione' => '__item__']) }}";
-    const printExportar = "{{ route('llamador.excelEfector') }}";
+    const printExportar = "{{ route('llamador.exportar') }}";
     const FOTO = "@fileUrl('lectura')/Fotos/";
     const dataPaciente = "{{ route('llamador.verPaciente') }}";
     const USERACTIVO = "{{ Auth::user()->profesional_id }}";
@@ -134,6 +135,8 @@
     const checkLlamado = "{{ route('llamador.check') }}";
     const ROLESUSER = @json(Auth::user()->role);
     const asignacionProfesional = "{{ route('llamador.asignarPaciente') }}";
+    const sessionProfesional = "{{ session('Profesional') }}";
+</script>
 </script>
 
 @push('styles')
@@ -147,8 +150,8 @@
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
 
-<script src="{{ asset('/js/llamador/index.js')}}?v={{ time() }}"></script>
-<script src="{{ asset('/js/llamador/paginacionInf.js')}}?v={{ time() }}"></script>
+<script src="{{ asset('/js/llamador/informador/index.js')}}?v={{ time() }}"></script>
+<script src="{{ asset('/js/llamador/informador/paginacion.js')}}?v={{ time() }}"></script>
 <script src="{{ asset('/js/llamador/sockets.js')}}?v={{ time() }}"></script>
 <script src="{{ asset('/js/llamador/atenderPaciente.js') }}?v={{ time() }}"></script>
 

@@ -334,7 +334,6 @@
                 
                 <div class="modal-header">
                     <h5 class="modal-title" id="myModalLabel">Seleccione el perfil del profesional</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>   
                 </div>
                 <div class="modal-body">
                     <div class="message-sesion"></div>

@@ -10,7 +10,6 @@ use App\Models\ItemPrestacion;
 use Illuminate\Http\Request;
 use App\Models\Llamador;
 use App\Models\Prestacion;
-use App\Models\ProfesionalProv;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -29,7 +28,7 @@ class LlamadorController extends Controller
     protected $utilidades;
 
     const ADMIN = ['Administrador', 'Admin SR', 'Recepcion SR'];
-    const TIPOS = ['Efector', 'Informador'];
+    const TIPOS = ['Efector', 'Informador', 'Combinado'];
 
     public function __construct(
         Profesionales $profesionales, 
@@ -68,7 +67,6 @@ class LlamadorController extends Controller
         return view('layouts.llamador.efector', compact(['efectores']));
     }
 
-
     public function informador()
     {
         $user = Auth::user()->load('personal');
@@ -80,9 +78,9 @@ class LlamadorController extends Controller
             $informadores = $this->profesionales->listado('Informador');
             event(new LstProfInformadorEvent($informadores));
 
-        } else if($this->utilidades->checkTipoRol($user->name, [SELF::TIPOS[0]])) {
-
-            $efectores = collect([
+        } else if($this->utilidades->checkTipoRol($user->name, [SELF::TIPOS[1]])) {
+  
+            $informadores = collect([
                 (object)[
                     'Id' => $user->profesional_id,
                     'NombreCompleto' => $user->personal->nombre_completo,
@@ -93,17 +91,36 @@ class LlamadorController extends Controller
         return view('layouts.llamador.informador', compact(['informadores']));
     }
 
-    public function evaluador()
+    public function combinado()
     {
-        return view('layouts.llamador.evaluador');
+        $user = Auth::user()->load('personal');
+
+        $combinados = null;
+
+        if($this->utilidades->checkTipoRol($user->name, SELF::ADMIN)) {
+            
+            $combinados = $this->profesionales->listado('Combinado');
+            event(new LstProfInformadorEvent($combinados));
+
+        } else if($this->utilidades->checkTipoRol($user->name, [SELF::TIPOS[2]])) {
+  
+            $combinados = collect([
+                (object)[
+                    'Id' => $user->profesional_id,
+                    'NombreCompleto' => $user->personal->nombre_completo,
+                ]
+            ]);
+        }
+
+        return view('layouts.llamador.combinado', compact(['combinados']));
     }
 
-    public function buscarEfector(Request $request)
+    public function buscar(Request $request)
     {
         if ($request->ajax()) {
 
             $query = $this->queryBasico($request->profesional);
-            $especialidades = ProfesionalProv::where('IdRol',SELF::TIPOS[0])->where('IdProf', $request->profesional)->pluck('IdProv')->toArray();
+            // $especialidades = ProfesionalProv::where('IdRol',SELF::TIPOS[0])->where('IdProf', $request->profesional)->pluck('IdProv')->toArray();
 
             if (!empty($request->prestacion)){
                 
@@ -111,10 +128,10 @@ class LlamadorController extends Controller
             
             } else {
 
-                $query->when(!empty($request->profesional), function ($query) use ($request, $especialidades){
+                $query->when(!empty($request->profesional), function ($query) use ($request){
                     $query->whereIn('itemsprestaciones.IdProfesional', [$request->profesional, 0])
-                        ->whereIn('examenes.IdProveedor', $especialidades)
-                        ->addSelect(DB::raw('"' . implode(',', $especialidades) . '" as especialidades'));
+                        ->where('examenes.IdProveedor', $request->especialidad)
+                        ->addSelect(DB::raw('"' . $request->especialidad . '" as especialidades'));
                 });
     
                 $query->when(!empty($request->fechaDesde) || !empty($request->fechaHasta), function ($query) use ($request){
@@ -122,15 +139,28 @@ class LlamadorController extends Controller
                 });
     
                 $query->when(!empty($request->estado) && ($request->estado === 'abierto'), function($query) {
-                    $query->whereIn('itemsprestaciones.CAdj', [0, 1, 2]);
+
+                    match(session('Profesional')) {
+                        strtoupper(SELF::TIPOS[0]) => $query->whereIn('itemsprestaciones.CAdj', [0, 1, 2]),
+                        strtoupper(SELF::TIPOS[1]) => $query->whereIn('itemsprestaciones.CInfo', 1,2),
+                        default => null
+                    };
                 });
     
                 $query->when(!empty($request->estado) && ($request->estado === 'cerrado'), function($query) {
-                    $query->whereIn('itemsprestaciones.CAdj', [3, 4, 5]);
+
+                    match(session('Profesional')) {
+                        strtoupper(SELF::TIPOS[0]) => $query->whereIn('itemsprestaciones.CAdj', [3, 4, 5]),
+                        strtoupper(SELF::TIPOS[1]) => $query->where('itemsprestaciones.CInfo', 3),
+                        default => null
+                    };
                 });
     
                 $query->when(!empty($request->estado) && ($request->estado === 'todos'), function($query){
-                    $query->whereIn('itemsprestaciones.CAdj', [0, 1, 2, 3, 4, 5]);
+                    match(session('Profesional')) {
+                        strtoupper(SELF::TIPOS[0]) => $query->whereIn('itemsprestaciones.CAdj', [0, 1, 2, 3, 4, 5]),
+                        strtoupper(SELF::TIPOS[1]) => $query->whereIn('itemsprestaciones.CInfo', [1, 2, 3]),
+                    };
                 });
             }
 
@@ -140,11 +170,9 @@ class LlamadorController extends Controller
 
             return Datatables::of($query)->make(true);
         }
-        
-        return view('layouts.llamador.efector');
     }
 
-    public function imprimirExcel(Request $request)
+    public function exportar(Request $request)
     {
         if($request->modo === 'basico') {
             $prestaciones = $this->queryBasico()->whereIn('prestaciones.Id', $request->Ids)->groupBy('prestaciones.Id')->get();
@@ -191,7 +219,6 @@ class LlamadorController extends Controller
     public function controlLlamado(Request $request)
     {   
         $query = Llamador::with(['prestacion', 'prestacion.paciente'])->where('prestacion_id', $request->prestacion)->first();
-
         $data = [];
 
         if ($query) {
@@ -209,7 +236,8 @@ class LlamadorController extends Controller
                 'Id' => Llamador::max('Id') + 1,
                 'profesional_id' => $request->profesional,
 	            'prestacion_id' =>  $request->prestacion,
-                'itemprestacion_id' => 0
+                'itemprestacion_id' => 0,
+                'tipo_profesional' => session('Profesional')
             ]);
 
             $data = [
@@ -223,8 +251,11 @@ class LlamadorController extends Controller
 
     public function checkLlamado(Request $request)
     {
-        $query = Llamador::where('prestacion_id', $request->id)->first();
-        return response()->json($query);
+        $query = Llamador::where('prestacion_id', $request->id)
+            ->where('tipo_profesional', session('Profesional'))
+            ->first();
+        
+            return response()->json($query);
     }
 
     public function asignarProfesional(Request $request)
