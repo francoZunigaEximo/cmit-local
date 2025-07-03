@@ -165,6 +165,7 @@ $(function () {
             if(['0', null, undefined, ''].includes(variables.selectArt.val())) {
                 toastr.warning('¡Debe seleccionar una ART para el tipo de prestación ART!','',{timeOut: 1000});
             
+            
             }else if (!['0', null, undefined, ''].includes(variables.selectArt.val())) {
 
                 $.get(getFormaPagoCli, {Id: variables.selectArt.val()}, function(response){
@@ -175,7 +176,8 @@ $(function () {
                 });
             } 
 
-        }else {
+        }else if(variables.TipoPrestacion.filter(':checked').val() !== '') {
+            console.log(1)
              $.get(getFormaPagoCli, {Id: variables.selectClientes.val()}, function(response){
                     let formaPago = ['', null, undefined].includes(response.FPago) ? 'A' : response.FPago;
                     
@@ -196,15 +198,20 @@ $(function () {
             return;
         }
 
-         if(variables.TipoPrestacion.filter(':checked').val() !== 'ART') {
+         if(
+            variables.TipoPrestacion.filter(':checked').val() !== 'ART' &&  variables.TipoPrestacion.filter(':checked').val() !== '') {
+                console.log("ingreso")
+                $.get(getFormaPagoCli, {Id: variables.selectClientes.val()}, async function(response){
 
-            $.get(getFormaPagoCli, {Id: variables.selectClientes.val()}, function(response){
-                let formaPago = ['', null, undefined].includes(response.FPago) ? 'A' : response.FPago;
-                variables.PagoLaboral.val(formaPago);
-                variables.PagoLaboral.css('color', 'green');
-                selectMedioPago(response.FPago);
-                response.FPago === 'B' ? variables.PagoLaboral.val('B').prop('disabled', true) : variables.PagoLaboral.val('B').prop('disabled', false);
-            });
+                    console.log(response);
+
+                    let formaPago = ['', null, undefined].includes(response.FPago) ? 'A' : response.FPago;
+                    await variables.PagoLaboral.val(formaPago);
+                    await variables.PagoLaboral.css('color', 'green');
+                    selectMedioPago(response.FPago);
+                    
+                    response.FPago === 'B' ? variables.PagoLaboral.val('B').prop('disabled', true) : variables.PagoLaboral.val('B').prop('disabled', false);
+                });
 
          }
     });
@@ -343,9 +350,6 @@ $(function () {
         if($(this).select2('data').map(option => option.id).length === 0){
             principal.guardarFicha
                 .removeAttr('disabled')
-                .removeAttr('title', 'Botón habilitado')
-                .removeAttr('data-toggle', 'tooltip')
-                .removeAttr('data-placement', 'top');
         }
     });
 
