@@ -175,7 +175,7 @@
 
                     <div class="col-2 mb-3">
                         <label for="Descuento" class="form-label">Descuento</label>
-                        <input type="number" class="form-control" id="Descuento" name="Descuento" value="{{ $cliente->Descuento ?? 0 }}">
+                        <input type="text" class="form-control" id="Descuento" name="Descuento" value="{{ $cliente->Descuento ?? 0 }}">
                         <small class="text-muted">El valor representa un porcentaje</small>
                     </div>
 
