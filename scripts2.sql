@@ -1411,3 +1411,87 @@ BEGIN
 	    examenes.Nombre ASC,
 	    itemsprestaciones.Fecha ASC;
 END
+
+ALTER TABLE autorizados DROP FOREIGN KEY autorizados_ibfk_1; --IdEntidad
+ALTER TABLE clientesgrupos_it DROP FOREIGN KEY clientesgrupos_it_ibfk_2; --IdCliente
+ALTER TABLE facturasventa DROP FOREIGN KEY facturasventa_ibfk_1; --IdEmpresa
+ALTER TABLE fichaslaborales DROP FOREIGN KEY fichaslaborales_ibfk_2; --IdEmpresa
+ALTER TABLE fichaslaborales DROP FOREIGN KEY fichaslaborales_ibfk_3; --IdART
+ALTER TABLE hc_casos DROP FOREIGN KEY hc_casos_ibfk_2; --IdEmpresa
+ALTER TABLE hc_casos DROP FOREIGN KEY hc_casos_ibfk_3; --IdART
+ALTER TABLE mapas DROP FOREIGN KEY mapas_ibfk_1; --IdART
+ALTER TABLE mapas DROP FOREIGN KEY mapas_ibfk_2; --IdEmpresa
+ALTER TABLE notascredito DROP FOREIGN KEY notascredito_ibfk_1; --IdEmpresa
+ALTER TABLE pagosacuenta DROP FOREIGN KEY pagosacuenta_ibfk_1;  --IdEmpresa
+ALTER TABLE paqfacturacion DROP FOREIGN KEY paqfacturacion_ibfk_1;  --IdEmpresa
+ALTER TABLE parametros DROP FOREIGN KEY parametros_ibfk_3; --IdCliCarnet
+ALTER TABLE prestaciones DROP FOREIGN KEY prestaciones_ibfk_2; --IdEmpresa
+ALTER TABLE prestaciones DROP FOREIGN KEY prestaciones_ibfk_3; --IdART
+
+SHOW TABLE STATUS LIKE 'clientes';
+ALTER TABLE clientes ENGINE=InnoDB;
+
+CREATE TABLE cliente_fila_0_temp AS SELECT * FROM clientes WHERE Id = 0;
+DELETE FROM clientes WHERE Id = 0;
+ALTER TABLE clientes MODIFY COLUMN Id int(11) NOT NULL AUTO_INCREMENT;
+
+
+INSERT INTO clientes (
+    RazonSocial, Nacionalidad, CondicionIva, TipoIdentificacion, Identificacion, 
+    Observaciones, TipoPersona, Envio, Entrega, ParaEmpresa, IdActividad, 
+    NombreFantasia, Logo, Bloqueado, Motivo, Direccion, IdLocalidad, Provincia, 
+    CP, EMail, ObsEMail, EMailResultados, Telefono, LogoCertificado, Oreste, 
+    TipoCliente, FPago, ObsEval, ObsCE, Generico, SEMail, ObsCO, EMailFactura, 
+    EnvioFactura, EMailInformes, EnvioInforme, Ajuste, SinPF, SinEval, RF, 
+    Estado, Anexo, EMailAnexo, Descuento
+)
+SELECT 
+    RazonSocial, Nacionalidad, CondicionIva, TipoIdentificacion, Identificacion, 
+    Observaciones, TipoPersona, Envio, Entrega, ParaEmpresa, IdActividad, 
+    NombreFantasia, Logo, Bloqueado, Motivo, Direccion, IdLocalidad, Provincia, 
+    CP, EMail, ObsEMail, EMailResultados, Telefono, LogoCertificado, Oreste, 
+    TipoCliente, FPago, ObsEval, ObsCE, Generico, SEMail, ObsCO, EMailFactura, 
+    EnvioFactura, EMailInformes, EnvioInforme, Ajuste, SinPF, SinEval, RF, 
+    Estado, Anexo, EMailAnexo, Descuento
+FROM cliente_fila_0_temp;
+
+DROP TABLE cliente_fila_0_temp;
+
+ALTER TABLE autorizados ADD CONSTRAINT autorizados_ibfk_1 FOREIGN KEY (IdEntidad) REFERENCES clientes(Id);
+ALTER TABLE clientesgrupos_it ADD CONSTRAINT clientesgrupos_it_ibfk_2 FOREIGN KEY (IdCliente) REFERENCES clientes(Id);
+ALTER TABLE facturasventa ADD CONSTRAINT facturasventa_ibfk_1 FOREIGN KEY (IdEmpresa) REFERENCES clientes(Id);
+ALTER TABLE fichaslaborales ADD CONSTRAINT fichaslaborales_ibfk_2 FOREIGN KEY (IdEmpresa) REFERENCES clientes(Id);
+ALTER TABLE fichaslaborales ADD CONSTRAINT fichaslaborales_ibfk_3 FOREIGN KEY (IdART) REFERENCES clientes(Id);
+ALTER TABLE hc_casos ADD CONSTRAINT hc_casos_ibfk_2 FOREIGN KEY (IdEmpresa) REFERENCES clientes(Id);
+ALTER TABLE hc_casos ADD CONSTRAINT hc_casos_ibfk_3 FOREIGN KEY (IdART) REFERENCES clientes(Id);
+ALTER TABLE mapas ADD CONSTRAINT mapas_ibfk_1 FOREIGN KEY (IdART) REFERENCES clientes(Id);
+ALTER TABLE mapas ADD CONSTRAINT mapas_ibfk_2 FOREIGN KEY (IdEmpresa) REFERENCES clientes(Id);
+ALTER TABLE notascredito ADD CONSTRAINT notascredito_ibfk_1 FOREIGN KEY (IdEmpresa) REFERENCES clientes(Id);
+ALTER TABLE pagosacuenta ADD CONSTRAINT pagosacuenta_ibfk_1 FOREIGN KEY (IdEmpresa) REFERENCES clientes(Id);
+ALTER TABLE paqfacturacion ADD CONSTRAINT paqfacturacion_ibfk_1 FOREIGN KEY (IdEmpresa) REFERENCES clientes(Id);
+ALTER TABLE parametros ADD CONSTRAINT parametros_ibfk_3 FOREIGN KEY (IdCliCarnet) REFERENCES clientes(Id);
+ALTER TABLE prestaciones ADD CONSTRAINT prestaciones_ibfk_2 FOREIGN KEY (IdEmpresa) REFERENCES clientes(Id);
+ALTER TABLE prestaciones ADD CONSTRAINT prestaciones_ibfk_3 FOREIGN KEY (IdART) REFERENCES clientes(Id);
+
+DELIMITER $$
+CREATE TRIGGER autocomplete_clientes
+BEFORE INSERT ON clientes
+FOR EACH ROW
+BEGIN
+    IF NEW.EMail IS NULL OR NEW.EMail = '' THEN
+        SET NEW.EMail = '';
+    END IF;
+
+	IF NEW.Telefono IS NULL OR NEW.Telefono = '' THEN
+        SET NEW.Telefono = '';
+    END IF;
+
+	IF NEW.ObsEMail IS NULL OR NEW.ObsEMail = '' THEN
+        SET NEW.ObsEMail = '';
+    END IF;
+
+	IF NEW.Direccion IS NULL OR NEW.Direccion = '' THEN
+        SET NEW.Direccion = '';
+    END IF;
+END$$
+DELIMITER;

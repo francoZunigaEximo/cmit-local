@@ -7,16 +7,15 @@ $(function(){
 
         if (cuit && empresa) {
             $.ajax({
-                url: verifycuitEmpresa,
+                url: verifyIdentificacion,
                 type: "GET",
                 data: {
                     Identificacion: cuit,
                     ParaEmpresa: empresa,
                 },
                 success: function (response) {
-                    if (response.existe) {
-                        let cliente = response.cliente,
-                            url = editUrl.replace('__cliente__', cliente.Id);
+                    if (response && Object.keys(response).length > 0) {
+                            url = editUrl.replace('__cliente__', response.Id);
                         $('#editLink').attr('href', url);
 
                         $('#myModal').modal('show');
@@ -49,43 +48,41 @@ $(function(){
                 Identificacion: cuit,
             },
             success: function(response){
-                
-                if(response.existe){
+
+                if(response && Object.keys(response).length > 0){
                     toastr.warning('Ya existe ese cuit registrado en la base de datos','',{timeOut: 1000});
+                    return;
                 }
             }
         });
     });
 
-    $('#Descuento').inputmask('99%', { 
-        numericInput: true, 
-        placeholder: '0%', 
-        rightAlignNumerics: false 
+    $('#Descuento').on('input', function () {
+        let valor = $(this).val().replace('%', '');
+        if (!isNaN(valor) && valor) {
+            $(this).val(valor + '%');
+        }
     });
 
     function buscarLocalidad(id){
-        
-        if(id == ''){
-            return;
-        }else{
+        if(!id) return;
 
-            $.ajax({
-                url: searchLocalidad,
-                type: 'GET',
-                data: {
-                    Id: id,
-                },
-                success: function(response){
-                    let resultado = response.resultado,
-                        contenido = `<option selected value="${resultado.Nombre}">${resultado.Nombre}</option>`;
-                    $('#IdLocalidad').append(contenido);
-                },
-                error: function(xhr){
-                    console.error(xhr);
-                    toastr.error("Hay un error en la busqueda de la localidad. Consulte al administrador", "Error", {timeOut: 1000});
-                }
-            });
-        }
+        $.ajax({
+            url: searchLocalidad,
+            type: 'GET',
+            data: {
+                Id: id,
+            },
+            success: function(response){
+                let resultado = response.resultado,
+                    contenido = `<option selected value="${resultado.Nombre}">${resultado.Nombre}</option>`;
+                $('#IdLocalidad').append(contenido);
+            },
+            error: function(xhr){
+                console.error(xhr);
+                toastr.error("Hay un error en la busqueda de la localidad. Consulte al administrador", "Error", {timeOut: 1000});
+            }
+        });
     }
 
     let clonTipoCliente = localStorage.getItem('clon_TipoCliente'),
@@ -132,7 +129,7 @@ $(function(){
             numero = $('#numeroExtra').val(),
             observacion = $('#obsExtra').val();
 
-        if (prefijo !== '' && numero !== '' && observacion !== '') {
+        if (prefijo && numero && observacion) {
             $('#tablaTelefonos').append(`
                 <tr>
                     <td>${prefijo !== "" ? prefijo : ""}</td>
@@ -151,9 +148,7 @@ $(function(){
                 <input type='hidden' class='telefono-input' name='telefonos[]' value='${datosArrayJSON}'>
             `);
 
-            $('#prefijoExtra').val("");
-            $('#numeroExtra').val("");
-            $('#obsExtra').val("");
+            $('#prefijoExtra, #numeroExtra, #obsExtra').val("");
 
             actualizarInputHidden();
         }
