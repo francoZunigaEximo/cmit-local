@@ -5,22 +5,22 @@ $(function(){
         let usuario = $('#usuario').val();
         let email = $('#email').val();
 
-        if(usuario === '') {
+        if(!usuario) {
             toastr.warning('El usuario no puede estar vacío','',{timeOut: 1000});
             return;
         }
 
-        if(verificarUsuario(usuario) === false) {
+        if(!verificarUsuario(usuario)) {
             toastr.warning("El usuario no puede contener espacios vacíos, caracteres especiales y solo hasta 25 caracteres",'',{timeOut: 1000});
             return;
         }
       
-        if(email === '') {
+        if(!email) {
             toastr.warning('El email no se puede encontrar vacío','',{timeOut: 1000});
             return;
         }
 
-        if(correoValido(email) === false) {
+        if(!correoValido(email)) {
             toastr.warning('El email no es válido','',{timeOut: 1000});
             return;
         }
