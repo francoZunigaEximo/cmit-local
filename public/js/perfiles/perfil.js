@@ -56,17 +56,17 @@ $(document).ready(()=>{
             email = $('#email').val(),
             name = $('#name').val();
 
-        if([0,null,''].includes(email)) {
+        if(!email) {
             toastr.warning('El correo electrónico no puede estar vacío','',{timeOut: 1000});
             return;
         }
 
-        if([0,null,''].includes(name)) {
+        if(!name) {
             toastr.warning('No identificamos al usuario. Consulte con el administrador','',{timeOut: 1000});
             return;
         }
 
-        if(correoValido(email) === false) {
+        if(!correoValido(email)) {
             toastr.warning("El email no es válido",'',{timeOut: 1000});
             return;
         }
@@ -161,8 +161,7 @@ $(document).ready(()=>{
             },
             success: function(response) {
                 let localidades = response.localidades;
-                $('#localidad').empty();
-                $('#localidad').append('<option selected>Elija una opción...</option>');
+                $('#localidad').empty().append('<option selected>Elija una opción...</option>');
                 localidades.forEach(function(localidad) {
                     $('#localidad').append('<option value="' + localidad.id + '">' + localidad.nombre + '</option>');
                 });

@@ -68,7 +68,7 @@ $(function() {
             fecha = $('#Fecha').val();
             empresa = $('#empresa').val(),
             art = $('#art').val(),
-            IdPaciente = $('#IdPaciente').val();
+            IdPaciente = $('#IdPaciente').val(),
             spago = $('#SPago').val(),
             observaciones = $('#Observaciones').val(),
             tipo = $('#Tipo').val(),
@@ -85,43 +85,45 @@ $(function() {
             Obs = $('#Obs').val();
             NroFactProv = $('#NroFactProv').val();
  
+        let factura = [tipo, sucursal, nroFactura];
+
          //Validamos la factura
-        if (spago === 'G' && autorizado === ''){ 
+        if (spago === 'G' && !autorizado){ 
             toastr.warning('Si el medio de pago es gratuito, debe seleccionar quien autoriza.', '', {timeOut: 1000});
             return;
         }
 
-        if (pago === 'B' && spago === '') {
+        if (pago === 'B' && !spago) {
             toastr.warning('Debe seleccionar un "medio de pago" cuando la "forma de pago" es "contado"','', {timeOut: 1000});
             return;
         }
        
-        if (['', null, undefined].includes(pago)) {
+        if (!pago) {
             toastr.warning('Debe seleccionar una "forma de pago"','', {timeOut: 1000});
             return;
         }
 
-        if (pago === 'B' && (tipo == '' || sucursal === '' || nroFactura === '')){
+        if (pago === 'B' && (factura.some(condicion => !condicion))){
             toastr.warning('El pago es contado, asi que debe agregar el número de factura para continuar.','', {timeOut: 1000});
             return;
         }
 
-        if (tipoPrestacion === ''){
+        if (!tipoPrestacion){
             toastr.warning("Atención", "El tipo de prestación no puede ser un campo vacío", "warning", {timeOut: 1000});
             return;
         }
         
-        if ([0, null, '', '0'].includes(art) && tipoPrestacion === 'ART') {
+        if (!art && tipoPrestacion === 'ART') {
             toastr.warning("Debe seleccionar un cliente ART si el tipo de prestación es ART",'', {timeOut: 1000});
             return;
         }
         
-        if (![0, null, undefined, '0'].includes(art) && tipoPrestacion === 'ART' && (['', null, 0].includes(mapas))) {
+        if ((!art || art === '0') && tipoPrestacion === 'ART' && !mapas) {
             toastr.warning("Debe seleccionar un mapa vigente si la prestación es ART y tiene un cliente ART cargado",'', {timeOut: 1000});
             return;
         }
 
-        if (tipoPrestacion === 'ART' && ['', 0, null].includes(mapas)) {
+        if (tipoPrestacion === 'ART' && !mapas) {
             toastr.warning("Debe seleccionar un mapa si la prestación es ART",'', {timeOut: 1000});
             return;
         }
@@ -181,7 +183,7 @@ $(function() {
 
         let empresa = $(this).val();
         
-        if(empresa === null) return;
+        if(!empresa) return;
 
         $.get(checkParaEmpresa, {empresa: empresa})
             .done(function(response){
@@ -718,7 +720,7 @@ $(function() {
             return;
         }
 
-        if (verificarCorreos(EMailInformes) === false) {
+        if (!verificarCorreos(EMailInformes)) {
             toastr.warning('Alguno de los correos no es válido o el mismo se encuentra vacío', '', {timeOut: 1000});
             return;
         }
@@ -842,7 +844,7 @@ $(function() {
 
         let id = $(this).data('id');
         
-        if([null, 0, ''].includes(id)) return;
+        if(!id) return;
 
         swal({
             title: "¿Estás seguro que deseas eliminar?",
@@ -880,7 +882,7 @@ $(function() {
 
         let id = $(this).data('id'), tipo = $(this).hasClass('exportSimple') ? 'exportSimple' : 'exportDetallado';
 
-        if([0, null, undefined, ''].includes(id)) return;
+        if(!id) return;
 
         preloader('on');
         $.get(exResultado, {IdPaciente: id, Tipo: tipo})
@@ -902,7 +904,7 @@ $(function() {
 
         let id = $(this).data('id');
 
-        if(['',0, undefined, null].includes(id)) return;
+        if(!id) return;
 
         swal({
             title: "¿Está seguro que desea eliminar el comentario privado?",
@@ -1019,7 +1021,7 @@ $(function() {
     {
         $('#estudios').empty();
 
-        if([null, 0, ''].includes(ID)) return;
+        if(!ID) return;
         
         preloader('on');
         $.get(await listadoEstudiosImp, {Id: ID})
@@ -1055,7 +1057,7 @@ $(function() {
         
         let val = $('#TipoPrestacion').val(), val2 = $('#art').val();
 
-        if (val === 'ART' && (!['','0', null].includes(val2))) {
+        if (val === 'ART' && (val2)) {
             $('.mapas').show();
             getMap(empresa, art)
         } else {
@@ -1066,7 +1068,7 @@ $(function() {
 
     function cambiosVencimiento(actual){
 
-        if(actual == '') return;
+        if(!actual) return;
 
         let hoy = new Date().toLocaleDateString('en-CA');
         if(hoy > actual){
@@ -1312,7 +1314,7 @@ $(function() {
 
     async function checkExamenes(id) {
         $.get(await buscarEx, {Id: id}, function(response){
-            response === 0 
+            !response
                 ? $('.auditoria, .autorizados, .evaluacion, .banderas').hide()
                 : $('.auditoria, .autorizados, .evaluacion, .banderas').show()  
         })
@@ -1326,7 +1328,7 @@ $(function() {
 
     function checkEstadoEnviar(id) {
         
-        if([0, null, ''].includes(id)) return;
+        if(!id) return;
 
         $.get(btnVisibleEnviar, {Id: id})
             .done(function(response){
@@ -1337,7 +1339,7 @@ $(function() {
 
     async function lstResultadosPrest(idPaciente){
 
-        if([0,null,'', undefined].includes(idPaciente)) return;
+        if(!idPaciente) return;
 
         $('#lstResultadosPrestacion').empty();
         preloader('on');

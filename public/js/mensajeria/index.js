@@ -244,7 +244,7 @@ $(function() {
 
         let id = $(this).data('id');
 
-        if([null, undefined, ''].includes(id)) {
+        if(!id) {
             toastr.warning("No se ha seleccionado ningún registro", '', {timeOut: 1000});
             return;
         }

@@ -11,7 +11,7 @@ $(function(){
             mensaje: '.verMensaje'
         };
 
-        if([null, undefined, ''].includes(id)) {
+        if(!id) {
             toastr.warning("La existe el identificador", "", {timeOut: 1000});
             return;
         }

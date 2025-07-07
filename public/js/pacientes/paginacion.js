@@ -5,7 +5,7 @@ $(function(){
 
         let buscar = $('#buscar').val();
 
-        if (buscar === '') {
+        if (!buscar) {
             toastr.warning('Debe escribir un nombre, apellido o dni','Atención',{timeOut: 1000});
             return;
         }

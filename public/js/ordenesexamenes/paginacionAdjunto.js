@@ -9,12 +9,12 @@ $(function() {
             fechaHasta = $('#fechaHastaAdjunto').val(),
             especialidad = $('#especialidadAdjunto').val();
 
-        if (fechaDesde === '' || fechaHasta === '') {
+        if (!fechaDesde || !fechaHasta) {
             toastr.warning("Las fechas son obligatorias", "Atención", {timeOut: 1000});
             return;
         }
 
-        if (especialidad === '') {
+        if (!especialidad) {
             toastr.warning('Debe seleccionar una especialidad para continuar', 'Atención', {timeOut: 1000});
             return;
         }
