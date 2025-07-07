@@ -49,7 +49,7 @@
                         </button>
                     </div>
                     <div class="mx-1">
-                        <button type="button" id="btnBajaMultiple" class="btn botonGeneral" title="Bloquear">
+                        <button type="button" id="multiple" class="btn botonGeneral" title="Bloquear">
                             <i class="ri-forbid-2-line"></i> Inhabilitar Mult
                         </button>
                     </div>

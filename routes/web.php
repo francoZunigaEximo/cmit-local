@@ -101,8 +101,7 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     //Rutas de Clientes
     Route::get('clientes/check-estado', [ClientesController::class, 'cambioEstado'])->name('clientes.checkEstado');
     Route::get('clientes/forma-pago', [ClientesController::class, 'formaPago'])->name('clientes.formaPago');
-    Route::post('cliente/down', [ClientesController::class, 'baja'])->name('baja');
-    Route::post('clientes/multipleDown', [ClientesController::class, 'multipleDown'])->name('clientes.multipleDown');
+    Route::post('clientes/baja', [ClientesController::class, 'baja'])->name('clientes.baja');
     Route::post('cliente/block', [ClientesController::class, 'block'])->name('clientes.block');
     Route::get('clientes/buscar', [ClientesController::class, 'search'])->name('searchClientes');
     Route::get('cliente/verificar-cuit', [ClientesController::class, 'verifyCuitEmpresa'])->name('verifycuitEmpresa');
@@ -110,7 +109,7 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::post('clientes/observaciones', [ClientesController::class, 'setObservaciones'])->name('clientes.setObservaciones');
     Route::get('cliente/chequear-correo', [ClientesController::class, 'checkEmail'])->name('checkEmail');
     Route::post('cliente/check-opciones', [ClientesController::class, 'checkOpciones'])->name('checkOpciones');
-    Route::get('cliente/verificar-identificacion', [ClientesController::class, 'verifyIdentificacion'])->name('verifyIdentificacion');
+    Route::get('cliente/verificar-identificacion', [ClientesController::class, 'verificarCuit'])->name('verifyIdentificacion');
     Route::get('cliente/exportar-excel', [ClientesController::class, 'excel'])->name('exportExcelClientes');
     Route::get('cliente/check-paraempresa', [ClientesController::class, 'checkParaEmpresa'])->name('checkParaEmpresa');
     Route::get('cliente/bloquear', [ClientesController::class, 'getBloqueo'])->name('getBloqueo');
@@ -244,8 +243,7 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::get('/especialidades/select', [ProveedoresController::class, 'getProveedores'])->name('getProveedores');
     Route::get('/especialidades/buscar', [ProveedoresController::class, 'search'])->name('searchEspecialidad');
     Route::get('/especialidades/exportar/excel', [ProveedoresController::class, 'excel'])->name('especialidadExcel');
-    Route::post('/especialidades/baja-multiple', [ProveedoresController::class, 'multiDown'])->name('multiDownEspecialidad');
-    Route::post('/especialidades/baja', [ProveedoresController::class, 'down'])->name('bajaEspecialidad');
+    Route::post('/especialidades/baja-multiple', [ProveedoresController::class, 'baja'])->name('multiDownEspecialidad');
     Route::get('/especialidades/chequear', [ProveedoresController::class, 'check'])->name('checkProveedor');
     Route::post('/especialidades/guardar', [ProveedoresController::class, 'save'])->name('saveBasico');
     Route::post('/especialidades/actualizar', [ProveedoresController::class, 'updateProveedor'])->name('updateProveedor');

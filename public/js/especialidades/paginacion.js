@@ -4,7 +4,7 @@ $(function(){
         
         let especialidad = $('#especialidad').val(), opciones = $('#opciones').val();
 
-        if(especialidad === '' && opciones === ''){
+        if(!especialidad && !opciones){
 
             toastr.warning("Debe escribir que desea buscar o bien seleccionar un filtro", "Atención", {timeOut: 1000});
             return;
@@ -92,7 +92,7 @@ $(function(){
                                 </a>
                             </div>
                             <div class="bloquear">
-                                <button data-id="${data.IdEspecialidad}" class="blockEsp btn btn-sm iconGeneral" title="Inhabilitar">
+                                <button data-id="${data.IdEspecialidad}" id="baja" class="btn btn-sm iconGeneral" title="Inhabilitar">
                                     <i class="ri-forbid-2-line"></i>
                                 </button>
                             </div>

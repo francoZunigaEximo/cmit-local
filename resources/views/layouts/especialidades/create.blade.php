@@ -112,7 +112,6 @@
 
 <script>
     const getLocalidad ="{{ route('getLocalidades') }}";
-
     let editUrl = "{{ route('especialidades.edit', ['especialidade' => '__especialidades__']) }}";
     const checkProveedor = "{{ route('checkProveedor') }}";
     const saveBasico = "{{ route('saveBasico') }}";
