@@ -251,7 +251,7 @@ $(function(){
 
         let id = $(this).data('id'), tipo = $(this).hasClass('detalles') ? 'detalles' : 'saldo';
 
-        if([null, undefined, ''].includes(id)) {
+        if(!id) {
             toastr.warning("No posee identificador para iniciar el proceso", '', {timeOut: 1000});
             return;
         }
