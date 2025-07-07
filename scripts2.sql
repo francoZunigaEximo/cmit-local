@@ -1495,3 +1495,7 @@ BEGIN
     END IF;
 END$$
 DELIMITER;
+
+INSERT INTO rol_permisos (rol_id, permiso_id) VALUES(13, 119); -- Permiso para administrador faltante en profesionalesEdit
+ALTER TABLE permisos MODIFY COLUMN descripcion LONGTEXT DEFAULT NULL NULL;
+ALTER TABLE roles MODIFY COLUMN descripcion LONGTEXT DEFAULT NULL NULL;
