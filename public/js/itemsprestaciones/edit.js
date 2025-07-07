@@ -21,7 +21,7 @@ $(function() {
     $('#informadores option[value="0"]').text('Elija una opción...');
     checkBloq();
     checkAdjunto(IDITEMPRES, 'informador').then(response => {
-        if (response === true) {
+        if (response) {
             $('.adjuntarInformador').show();
         } else {
             $('.adjuntarInformador').hide();
@@ -29,7 +29,7 @@ $(function() {
     });
 
     checkAdjunto(IDITEMPRES, 'efector').then(response => {
-        if (response === true) {
+        if (response) {
             $('.adjuntarEfector').show();
         } else {
             $('.adjuntarEfector').hide();
@@ -152,7 +152,7 @@ $(function() {
         e.preventDefault();
         let id = $(this).data('id'), tipo = $(this).data('tipo');
 
-        if(id === '' || tipo === ''){
+        if(!id || !tipo){
             toastr.warning("Hay un problema porque no podemos identificar el tipo o la id a eliminar", '', {timeOut: 1000});
             return;
         }
@@ -233,7 +233,7 @@ $(function() {
         let who = $(this).hasClass('asignar') ? 'asignar' : 'asignarI',
             check = (who === 'asignar') ? $('#efectores').val() : $('#informadores').val();
 
-        if(['', null, 0, '0'].includes(check)) {
+        if(!check) {
             toastr.warning("Debe seleccionar un Efector/Informador para poder asignar uno", '', {timeOut: 1000});
             return;
         }
@@ -269,7 +269,7 @@ $(function() {
 
         let checkEmptyE = $('#efectores').val(), checkEmptyI = $('#informadores').val(), who = $(this).attr('id') === 'liberar' ? checkEmptyE : checkEmptyI;
         
-        if (who != '0') {
+        if (who) {
 
             swal({
                 title: "¿Esta seguro que desea liberar el exámen?",
@@ -305,7 +305,7 @@ $(function() {
 
         let lista = {1: 2, 4: 5, 2: 1, 5: 4};
 
-        if (cadj === '0' || cadj === null) return;
+        if (!cadj || cadj === '0') return;
 
         if (cadj in lista) {
             $.post(updateAdjunto, {Id: ID, _token: TOKEN, CAdj: lista[cadj]})
@@ -467,7 +467,7 @@ $(function() {
         
         if(tipo === 'efector') {
 
-            let resultado = await (!['',null,'0'].includes(e) && valCerrar.includes(val));
+            let resultado = await (e && e !== '0') && valCerrar.includes(val);
             
             if (resultado) {
                 $('.liberar, .adjuntarEfector').show();
@@ -475,7 +475,7 @@ $(function() {
             } 
         }else if(tipo === 'informador') {
 
-            let resultado = await (!['',null,'0'].includes(e) && valCerrarI !== val);
+            let resultado = await (e && e !== '0') && valCerrarI !== val;
         
             if (resultado) {
                 $('.liberarI, .adjuntarInformador').show();
@@ -622,7 +622,7 @@ $(function() {
         $.get(getBloqueoItemPrestacion, {Id: ID})
             .done(async function(response){
 
-                if(await response.prestacion === true){
+                if(await response.prestacion){
 
                     $('#Fecha, #ObsExamen, #efectores, #informadores, #actualizarExamen').prop('disabled', true);
                     $('button').removeClass('asignar abrir cerrar asignarI cerrarI');
@@ -656,7 +656,7 @@ $(function() {
 
     function checkearFacturas() {
 
-        if(['', 0, null].includes(ID)) return;
+        if(!ID) return;
 
         $.get(checkFacturas, {IdPrestacion: IDPRESTACION, IdExamen: IDEXAMEN})
             .done(function(response){

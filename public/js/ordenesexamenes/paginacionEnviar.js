@@ -13,7 +13,7 @@ $(function() {
             cerrado = $(this).hasClass('cerradoEE') ? "activo" : null,
             impago = $(this).hasClass('impagoEE') ? "activo" : null;
 
-        if ((completo !== 'activo' || abierto !== 'activo' || cerrado !== 'activo' || impago !== 'activo') && (fechaDesde === '' || fechaHasta === '')) {
+        if ((completo !== 'activo' || abierto !== 'activo' || cerrado !== 'activo' || impago !== 'activo') && (!fechaDesde || !fechaHasta)) {
             toastr.warning("Las fechas son obligatorias",'',{timeOut: 1000});
             return;
         }

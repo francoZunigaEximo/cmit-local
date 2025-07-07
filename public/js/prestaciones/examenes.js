@@ -55,7 +55,7 @@ $(function(){
         
         let paquete = $('#paquetes').val();
         
-        if([null, undefined, ''].includes(paquete)){
+        if(!paquete){
             toastr.warning("Debe seleccionar un paquete para poder añadirlo en su totalidad",'',{timeOut: 1000});
             return;
         }
@@ -106,7 +106,7 @@ $(function(){
             ids.push(id);
         }
 
-        if(ids.length === 0 && checkAll === false){
+        if(ids.length === 0 && !checkAll){
             toastr.warning('No hay examenes seleccionados','',{timeOut: 1000});
             return;
         }  
@@ -173,7 +173,7 @@ $(function(){
             ids.push(id);
         }
 
-        if(ids.length === 0 && checkAll === false){
+        if(ids.length === 0 && !checkAll){
             toastr.warning('No hay examenes seleccionados','',{timeOut: 1000});
             return;
         }
@@ -232,7 +232,7 @@ $(function(){
 
         let checkAll = $('#checkAllExamenes').prop('checked');
 
-        if(ids.length === 0 && checkAll === false){
+        if(ids.length === 0 && !checkAll){
             toastr.warning('No hay examenes seleccionados','',{timeOut: 1000});
             return;
         }
@@ -294,7 +294,7 @@ $(function(){
 
         let checkAll = $('#checkAllExamenes').prop('checked');
 
-        if(ids.length === 0 && checkAll === false){
+        if(ids.length === 0 && !checkAll){
             toastr.warning('No hay examenes seleccionados','',{timeOut: 1000});
             return;
         }
@@ -355,7 +355,7 @@ $(function(){
 
         let checkAll = $('#checkAllExamenes').prop('checked');
 
-        if(ids.length === 0 && checkAll === false){
+        if(ids.length === 0 && !checkAll){
             toastr.warning('No hay examenes seleccionados','',{timeOut: 1000});
             return;
         }
@@ -409,7 +409,7 @@ $(function(){
         let id = $(this).hasClass('addExamen') ? $("#exam").val() : $('#exaCtaDisp').val(),
             idExaCta = $('#exaCtaDisp option:selected').data('id');
 
-        if(['', null, undefined].includes(id)) {
+        if(!id) {
             toastr.warning("Debe seleccionar un examen para poder añadirlo a la lista",'',{timeOut: 1000});
             return;
         }
@@ -539,7 +539,7 @@ $(function(){
 
     async function checkerIncompletos(idPrestacion)
     {
-        if([null,'',0].includes(idPrestacion)) return;
+        if(!idPrestacion) return;
 
         $.get(await checkInc, { Id: idPrestacion }, function(response) {
 
@@ -574,44 +574,28 @@ $(function(){
             for (let i = 0; i < response.length; i++) {
                 const examen = response[i];
 
-                let titleEfector = examen.RegHis === 1 
-                    ? ![undefined,null,0].includes(examen.EfectorFullName) && (examen.EfectorFullName).length > 0 
-                        ? examen.EfectorFullName 
-                        : (examen.IdEfector  === 0 ? '' : examen.DatosEfectorFullName)
-                    : ![undefined,null,0].includes(examen.DatosEfectorFullName) && (examen.DatosEfectorFullName).length > 0 
-                        ? (examen.IdEfector === 0 ? '' : examen.DatosEfectorFullName)
-                        : '',
+                let titleEfector = (examen.RegHis === 1 
+                    ? examen.EfectorFullName || (examen.IdEfector && examen.DatosEfectorFullName)
+                    : examen.DatosEfectorFullName || (examen.IdEfector && examen.DatosEfectorFullName)) ?? '',
                     
-                    fullNameEfector = examen.RegHis === 1 
-                        ? ![undefined,null,0].includes(examen.EfectorApellido) && (examen.EfectorApellido).length > 0 
-                            ? examen.EfectorApellido 
-                            : (examen.IdEfector === 0 ? '' : examen.DatosEfectorApellido)
-                        : ![undefined,null,0].includes(examen.DatosEfectorApellido) && (examen.DatosEfectorApellido).length > 0 
-                            ? (examen.IdEfector === 0 ? '' : examen.DatosEfectorApellido)
-                            : '';
+                    fullNameEfector = (examen.RegHis === 1 
+                        ? examen.EfectorApellido || (examen.IdEfector && examen.DatosEfectorApellido)
+                        : examen.DatosEfectorApellido || (examen.IdEfector && examen.DatosEfectorApellido)) ?? '';
 
-                let titleInformador = examen.Informe === 1 
-                    ? examen.RegHis === 1 
-                        ? ![undefined,null,0].includes(examen.InformadorFullName) && (examen.InformadorFullName).length > 0 
-                            ? examen.InformadorFullName
-                            : (examen.IdInformador === 0 ? '' : examen.DatosInformadorFullName)
-                        : ![undefined,null,0].includes(examen.DatosInformadorFullName) && (examen.DatosInformadorFullName).length > 0 ? (examen.IdInformador === 0 ? '' : examen.DatosInformadorFullName) : ''
-                    : '',
+                let titleInformador = (examen.Informe === 1 && examen.RegHis === 1 
+                        ? examen.InformadorFullName || (examen.IdInformador && examen.DatosInformadorFullName)
+                        : examen.DatosInformadorFullName || (examen.IdInformador && examen.DatosInformadorFullName)) ?? '',
 
-                    fullNameInformador = examen.Informe === 1
-                    ? examen.RegHis === 1
-                        ? ![undefined,null,0].includes(examen.InformadorApellido) && (examen.InformadorApellido).length > 0 
-                            ? examen.InformadorApellido
-                            : (examen.IdInformador === 0 ? '' : examen.DatosInformadorApellido)
-                        : ![undefined,null,0].includes(examen.DatosInformadorApellido) && (examen.DatosInformadorApellido).length > 0 ? (examen.IdInformador === 0 ?  '' : examen.DatosInformadorApellido) : ''
-                    : '';
+                    fullNameInformador = (examen.Informe === 1 && examen.RegHis === 1
+                        ? examen.InformadorApellido || (examen.IdInformador && examen.DatosInformadorApellido)
+                        : examen.DatosInformadorApellido || (examen.IdInformador && examen.DatosInformadorApellido)) ?? '';
 
                 filas += `
                     <tr ${examen.Anulado === 1 ? 'class="filaBaja"' : ''}>
                         <td><input type="checkbox" name="Id_examenes" value="${examen.IdItem}" checked></td>
                         <td data-idexam="${examen.IdExamen}" id="${examen.IdItem}" style="text-align:left">${examen.Nombre} ${examen.Anulado === 1 ? '<span class="custom-badge rojo">Bloqueado</span>' : ''} ${cargaEfector.includes(examen.IdItem) ? '<i title="Carga multiple, efector, desde este exámen" class="ri-file-mark-line verde"></i>' : ''} ${cargaInformador.includes(examen.IdItem) ? '<i title="Carga multiple, informador, desde este exámen" class="ri-file-mark-line naranja"></i>' : ''}</td>
                         <td>
-                            <span id="incompleto" class="${(examen.Incompleto === 0 || examen.Incompleto === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
+                            <span id="incompleto" class="${(examen.Incompleto === 0 || examen.Incompleto === null  ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
                                 <i class="ri-flag-2-line ${examen.Anulado === 0 ? 'incompleto' : ''}"></i>
                             </span>
                         </td>
@@ -621,8 +605,8 @@ $(function(){
                             </span>
                         </td>
                         <td>
-                            <span id="forma" class="${(examen.Forma === 0 || examen.Forma === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
-                                <i class="ri-flag-2-line ${examen.Anulado === 0 ? 'forma' : ''}"></i>
+                            <span id="forma" class="${(examen.Forma === 0 ||  examen.Forma === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
+                                <i class="ri-flag-2-line ${examen.Anulado == 0 ? 'forma' : ''}"></i>
                             </span>
                         </td>
                         <td>
@@ -643,7 +627,7 @@ $(function(){
                         </td>
                         <td class="date text-center capitalize" title="${titleInformador}">${fullNameInformador}
                             <span class="badge badge-soft-${(examen.CInfo === 0 ? 'dark' :(examen.CInfo === 3 ? 'success' : ([1,2].includes(examen.CInfo)) ? 'danger' : ''))}">${(examen.CInfo === 0 || examen.InfAdj === 0 ? '' : (examen.CInfo === 3 ? 'Cerrado' : (examen.CInfo == 2 ? 'Borrador' : (examen.CInfo === 1 ? 'Pendiente': ''))))}</span>
-                            ${examen.InfAdj === 1 ? (examen.CInfo !== 0 ? `<i class="ri-attachment-line ${examen.archivosI > 0 ? 'verde' : 'gris'}"></i>`: ``) : ''}   
+                            ${examen.InfAdj === 1 ? (examen.CInfo ? `<i class="ri-attachment-line ${examen.archivosI > 0 ? 'verde' : 'gris'}"></i>`: ``) : ''}   
                         </td>
                         <td class="phone"><span class="${examen.Facturado === 1 ? 'badge badge-soft-success' : 'custom-badge rojo'}"><i class="ri-check-line"></i></span></td>
                         <td>
@@ -651,7 +635,7 @@ $(function(){
                                 <div class="edit">
                                     <button data-id="${examen.IdItem}" type="button" class="btn btn-sm iconGeneral verExamen" title="Ver" data-bs-toggle="modal" data-bs-target="#modalExamen"><i class="ri-search-eye-line"></i></button>
                                 </div>
-                                ${examen.Anulado === 0 ? `
+                                ${!examen.Anulado ? `
                                     <div class="bloquear">
                                         <button data-bloquear="${examen.IdItem}" class="btn btn-sm iconGeneral bloquearExamen" title="Baja">
                                             <i class="ri-forbid-2-line"></i>
@@ -946,7 +930,7 @@ $(function(){
             let who = $(this).hasClass('ex-asignar') ? 'asignar' : 'asignarI',
                 check = (who === 'asignar') ? $('#ex-efectores').val() : $('#ex-informadores').val();
     
-            if(['', null, 0, '0'].includes(check)) {
+            if(!check || check === '0') {
                 toastr.warning("Debe seleccionar un Efector/Informador para poder asignar uno",'',{timeOut: 1000});
                 return;
             }
@@ -1107,7 +1091,7 @@ $(function(){
                 tipo = $(this).data('tipo'),
                 idExOriginal = $('#ex-identificacion').val();
     
-            if(id === '' || tipo === ''){
+            if(!id || !tipo){
                 toastr.warning("Hay un problema porque no podemos identificar el tipo o la id a eliminar");
                 return;
             }
@@ -1270,7 +1254,7 @@ $(function(){
 
         if(tipo === 'efector') {
                                     
-            let resultado = await (![null,undefined,'',0].includes(number) && valCerrar.includes(parseInt(val, 10)));
+            let resultado = await (number && valCerrar.includes(parseInt(val, 10)));
 
             if (resultado) {
                 await borrarCache();
@@ -1279,7 +1263,7 @@ $(function(){
 
         }else if(tipo === 'informador') {
 
-            let resultado = await (![null,undefined,'',0].includes(number) && valCerrarI !== parseInt(val, 10));
+            let resultado = await (number && valCerrarI !== parseInt(val, 10));
 
             if (resultado) {
                 await borrarCache();
@@ -1320,15 +1304,14 @@ $(function(){
             num = parseInt(e, 10);
         
         if (tipo === 'efector') {
-            let valido = ![null,undefined,'',0].includes(num);
-            let resultado = await (valCerrar.includes(parseInt(val, 10)) && valido);
+            let resultado = await (valCerrar.includes(parseInt(val, 10)) && num);
 
             if(resultado){
                 await borrarCache();
                 $('.ex-liberar, .ex-cerrar').show();   
             
                 checkAdjunto(idItemprestacion, 'efector').then(response => {
-                    if (response === true) {
+                    if (response) {
                         $('.ex-adjuntarEfector').show();
                     } else {
                         $('.ex-adjuntarEfector').hide();
@@ -1350,7 +1333,7 @@ $(function(){
                 $('.ex-adjuntarInformador').show();
 
                 checkAdjunto(idItemprestacion, 'informador').then(response => {
-                    response === true ? $('.ex-adjuntarInformador').show() : $('.ex-adjuntarInformador').hide();
+                    response ? $('.ex-adjuntarInformador').show() : $('.ex-adjuntarInformador').hide();
                 });
 
             }else if(errorEfector) {
@@ -1419,7 +1402,7 @@ $(function(){
                     let contenido = `
                         <tr>
                             <td>${d.Nombre}</td>
-                            <td>${(![null, undefined, ''].includes(d.DescripcionE) ? d.DescripcionE : '')}</td>
+                            <td>${(d.DescripcionE ?? '')}</td>
                             <td>${(d.Adjunto === 0 ? 'Físico' : 'Digital')}</td>
                             <td>${(d.MultiE === 0 ? 'Simple' : 'Multi')}</td>
                             <td>
@@ -1474,7 +1457,7 @@ $(function(){
                         contenido = `
                     <tr>
                         <td>${d.Nombre}</td>
-                        <td>${(![null, undefined, ''].includes(d.DescripcionI) ? d.DescripcionI : '')}</td>
+                        <td>${(d.DescripcionI ?? '')}</td>
                         <td>
                             <div class="d-flex justify-content-center align-items-center gap-2">
                                 <div class="edit">
@@ -1531,7 +1514,7 @@ $(function(){
 
     function listaExEfector(data) {
 
-        if([null, undefined, ''].includes(data)) return;
+        if(!data) return;
         $('.listaGrupoEfector').empty();
 
         for(let index = 0; index < data.length; index++) {
@@ -1551,7 +1534,7 @@ $(function(){
     }
 
     function listaExInformador(data) {
-        if([null, undefined, ''].includes(data)) return;
+        if(!data) return;
         
         $('.listaGrupoInformador').empty();
         for(let index = 0; index < data.length; index++) {
@@ -1608,7 +1591,7 @@ $(function(){
 
 
     async function checkAdjunto(id, tipo) {
-        if (['', 0, null].includes(id)) return;
+        if (!id) return;
 
         return new Promise((resolve, reject) => {
             $.get(checkAdj, { Id: id, Tipo: tipo })
@@ -1658,8 +1641,9 @@ $(function(){
     }
 
     function checkearFacturas() {
+        let id = $('#ex-identificacion').val();
 
-        if(['', 0, null].includes($('#ex-identificacion').val())) return;
+        if(!id) return;
 
         $.get(checkFacturas, {IdPrestacion: $('#ex-prestacion').val(), IdExamen: $('#ex-idExamen').val()})
             .done(function(response){
@@ -1689,7 +1673,7 @@ $(function(){
         function listadoSelectExCta(id) {
         $('#exaCtaDisp').empty()
 
-        if([null, undefined, 0, ''].includes(id)) return;
+        if(!id) return;
 
         preloader('on');
         $.get(listaExCuenta, {Id: id})

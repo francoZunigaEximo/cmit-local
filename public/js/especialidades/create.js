@@ -25,17 +25,17 @@ $(function(){
 
         let Nombre = $('#Nombre').val(), Externo = $('#Externo').val(), Inactivo = 1, Telefono = $('#Telefono').val(), Direccion = $('#Direccion').val(), IdLocalidad = $('#IdLocalidad').val(), Obs = $('#Obs').val();
 
-        if([0,null,''].includes(Nombre)) {
+        if(!Nombre) {
             toastr.warning('El campo Nombre es obligatorio', '', {timeOut: 1000});
             return;
         }
 
-        if([0,null,''].includes(Externo)) {
+        if(!Externo) {
             toastr.warning('Debe especificar si es externo', '', {timeOut: 1000});
             return;
         }
 
-        if([0,null,''].includes(Inactivo)) {
+        if(!Inactivo) {
             toastr.warning('Debe especificar si el campo es inactivo o no', '', {timeOut: 1000});
             return;
         }
@@ -77,8 +77,8 @@ $(function(){
         $.get(checkProveedor, {Nombre: nombre})
             .done(function(response){
 
-                if (response.existe) {
-                    let especialidad = response.especialidades, url = editUrl.replace('__especialidades__', especialidad.Id);
+                if (response && Object.keys(response).length > 0) {
+                    let especialidad = response, url = editUrl.replace('__especialidades__', especialidad.Id);
                     
                     $('#editLink').attr('href', url);
                     $('#advertencia').modal('show');

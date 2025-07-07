@@ -242,12 +242,12 @@ $(function(){
 
         let email = $('#email').val(), name = $('#usuario').val();
         
-        if([null, undefined, ''].includes(email)) {
+        if(!email) {
             toastr.warning("El email no puede estar vacío",'',{timeOut: 1000});
             return;
         }
 
-        if(correoValido(email) === false) {
+        if(!correoValido(email)) {
             toastr.warning("El email no es válido",'',{timeOut: 1000});
             return;
         }
@@ -263,8 +263,9 @@ $(function(){
     });
 
     $(document).on('click', '.agregarRol', function(e){
-        let rol = $('#listaRoles').val(), usuario = $(this).data('id'),  errores = [null, undefined, ''];
-        if(errores.includes(rol) || errores.includes(usuario)) return;
+        let rol = $('#listaRoles').val(), usuario = $(this).data('id');
+        
+        if(!rol || !usuario) return;
 
         swal({
             title: "¿Estas seguro que deseas agregar el rol?",
@@ -277,9 +278,9 @@ $(function(){
                 $.post(addRol, {_token: TOKEN, user: usuario, role: rol})
                     .done(function(response){
                         preloader('off');
-                        if(response.estado === 'false'){
+                        if(!response.estado){
                             toastr.warning(response.msg, '', {timeOut: 1000});
-                        }else if(response.estado === 'true'){
+                        }else if(response.estado){
                             toastr.success(response.msg, '', {timeOut: 1000});
                             checkRol(IdProfesional);
                             perfiles(IdProfesional);
@@ -301,8 +302,8 @@ $(function(){
 
     $(document).on('click', '.eliminar', function(e){
 
-        let usuario = $(this).data('user'), rol = $(this).data('rol'), errores = [null, undefined, '', 0];
-        if(errores.includes(rol) || errores.includes(usuario)) return;
+        let usuario = $(this).data('user'), rol = $(this).data('rol');
+        if(!rol || !usuario) return;
 
         swal({
             title: "¿Estas seguro que deseas eliminar el rol?",
@@ -435,7 +436,7 @@ $(function(){
 
         let perfil = $('#perfiles').val(), especialidad = $('#listaEspecialidad').val();
 
-        if(perfil === '' || especialidad === '') {
+        if(!perfil|| !especialidad) {
             toastr.warning("Debe seleccionar una especialidad y un perfil para poder añadirlo a la lista", '', {timeOut: 1000});
             return;
         }
@@ -558,7 +559,7 @@ $(function(){
 
     function perfiles(id)
     {
-        if([0, null, undefined, ''].includes(id)) return;
+        if(!id) return;
 
         $("#perfiles").empty().append('<option value="" selected>Elija una opción...</option>');
 
@@ -597,7 +598,7 @@ $(function(){
 
         $.get(getPerfiles, {Id: IDPROF})
             .done(function(response){
-                console.log(response)
+
                 preloader('off')
                 let data = response.data;
                 data.forEach(function (d) {

@@ -9,17 +9,17 @@ $(function(){
 
         let Nombre = $('#Nombre').val(), Id = $('#Id').val(), Externo = $('#Externo').val(), Inactivo = $('#Inactivo').val(), Telefono = $('#Telefono').val(), Direccion = $('#Direccion').val(), IdLocalidad = $('#IdLocalidad').val(), Obs = $('#Obs').val(), Multi = $('#Multi').prop('checked'), MultiE = $('#MultiE').prop('checked'), Min = $('#Min').val(), PR = $('#PR').val(), InfAdj = $('#InfAdj').val();
         
-        if(Nombre === ''){
+        if(!Nombre){
             toastr.warning('El campo Nombre es obligatorio', '', {timeOut: 1000});
             return;
         }
 
-        if([0,null,''].includes(Externo)) {
+        if(!Externo) {
             toastr.warning('Debe especificar si es externo', '', {timeOut: 1000});
             return;
         }
 
-        if([0,null,''].includes(Inactivo)) {
+        if(!Inactivo) {
             toastr.warning('Debe especificar si el campo es inactivo o no', '', {timeOut: 1000});
             return;
         }

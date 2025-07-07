@@ -157,7 +157,7 @@ $(function() {
     $('#checkPaciente').on('click', function() {
         let paciente = $('#paciente').select2('data').map(option => option.id);
 
-        if (paciente.length == '') {
+        if (!paciente) {
             toastr.warning("El campo no puede estar vacío. Si su usuario no existe, pruebe con crearlo con el botón nuevo.");
             return;
         }
@@ -174,7 +174,7 @@ $(function() {
 
         let prestacion = $(this).data('id');
         
-        if(prestacion === '') return;
+        if(!prestacion) return;
 
         swal({
             title: "¿Está seguro que desea dar de baja esta prestación?",
@@ -320,7 +320,7 @@ $(function() {
             return row.Id;
         });
     
-        if(!['',0, null].includes(ids)) {
+        if(ids) {
             filters += "nroprestacion:" + nroprestacion + ",";
             filters += "paciente:" + $('#pacienteSearch').val() + ",";
             filters += "empresa:" + $('#empresaSearch').val() + ",";
@@ -330,7 +330,7 @@ $(function() {
             filters += "fechaHasta:" + fechaHasta + ",";
             filters += "estado:" + $('#Estado').val() + ",";
     
-            if((fechaDesde == '' || fechaHasta == '') && nroprestacion == ''){
+            if((!fechaDesde || !fechaHasta) && !nroprestacion){
                 swal('Alerta','La fecha "Desde" y "Hasta" son obligatorias.', 'warning');
                 return;
             }

@@ -60,12 +60,12 @@ $(function(){
         let id = $(this).data('id'),
             tipo = $(this).hasClass('exportSimple') ? 'exportSimple' : 'exportDetallado';
 
-        if([0, null, undefined, ''].includes(id)) return;
+        if(!id) return;
 
         preloader('on');
         $.get(exResultado, {IdPaciente: id, Tipo: tipo})
             .done(function(response){
-                console.log("file path:"+response);
+
                 createFile("excel", response.filePath, generarCodigoAleatorio() + '_reporte');
                 preloader('off');
                 toastr.success('Se ha generado el archivo correctamente','',{timeOut: 1000});

@@ -103,9 +103,8 @@
 <script>
 //Rutas
 const exportExcelClientes = "{{ route('exportExcelClientes') }}";
-const multipleDown = "{{ route('clientes.multipleDown') }}";
+const multipleDown = "{{ route('clientes.baja') }}";
 const SEARCH = "{{ route('searchClientes') }}";
-const baja = "{{ route('baja') }}";
 
 //Constantes
 const GOINDEX = "{{ route('clientes.index') }}";

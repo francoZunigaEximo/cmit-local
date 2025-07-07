@@ -211,12 +211,12 @@ $(function(){
     principal.guardarPrestacion.on('click', async function(e){
         e.preventDefault();
 
-        if (['', null].includes(variables.TipoPrestacion.val())) {
+        if (!variables.TipoPrestacion.val()) {
             toastr.warning('El tipo de prestación no puede ser un campo vacío','', {timeOut: 1000});
             return;
         }
 
-        if (variables.TipoPrestacion.val() === 'ART' && ['0','',null].includes(variables.IdMapa.val())){
+        if (variables.TipoPrestacion.val() === 'ART' && (!variables.IdMapa.val() || variables.IdMapa.val() === '0')){
             toastr.warning('Debe seleccionar un mapa vigente para continuar si su prestacion es ART','', {timeOut: 1000});
             return;
         }
@@ -236,7 +236,7 @@ $(function(){
                 AutorizaSC: variables.AutorizaSC.val() ?? '',
                 IdART: alta.clienteArt.Id ?? 0,
                 IdEmpresa: alta.cliente.Id ?? 0,
-                datos_facturacion_id: ['B', 'A'].includes(variables.PagoLaboral.val()) ? variables.facturacion_id.val() : null,
+                datos_facturacion_id: ['B', 'A'].includes(variables.PagoLaboral.val()) && variables.facturacion_id.val(),
                 Tipo: variables.ElTipo.val(),
                 Sucursal: variables.ElSucursal.val(),
                 NroFactura: variables.ElNroFactura.val(),
@@ -285,7 +285,7 @@ $(function(){
     variables.buscarExCtd.on('click', function(e){
         e.preventDefault();
 
-        if(['', 0, null, undefined].includes(variables.inputExCtd.val())) {
+        if(!variables.inputExCtd.val()) {
             toastr.warning("El campo se encuentra vacío o contiene datos incorrectos");
             return;
         }
@@ -510,7 +510,7 @@ $(function(){
     $(document).on('click','.buscarExamen', function(e){
         e.preventDefault();
 
-        if([null,''].includes(variables.examen.val())) {
+        if(!variables.examen.val()) {
             
             toastr.warning('Debe seleccionar un exámen','',{timeOut: 1000});
             return;
@@ -1006,7 +1006,7 @@ $(function(){
     principal.addPaquete.on('click', function(e){
         e.preventDefault();
         
-        if([null, undefined, ''].includes(variables.paquetes.val())){
+        if(!variables.paquetes.val()){
             toastr.warning("Debe seleccionar un paquete para poder añadirlo en su totalidad",'',{timeOut: 1000});
             return;
         }
@@ -1101,7 +1101,7 @@ $(function(){
 
         let id = [];
 
-        if(['', null, undefined].includes(variables.exam.val())) {
+        if(!variables.exam.val()) {
             toastr.warning("Debe seleccionar un examen para poder añadirlo a la lista", "Atención", { timeOut: 1000 });
             return;
         }
