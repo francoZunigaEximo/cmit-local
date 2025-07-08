@@ -228,6 +228,12 @@ $(function () {
                     variables.PagoLaboral.val(formaPago);
                     variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde'); // color solo a la opcion requerida
 
+                    selectMedioPago(response.FPago);
+
+                    setTimeout(() => {
+                        variables.PagoLaboral.val() === 'B' && variables.PagoLaboral.attr('disabled', true);
+                    }, 2000);
+
                 });
          }
     });
@@ -243,6 +249,23 @@ $(function () {
             variables.PagoLaboral.css('color', 'black');
             $('input[name="TipoPrestacion"]').prop('checked', false); //Quitamos todos los checks y dejamos de cero
             return;
+        
+        }else {
+
+            $.get(getFormaPagoCli, {Id: variables.selectArt.val()}, async function(response){
+
+                let formaPago = !response.FPago ? 'A' : response.FPago;
+                variables.PagoLaboral.val(formaPago);
+                variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde'); // color solo a la opcion requerida
+
+                selectMedioPago(response.FPago);
+
+                setTimeout(() => {
+                    variables.PagoLaboral.val() === 'B' && variables.PagoLaboral.attr('disabled', true);
+                }, 2000);
+
+            });
+
         }
 
     });
