@@ -151,24 +151,27 @@ $(function () {
     });
 
     variables.TipoPrestacion.change(function(){
+
+        variables.PagoLaboral.attr('disabled', false);
         variables.tipoPrestacionHidden.val(variables.TipoPrestacion.val());
         
         variables.TipoPrestacion.filter(':checked').val() === 'MAS' 
             ? variables.divtipoPrestacionPresOtros.show() 
             : variables.divtipoPrestacionPresOtros.hide();
         
-            checkExamenesCuenta(variables.selectClientes.val());
+            checkExamenesCuenta(variables.selectClientes.val()); //ok
     });
 
     variables.TipoPrestacion.change(async function(){
+
+        variables.PagoLaboral.attr('disabled', false);
 
         if (variables.TipoPrestacion.filter(':checked').val() === 'ART') {
             variables.PagoLaboral.find('option[value="P"]').remove();
 
             if(!variables.selectArt.val() || variables.selectArt.val() === '0') {
                 toastr.warning('¡Debe seleccionar una ART para el tipo de prestación ART!','',{timeOut: 1000});
-            
-            
+                    
             }else if (variables.selectArt.val()) {
 
                 $.get(getFormaPagoCli, {Id: variables.selectArt.val()}, function(response){
@@ -176,6 +179,11 @@ $(function () {
                     
                     variables.PagoLaboral.val(formaPago);
                     variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde'); // color solo a la opcion requerida
+
+                    selectMedioPago(response.FPago);
+                    setTimeout(() => {
+                        variables.PagoLaboral.val() === 'B' && variables.PagoLaboral.attr('disabled', true);
+                    }, 2000);
                 });
             } 
 
@@ -186,14 +194,18 @@ $(function () {
                     
                     variables.PagoLaboral.val(formaPago);
                     variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde'); // color solo a la opcion requerida
-
                     selectMedioPago(response.FPago);
-                    response.FPago === 'B' ? variables.PagoLaboral.attr('disabled', true) : variables.PagoLaboral.attr('disabled', false);
+
+                    setTimeout(() => {
+                        variables.PagoLaboral.val() === 'B' && variables.PagoLaboral.attr('disabled', true);
+                    }, 2000);
                 });
         }
     });
 
     variables.selectClientes.on('change', function(){
+
+        variables.PagoLaboral.attr('disabled', false);
 
         if(!variables.selectClientes.val() || variables.selectClientes.val() === '0') {
             variables.PagoLaboral.empty().append(`<option selected="" value="">Elija una opción...</option>
@@ -209,20 +221,20 @@ $(function () {
             variables.TipoPrestacion.filter(':checked').val() !== 'ART' &&  
             variables.TipoPrestacion.filter(':checked').val()
         ) 
-            {
-                
+            {   
                 $.get(getFormaPagoCli, {Id: variables.selectClientes.val()}, async function(response){
 
                     let formaPago = !response.FPago ? 'A' : response.FPago;
                     variables.PagoLaboral.val(formaPago);
                     variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde'); // color solo a la opcion requerida
 
-                    // await response.FPago === 'B' ? variables.PagoLaboral.val('B').prop('disabled', true) : variables.PagoLaboral.val('B').prop('disabled', false);
                 });
          }
     });
 
     variables.selectArt.on('change', function(){
+
+        variables.PagoLaboral.attr('disabled', false);
 
         if((!variables.selectArt.val() || variables.selectArt.val() === '0') && (!variables.selectClientes.val() || variables.selectClientes.val() === '0')) {
             variables.PagoLaboral.empty().append(`<option selected="" value="">Elija una opción...</option>
@@ -233,15 +245,6 @@ $(function () {
             return;
         }
 
-        if(variables.TipoPrestacion.filter(':checked').val() === 'ART') {
-
-            $.get(getFormaPagoCli, {Id: variables.selectArt.val()}, function(response){
-                let formaPago = !response.FPago ? 'A' : response.FPago;
-                variables.PagoLaboral.val(formaPago);
-                variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde'); // color solo a la opcion requerida
-            });
-
-        }
     });
 
     variables.Pago.val(variables.PagoLaboral.val());
@@ -360,6 +363,7 @@ $(function () {
     });
 
     variables.selectClientes.on('change', function(){
+        variables.PagoLaboral.attr('disabled', false);
         let value = $(this).val();
 
         if(!value || value === '0') {
@@ -781,7 +785,6 @@ $(function () {
                     elementos.ObBloqueoEmpresa
                         .find('p')
                         .text(obsEmpresa.Motivo);
-                    //$('.seguirAl').prop('disabled', true).attr('title', 'Boton bloqueado');
                 }
                 
                 if(obsPaciente.Observaciones) {
@@ -842,6 +845,8 @@ $(function () {
                 .add(variables.Sucursal)
                 .add(variables.NroFactura)
                 .val('');
+            
+                //aca
         }
 
         if(['B','A', ''].includes(pago)) {
@@ -895,6 +900,7 @@ $(function () {
                 variables.PagoLaboral.val('P');
                 variables.Pago.val('P');
                 limpiezaInputsPagos();
+                variables.PagoLaboral.attr('disabled', false);
                 return true;
 
             } else {
@@ -902,7 +908,7 @@ $(function () {
                     .add(principal.verListadoExCta)
                     .hide();
 
-                variables.PagoLaboral.find('option[value="P"]').remove();
+                variables.PagoLaboral.find('option[value="P"]').remove();               
                 return;
             }
         } catch (jqXHR) {
