@@ -255,7 +255,7 @@ class LlamadorController extends Controller
             ->where('tipo_profesional', session('Profesional'))
             ->first();
         
-            return response()->json($query);
+        return response()->json($query);
     }
 
     public function asignarProfesional(Request $request)

@@ -80,7 +80,7 @@ $(function(){
             especialidades = $(this).data('especialidades');
 
         variables.profesionalEfector
-            .add(variables.prestacionEfector)
+            .add(variables.prestacion)
             .add(variables.tipoEfector)
             .add(variables.artEfector)
             .add(variables.empresaEfector)

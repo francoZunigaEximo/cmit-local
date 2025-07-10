@@ -41,7 +41,7 @@
                                             
                                         </select>
                                     </div>
-
+                                    @if(session('Profesional') === 'ADMINISTRADOR')
                                     <div class="col-sm-2 mb-3">
                                         <label for="especialidad" class="form-label fw-bolder">Especialidad <span class="required">(*)</span></label>
                                         <input type="text" class="form-control" name="especialidad" id="especialidad" data-id="{{ session('IdEspecialidad')->Id ?? ''}}" value="{{ session('Profesional') === 'EFECTOR' ? session('Especialidad') : 'Sin Especialidad'}}">

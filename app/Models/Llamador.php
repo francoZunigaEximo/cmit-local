@@ -18,6 +18,7 @@ class Llamador extends Model
         'profesional_id',
 	    'prestacion_id',
 	    'itemprestacion_id',
+        'tipo_profesional'
     ];
 
     public $timestamps = false;
