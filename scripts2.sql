@@ -1423,3 +1423,20 @@ ALTER TABLE clientesgrupos DROP INDEX Nombre;
 -- damos de baja estas dos primeras filas de las tablas de paquetes
 UPDATE paqestudios p SET p.Baja = 1 WHERE p.Id  = 0;
 UPDATE paqfacturacion f SET f.Baja = 1 WHERE f.Id = 0; 
+
+
+-- notas de credito
+ALTER TABLE notascredito_it ADD Estado INT NOT NULL DEFAULT 0;
+ALTER TABLE notascredito_it ADD FechaAnulado DATE NULL DEFAULT NULL;
+ALTER TABLE notascredito_it ADD Baja BIT DEFAULT 0;
+
+ALTER TABLE notascredito ADD Baja BIT DEFAULT 0;
+
+-- auditorias
+INSERT INTO db_cmit.auditoriatablas
+(Id, Nombre)
+VALUES(7,'NOTA CREDITO');
+
+INSERT INTO db_cmit.auditoriatablas
+(Id, Nombre)
+VALUES(8,'EXAMEN');

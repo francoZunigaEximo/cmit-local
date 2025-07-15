@@ -18,6 +18,8 @@ use App\Models\ExamenPrecioProveedor;
 use App\Traits\CheckPermission;
 use App\Helpers\FileHelper;
 use App\Helpers\Tools;
+use App\Models\NotaCredito;
+use App\Models\NotaCreditoIt;
 use App\Models\Profesional;
 use App\Models\User;
 use App\Services\Facturas\CheckFacturas;
@@ -1165,6 +1167,13 @@ class ItemPrestacionesController extends Controller
             }
     }
 
+    private function getNotaCredito(int $id): mixed
+    {
+        $item_nota_credito = NotaCreditoIt::where('IdIP', $id)->with('notaCredito')->first();
+        $notaCredito = NotaCredito::where('Id', $item_nota_credito->IdNC)->first();
+        return $notaCredito;
+    }
+
     private function marcarPrimeraCarga(int $id, string $who): void
     {
         if($who === 'multiefector'){
@@ -1203,7 +1212,8 @@ class ItemPrestacionesController extends Controller
                 'multiEfector' => $this->multiEfector($query->IdPrestacion, $query->IdProfesional, $query->examenes->IdProveedor),
                 'multiInformador' => $this->multiInformador($query->IdPrestacion, $query->IdProfesional2, $query->examenes->IdProveedor2),
                 'efectores' => $this->getProfesional($query->IdProfesional),
-                'informadores' => $this->getProfesional($query->IdProfesional2)
+                'informadores' => $this->getProfesional($query->IdProfesional2),
+                'notacredito' => $this->getNotaCredito($id)
             ];
         }
 
