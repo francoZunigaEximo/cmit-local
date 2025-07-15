@@ -249,10 +249,12 @@
                                         <a href="{{ route('facturas.index') }}" class="nav-link enlace-blanco" data-key="t-factura"> Facturación </a>
                                     </li>
                                     @endcan
-                                    @can("notaCredito_show")
+                                    <!-- esto lo tengo que cambiar :) -->
                                     <li class="nav-item">
-                                        <a href="#" class="nav-link enlace-blanco" data-key="t-notaCredito"> Nota de crédito </a>
+                                        <a href="{{ route('notasCredito.index') }}" class="nav-link enlace-blanco" data-key="t-notaCredito"> Nota de crédito </a>
                                     </li>
+                                    @can("notaCredito_show")
+                                    
                                     @endcan
                                 </ul>
                             </div>
