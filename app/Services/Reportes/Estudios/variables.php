@@ -124,6 +124,7 @@ if($vistaPrevia){
     $prestacion->paciente->TipoDocumento = 'DNI';
     $prestacion->paciente->FechaNacimiento = '01-01-1990';
     $prestacion->paciente->LugarNacimiento = 'Lugar de Nacimiento de Prueba';
+    $prestacion->paciente->Nacionalidad = 'Argentino';
     $prestacion->paciente->Sexo = 'Masculino';
     $prestacion->paciente->EstadoCivil = 'Soltero';
     $prestacion->paciente->ObsEC = 'Observaciones de Estado Civil de Prueba';
@@ -154,6 +155,10 @@ if($vistaPrevia){
     $prestacion->IdART = 123456; // Asignar un ID de ART de prueba
     $prestacion->empresa = $cliente;
     $prestacion->paciente->Id = 12345678; // Asignar un ID de paciente de prueba
+
+
+    $datosPaciente->Tareas = "Tareas de prueba";
+    list($a,$m,$d)=explode("-",$fecha);
 }else{
 $prestacion = $this->prestacion($datos['id']);
 $examen = Examen::where('Id', $datos['idExamen'])->first();

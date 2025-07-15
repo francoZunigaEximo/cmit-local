@@ -12,15 +12,11 @@ use FPDF;
 
 class HcPetreven extends Reporte
 {
-    public function render(FPDF $pdf, $datos = ['id', 'idExamen']):void
+    public function render(FPDF $pdf, $datos = ['id', 'idExamen'],$vistaPrevia=false):void
     {
-        $pdf->AddPage();
+        include('variables.php');
         $pdf->Image(public_path(ReporteConfig::$HCPETREVEN),25,25,163); 
         $pdf->Image(public_path(ReporteConfig::$HCPETREVEN1),25,45,163);
-
-        $prestacion = $this->prestacion($datos['id']);
-        $datosPaciente = $this->datosPaciente($datos['id']);
-        $telefonoPaciente = $this->telefono($prestacion->paciente->Id);
 
         if($prestacion->empresa->RF === 1){
             $pdf->SetFont('Arial','B',14);$pdf->SetXY(170,4);$pdf->Cell(0,3,'RF',0,0,'L');$pdf->SetFont('Arial','',8);
@@ -28,8 +24,6 @@ class HcPetreven extends Reporte
 
         if (!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
         else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
-
-        $paciente = $prestacion->paciente->Apellido.' '.$prestacion->paciente->Nombre;
 
         $pdf->SetFont('Arial','',7);$pdf->SetXY(10,5);$pdf->Cell(0,3,'1',0,0,'L');
         switch ($prestacion->TipoPrestacion) {
