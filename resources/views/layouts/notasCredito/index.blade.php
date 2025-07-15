@@ -32,25 +32,122 @@
             <div class="tab-pane active" id="clientes" role="tabpanel">
                 <div class="card">
                     <div class="card-body">
+                        <div class="row">
+                            <div class="col-3">
+                                <label for="">Desde</label>
+                                <input type="date" class="form-control" id="desde" name="desde">
+                            </div>
+                            <div class="col-3">
+                                <label for="">Hasta</label>
+                                <input type="date" class="form-control" id="hasta" name="hasta">
+                            </div>
+                            <div class="col-3">
+                                <label for="">Cliente</label>
+                                <select class="form-control" id="cliente" name="cliente">
+                                    <option value="">Seleccione un cliente</option>
+                                </select>
+                            </div>
+                            <div class="col-3">
+                                <label for="">CUIT</label>
+                                <input type="text" class="form-control" id="cuit" name="cuit">
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-12 d-flex justify-content-end">
+                                <button type="button" class="btn botonGeneral btnExcelClientesItemsAnulados m-1">
+                                    <i class="ri-file-excel-line align-bottom me-1"></i> Exportar
+                                </button>
+                                <button class="btn botonGeneral m-1" id="buscarCliente">Buscar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
                         <div class="table-responsive">
                             <table id="listaClientes" class="table nowrap align-middle">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th class="sort">Cliente</th>
-                                            <th class="sort">CUIT</th>
-                                            <th>Acciones</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="list form-check-all">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="sort">Cliente</th>
+                                        <th class="sort">CUIT</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="list form-check-all">
 
-                                    </tbody>
-                                </table>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="tab-pane" id="notas" role="tabpanel">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-3">
+                                <label for="">Desde</label>
+                                <input type="date" class="form-control" id="fechaNotaDesde" name="fechaDesde">
+                            </div>
+                            <div class="col-3">
+                                <label for="">Hasta</label>
+                                <input type="date" class="form-control" id="fechaNotaHasta" name="fechaHasta">
+                            </div>
+                            <div class="col-3">
+                                <label for="">Nro Desde</label>
+                               <input type="number" class="form-control" id="NroDesde" name="NroDesde" min="0" >
+                            </div>
+                            <div class="col-3">
+                                <label for="">Nro Hasta</label>
+                                <input type="number" class="form-control" id="NroHasta" name="NroHasta" min="0">
+                            </div>
+                            <div class="col-3">
+                                <label for="">Cliente</label>
+                                <select class="form-control" id="clienteNota" name="cliente">
+                                    <option value="">Seleccione un cliente</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-12 d-flex align-items-end justify-content-end">
+                                <button type="button" class="btn botonGeneral btnEliminarNotas m-1" onclick="eliminarNotaCreditoMasivo()">
+                                    <i class="ri-delete-bin-5-line align-bottom me-1"></i> Eliminar Seleccionadas
+                                </button>
+                                <button type="button" class="btn botonGeneral btnExcelNotas m-1">
+                                    <i class="ri-file-excel-line align-bottom me-1"></i> Exportar
+                                </button>
+                                <button class="btn btn-primary m-1" id="buscarNotas">Buscar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="listaNotas" class="table nowrap align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="sort">
+                                            <div class="form-check form-check-primary font-size-16">
+                                                <input class="form-check-input" type="checkbox" id="check-todas-notas">
+                                            </div>
+                                        </th>
+                                        <th class="sort">Id</th>
+                                        <th class="sort">NC</th>
+                                        <th class="sort">Fecha</th>
+                                        <th class="sort">Empresa</th>
+                                        <th class="sort">CUIT</th>
+                                        <th class="sort">Observacion</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="list form-check-all">
 
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -67,6 +164,12 @@
 
 <script>
     const getClientes = "{{ route('notasCredito.getClientes') }}";
+    const getNotas = "{{ route('notasCredito.getNotaCredito') }}";
+    const getClientesSelect = "{{ route('getClientes') }}";
+    const eliminarNotaCreditoPost = "{{ route('notasCredito.eliminarNotaCredito') }}";
+    const exportarNotaCreditoExcel = "{{ route('notasCredito.exportDetalleNotaCreditoExcel') }}";
+    const eliminarNotaCreditoMasivoPost = "{{ route('notasCredito.eliminarNotaCreditoMasivo') }}";
+    const exportClientesItemsAnuladosExcel = "{{ route('notasCredito.exportClientesItemsAnuladosExcel') }}";
 </script>
 
 @push('styles')

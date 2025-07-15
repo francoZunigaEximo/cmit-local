@@ -13,7 +13,7 @@ class Tools
         return bin2hex(random_bytes($longitud/2));
     }
 
-    public static function generarQR($tipo, $prestacionId, $examenId, $pacienteId, $out, $pdf): mixed
+    public static function generarQR($tipo, $prestacionId, $examenId, $pacienteId, $out, $pdf = null): mixed
     {
         $paciente = Paciente::find($pacienteId);
         $prestacion = Prestacion::find($prestacionId);
@@ -28,13 +28,13 @@ class Tools
         $code = strtoupper($tipo) . $prestacionId . $examenId . $pacienteId;
 
         QrCode::size(300)->format('png')->generate($code, $path);
-
-        $pdf->SetXY(100,5);$pdf->Cell(85,3,$paciente->Apellido.' '.$paciente->Nombre,0,0,'R');
-        $pdf->SetXY(100,10);$pdf->Cell(85,3,$paciente->Documento,0,0,'R');
-        $pdf->SetXY(100,15);$pdf->Cell(85,3,$prestacion->Fecha,0,0,'R');
-        
-        $pdf->Image($path, 190, 5, 15, 15);
-
+        if($pdf){
+            $pdf->SetXY(100,5);$pdf->Cell(85,3,$paciente->Apellido.' '.$paciente->Nombre,0,0,'R');
+            $pdf->SetXY(100,10);$pdf->Cell(85,3,$paciente->Documento,0,0,'R');
+            $pdf->SetXY(100,15);$pdf->Cell(85,3,$prestacion->Fecha,0,0,'R');
+            
+            $pdf->Image($path, 190, 5, 15, 15);
+        }
         return $out === 'texto' ? $code : $path;
     }
 

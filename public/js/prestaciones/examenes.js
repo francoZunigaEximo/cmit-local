@@ -652,13 +652,14 @@ $(function(){
                                 <div class="edit">
                                     <button data-id="${examen.IdItem}" type="button" class="btn btn-sm iconGeneral verExamen" title="Ver" data-bs-toggle="modal" data-bs-target="#modalExamen"><i class="ri-search-eye-line"></i></button>
                                 </div>
-                                ${examen.Anulado === 0 ? `
+                                ${examen.Anulado === 0 && examen.IdNotaCredito === null ? `
                                     <div class="bloquear">
                                         <button data-bloquear="${examen.IdItem}" class="btn btn-sm iconGeneral bloquearExamen" title="Baja">
                                             <i class="ri-forbid-2-line"></i>
                                         </button>
                                     </div>
-                                ` : ''}
+                                ` : examen.IdNotaCredito === null ? `<button class="btn btn-sm iconGeneral edit-item-btn btnReactivar" data-id="${examen.IdItem}" type="button"><i class="ri-arrow-up-circle-fill"></i></button>` 
+                                    : `<button class="btn btn-sm iconGeneral" type="button" title="Este examen esta en una nota de credito"><i class="ri-file-text-fill" style="color: red"></i></button>`}
                                 <div class="remove">
                                     <button data-delete="${examen.IdItem}" class="btn btn-sm iconGeneral deleteExamen" title="Eliminar">
                                         <i class="ri-delete-bin-2-line"></i>
@@ -709,7 +710,7 @@ $(function(){
                       pacientes = response.paciente.paciente,
                       examenes = itemprestaciones.examenes,
                       factura = itemprestaciones.facturadeventa,
-                      notaCreditoEx = itemprestaciones?.notaCreditoIt?.notaCredito;
+                      notaCreditoEx = response.notacredito;
 
                 const eventos = [
                     eventoAbrir,
@@ -1239,6 +1240,37 @@ $(function(){
 
     });
   
+    $(document).on('click', '.btnReactivar', function(e) {
+        e.preventDefault();
+        let id = $(this).data('id');
+
+        swal({
+            title: "¿Está seguro que desea reactivar el examen?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if (confirmar) {
+                preloader('on');
+                $.post(reactivarItem, {id: id, _token: TOKEN})
+                    .done(function(response){
+                        preloader('off');
+                        toastr.success(response.msg,'',{timeOut: 1000});
+                         $('#listaExamenes').empty();
+                            $('#exam').val([]).trigger('change.select2');
+                            $('#addPaquete').val([]).trigger('change.select2');
+                            cargarExamen();
+                            contadorExamenes(ID);
+                    })
+                    .fail(function(jqXHR){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
+                    });
+            }
+        });
+    })
+
     async function asignarModal(e, tipo){
 
         let efector = $('#ex-efectores').val();

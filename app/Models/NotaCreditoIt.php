@@ -15,6 +15,14 @@ class NotaCreditoIt extends Model
 
     public $timestamps = false;
 
+    protected $fillable = [
+        'Id',
+        'IdNC',
+        'IdIP',
+        'Estado',
+        'FechaAnulado',
+        'Baja'
+    ];
     public function itemPrestacion()
     {
         return $this->hasOne(ItemPrestacion::class, 'Id', 'IdIP');

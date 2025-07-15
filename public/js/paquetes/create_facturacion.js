@@ -385,6 +385,7 @@ $('#btnRegistrar').on('click', function (e) {
     let idEmpresa = $("#empresaSelect2").val();
 
     if ( validaciones()) {
+        
         $.ajax({
                 url: postPaqueteFacturacionCreate,
                 type: 'POST',

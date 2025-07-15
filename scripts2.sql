@@ -1325,3 +1325,14 @@ ALTER TABLE itemsprestaciones MODIFY COLUMN IdProfesional2 INT NOT NULL DEFAULT 
 ALTER TABLE notascredito_it ADD Estado INT NOT NULL DEFAULT 0;
 ALTER TABLE notascredito_it ADD FechaAnulado DATE NULL DEFAULT NULL;
 ALTER TABLE notascredito_it ADD Baja BIT DEFAULT 0;
+
+ALTER TABLE notascredito ADD Baja BIT DEFAULT 0;
+
+-- auditorias
+INSERT INTO db_cmit.auditoriatablas
+(Id, Nombre)
+VALUES(7,'NOTA CREDITO');
+
+INSERT INTO db_cmit.auditoriatablas
+(Id, Nombre)
+VALUES(8,'EXAMEN');
