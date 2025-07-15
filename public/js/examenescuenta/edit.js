@@ -348,12 +348,12 @@ $(function(){
     $(document).on('click', '.deleteItem, .deleteItemMasivo', function(e){
         e.preventDefault();
          
-        var id;
+        let id;
 
-        if ($(this).hasClass('deleteItem') === true ){
+        if ($(this).hasClass('deleteItem')){
 
             id = $(this).data('id');
-            if(id === null || id === '') return;
+            if(!id) return;
         
         } else {
 
@@ -365,7 +365,7 @@ $(function(){
 
             let checkAll =$('#checkAll').prop('checked');
 
-            if(id.length === 0 && checkAll === false){
+            if(id.length === 0 && !checkAll){
                 toastr.warning('No hay items seleccionados', 'Atención','', {timeOut: 1000});
                 return;
             }
@@ -396,7 +396,7 @@ $(function(){
 
         let id = $(this).data('id'), tipo = $(this).hasClass('exportar') ? 'excel' : 'pdf';
 
-        if([null, undefined, ""].includes(id)) {
+        if(!id) {
             toastr.warning('No hay datos para exportar','', {timeOut: 1000});
             return;
         }

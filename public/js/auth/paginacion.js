@@ -1,10 +1,11 @@
-let nombre = $('#nombre').val(), 
-    usuario = $('#usua').val(), 
-    rol = $('#rol').val(), 
-    condiciones = [nombre, usuario, rol],
-    idSesion = $('#ID').val();
-
 $(function() {
+
+    let nombre = $('#nombre').val(), 
+        usuario = $('#usua').val(), 
+        rol = $('#rol').val(), 
+        condiciones = [nombre, usuario, rol],
+        idSesion = $('#ID').val(),
+        tabla = "#listaUsuarios";
 
     let informacion = {
             
@@ -19,10 +20,6 @@ $(function() {
         ajax: {
             url: SEARCHUSUARIO,
             data: function (d) {
-                let nombre = $('#nombre').val();
-                let usuario = $('#usua').val();
-                let rol = $('#rol').val();
-
                 d.nombre = nombre;
                 d.usuario = usuario;
                 d.rol = rol;
@@ -44,7 +41,7 @@ $(function() {
             {
                 data: null,
                 render: function(data){
-                    let arr = [null, undefined].includes(data.RolUsuario) ? [] : (data.RolUsuario).split(',');
+                    let arr = !data.RolUsuario ? [] : (data.RolUsuario).split(',');
                     let result = '';
                     arr.forEach(element => {
                         result += `<span class="custom-badge nuevoAzul">${element}</span> `;
@@ -103,13 +100,12 @@ $(function() {
         },
     };
 
-       let dataTable = new DataTable("#listaUsuarios", informacion);
+       let dataTable = new DataTable(tabla, informacion);
 
        $(document).on('click', '.buscarUsuario', function (e) {
             e.preventDefault();
-           let nombre = $('#nombre').val(), usuario = $('#usua').val(),rol = $('#rol').val();
    
-           if (nombre === '' && usuario === '' && rol === '') {
+           if (condiciones.every(condicion => !condicion)) {
                toastr.warning("Debe seleccionar algún filtro para buscar",'',{timeOut: 1000});
                return;
            }
@@ -119,7 +115,7 @@ $(function() {
            informacion.ajax.data.rol = rol;
    
            dataTable.clear().destroy();
-           dataTable = new DataTable("#listaUsuarios", informacion);
+           dataTable = new DataTable(tabla, informacion);
        });
 
 });

@@ -8,7 +8,7 @@ $(function() {
             fechaHasta = $('#fechaHasta').val(),
             prestacion = $('#prestacion').val();
 
-        if ((fechaDesde === '' || fechaHasta === '') && prestacion === '') {
+        if ((!fechaDesde || !fechaHasta) && !prestacion) {
             toastr.warning("Las fechas son obligatorias", "Atención", {timeOut: 1000});
             return;
         }
@@ -18,14 +18,14 @@ $(function() {
         $(document).on('change', '#especialidad', function(){
             let nuevoValor = $(this).val();
 
-            if(['',0, undefined].includes(nuevoValor)) return; //evitamos la recarga vacia
+            if(!nuevoValor) return; //evitamos la recarga vacia
             
             if (nuevoValor !== especialidad) {
                 especialidad = nuevoValor;
             }
         });
 
-        if (especialidad === '') {
+        if (!especialidad) {
             toastr.warning("Debe seleccionar una especialidad",'',{timeOut: 1000});
             return;
         }

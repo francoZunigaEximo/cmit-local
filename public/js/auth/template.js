@@ -14,7 +14,7 @@ $(function() {
     function opcionesChoise(id)
     {
         const select = $("#choisePerfil");
-        if([0,'',null,undefined].includes(id)) return;
+        if(!id) return;
 
         select.empty().append('<option value="" selected>Elija una opción...</option>');
 
@@ -47,7 +47,7 @@ $(function() {
 
         let tipo = $('#choisePerfil').val();
 
-        if(profesional === '' || tipo === '') return;
+        if(!profesional || !tipo) return;
 
         $('#choiseEspecialidad').empty().append('<option value="" selected>Elija una opción...</option>');
 
@@ -70,7 +70,7 @@ $(function() {
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
             `;
-        if(especialidad === '' || perfil === ''){
+        if(!especialidad || !perfil){
             $('.message-sesion').empty().append(error);
             return;
         }

@@ -126,44 +126,22 @@ class ProveedoresController extends Controller
         return response()->json(['proveedores' => $resultados]);
     }
 
-    public function down(Request $request): mixed
+
+    public function baja(Request $request): mixed
     {
         if(!$this->hasPermission('especialidades_delete')) {
             return response()->json(['msg' => 'No tiene permisos'], 403);
         }
 
-        $especialidad = Proveedor::find($request->Id);
-
-        if($especialidad){
-
-            $especialidad->Inactivo = 1;
-            $especialidad->save();
-
-            return response()->json(['msg' => 'Se ha dado de baja la especialidad de manera correcta'], 200);
-        }else{
-            return response()->json(['msg' => 'No se ha podido dar de baja la especialidad'], 500);
-        }
-    }
-
-    public function multiDown(Request $request): mixed
-    {
-        if(!$this->hasPermission('especialidades_delete')) {
-            return response()->json(['msg' => 'No tiene permisos'], 403);
+        if(empty($request->input('ids'))) {
+             return response()->json(['msg' => 'No se ha podido realizar la acción.'], 409);
         }
 
-        $ids = $request->input('ids');
-        if (! is_array($ids)) {
-            $ids = [$ids];
-        }
+        $ids = (array) $request->input('ids');
+        Proveedor::whereIn('Id', $ids)->update(['Inactivo' => 1]);
 
-        $query = Proveedor::whereIn('id', $ids)->update(['Inactivo' => 1]);
-
-        if($query) {
-            return response()->json(['msg' => 'Se ha dado de baja correctamente'], 200);
-        }else{
-            return response()->json(['msg' => 'No se ha podido realizar la acción.'], 409);
-        }
-
+        return response()->json(['msg' => 'Se ha dado de baja correctamente'], 200);
+        
     }
 
     public function check(Request $request)
@@ -173,9 +151,8 @@ class ProveedoresController extends Controller
         }
 
         $especialidad = Proveedor::where('Nombre', $request->Nombre)->first();
-        $existe = $especialidad !== null;
 
-        return response()->json(['existe' => $existe, 'especialidades' => $especialidad]);
+        return response()->json($especialidad);
     }
 
     public function save(Request $request)
@@ -185,17 +162,10 @@ class ProveedoresController extends Controller
         }
 
         $Id = Proveedor::max('Id') + 1;
+        $data = $request->all();
+        $data['Id'] = $Id;
 
-        $query = Proveedor::create([
-            'Id' => $Id,
-            'Nombre' => $request->Nombre,
-            'Telefono' => $request->Telefono ?? '',
-            'Direccion' => $request->Direccion ?? '',
-            'IdLocalidad' => $request->IdLocalidad,
-            'Inactivo' => $request->Inactivo,
-            'Externo' => $request->Externo,
-            'Obs' => $request->Obs
-        ]);
+        $query = Proveedor::create($data);
 
         if($query) {
             return response()->json(['msg' => 'Se ha registrado la nueva especialidad de manera correcta', 'especialidad' => $Id], 200);
@@ -240,10 +210,7 @@ class ProveedoresController extends Controller
             return response()->json(['msg' => 'No tiene permisos'], 403);
         }
 
-        $ids = $request->input('Id');
-        if (! is_array($ids)) {
-            $ids = [$ids];
-        }
+        $ids = (array) $request->input('Id');
 
         $especialidades = Proveedor::select(
                 'Id as IdEspecialidad',

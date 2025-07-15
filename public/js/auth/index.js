@@ -109,7 +109,7 @@ $(function(){
     $(document).on('click', '.baja', function(e){
         let id = $(this).data('id');
 
-        if([null, undefined, 0].includes(id)) return;
+        if(!id) return;
 
         swal({
             title: "¿Estas seguro que deseas eliminar al usuario?",
@@ -145,7 +145,7 @@ $(function(){
     $(document).on('click', '.bloquear', function(e){
         let id = $(this).data('id');
 
-        if([null, undefined, 0].includes(id)) return;
+        if(!id) return;
 
         swal({
             title: "¿Estas seguro que deseas realizar la acción?",
@@ -179,7 +179,7 @@ $(function(){
     $(document).on('click', '.cambiarPass', function(e){
         let id = $(this).data('id');
 
-        if([null, undefined, 0].includes(id)) return;
+        if(!id) return;
 
         swal({
             title: "¿Estas seguro que deseas resetear la contraseña?",
@@ -214,7 +214,7 @@ $(function(){
 
         let id = $(this).data('id');
 
-        if([null, 0, undefined, ''].includes(id)) return;
+        if(!id) return;
 
         swal({
             title: "¿Esta seguro que deseas cerrar la sesion del usuario?",

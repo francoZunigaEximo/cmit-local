@@ -4,8 +4,7 @@ $(function() {
 
         let dniPrestacion = $('#dniPrestacion').val();
 
-
-        if(dniPrestacion === ''){
+        if(!dniPrestacion){
             toastr.info('El campo del DNI es obligatorio', 'Atención');
             return;
         }

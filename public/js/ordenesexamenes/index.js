@@ -213,7 +213,7 @@ $(function() {
             ids.push($(this).val());
         });
 
-        if (profesional == '' || profesional == '0') { 
+        if (!profesional|| profesional === '0') { 
             toastr.warning('No se ha seleccionado un Profesional para asignar','',{timeOut: 1000});
             return;
         }
@@ -260,7 +260,7 @@ $(function() {
 
         let checkAll =$('#checkAllAsignado').prop('checked');
 
-        if(ids.length === 0 && checkAll === false){
+        if(ids.length === 0 && !checkAll){
             toastr.warning('No hay examenes seleccionados', 'Atención', {timeOut: 1000});
             return;
         }
@@ -346,7 +346,7 @@ $(function() {
 
         let checkAll =$(obj[seleccion][1]).prop('checked');
 
-        if(ids.length === 0 && checkAll === false){
+        if(ids.length === 0 && !checkAll){
             toastr.warning('No hay examenes seleccionados','',{timeOut: 1000});
             return;
         }
@@ -558,7 +558,7 @@ $(function() {
     
         let checkAll = $(obj[opcion][1]).prop('checked');
 
-        if(ids.length === 0 && checkAll === false){
+        if(ids.length === 0 && !checkAll){
             toastr.warning('No hay examenes seleccionados', 'Atención', {timeOut: 1000});
             return;
         }

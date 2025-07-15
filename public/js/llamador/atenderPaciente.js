@@ -30,7 +30,7 @@ $(function(){
         e.preventDefault();
         accion = $(this).hasClass('abrir') ? 'abrir' : 'cerrar';
 
-        if(['', 0, undefined, null].includes(accion));
+        if(!accion);
 
         console.log(accion);
     });

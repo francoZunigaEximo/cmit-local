@@ -159,32 +159,11 @@ class ClientesController extends Controller
         if (!$this->hasPermission("clientes_edit")) {
             return response()->json(['msg' => 'No tiene permisos'], 403);
         }
-
-        $nuevoId = Cliente::max('Id') + 1;
-
-        Cliente::create([
-            'Id' => $nuevoId,
-            'TipoCliente' => $request->TipoCliente,
-            'Identificacion' => $request->Identificacion,
-            'ParaEmpresa' => $request->ParaEmpresa,
-            'RazonSocial' => $request->RazonSocial,
-            'CondicionIva' => $request->CondicionIva,
-            'NombreFantasia' => $request->NombreFantasia,
-            'EMail' => $request->EMail ?? '',
-            'Telefono' => $request->Telefono,
-            'ObsEMail' => $request->ObsEMail ?? '',
-            'Direccion' => $request->Direccion ?? '',
-            'IdLocalidad' => $request->IdLocalidad,
-            'Provincia' => $request->Provincia,
-            'CP' => $request->CP,
-            'Bloqueado' => '0',
-            'FPago' => $request->FPago
-        ]);
         
-        $this->setTelefono($nuevoId, $request->telefonos);
+        $cliente = Cliente::create($request->all());
+        $this->setTelefono($cliente->Id, $request->telefonos);
 
-        return redirect()->route('clientes.edit', ['cliente' => $nuevoId]);
-
+        return redirect()->route('clientes.edit', ['cliente' => $cliente->Id]);
     }
 
     public function edit(Cliente $cliente)
@@ -215,37 +194,22 @@ class ClientesController extends Controller
 
     }
 
-    public function multipleDown(Request $request): mixed
-    {
-
-        if (!$this->hasPermission("clientes_delete")) {
-            return response()->json(['msg' => 'No tiene permisos'], 403);
-        }
-
-        $ids = $request->input('ids');
-        if (! is_array($ids)) {
-            $ids = [$ids];
-        }
-
-        Cliente::whereIn('id', $ids)->update(['Estado' => 0]);
-        return response()->json(['msg' => 'Se ha dado de baja correctamente'], 200);
-    }
-
     public function baja(Request $request): mixed
     {
         if (!$this->hasPermission("clientes_delete")) {
             return response()->json(['msg' => 'No tiene permisos'], 403);
         }
 
-        $cliente = Cliente::find($request->Id);
-        
-        if($cliente)
-        {
-            $cliente->update(['Estado' => 0]);
-            return response()->json(['msg' => 'Se ha dado de baja correctamente'], 200);
+        $ids = (array) $request->input('ids');
+
+        if(empty($ids)) {
+            response()->json(['msg' => 'No hay clientes para dar de baja'], 409);
         }
 
+        Cliente::whereIn('id', $ids)->update(['Estado' => 0]);
+        return response()->json(['msg' => 'Se ha dado de baja correctamente'], 200);
     }
+
 
     public function block(Request $request)
     {
@@ -253,39 +217,33 @@ class ClientesController extends Controller
             return response()->json(['msg' => 'No tiene permisos'], 403);
         }
 
-        $cliente = Cliente::find($request->cliente);
-        if($cliente)
-        {
-            $cliente->update(['Motivo' => $request->motivo, 'Bloqueado' => '1']);
-            return response()->json(['msg' => 'El bloqueo se ha realizado de manera correcta'], 200);
+        if(empty($request->cliente)) {
+            response()->json(['msg' => 'No hay clientes para bloquear'], 409);
         }
 
+        Cliente::find($request->cliente)->update(
+            ['Motivo' => $request->motivo, 
+            'Bloqueado' => '1']
+        );
+        
+        return response()->json(['msg' => 'El bloqueo se ha realizado de manera correcta'], 200);
     }
 
-    public function verifyIdentificacion(Request $request): mixed
+    public function verificarCuit(Request $request): mixed
     {
         if (!$this->hasPermission("clientes_edit")) {
             return response()->json(['msg' => 'No tiene permisos'], 403);
         }
 
-        $cliente = Cliente::where('Identificacion', $request->Identificacion)->first();
-        $existe = $cliente !== null;
+        $query = Cliente::where('Identificacion', $request->Identificacion);
 
-        return response()->json(['existe' => $existe, 'cliente' => $cliente]);
-    }
-
-    public function verifyCuitEmpresa(Request $request): mixed
-    {
-        if (!$this->hasPermission("clientes_edit")) {
-            return response()->json(['msg' => 'No tiene permisos'], 403);
+        if(!empty($request->ParaEmpresa)) {
+            $query->where('ParaEmpresa', $request->ParaEmpresa);
         }
 
-        $cliente = Cliente::where('Identificacion', $request->Identificacion)
-            ->where('ParaEmpresa', $request->ParaEmpresa)
-            ->first();
-        $existe = $cliente !== null;
+        $cliente = $query->first();
 
-        return response()->json(['existe' => $existe, 'cliente' => $cliente]);
+        return response()->json($cliente);
     }
 
     public function setObservaciones(Request $request)
