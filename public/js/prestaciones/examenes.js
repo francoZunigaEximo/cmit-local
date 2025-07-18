@@ -589,7 +589,7 @@ $(function(){
                     fullNameInformador = (examen.Informe === 1 && examen.RegHis === 1
                         ? examen.InformadorApellido || (examen.IdInformador && examen.DatosInformadorApellido)
                         : examen.DatosInformadorApellido || (examen.IdInformador && examen.DatosInformadorApellido)) ?? '';
-
+                console.log(examen.IdNotaCredito);
                 filas += `
                     <tr ${examen.Anulado === 1 ? 'class="filaBaja"' : ''}>
                         <td><input type="checkbox" name="Id_examenes" value="${examen.IdItem}" checked></td>
