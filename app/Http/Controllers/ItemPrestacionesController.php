@@ -1167,7 +1167,7 @@ class ItemPrestacionesController extends Controller
 
     private function getNotaCredito(int $id): mixed
     {
-        $item_nota_credito = NotaCreditoIt::where('IdIP', $id)->with('notaCredito')->first();
+        $item_nota_credito = NotaCreditoIt::where('IdIP', $id)->first();
         $notaCredito = NotaCredito::where('Id', $item_nota_credito->IdNC)->first();
         return $notaCredito;
     }

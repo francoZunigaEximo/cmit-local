@@ -684,7 +684,7 @@ $(function(){
 
     function loadModalExamen(id) {
         preloader('on');
-        $.get(editModal, {Id: id})
+        $.get(editModal, {Id: id, _token: TOKEN})
             .done(function(response){
 
                 const estadoAbierto = [0, 1, 2], 

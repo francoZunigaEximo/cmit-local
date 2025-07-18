@@ -170,7 +170,7 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::post('examenes/actualizar', [ExamenesController::class, 'updateExamen'])->name('updateExamen');
     Route::get('examenes/exportar/excel', [ExamenesController::class, 'excel'])->name('examenes.excel');
     Route::get('reporte/vistaprevia', [ExamenesController::class, 'getVistaPrevia'])->name('examenes.getVistaPrevia');
-    Route::get('/examenes/getReportes', [ExamenesController::class, 'getReportes'])->name('examenes.getReportes');
+    Route::get('examenes/getReportes', [ExamenesController::class, 'getReportes'])->name('examenes.getReportes');
     Route::get('porcentajeExamen', [ExamenesController::class, 'porcentajeExamen'])->name('porcentajeExamen');
     Route::get('examenes/listar', [ExamenesController::class, 'getExamenes'])->name('examenes.getExamenes');
     Route::get('examenes/listar/Id', [ExamenesController::class, 'getById'])->name('examenes.getById');
