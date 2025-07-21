@@ -236,7 +236,7 @@ $(function(){
                 AutorizaSC: variables.AutorizaSC.val() ?? '',
                 IdART: alta.clienteArt.Id ?? 0,
                 IdEmpresa: alta.cliente.Id ?? 0,
-                datos_facturacion_id: ['B', 'A'].includes(variables.PagoLaboral.val()) && variables.facturacion_id.val(),
+                datos_facturacion_id: ['B', 'A'].includes(variables.PagoLaboral.val()) ? variables.facturacion_id.val(): 0,
                 Tipo: variables.ElTipo.val(),
                 Sucursal: variables.ElSucursal.val(),
                 NroFactura: variables.ElNroFactura.val(),
@@ -335,6 +335,7 @@ $(function(){
         preloader('on');
         $.post(saveItemExamenes, {idPrestacion: idPrestacion, idExamen: examenes, _token: TOKEN})
             .done(function(){
+                principal.listaExamenes.empty();
                 cargarExamen(idPrestacion);
                 contadorExamenes(idPrestacion);
                 preloader('off');
