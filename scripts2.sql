@@ -1529,3 +1529,7 @@ VALUES(7,'NOTA CREDITO');
 INSERT INTO db_cmit.auditoriatablas
 (Id, Nombre)
 VALUES(8,'EXAMEN');
+
+INSERT INTO fichaprestacion_factura
+(id, prestacion_id, fichalaboral_id, Tipo, Sucursal, NroFactura, NroFactProv)
+VALUES(0, 0, 0, 'X', 0, 0, '0');
