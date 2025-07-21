@@ -55,6 +55,7 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::get('/usuario/check-password', [AuthController::class, 'checkPassword'])->name('usuario.checkPassword');
     Route::get('/usuario/forzar-cierre', [AuthController::class, 'forzarLogout'])->name('usuario.forzarCierre');
     Route::get('usuarios/cierre-automatico', [AuthController::class, 'logoutId'])->name('usuario.cierreAutomatico');
+    Route::post('usuarios/heartbeat', [AuthController::class, 'heartbeat'])->name('usuario.heartBeat');
     // Route::get('/passw', function (){
     //     return Hash::make('cmit1234');
     // });

@@ -408,9 +408,10 @@
         const TOKEN = "{{ csrf_token() }}";
 
         const IDLE_TIMEOUT = 300 * 60 * 1000;
-        const CHECK_INTERVAL = 1000; //1 segundo
+        const CHECK_INTERVAL = 3000; //3 segundo
         const finalizarSesion = "{{ route('usuario.cierreAutomatico') }}";
         const sessionUser = "{{ auth()->user()?->id }}"; 
+        const heartbeat = "{{ route('usuario.heartBeat') }}";
 
         let ultimaActividad = Date.now(),
             idInterval = null,
@@ -421,9 +422,10 @@
         }
 
         function iniciarIdMonitor() {
-            setInterval(() => {
-                const tiempoInactividad = Date.now() - ultimaActividad;
+            if (idInterval) clearInterval(idInterval);
 
+            idInterval = setInterval(() => {
+                const tiempoInactividad = Date.now() - ultimaActividad;
                 if(tiempoInactividad >= IDLE_TIMEOUT) {
                     cerrarSesion();
                 }
@@ -443,17 +445,16 @@
             }
 
             $.get(finalizarSesion, { Id: parseInt(sessionUser) }, function(response) {
-                toastr.warning(response.msg);
+                toastr.warning(response.msg || "Tu sesión ha expirado por inactividad.");
                 setTimeout(()=>  {
                     window.location.href = "{{ route('login') }}";
-                }, 5000)
-                
+                }, 5000)      
             });
         }
 
 
         window.addEventListener("storage", function (event) {
-            if (event.key === "cerrar_sesion") {
+            if (event.key === "cerrar_sesion" && !sesionCerrada) {
                 cerrarSesion(); // ejecuta en esta pestaña también
             }
         });
@@ -462,8 +463,18 @@
             $(document).on(event, resetUltimaActividad);
         });
 
-        iniciarIdMonitor();
-        resetUltimaActividad(); 
+        if (sessionUser) {
+            iniciarIdMonitor();
+        }
+
+        function sendHeartBeat() {
+            $.post(heartbeat, {_token: TOKEN})
+                .fail(function() {
+                    window.location.reload();
+                });
+        }
+
+        setInterval(sendHeartBeat, 20000); //envia actualizacion de estado cada 20 segundos
 
     </script>
 

@@ -202,6 +202,12 @@ class AuthController extends Controller
         return response()->json(Hash::check($request->password, Auth::user()->password));
     }
 
+    public function heartbeat()
+    {
+        UserSession::where('user_id', Auth::id())->update(['last_heartbeat_at' => now()]);
+        return response()->json(['status' => 'ok']);
+    }
+
     private function session_user()
     {
         $getId = auth()->user()->id;
@@ -212,6 +218,7 @@ class AuthController extends Controller
             'ip_address' => request()->ip(),
             'user_agent' => substr((string)request()->userAgent(), 0, 255),
             'login_at' => now(),
+            'last_heartbeat_at' => now()
         ]);
     }
 
@@ -283,8 +290,6 @@ class AuthController extends Controller
             $request->session()->regenerateToken();
         }
     }
-
-
 
 
 }
