@@ -886,11 +886,7 @@ class ItemPrestacionesController extends Controller
 
     public function save(Request $request): void
     {
-        $examenes = $request->idExamen;
-
-        if (!is_array($examenes)) {
-            $examenes = [$examenes];
-        }
+        $examenes = (array) $request->idExamen;
 
         $this->crud->create($examenes, $request->idPrestacion, $request->idExaCta);
     }

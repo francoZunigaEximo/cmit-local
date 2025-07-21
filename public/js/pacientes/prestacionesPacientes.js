@@ -335,6 +335,7 @@ $(function(){
         preloader('on');
         $.post(saveItemExamenes, {idPrestacion: idPrestacion, idExamen: examenes, _token: TOKEN})
             .done(function(){
+                principal.listaExamenes.empty();
                 cargarExamen(idPrestacion);
                 contadorExamenes(idPrestacion);
                 preloader('off');
