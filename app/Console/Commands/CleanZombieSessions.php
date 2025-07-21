@@ -31,6 +31,5 @@ class CleanZombieSessions extends Command
             ->update(['logout_at' => now()]);
 
         $this->info("Sesiones zombies eliminadas");
-        
     }
 }
