@@ -17,11 +17,7 @@ class AudiometriaCarley extends Reporte
     {
         include('variables.php');
 
-        $pdf->AddPage();
         $pdf->Image(public_path(ReporteConfig::$AUDIOMETRIACARLEY),25,15,166);
-
-        $prestacion = $this->prestacion($datos['id']);
-        $datosPaciente = $this->datosPaciente($datos['id']);
 
         if($prestacion->empresa->RF === 1){
             $pdf->SetFont('Arial','B',14);$pdf->SetXY(170,4);$pdf->Cell(0,3,'RF',0,0,'L');$pdf->SetFont('Arial','',8);
@@ -29,10 +25,6 @@ class AudiometriaCarley extends Reporte
 
         if(!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
         else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
-
-
-        $paciente = $prestacion->paciente->Apellido.' '.$prestacion->paciente->Nombre;
-        $localidad = $this->localidad($datosPaciente->IdLocalidad) ?? '';
 
         $pdf->SetFont('Arial','',8);
         $pdf->SetXY(44,48);$pdf->Cell(0,3,substr($prestacion->empresa->ParaEmpresa,0,40),0,0,'L');

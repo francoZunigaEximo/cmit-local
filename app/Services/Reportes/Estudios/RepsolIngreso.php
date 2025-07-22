@@ -15,29 +15,15 @@ use DateTime;
 
 class RepsolIngreso extends Reporte
 {
-    public function render(FPDF $pdf, $datos = ['id', 'idExamen']): void
+    public function render(FPDF $pdf, $datos = ['id', 'idExamen'], $vistaPrevia=false): void
     {
-        $prestacion = $this->prestacion($datos['id']);
-        $datosPaciente = $this->datosPaciente($prestacion->paciente->Id);
-        $telefonoPaciente = $this->telefono($prestacion->paciente->Id);
-
+        include('variables.php');
+    
         if($prestacion->empresa->RF === 1){
             $pdf->SetFont('Arial','B',14);$pdf->SetXY(170,4);$pdf->Cell(0,3,'RF',0,0,'L');$pdf->SetFont('Arial','',8);
         }
-        dd($prestacion);
-        die();
-        $paciente = $prestacion->paciente->Apellido.' '.$prestacion->paciente->Nombre;
-        $localidad = $this->localidad($prestacion->paciente->IdLocalidad) ?? '';
-        $fecha = $prestacion->paciente->FechaNacimiento;
-
-        $fecha_nacimiento = new DateTime($prestacion->paciente->FechaNacimiento);
-        // Fecha actual
-        $hoy = new DateTime('now');
-        // Calcular la diferencia
-        $edad = $hoy->diff($fecha_nacimiento)->y;
-
+      
         //pagina 1
-        $pdf->AddPage();
         $pdf->Image(public_path("/archivos/reportes/E10.jpg"),25,20,154); 
         $pdf->SetFont('Arial','B',12);$pdf->SetXY(98,28);$pdf->Cell(0,4,'Examen Medico Preocupacional',0,0,'L');
         $pdf->SetFont('Arial','',8);

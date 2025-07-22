@@ -170,6 +170,7 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::post('examenes/actualizar', [ExamenesController::class, 'updateExamen'])->name('updateExamen');
     Route::get('examenes/exportar/excel', [ExamenesController::class, 'excel'])->name('examenes.excel');
     Route::get('reporte/vistaprevia', [ExamenesController::class, 'getVistaPrevia'])->name('examenes.getVistaPrevia');
+    Route::get('examenes/getReportes', [ExamenesController::class, 'getReportes'])->name('examenes.getReportes');
     Route::get('porcentajeExamen', [ExamenesController::class, 'porcentajeExamen'])->name('porcentajeExamen');
     Route::get('examenes/listar', [ExamenesController::class, 'getExamenes'])->name('examenes.getExamenes');
     Route::get('examenes/listar/Id', [ExamenesController::class, 'getById'])->name('examenes.getById');
@@ -481,4 +482,21 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::get('getGrupos', [GrupoClientesController::class, 'grupos'])->name('getGrupos');
 
     Route::resource('grupos', GrupoClientesController::class);
+
+    //notas credito
+    Route::get('notasCredito/getClientes', [NotasCreditoController::class, 'getClientes'])->name('notasCredito.getClientes');
+    Route::get('notasCredito/itemsanulados/{id}', [NotasCreditoController::class, 'getItemsAnulados'])->name('paquetes.itemsAnulados');
+    Route::get('notasCredito/getItemsAnuladosClientes', [NotasCreditoController::class, 'getItemsFacturaVenta'])->name('notasCredito.getItemsAnuladosClientes');
+    Route::post('notasCredito/reactivarItem', [NotasCreditoController::class, 'reactivarItem'])->name('notasCredito.reactivarItem');
+    Route::post('notasCredito/crear', [NotasCreditoController::class, 'crearNotaCredito'])->name('notasCredito.crear');
+    Route::get('notasCredito/getNotaCredito', [NotasCreditoController::class, 'getNotas'])->name('notasCredito.getNotaCredito');
+    Route::get('notasCredito/editarNotaCredito/{id}', [NotasCreditoController::class, 'editarNotasCredito'])->name('notasCredito.editarNotaCredito');
+    Route::get('notasCredito/getItemsNotaCredito', [NotasCreditoController::class, 'getItemsNotaCredito'])->name('notasCredito.getItemsNotaCredito');
+    Route::post('notasCredito/editarNotasCreditoPost', [NotasCreditoController::class, 'editarNotasCreditoPost'])->name('notasCredito.editarNotasCreditoPost');
+    Route::post('notasCredito/eliminarNotaCredito', [NotasCreditoController::class, 'eliminarNotaCredito'])->name('notasCredito.eliminarNotaCredito');
+    Route::get('notasCredito/exportarNotaCreditoExcel', [NotasCreditoController::class, 'exportDetalleNotaCreditoExcel'])->name('notasCredito.exportDetalleNotaCreditoExcel');
+    Route::post('notasCredito/eliminarNotaCreditoMasivo', [NotasCreditoController::class, 'eliminarNotaCreditoMasivo'])->name('notasCredito.eliminarNotaCreditoMasivo');
+    Route::get('notasCredito/exportClientesItemsAnuladosExcel', [NotasCreditoController::class, 'exportClientesItemsAnuladosExcel'])->name('notasCredito.exportClientesItemsAnuladosExcel');
+
+    Route::resource('notasCredito', NotasCreditoController::class);
 });

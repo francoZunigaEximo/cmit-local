@@ -15,6 +15,20 @@ class NotaCredito extends Model
 
     public $timestamps = false;
 
+    protected $fillable = [
+        'Id',
+        'Tipo',
+        'Sucursal',
+        'Nro',
+        'Fecha',
+        'IdEmpresa',
+        'TipoCliente',
+        'IdFactura',
+        'IdPrestacion',
+        'TipoNC',
+        'Obs'
+    ];
+
     public function notaCreditoIt()
     {
         return $this->hasOne(NotaCreditoIt::class, 'IdNC', 'Id');

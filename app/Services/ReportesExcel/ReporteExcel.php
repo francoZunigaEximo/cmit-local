@@ -4,6 +4,7 @@ namespace App\Services\ReportesExcel;
 
 use App\Services\ReportesExcel\modelos\Paciente;
 use App\Services\ReportesExcel\modelos\Cliente;
+use App\Services\ReportesExcel\modelos\ClientesItemsAnulados;
 use App\Services\ReportesExcel\modelos\DetalladaPrestacion;
 use App\Services\ReportesExcel\modelos\DetalladaPrestacionFull;
 use App\Services\ReportesExcel\modelos\Mapa;
@@ -17,6 +18,7 @@ use App\Services\ReportesExcel\modelos\SimplePrestacionFull;
 use App\Services\ReportesExcel\modelos\CompletoPrestacionFull;
 use App\Services\ReportesExcel\modelos\GrupoClientesDetalleFull;
 use App\Services\ReportesExcel\modelos\GrupoClientesFull;
+use App\Services\ReportesExcel\modelos\NotaCreditoReporte;
 use App\Services\ReportesExcel\modelos\PaqueteEstudio;
 use App\Services\ReportesExcel\modelos\PaqueteEstudioDetalle;
 use App\Services\ReportesExcel\modelos\PaqueteFacturacionDetalle;
@@ -62,6 +64,10 @@ class ReporteExcel
                 return new GrupoClientesDetalleFull();
             case 'paqueteFacturacionDetalle':
                 return new PaqueteFacturacionDetalle();
+            case 'notaCredito':
+                return new NotaCreditoReporte();
+            case 'clientesItemsAnulados':
+                return new ClientesItemsAnulados(); // Assuming this is the same as notaCredito
             default:
                 return response()->json(['msg' => 'Tipo de reporte no válido'], 400);
         }

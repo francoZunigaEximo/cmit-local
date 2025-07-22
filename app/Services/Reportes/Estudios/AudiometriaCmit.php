@@ -35,7 +35,7 @@ class AudiometriaCmit extends Reporte
         $retiraFisico->render($pdf, ['rf' => $prestacion->empresa->RF]);
         
         if(!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
-        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 182, 10, 15, 15);
 
         $pdf->SetFont('Arial','B',13);$pdf->SetXY(10,32);$pdf->Cell(200,5,'AUDIOGRAMA',0,0,'C');
         $pdf->SetFont('Arial','B',9);$pdf->SetXY(10,37);$pdf->Cell(200,4,$arrSubtitulo[$prestacion->TipoPrestacion],0,0,'C');$pdf->Ln();

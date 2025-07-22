@@ -589,6 +589,8 @@ $(function(){
                     fullNameInformador = (examen.Informe === 1 && examen.RegHis === 1
                         ? examen.InformadorApellido || (examen.IdInformador && examen.DatosInformadorApellido)
                         : examen.DatosInformadorApellido || (examen.IdInformador && examen.DatosInformadorApellido)) ?? '';
+                
+                console.log(titleEfector);
 
                 filas += `
                     <tr ${examen.Anulado === 1 ? 'class="filaBaja"' : ''}>
@@ -619,13 +621,13 @@ $(function(){
                                 <i class="ri-flag-2-line ${examen.Anulado === 0 ? 'devol' : ''}"></i>
                             </span>
                         </td>
-                        <td class="date text-center capitalize" title="${titleEfector}">${fullNameEfector}
+                        <td class="date text-center capitalize" title="${titleEfector}">${fullNameEfector === 0 ? '' : fullNameEfector}
                             <span class="badge badge-soft-${([0,1,2].includes(examen.CAdj) ? 'danger': ([3,4,5].includes(examen.CAdj) ? 'success' : ''))}">
                                 ${([0,1,2].includes(examen.CAdj) ? 'Abierto': ([3,4,5].includes(examen.CAdj) ? 'Cerrado' : ''))}
                             </span>
                             ${examen.ExaAdj === 1 ? `<i class="ri-attachment-line ${examen.archivos > 0 ? 'verde' : 'gris'}"></i>`: ``}    
                         </td>
-                        <td class="date text-center capitalize" title="${titleInformador}">${fullNameInformador}
+                        <td class="date text-center capitalize" title="${titleInformador}">${examen.CInfo === 0 ? '' : (fullNameInformador === 0 ? '' :  fullNameInformador)}
                             <span class="badge badge-soft-${(examen.CInfo === 0 ? 'dark' :(examen.CInfo === 3 ? 'success' : ([1,2].includes(examen.CInfo)) ? 'danger' : ''))}">${(examen.CInfo === 0 || examen.InfAdj === 0 ? '' : (examen.CInfo === 3 ? 'Cerrado' : (examen.CInfo == 2 ? 'Borrador' : (examen.CInfo === 1 ? 'Pendiente': ''))))}</span>
                             ${examen.InfAdj === 1 ? (examen.CInfo ? `<i class="ri-attachment-line ${examen.archivosI > 0 ? 'verde' : 'gris'}"></i>`: ``) : ''}   
                         </td>
@@ -635,13 +637,14 @@ $(function(){
                                 <div class="edit">
                                     <button data-id="${examen.IdItem}" type="button" class="btn btn-sm iconGeneral verExamen" title="Ver" data-bs-toggle="modal" data-bs-target="#modalExamen"><i class="ri-search-eye-line"></i></button>
                                 </div>
-                                ${!examen.Anulado ? `
+                                ${examen.Anulado === 0 && examen.IdNotaCredito === null ? `
                                     <div class="bloquear">
                                         <button data-bloquear="${examen.IdItem}" class="btn btn-sm iconGeneral bloquearExamen" title="Baja">
                                             <i class="ri-forbid-2-line"></i>
                                         </button>
                                     </div>
-                                ` : ''}
+                                ` : examen.IdNotaCredito === null ? `<button class="btn btn-sm iconGeneral edit-item-btn btnReactivar" data-id="${examen.IdItem}" type="button"><i class="ri-arrow-up-circle-fill"></i></button>` 
+                                    : `<button class="btn btn-sm iconGeneral" type="button" title="Este examen esta en una nota de credito"><i class="ri-file-text-fill" style="color: red"></i></button>`}
                                 <div class="remove">
                                     <button data-delete="${examen.IdItem}" class="btn btn-sm iconGeneral deleteExamen" title="Eliminar">
                                         <i class="ri-delete-bin-2-line"></i>
@@ -683,7 +686,7 @@ $(function(){
 
     function loadModalExamen(id) {
         preloader('on');
-        $.get(editModal, {Id: id})
+        $.get(editModal, {Id: id, _token: TOKEN})
             .done(function(response){
 
                 const estadoAbierto = [0, 1, 2], 
@@ -692,7 +695,7 @@ $(function(){
                       pacientes = response.paciente.paciente,
                       examenes = itemprestaciones.examenes,
                       factura = itemprestaciones.facturadeventa,
-                      notaCreditoEx = itemprestaciones?.notaCreditoIt?.notaCredito;
+                      notaCreditoEx = response.notacredito;
 
                 const eventos = [
                     eventoAbrir,
@@ -1222,6 +1225,37 @@ $(function(){
 
     });
   
+    $(document).on('click', '.btnReactivar', function(e) {
+        e.preventDefault();
+        let id = $(this).data('id');
+
+        swal({
+            title: "¿Está seguro que desea reactivar el examen?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if (confirmar) {
+                preloader('on');
+                $.post(reactivarItem, {id: id, _token: TOKEN})
+                    .done(function(response){
+                        preloader('off');
+                        toastr.success(response.msg,'',{timeOut: 1000});
+                         $('#listaExamenes').empty();
+                            $('#exam').val([]).trigger('change.select2');
+                            $('#addPaquete').val([]).trigger('change.select2');
+                            cargarExamen();
+                            contadorExamenes(ID);
+                    })
+                    .fail(function(jqXHR){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
+                    });
+            }
+        });
+    })
+
     async function asignarModal(e, tipo){
 
         let efector = $('#ex-efectores').val();

@@ -20,7 +20,7 @@ use App\Models\AuditoriaMailFacturacion;
 use App\Models\Cliente;
 use App\Models\ItemPrestacion;
 use App\Models\Prestacion;
-use App\Traits\Reportes;
+//use App\Traits\Reportes;
 use App\Traits\ReporteExcel;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -29,7 +29,7 @@ use Yajra\DataTables\Contracts\DataTable;
 class FacturasVentaController extends Controller
 {
 
-    use CheckPermission, Reportes, ReporteExcel;
+    use CheckPermission, ReporteExcel;
 
     const TITULOEMAIL = "";
 

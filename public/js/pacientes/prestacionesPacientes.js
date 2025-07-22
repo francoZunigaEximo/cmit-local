@@ -149,10 +149,10 @@ $(function(){
     getListado(null);
     listadoConSaldos(variables.selectClientes.val());
     cantidadDisponibles(variables.selectClientes.val());
+    // listadoFacturas(variables.selectClientes.val(), null);
     getUltimasFacturadas(variables.selectClientes.val());
-    tablasExamenes(variables.selectClientes.val(), false, '#lstEx2');
-    tablasExamenes(variables.selectClientes.val(), true, '#lstEx');
-    // selectorPago(pagoInput);
+    selectorPago(pagoInput);
+    cargarEstudiosImp();
 
     variables.tipoPrestacionPres.on('change', function(){
         precargaTipoPrestacion(variables.tipoPrestacionPres.val());
@@ -223,6 +223,7 @@ $(function(){
 
         preloader('on');
         const alta = await $.get(verificarAlta, {Id: ID})
+        console.log(alta);
 
         if (alta && Object.keys(alta).length > 0) {
 
@@ -236,7 +237,7 @@ $(function(){
                 AutorizaSC: variables.AutorizaSC.val() ?? '',
                 IdART: alta.clienteArt.Id ?? 0,
                 IdEmpresa: alta.cliente.Id ?? 0,
-                datos_facturacion_id: ['B', 'A'].includes(variables.PagoLaboral.val()) && variables.facturacion_id.val(),
+                datos_facturacion_id: ['B', 'A'].includes(variables.PagoLaboral.val()) ? variables.facturacion_id.val(): 0,
                 Tipo: variables.ElTipo.val(),
                 Sucursal: variables.ElSucursal.val(),
                 NroFactura: variables.ElNroFactura.val(),
@@ -335,6 +336,7 @@ $(function(){
         preloader('on');
         $.post(saveItemExamenes, {idPrestacion: idPrestacion, idExamen: examenes, _token: TOKEN})
             .done(function(){
+                principal.listaExamenes.empty();
                 cargarExamen(idPrestacion);
                 contadorExamenes(idPrestacion);
                 preloader('off');
@@ -1618,6 +1620,42 @@ $(function(){
             sortable: false, 
         });
 
+
+    }
+
+        async function cargarEstudiosImp()
+    {
+        $('#estudios').empty();
+
+        if(!ID) return;
+        
+        preloader('on');
+        $.get(await listadoEstudiosImp, {Id: ID})
+
+          .done(function(response){
+                preloader('off');
+                for(let index = 0; index < response.length; index++) {
+                    let data = response[index],
+                        forNombre = (data.NombreExamen).replace(" ", "-"),
+                        contenido = `
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="${data.IdReporte}" data-examen="${data.IdExamen}" data-nosend>
+                                <label class="form-check-label" for="${forNombre}">
+                                    ${data.NombreExamen}
+                                </label>
+                            </div>
+                        `;
+
+                    $('#estudios').append(contenido);
+                }
+
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            });
 
     }
 

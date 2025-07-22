@@ -1595,6 +1595,8 @@ const exResultado = "{{ route('prestaciones.exportarResultado') }}";
 const mapaPrestacion = "{{ route('prestaciones.mapaPrestacionId') }}";
 const listaExCuenta = "{{ route('examenesCuenta.listaEmpresa') }}";
 
+const reactivarItem = "{{ route('notasCredito.reactivarItem') }}";
+
 //Extras
 const UBICACION = "{{ request()->query('location') }}";
 const ID = "{{ $prestacione->Id }}";
