@@ -1292,6 +1292,7 @@ const savePrivComent = "{{ route('savePrivComent') }}";
 const bloquearItemExamen = "{{ route('bloquearItemExamen') }}";
 const obsNuevaPrestacion = "{{ route('obsNuevaPrestacion') }}";
 const getFormaPagoCli = "{{ route('clientes.formaPago') }}";
+const listadoEstudiosImp = "{{ route('prestaciones.estudioReporte') }}";
 
 const getMapas = "{{ route('getMapas') }}";
 
