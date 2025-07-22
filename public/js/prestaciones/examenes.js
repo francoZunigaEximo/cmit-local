@@ -627,7 +627,7 @@ $(function(){
                             </span>
                             ${examen.ExaAdj === 1 ? `<i class="ri-attachment-line ${examen.archivos > 0 ? 'verde' : 'gris'}"></i>`: ``}    
                         </td>
-                        <td class="date text-center capitalize" title="${titleInformador}">${examen.CInfo === 0 ? '' : fullNameInformador}
+                        <td class="date text-center capitalize" title="${titleInformador}">${examen.CInfo === 0 ? '' : (fullNameInformador === 0 ? '' :  fullNameInformador)}
                             <span class="badge badge-soft-${(examen.CInfo === 0 ? 'dark' :(examen.CInfo === 3 ? 'success' : ([1,2].includes(examen.CInfo)) ? 'danger' : ''))}">${(examen.CInfo === 0 || examen.InfAdj === 0 ? '' : (examen.CInfo === 3 ? 'Cerrado' : (examen.CInfo == 2 ? 'Borrador' : (examen.CInfo === 1 ? 'Pendiente': ''))))}</span>
                             ${examen.InfAdj === 1 ? (examen.CInfo ? `<i class="ri-attachment-line ${examen.archivosI > 0 ? 'verde' : 'gris'}"></i>`: ``) : ''}   
                         </td>
