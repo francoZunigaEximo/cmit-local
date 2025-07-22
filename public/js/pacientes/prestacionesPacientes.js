@@ -147,10 +147,10 @@ $(function(){
     precargaTipoPrestacion(variables.tipoPrestacionPres.val());
     getMap(variables.selectClientes.val(), variables.selectArt.val());
     getListado(null);
-    listadoConSaldos(empresaInput);
-    cantidadDisponibles(empresaInput);
-    listadoFacturas(empresaInput, null);
-    getUltimasFacturadas(empresaInput);
+    listadoConSaldos(variables.selectClientes.val());
+    cantidadDisponibles(variables.selectClientes.val());
+    listadoFacturas(variables.selectClientes.val(), null);
+    getUltimasFacturadas(variables.selectClientes.val());
     selectorPago(pagoInput);
     cargarEstudiosImp();
 
