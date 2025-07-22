@@ -223,6 +223,7 @@ $(function(){
 
         preloader('on');
         const alta = await $.get(verificarAlta, {Id: ID})
+        console.log(alta);
 
         if (alta && Object.keys(alta).length > 0) {
 
