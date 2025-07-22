@@ -1103,7 +1103,7 @@
                         <div class="row mt-3">
                             <form>
                                 <div class="form-check mb-2">
-                                    <input class="form-check-input" type="checkbox" id="infInternos">
+                                    <input class="form-check-input" type="checkbox" id="infInternos" checked>
                                     <label class="form-check-label" for="infInternos">
                                         Informes internos
                                     </label>

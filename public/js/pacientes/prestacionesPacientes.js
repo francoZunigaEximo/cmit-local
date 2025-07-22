@@ -149,7 +149,6 @@ $(function(){
     getListado(null);
     listadoConSaldos(variables.selectClientes.val());
     cantidadDisponibles(variables.selectClientes.val());
-    // listadoFacturas(variables.selectClientes.val(), null);
     getUltimasFacturadas(variables.selectClientes.val());
     selectorPago(pagoInput);
     cargarEstudiosImp();
