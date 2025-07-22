@@ -147,12 +147,12 @@ $(function(){
     precargaTipoPrestacion(variables.tipoPrestacionPres.val());
     getMap(variables.selectClientes.val(), variables.selectArt.val());
     getListado(null);
-    listadoConSaldos(variables.selectClientes.val());
-    cantidadDisponibles(variables.selectClientes.val());
-    getUltimasFacturadas(variables.selectClientes.val());
-    tablasExamenes(variables.selectClientes.val(), false, '#lstEx2');
-    tablasExamenes(variables.selectClientes.val(), true, '#lstEx');
-    // selectorPago(pagoInput);
+    listadoConSaldos(empresaInput);
+    cantidadDisponibles(empresaInput);
+    listadoFacturas(empresaInput, null);
+    getUltimasFacturadas(empresaInput);
+    selectorPago(pagoInput);
+    cargarEstudiosImp();
 
     variables.tipoPrestacionPres.on('change', function(){
         precargaTipoPrestacion(variables.tipoPrestacionPres.val());
@@ -1619,6 +1619,42 @@ $(function(){
             sortable: false, 
         });
 
+
+    }
+
+        async function cargarEstudiosImp()
+    {
+        $('#estudios').empty();
+
+        if(!ID) return;
+        
+        preloader('on');
+        $.get(await listadoEstudiosImp, {Id: ID})
+
+          .done(function(response){
+                preloader('off');
+                for(let index = 0; index < response.length; index++) {
+                    let data = response[index],
+                        forNombre = (data.NombreExamen).replace(" ", "-"),
+                        contenido = `
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="${data.IdReporte}" data-examen="${data.IdExamen}" data-nosend>
+                                <label class="form-check-label" for="${forNombre}">
+                                    ${data.NombreExamen}
+                                </label>
+                            </div>
+                        `;
+
+                    $('#estudios').append(contenido);
+                }
+
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            });
 
     }
 
