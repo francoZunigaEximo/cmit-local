@@ -1040,7 +1040,7 @@ $(function() {
                         `;
 
                     $('#estudios').append(contenido);
-                });
+                }
             })
             .fail(function(jqXHR){
                 preloader('off');
