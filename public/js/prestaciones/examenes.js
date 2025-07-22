@@ -589,7 +589,9 @@ $(function(){
                     fullNameInformador = (examen.Informe === 1 && examen.RegHis === 1
                         ? examen.InformadorApellido || (examen.IdInformador && examen.DatosInformadorApellido)
                         : examen.DatosInformadorApellido || (examen.IdInformador && examen.DatosInformadorApellido)) ?? '';
-                console.log(examen.IdNotaCredito);
+                
+                console.log(titleEfector);
+
                 filas += `
                     <tr ${examen.Anulado === 1 ? 'class="filaBaja"' : ''}>
                         <td><input type="checkbox" name="Id_examenes" value="${examen.IdItem}" checked></td>
@@ -619,13 +621,13 @@ $(function(){
                                 <i class="ri-flag-2-line ${examen.Anulado === 0 ? 'devol' : ''}"></i>
                             </span>
                         </td>
-                        <td class="date text-center capitalize" title="${titleEfector}">${fullNameEfector}
+                        <td class="date text-center capitalize" title="${titleEfector}">${fullNameEfector === 0 ? '' : fullNameEfector}
                             <span class="badge badge-soft-${([0,1,2].includes(examen.CAdj) ? 'danger': ([3,4,5].includes(examen.CAdj) ? 'success' : ''))}">
                                 ${([0,1,2].includes(examen.CAdj) ? 'Abierto': ([3,4,5].includes(examen.CAdj) ? 'Cerrado' : ''))}
                             </span>
                             ${examen.ExaAdj === 1 ? `<i class="ri-attachment-line ${examen.archivos > 0 ? 'verde' : 'gris'}"></i>`: ``}    
                         </td>
-                        <td class="date text-center capitalize" title="${titleInformador}">${fullNameInformador}
+                        <td class="date text-center capitalize" title="${titleInformador}">${examen.CInfo === 0 ? '' : fullNameInformador}
                             <span class="badge badge-soft-${(examen.CInfo === 0 ? 'dark' :(examen.CInfo === 3 ? 'success' : ([1,2].includes(examen.CInfo)) ? 'danger' : ''))}">${(examen.CInfo === 0 || examen.InfAdj === 0 ? '' : (examen.CInfo === 3 ? 'Cerrado' : (examen.CInfo == 2 ? 'Borrador' : (examen.CInfo === 1 ? 'Pendiente': ''))))}</span>
                             ${examen.InfAdj === 1 ? (examen.CInfo ? `<i class="ri-attachment-line ${examen.archivosI > 0 ? 'verde' : 'gris'}"></i>`: ``) : ''}   
                         </td>
