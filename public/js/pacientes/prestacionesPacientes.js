@@ -149,10 +149,10 @@ $(function(){
     getListado(null);
     listadoConSaldos(variables.selectClientes.val());
     cantidadDisponibles(variables.selectClientes.val());
+    // listadoFacturas(variables.selectClientes.val(), null);
     getUltimasFacturadas(variables.selectClientes.val());
-    tablasExamenes(variables.selectClientes.val(), false, '#lstEx2');
-    tablasExamenes(variables.selectClientes.val(), true, '#lstEx');
-    // selectorPago(pagoInput);
+    selectorPago(pagoInput);
+    
 
     variables.tipoPrestacionPres.on('change', function(){
         precargaTipoPrestacion(variables.tipoPrestacionPres.val());
@@ -223,6 +223,7 @@ $(function(){
 
         preloader('on');
         const alta = await $.get(verificarAlta, {Id: ID})
+        console.log(alta);
 
         if (alta && Object.keys(alta).length > 0) {
 
@@ -236,7 +237,7 @@ $(function(){
                 AutorizaSC: variables.AutorizaSC.val() ?? '',
                 IdART: alta.clienteArt.Id ?? 0,
                 IdEmpresa: alta.cliente.Id ?? 0,
-                datos_facturacion_id: ['B', 'A'].includes(variables.PagoLaboral.val()) && variables.facturacion_id.val(),
+                datos_facturacion_id: ['B', 'A'].includes(variables.PagoLaboral.val()) ? variables.facturacion_id.val(): 0,
                 Tipo: variables.ElTipo.val(),
                 Sucursal: variables.ElSucursal.val(),
                 NroFactura: variables.ElNroFactura.val(),
@@ -335,6 +336,9 @@ $(function(){
         preloader('on');
         $.post(saveItemExamenes, {idPrestacion: idPrestacion, idExamen: examenes, _token: TOKEN})
             .done(function(){
+                principal.listaExamenes.empty();
+                $('#estudios').empty();
+                cargarEstudiosImp(idPrestacion);
                 cargarExamen(idPrestacion);
                 contadorExamenes(idPrestacion);
                 preloader('off');
@@ -886,7 +890,9 @@ $(function(){
             resAdmin = variables.resAdmin.prop('checked'),
             caratula = variables.caratula.prop('checked'),
             consEstDetallado = variables.consEstDetallado.prop('checked'),
-            consEstSimple = variables.consEstSimple.prop('checked');
+            consEstSimple = variables.consEstSimple.prop('checked'),
+            estudios = [];
+
 
         let verificar = [
                 infInternos,
@@ -895,13 +901,19 @@ $(function(){
                 resAdmin,
                 caratula,
                 consEstDetallado,
-                consEstSimple
+                consEstSimple,
+                estudios
             ];
 
         if (verificar.every(val => !val || (Array.isArray(val) && val.length === 0) || (typeof val === 'object' && Object.keys(val).length === 0))) {
             toastr.warning('Debe seleccionar alguna opción para poder imprimir los reportes','',{timeOut: 1000});
             return;
         }
+
+        $('input[data-nosend]:checked').each(function() {
+            estudios.push($(this).attr('id'));
+        });
+
         preloader('on');
         $.get(impRepo, {
             Id: variables.idPrestacion.val(), 
@@ -911,7 +923,8 @@ $(function(){
             resAdmin: resAdmin, 
             caratula: caratula, 
             consEstDetallado: consEstDetallado, 
-            consEstSimple: consEstSimple
+            consEstSimple: consEstSimple,
+            estudios: estudios
         })
             .done(function(response){
                 preloader('off');
@@ -1079,6 +1092,8 @@ $(function(){
                         }
 
                         principal.listaExamenes.empty();
+                        $('#estudios').empty();
+                        cargarEstudiosImp(IdNueva);
                         variables.exam.val([]).trigger('change.select2');
                         variables.paquetes.val([]).trigger('change.select2');
                         cargarExamen(IdNueva);
@@ -1317,6 +1332,8 @@ $(function(){
         $.post(saveItemExamenes,{_token: TOKEN, idPrestacion: idPrestacion, idExamen: idExamen})
             .done(function(){
                 principal.listaExamenes.empty();
+                $('#estudios').empty()
+                cargarEstudiosImp(idPrestacion);
                 variables.exam.val([]).trigger('change.select2');
                 variables.paquetes.trigger('change.select2');
                 cargarExamen(idPrestacion);
@@ -1618,6 +1635,42 @@ $(function(){
             sortable: false, 
         });
 
+
+    }
+
+        async function cargarEstudiosImp(idPrestacion)
+    {
+        $('#estudios').empty();
+
+        if(!idPrestacion) return;
+        console.log("idPrestacion: " + variables.idPrestacion.val());
+        preloader('on');
+        $.get(await listadoEstudiosImp, {Id: variables.idPrestacion.val()})
+
+          .done(function(response){
+                preloader('off');
+                for(let index = 0; index < response.length; index++) {
+                    let data = response[index],
+                        forNombre = (data.NombreExamen).replace(" ", "-"),
+                        contenido = `
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="${data.IdReporte}" data-examen="${data.IdExamen}" data-nosend checked>
+                                <label class="form-check-label" for="${forNombre}">
+                                    ${data.NombreExamen}
+                                </label>
+                            </div>
+                        `;
+
+                    $('#estudios').append(contenido);
+                }
+
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            });
 
     }
 

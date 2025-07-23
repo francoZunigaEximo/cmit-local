@@ -1530,6 +1530,7 @@ INSERT INTO db_cmit.auditoriatablas
 (Id, Nombre)
 VALUES(8,'EXAMEN');
 
+<<<<<<< HEAD
 -- get examenes con idNotaCredito
 
 DROP PROCEDURE IF EXISTS db_cmit.getExamenes;
@@ -1596,3 +1597,8 @@ BEGIN
 	    itemsprestaciones.Fecha ASC;
 END$$
 DELIMITER ;
+=======
+INSERT INTO fichaprestacion_factura
+(id, prestacion_id, fichalaboral_id, Tipo, Sucursal, NroFactura, NroFactProv)
+VALUES(0, 0, 0, 'X', 0, 0, '0');
+>>>>>>> ea0023f36ca5bd1ab0d57102b2af2abf0deea7d6
