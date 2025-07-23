@@ -1633,8 +1633,8 @@ $(function(){
     {
         $('#estudios').empty();
 
-        if(!ID) return;
-        
+        if(!variables.idPrestacion.val()) return;
+        console.log("idPrestacion: " + variables.idPrestacion.val());
         preloader('on');
         $.get(await listadoEstudiosImp, {Id: variables.idPrestacion.val()})
 
