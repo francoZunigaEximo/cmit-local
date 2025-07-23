@@ -1529,3 +1529,70 @@ VALUES(7,'NOTA CREDITO');
 INSERT INTO db_cmit.auditoriatablas
 (Id, Nombre)
 VALUES(8,'EXAMEN');
+
+-- get examenes con idNotaCredito
+
+DROP PROCEDURE IF EXISTS db_cmit.getExamenes;
+
+DELIMITER $$
+$$
+CREATE DEFINER=`db_cmit`@`%` PROCEDURE `db_cmit`.`getExamenes`(IN `id_prestacion` INT, IN `tipo` VARCHAR(10))
+BEGIN
+	SELECT 
+	    examenes.Nombre AS Nombre,
+	    examenes.Id AS IdExamen,
+	    examenes.Adjunto AS ExaAdj,
+	    examenes.Informe AS Informe,
+	    informador.InfAdj AS InfAdj,
+	    examenes.NoImprime AS ExaNI,
+	    CONCAT(efector.Apellido, ' ', efector.Nombre) AS EfectorFullName,
+	    CONCAT(informador.Apellido, ' ', informador.Nombre) AS InformadorFullName,
+	    CONCAT(datosEfector.Apellido, ' ', datosEfector.Nombre) AS DatosEfectorFullName,
+	    CONCAT(datosInformador.Apellido, ' ', datosInformador.Nombre) AS DatosInformadorFullName,
+	    efector.Apellido AS EfectorApellido,
+	    informador.Apellido AS InformadorApellido,
+	    datosEfector.Apellido AS DatosEfectorApellido,
+	    datosInformador.Apellido AS DatosInformadorApellido,
+	    efector.RegHis AS RegHis,
+	    itemsprestaciones.Ausente AS Ausente,
+	    itemsprestaciones.Forma AS Forma,
+	    itemsprestaciones.Incompleto AS Incompleto,
+	    itemsprestaciones.SinEsc AS SinEsc,
+	    itemsprestaciones.Devol AS Devol,
+	    itemsprestaciones.CAdj AS CAdj,
+	    itemsprestaciones.CInfo AS CInfo,
+	    itemsprestaciones.Id AS IdItem,
+	    itemsprestaciones.Anulado AS Anulado,
+	    (SELECT COUNT(*) FROM archivosefector WHERE IdEntidad = itemsprestaciones.Id) AS archivos,
+	    (SELECT COUNT(*) FROM archivosinformador WHERE IdEntidad = itemsprestaciones.Id) AS archivosI,
+	    efector.Id AS IdEfector,
+	    informador.Id AS IdInformador,
+	    userEfector.id AS IdUserEfector,
+	    userInformador.id AS IdUserInformador,
+	    notascredito_it.IdNC as IdNotaCredito 
+	FROM itemsprestaciones
+	LEFT JOIN profesionales AS efector ON itemsprestaciones.IdProfesional = efector.Id
+	LEFT JOIN users AS userEfector ON efector.Id = userEfector.profesional_id
+	LEFT JOIN datos AS datosEfector ON userEfector.datos_id = datosEfector.Id
+	LEFT JOIN profesionales AS informador ON itemsprestaciones.IdProfesional2 = informador.Id
+	LEFT JOIN users AS userInformador ON informador.Id = userInformador.profesional_id
+	LEFT JOIN datos AS datosInformador ON userInformador.datos_id = datosInformador.Id
+	LEFT JOIN notascredito_it ON notascredito_it.IdIP = itemsprestaciones.Id
+	JOIN examenes ON itemsprestaciones.IdExamen = examenes.Id
+	JOIN proveedores AS proveedor2 ON examenes.IdProveedor = proveedor2.Id
+	JOIN prestaciones ON itemsprestaciones.IdPrestacion = prestaciones.Id
+	LEFT JOIN archivosefector ON itemsprestaciones.Id = archivosefector.IdEntidad
+	LEFT JOIN archivosinformador ON itemsprestaciones.Id = archivosinformador.IdEntidad
+	WHERE 1=1
+	-- Filtro condicional
+	AND (
+	    (tipo != 'listado') OR 
+	    (tipo = 'listado' AND itemsprestaciones.IdPrestacion = id_prestacion)
+	)
+	GROUP BY itemsprestaciones.Id
+	ORDER BY 
+	    efector.IdProveedor ASC,
+	    examenes.Nombre ASC,
+	    itemsprestaciones.Fecha ASC;
+END$$
+DELIMITER ;
