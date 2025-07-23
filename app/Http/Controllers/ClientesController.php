@@ -318,7 +318,7 @@ class ClientesController extends Controller
             $ids = [$ids];
         }
 
-        $clientes = Cliente::with(['localidad'])->whereIn('Id', $ids)->get();
+        $clientes = Cliente::with(['localidad'])->with(['actividad'])->whereIn('Id', $ids)->get();
 
         if($clientes) {
             $reporte = $this->reporteExcel->crear('clientes');
