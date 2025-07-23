@@ -890,7 +890,9 @@ $(function(){
             resAdmin = variables.resAdmin.prop('checked'),
             caratula = variables.caratula.prop('checked'),
             consEstDetallado = variables.consEstDetallado.prop('checked'),
-            consEstSimple = variables.consEstSimple.prop('checked');
+            consEstSimple = variables.consEstSimple.prop('checked'),
+            estudios = [];
+
 
         let verificar = [
                 infInternos,
@@ -899,13 +901,19 @@ $(function(){
                 resAdmin,
                 caratula,
                 consEstDetallado,
-                consEstSimple
+                consEstSimple,
+                estudios
             ];
 
         if (verificar.every(val => !val || (Array.isArray(val) && val.length === 0) || (typeof val === 'object' && Object.keys(val).length === 0))) {
             toastr.warning('Debe seleccionar alguna opción para poder imprimir los reportes','',{timeOut: 1000});
             return;
         }
+
+        $('input[data-nosend]:checked').each(function() {
+            estudios.push($(this).attr('id'));
+        });
+
         preloader('on');
         $.get(impRepo, {
             Id: variables.idPrestacion.val(), 
@@ -915,7 +923,8 @@ $(function(){
             resAdmin: resAdmin, 
             caratula: caratula, 
             consEstDetallado: consEstDetallado, 
-            consEstSimple: consEstSimple
+            consEstSimple: consEstSimple,
+            estudios: estudios
         })
             .done(function(response){
                 preloader('off');
