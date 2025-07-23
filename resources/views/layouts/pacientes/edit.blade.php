@@ -590,7 +590,7 @@
                     </div>
 
                     <div class="row nuevaPrestacion">
-                        <h3 class="ff-secondary fw-bold mt-1 text-center">Alta Prestación</h3>
+                        <h3 class="ff-secondary fw-bold mt-1 text-center">Alta Prestación Nro: {{ $nroPrestacion ?? '' }}</h3>
 
                         <div class="row d-flex justify-content-center">
                             <div class="col-9 box-information">
@@ -800,7 +800,7 @@
                 </div>
 
                 <div class="row prestacionLimpia">
-                    <h3 class="ff-secondary fw-bold mt-1 text-center tituloPrestacion">Alta Prestación</h3>
+                    <h3 class="ff-secondary fw-bold mt-1 text-center tituloPrestacion">Alta Prestación Nro: {{ $nroPrestacion ?? '' }}</h3>
                     <div class="row d-flex justify-content-center">
                         <div class="col-9 box-information">
                             <div class="messagePrestacion"></div>
