@@ -106,6 +106,9 @@ class PacientesController extends Controller
     public function create():mixed
     {
         if(!$this->hasPermission("pacientes_add")){abort(403);}
+
+        $idPrestacion = Prestacion::max('Id') + 1;
+
         return view('layouts.pacientes.create', with(['provincias' =>  Provincia::all()]));
     }
 
@@ -165,7 +168,7 @@ class PacientesController extends Controller
         if(!$this->hasPermission("pacientes_edit")){abort(403);}
 
         $tiposPrestacionPrincipales = ['ART', 'INGRESO', 'PERIODICO', 'OCUPACIONAL', 'EGRESO'];
-
+        $idPrestacion = Prestacion::max('Id') + 1;
         return view('layouts.pacientes.edit', with([
                 'paciente' => $paciente,
                 'provincias' => Provincia::all(),
@@ -176,6 +179,7 @@ class PacientesController extends Controller
                 'fichaLaboral' => $this->getFichaLaboral($paciente->Id, null) ?? null,
                 'pacientePrestacion' => $this->getPrestacion($paciente->Id),
                 'tiposPrestacionOtros' => PrestacionesTipo::whereNotIn('Nombre', $tiposPrestacionPrincipales)->get(),
+                'nroPrestacion' => $idPrestacion
             ])
         );
     }
@@ -272,12 +276,11 @@ class PacientesController extends Controller
 
     public function exportExcel(Request $request)
     {
-        $ids = $request->input('Id');
+        $ids = $request->Id;
         if (! is_array($ids)) {
             $ids = [$ids];
         }
-
-        if($request->input('All')){
+        if($request->All == 'true') {
             $pacientes = Paciente::join('telefonos', 'pacientes.Id', '=', 'telefonos.IdEntidad')->where('pacientes.Estado', 1)->get();
 
         }else{

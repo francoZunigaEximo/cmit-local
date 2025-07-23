@@ -91,7 +91,7 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::get('pacientes/buscar', [PacientesController::class, 'search'])->name('search');
     Route::post('pacientes/baja', [PacientesController::class, 'down'])->name('pacientes.down');
     Route::get('pacientes/verficar-documento', [PacientesController::class, 'verifyDocument'])->name('verify');
-    Route::get('pacientes/excel', [PacientesController::class, 'exportExcel'])->name('excelPacientes');
+    Route::post('pacientes/excel', [PacientesController::class, 'exportExcel'])->name('excelPacientes');
     Route::get('pacientes/datos', [PacientesController::class, 'getPacientes'])->name('getPacientes');
     Route::get('pacientes/buscar-prestacion', [PacientesController::class, 'searchPrestPacientes'])->name('searchPrestPacientes');
     Route::get('pacientes/obtener-nombre', [PacientesController::class, 'getNombre'])->name('getNombre');
