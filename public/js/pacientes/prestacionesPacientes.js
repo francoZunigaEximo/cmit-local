@@ -249,6 +249,8 @@ $(function(){
                 principal.volverPrestacionLimpia.trigger('click');
                 principal.listaExamenes.empty();
                 IdNueva = response.nuevoId;
+                nroPrestacion = response.nuevoId;
+                $("#nroPrestacion").text(nroPrestacion);
                 cargarExamen(response.nuevoId);
                 contadorExamenes(response.nuevoId);
                 variables.idPrestacion.val(IdNueva);

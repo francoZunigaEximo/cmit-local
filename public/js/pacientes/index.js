@@ -76,11 +76,6 @@ $(function(){
             return;
         }
 
-        let all = false;
-        if($("#checkAll").is(":checked")){
-            all = true;
-        }
-
         swal({
             title: "¿Estás seguro de que deseas generar el reporte de Excel con todos los items seleccionados?",
             icon: "warning",
@@ -89,7 +84,7 @@ $(function(){
             if(confirmar){
                 preloader('on');
 
-                $.get(exportExcel, {Id: ids, All: all})
+                $.post(exportExcel, {Id: ids, All: false, _token: TOKEN})
                     .done(function(response){
                         preloader('off');
                         let tipoToastr = response.estado === 'success' ? 'success' : 'warning';
