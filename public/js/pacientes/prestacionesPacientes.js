@@ -151,7 +151,7 @@ $(function(){
     cantidadDisponibles(variables.selectClientes.val());
     getUltimasFacturadas(variables.selectClientes.val());
     selectorPago(pagoInput);
-    cargarEstudiosImp();
+    
 
     variables.tipoPrestacionPres.on('change', function(){
         precargaTipoPrestacion(variables.tipoPrestacionPres.val());
@@ -336,6 +336,8 @@ $(function(){
         $.post(saveItemExamenes, {idPrestacion: idPrestacion, idExamen: examenes, _token: TOKEN})
             .done(function(){
                 principal.listaExamenes.empty();
+                $('#estudios').empty();
+                cargarEstudiosImp();
                 cargarExamen(idPrestacion);
                 contadorExamenes(idPrestacion);
                 preloader('off');
@@ -1318,6 +1320,8 @@ $(function(){
         $.post(saveItemExamenes,{_token: TOKEN, idPrestacion: idPrestacion, idExamen: idExamen})
             .done(function(){
                 principal.listaExamenes.empty();
+                $('#estudios').empty()
+                cargarEstudiosImp();
                 variables.exam.val([]).trigger('change.select2');
                 variables.paquetes.trigger('change.select2');
                 cargarExamen(idPrestacion);
