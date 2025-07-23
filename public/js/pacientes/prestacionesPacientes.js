@@ -1082,6 +1082,8 @@ $(function(){
                         }
 
                         principal.listaExamenes.empty();
+                        $('#estudios').empty();
+                        cargarEstudiosImp();
                         variables.exam.val([]).trigger('change.select2');
                         variables.paquetes.val([]).trigger('change.select2');
                         cargarExamen(IdNueva);
