@@ -1636,7 +1636,7 @@ $(function(){
         if(!ID) return;
         
         preloader('on');
-        $.get(await listadoEstudiosImp, {Id: ID})
+        $.get(await listadoEstudiosImp, {Id: variables.idPrestacion.val()})
 
           .done(function(response){
                 preloader('off');
