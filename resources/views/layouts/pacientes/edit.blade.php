@@ -590,7 +590,7 @@
                     </div>
 
                     <div class="row nuevaPrestacion">
-                        <h3 class="ff-secondary fw-bold mt-1 text-center">Alta Prestación</h3>
+                        <h3 class="ff-secondary fw-bold mt-1 text-center">Alta Prestación Nro: {{ $nroPrestacion ?? '' }}</h3>
 
                         <div class="row d-flex justify-content-center">
                             <div class="col-9 box-information">
@@ -800,7 +800,7 @@
                 </div>
 
                 <div class="row prestacionLimpia">
-                    <h3 class="ff-secondary fw-bold mt-1 text-center tituloPrestacion">Alta Prestación</h3>
+                    <h3 class="ff-secondary fw-bold mt-1 text-center tituloPrestacion">Alta Prestación Nro: {{ $nroPrestacion ?? '' }}</h3>
                     <div class="row d-flex justify-content-center">
                         <div class="col-9 box-information">
                             <div class="messagePrestacion"></div>
@@ -847,7 +847,11 @@
                                         <span class="input-group-text">Fecha</span>
                                         <input type="date" class="form-control" id="FechaN" name="FechaN">
                                     </div>
-
+                                    <div class="input-group input-group-sm mb-2">
+                                        <div class="alert alert-info" role="alert">
+                                            Nro Prestacion: <span id="nroPrestacion"></span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         
@@ -1323,6 +1327,8 @@ const sendExcel = "{{ route('prestaciones.excel') }}";
 const contadorEx = "{{route('itemsprestaciones.contador')}}";
 const getListaExCta = "{{ route('examenesCuenta.listado') }}";
 const cargarExCta = "{{ route('examenesCuenta.cargar') }}";
+
+const nroPrestacion = "{{ $nroPrestacion ?? '' }}";
 </script>
 
 @push('styles')

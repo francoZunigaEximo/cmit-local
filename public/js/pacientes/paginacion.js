@@ -38,7 +38,7 @@ $(function(){
                 {
                     data: null,
                     render: function(data){
-                        return `<div class="text-center"><input type="checkbox" name="Id" value="${data.Id}" checked></div>`;
+                        return `<div class="text-center"><input type="checkbox" class="fila-checkbox" name="Id" value="${data.Id}"></div>`;
                     }
                 },
                 {
@@ -104,10 +104,16 @@ $(function(){
             drawCallback: function(settings) {
                 $("#listaPac").show();
                 $(".dataTables_processing").hide();
+
+                $("#checkAll").on('change', function() {
+                    const check = this.checked;
+                    $('.fila-checkbox').prop('checked', check);
+                })   
             },
         });
     });
-            
+
+     
 
 });
 

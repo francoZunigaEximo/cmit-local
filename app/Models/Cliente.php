@@ -98,6 +98,11 @@ class Cliente extends Model
         return $this->hasMany(HistorialPrestacion::class, ['IdART', 'IdEmpresa'], 'Id');
     }
 
+    public function actividad()
+    {
+        return $this->hasOne(Actividad::class, 'Id', 'IdActividad');
+    }
+
     /* Atributos */
     public function setDescuentoAttribute($descuento)
     {
