@@ -337,7 +337,7 @@ $(function(){
             .done(function(){
                 principal.listaExamenes.empty();
                 $('#estudios').empty();
-                cargarEstudiosImp();
+                cargarEstudiosImp(idPrestacion);
                 cargarExamen(idPrestacion);
                 contadorExamenes(idPrestacion);
                 preloader('off');
@@ -1083,7 +1083,7 @@ $(function(){
 
                         principal.listaExamenes.empty();
                         $('#estudios').empty();
-                        cargarEstudiosImp();
+                        cargarEstudiosImp(IdNueva);
                         variables.exam.val([]).trigger('change.select2');
                         variables.paquetes.val([]).trigger('change.select2');
                         cargarExamen(IdNueva);
@@ -1323,7 +1323,7 @@ $(function(){
             .done(function(){
                 principal.listaExamenes.empty();
                 $('#estudios').empty()
-                cargarEstudiosImp();
+                cargarEstudiosImp(idPrestacion);
                 variables.exam.val([]).trigger('change.select2');
                 variables.paquetes.trigger('change.select2');
                 cargarExamen(idPrestacion);
@@ -1628,11 +1628,11 @@ $(function(){
 
     }
 
-        async function cargarEstudiosImp()
+        async function cargarEstudiosImp(idPrestacion)
     {
         $('#estudios').empty();
 
-        if(!variables.idPrestacion.val()) return;
+        if(!idPrestacion) return;
         console.log("idPrestacion: " + variables.idPrestacion.val());
         preloader('on');
         $.get(await listadoEstudiosImp, {Id: variables.idPrestacion.val()})
