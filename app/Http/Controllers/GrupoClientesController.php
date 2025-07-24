@@ -104,6 +104,8 @@ class GrupoClientesController extends Controller
                 'Baja' => 0
             ]);
         }
+
+        return response()->json(['id' => $id], 200);
     }
 
     public function edit($id)

@@ -46,9 +46,18 @@ $(document).ready(()=>{
                 },
                 {
                     data: null,
-                    name: 'Nombre',
+                    name: 'Examenes',
                     orderable: true,
                     targets: 1,
+                    render: function(data){
+                        return `<div class="text-start"><span>${data.CantidadExamenes}</span></div>`;
+                    }
+                },
+                {
+                    data: null,
+                    name: 'Nombre',
+                    orderable: true,
+                    targets: 2,
                     render: function(data){
                         return `<div class="text-start"><span>${data.Nombre}</span></div>`;
                     }
@@ -58,7 +67,7 @@ $(document).ready(()=>{
                     data: null,
                     name: 'Alias',
                     orderable: true,
-                    targets: 2,
+                    targets: 3,
                     render: function(data){
                         return `<div class="text-start"><span>${data.Alias == null ? "" : data.Alias}</span></div>`;
                     }
@@ -67,7 +76,7 @@ $(document).ready(()=>{
                 {
                     data: null,
                     name: 'Acciones',
-                    targets: 3,
+                    targets: 4,
                     render: function(data){
                         
                         let editar = '<a title="Editar" href="'+ location.href + '/editPaqueteExamen/'+data.Id +'">' + '<button type="button" class="btn btn-sm iconGeneral edit-item-btn"> <i class="ri-edit-line"></i> </button>' + '</a>';

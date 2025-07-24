@@ -136,14 +136,15 @@ $(function () {
 
     $(".btnExcelEstudios").on("click", function (e) {
         preloader('on');
-        buscar = $('#nombrepaquete').val();
-        alias = $('#aliaspaquete').val();
+        
+        buscar = $('#paqueteEstudioSelect2').val();
+        //alias = $('#aliaspaquete').val();
         id = $('#codigopaquete').val();
+
         $.get(exportarExcel,
             {
                 buscar: buscar,
-                id: id,
-                alias: alias
+                id: id
             })
             .done(function (response) {
                 preloader('off');

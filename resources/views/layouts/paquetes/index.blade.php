@@ -150,6 +150,7 @@
                                     <thead class="table-light">
                                         <tr>
                                             <th class="sort">Codigo</th>
+                                            <th class="sort">Examenes</th>
                                             <th class="sort">Nombre</th>
                                             <th class="sort">Alias</th>
                                             <th>Acciones</th>

@@ -143,11 +143,11 @@ $(function () {
                 descripcion: descripcion,
                 estudios: examenes
             })
-                .done(function () {
+                .done(function (response) {
                     preloader('off');
                     toastr.success('Se ha editado al paquete correctamente', '', { timeOut: 1000 });
                     setTimeout(function() {
-                        history.back();
+                        window.location.href = "editPaqueteExamen/"+response.id;
                     }, 1000);
                 })
                 .fail(function (jqXHR) {
