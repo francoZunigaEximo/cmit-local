@@ -5,7 +5,7 @@
 @section('content')
 <div class="row mb-4">
     <div class="col-12 text-end">
-        <button onclick="window.history.back()" class="btn btn-warning"><i class="ri-arrow-left-line"></i>&nbsp;Volver</button>
+        <a href="{{ route('paquetes.index') }}" class="btn btn-warning"><i class="ri-arrow-left-line"></i>&nbsp;Volver</a>
     </div>
 </div>
 

@@ -1027,18 +1027,17 @@ $(function() {
 
           .done(function(response){
                 preloader('off');
-                for(let index = 0; index < response.length; index++){
-                    let data = response[index];
-
-                    let forNombre = (data.NombreExamen).replace(" ", "-");
-                    let contenido = `
-                        <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" id="${data.IdReporte}" data-examen="${data.IdExamen}" data-nosend>
-                            <label class="form-check-label" for="${forNombre}">
-                                ${data.NombreExamen}
-                            </label>
-                        </div>
-                    `;
+                for(let index = 0; index < response.length; index++) {
+                    let data = response[index],
+                        forNombre = (data.NombreExamen).replace(" ", "-"),
+                        contenido = `
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="${data.IdReporte}" data-examen="${data.IdExamen}" data-nosend>
+                                <label class="form-check-label" for="${forNombre}">
+                                    ${data.NombreExamen}
+                                </label>
+                            </div>
+                        `;
 
                     $('#estudios').append(contenido);
                 }

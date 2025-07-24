@@ -462,6 +462,7 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     //ruta paquete estudios id
     Route::post('paquetes/examenesPaqueteId', [PaquetesController::class, 'getExamenesPaqueteId'])->name('paquetes.examenesPaqueteId');
     Route::post('paquetes/examenesPaqueteFacturacionId', [PaquetesController::class, 'getExamenesPaqueteEstudio'])->name('paquetes.examenesPaqueteFacturacionId');
+    Route::get('paquetes/index', [PaquetesController::class, 'index'])->name('paquetes.index');
     Route::resource('paquetes', PaquetesController::class);
 
     //grupos

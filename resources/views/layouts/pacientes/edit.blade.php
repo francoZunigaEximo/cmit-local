@@ -1107,7 +1107,7 @@
                         <div class="row mt-3">
                             <form>
                                 <div class="form-check mb-2">
-                                    <input class="form-check-input" type="checkbox" id="infInternos">
+                                    <input class="form-check-input" type="checkbox" id="infInternos" checked>
                                     <label class="form-check-label" for="infInternos">
                                         Informes internos
                                     </label>
@@ -1158,6 +1158,8 @@
                                 </div>
             
                                 <hr class="mt-2 mb-2">
+
+                                <div id="estudios"></div>
             
                                 <div class="mb-3 text-center">
                                     <button type="button" data-id="" class="btn btn-sm botonGeneral imprimirRepo"><i class="bx bxs-file-pdf"></i>Imprimir</button>
@@ -1294,6 +1296,7 @@ const savePrivComent = "{{ route('savePrivComent') }}";
 const bloquearItemExamen = "{{ route('bloquearItemExamen') }}";
 const obsNuevaPrestacion = "{{ route('obsNuevaPrestacion') }}";
 const getFormaPagoCli = "{{ route('clientes.formaPago') }}";
+const listadoEstudiosImp = "{{ route('prestaciones.estudioReporte') }}";
 
 const getMapas = "{{ route('getMapas') }}";
 

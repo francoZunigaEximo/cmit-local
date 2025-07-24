@@ -420,9 +420,7 @@ function validaciones() {
     if (!$("#codigo").val()) {
         mensaje += "Debe ingresar un código para el paquete.\n";
     }
-    if (!$("#grupoSelect2").val() && !$("#empresaSelect2").val()) {
-        mensaje += "Debe seleccionar un grupo o una empresa.\n";
-    }
+    
     if (examenes.length == examenesEliminar.length && examenesNuevos.length === 0) {
         mensaje += "Debe agregar al menos un examen al paquete.\n";
     }

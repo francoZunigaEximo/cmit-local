@@ -122,9 +122,12 @@ $('.agregarCliente').on('click', function (e) {
                 Nombre: nombre,
                 Empresas: clientes
             })
-                .done(function () {
+                .done(function (response) {
                     preloader('off');
                     toastr.success('Se ha cargado el grupo correctamente', '', { timeOut: 1000 });
+                    setTimeout(function () {
+                        window.location.href = 'edit/'+response.id;
+                    }, 1000);
                 })
                 .fail(function (jqXHR) {
                     preloader('off');
