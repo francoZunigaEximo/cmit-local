@@ -4,7 +4,7 @@ $(function(){
 
         let id = $(this).data('id');
    
-        if([null, undefined, ''].includes(id)) {
+        if(!id) {
             toastr.warning("No hay ningún modelo para editar", "", {timeOut: 1000});
             return;
         }
@@ -16,7 +16,7 @@ $(function(){
     $(document).on('click', '.eliminar', function(){
         let id = $(this).data('id');
 
-        if([null, undefined, ''].includes(id)) {
+        if(!id) {
             toastr.warning("No hay ningún modelo para eliminar", "", {timeOut: 1000});
             return;
         }

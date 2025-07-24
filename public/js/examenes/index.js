@@ -21,13 +21,16 @@ $(function(){
     $(document).on('change', "#atributos", function() {
         const data = $(this).val();
     
-        opcionesClass.hide();
-        activoClass.hide();
-        estadoClass.hide();
+        opcionesClass
+            .add(activoClass)
+            .add(estadoClass)
+            .hide();
         
-        activo.val('');
-        estado.val('');
-        opciones.val('');
+        activo
+            .add(estado)
+            .add(opciones)
+            .val('');
+
     
         switch (data) {
             case 'opciones':
@@ -51,13 +54,17 @@ $(function(){
     reset.click(function(){ 
         $('#form-index :input, #form-index select').val('');
         examen.val([]).trigger('change.select2');
-        activoClass.hide();
-        opcionesClass.hide();
-        activo.val('');
-        estado.val('');
-        opciones.val('');
-        atributos.val('');
-        especialidad.val('');
+        activoClass
+            .add(opcionesClass)
+            .hide();
+
+        activo
+            .add(estado)
+            .add(opciones)
+            .add(atributos)
+            .add(especialidad)
+            .val('');
+
         $('#listaExamenes').DataTable().clear().destroy();
     });
 
@@ -131,7 +138,7 @@ $(function(){
 
             especialidad.empty().append('<option value="" selected>Elige una opción...</option>');
 
-            for(let index = 0; index < response; index++) {
+            for(let index = 0; index < response.length; index++) {
                 let r = response[index],
                 contenido = `<option value="${r.Id}">${r.Nombre}</option>`;
                 especialidad.append(contenido);

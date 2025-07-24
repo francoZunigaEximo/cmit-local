@@ -37,7 +37,7 @@ $(function(){
                 estado = null;
         }
 
-        if((fechaDesde == '' || fechaHasta == '') && nroprestacion == ''){
+        if((!fechaDesde || !fechaHasta) && !nroprestacion){
             swal('Alerta','La fecha "Desde" y "Hasta" son obligatorias.', 'warning');
             return;
         }

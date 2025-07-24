@@ -8,7 +8,7 @@ $(function(){
             condiciones = [empresaCreate, FechaCreate, FacturaCreate],
             partes = FacturaCreate.split('-');
 
-        if (condiciones.some(condicion => condicion === '' || condicion === null) === true) {
+        if (condiciones.some(condicion => !condicion)) {
             toastr.warning("Los campos marcados con astericos son obligatorios", "", {timeOut: 1000});
             return;
         }

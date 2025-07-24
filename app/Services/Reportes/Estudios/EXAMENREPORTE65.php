@@ -18,15 +18,16 @@ use DateTime;
 
 class EXAMENREPORTE65 extends Reporte
 {
-    public function render(FPDF $pdf, $datos = ['id', 'idExamen']): void
+    public function render(FPDF $pdf, $datos = ['id', 'idExamen'], $vistaPrevia=false): void
     {
-include('variables.php');
+        include('variables.php');
        
         $pdf->Image(public_path("/archivos/reportes/E65_1.jpg"),12,15,185); 
         $pdf->Image(public_path("/archivos/reportes/E65_2.jpg"),12,100,185); 
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+        if(!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
         $pdf->SetFont('Arial','',8);
-        $pdf->SetXY(46,39);$pdf->Cell(0,3,LugarFechaLargo($fecha),0,0,'L');
+        $pdf->SetXY(46,39);$pdf->Cell(0,3,$fecha,0,0,'L');
         $pdf->SetXY(38,49);$pdf->Cell(0,3,substr($paraempresa,0,60),0,0,'L');
     }
 

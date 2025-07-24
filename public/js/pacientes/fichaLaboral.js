@@ -148,63 +148,126 @@ $(function () {
     variables.PagoLaboral.change(function(){
         let valor = $(this).val();
         selectorPago(valor);
-        // checkExamenesCuenta(IDficha);
     });
 
     variables.TipoPrestacion.change(function(){
+
+        variables.PagoLaboral.attr('disabled', false);
         variables.tipoPrestacionHidden.val(variables.TipoPrestacion.val());
-        variables.TipoPrestacion.filter(':checked').val() === 'MAS' ? variables.divtipoPrestacionPresOtros.show() : variables.divtipoPrestacionPresOtros.hide();
-        checkExamenesCuenta(variables.selectClientes.val());
+        
+        variables.TipoPrestacion.filter(':checked').val() === 'MAS' 
+            ? variables.divtipoPrestacionPresOtros.show() 
+            : variables.divtipoPrestacionPresOtros.hide();
+        
+            checkExamenesCuenta(variables.selectClientes.val()); //ok
     });
 
     variables.TipoPrestacion.change(async function(){
 
+        variables.PagoLaboral.attr('disabled', false);
+
         if (variables.TipoPrestacion.filter(':checked').val() === 'ART') {
             variables.PagoLaboral.find('option[value="P"]').remove();
 
-            if(['0', null, undefined, ''].includes(variables.selectArt.val())) {
+            if(!variables.selectArt.val() || variables.selectArt.val() === '0') {
                 toastr.warning('¡Debe seleccionar una ART para el tipo de prestación ART!','',{timeOut: 1000});
-            
-            }else if (!['0', null, undefined, ''].includes(variables.selectArt.val())) {
+                    
+            }else if (variables.selectArt.val()) {
 
-                $.get(getFormaPagoART, {Id: variables.selectArt.val()}, function(response){
-                    let formaPago = ['', null, undefined].includes(response.FPago) ? 'A' : response.FPago;
+                $.get(getFormaPagoCli, {Id: variables.selectArt.val()}, function(response){
+                    let formaPago = !response.FPago ? 'A' : response.FPago;
                     
                     variables.PagoLaboral.val(formaPago);
                     variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde'); // color solo a la opcion requerida
+
+                    selectMedioPago(response.FPago);
+                    setTimeout(() => {
+                        variables.PagoLaboral.val() === 'B' && variables.PagoLaboral.attr('disabled', true);
+                    }, 2000);
                 });
             } 
 
-        }else {
+        }else if(variables.TipoPrestacion.filter(':checked').val()) {
+            
+             $.get(getFormaPagoCli, {Id: variables.selectClientes.val()}, function(response){
+                    let formaPago = !response.FPago ? 'A' : response.FPago;
+                    
+                    variables.PagoLaboral.val(formaPago);
+                    variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde'); // color solo a la opcion requerida
+                    selectMedioPago(response.FPago);
+
+                    setTimeout(() => {
+                        variables.PagoLaboral.val() === 'B' && variables.PagoLaboral.attr('disabled', true);
+                    }, 2000);
+                });
+        }
+    });
+
+    variables.selectClientes.on('change', function(){
+
+        variables.PagoLaboral.attr('disabled', false);
+
+        if(!variables.selectClientes.val() || variables.selectClientes.val() === '0') {
             variables.PagoLaboral.empty().append(`<option selected="" value="">Elija una opción...</option>
                 <option value="B">Contado</option>
-                <option value="A">Cuenta Corriente</option>
-                <option value="P">Exámen a Cuenta</option>`);
+                <option value="A">Cuenta Corriente</option>`);
             variables.PagoLaboral.css('color', 'black');
+            $('input[name="TipoPrestacion"]').prop('checked', false); //Quitamos todos los checks y dejamos de cero
+            
+            checkExamenesCuenta(variables.selectClientes.val());
         }
+
+         if(
+            variables.TipoPrestacion.filter(':checked').val() !== 'ART' &&  
+            variables.TipoPrestacion.filter(':checked').val()
+        ) 
+            {   
+                $.get(getFormaPagoCli, {Id: variables.selectClientes.val()}, async function(response){
+
+                    let formaPago = !response.FPago ? 'A' : response.FPago;
+                    variables.PagoLaboral.val(formaPago);
+                    variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde'); // color solo a la opcion requerida
+
+                    selectMedioPago(response.FPago);
+
+                    setTimeout(() => {
+                        variables.PagoLaboral.val() === 'B' && variables.PagoLaboral.attr('disabled', true);
+                    }, 2000);
+
+                });
+         }
     });
 
     variables.selectArt.on('change', function(){
 
-        if(['0', null, undefined, '', 0].includes(variables.selectArt.val())) {
+        variables.PagoLaboral.attr('disabled', false);
+
+        if((!variables.selectArt.val() || variables.selectArt.val() === '0') && (!variables.selectClientes.val() || variables.selectClientes.val() === '0')) {
             variables.PagoLaboral.empty().append(`<option selected="" value="">Elija una opción...</option>
                 <option value="B">Contado</option>
-                <option value="A">Cuenta Corriente</option>
-                <option value="P">Exámen a Cuenta</option>`);
+                <option value="A">Cuenta Corriente</option>`);
             variables.PagoLaboral.css('color', 'black');
             $('input[name="TipoPrestacion"]').prop('checked', false); //Quitamos todos los checks y dejamos de cero
             return;
-        };
+        
+        }else {
 
-        if(variables.TipoPrestacion.filter(':checked').val() === 'ART') {
+            $.get(getFormaPagoCli, {Id: variables.selectArt.val()}, async function(response){
 
-            $.get(getFormaPagoART, {Id: variables.selectArt.val()}, function(response){
-                let formaPago = ['', null, undefined].includes(response.FPago) ? 'A' : response.FPago;
+                let formaPago = !response.FPago ? 'A' : response.FPago;
                 variables.PagoLaboral.val(formaPago);
-                variables.PagoLaboral.css('color', 'green');
+                variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde'); // color solo a la opcion requerida
+
+                selectMedioPago(response.FPago);
+
+                setTimeout(() => {
+                    variables.PagoLaboral.val() === 'B' && variables.PagoLaboral.attr('disabled', true);
+                }, 2000);
+
             });
 
         }
+
     });
 
     variables.Pago.val(variables.PagoLaboral.val());
@@ -319,16 +382,14 @@ $(function () {
         if($(this).select2('data').map(option => option.id).length === 0){
             principal.guardarFicha
                 .removeAttr('disabled')
-                .removeAttr('title', 'Botón habilitado')
-                .removeAttr('data-toggle', 'tooltip')
-                .removeAttr('data-placement', 'top');
         }
     });
 
     variables.selectClientes.on('change', function(){
+        variables.PagoLaboral.attr('disabled', false);
         let value = $(this).val();
 
-        if([0,null,undefined,'0'].includes(value)) {
+        if(!value || value === '0') {
             $('input[name="TipoPrestacion"]').prop('checked', false);
             variables.PagoLaboral.val('');
             principal.SPago
@@ -383,56 +444,53 @@ $(function () {
         };
     
         //Validamos la factura
-        if (data.Spago === 'G' && data.Autoriza === ''){
+        if (data.Spago === 'G' && !data.Autoriza){
             toastr.warning('Si el medio de pago es gratuito, debe seleccionar quien autoriza.', '', {timeOut: 1000});
             return;
         }
 
-        if (data.pago === 'B' && data.Spago === '') {
+        if (data.pago === 'B' && !data.Spago) {
             toastr.warning('Debe seleccionar un "medio de pago" cuando la "forma de pago" es "contado"', '', {timeOut: 1000});
             return;
         }
 
-        if (['',null,undefined].includes(data.pago)) {
+        if (!data.pago) {
             toastr.warning('Debe seleccionar una "forma de pago"','',{timeOut: 1000});
             return;
         }
 
-        if (data.pago === 'B' && (data.TipoF == '' || data.SucursalF === '' || data.NumeroF === '')){
+        if (data.pago === 'B' && (!data.TipoF || !data.SucursalF || !data.NumeroF)){
             toastr.warning('El pago es contado, asi que debe agregar el número de factura para continuar.','',{timeOut: 1000});
             return;
         }
 
-        if(data.tipoPrestacion === 'MAS' && variables.tipoPrestacionPresOtros.val() === '') {
+        if(data.tipoPrestacion === 'MAS' && !variables.tipoPrestacionPresOtros.val()) {
             toastr.warning('¡El campo tipo de prestación MAS necesita una opción de tipo!','',{timeOut: 1000});
             return;
         }
 
-
-        if([0, null, undefined, ''].includes(data.tipoPrestacion)){
+        if(!data.tipoPrestacion){
             toastr.warning('¡El campo tipo de prestación es obligatorio!','',{timeOut: 1000});
             return;
         }
 
-        if(["0", null, undefined, ''].includes(data.cliente) && ["0", null, undefined, ''].includes(data.art)){
+        if((!data.cliente || data.cliente === '0') && (!data.art || data.art === '0')){
             toastr.warning('¡Debe seleccionar una empresa o una art!','',{timeOut: 1000});
             return;
         }
         
-        if(data.tipoPrestacion === 'ART' && (["0", null, undefined, ''].includes(data.art))){
+        if(data.tipoPrestacion === 'ART' && (!data.art || data.art === '0')){
             toastr.warning('¡Debe seleccionar una ART para el tipo de prestación ART!','',{timeOut: 1000});
             return;
         }
         
-        if(data.tipoPrestacion !== 'ART' && (["0", null, undefined, ''].includes(data.cliente))){
+        if(data.tipoPrestacion !== 'ART' && (!data.cliente || data.cliente === '0')){
             toastr.warning('¡Debe seleccionar una empresa para el tipo de prestación seleccionado!','',{timeOut: 1000});
             return;
         }
 
         //ejecutamos la verificación de disponibilidad
-        if(
-            ((["0", null, undefined, ''].includes(data.art) || !["0", null, undefined, ''].includes(data.art)) && data.tipoPrestacion !== 'ART')
-        ) {
+        if(data.tipoPrestacion !== 'ART'){
             verificarDisponibilidad(data.cliente, data.pago, data, e);
             variables.Pago.find('option[value="' + data.pago + '"]').prop('selected', true);
         }else{
@@ -468,11 +526,6 @@ $(function () {
         e.preventDefault();
         principal.listadoExCta.hide();
         principal.fichaLaboralModal.show();
-    });
-
-    variables.selectClientes.on('change', function(){
-        let id = $(this).val();
-        checkExamenesCuenta(id);
     });
 
     principal.altaPrestacionModal.on('hidden.bs.modal', function () {
@@ -577,8 +630,6 @@ $(function () {
                         variables.tipoPrestacionPres
                             .add(variables.tipoPrestacionPresN)
                             .val(result);
-
-                        console.log(result); 
                     }
 
                     if (estado !== 'ART' || estado === '') {
@@ -696,11 +747,12 @@ $(function () {
      
         if (ID === '') return;
         
-        elementos.ObBloqueoArt.hide();
-        elementos.ObBloqueoEmpresa.hide();
-        elementos.ObArt.hide();
-        elementos.ObEmpresa.hide();
-        elementos.ObPaciente.hide();
+        elementos.ObBloqueoArt
+            .add(elementos.ObBloqueoEmpresa)
+            .add(elementos.ObArt)
+            .add(elementos.ObEmpresa)
+            .add(elementos.ObPaciente)
+            .hide();
 
         principal.seguirAl
             .prop('disabled', false)
@@ -727,7 +779,7 @@ $(function () {
                 principal.fichaLaboralModal.hide();
                 principal.observacionesModal.show();
 
-                if(![null, undefined, ''].includes(obsArt.Motivo)) {
+                if(obsArt.Motivo) {
                     elementos.ObBloqueoArt.show();
                     elementos.ObBloqueoArt
                         .find('p')
@@ -737,29 +789,28 @@ $(function () {
                         .attr('title', 'Boton bloqueado');
                 }
 
-                if(![null, undefined, ''].includes(obsArt.Observaciones)) {
+                if(obsArt.Observaciones) {
                     elementos.ObArt.show();
                     elementos.ObArt
                         .find('p')
                         .text(obsArt.Observaciones);
                 }
                 
-                if(![null, undefined, ''].includes(obsEmpresa.Observaciones)) {
+                if(obsEmpresa.Observaciones) {
                     elementos.ObEmpresa.show();
                     elementos.ObEmpresa
                         .find('p')
                         .text(obsEmpresa.Observaciones);
                 }
 
-                if(![null,undefined, ''].includes(obsEmpresa.Motivo)) {
+                if(obsEmpresa.Motivo) {
                     elementos.ObBloqueoEmpresa.show();
                     elementos.ObBloqueoEmpresa
                         .find('p')
                         .text(obsEmpresa.Motivo);
-                    //$('.seguirAl').prop('disabled', true).attr('title', 'Boton bloqueado');
                 }
                 
-                if(![null, undefined, ''].includes(obsPaciente.Observaciones)) {
+                if(obsPaciente.Observaciones) {
                     elementos.ObPaciente.show();
                     elementos.ObPaciente
                         .find('p')
@@ -812,10 +863,13 @@ $(function () {
 
         if (pago != 'B') {
 
-            variables.SPago.val('');
-            variables.Tipo.val('');
-            variables.Sucursal.val('');
-            variables.NroFactura.val('');
+            variables.SPago
+                .add(variables.Tipo)
+                .add(variables.Sucursal)
+                .add(variables.NroFactura)
+                .val('');
+            
+                //aca
         }
 
         if(['B','A', ''].includes(pago)) {
@@ -839,7 +893,7 @@ $(function () {
                         .add(principal.siguienteExCta)
                         .show();
                     principal.guardarPrestacion.hide();
-                    checkExamenesCuenta(variables.selectClientes.val())
+                    // checkExamenesCuenta(variables.selectClientes.val())
                 }
             });
         }
@@ -847,7 +901,7 @@ $(function () {
 
     async function checkExamenesCuenta(id) {
 
-        if([null, 0,''].includes(id)) {
+        if(!id) {
             principal.alertaExCta
                     .add(principal.verListadoExCta)
                     .hide();
@@ -856,23 +910,28 @@ $(function () {
 
         try {
             const response = await $.get(lstExDisponibles, { Id: id });
-    
+            let checkbox = $("input[name='TipoPrestacion']:checked").val();
             if (
                 response &&
                 response.length > 0 &&
-                !['ART', '', undefined, 0].includes($("input[name='TipoPrestacion']:checked").val())
+                (checkbox && checkbox !== 'ART')
             ) {
 
                 principal.alertaExCta.add(principal.verListadoExCta).show();
+                variables.PagoLaboral.find('option[value="P"]').remove();
+                variables.PagoLaboral.append('<option value="P" selected>Examen a cuenta</option>');
                 variables.PagoLaboral.val('P');
                 variables.Pago.val('P');
                 limpiezaInputsPagos();
+                variables.PagoLaboral.attr('disabled', false);
                 return true;
 
             } else {
                 principal.alertaExCta
                     .add(principal.verListadoExCta)
                     .hide();
+
+                variables.PagoLaboral.find('option[value="P"]').remove();               
                 return;
             }
         } catch (jqXHR) {
@@ -921,7 +980,7 @@ $(function () {
                 toastr.success(response.msg,'',{timeOut: 1000});
 
                 variables.facturacion_id.val(response.datos_facturacion_id);
-                console.log(response);
+
                 mostrarFinanciador();
                 selectMedioPago(variables.PagoLaboral.val());
 

@@ -590,7 +590,7 @@
                     </div>
 
                     <div class="row nuevaPrestacion">
-                        <h3 class="ff-secondary fw-bold mt-1 text-center">Alta Prestación</h3>
+                        <h3 class="ff-secondary fw-bold mt-1 text-center">Alta Prestación Nro: {{ $nroPrestacion ?? '' }}</h3>
 
                         <div class="row d-flex justify-content-center">
                             <div class="col-9 box-information">
@@ -800,7 +800,7 @@
                 </div>
 
                 <div class="row prestacionLimpia">
-                    <h3 class="ff-secondary fw-bold mt-1 text-center tituloPrestacion">Alta Prestación</h3>
+                    <h3 class="ff-secondary fw-bold mt-1 text-center tituloPrestacion">Alta Prestación Nro: {{ $nroPrestacion ?? '' }}</h3>
                     <div class="row d-flex justify-content-center">
                         <div class="col-9 box-information">
                             <div class="messagePrestacion"></div>
@@ -847,20 +847,24 @@
                                         <span class="input-group-text">Fecha</span>
                                         <input type="date" class="form-control" id="FechaN" name="FechaN">
                                     </div>
-
+                                    <div class="input-group input-group-sm mb-2">
+                                        <div class="alert alert-info" role="alert">
+                                            Nro Prestacion: <span id="nroPrestacion"></span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         
                             <div class="row">
                                 <div class="col-12">
                                     <hr class="mt-3 mb-3">
-                                    <div class="input-group input-group-sm mb-2">
+                                    <div class="input-group input-group-sm mb-2 d-none">
                                         <span class="input-group-text">Observaciones</span>
                                         <input type="text" class="form-control" id="ObservacionesPresN" name="ObservacionesPresN">
                                     </div>
 
                                     <div class="input-group input-group">
-                                        <span class="input-group-text">Obs prestaciones</span>
+                                        <span class="input-group-text">Obs. prestacion</span>
                                         <input type="text" class="form-control" placeholder="Observaciones" id="ObsExamenesN" name="ObsExamenesN">
                                     </div>
                     
@@ -902,7 +906,7 @@
 
                             <div class="row mt-2 paqueteExamen">
                         
-                                <div class="col-6">
+                                <div class="col-5">
                                     <label for="paquetes" class="form-label">Paquetes</label> <!-- select 2 de paquetes de exámenes -->
                                     <div class="mb-3">
                                         <div class="cajaExamenes">
@@ -912,12 +916,20 @@
                                     </div>
                                 </div>
 
-                                <div class="col-6">
+                                <div class="col-5">
                                     <label for="examenes" class="form-label">Examen</label> <!-- select 2 de exámenes -->
                                     <div class="mb-3">
                                         <div class="cajaExamenes">
                                             <select class="form-select" name ="exam" id="exam"></select>
                                             <i class="addExamen ri-add-circle-line naranja" title="Añadir examén de la busqueda"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-2 d-flex justify-content-center align-items-center">
+                                    <div class="mb-3">
+                                        <div class="cajaExamenes">
+                                            <button class="btn botonGeneral btnExamen">Examenes Masivo</button>
                                         </div>
                                     </div>
                                 </div>
@@ -979,7 +991,7 @@
 
                             <div class="row">
                                 <div class="col-lg-12 mb-2">
-                                    <p>Escriba un comentario de la cuestión o situación:</p>
+                                    <p>ESCRIBA UN COMENTARIO O ALERTA:</p>
                                     <textarea name="Comentario" id="Comentario" class="form-control" rows="10"></textarea>
                                     <div class="text-center mt-2">
                                         <button type="button" class="btn botonGeneral confirmarComentarioPriv">Confirmar</button>
@@ -1095,7 +1107,7 @@
                         <div class="row mt-3">
                             <form>
                                 <div class="form-check mb-2">
-                                    <input class="form-check-input" type="checkbox" id="infInternos">
+                                    <input class="form-check-input" type="checkbox" id="infInternos" checked>
                                     <label class="form-check-label" for="infInternos">
                                         Informes internos
                                     </label>
@@ -1146,6 +1158,8 @@
                                 </div>
             
                                 <hr class="mt-2 mb-2">
+
+                                <div id="estudios"></div>
             
                                 <div class="mb-3 text-center">
                                     <button type="button" data-id="" class="btn btn-sm botonGeneral imprimirRepo"><i class="bx bxs-file-pdf"></i>Imprimir</button>
@@ -1198,6 +1212,53 @@
     </div>
 </div>
 
+<div id="examenesCantidad" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidde="true" style="display: none">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel"> Examenes por Cantidad</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>
+            </div>
+            <div class="modal-body" class="text-center p-3">
+                <div class="search-box d-flex align-items-center gap-2">
+                    <input type="text" class="form-control bg-light border-light" placeholder="Buscar examen" name="inputExCtd" id="inputExCtd">
+                    <i class="ri-search-2-line search-icon"></i>
+                    <button class="btn btn-sm botonGeneral" id="buscarExCtd">
+                        <i class="ri-search-line"></i>
+                        Buscar
+                    </button>
+                </div>
+
+                <div class="row auto-mx mb-3">
+                    <div class="table-responsive mt-3 mb-1 mx-auto col-sm-12">
+                        <table id="listadoExamenesCtd" class="table table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Nombre del examen</th>
+                                    <th><input type="checkbox" name="examenCheck" id="examenCheck"></th>
+                                </tr>
+                            </thead>
+                            <tbody class="list form-check-all" id="lstExamenesCtd">
+                
+                            </tbody>
+                        </table>
+                
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-12 text-center">
+                        <button class="btn btn-sm botonGeneral" id="addExaCtd">
+                            <i class=" ri-save-line"></i>
+                            Añadir a la prestación
+                        </button>
+                    </div>
+                </div>
+
+            </div>            
+        </div>
+    </div>
+</div>
+
 <script>
 //Rutas
 const checkP = "{{ route('checkProvincia') }}";
@@ -1225,9 +1286,8 @@ const lstExClientes = "{{ route('lstExClientes') }}";
 const searchExamen = "{{ route('searchExamen') }}";
 const IDFICHA = "{{ $fichaLaboral->empresa->Id ?? ''}}";
 const pagoInput = "{{ $fichaLaboral->Pago ?? ''}} ";
-const checkItemExamen = "{{ route('checkItemExamen') }}";
 const saveItemExamenes = "{{ route('saveItemExamenes') }}";
-const getItemExamenes = "{{ route('itemsprestaciones.listadoexamenes') }}";
+const getExamenesEstandar = "{{ route('itemsprestaciones.lstExamenesEstandar') }}";
 const getPaquetes = "{{ route('getPaquetes') }}";
 const paqueteId = "{{ route('paqueteId') }}";
 const deleteItemExamen = "{{ route('deleteItemExamen')}}";
@@ -1235,7 +1295,8 @@ const privateComment = "{{ route('comentariosPriv') }}";
 const savePrivComent = "{{ route('savePrivComent') }}";
 const bloquearItemExamen = "{{ route('bloquearItemExamen') }}";
 const obsNuevaPrestacion = "{{ route('obsNuevaPrestacion') }}";
-const getFormaPagoART = "{{ route('clientes.formaPago') }}";
+const getFormaPagoCli = "{{ route('clientes.formaPago') }}";
+const listadoEstudiosImp = "{{ route('prestaciones.estudioReporte') }}";
 
 const getMapas = "{{ route('getMapas') }}";
 
@@ -1266,6 +1327,8 @@ const sendExcel = "{{ route('prestaciones.excel') }}";
 const contadorEx = "{{route('itemsprestaciones.contador')}}";
 const getListaExCta = "{{ route('examenesCuenta.listado') }}";
 const cargarExCta = "{{ route('examenesCuenta.cargar') }}";
+
+const nroPrestacion = "{{ $nroPrestacion ?? '' }}";
 </script>
 
 @push('styles')

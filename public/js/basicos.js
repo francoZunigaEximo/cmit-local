@@ -96,6 +96,9 @@ function createFile(tipo, array, name){
         baseUrl = url.origin + checkPublic,
         fullPath = baseUrl + path;
 
+    console.log(baseUrl);
+    console.log(fullPath);
+
     let link = document.createElement('a');
     link.href = fullPath;
     link.download = tipo === 'pdf' ? name : name + ".xlsx";
@@ -107,6 +110,18 @@ function createFile(tipo, array, name){
         document.body.removeChild(link);
     }, 100);
 }
+
+function convertToUrl(filePath, path) {
+    // Remueve el prefijo absoluto del sistema
+    const regex = new RegExp(`${path}/file-[^/]+\\.pdf`);
+    const match = filePath.match(regex);
+    
+    let url = new URL(location.href);
+    let checkPublic = url.href.includes("public") ? '/cmit/public/storage' : '/storage';
+    // Construye la URL completa
+    return `${url.origin}${checkPublic}/${match[0]}`;
+}
+
 
 function generarCodigoAleatorio() {
 

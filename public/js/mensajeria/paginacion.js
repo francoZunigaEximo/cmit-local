@@ -12,7 +12,7 @@ $(function(){
             fechaHasta = $('#fechaHasta').val(),
             bloqueado = $('#bloqueado').val();
 
-        if([null, '', 0].includes(fechaHasta) || (![null, '', 0].includes(fechaDesde) && [null, '', 0].includes(fechaHasta))) {
+        if(!fechaHasta) {
             toastr.warning("La fecha hasta es obligatoria. Tampoco puede faltar si la fecha desde esta incluida", "", {timeOut: 1000});
             return;
         }

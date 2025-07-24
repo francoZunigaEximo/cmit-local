@@ -18,25 +18,26 @@ use DateTime;
 
 class EXAMENREPORTE48 extends Reporte
 {
-    public function render(FPDF $pdf, $datos = ['id', 'idExamen']): void
+    public function render(FPDF $pdf, $datos = ['id', 'idExamen'], $vistaPrevia=false): void
     {
 include('variables.php');
-        
-        $pdf->Image(public_path("/archivos/reportes/E48_1.jpg"),5,9,199); 
-        $pdf->Image(public_path("/archivos/reportes/E48_2.jpg"),5,169,199); 
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
+        $y=0;
+        $pdf->Image(public_path("/archivos/reportes/E48_1.jpg"),5,$y+9,190); 
+        $pdf->Image(public_path("/archivos/reportes/E48_2.jpg"),5,$y+169,199); 
+         if(!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
         $pdf->SetFont('Arial','',7);
-        $pdf->SetXY(185,273);$pdf->Cell(0,3,'1',0,0,'L'); 
-        $pdf->SetXY(32,59);$pdf->Cell(0,3,'CMIT de Irigoyen Miguel Antonio',0,0,'L');$pdf->SetXY(151,59);$pdf->Cell(0,3,$fecha,0,0,'L');
-        $pdf->SetXY(35,73);$pdf->Cell(0,3,substr($paraempresa,0,60),0,0,'L');
-        $pdf->SetXY(135,91);if($cuil!=''){$pdf->Cell(0,3,$cuil,0,0,'L');}else{$pdf->Cell(0,3,$doc,0,0,'L');}
-        $pdf->SetXY(42,96);$pdf->Cell(0,3,substr($paciente,0,60),0,0,'L');
-        $pdf->SetXY(43,100);$pdf->Cell(0,3,$fechanac,0,0,'L');$pdf->SetXY(70,100);$pdf->Cell(0,3,$edad,0,0,'L');
-        $pdf->SetXY(91,100);$pdf->Cell(0,3,$nac,0,0,'L');
-        if($sexo=='Femenino'){$pdf->SetXY(179,100);}else{$pdf->SetXY(186,100);}$pdf->Cell(0,3,'X',0,0,'L');
-        $pdf->SetXY(27,104);$pdf->Cell(0,3,substr($domipac,0,60),0,0,'L');
-        $pdf->SetXY(30,109);$pdf->Cell(0,3,$locpac,0,0,'L');$pdf->SetXY(105,109);$pdf->Cell(0,3,$cp,0,0,'L');$pdf->SetXY(135,109);$pdf->Cell(0,3,$telpac,0,0,'L');
-        $pdf->SetXY(47,113);$pdf->Cell(0,3,$puesto,0,0,'L');
+        $pdf->SetXY(185,$y+273);$pdf->Cell(0,3,'1',0,0,'L'); 
+        $pdf->SetXY(32,$y+59);$pdf->Cell(0,3,'CMIT de Irigoyen Miguel Antonio',0,0,'L');$pdf->SetXY(151,59);$pdf->Cell(0,3,$fecha,0,0,'L');
+        $pdf->SetXY(35,$y+73);$pdf->Cell(0,3,substr($paraempresa,0,60),0,0,'L');
+        $pdf->SetXY(135,$y+91);if($cuil!=''){$pdf->Cell(0,3,$cuil,0,0,'L');}else{$pdf->Cell(0,3,$doc,0,0,'L');}
+        $pdf->SetXY(42,$y+96);$pdf->Cell(0,3,substr($paciente,0,60),0,0,'L');
+        $pdf->SetXY(43,$y+100);$pdf->Cell(0,3,$fechanac,0,0,'L');$pdf->SetXY(70,$y+100);$pdf->Cell(0,3,$edad,0,0,'L');
+        $pdf->SetXY(91,$y+100);$pdf->Cell(0,3,$nac,0,0,'L');
+        if($sexo=='Femenino'){$pdf->SetXY(179,100);}else{$pdf->SetXY(186,$y+100);}$pdf->Cell(0,3,'X',0,0,'L');
+        $pdf->SetXY(27,$y+104);$pdf->Cell(0,3,substr($domipac,0,60),0,0,'L');
+        $pdf->SetXY(30,$y+109);$pdf->Cell(0,3,$locpac,0,0,'L');$pdf->SetXY(105,$y+109);$pdf->Cell(0,3,$cp,0,0,'L');$pdf->SetXY(135,$y+109);$pdf->Cell(0,3,$telpac,0,0,'L');
+        $pdf->SetXY(47,$y+113);$pdf->Cell(0,3,$puesto,0,0,'L');
     }
 
     private function edad($fechaNacimiento)

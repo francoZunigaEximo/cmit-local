@@ -14,7 +14,6 @@ class Cliente extends Model
     protected $primaryKey = 'Id';
 
     protected $fillable = [
-        'Id',
         'TipoIdentificacion',
         'TipoCliente',
         'Identificacion',
@@ -98,5 +97,19 @@ class Cliente extends Model
     {
         return $this->hasMany(HistorialPrestacion::class, ['IdART', 'IdEmpresa'], 'Id');
     }
+
+    public function actividad()
+    {
+        return $this->hasOne(Actividad::class, 'Id', 'IdActividad');
+    }
+
+    /* Atributos */
+    public function setDescuentoAttribute($descuento)
+    {
+        $convertirEntero = str_replace('%', '', $descuento);
+        $this->attributes['Descuento'] = (int) $convertirEntero;
+    }
+
+
 }
 

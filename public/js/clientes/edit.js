@@ -54,12 +54,12 @@ $(function() {
             motivo = $('#MotivoB').val();
 
     
-        if(correo == true && mensajeria == true){
+        if(correo && mensajeria){
             toastr.warning('¡No puede tener la opcion Mensajeria y Correo seleccionadas. Debe escoger por una opción!', '', {timeOut: 1000});
             return;
         }
 
-        if(motivo === '' && bloqueado === 1){
+        if(!motivo && bloqueado === 1){
             toastr.warning('¡El motivo es un campo obligatorio si ha seleccionado la opción bloquear. Debe escribir un motivo!', '', {timeOut: 1000});
             return;
         }
@@ -377,7 +377,7 @@ $(function() {
 
         let provincia = $('#Provincia').val(), localidad = $('#IdLocalidad').val();
 
-        if ((provincia.length == 0 || provincia == 0) && (localidad.length > 0 || localidad == true))
+        if ((provincia.length == 0 || !provincia) && (localidad.length > 0 || localidad))
         {
             $.ajax({
                 url: checkProvController,
@@ -409,7 +409,7 @@ $(function() {
     $(document).on('click', '#addNumero', function(e) {
         e.preventDefault();
         let prefijo = $('#prefijoExtra').val(), numero = $('#numeroExtra').val(), observacion = $('#obsExtra').val();
-
+        
         if (prefijo !== '' && numero !== '' && observacion !== '') {
             $('#tablaTelefonos').append(`
                 <tr>
@@ -484,6 +484,13 @@ $(function() {
         localStorage.setItem('nuevaId', $(this).data('id'));
         localStorage.setItem('nuevaRazonSocial', $(this).data('name'));
         window.location.href = RUTAEXAMEN;
+    });
+
+    $('#Descuento').on('input', function () {
+        let valor = $(this).val().replace('%', '');
+        if (!isNaN(valor) && valor) {
+            $(this).val(valor + '%');
+        }
     });
 
     function actualizarInputHidden() {

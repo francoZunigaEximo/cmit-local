@@ -14,7 +14,6 @@ class ItemPrestacion extends Model
     protected $primaryKey = 'Id';
 
     protected $fillable = [
-        'Id',
         'IdPrestacion',
         'IdExamen',
         'ObsExamen',

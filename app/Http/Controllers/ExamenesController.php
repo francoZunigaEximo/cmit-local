@@ -23,6 +23,7 @@ class ExamenesController extends Controller
     private $tempFile;
 
     use ObserverExamenes, CheckPermission, ReporteExcel;
+
     public $helper = '
         <div class="d-flex">
             <span class="fondo-celeste p-1 small">Con prioridad de impresión</span>
@@ -67,11 +68,10 @@ class ExamenesController extends Controller
         }
 
         $estudios = $this->getEstudios();
-        $reportes = $this->getReportes();
         $proveedores = $this->getProveedor();
         $aliasexamenes = $this->getAliasExamenes();
 
-        return view("layouts.examenes.create", compact(['estudios', 'reportes', 'proveedores','aliasexamenes']), ['helper'=>$this->helpeEditar]);
+        return view("layouts.examenes.create", compact(['estudios', 'proveedores','aliasexamenes']), ['helper'=>$this->helpeEditar]);
     }
 
     public function store(Request $request)
@@ -115,11 +115,14 @@ class ExamenesController extends Controller
         }
         
         $estudios = $this->getEstudios();
-        $reportes = $this->getReportes();
         $proveedores = $this->getProveedor();
         $aliasexamenes = $this->getAliasExamenes();
-
-        return view("layouts.examenes.edit", compact(['examene', 'estudios', 'reportes', 'proveedores', 'aliasexamenes']), ['helper'=>$this->helpeEditar]);
+        if($examene->IdReporte > 0) {
+            $reporte = Reporte::find($examene->IdReporte);
+        } else {
+            $reporte = null ;
+        }
+        return view("layouts.examenes.edit", compact(['examene', 'estudios', 'proveedores', 'aliasexamenes', 'reporte']), ['helper'=>$this->helpeEditar]);
     }
 
     public function search(Request $request): mixed
@@ -360,6 +363,27 @@ class ExamenesController extends Controller
     public function getById(Request $request){
         $id = $request->Id;
         return response()->json( Examen::find($id));
+    }
+
+    public function getReportes(Request $request): mixed
+    {
+
+        $buscar = $request->buscar;
+
+        $reportes = Reporte::where('Nombre', 'LIKE', '%' . $buscar . '%')->get();
+
+        $resultados = [];
+
+        foreach ($reportes as $reporte) {
+            $resultados[] = [
+                'id' => $reporte->Id,
+                'text' => $reporte->Nombre,
+            ];
+        }
+
+        return $resultados;
+
+        return response()->json(['paquete' => $resultados]);
     }
 }
  

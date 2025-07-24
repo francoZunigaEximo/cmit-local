@@ -43,6 +43,11 @@
                                     </div>
 
                                     <div class="col-sm-2 mb-3">
+                                        <label for="especialidad" class="form-label fw-bolder">Especialidad <span class="required">(*)</span></label>
+                                        <input type="text" class="form-control" name="especialidad" id="especialidad">
+                                    </div>
+
+                                    <div class="col-sm-2 mb-3">
                                         <label for="fechaDesde" class="form-label fw-bolder">Fecha Desde <span class="required">(*)</span></label>
                                         <input type="date" class="form-control" id="fechaDesde">
                                     </div>
@@ -141,67 +146,67 @@
 
                         <div class="row">
 
-                            <div class="col-md-9">
+                            <div class="col-md-9 d-flex justify-content-center align-content-center">
 
-                                <div class="row">
+                                <div class="row d-flex align-content-center">
 
-                                    <div class="col-md-4">
+                                    <div class="col-md-4 p-2">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text">Profesional</span>
                                             <input type="text" class="form-control" id="profesionalEfector" name="profesionalEfector" readonly="true">
                                         </div>
                                     </div>
                                     
-                                    <div class="col-md-4">
+                                    <div class="col-md-4 p-2">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text">Prestación</span>
                                             <input type="text" class="form-control" id="prestacionEfector" name="prestacionEfector" readonly="true">
                                         </div>
                                     </div>
         
-                                    <div class="col-md-4">
+                                    <div class="col-md-4 p-2">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text">Tipo Exámen</span>
                                             <input type="text" class="form-control" id="tipoEfector" name="tipoEfector" readonly="true">
                                         </div>
                                     </div>
 
-                                    <div class="col-md-4">
+                                    <div class="col-md-4 p-2">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text">ART</span>
                                             <input type="text" class="form-control" id="artEfector" name="artEfector" readonly="true">
                                         </div>
                                     </div>
 
-                                    <div class="col-md-4">
+                                    <div class="col-md-4 p-2">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text">Empresa</span>
                                             <input type="text" class="form-control" id="empresaEfector" name="empresaEfector" readonly="true">
                                         </div>
                                     </div>
 
-                                    <div class="col-md-4 mt-1">
+                                    <div class="col-md-4 p-2">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text">Para Empresa</span>
                                             <input type="text" class="form-control" id="paraEmpresaEfector" name="paraEmpresaEfector" readonly="true">
                                         </div>
                                     </div>
 
-                                    <div class="col-md-4 mt-1">
+                                    <div class="col-md-4 p-2 mt-1">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text">Paciente</span>
                                             <input type="text" class="form-control" id="pacienteEfector" name="pacienteEfector" readonly="true">
                                         </div>
                                     </div>
 
-                                    <div class="col-md-4 mt-1">
+                                    <div class="col-md-4 p-2 mt-1">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text">Edad</span>
                                             <input type="text" class="form-control" id="edadEfector" name="edadEfector" readonly="true">
                                         </div>
                                     </div>
 
-                                    <div class="col-md-4 mt-1">
+                                    <div class="col-md-4 p-2 mt-1">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text">Fecha Prestación</span>
                                             <input type="text" class="form-control" id="fechaEfector" name="fechaEfector" readonly="true">
@@ -254,7 +259,7 @@
 
 <script>
     const SEARCH = "{{ route('llamador.buscarEfector') }}";
-    const lnkPrestaciones = "{{ route('prestaciones.edit', ['prestacione' => '__item__']) }}";
+    const lnkPres = "{{ route('prestaciones.edit', ['prestacione' => '__item__']) }}";
     const printExportar = "{{ route('llamador.excelEfector') }}";
     const FOTO = "@fileUrl('lectura')/Fotos/";
     const dataPaciente = "{{ route('llamador.verPaciente') }}";

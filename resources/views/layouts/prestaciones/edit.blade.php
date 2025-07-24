@@ -324,7 +324,7 @@
 
             <div class="col-12 box-information mb-2">
                 <div class="input-group input-group">
-                    <span class="input-group-text">Obs prestaciones</span>
+                    <span class="input-group-text">Obs. Prestacion</span>
                     <textarea class="form-control" id="ObsExamenes" name="ObsExamenes" rows="4">{{ $prestacione->ObsExamenes ?? ''}}</textarea>
                 </div>
 
@@ -834,7 +834,7 @@
             </div>
             <div class="modal-body" class="text-center p-3">
                 <div class="modal-body">
-                    <p>Escriba un comentario de la cuestión o situación:</p>
+                    <p>ESCRIBA UN COMENTARIO O ALERTA:</p>
                    <textarea name="Comentario" id="Comentario" class="form-control" rows="10"></textarea>
                 </div>
                 <div class="modal-footer">
@@ -1546,8 +1546,7 @@ const marcarExamenAdjunto = "{{ route('marcarExamenAdjunto') }}";
 
 const getPaquetes = "{{ route('getPaquetes') }}";
 const searchExamen = "{{ route('searchExamen') }}";
-const getItemExamenes = "{{ route('itemsprestaciones.listadoexamenes') }}";
-const checkItemExamen = "{{ route('checkItemExamen') }}";
+const getExamenes = "{{ route('itemsprestaciones.listadoexamenes') }}";
 const saveItemExamenes = "{{ route('saveItemExamenes') }}";
 const getId = "{{ route('IdExamen') }}";
 const deleteItemExamen = "{{ route('deleteItemExamen')}}";
@@ -1595,6 +1594,8 @@ const loadResultadosPres = "{{ route('prestaciones.resultados') }}";
 const exResultado = "{{ route('prestaciones.exportarResultado') }}";
 const mapaPrestacion = "{{ route('prestaciones.mapaPrestacionId') }}";
 const listaExCuenta = "{{ route('examenesCuenta.listaEmpresa') }}";
+
+const reactivarItem = "{{ route('notasCredito.reactivarItem') }}";
 
 //Extras
 const UBICACION = "{{ request()->query('location') }}";

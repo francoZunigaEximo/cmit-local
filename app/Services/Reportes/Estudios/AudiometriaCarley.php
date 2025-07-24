@@ -13,22 +13,18 @@ use Carbon\Carbon;
 
 class AudiometriaCarley extends Reporte
 {
-    public function render(FPDF $pdf, $datos = ['id', 'idExamen']): void
+    public function render(FPDF $pdf, $datos = ['id', 'idExamen'],  $vistaPrevia = false): void
     {
-        $pdf->AddPage();
-        $pdf->Image(public_path(ReporteConfig::$AUDIOMETRIACARLEY),25,15,166);
+        include('variables.php');
 
-        $prestacion = $this->prestacion($datos['id']);
-        $datosPaciente = $this->datosPaciente($datos['id']);
+        $pdf->Image(public_path(ReporteConfig::$AUDIOMETRIACARLEY),25,15,166);
 
         if($prestacion->empresa->RF === 1){
             $pdf->SetFont('Arial','B',14);$pdf->SetXY(170,4);$pdf->Cell(0,3,'RF',0,0,'L');$pdf->SetFont('Arial','',8);
         }
 
-        Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr");
-
-        $paciente = $prestacion->paciente->Apellido.' '.$prestacion->paciente->Nombre;
-        $localidad = $this->localidad($datosPaciente->IdLocalidad) ?? '';
+        if(!$vistaPrevia) Tools::generarQR('A', $prestacion->Id, $datos['idExamen'], $prestacion->paciente->Id, "qr", $pdf);
+        else $pdf->Image(Tools::generarQRPrueba('A', "qr"), 190, 15, 15, 15);
 
         $pdf->SetFont('Arial','',8);
         $pdf->SetXY(44,48);$pdf->Cell(0,3,substr($prestacion->empresa->ParaEmpresa,0,40),0,0,'L');

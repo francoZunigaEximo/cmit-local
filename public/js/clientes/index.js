@@ -13,13 +13,13 @@ $(function(){
             ids.push($(this).data('id'));
         }
         
-        if (ids.length === 0) {
+        if (!ids) {
             toastr.warning('Debe seleccionar al menos un cliente para la baja múltiple', '', { timeOut: 1000 });
             return; 
         }
 
         swal({
-            title: "¿Estás seguro de que deseas realizar la baja múltiple de los clientes seleccionados?",
+            title: "¿Estás seguro de que deseas realizar la baja de él o los clientes seleccionados?",
             icon: "warning",
             buttons: ["Cancelar", "Aceptar"]
         }).then((confirmar)=> {
@@ -36,14 +36,8 @@ $(function(){
                         ids: ids
                     },
                     success: function(response) {
-
-                        for(let i = 0; i < response.length; i++){
-                            if(response[i].estado === 'warning'){
-                                toastr.warning(response[i].msg, '', { timeOut: 2000 });
-                            }else{
-                                toastr.success(response[i].msg, '', { timeOut: 2000 });
-                            }
-                        }
+                        preloader('off');
+                        toastr.success(response.msg, '', { timeOut: 2000 });
 
                         $('#listaClientes').DataTable().ajax.reload(function() {
                             $('#listaClientes tbody').show();
@@ -78,7 +72,7 @@ $(function(){
             }
         });
 
-        if(ids.length === 0) {
+        if(!ids) {
             toastr.warning('Debes seleccionar al menos un cliente para exportar.', '', { timeOut: 1000 });
             return;
         }

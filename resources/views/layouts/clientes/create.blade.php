@@ -112,7 +112,7 @@
 
                     <div class="col-2 mb-3">
                         <label for="Descuento" class="form-label">Descuento</label>
-                        <input class="form-control" type="number" id="Descuento" name="Descuento">
+                        <input class="form-control" type="text" id="Descuento" name="Descuento">
                     </div>
 
                     <div class="col-3 mb-3">
@@ -217,7 +217,6 @@ const getLocalidad = "{{ route('getLocalidades') }}";
 const getCodigoPostal = "{{ route('getCodigoPostal') }}";
 const checkProvincia = "{{ route('checkProvincia') }}";
 const verifyIdentificacion = "{{ route('verifyIdentificacion') }}";
-const verifycuitEmpresa = "{{ route('verifycuitEmpresa') }}";
 const searchLocalidad = "{{ route('searchLocalidad') }}";
 
 

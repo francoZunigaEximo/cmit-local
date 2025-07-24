@@ -972,6 +972,9 @@ CREATE TABLE `user_sessions` (
   CONSTRAINT `user_sessions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 );
 
+ALTER TABLE profesionales_prov MODIFY COLUMN IdRol varchar(20) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT '0' NULL;
+
+
 ALTER TABLE fichaslaborales MODIFY COLUMN FechaUltPeriod VARCHAR(15) DEFAULT NULL;
 ALTER TABLE fichaslaborales MODIFY COLUMN FechaExArt VARCHAR(15) DEFAULT NULL;
 ALTER TABLE proveedores ADD COLUMN Obs TEXT NULL;
@@ -1307,6 +1310,196 @@ DELIMITER ;
 
 ALTER TABLE clientesgrupos_it DROP INDEX IdCliente_2;
 
+ALTER TABLE itemsprestaciones MODIFY COLUMN IdProfesional2 INT NOT NULL DEFAULT 0;
+
+-- CREATE DEFINER=`db_cmit`@`%` TRIGGER autocomplete_itemsprestaciones
+-- BEFORE INSERT ON itemsprestaciones
+-- FOR EACH ROW
+-- BEGIN
+--     IF NEW.IdProfesional2 IS NULL OR NEW.IdProfesional2 = '' THEN
+--         SET NEW.IdProfesional2 = 0;
+--     END IF;
+-- END
+
+CREATE PROCEDURE getExamenes(IN id_prestacion INT, IN tipo VARCHAR(10))
+BEGIN
+	SELECT 
+	    examenes.Nombre AS Nombre,
+	    examenes.Id AS IdExamen,
+	    examenes.Adjunto AS ExaAdj,
+	    examenes.Informe AS Informe,
+	    informador.InfAdj AS InfAdj,
+	    examenes.NoImprime AS ExaNI,
+	    CONCAT(efector.Apellido,' ', efector.Nombre) AS EfectorFullName,
+	    CONCAT(informador.Apellido,' ', informador.Nombre) AS InformadorFullName,
+	    CONCAT(datosEfector.Apellido,' ', datosEfector.Nombre) AS DatosEfectorFullName,
+	    CONCAT(datosInformador.Apellido,' ', datosInformador.Nombre) AS DatosInformadorFullName,
+	    efector.Apellido AS EfectorApellido,
+	    informador.Apellido AS InformadorApellido,
+	    datosEfector.Apellido AS DatosEfectorApellido,
+	    datosInformador.Apellido AS DatosInformadorApellido,
+	    efector.RegHis AS RegHis,
+	    itemsprestaciones.Ausente AS Ausente,
+	    itemsprestaciones.Forma AS Forma,
+	    itemsprestaciones.Incompleto AS Incompleto,
+	    itemsprestaciones.SinEsc AS SinEsc,
+	    itemsprestaciones.Devol AS Devol,
+	    itemsprestaciones.CAdj AS CAdj,
+	    itemsprestaciones.CInfo AS CInfo,
+	    itemsprestaciones.Id AS IdItem,
+	    itemsprestaciones.Anulado AS Anulado,
+	    (SELECT COUNT(*) FROM archivosefector WHERE IdEntidad = itemsprestaciones.Id) AS archivos,
+	    (SELECT COUNT(*) FROM archivosinformador WHERE IdEntidad = itemsprestaciones.Id) AS archivosI,
+	    efector.Id AS IdEfector,
+	    informador.Id AS IdInformador,
+	    userEfector.id AS IdUserEfector,
+	    userInformador.id AS IdUserInformador
+	FROM itemsprestaciones
+	LEFT JOIN profesionales AS efector ON itemsprestaciones.IdProfesional = efector.Id
+	LEFT JOIN users AS userEfector ON efector.Id = userEfector.profesional_id
+	LEFT JOIN datos AS datosEfector ON userEfector.datos_id = datosEfector.Id
+	LEFT JOIN profesionales AS informador ON itemsprestaciones.IdProfesional2 = informador.Id
+	LEFT JOIN users AS userInformador ON informador.Id = userInformador.profesional_id
+	LEFT JOIN datos AS datosInformador ON userInformador.datos_id = datosInformador.Id
+	JOIN examenes ON itemsprestaciones.IdExamen = examenes.Id
+	JOIN proveedores AS proveedor2 ON examenes.IdProveedor = proveedor2.Id
+	JOIN prestaciones ON itemsprestaciones.IdPrestacion = prestaciones.Id
+	LEFT JOIN archivosefector ON itemsprestaciones.Id = archivosefector.IdEntidad
+	LEFT JOIN archivosinformador ON itemsprestaciones.Id = archivosinformador.IdEntidad
+	WHERE 1=1
+	AND (
+	    (tipo != 'listado') OR 
+	    (tipo = 'listado' AND itemsprestaciones.IdPrestacion = id_prestacion)
+	)
+	GROUP BY itemsprestaciones.Id
+	ORDER BY 
+	    efector.IdProveedor ASC,
+	    examenes.Nombre ASC,
+	    itemsprestaciones.Fecha ASC;
+END
+
+ALTER TABLE itemsfacturacompra DROP FOREIGN KEY itemsfacturacompra_ibfk_2; --IdItemPrestacion
+ALTER TABLE itemsfacturacompra2 DROP FOREIGN KEY itemsfacturacompra2_ibfk_2; --IdItemPrestacion
+ALTER TABLE itemsprestaciones_info DROP FOREIGN KEY itemsprestaciones_info_ibfk_1; --IdIP
+ALTER TABLE notascredito_it DROP FOREIGN KEY notascredito_it_ibfk_3; --IdIP
+ALTER TABLE archivosinformador DROP FOREIGN KEY archivosinformador_ibfk_1; --IdEntidad
+ALTER TABLE archivosefector DROP FOREIGN KEY archivosefector_ibfk_1; --IdEntidad
+ALTER TABLE itemsprestaciones MODIFY COLUMN Id int(11) auto_increment NOT NULL;
+
+ALTER TABLE itemsfacturacompra ADD CONSTRAINT itemsfacturacompra_ibfk_2 FOREIGN KEY (IdItemPrestacion) REFERENCES itemsprestaciones(Id);
+ALTER TABLE itemsfacturacompra2 ADD CONSTRAINT itemsfacturacompra2_ibfk_2 FOREIGN KEY (IdItemPrestacion) REFERENCES itemsprestaciones(Id);
+ALTER TABLE itemsprestaciones_info ADD CONSTRAINT itemsprestaciones_info_ibfk_1 FOREIGN KEY (IdIP) REFERENCES itemsprestaciones(Id);
+ALTER TABLE notascredito_it ADD CONSTRAINT notascredito_it_ibfk_3 FOREIGN KEY (IdIP) REFERENCES itemsprestaciones(Id);
+ALTER TABLE archivosinformador ADD CONSTRAINT archivosinformador_ibfk_1 FOREIGN KEY (IdEntidad) REFERENCES itemsprestaciones(Id);
+ALTER TABLE archivosefector ADD CONSTRAINT archivosefector_ibfk_1 FOREIGN KEY (IdEntidad) REFERENCES itemsprestaciones(Id);
+
+CREATE PROCEDURE getExamenesEstandar(IN id_prestacion INT, IN tipo VARCHAR(10))
+BEGIN
+	SELECT 
+	    examenes.Nombre AS Nombre,
+	    examenes.Id AS IdExamen,
+	    itemsprestaciones.Id AS IdItem,
+	    itemsprestaciones.Anulado AS Anulado
+	FROM itemsprestaciones
+	JOIN examenes ON itemsprestaciones.IdExamen = examenes.Id
+	WHERE (
+	    (tipo != 'listado') OR 
+	    (tipo = 'listado' AND itemsprestaciones.IdPrestacion = id_prestacion)
+	)
+	GROUP BY itemsprestaciones.Id
+	ORDER BY 
+	    examenes.Nombre ASC,
+	    itemsprestaciones.Fecha ASC;
+END
+
+ALTER TABLE autorizados DROP FOREIGN KEY autorizados_ibfk_1; --IdEntidad
+ALTER TABLE clientesgrupos_it DROP FOREIGN KEY clientesgrupos_it_ibfk_2; --IdCliente
+ALTER TABLE facturasventa DROP FOREIGN KEY facturasventa_ibfk_1; --IdEmpresa
+ALTER TABLE fichaslaborales DROP FOREIGN KEY fichaslaborales_ibfk_2; --IdEmpresa
+ALTER TABLE fichaslaborales DROP FOREIGN KEY fichaslaborales_ibfk_3; --IdART
+ALTER TABLE hc_casos DROP FOREIGN KEY hc_casos_ibfk_2; --IdEmpresa
+ALTER TABLE hc_casos DROP FOREIGN KEY hc_casos_ibfk_3; --IdART
+ALTER TABLE mapas DROP FOREIGN KEY mapas_ibfk_1; --IdART
+ALTER TABLE mapas DROP FOREIGN KEY mapas_ibfk_2; --IdEmpresa
+ALTER TABLE notascredito DROP FOREIGN KEY notascredito_ibfk_1; --IdEmpresa
+ALTER TABLE pagosacuenta DROP FOREIGN KEY pagosacuenta_ibfk_1;  --IdEmpresa
+ALTER TABLE paqfacturacion DROP FOREIGN KEY paqfacturacion_ibfk_1;  --IdEmpresa
+ALTER TABLE parametros DROP FOREIGN KEY parametros_ibfk_3; --IdCliCarnet
+ALTER TABLE prestaciones DROP FOREIGN KEY prestaciones_ibfk_2; --IdEmpresa
+ALTER TABLE prestaciones DROP FOREIGN KEY prestaciones_ibfk_3; --IdART
+
+SHOW TABLE STATUS LIKE 'clientes';
+ALTER TABLE clientes ENGINE=InnoDB;
+
+CREATE TABLE cliente_fila_0_temp AS SELECT * FROM clientes WHERE Id = 0;
+DELETE FROM clientes WHERE Id = 0;
+ALTER TABLE clientes MODIFY COLUMN Id int(11) NOT NULL AUTO_INCREMENT;
+
+
+INSERT INTO clientes (
+    RazonSocial, Nacionalidad, CondicionIva, TipoIdentificacion, Identificacion, 
+    Observaciones, TipoPersona, Envio, Entrega, ParaEmpresa, IdActividad, 
+    NombreFantasia, Logo, Bloqueado, Motivo, Direccion, IdLocalidad, Provincia, 
+    CP, EMail, ObsEMail, EMailResultados, Telefono, LogoCertificado, Oreste, 
+    TipoCliente, FPago, ObsEval, ObsCE, Generico, SEMail, ObsCO, EMailFactura, 
+    EnvioFactura, EMailInformes, EnvioInforme, Ajuste, SinPF, SinEval, RF, 
+    Estado, Anexo, EMailAnexo, Descuento
+)
+SELECT 
+    RazonSocial, Nacionalidad, CondicionIva, TipoIdentificacion, Identificacion, 
+    Observaciones, TipoPersona, Envio, Entrega, ParaEmpresa, IdActividad, 
+    NombreFantasia, Logo, Bloqueado, Motivo, Direccion, IdLocalidad, Provincia, 
+    CP, EMail, ObsEMail, EMailResultados, Telefono, LogoCertificado, Oreste, 
+    TipoCliente, FPago, ObsEval, ObsCE, Generico, SEMail, ObsCO, EMailFactura, 
+    EnvioFactura, EMailInformes, EnvioInforme, Ajuste, SinPF, SinEval, RF, 
+    Estado, Anexo, EMailAnexo, Descuento
+FROM cliente_fila_0_temp;
+
+DROP TABLE cliente_fila_0_temp;
+
+ALTER TABLE autorizados ADD CONSTRAINT autorizados_ibfk_1 FOREIGN KEY (IdEntidad) REFERENCES clientes(Id);
+ALTER TABLE clientesgrupos_it ADD CONSTRAINT clientesgrupos_it_ibfk_2 FOREIGN KEY (IdCliente) REFERENCES clientes(Id);
+ALTER TABLE facturasventa ADD CONSTRAINT facturasventa_ibfk_1 FOREIGN KEY (IdEmpresa) REFERENCES clientes(Id);
+ALTER TABLE fichaslaborales ADD CONSTRAINT fichaslaborales_ibfk_2 FOREIGN KEY (IdEmpresa) REFERENCES clientes(Id);
+ALTER TABLE fichaslaborales ADD CONSTRAINT fichaslaborales_ibfk_3 FOREIGN KEY (IdART) REFERENCES clientes(Id);
+ALTER TABLE hc_casos ADD CONSTRAINT hc_casos_ibfk_2 FOREIGN KEY (IdEmpresa) REFERENCES clientes(Id);
+ALTER TABLE hc_casos ADD CONSTRAINT hc_casos_ibfk_3 FOREIGN KEY (IdART) REFERENCES clientes(Id);
+ALTER TABLE mapas ADD CONSTRAINT mapas_ibfk_1 FOREIGN KEY (IdART) REFERENCES clientes(Id);
+ALTER TABLE mapas ADD CONSTRAINT mapas_ibfk_2 FOREIGN KEY (IdEmpresa) REFERENCES clientes(Id);
+ALTER TABLE notascredito ADD CONSTRAINT notascredito_ibfk_1 FOREIGN KEY (IdEmpresa) REFERENCES clientes(Id);
+ALTER TABLE pagosacuenta ADD CONSTRAINT pagosacuenta_ibfk_1 FOREIGN KEY (IdEmpresa) REFERENCES clientes(Id);
+ALTER TABLE paqfacturacion ADD CONSTRAINT paqfacturacion_ibfk_1 FOREIGN KEY (IdEmpresa) REFERENCES clientes(Id);
+ALTER TABLE parametros ADD CONSTRAINT parametros_ibfk_3 FOREIGN KEY (IdCliCarnet) REFERENCES clientes(Id);
+ALTER TABLE prestaciones ADD CONSTRAINT prestaciones_ibfk_2 FOREIGN KEY (IdEmpresa) REFERENCES clientes(Id);
+ALTER TABLE prestaciones ADD CONSTRAINT prestaciones_ibfk_3 FOREIGN KEY (IdART) REFERENCES clientes(Id);
+
+DELIMITER $$
+CREATE TRIGGER autocomplete_clientes
+BEFORE INSERT ON clientes
+FOR EACH ROW
+BEGIN
+    IF NEW.EMail IS NULL OR NEW.EMail = '' THEN
+        SET NEW.EMail = '';
+    END IF;
+
+	IF NEW.Telefono IS NULL OR NEW.Telefono = '' THEN
+        SET NEW.Telefono = '';
+    END IF;
+
+	IF NEW.ObsEMail IS NULL OR NEW.ObsEMail = '' THEN
+        SET NEW.ObsEMail = '';
+    END IF;
+
+	IF NEW.Direccion IS NULL OR NEW.Direccion = '' THEN
+        SET NEW.Direccion = '';
+    END IF;
+END$$
+DELIMITER;
+
+INSERT INTO rol_permisos (rol_id, permiso_id) VALUES(13, 119); -- Permiso para administrador faltante en profesionalesEdit
+ALTER TABLE permisos MODIFY COLUMN descripcion LONGTEXT DEFAULT NULL NULL;
+ALTER TABLE roles MODIFY COLUMN descripcion LONGTEXT DEFAULT NULL NULL;
+
 
 -- indice unico de nombre, ya que se tiene que validar cuando tambien esta dado de baja
 
@@ -1319,3 +1512,91 @@ ALTER TABLE clientesgrupos DROP INDEX Nombre;
 -- damos de baja estas dos primeras filas de las tablas de paquetes
 UPDATE paqestudios p SET p.Baja = 1 WHERE p.Id  = 0;
 UPDATE paqfacturacion f SET f.Baja = 1 WHERE f.Id = 0; 
+
+
+-- notas de credito
+ALTER TABLE notascredito_it ADD Estado INT NOT NULL DEFAULT 0;
+ALTER TABLE notascredito_it ADD FechaAnulado DATE NULL DEFAULT NULL;
+ALTER TABLE notascredito_it ADD Baja BIT DEFAULT 0;
+
+ALTER TABLE notascredito ADD Baja BIT DEFAULT 0;
+
+-- auditorias
+INSERT INTO db_cmit.auditoriatablas
+(Id, Nombre)
+VALUES(7,'NOTA CREDITO');
+
+INSERT INTO db_cmit.auditoriatablas
+(Id, Nombre)
+VALUES(8,'EXAMEN');
+
+-- get examenes con idNotaCredito
+
+DROP PROCEDURE IF EXISTS db_cmit.getExamenes;
+
+DELIMITER $$
+$$
+CREATE DEFINER=`db_cmit`@`%` PROCEDURE `db_cmit`.`getExamenes`(IN `id_prestacion` INT, IN `tipo` VARCHAR(10))
+BEGIN
+	SELECT 
+	    examenes.Nombre AS Nombre,
+	    examenes.Id AS IdExamen,
+	    examenes.Adjunto AS ExaAdj,
+	    examenes.Informe AS Informe,
+	    informador.InfAdj AS InfAdj,
+	    examenes.NoImprime AS ExaNI,
+	    CONCAT(efector.Apellido, ' ', efector.Nombre) AS EfectorFullName,
+	    CONCAT(informador.Apellido, ' ', informador.Nombre) AS InformadorFullName,
+	    CONCAT(datosEfector.Apellido, ' ', datosEfector.Nombre) AS DatosEfectorFullName,
+	    CONCAT(datosInformador.Apellido, ' ', datosInformador.Nombre) AS DatosInformadorFullName,
+	    efector.Apellido AS EfectorApellido,
+	    informador.Apellido AS InformadorApellido,
+	    datosEfector.Apellido AS DatosEfectorApellido,
+	    datosInformador.Apellido AS DatosInformadorApellido,
+	    efector.RegHis AS RegHis,
+	    itemsprestaciones.Ausente AS Ausente,
+	    itemsprestaciones.Forma AS Forma,
+	    itemsprestaciones.Incompleto AS Incompleto,
+	    itemsprestaciones.SinEsc AS SinEsc,
+	    itemsprestaciones.Devol AS Devol,
+	    itemsprestaciones.CAdj AS CAdj,
+	    itemsprestaciones.CInfo AS CInfo,
+	    itemsprestaciones.Id AS IdItem,
+	    itemsprestaciones.Anulado AS Anulado,
+	    (SELECT COUNT(*) FROM archivosefector WHERE IdEntidad = itemsprestaciones.Id) AS archivos,
+	    (SELECT COUNT(*) FROM archivosinformador WHERE IdEntidad = itemsprestaciones.Id) AS archivosI,
+	    efector.Id AS IdEfector,
+	    informador.Id AS IdInformador,
+	    userEfector.id AS IdUserEfector,
+	    userInformador.id AS IdUserInformador,
+	    notascredito_it.IdNC as IdNotaCredito 
+	FROM itemsprestaciones
+	LEFT JOIN profesionales AS efector ON itemsprestaciones.IdProfesional = efector.Id
+	LEFT JOIN users AS userEfector ON efector.Id = userEfector.profesional_id
+	LEFT JOIN datos AS datosEfector ON userEfector.datos_id = datosEfector.Id
+	LEFT JOIN profesionales AS informador ON itemsprestaciones.IdProfesional2 = informador.Id
+	LEFT JOIN users AS userInformador ON informador.Id = userInformador.profesional_id
+	LEFT JOIN datos AS datosInformador ON userInformador.datos_id = datosInformador.Id
+	LEFT JOIN notascredito_it ON notascredito_it.IdIP = itemsprestaciones.Id
+	JOIN examenes ON itemsprestaciones.IdExamen = examenes.Id
+	JOIN proveedores AS proveedor2 ON examenes.IdProveedor = proveedor2.Id
+	JOIN prestaciones ON itemsprestaciones.IdPrestacion = prestaciones.Id
+	LEFT JOIN archivosefector ON itemsprestaciones.Id = archivosefector.IdEntidad
+	LEFT JOIN archivosinformador ON itemsprestaciones.Id = archivosinformador.IdEntidad
+	WHERE 1=1
+	-- Filtro condicional
+	AND (
+	    (tipo != 'listado') OR 
+	    (tipo = 'listado' AND itemsprestaciones.IdPrestacion = id_prestacion)
+	)
+	GROUP BY itemsprestaciones.Id
+	ORDER BY 
+	    efector.IdProveedor ASC,
+	    examenes.Nombre ASC,
+	    itemsprestaciones.Fecha ASC;
+END$$
+DELIMITER ;
+
+INSERT INTO fichaprestacion_factura
+(id, prestacion_id, fichalaboral_id, Tipo, Sucursal, NroFactura, NroFactProv)
+VALUES(0, 0, 0, 'X', 0, 0, '0');

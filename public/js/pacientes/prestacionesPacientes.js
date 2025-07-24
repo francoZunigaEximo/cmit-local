@@ -63,7 +63,11 @@ $(function(){
         checkAllExa: $('#checkAllExa'),
         paqueteExamen: $('.paqueteExamen'),
         tituloPrestacion: $('.tituloPrestacion'),
-        paqueteExCta: $('.paqueteExCta')
+        paqueteExCta: $('.paqueteExCta'),
+        btnExamen: $('.btnExamen'),
+        examenesCantidad: $('#examenesCantidad'),
+        lstExamenesCtd: $('#lstExamenesCtd'),
+        listadoExamenesCtd: $('#listadoExamenesCtd')
     };
 
     const variables = {
@@ -112,7 +116,11 @@ $(function(){
         facturacion_id: $('#facturacion_id'),
         ElTipo: $('#ElTipo'),
         ElSucursal: $('#ElSucursal'),
-        ElNroFactura: $('#ElNroFactura')
+        ElNroFactura: $('#ElNroFactura'),
+        inputExCtd: $('#inputExCtd'),
+        buscarExCtd: $('#buscarExCtd'),
+        examenCheck: $('#examenCheck'),
+        addExaCtd: $('#addExaCtd')
     };
 
     variables.ElPago
@@ -141,10 +149,10 @@ $(function(){
     getListado(null);
     listadoConSaldos(variables.selectClientes.val());
     cantidadDisponibles(variables.selectClientes.val());
+    // listadoFacturas(variables.selectClientes.val(), null);
     getUltimasFacturadas(variables.selectClientes.val());
-    tablasExamenes(variables.selectClientes.val(), false, '#lstEx2');
-    tablasExamenes(variables.selectClientes.val(), true, '#lstEx');
-    // selectorPago(pagoInput);
+    selectorPago(pagoInput);
+    
 
     variables.tipoPrestacionPres.on('change', function(){
         precargaTipoPrestacion(variables.tipoPrestacionPres.val());
@@ -170,7 +178,7 @@ $(function(){
 
         let ids = [];
 
-        principal.lstEx.find('input[type="checkbox"][id^="Id_"]:checked').each(function(){
+        principal.lstEx.find('.item-checkbox:checked').each(function(){
             ids.push($(this).val());
         });
 
@@ -203,18 +211,19 @@ $(function(){
     principal.guardarPrestacion.on('click', async function(e){
         e.preventDefault();
 
-        if (['', null].includes(variables.TipoPrestacion.val())) {
+        if (!variables.TipoPrestacion.val()) {
             toastr.warning('El tipo de prestación no puede ser un campo vacío','', {timeOut: 1000});
             return;
         }
 
-        if (variables.TipoPrestacion.val() === 'ART' && ['0','',null].includes(variables.IdMapa.val())){
+        if (variables.TipoPrestacion.val() === 'ART' && (!variables.IdMapa.val() || variables.IdMapa.val() === '0')){
             toastr.warning('Debe seleccionar un mapa vigente para continuar si su prestacion es ART','', {timeOut: 1000});
             return;
         }
 
         preloader('on');
         const alta = await $.get(verificarAlta, {Id: ID})
+        console.log(alta);
 
         if (alta && Object.keys(alta).length > 0) {
 
@@ -228,7 +237,7 @@ $(function(){
                 AutorizaSC: variables.AutorizaSC.val() ?? '',
                 IdART: alta.clienteArt.Id ?? 0,
                 IdEmpresa: alta.cliente.Id ?? 0,
-                datos_facturacion_id: ['B', 'A'].includes(variables.PagoLaboral.val()) ? variables.facturacion_id.val() : null,
+                datos_facturacion_id: ['B', 'A'].includes(variables.PagoLaboral.val()) ? variables.facturacion_id.val(): 0,
                 Tipo: variables.ElTipo.val(),
                 Sucursal: variables.ElSucursal.val(),
                 NroFactura: variables.ElNroFactura.val(),
@@ -241,6 +250,8 @@ $(function(){
                 principal.volverPrestacionLimpia.trigger('click');
                 principal.listaExamenes.empty();
                 IdNueva = response.nuevoId;
+                nroPrestacion = response.nuevoId;
+                $("#nroPrestacion").text(nroPrestacion);
                 cargarExamen(response.nuevoId);
                 contadorExamenes(response.nuevoId);
                 variables.idPrestacion.val(IdNueva);
@@ -268,6 +279,83 @@ $(function(){
                 .append(getListado($(this).val()));
         }
     });
+    
+    principal.btnExamen.on('click', function(e){
+        e.preventDefault();
+        principal.examenesCantidad.modal('show');
+    });
+
+    variables.buscarExCtd.on('click', function(e){
+        e.preventDefault();
+
+        if(!variables.inputExCtd.val()) {
+            toastr.warning("El campo se encuentra vacío o contiene datos incorrectos");
+            return;
+        }
+        preloader('on')
+        $.get(searchExamen, {buscar: variables.inputExCtd.val()})
+            .done(function(response){
+                preloader('off');
+                tablaExaCantidad(response);
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return; 
+            })
+    });
+
+
+    variables.examenCheck.on('click', function(e){
+        e.preventDefault();
+
+        let checkboxes = $('input[name="itemCheckbox"]:not(#examenCheck)'),
+            total = checkboxes.length,
+            checked = checkboxes.filter(':checked').length;
+
+        if (checked < total) {
+            checkboxes.prop('checked', true);
+        } else {
+            checkboxes.prop('checked', false);
+        }
+    });
+
+    variables.addExaCtd.on('click', function(e){
+
+        let examenes = [],
+            idPrestacion = variables.idPrestacion.val();
+
+        $('input[name="itemCheckbox"][type="checkbox"]:checked').each(function(){
+            examenes.push($(this).val());
+        })
+
+        if(examenes.length === 0) {
+            toastr.warning("Debe seleccionar algun examen para añadirlo a la prestación");
+            return;
+        }
+
+        preloader('on');
+        $.post(saveItemExamenes, {idPrestacion: idPrestacion, idExamen: examenes, _token: TOKEN})
+            .done(function(){
+                principal.listaExamenes.empty();
+                $('#estudios').empty();
+                cargarEstudiosImp(idPrestacion);
+                cargarExamen(idPrestacion);
+                contadorExamenes(idPrestacion);
+                preloader('off');
+                toastr.success('Examenes cargados a la prestación correctamente','',{timeOut: 1000});
+
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return; 
+            });
+    });
+
+    
 
     //Bloqueo de prestación
     $(document).on('click', '#blockPrestPaciente', function(e){
@@ -377,8 +465,6 @@ $(function(){
         principal.guardarPrestacion.trigger('click');
 
         verificarExamenCuenta();
-
-
     });
 
     $(document).on('click', '.volverPrestacion', function(e){
@@ -430,7 +516,7 @@ $(function(){
     $(document).on('click','.buscarExamen', function(e){
         e.preventDefault();
 
-        if([null,''].includes(variables.examen.val())) {
+        if(!variables.examen.val()) {
             
             toastr.warning('Debe seleccionar un exámen','',{timeOut: 1000});
             return;
@@ -594,13 +680,11 @@ $(function(){
                                     <div class="text-center">${(papre.Devol === 1 ? `<i class="ri-check-line"></i>` : `-`)}</div>
                                 </td>
                                 <td>
-                                    ${(papre.Pago == "B" 
-                                        ? 'Ctdo.' 
-                                        : papre.Pago == "C" 
-                                            ? "Ctdo" 
-                                            : papre.Pago == "P" 
-                                                ? "ExCta" 
-                                                : "CC")}
+                                    ${(["B","C"].includes(papre.Pago)
+                                        ? "Ctdo" 
+                                        : papre.Pago == "P" 
+                                            ? "ExCta" 
+                                            : "CC")}
                                 </td>
                                 <td>
                                    <div class="text-center"> ${(papre.Facturado === 1 ? `<i class="ri-check-line"></i>` : `-`)}</div>
@@ -808,7 +892,9 @@ $(function(){
             resAdmin = variables.resAdmin.prop('checked'),
             caratula = variables.caratula.prop('checked'),
             consEstDetallado = variables.consEstDetallado.prop('checked'),
-            consEstSimple = variables.consEstSimple.prop('checked');
+            consEstSimple = variables.consEstSimple.prop('checked'),
+            estudios = [];
+
 
         let verificar = [
                 infInternos,
@@ -817,13 +903,19 @@ $(function(){
                 resAdmin,
                 caratula,
                 consEstDetallado,
-                consEstSimple
+                consEstSimple,
+                estudios
             ];
 
         if (verificar.every(val => !val || (Array.isArray(val) && val.length === 0) || (typeof val === 'object' && Object.keys(val).length === 0))) {
             toastr.warning('Debe seleccionar alguna opción para poder imprimir los reportes','',{timeOut: 1000});
             return;
         }
+
+        $('input[data-nosend]:checked').each(function() {
+            estudios.push($(this).attr('id'));
+        });
+
         preloader('on');
         $.get(impRepo, {
             Id: variables.idPrestacion.val(), 
@@ -833,7 +925,8 @@ $(function(){
             resAdmin: resAdmin, 
             caratula: caratula, 
             consEstDetallado: consEstDetallado, 
-            consEstSimple: consEstSimple
+            consEstSimple: consEstSimple,
+            estudios: estudios
         })
             .done(function(response){
                 preloader('off');
@@ -928,23 +1021,23 @@ $(function(){
     principal.addPaquete.on('click', function(e){
         e.preventDefault();
         
-        if([null, undefined, ''].includes(variables.paquetes.val())){
+        if(!variables.paquetes.val()){
             toastr.warning("Debe seleccionar un paquete para poder añadirlo en su totalidad",'',{timeOut: 1000});
             return;
         }
-        preloader('on');
-       $.post(paqueteId,{_token: TOKEN, IdPaquete: variables.paquetes.val()})
-            .done(function(response){
 
-                let data = response.examenes,
-                    ids = [];
- 
-                for (let i = 0; i < data.length; i++) {
-                    ids.push(data[i].Id);
-                }
-                saveExamen(ids, variables.idPrestacion.val()); 
- 
-                variables.paquetes.val([]).trigger('change.select2');
+        let idPrestacion = variables.idPrestacion.val();
+
+        preloader('on');
+
+       $.post(paqueteId,{_token: TOKEN, IdPaquete: variables.paquetes.val(), IdPrestacion: idPrestacion})
+            .done(function(){
+                principal.listaExamenes.empty();
+                variables.exam.val([]).trigger('change.select2');
+                variables.paquetes.trigger('change.select2');
+                cargarExamen(idPrestacion);
+                contadorExamenes(idPrestacion);
+                preloader('off');
             })
             .fail(function(jqXHR){
                 preloader('off');
@@ -1001,6 +1094,8 @@ $(function(){
                         }
 
                         principal.listaExamenes.empty();
+                        $('#estudios').empty();
+                        cargarEstudiosImp(IdNueva);
                         variables.exam.val([]).trigger('change.select2');
                         variables.paquetes.val([]).trigger('change.select2');
                         cargarExamen(IdNueva);
@@ -1023,7 +1118,7 @@ $(function(){
 
         let id = [];
 
-        if(['', null, undefined].includes(variables.exam.val())) {
+        if(!variables.exam.val()) {
             toastr.warning("Debe seleccionar un examen para poder añadirlo a la lista", "Atención", { timeOut: 1000 });
             return;
         }
@@ -1239,6 +1334,8 @@ $(function(){
         $.post(saveItemExamenes,{_token: TOKEN, idPrestacion: idPrestacion, idExamen: idExamen})
             .done(function(){
                 principal.listaExamenes.empty();
+                $('#estudios').empty()
+                cargarEstudiosImp(idPrestacion);
                 variables.exam.val([]).trigger('change.select2');
                 variables.paquetes.trigger('change.select2');
                 cargarExamen(idPrestacion);
@@ -1257,72 +1354,51 @@ $(function(){
         try {
             preloader('on');
 
-            let result = await $.ajax({
-                url: checkItemExamen,
-                method: 'GET',
-                data: { Id: id }
-            });
+            let response = await $.get(getExamenesEstandar,{Id: id, tipo: 'listado'});
 
-            let examenes = result;
-            
-            if (examenes.length > 0) {
-
-                let response = await $.ajax({
-                    url: getItemExamenes,
-                    method: 'GET',
-                    data: {
-                        IdExamen: examenes,
-                        Id: id,
-                        tipo: 'listado'
-                    }
-                });
-    
-                preloader('off');
-                let registros = response;
-
-                for(let index = 0; index < registros.length; index++){
-                    let examen = registros[index],
-                    fila = `
-                        <tr ${examen.Anulado === 1 ? 'class="filaBaja"' : ''}>
-                            <td>
-                                <input type="checkbox" name="Id_examenes" value="${examen.IdItem}" checked ${examen.Anulado === 1 ? 'disabled' : ''}>
-                            </td>
-                            <td data-idexam="${examen.IdExamen}" id="${examen.IdItem}" style="text-align:left;">${examen.Nombre} ${examen.Anulado === 1 ? '<span class="custom-badge rojo">Bloqueado</span>' : ''}</td>
-                            <td style="width: 100px">    
-                                <div class="d-flex gap-2">
-                                     <div class="bloquear">
-                                        <button data-id="${examen.IdItem}" class="btn btn-sm iconGeneral openExamen" title="Ver">
-                                            <i class="ri-zoom-in-line"></i>
-                                        </button>
-                                    </div>
-                                    ${examen.Anulado === 0 ? `
-                                         <div class="bloquear">
-                                                    <button data-bloquear="${examen.IdItem}" class="btn btn-sm iconGeneral bloquearExamen" title="Baja">
-                                                        <i class="ri-forbid-2-line"></i>
-                                                    </button>
-                                                </div>
-                                    ` : ''}
-                                    <div class="remove">
-                                        <button data-delete="${examen.IdItem}" class="btn btn-sm iconGeneral deleteExamen" title="Eliminar">
-                                            <i class="ri-delete-bin-2-line"></i>
-                                        </button>
-                                    </div>  
-                                    
+            preloader('off');
+            for(let index = 0; index < response.length; index++){
+                let examen = response[index],
+                fila = `
+                    <tr ${examen.Anulado === 1 ? 'class="filaBaja"' : ''}>
+                        <td>
+                            <input type="checkbox" name="Id_examenes" value="${examen.IdItem}" checked ${examen.Anulado === 1 ? 'disabled' : ''}>
+                        </td>
+                        <td data-idexam="${examen.IdExamen}" id="${examen.IdItem}" style="text-align:left;">${examen.Nombre} ${examen.Anulado === 1 ? '<span class="custom-badge rojo">Bloqueado</span>' : ''}</td>
+                        <td style="width: 100px">    
+                            <div class="d-flex gap-2">
+                                    <div class="bloquear">
+                                    <button data-id="${examen.IdItem}" class="btn btn-sm iconGeneral openExamen" title="Ver">
+                                        <i class="ri-zoom-in-line"></i>
+                                    </button>
                                 </div>
-                            </td>
-                        </tr>`;
-    
-                    principal.listaExamenes.append(fila);
-                }
-    
-                principal.listado.fancyTable({
-                    pagination: true,
-                    perPage: 50,
-                    searchable: false,
-                    globalSearch: false,
-                    sortable: false, 
-                });
+                                ${examen.Anulado === 0 ? `
+                                        <div class="bloquear">
+                                                <button data-bloquear="${examen.IdItem}" class="btn btn-sm iconGeneral bloquearExamen" title="Baja">
+                                                    <i class="ri-forbid-2-line"></i>
+                                                </button>
+                                            </div>
+                                ` : ''}
+                                <div class="remove">
+                                    <button data-delete="${examen.IdItem}" class="btn btn-sm iconGeneral deleteExamen" title="Eliminar">
+                                        <i class="ri-delete-bin-2-line"></i>
+                                    </button>
+                                </div>  
+                                
+                            </div>
+                        </td>
+                    </tr>`;
+
+                principal.listaExamenes.append(fila);
             }
+
+            principal.listado.fancyTable({
+                pagination: true,
+                perPage: 50,
+                searchable: false,
+                globalSearch: false,
+                sortable: false, 
+            });
             
     
         } catch (error) {
@@ -1336,8 +1412,8 @@ $(function(){
 
     async function checkExamenesCuenta(id){
 
-        $.get(lstExDisponibles, {Id: id})
-            .done(await function(response){
+        $.get(await lstExDisponibles, {Id: id})
+            .done(function(response){
                 // let data = selectorPago(pagoInput);
 
                 if(response && response.length > 0) {
@@ -1423,106 +1499,181 @@ $(function(){
         }
     }
 
-    async function tablasExamenes(idCliente, checkVisible, etiquetaId, filtroId = null) { 
+    async function tablasExamenes(idCliente, checkVisible, etiquetaId, filtroId = null) {
         preloader('on');
-        let data = await $.get(getListaExCta, {Id: idCliente});
-    
-        if (!Array.isArray(data) || data.length === 0) {
-            $(etiquetaId).append('<tr><td>No hay historial de facturas disponible</td></tr>');
-            return;
-        }
-    
-        $(etiquetaId).empty();
-    
-        const factura = {};
-        
-        data.forEach(function (item) {
-            if (!factura[item.Factura]) {
-                factura[item.Factura] = [];
-            }
-            factura[item.Factura].push(item);
-        });
-    
-        for (const grupoFactura in factura) {
-            if (factura.hasOwnProperty(grupoFactura)) {
-                const examenes = factura[grupoFactura];
-    
-                const documentos = {};
-                examenes.forEach((examen) => {
-                    const documentoKey = examen.Documento || "Sin precarga";
-                    if (!documentos[documentoKey]) {
-                        documentos[documentoKey] = [];
-                    }
-                    documentos[documentoKey].push({
-                        IdEx: examen.IdEx,
-                        CantidadExamenes: examen.CantidadExamenes,
-                        NombreExamen: examen.NombreExamen,
-                        IdFiltro: examen.IdFiltro
+
+        try {
+            let data = await $.get(getListaExCta, { Id: idCliente });
+
+            $(etiquetaId).empty();
+
+            const factura = {};
+            data.forEach(function (item) {
+                if (!factura[item.Factura]) {
+                    factura[item.Factura] = [];
+                }
+                factura[item.Factura].push(item);
+            });
+
+            let tablaCompleta = '';
+
+            for (const grupoFactura in factura) {
+                if (factura.hasOwnProperty(grupoFactura)) {
+                    const examenes = factura[grupoFactura];
+                    const documentos = {};
+
+                    examenes.forEach((examen) => {
+                        const documentoKey = examen.Documento || "Sin precarga";
+                        if (!documentos[documentoKey]) {
+                            documentos[documentoKey] = [];
+                        }
+                        documentos[documentoKey].push(examen);
                     });
-                });
-    
-                let contenido = `
-                    <tr class="fondo-gris">
-                        <td colspan="5">
-                            <span class="fw-bolder text-capitalize">fact </span> ${grupoFactura}
-                        </td>
-                        ${checkVisible === true ? `<td style="width:5px"><input type="checkbox" class="form-check-input" id="checkAll-${grupoFactura}"></td>` : ''}
-                    </tr>
-                `;
-    
-                for (const documentoKey in documentos) {
-                    if (documentos.hasOwnProperty(documentoKey)) {
-                        const examenesPorDocumento = documentos[documentoKey];
-    
-                        contenido += `
-                            <tr class="fondo-grisClaro mb-2">
-                                <td colspan="6" class="fw-bolder">
-                                    <span class="fw-bolder">${documentoKey === "Sin precarga" ? "" : "DNI Precargado: "}</span> 
-                                    ${documentoKey}
-                                </td>
-                            </tr>
-                        `;
 
-                        if (filtroId !== null) {
+                    let contenidoFactura = `
+                        <tr class="fondo-gris">
+                            <td colspan="5">
+                                <span class="fw-bolder text-capitalize">fact </span> ${grupoFactura}
+                            </td>
+                            ${checkVisible ? `<td style="width:5px"><input type="checkbox" class="form-check-input" id="checkAll-${grupoFactura}"></td>` : ''}
+                        </tr>
+                    `;
 
-                            const examenesFiltrados = examenesPorDocumento.filter((examen) => examen.IdFiltro === parseInt(filtroId, 10));
+                    for (const documentoKey in documentos) {
+                        if (documentos.hasOwnProperty(documentoKey)) {
+                            const examenesPorDocumento = documentos[documentoKey];
+                            const idSubgrupo = documentoKey === "Sin precarga" ? `sin_precarga-${grupoFactura}` : documentoKey;
 
-                            examenesFiltrados.forEach((examen) => {
-                                contenido += `
+                            contenidoFactura += `
+                                <tr class="fondo-grisClaro mb-2">
+                                    <td colspan="5" class="fw-bolder">
+                                        <span class="fw-bolder precarga">${documentoKey === "Sin precarga" ? "" : "DNI Precargado: "}</span> 
+                                        ${documentoKey}
+                                    </td>
+                                    ${checkVisible ? `<td style="width:5px"><input type="checkbox" class="form-check-input" id="checkAll-${idSubgrupo}"></td>` : ''}
+                                </tr>
+                            `;
+
+                            const listaParaRenderizar = filtroId !== null 
+                                ? examenesPorDocumento.filter((examen) => examen.IdFiltro === parseInt(filtroId, 10))
+                                : examenesPorDocumento;
+
+                            listaParaRenderizar.forEach((examen) => {
+                                contenidoFactura += `
                                     <tr>
                                         <td>${examen.CantidadExamenes}</td>
                                         <td colspan="4">${examen.NombreExamen}</td>
-                                        ${checkVisible === true ? `<td style="width:5px"><input type="checkbox" class="form-check-input" id="Id_${grupoFactura}" value="${examen.IdEx}"></td>` : ''}
+                                        ${checkVisible ? `
+                                        <td style="width:5px">
+                                            <input type="checkbox" 
+                                                class="form-check-input item-checkbox" 
+                                                data-factura="${grupoFactura}" 
+                                                data-subgrupo="${idSubgrupo}"
+                                                value="${examen.IdEx}">
+                                        </td>
+                                        ` : ''}
                                     </tr>`;
                             });
-
-                        }else{
-
-                            examenesPorDocumento.forEach((examen) => {
-                                contenido += `
-                                    <tr>
-                                        <td>${examen.CantidadExamenes}</td>
-                                        <td colspan="4">${examen.NombreExamen}</td>
-                                        ${checkVisible === true ? `<td style="width:5px"><input type="checkbox" class="form-check-input" id="Id_${grupoFactura}" value="${examen.IdEx}"></td>` : ''}
-                                    </tr>`;
-                            });
-
                         }
                     }
+                    tablaCompleta += contenidoFactura;
                 }
-                preloader('off');
-                $(etiquetaId).append(contenido);
             }
+            $(etiquetaId).append(tablaCompleta);
+
+        } catch (error) {
+            let errorData = JSON.parse(error.responseText);
+            checkError(error.status, errorData.msg);
+        } finally {
+            preloader('off');
         }
     }
 
-    $('tbody').on('click', '.form-check-input[id^="checkAll"]', function () {
-        let checkAll = $(this).attr('id'),
-            nroFactura = checkAll.split('-')[1] + '-' + checkAll.split('-')[2];
-            checkPrincipal = $(this).closest('tr'),
-            checkboxes = checkPrincipal.nextUntil('tr.fondo-gris').find(`input[id^="Id_${nroFactura}"]`);
-        
-            checkboxes.prop('checked', $(this).is(':checked'));
+     principal.lstEx.on('click', 'input.form-check-input[id^="checkAll"]', function () {
+        let checkAll = $(this), 
+            isChecked = checkAll.is(':checked'), 
+            fila = checkAll.closest('tr');
+
+        if(fila.hasClass('fondo-gris')) {
+            
+            let rangoFactura = fila.nextUntil('tr.fondo-gris'),
+                checkboxesHijos = rangoFactura.find('input.form-check-input');
+            
+            checkboxesHijos.prop('checked', isChecked);
+        } 
+
+        else if(fila.hasClass('fondo-grisClaro')) {
+
+            let rangoSubgrupo = fila.nextUntil('tr.fondo-gris, tr.fondo-grisClaro'),
+                checkboxesHijos = rangoSubgrupo.find('input.item-checkbox');
+            
+            checkboxesHijos.prop('checked', isChecked);
+        }
     });
+
+    function tablaExaCantidad(data)
+    {
+        principal.lstExamenesCtd.empty();
+
+        const examenes = data.examen;
+
+        for(let index = 1; index < examenes.length; index++) {
+            let examen = examenes[index],
+                contenido = `
+                <tr>
+                    <td>${examen.text}</td>
+                    <td><input type="checkbox" name="itemCheckbox" value="${examen.id}"></td>
+                </tr>
+                `;
+
+                principal.lstExamenesCtd.append(contenido);
+        }
+
+        principal.listadoExamenesCtd.fancyTable({
+            pagination: true,
+            perPage: 15,
+            searchable: false,
+            globalSearch: false,
+            sortable: false, 
+        });
+
+
+    }
+
+        async function cargarEstudiosImp(idPrestacion)
+    {
+        $('#estudios').empty();
+
+        if(!idPrestacion) return;
+        console.log("idPrestacion: " + variables.idPrestacion.val());
+        preloader('on');
+        $.get(await listadoEstudiosImp, {Id: variables.idPrestacion.val()})
+
+          .done(function(response){
+                preloader('off');
+                for(let index = 0; index < response.length; index++) {
+                    let data = response[index],
+                        forNombre = (data.NombreExamen).replace(" ", "-"),
+                        contenido = `
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="${data.IdReporte}" data-examen="${data.IdExamen}" data-nosend checked>
+                                <label class="form-check-label" for="${forNombre}">
+                                    ${data.NombreExamen}
+                                </label>
+                            </div>
+                        `;
+
+                    $('#estudios').append(contenido);
+                }
+
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            });
+
+    }
 
 });

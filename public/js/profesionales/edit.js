@@ -1,5 +1,14 @@
 $(document).ready(function(){
 
+    const perfilesMap = {
+        T1: { value: 't1', text: 'Efector' },
+        T2: { value: 't2', text: 'Informador' },
+        T3: { value: 't3', text: 'Evaluador' },
+        T4: { value: 't4', text: 'Combinado' }
+    };
+    const select = $("#perfiles");
+    const listaEspecialidad = $('#listaEspecialidad');
+
     let resizing = false, startWidth, startHeight, startX, startY; //variables de ancho de imagen
 
     cargarPerfiles();
@@ -30,7 +39,7 @@ $(document).ready(function(){
             .done(function(response){
                 preloader('off');
                 toastr.success(response.msg);
-                $('#perfiles').empty().append('<option value="" selected>Elija una opción</option>');
+                select.empty().append('<option value="" selected>Elija una opción</option>');
                 perfiles(ID);
             })
             .fail(function(jqXHR){
@@ -71,9 +80,9 @@ $(document).ready(function(){
     $(document).on('click', '.addPerfilProf', function(e){
         e.preventDefault();
 
-        let perfil = $('#perfiles').val(), especialidad = $('#listaEspecialidad').val();
+        let perfil = select.val(), especialidad = listaEspecialidad.val();
 
-        if(perfil === '' || especialidad === '') {
+        if(!perfil || !especialidad) {
             toastr.warning("Debe seleccionar una especialidad y un perfil para poder añadirlo a la lista");
             return;
         }
@@ -162,16 +171,11 @@ $(document).ready(function(){
                     if(d.Tipos) {
                         let arr = d.Tipos.split(',');
                     
-                        const perfiles = {
-                            't1': ['Efector'],
-                            't2': ['Informador'],
-                            't3': ['Evaluador'],
-                            't4': ['Combinado']
-                        }
-                    
                         let imprimir = arr.map(e => {
-                            if (perfiles[e]) {
-                                return `<span class="badge custom-badge pequeno text-uppercase" style="margin-right: 3px; display:inline-block">${perfiles[e][0]}</span><br>`;
+                            let key = e.toUpperCase;
+
+                            if (perfilesMap[key]) {
+                                return `<span class="badge custom-badge pequeno text-uppercase" style="margin-right: 3px; display:inline-block">${perfilesMap[key].text}</span><br>`;
                             }
                             return ''; 
                         }).join(''); 
@@ -191,8 +195,8 @@ $(document).ready(function(){
                         `;
                     
                         $('#listaProfesionales').append(contenido);
-                        $('#perfiles').val(''),
-                        $('#listaEspecialidad').val('');
+                        select.val(''),
+                        listaEspecialidad.val('');
                     }
                 });
             })
@@ -206,24 +210,17 @@ $(document).ready(function(){
 
     function perfiles(id)
     {
-        if(id === '' || id === null) return;
+        if(!id) return;
 
         $.get(choisePerfil, {Id: id})
             .done(function(response){
-
-                select = $("#perfiles");
                 
-                if (response.T1 === 1) {
-                    select.append(`<option value="t1">Efector</option>`);
-                }
-                if (response.T2 === 1) {
-                    select.append(`<option value="t2">Informador</option>`);
-                }
-                if (response.T3 === 1) {
-                    select.append(`<option value="t3">Evaluador</option>`);
-                }
-                if (response.T4 === 1) {
-                    select.append(`<option value="t4">Combinado</option>`);
+                for (let key in perfilesMap) {
+                    if (response[key] === 1) {
+                        let perfil = perfilesMap[key];
+                        let option = `<option value="${perfil.value}">${perfil.text}</option>`;
+                        select.append(option);
+                    }
                 }
               
             });

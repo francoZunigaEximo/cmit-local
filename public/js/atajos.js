@@ -1,13 +1,20 @@
 $(function(){
+
+    let prestacionFast = document.getElementById('prestacionFast');
     
     $("#prestacionButton").on('click', function() {
         $("#prestacionFast").offcanvas("show");
     });
 
-    $("#prestacionFast").on('shown.bs.offcanvas', function() {
-        $("#dniPrestacion").on('focus');
-    });
-    
+
+    prestacionFast.addEventListener('shown.bs.offcanvas', function(e){
+        let dniPrestacion = document.getElementById('dniPrestacion');
+
+        if(dniPrestacion) {
+            dniPrestacion.focus();
+        }
+    })
+
     $("#dniPrestacion").on('keyup', function(e) {
         if (e.which === 13) {
             $("#btnWizardPrestacion").on('click');
@@ -30,7 +37,7 @@ $(function(){
         if (e.altKey && e.key === 'p') {
             e.preventDefault();
             $("#prestacionFast").offcanvas("show");
-            $("#dniPrestacion").on('focus');
+            $("#dniPrestacion").focus();
         }
 
         if (e.altKey) {
