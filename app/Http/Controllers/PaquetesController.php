@@ -52,19 +52,25 @@ class PaquetesController extends Controller
     }
 
     private function buildQuery(Request $request){
-        $consulta = PaqueteEstudio::where('Baja', '=', 0);
+        $consulta = DB::table('paqestudios')
+        ->join('relpaqest', 'paqestudios.id', '=', 'relpaqest.IdPaquete')
+        ->where('paqestudios.Baja', '=', 0)
+        ->groupBy('paqestudios.Id', 'paqestudios.Nombre', 'paqestudios.Descripcion', 'paqestudios.Alias');
+        
+
         if($request->buscar){
-            $consulta->where('Id', '=', $request->buscar);
+            $consulta->where('paqestudios.Id', '=', $request->buscar);
         }
 
         if($request->alias){
-            $consulta->where('Alias', 'LIKE', '%'.$request->alias.'%');
+            $consulta->where('paqestudios.Alias', 'LIKE', '%'.$request->alias.'%');
         }
 
         if($request->id){
-            $consulta->where('Id', '=', $request->id);
+            $consulta->where('paqestudios.Id', '=', $request->id);
         }
-
+        
+        $consulta->select('paqestudios.Id as Id', 'paqestudios.Nombre as Nombre', 'paqestudios.Descripcion as Descripcion', 'paqestudios.Alias as Alias', DB::raw('COUNT(relpaqest.Id) as CantidadExamenes'));
         return $consulta;
 
     }
@@ -128,7 +134,7 @@ class PaquetesController extends Controller
                 'IdExamen' => $estudio['Id']
             ]);
         }
-
+        return response()->json(['id' => $nuevoId], 200);
     }
 
     public function editPaqueteExamen($id){
@@ -295,6 +301,7 @@ class PaquetesController extends Controller
             'Cod' => $codigo,
             'IdEmpresa' => ($idEmpresa != null && $idGrupo == null) ? $idEmpresa : 0,
             'IdGrupo'=>  ($idGrupo != null && $idEmpresa == null) ? $idGrupo : 0,
+            'CantExamenes' => count($estudios),
             'Baja' => 0
         ]);
 
@@ -311,6 +318,8 @@ class PaquetesController extends Controller
                 ]);
             }
         }
+
+        return response()->json(['id' => $nuevoId], 200);
     }
 
     public function editPaqueteFacturacion($id){
@@ -380,11 +389,12 @@ class PaquetesController extends Controller
         if($idEmpresa != null && $idGrupo == null){
             PaqueteFacturacion::find($idPaquete)
             ->update(['IdEmpresa'=>$idEmpresa, 'IdGrupo'=>0]);
-        }
-
-        if($idGrupo != null && $idEmpresa == null){
+        }else if($idGrupo != null && $idEmpresa == null){
             PaqueteFacturacion::find($idPaquete)
             ->update(['IdEmpresa'=>0, 'IdGrupo'=>$idGrupo]);
+        }else{
+            PaqueteFacturacion::find($idPaquete)
+            ->update(['IdEmpresa'=>$idEmpresa, 'IdGrupo'=>0, 'IdEmpresa'=>0]);
         }
 
         //eliminamos los paquetes viejos

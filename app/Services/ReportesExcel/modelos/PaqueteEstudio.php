@@ -27,11 +27,12 @@ class PaqueteEstudio implements ReporteInterface
         $encabezados = [
             'A1' => 'Codigo',
             'B1' => 'Nombre',
-            'C1' => 'Descripcion',
-            'D1' => 'Alias'
+            'C1' => 'Examenes',
+            'D1' => 'Descripcion',
+            'E1' => 'Alias'
         ];
 
-        $columnas = ['A', 'B', 'C', 'D'];
+        $columnas = ['A', 'B', 'C', 'D', 'E'];
 
         foreach ($columnas as $columna) {
             $sheet->getColumnDimension($columna)->setAutoSize(true);
@@ -49,8 +50,9 @@ class PaqueteEstudio implements ReporteInterface
         foreach ($paquetes as $paquete) {            
             $sheet->setCellValue('A' . $fila, $paquete->Id);
             $sheet->setCellValue('B' . $fila, $paquete->Nombre);
-            $sheet->setCellValue('C' . $fila, $paquete->Descripcion);
-            $sheet->setCellValue('D' . $fila, $paquete->Alias);
+            $sheet->setCellValue('C' . $fila, $paquete->CantidadExamenes);
+            $sheet->setCellValue('D' . $fila, $paquete->Descripcion);
+            $sheet->setCellValue('E' . $fila, $paquete->Alias);
             $fila++;
         }
     }
