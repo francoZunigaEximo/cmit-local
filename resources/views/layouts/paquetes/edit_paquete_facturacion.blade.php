@@ -6,7 +6,7 @@
 
 <div class="row mb-4">
     <div class="col-12 text-end">
-        <a href="{{ route('paquetes.index') }}" class="btn btn-warning"><i class="ri-arrow-left-line"></i>&nbsp;Volver</a>
+        <button onclick="window.history.back()" class="btn btn-warning"><i class="ri-arrow-left-line"></i>&nbsp;Volver</button>
     </div>
 </div>
 
@@ -79,7 +79,7 @@
         </div>
     </div>
     <div class="col-12 box-information mt-2 text-center">
-        <button type="submit" id="btnRegistrar" class="btn botonGeneral">Editar</button>
+        <button type="submit" id="btnRegistrar" class="btn botonGeneral">Guardar</button>
     </div>
     <div class="col-12 p-3 border border-1 border-color mt-1" style="border-color: #666666;">
         <div class="row">
