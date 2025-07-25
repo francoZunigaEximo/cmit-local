@@ -250,8 +250,6 @@ $(function(){
                 principal.volverPrestacionLimpia.trigger('click');
                 principal.listaExamenes.empty();
                 IdNueva = response.nuevoId;
-                nroPrestacion = response.nuevoId;
-                $("#nroPrestacion").text(nroPrestacion);
                 cargarExamen(response.nuevoId);
                 contadorExamenes(response.nuevoId);
                 variables.idPrestacion.val(IdNueva);
@@ -1490,12 +1488,12 @@ $(function(){
         if(variables.PagoLaboral.val() === 'P') {
             principal.paqueteExamen.hide();
             principal.paqueteExCta.show();
-            principal.tituloPrestacion.text('Alta Prestación con Ex. a Cuenta');
+            principal.tituloPrestacion.text('Alta Prestación con Ex. a Cuenta Nro: ' + nroPrestacion);
 
         }else{
             principal.paqueteExamen.show();
             principal.paqueteExCta.hide();
-            principal.tituloPrestacion.text('Alta Prestación');
+            principal.tituloPrestacion.text('Alta Prestación Nro: ' + nroPrestacion);
         }
     }
 
