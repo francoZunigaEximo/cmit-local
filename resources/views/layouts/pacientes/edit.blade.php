@@ -847,11 +847,6 @@
                                         <span class="input-group-text">Fecha</span>
                                         <input type="date" class="form-control" id="FechaN" name="FechaN">
                                     </div>
-                                    <div class="input-group input-group-sm mb-2">
-                                        <div class="alert alert-info" role="alert">
-                                            Nro Prestacion: <span id="nroPrestacion"></span>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         
