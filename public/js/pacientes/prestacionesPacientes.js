@@ -12,6 +12,7 @@ $(function(){
         grillaPacientes: $('#grillaPacientes'),
         selectMapaPres: $('.selectMapaPres'),
         ultimasFacturadas: $('.ultimasFacturadas'),
+        ultimasPrestacionesFacturadas: $('.ultimasPrestacionesFacturadas'),
         examenesDisponibles: $('.examenesDisponibles'),
         guardarPrestacion: $('#guardarPrestacion'),
         cargarExPrestacion: $('.cargarExPrestacion'),
@@ -431,12 +432,14 @@ $(function(){
 
     function selectorPago(pago) {
         
-        if(['B','C', ''].includes(pago)) {
+         if(['B','C', ''].includes(pago)) {
             
             principal.ultimasFacturadas
                 .add(principal.siguienteExCta)
                 .hide();
-            
+                
+            if(variables.TipoPrestacion.val() !== 'ART') principal.ultimasPrestacionesFacturadas.show();
+
             principal.guardarPrestacion.show();
 
         }else if(variables.TipoPrestacion.val() !== 'ART') {
@@ -1409,11 +1412,11 @@ $(function(){
     }
 
     async function checkExamenesCuenta(id){
-
+        console.log("check examenes a cuenta");
         $.get(await lstExDisponibles, {Id: id})
             .done(function(response){
                 // let data = selectorPago(pagoInput);
-
+                console.log(response);
                 if(response && response.length > 0) {
 
                     principal.alertaExCta
@@ -1421,7 +1424,7 @@ $(function(){
                         .add(principal.siguienteExCta)
                         .show();
 
-                    variables.PagoLaboral.val('P');
+                    //variables.PagoLaboral.val('P');
                     
                     principal.guardarPrestacion.hide();
 

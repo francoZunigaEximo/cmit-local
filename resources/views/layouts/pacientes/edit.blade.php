@@ -353,7 +353,7 @@
                                         <input class="form-check-input" type="radio" name="TipoPrestacion" id="TipoPrestacion" id="MAS" value="MAS">
                                         <label class="form-check-label" for="mas">MAS</label>
                                     </div>
-                                    <div class="form-check form-check-inline" id="divtipoPrestacionPresOtros" style="display: ">
+                                    <div class="form-check form-check-inline" id="divtipoPrestacionPresOtros" style="display: none;">
                                         <select class="form-select" id="tipoPrestacionPresOtros">
                                             <option selected value="">Elija una opción...</option>
                                             @foreach ($tiposPrestacionOtros as $tipo)
@@ -717,9 +717,9 @@
                                 </div>
                             </div>
 
-                            <hr class="mt-3 mb-3 ultimasFacturadas">
+                            <hr class="mt-3 mb-3 ultimasFacturadas ultimasPrestacionesFacturadasTitulo">
 
-                            <div class="row mt-2 ultimasFacturadas">
+                            <div class="row mt-2 ultimasFacturadas ultimasPrestacionesFacturadas">
                                 <div class="col-lg-12">
                                     <div class="card titulo-tabla">
                                         <div class="card-header d-flex justify-content-between align-items-center">
