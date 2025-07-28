@@ -23,6 +23,7 @@ $(function () {
         cerrarlstExCta: $('.cerrarlstExCta'),
         prestacionLimpia: $('.prestacionLimpia'),
         ultimasFacturadas: $('.ultimasFacturadas'),
+        ultimasPrestacionesFacturadas: $('.ultimasPrestacionesFacturadas'),
         examenesDiponibles: $('examenesDisponibles'),
         siguienteExCta: $('#siguienteExCta'),
         guardarPrestacion: $('#guardarPrestacion'),
@@ -878,6 +879,9 @@ $(function () {
                 .add(principal.examenesDiponibles)
                 .add(principal.siguienteExCta)
                 .hide();
+            console.log(variables.TipoPrestacion.val());
+            if(variables.TipoPrestacion.filter(':checked').val() !== 'ART') principal.ultimasPrestacionesFacturadas.show();
+            
             principal.guardarPrestacion.show();
         
         }else if(pago === 'P') {
