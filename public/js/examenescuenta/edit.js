@@ -538,6 +538,7 @@ $(function(){
         e.preventDefault();
 
         let id = $(this).data('id'), tipo = $(this).hasClass('exportar') ? 'excel' : 'pdf';
+        console.log(id, tipo);
         let extencion = tipo === 'excel' ? 'xlsx' : 'pdf';
         if(!id) {
             toastr.warning('No hay datos para exportar','', {timeOut: 1000});
@@ -559,7 +560,12 @@ $(function(){
                     },
                     success: function(response) {
                         preloader('off');
-                        createFile(tipo, response.filePath, generarCodigoAleatorio() + "_examen_cta");
+
+                        if(tipo == 'excel') {
+                            createFile(tipo, response.filePath, generarCodigoAleatorio() + "_examen_cta");
+                        }else{
+                            createFile(tipo, response, generarCodigoAleatorio() + "_examen_cta");
+                        }
                     },
                     error: function(jqXHR) {
                         preloader('off');

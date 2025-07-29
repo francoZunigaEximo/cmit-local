@@ -724,7 +724,7 @@ class ExamenesCuentaController extends Controller
             Empresa::class,
             ExCuenta::class,
             null,
-            "imprimir",
+            "guardar",
             storage_path('app/public/archivo.pdf'),
             $request->Id,
             $paramsTitulo, 
