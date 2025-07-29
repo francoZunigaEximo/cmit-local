@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
     ]): void
     {
         //titulos columnas
-        $pdf->Cell(31,5,'ESTUDIO',0,0,'L');
+        $pdf->Cell(31,5,'ESPECIALIDAD',0,0,'L');
         $pdf->Cell(75,5,'EXAMEN',0,0,'L');
         $pdf->Cell(20,5,'PRESTACION',0,0,'R');
         $pdf->Cell(60,5,'PACIENTE',0,0,'L');

@@ -382,17 +382,20 @@ class ExamenesCuentaController extends Controller
 
     public function listado(Request $request)
     {
+        if ($request->ajax()) {
         if(!$this->hasPermission("examenCta_show")) {
             return response()->json(['msg' => 'No tiene permisos'], 403);
         }
 
         $query = ExamenCuentaIt::join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
             ->join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
+            ->join('estudios', 'estudios.Id', '=', 'examenes.IdEstudio')
             ->join('prestaciones', 'pagosacuenta_it.IdPrestacion', '=', 'prestaciones.Id')
             ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
             ->select(
                 'pagosacuenta_it.Precarga as Precarga',
                 'examenes.Nombre as Examen',
+                'estudios.Nombre as Estudio',
                 'prestaciones.Id as Prestacion',
                 'pacientes.Nombre as NombrePaciente',
                 'pacientes.Apellido as ApellidoPaciente',
@@ -402,9 +405,8 @@ class ExamenesCuentaController extends Controller
             ->whereNot('pagosacuenta_it.Obs', 'provisorio')
             ->orderBy('pagosacuenta_it.Precarga', 'Desc')
             ->get();
-
-        return response()->json($query);
-
+            return DataTables::of($query)->make(true);
+        }
 
     }
 
@@ -640,7 +642,7 @@ class ExamenesCuentaController extends Controller
         $examenes = $this->examenesReporte($examen->Id);
 
         $sheet->setCellValue('A8', 'Prestación');
-        $sheet->setCellValue('B8', 'Estudio');
+        $sheet->setCellValue('B8', 'Especialidad');
         $sheet->setCellValue('C8', 'Examen');
         $sheet->setCellValue('D8', 'Paciente');
 
@@ -722,7 +724,7 @@ class ExamenesCuentaController extends Controller
             Empresa::class,
             ExCuenta::class,
             null,
-            "imprimir",
+            "guardar",
             storage_path('app/public/archivo.pdf'),
             $request->Id,
             $paramsTitulo, 

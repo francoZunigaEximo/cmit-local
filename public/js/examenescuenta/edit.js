@@ -207,10 +207,152 @@ $(function(){
     });
 
     function listado() {
-        preloader('on');
-        $('#lstSaldos').empty();
     
-        $.get(listadoExCta, {Id: ID})
+        $('#listadoSaldos').DataTable().clear().destroy();
+
+        new DataTable("#listadoSaldos", {
+            searching: false,
+            ordering: true,
+            order: [[0, 'asc']],
+            processing: true,
+            lengthChange: false,
+            pageLength: 100,
+            responsive: false,
+            serverSide: true,
+            deferRender: true,
+            scrollCollapse: true,
+            autoWidth: false,
+            select: {
+                style: 'multi'
+            },
+            ajax: {
+                url: listadoExCta,
+                data: function(e) {
+                    e.Id = ID;
+                }
+            },
+            dataType: 'json',
+            type: 'GET',
+            columnDefs: [
+                {
+                    data: null,
+                    name: 'IdEx',
+                    orderable: true,
+                    targets: 0,
+                    render: function(data){
+                        return `<div class="text-center"><input type="checkbox" name="Id" value="${data.IdEx}"></div>`;
+                    }
+
+                },
+                {
+                    data: null,
+                    name: 'Precarga',
+                    targets: 1,
+                    orderable: true,
+                    render: function(data){
+                        return `<div class="text-center"><span>${data.Precarga === '' ? '-' : data.Precarga}</span></div>`;
+                    }
+                },
+                {
+                    data: null,
+                    name: 'Estudio',
+                    target: 2,
+                    orderable: true,
+                    render: function(data){
+                        return `<div class="text-center"><span>${data.Estudio}</span></div>`;
+                    }
+                },
+                {
+                    data: null,
+                    name: 'Examen',
+                    target: 3,
+                    orderable: true,
+                    render: function(data){
+                        return `<div class="text-center"><span>${data.Examen}</span></div>`;
+                    }
+                },
+                {
+                    data: null,
+                    name: 'Prestacion',
+                    target: 4,
+                    orderable: true,
+                    render: function(data){
+                        return `<div class="text-center"><span>${data.Prestacion}</span></div>`;
+                    }
+                },
+                {
+                    data: null,
+                    name: 'Paciente',
+                    target: 5,      
+                    orderable: true,
+                    render: function(data){
+                        return `<div class="text-center"><span>${ data.ApellidoPaciente + ' ' + data.NombrePaciente}</span></div>`;
+                    }
+                },
+                {
+                    data: null,
+                    name: 'Acciones',
+                    target: 6,      
+                    orderable: true,
+                    render: function(data){
+                        return `<div class="text-center">
+                                    <button data-id="${data.IdEx}" type="button" class="btn iconGeneral editarDNI" title="Agregar/Editar DNI" data-bs-toggle="modal" data-bs-target="#editarDNI">
+                                        <i class="ri-edit-line"></i>
+                                    </button>
+                                    <button data-id="${data.IdEx}" type="button" class="btn iconGeneral deleteItem" title="Eliminar examen">
+                                        <i class="ri-delete-bin-2-line"></i>
+                                    </button>
+                                </div>`;
+                    }
+                }
+            ],
+            language: {
+                processing: "<div style='text-align: center; margin-top: 20px;'><img src='/images/spinner.gif' /><p>Cargando...</p></div>",
+                emptyTable: "No hay prestaciones con los datos buscados",
+                paginate: {
+                    first: "Primera",
+                    previous: "Anterior",
+                    next: "Siguiente",
+                    last: "Última"
+                },
+                aria: {
+                    paginate: {
+                        first: "Primera",
+                        previous: "Anterior",
+                        next: "Siguiente",
+                        last: "Última"
+                    }
+                },
+                info: "Mostrando _START_ a _END_ de _TOTAL_ de prestaciones",
+            },
+            stateLoadCallback: function(settings, callback) {
+                $.ajax({
+                    url: SEARCH,
+                    dataType: 'json',
+                    success: function(json) {
+
+                        // Pasar el objeto json a callback
+                        callback(json);
+                    }
+                });
+            },
+            stateSaveCallback: function(settings, data) {
+                $.ajax({
+                    url: SEARCH,
+                    type: 'POST',
+                    data: {
+                        
+                    },
+                    dataType: "json",
+                    success: function(response) {},
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.error("Error: ", textStatus, errorThrown);
+                    }
+                });
+            },
+        });
+
+        /*$.get(listadoExCta, {Id: ID})
             .done(function(response){
                 preloader('off');                
                 let dniAnterior = '';
@@ -221,9 +363,10 @@ $(function(){
                         <tr>
                             <td><div class="text-center"><input type="checkbox" name="Id" value="${r.IdEx}"></div></td>
                             <td>${r.Precarga === '' ? '-' : r.Precarga}</td>
-                            <td title="${r.Examen}">${acortadorTexto(r.Examen, 10)}</td>
+                            <td>${r.Estudio}</td>
+                            <td title="${r.Examen}">${r.Examen}</td>
                             <td>${r.Prestacion}</td>
-                            <td title="${nombreCompleto}">${acortadorTexto(nombreCompleto)}</td>
+                            <td title="${nombreCompleto}">${nombreCompleto}</td>
                             <td>
                                 <button data-id="${r.IdEx}" type="button" class="btn iconGeneral editarDNI" title="Agregar/Editar DNI" data-bs-toggle="modal" data-bs-target="#editarDNI">
                                     <i class="ri-edit-line"></i>
@@ -253,7 +396,7 @@ $(function(){
                     globalSearch: false,
                     sortable: false, 
                 });
-            })
+            })*/
     }
     
 
@@ -395,7 +538,8 @@ $(function(){
         e.preventDefault();
 
         let id = $(this).data('id'), tipo = $(this).hasClass('exportar') ? 'excel' : 'pdf';
-
+        console.log(id, tipo);
+        let extencion = tipo === 'excel' ? 'xlsx' : 'pdf';
         if(!id) {
             toastr.warning('No hay datos para exportar','', {timeOut: 1000});
             return;
@@ -416,15 +560,11 @@ $(function(){
                     },
                     success: function(response) {
                         preloader('off');
-                        const jsonPattern = /{.*}/s;
-                        const match = response.match(jsonPattern);
 
-                        if(match) {
-                            const jsonResponse = match[0];
-                            const data = JSON.parse(jsonResponse);
-
-                            createFile(tipo, data.filePath, data.name);
-                            toastr.success(data.msg, '', {timeOut: 1000});
+                        if(tipo == 'excel') {
+                            createFile(tipo, response.filePath, generarCodigoAleatorio() + "_examen_cta");
+                        }else{
+                            createFile(tipo, response, generarCodigoAleatorio() + "_examen_cta");
                         }
                     },
                     error: function(jqXHR) {
