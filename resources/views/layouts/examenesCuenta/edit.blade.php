@@ -118,13 +118,14 @@
                 <tr>
                     <th class="text-center"><input type="checkbox" id="checkAll" name="Id"></th>
                     <th class="sort">Precarga</th>
+                    <th class="sort">Especialidad</th>
                     <th class="sort">Examen</th>
                     <th class="sort">Prestación</th>
                     <th class="sort">Paciente</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
-            <tbody class="list form-check-all" id="lstSaldos">
+            <tbody class="list form-check-all">
 
             </tbody>
         </table>
@@ -180,6 +181,10 @@
 @endpush
 
 @push('scripts')
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/inputmask/dist/jquery.inputmask.min.js"></script>
 <script src="{{ asset('js/examenescuenta/edit.js')}}?=v{{ time() }}"></script>
 
