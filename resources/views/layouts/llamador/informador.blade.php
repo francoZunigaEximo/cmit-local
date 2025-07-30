@@ -44,7 +44,17 @@
 
                                     <div class="col-sm-2 mb-3">
                                         <label for="especialidad" class="form-label fw-bolder">Especialidad <span class="required">(*)</span></label>
-                                        <input type="text" class="form-control" name="especialidad" id="especialidad" value="{{ session('Profesional') === 'INFORMADOR' ? session('Especialidad') : 'Sin Especialidad'}}" data-id="{{ session('IdEspecialidad')->Id ?? ''}}">
+                                        @php
+                                            $rolesPermitidos = ['Administrador', 'Admin SR', 'Recepcion SR'];
+                                            $rolesUsuario = Auth::user()->role->pluck('nombre')->toArray();
+                                            $tieneRol = !empty(array_intersect($rolesPermitidos, $rolesUsuario));
+                                        @endphp
+
+                                        @if($tieneRol)
+                                            <select name="especialidadSelect" id="especialidadSelect" class="form-control"></select>
+                                        @else
+                                            <input type="text" class="form-control" name="especialidad" id="especialidad" data-id="{{ session('IdEspecialidad')->Id ?? '' }}" value="{{ session('Profesional') === 'INFORMADOR' ? session('Especialidad') : 'Sin Especialidad' }}">
+                                        @endif
                                     </div>
 
                                     <div class="col-sm-2 mb-3">
@@ -136,6 +146,7 @@
     const ROLESUSER = @json(Auth::user()->role);
     const asignacionProfesional = "{{ route('llamador.asignarPaciente') }}";
     const sessionProfesional = "{{ session('Profesional') }}";
+    const searchEspecialidad = "{{ route('llamador.buscarEspecialidad') }}";
 </script>
 </script>
 

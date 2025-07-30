@@ -41,10 +41,19 @@
                                             
                                         </select>
                                     </div>
-
                                     <div class="col-sm-2 mb-3">
                                         <label for="especialidad" class="form-label fw-bolder">Especialidad <span class="required">(*)</span></label>
-                                        <input type="text" class="form-control" name="especialidad" id="especialidad" data-id="{{ session('IdEspecialidad')->Id ?? ''}}" value="{{ session('Profesional') === 'EFECTOR' ? session('Especialidad') : 'Sin Especialidad'}}">
+                                        @php
+                                            $rolesPermitidos = ['Administrador', 'Admin SR', 'Recepcion SR'];
+                                            $rolesUsuario = Auth::user()->role->pluck('nombre')->toArray();
+                                            $tieneRol = !empty(array_intersect($rolesPermitidos, $rolesUsuario));
+                                        @endphp
+
+                                        @if($tieneRol)
+                                            <select name="especialidadSelect" id="especialidadSelect" class="form-control"></select>
+                                        @else
+                                            <input type="text" class="form-control" name="especialidad" id="especialidad" data-id="{{ session('IdEspecialidad')->Id ?? '' }}" value="{{ session('Profesional') === 'EFECTOR' ? session('Especialidad') : 'Sin Especialidad' }}">
+                                        @endif
                                     </div>
 
                                     <div class="col-sm-2 mb-3">
@@ -156,63 +165,63 @@
                                     <div class="col-md-4 p-2">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text">Profesional</span>
-                                            <input type="text" class="form-control" id="profesionalEfector" name="profesionalEfector" readonly="true">
+                                            <input type="text" class="form-control" id="profesional_var" name="profesional_var" readonly="true">
                                         </div>
                                     </div>
                                     
                                     <div class="col-md-4 p-2">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text">Prestación</span>
-                                            <input type="text" class="form-control" id="prestacionEfector" name="prestacionEfector" readonly="true">
+                                            <input type="text" class="form-control" id="prestacion_var" name="prestacion_var" readonly="true">
                                         </div>
                                     </div>
         
                                     <div class="col-md-4 p-2">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text">Tipo Exámen</span>
-                                            <input type="text" class="form-control" id="tipoEfector" name="tipoEfector" readonly="true">
+                                            <input type="text" class="form-control" id="tipo_var" name="tipo_var" readonly="true">
                                         </div>
                                     </div>
 
                                     <div class="col-md-4 p-2">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text">ART</span>
-                                            <input type="text" class="form-control" id="artEfector" name="artEfector" readonly="true">
+                                            <input type="text" class="form-control" id="art_var" name="art_var" readonly="true">
                                         </div>
                                     </div>
 
                                     <div class="col-md-4 p-2">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text">Empresa</span>
-                                            <input type="text" class="form-control" id="empresaEfector" name="empresaEfector" readonly="true">
+                                            <input type="text" class="form-control" id="empresa_var" name="empresa_var readonly="true">
                                         </div>
                                     </div>
 
                                     <div class="col-md-4 p-2">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text">Para Empresa</span>
-                                            <input type="text" class="form-control" id="paraEmpresaEfector" name="paraEmpresaEfector" readonly="true">
+                                            <input type="text" class="form-control" id="paraEmpresa_var" name="paraEmpresa_var" readonly="true">
                                         </div>
                                     </div>
 
                                     <div class="col-md-4 p-2 mt-1">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text">Paciente</span>
-                                            <input type="text" class="form-control" id="pacienteEfector" name="pacienteEfector" readonly="true">
+                                            <input type="text" class="form-control" id="paciente_var" name="paciente_var" readonly="true">
                                         </div>
                                     </div>
 
                                     <div class="col-md-4 p-2 mt-1">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text">Edad</span>
-                                            <input type="text" class="form-control" id="edadEfector" name="edadEfector" readonly="true">
+                                            <input type="text" class="form-control" id="edad_var" name="edad_var" readonly="true">
                                         </div>
                                     </div>
 
                                     <div class="col-md-4 p-2 mt-1">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text">Fecha Prestación</span>
-                                            <input type="text" class="form-control" id="fechaEfector" name="fechaEfector" readonly="true">
+                                            <input type="text" class="form-control" id="fecha_var" name="fecha_var" readonly="true">
                                         </div>
                                     </div>
 
@@ -222,7 +231,7 @@
 
                             
                             <div class="col-md-3">
-                                <img class="round mx-auto d-block img-fluid" id="fotoEfector" src="" alt="Foto del paciente" width="150px">
+                                <img class="round mx-auto d-block img-fluid" id="foto_var" src="" alt="Foto del paciente" width="150px">
                                 <span class="d-flex justify-content-center mt-1">
                                     <a id="descargaFoto" class="descargaFoto" href="" download>
                                         <button class="descargarImagen btn btn-sm botonGeneral">Descargar</button>
@@ -272,6 +281,8 @@
     const ROLESUSER = @json(Auth::user()->role);
     const asignacionProfesional = "{{ route('llamador.asignarPaciente') }}";
     const sessionProfesional = "{{ session('Profesional') }}";
+    const searchEspecialidad = "{{ route('llamador.buscarEspecialidad') }}";
+    const itemPrestacionEstado = "{{ route('llamador.cambioEstado') }}";
 </script>
 
 @push('styles')
@@ -287,6 +298,7 @@
 <script src="{{ asset('/js/llamador/efector/paginacion.js')}}?v={{ time() }}"></script>
 <script src="{{ asset('/js/llamador/sockets.js')}}?v={{ time() }}"></script>
 <script src="{{ asset('/js/llamador/atenderPaciente.js') }}?v={{ time() }}"></script>
+
 
 
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>

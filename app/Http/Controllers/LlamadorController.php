@@ -6,10 +6,13 @@ use App\Events\AsignarProfesionalEvent;
 use App\Events\GrillaEfectoresEvent;
 use App\Events\LstProfesionalesEvent;
 use App\Events\LstProfInformadorEvent;
+use App\Events\LstProfCombinadoEvent;
+use App\Models\ArchivoEfector;
 use App\Models\ItemPrestacion;
 use Illuminate\Http\Request;
 use App\Models\Llamador;
 use App\Models\Prestacion;
+use App\Models\ProfesionalProv;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -100,7 +103,7 @@ class LlamadorController extends Controller
         if($this->utilidades->checkTipoRol($user->name, SELF::ADMIN)) {
             
             $combinados = $this->profesionales->listado('Combinado');
-            event(new LstProfInformadorEvent($combinados));
+            event(new LstProfCombinadoEvent($combinados));
 
         } else if($this->utilidades->checkTipoRol($user->name, [SELF::TIPOS[2]])) {
   
@@ -130,6 +133,7 @@ class LlamadorController extends Controller
 
                 $query->when(!empty($request->profesional), function ($query) use ($request){
                     $query->whereIn('itemsprestaciones.IdProfesional', [$request->profesional, 0])
+                        ->where('itemsprestaciones.IdProfesional', '!=', $request->profesional)
                         ->where('examenes.IdProveedor', $request->especialidad)
                         ->addSelect(DB::raw('"' . $request->especialidad . '" as especialidades'));
                 });
@@ -142,25 +146,25 @@ class LlamadorController extends Controller
 
                     match(session('Profesional')) {
                         strtoupper(SELF::TIPOS[0]) => $query->whereIn('itemsprestaciones.CAdj', [0, 1, 2]),
-                        strtoupper(SELF::TIPOS[1]) => $query->whereIn('itemsprestaciones.CInfo', 1,2),
                         default => null
                     };
+                    $query->where('prestaciones.Cerrado', 0);
                 });
     
                 $query->when(!empty($request->estado) && ($request->estado === 'cerrado'), function($query) {
 
                     match(session('Profesional')) {
                         strtoupper(SELF::TIPOS[0]) => $query->whereIn('itemsprestaciones.CAdj', [3, 4, 5]),
-                        strtoupper(SELF::TIPOS[1]) => $query->where('itemsprestaciones.CInfo', 3),
                         default => null
                     };
+                    $query->where('prestaciones.Cerrado', 1);
                 });
     
                 $query->when(!empty($request->estado) && ($request->estado === 'todos'), function($query){
                     match(session('Profesional')) {
                         strtoupper(SELF::TIPOS[0]) => $query->whereIn('itemsprestaciones.CAdj', [0, 1, 2, 3, 4, 5]),
-                        strtoupper(SELF::TIPOS[1]) => $query->whereIn('itemsprestaciones.CInfo', [1, 2, 3]),
                     };
+                    $query->whereIn('prestaciones.Cerrado', [0,1]);
                 });
             }
 
@@ -237,7 +241,7 @@ class LlamadorController extends Controller
                 'profesional_id' => $request->profesional,
 	            'prestacion_id' =>  $request->prestacion,
                 'itemprestacion_id' => 0,
-                'tipo_profesional' => session('Profesional')
+                'tipo_profesional' => session('Profesional') ?? $request->Tipo
             ]);
 
             $data = [
@@ -283,6 +287,77 @@ class LlamadorController extends Controller
         }
     }
 
+    public function listadoEspecialidades(Request $request)
+    {
+        return ProfesionalProv::join('proveedores', 'profesionales_prov.IdProv', '=', 'proveedores.Id')
+            ->select(
+                'proveedores.Nombre as Nombre',
+                'proveedores.Id as Id'
+            )
+            ->whereNot('profesionales_prov.IdRol', '0')
+            ->where('profesionales_prov.IdProf', $request->IdProfesional)
+            ->where('profesionales_prov.IdRol', $request->Tipo)
+            ->get();
+    }
+
+    public function cambioEstado(Request $request)
+    {
+
+        if(empty($request->Id)) {
+            return response()->json(['msg' => 'No hay ID para procesar. Error interno'], 500);
+        }
+        
+        $item = ItemPrestacion::with('examenes')->find($request->Id);
+
+        if(!$item) {
+            return response()->json(['msg' => 'No se encontro el examen'], 404);
+        }
+
+        if(!$item->IdProfesional) {
+            return response()->json(['msg' => 'No tiene profesional efector asignado. Debe asignarse para cerrar'], 409);
+        }
+
+        if ($request->tipo === SELF::TIPOS[0]) {
+
+            //Adjunto "Cero" no lleva adjuntos
+            if ($item->examenes->Adjunto === 0 && $request->accion === 'cerrar') {
+
+                //Tres es cerrado sin adjunto
+                $item->update(['CAdj' => 3]);
+                return response()->json(['msg' => 'Se ha cerrado el examen de manera correcto', 'CAdj' => 3, 'IdItem' => $request->Id], 200);
+            
+            } elseif($item->examenes->Adjunto === 1 && $request->accion === 'cerrar') {
+
+                $archivo = ArchivoEfector::where('IdEntidad', $request->Id)->first();
+
+                if(!$archivo) {
+
+                    return response()->json(['msg' => 'No se puede cerrar el examen porque no se ha adjuntado el archivo'], 409);
+                }
+
+                //Cerrado es cerrado con adjunto
+                $item->update(['CAdj' => 5]);
+                return response()->json(['msg' => 'Se ha cerrado el examen de manera correcto', 'CAdj' => 5, 'IdItem' => $request->Id], 200);
+
+            }       
+        } 
+    }
+
+    public function cerrarAtencion(Request $request)
+    {
+        if(empty($request->Id)) {
+            return response()->json(['msg' => 'No se puede terminar la atencion sin la ID'], 404);
+        }
+
+        $llamador = Llamador::where('prestacion_id', $request->Id)->where('tipo_profesional', $request->tipo)->first();
+
+        if($llamador) {
+            $llamador->delete();
+
+            return response()->json(['msg', 'Se ha liberado la prestación correctamente'], 200);
+        }
+    }
+
     private function queryBasico(?int $idProfesional = null)
     {
         return Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
@@ -306,7 +381,7 @@ class LlamadorController extends Controller
             DB::raw("CONCAT(telefonos.CodigoArea,telefonos.NumeroTelefono) as telefono")
         );
         
-        if ($idProfesional !== null) {
+        if ($idProfesional) {
             $query->addSelect(DB::raw($idProfesional . ' as idProfesional'));
         }
 

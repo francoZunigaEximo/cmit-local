@@ -9,6 +9,7 @@ $(function(){
             prestacion = $('#prestacion').val(),
             estado = $('#estado').val(),
             especialidad = $('#especialidad').data('id'),
+            especialidadSelect = $('#especialidadSelect').val(),
             table = $('#listaLlamadaEfector');
 
         //La prestacion es individual y no acepta otros filtros
@@ -45,7 +46,7 @@ $(function(){
                     d.fechaDesde = fechaDesde;
                     d.fechaHasta = fechaHasta;
                     d.prestacion = prestacion;
-                    d.especialidad = especialidad
+                    d.especialidad = especialidad || especialidadSelect;
                     d.estado = estado;
                 }
             },
@@ -119,7 +120,7 @@ $(function(){
                     width:'100px',
                     render: function(data){
                         
-                        let llamar = `<button type="button" data-id="${data.prestacion}" data-profesional=${data.idProfesional} class="btn btn-sm botonGeneral llamarExamen"><i class="ri-edit-line" ></i>Llamar</button>`;
+                        let llamar = `<button type="button" data-id="${data.prestacion}" data-profesional=${data.idProfesional} data-tipo="EFECTOR"class="btn btn-sm botonGeneral llamarExamen"><i class="ri-edit-line" ></i>Llamar</button>`;
                         
                         let atender = `<button type="button" data-id="${data.prestacion}" data-profesional=${data.idProfesional}" data-especialidades="${data.especialidades}" class="btn btn-sm botonGeneral atenderPaciente" data-bs-toggle="modal" data-bs-target="#atenderEfector"><i class="ri-edit-line"></i>Atender</button>`;
     

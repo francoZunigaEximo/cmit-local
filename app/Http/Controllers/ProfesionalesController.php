@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\LstProfesionalesEvent;
+use App\Events\LstProfInformadorEvent;
+use App\Events\LstProfCombinadoEvent;
 use App\Helpers\FileHelper;
 use App\Models\Profesional;
 use App\Models\ProfesionalProv;
@@ -20,6 +23,7 @@ use Illuminate\Support\Facades\Storage;
 
 use App\Traits\CheckPermission;
 use Illuminate\Support\Facades\Auth;
+use App\Services\Llamador\Profesionales;
 
 class ProfesionalesController extends Controller
 {
@@ -27,6 +31,14 @@ class ProfesionalesController extends Controller
 
     protected $folder = "Prof";
     private $profesionales = ['efector', 'informador', 'combinado', 'evaluador', 'evaluador art'];
+    protected $profesionalesLst;
+
+    private $profesionales_eventos = ['Efector', 'Informador', 'Combinado'];
+
+    public function __construct(Profesionales $profesionalesLst)
+    {
+        $this->profesionalesLst = $profesionalesLst;
+    }
 
     public function index()
     {
@@ -276,6 +288,7 @@ class ProfesionalesController extends Controller
         foreach ($perfiles as $perfil) {
             $perfil->delete();
         }
+        
     }
 
     public function store(Request $request): string
@@ -412,6 +425,10 @@ class ProfesionalesController extends Controller
 
     public function choiseEspecialidad(Request $request)
     {
+        $efectores = $this->profesionalesLst->listado('Efector');
+        $informadores = $this->profesionalesLst->listado('Informador');
+        event(new LstProfesionalesEvent($efectores));
+        event(new LstProfInformadorEvent($informadores));
 
         $especialidad = ProfesionalProv::join('proveedores', 'profesionales_prov.IdProv', '=', 'proveedores.Id')
             ->where('profesionales_prov.IdProf', $request->Id)
@@ -434,9 +451,21 @@ class ProfesionalesController extends Controller
             session()->put('Profesional',  strtoupper($request->perfil));
             session()->put('Especialidad', $request->especialidad);
             session()->put('IdEspecialidad', $IdEspecialidad);
+
+            $efectores = $this->profesionalesLst->listado('Efector');
+            $informadores = $this->profesionalesLst->listado('Informador');
+            event(new LstProfesionalesEvent($efectores));
+            event(new LstProfInformadorEvent($informadores));
+            
+
         }else{
             session()->put('Profesional',  0);
             session()->put('Especialidad', 0);
+
+            $efectores = $this->profesionalesLst->listado('Efector');
+            $informadores = $this->profesionalesLst->listado('Informador');
+            event(new LstProfesionalesEvent($efectores));
+            event(new LstProfInformadorEvent($informadores));
         }
     }
 

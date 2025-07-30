@@ -156,7 +156,6 @@ class RolesController extends Controller
             $informadores = $this->profesionales->listado('Informador');
             event(new LstProfesionalesEvent($efectores));
             event(new LstProfInformadorEvent($informadores));
-            //Bus::dispatch(new ListadoProfesionalesEvent($efectores))->onQueue('correos');
 
             $user->profesional->save();
         }
@@ -174,11 +173,9 @@ class RolesController extends Controller
             $user->profesional->save();
             ProfesionalProv::where('IdProf', $user->profesional_id)->delete();
 
-            $efectores = $this->profesionales->listado('Efector');
-            $informadores = $this->profesionales->listado('Informador');
-
-            event(new LstProfesionalesEvent($efectores));
-            event(new LstProfInformadorEvent($informadores));
+            foreach(SELF::TIPOS as $tipos) {
+                event(new LstProfesionalesEvent($tipos));
+            }
         }
     }
 

@@ -13,10 +13,6 @@ $(function(){
             echo: window.Echo.channel('listado-combinado'),
             canal: '.LstProfCombinadoEvent'
         },
-        selectEvaluador: {
-            echo: window.Echo.channel('listado-evaluador'),
-            canal: '.LstProfEvaluadorEvent'
-        },
         grillaEfectores:  {
             echo: window.Echo.channel('grilla-efectores'),
             canal: '.GrillaEfectoresEvent'
@@ -35,7 +31,9 @@ $(function(){
         profesional: $('#profesional'),
         profesionalInf: $('#profesionalInf'),
         profesionalComb: $('#profesionalComb'),
-        profesionalEva: $('#profesionalEva')
+        profesionalEva: $('#profesionalEva'),
+        especialidadSelect: $('#especialidadSelect'),
+        especialidad: $('#especialidad')
     };
 
     const principal = {
@@ -61,7 +59,9 @@ $(function(){
                     checkRoles = roles.some(rol => ADMIN.includes(rol)),
                     usuarios = efectores.map(e => e.Id);
 
-                if (!checkRoles && usuarios.includes(parseInt(USERACTIVO))) {
+                console.log(efectores);
+                
+                if(!checkRoles && usuarios.includes(parseInt(USERACTIVO))) {
 
                     variables.profesional.append(
                         `<option value="${efectores[0].Id}" selected>${efectores[0].NombreCompleto}</option>`
@@ -69,21 +69,24 @@ $(function(){
                 } else if(checkRoles) {
 
                     toastr.info('Se ha actualizado el listado de profesionales');
-
                     variables.profesional.append('<option value="" selected>Elija una opción...</option>');
 
-                    for(let index = 0; index <= efectores.length; index++) {
+                    for(let index = 0; index < efectores.length; index++) {
                         let value = efectores[index],
-                            contenido = `<option value="${value.Id}">${value.NombreCompleto}</option>`;
+                            contenido = `<option value="${value?.Id}">${value?.NombreCompleto || ''}</option>`;
 
                         variables.profesional.append(contenido);
+                    }
 
+                    if(efectores.length === 0) {
+                        variables.especialidad.add(variables.especialidadSelect).empty(); 
                     }
 
                 } else {
                     variables.profesional.append(
                         `<option value="" selected>No hay efectores</option>`
                     );
+                    variables.especialidad.add(variables.especialidadSelect).empty(); //limpiamos la especialidad del efector o admin si no hay efectores
                 }
     });
 

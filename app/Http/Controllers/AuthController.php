@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Redis;
 class AuthController extends Controller
 {
     CONST PASS = "cmit1234";
+    CONST TIPOS = ['Efector', 'Informador'];
 
     protected $profesional;
 
@@ -74,9 +75,10 @@ class AuthController extends Controller
             $roles = Auth::user()->role->pluck('nombre'); 
 
             if ($roles->contains('Efector') || $roles->contains('Informador')) {
-
-                $efectores = $this->profesional->listado('Efector');
-                event(new LstProfesionalesEvent($efectores));
+                
+                foreach(SELF::TIPOS as $tipo) {
+                    event(new LstProfesionalesEvent($this->profesional->listado($tipo)));
+                }
 
                 return redirect()->route('mapas.index');
             }

@@ -20,6 +20,10 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 Broadcast::channel('listado-efectores', fn(User $user) => $user); 
 Broadcast::channel('listado-informadores', fn(User $user) => $user); 
 Broadcast::channel('listado-combinados', fn(User $user) => $user); 
+
+
 Broadcast::channel('grilla-efectores', fn(User $user) => $user);
+
+
 Broadcast::channel('liberar-atencion', fn(User $user) => $user);
 Broadcast::channel('asignar-profesional', fn(User $user) => $user);

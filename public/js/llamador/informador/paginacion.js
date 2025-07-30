@@ -9,6 +9,7 @@ $(function(){
             prestacion = $('#prestacion').val(),
             estado = $('#estado').val(),
             especialidad = $('#especialidad').data('id'),
+            especialidadSelect = $('#especialidadSelect').val()
             table = $('#listaLlamadaInformador');
 
         //La prestacion es individual y no acepta otros filtros
@@ -45,7 +46,7 @@ $(function(){
                     d.fechaDesde = fechaDesde;
                     d.fechaHasta = fechaHasta;
                     d.prestacion = prestacion;
-                    d.especialidad = especialidad
+                    d.especialidad = especialidad || especialidadSelect;
                     d.estado = estado;
                 }
             },

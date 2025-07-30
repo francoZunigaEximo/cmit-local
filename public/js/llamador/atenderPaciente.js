@@ -1,7 +1,14 @@
 $(function(){
 
     const variables = {
-        profesional: $('#profesional')
+        profesional: $('#profesional'),
+        prestacion: $('#prestacion_var')
+    };
+
+    const principal = {
+        efector: 'Efector',
+        tabla: '#listaLlamadaEfector',
+        atenderEfector: '#atenderEfector'
     };
 
     $(document).on('click', 'input[type="checkbox"][name^="Id_"]', function () {
@@ -9,7 +16,7 @@ $(function(){
         let chequeado = $(this).is(':checked'),
             idCheck = $(this).val();
 
-        if([null, undefined, ''].includes(idCheck)) return;
+        if(!idCheck) return;
 
         // console.log(chequeado, idCheck, variables.profesional.val());
         preloader('on')
@@ -30,9 +37,70 @@ $(function(){
         e.preventDefault();
         accion = $(this).hasClass('abrir') ? 'abrir' : 'cerrar';
 
-        if(['', 0, undefined, null].includes(accion));
+        if(!accion) return;
 
-        console.log(accion);
-    });
+        let fila = $(this).closest('tr.listadoAtencion'),
+             id = fila.data('id'); 
+
+        swal({
+            title: "¿Esta seguro que desea cambiar el estado?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar) {
+                preloader('on')
+                $.get(itemPrestacionEstado, {Id: id, accion: accion, tipo: principal.efector})
+                    .done(function(response){
+                        preloader('off');
+                        toastr.success(response.msg);
+                        estado(response.CAdj, response.IdItem);
+                        $(principal.tabla).DataTable().draw(false);
+                    })
+                    .fail(function(jqXHR){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
+                    });
+                }
+            });
+        });
+
+        $(document).on('click', '.terminarAtencion', function(e){
+            e.preventDefault();
+
+            $(principal.tabla).DataTable().draw(false);
+            principal.atenderEfector.modal(hide);
+            $.get(cerrarAtencion, {Id: variables.prestacion.val(), tipo: (variables.efector).toUpperCase()})
+                .done(function(response){
+                    $(principal.tabla).DataTable().draw(false);
+                })
+                .fail(function(jqXHR){
+                    preloader('off');
+                    let errorData = JSON.parse(jqXHR.responseText);            
+                    checkError(jqXHR.status, errorData.msg);
+                    return;
+                });
+
+        });
+
+
+        function estado(CAdj, itemId) {
+
+            let fila = $('.listadoAtencion[data-id="' + itemId + '"]'),
+                td = fila.find('td').eq(1),
+                html = '';
+
+            if ([0, 1, 2].includes(CAdj)) {
+                html = '<span class="rojo">Abierto <i class="fs-6 ri-lock-unlock-line cerrar"></i></span>';
+            } else if ([3, 4, 5].includes(CAdj)) {
+                html = '<span class="verde">Cerrado <i class="fs-6 ri-lock-2-line abrir"></i></span>';
+            } else {
+                html = '';
+            }
+
+            td.html(html);
+        }
+        
 
 });

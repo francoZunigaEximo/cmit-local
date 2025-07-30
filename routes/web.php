@@ -405,6 +405,9 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::get('llamador/check-status', [LlamadorController::class, 'checkLlamado'])->name('llamador.check');
     Route::get('llamador/asignar-profesional', [LlamadorController::class, 'asignarProfesional'])->name('llamador.asignarPaciente');
     Route::get('llamador/informador/buscar', [LlamadorController::class, 'buscarInformador'])->name('llamador.buscarInformador');
+    Route::get('llamador/buscar/especialidad', [LlamadorController::class, 'listadoEspecialidades'])->name('llamador.buscarEspecialidad');
+    Route::get('llamador/estado/efector', [LlamadorController::class, 'cambioEstado'])->name('llamador.cambioEstado');
+    Route::get('llamador/cerrarAtencion', [LlamadorController::class, 'cerrarAtencion'])->name('llamador.cerrarAtencion');
 
     //Ruta de Sesiones
     Route::get('sesiones/sesiones-usuarios', [UserSessionsController::class, 'getSessiones'])->name('sesiones.listaSesiones');
