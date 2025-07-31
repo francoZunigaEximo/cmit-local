@@ -8,7 +8,8 @@ $(function(){
     const principal = {
         efector: 'Efector',
         tabla: '#listaLlamadaEfector',
-        atenderEfector: '#atenderEfector'
+        atenderEfector: '#atenderEfector',
+        cargarArchivo: '#cargarArchivo'
     };
 
     $(document).on('click', 'input[type="checkbox"][name^="Id_"]', function () {
@@ -69,11 +70,9 @@ $(function(){
         $(document).on('click', '.terminarAtencion', function(e){
             e.preventDefault();
 
-            $(principal.tabla).DataTable().draw(false);
-            principal.atenderEfector.modal(hide);
-            $.get(cerrarAtencion, {Id: variables.prestacion.val(), tipo: (variables.efector).toUpperCase()})
+            $.get(addAtencion, {prestacion: variables.prestacion.val(), Tipo: (principal.efector).toUpperCase(), profesional: variables.profesional.val()})
                 .done(function(response){
-                    $(principal.tabla).DataTable().draw(false);
+                    $(principal.atenderEfector).modal('hide');
                 })
                 .fail(function(jqXHR){
                     preloader('off');
@@ -82,6 +81,10 @@ $(function(){
                     return;
                 });
 
+        });
+
+        $(document).on('click', '.modalArchivo', function(e){
+            $('#cargarArchivo').modal('show');
         });
 
 

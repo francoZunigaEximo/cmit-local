@@ -133,6 +133,8 @@
     </div>
 </div>
 
+
+
 <!-- Modales -->
 <div id="atenderEfector" class="modal fadeInUp" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
     <div class="modal-dialog modal-fullscreen">
@@ -145,7 +147,7 @@
                 <hr size="1">
                 <div class="row p-2 fondo-grisClaro">
                     <div class="col-6 text-start">
-                        <button class="btn btn-sm botonGeneral">Liberar</button>
+                        <button class="btn btn-sm botonGeneral liberarPrestacion">Liberar</button>
                     </div>
                     <div class="col-6 text-end">
                         <button class="btn btn-sm botonGeneral">Llamar todo</button>
@@ -256,6 +258,28 @@
                             </div>
                         </div>
 
+                        <hr size="1">
+
+                        <div class="row justify-content-center">
+                             <div class="table mx-auto text-center col-md-7 col-sm-9 col-12">
+                                <table id="listadoAdjuntosEfectores" class="table table-bordered">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Examen</th>
+                                            <th>Descripción</th>
+                                            <th>Adjunto</th>
+                                            <th>Tipo</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="list form-check-all" id="adjuntosEfectores">
+                        
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+
                     </div>
                 </div>
 
@@ -268,6 +292,12 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+ 
+<div id="cargarArchivo" class="modal fadeInUp" role="dialog">
+    <div class="modal-dialog">
+
+    </div>
+</div>
 
 <script>
     const SEARCH = "{{ route('llamador.buscar') }}";

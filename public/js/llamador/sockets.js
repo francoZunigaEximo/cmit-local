@@ -58,8 +58,6 @@ $(function(){
                 let roles = ROLESUSER.map(r => r.nombre)
                     checkRoles = roles.some(rol => ADMIN.includes(rol)),
                     usuarios = efectores.map(e => e.Id);
-
-                console.log(efectores);
                 
                 if(!checkRoles && usuarios.includes(parseInt(USERACTIVO))) {
 

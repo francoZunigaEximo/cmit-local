@@ -289,7 +289,7 @@ $(function(){
                         <tr class="listadoAtencion" data-id="${examen.IdItem}">
                             <td>${examen.NombreExamen}</td>
                             <td>${estado(examen.CAdj)}</td>
-                            <td title="NoImprime: ${examen.NoImprime} | Adjunto: ${examen.Adjunto} | Archivo: ${examen.Archivo}">${checkAdjunto(examen.NoImprime, examen.Adjunto, examen.Archivo)}</td>
+                            <td title="Adjunto: ${examen.Adjunto} | Archivo: ${examen.Archivo}">${checkAdjunto(examen.Adjunto, examen.Archivo)}</td>
                             <td>${[null, undefined, ''].includes(examen.ObsExamen) ? '' : examen.ObsExamen}</td>
                             <td>${verificarProfesional(examen, "efector")}</td>
                             <td>${verificarProfesional(examen, "informador")}</td>
@@ -325,22 +325,22 @@ $(function(){
     }
 
     //No Imprime: saber si es fisico o digital / adjunto: si acepta o no adjuntos / condicion: pendiente o adjuntado
-    function checkAdjunto(adjunto, condicion, noImprime) {
+    function checkAdjunto(adjunto, condicion) {
         switch (true) {
             case adjunto === 0:
                 return '';
 
-            case adjunto === 1 && condicion === 1 && noImprime === 0:
+            case adjunto === 1 && condicion === 1:
                 return `<span class="verde">Adjuntado <i class="fs-6 ri-map-pin-line"></i><span>`;
 
-            case adjunto === 1 && condicion === 0 && noImprime === 0:
+            case adjunto === 1 && condicion === 0:
                 return `<span class="rojo d-flex align-items-center justify-content-between w-100">
                             <span class="me-auto">Pendiente</span>
                             <i class="fs-6 ri-map-pin-line mx-auto"></i>
-                            <i class="fs-6 ri-folder-add-line ms-auto"></i>
+                          <i class="fs-6 ri-folder-add-line ms-auto modalArchivo"></i>    
                         </span>`;
 
-            case adjunto === 0 && noImprime === 1:
+            case adjunto === 0:
                 return `<span class="mx-auto"><i class="gris fs-6 ri-map-pin-line"></i><span>`;
 
             default:
