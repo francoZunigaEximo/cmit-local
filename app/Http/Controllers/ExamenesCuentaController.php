@@ -24,6 +24,7 @@ use App\Services\ItemsPrestaciones\Crud;
 use App\Services\Reportes\Titulos\Basico;
 use App\Services\Reportes\Titulos\Empresa;
 use App\Services\Reportes\Cuerpos\ExamenCuenta as ExCuenta;
+use App\Services\ReportesExcel\ReporteExcel;
 
 class ExamenesCuentaController extends Controller
 {
@@ -32,16 +33,19 @@ class ExamenesCuentaController extends Controller
     private $reporteService;
     private $itemSupport;
     private $itemCrud;
-    
+        protected $reporteExcel;
+
 
     public function __construct(
         ReporteService $reporteService, 
         ItemSupport $itemSupport,
-        Crud $itemCrud)
+        Crud $itemCrud,
+        ReporteExcel $reporteExcel)
     {
         $this->reporteService = $reporteService;
         $this->itemSupport = $itemSupport;
         $this->itemCrud = $itemCrud;
+        $this->reporteExcel = $reporteExcel;
     }
 
     public function index(Request $request)
@@ -70,6 +74,15 @@ class ExamenesCuentaController extends Controller
 
         if ($request->ajax())
         {
+            $result = $this->buildQuery($request);
+
+            return Datatables::of($result)->make(true);
+        }
+
+        return view('layouts.examenesCuenta.index');
+    }
+
+    public function buildQuery(Request $request){
             $query = $this->queryBasico();
             
             $FactDesde = explode('-', $request->rangoDesde);
@@ -115,11 +128,7 @@ class ExamenesCuentaController extends Controller
             });
 
             $result = $query->groupBy('pagosacuenta.Id', 'pagosacuenta.Tipo', 'pagosacuenta.Suc', 'pagosacuenta.Nro', 'pagosacuenta.Pagado');
-
-            return Datatables::of($result)->make(true);
-        }
-
-        return view('layouts.examenesCuenta.index');
+            return $result;
     }
 
     public function saldo(Request $request)
@@ -130,12 +139,27 @@ class ExamenesCuentaController extends Controller
 
         if ($request->ajax())
         {
-            $query = ExamenCuenta::join('pagosacuenta_it', 'pagosacuenta.Id', '=', 'pagosacuenta_it.IdPago')
+            $result = $this->buildQuerySaldo($request);
+            return Datatables::of($result)->make(true);
+        }
+
+        return view('layouts.examenesCuenta.index');
+    }
+
+    public function buildQuerySaldo(Request $request){
+        $query = ExamenCuenta::join('pagosacuenta_it', 'pagosacuenta.Id', '=', 'pagosacuenta_it.IdPago')
             ->join('clientes', 'pagosacuenta.IdEmpresa', '=', 'clientes.Id')
             ->join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
             ->join('prestaciones', 'pagosacuenta_it.IdPrestacion', '=', 'prestaciones.Id')
             ->select(
                 'clientes.RazonSocial as Empresa',
+                'clientes.ParaEmpresa as ParaEmpresa',
+                'pagosacuenta.Tipo as Tipo',
+                'pagosacuenta.Suc as Suc',
+                'pagosacuenta.Nro', 
+                'pagosacuenta.Pagado',
+                'pagosacuenta.Fecha',
+                'pagosacuenta.Id as IdEx',
                 'examenes.Nombre as Examen',
                 'pagosacuenta.IdEmpresa as IdEmpresa'
             );
@@ -162,15 +186,15 @@ class ExamenesCuentaController extends Controller
                     ->groupBy(['clientes.Id', 'clientes.RazonSocial', 'clientes.ParaEmpresa', 'clientes.Identificacion', 'examenes.Nombre']);
             });
 
+            if(!empty($request->examen2)) {
+                $query->where('examenes.Nombre', 'like', '%' . $request->examen2 . '%');
+            }
+
             $result = $query->havingRaw('contadorSaldos > 0')
                 ->whereNot('pagosacuenta_it.Obs', 'provisorio')
                 ->orderBy('clientes.RazonSocial')
                 ->orderBy('examenes.Nombre');
-
-            return Datatables::of($result)->make(true);
-        }
-
-        return view('layouts.examenesCuenta.index');
+            return $result;
     }
 
     public function cambiarPago(Request $request)
@@ -741,81 +765,25 @@ class ExamenesCuentaController extends Controller
             return response()->json(['msg' => 'No tiene permisos'], 403);
         }
 
-        $examenes = $this->querySalDet($request->Id);
+        $examenes = $this->buildQuerySaldo($request);
 
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-        $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
-
-        $columnas = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
-
-        foreach ($columnas as $columna) {
-            $sheet->getColumnDimension($columna)->setAutoSize(true);
-        }
-
-        $condicion = $request->Tipo === 'detalles' ? 'G' : 'D';
-
-        $sheet->getStyle('A1:'.$condicion.'1')->getFill()
-                ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                ->getStartColor()->setARGB('CCCCCCCC'); 
-        
-        $fila = 2;
-
-        switch ($request->Tipo) {
-            case 'detalles':
-                $sheet->setCellValue('A1', 'Numero ');
-                $sheet->setCellValue('B1', 'Pago ');
-                $sheet->setCellValue('C1', 'Fecha ');
-                $sheet->setCellValue('D1', 'Cliente ');
-                $sheet->setCellValue('E1', 'Empresa ');
-                $sheet->setCellValue('F1', 'Cant ');
-                $sheet->setCellValue('G1', 'Examen ');
-
-                foreach($examenes as $examen){
-                    $factura = $examen->Tipo . sprintf('%04d', $examen->Suc) . sprintf('%08d', $examen->Nro);
-
-                    $sheet->setCellValue('A'.$fila, $examen->Id);
-                    $sheet->setCellValue('B'.$fila, $factura);
-                    $sheet->setCellValue('C'.$fila, $examen->Fecha);
-                    $sheet->setCellValue('D'.$fila, $examen->Empresa);
-                    $sheet->setCellValue('E'.$fila, $examen->ParaEmpresa);
-                    $sheet->setCellValue('F'.$fila, $examen->Cantidad);
-                    $sheet->setCellValue('G'.$fila, $examen->NombreExamen);
-                    $fila++;
-                }
-                
-                break;
-            
-            case 'saldo':
-                $sheet->setCellValue('A1', 'Cliente ');
-                $sheet->setCellValue('B1', 'ParaEmpresa ');
-                $sheet->setCellValue('C1', 'Cantidad ');
-                $sheet->setCellValue('D1', 'Examen ');
-
-                foreach($examenes as $examen){
-                    $sheet->setCellValue('A'.$fila, $examen->Empresa);
-                    $sheet->setCellValue('B'.$fila, $examen->ParaEmpresa);
-                    $sheet->setCellValue('C'.$fila, $examen->Cantidad);
-                    $sheet->setCellValue('D'.$fila, $examen->NombreExamen);
-                    $fila++;
-                }
-
-                break;
-        }
-
-        // Generar un nombre aleatorio para el archivo
-        $name = Str::random(10).'.xlsx';
-
-        // Guardar el archivo en la carpeta de almacenamiento
-        $filePath = storage_path('app/public/'.$name);
-
-        $writer = new Xlsx($spreadsheet);
-        $writer->save($filePath);
-        chmod($filePath, 0777);
-
+        $reporte = $this->reporteExcel->crear('saldosCte'); 
         // Devolver la ruta del archivo generado
-        return response()->json(['filePath' => $filePath]);      
+        
+        return $reporte->generar($examenes->get());
+    }
 
+    public function reporteDetalle(Request $request){
+         if(!$this->hasPermission("examenCta_report")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
+
+        $examenes = $this->buildQuerySaldo($request);
+
+        $reporte = $this->reporteExcel->crear('cuentaCte'); 
+        // Devolver la ruta del archivo generado
+        
+        return $reporte->generar($examenes->get());
     }
 
     public function disponibilidad(Request $request)
@@ -844,6 +812,7 @@ class ExamenesCuentaController extends Controller
 
         return response()->json($examen);  
     }
+    
 
     public function listadoUltimas(Request $request)
     {
@@ -1052,9 +1021,9 @@ class ExamenesCuentaController extends Controller
         return ExamenCuentaIt::where('IdPago', $id)->where('IdPrestacion', 0)->count();
     }
 
-    private function querySalDet(?int $id): mixed
+    private function querySalDet(Request $request): mixed
     {
-        return ExamenCuenta::join('pagosacuenta_it', function($join) {
+        $query = ExamenCuenta::join('pagosacuenta_it', function($join) {
             $join->on('pagosacuenta.Id', '=', 'pagosacuenta_it.IdPago')
                     ->where('pagosacuenta_it.IdPrestacion', 0);
             })
@@ -1070,9 +1039,22 @@ class ExamenesCuentaController extends Controller
                 'clientes.ParaEmpresa as ParaEmpresa',
                 'examenes.Nombre as NombreExamen',
                 DB::raw('COUNT(pagosacuenta_it.IdExamen) as Cantidad')
-            )
-            ->where('pagosacuenta.IdEmpresa', $id)
-            ->groupBy('examenes.Nombre')
+            );
+
+            if(!empty($request->empresa)){
+                $query->where('pagosacuenta.IdEmpresa', $request->empresa);
+            }
+
+            if(!empty($request->examen)){
+                $query->where('pagosacuenta_it.IdExamen', $request->examen);
+            }
+
+            if(!empty($request->examen2)){
+                $query->where('examenes.Nombre','LIKE','%'.$request->examen2.'%');
+            }
+
+
+            $query->groupBy('examenes.Nombre')
             ->orderBy('clientes.RazonSocial', 'DESC')
             ->orderBy('clientes.ParaEmpresa', 'DESC')
             ->orderBy('pagosacuenta.Tipo', 'DESC')
@@ -1080,6 +1062,8 @@ class ExamenesCuentaController extends Controller
             ->orderBy('pagosacuenta.Nro', 'DESC')
             ->orderBy('examenes.Nombre', 'DESC')
             ->get();
+
+        return $query;
     }
 
     private function queryBasico(): mixed

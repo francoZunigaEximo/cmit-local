@@ -246,38 +246,5 @@ $(function(){
         location.reload();
     });
 
-    $(document).on('click', '.detalles, .saldo', function(e){
-        e.preventDefault();
-
-        let id = $(this).data('id'), tipo = $(this).hasClass('detalles') ? 'detalles' : 'saldo';
-
-        if(!id) {
-            toastr.warning("No posee identificador para iniciar el proceso", '', {timeOut: 1000});
-            return;
-        }
-
-        swal({
-            title: "¿Estas seguro que deseas generar el reporte de " + tipo,
-            icon: "warning",
-            buttons: ["Cancelar", "Aceptar"]
-        }).then((confirmar) => {
-            if(confirmar) {
-                $.get(exportGeneral, {Id: id, Tipo: tipo})
-                .done(function(response){
-
-                    createFile("xlsx", response.filePath, "reporte");
-                    toastr.success("Se esta generando el reporte", '', {timeOut: 1000});
-                })
-                .fail(function(jqXHR){
-                    preloader('off');
-                    let errorData = JSON.parse(jqXHR.responseText);            
-                    checkError(jqXHR.status, errorData.msg);
-                    return;  
-                });
-            }
-        });
-    });
-
-
 
 });
