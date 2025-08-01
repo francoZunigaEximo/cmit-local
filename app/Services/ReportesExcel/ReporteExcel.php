@@ -16,12 +16,14 @@ use App\Services\ReportesExcel\modelos\ResumenTotal;
 use App\Services\ReportesExcel\modelos\SimplePrestacion;
 use App\Services\ReportesExcel\modelos\SimplePrestacionFull;
 use App\Services\ReportesExcel\modelos\CompletoPrestacionFull;
+use App\Services\ReportesExcel\modelos\CuentaCte;
 use App\Services\ReportesExcel\modelos\GrupoClientesDetalleFull;
 use App\Services\ReportesExcel\modelos\GrupoClientesFull;
 use App\Services\ReportesExcel\modelos\NotaCreditoReporte;
 use App\Services\ReportesExcel\modelos\PaqueteEstudio;
 use App\Services\ReportesExcel\modelos\PaqueteEstudioDetalle;
 use App\Services\ReportesExcel\modelos\PaqueteFacturacionDetalle;
+use App\Services\ReportesExcel\modelos\SaldosCta;
 
 class ReporteExcel
 {
@@ -68,6 +70,10 @@ class ReporteExcel
                 return new NotaCreditoReporte();
             case 'clientesItemsAnulados':
                 return new ClientesItemsAnulados(); // Assuming this is the same as notaCredito
+            case 'cuentaCte':
+                return new CuentaCte();
+            case 'saldosCte':
+                return new SaldosCta();
             default:
                 return response()->json(['msg' => 'Tipo de reporte no válido'], 400);
         }

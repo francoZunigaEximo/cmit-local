@@ -5,7 +5,8 @@ $(document).ready(()=>{
     $(document).on('click', '#buscarSaldo', function(e){
 
         let empresa = $('#empresaSaldo').val(),
-        examen = $('#examenSaldo').val();
+        examen = $('#examenSaldo').val(),
+        examen2 = $('#examenSaldo2').val();
 
         if ($.fn.DataTable.isDataTable('#listadoExCtasSaldos')) {
             $('#listadoExCtasSaldos').DataTable().clear().destroy();
@@ -28,6 +29,7 @@ $(document).ready(()=>{
                 data: function(d){
                     d.empresa = empresa;
                     d.examen = examen;
+                    d.examen2 = examen2;
                 }
             },
             dataType: 'json',
@@ -67,11 +69,11 @@ $(document).ready(()=>{
                     targets: 3,
                     render: function(data){
                 
-                        detalle = `<button data-id="${data.IdEmpresa}" title="Detalles" type="button" class="btn btn-sm botonGeneral detalles"><i class="ri-file-list-2-line"></i> Detalle</button>`,
+                        //detalle = `<button data-id="${data.IdEmpresa}" title="Detalles" type="button" class="btn btn-sm botonGeneral detalles"><i class="ri-file-list-2-line"></i> Detalle</button>`,
                         
                         saldo = `<button type="button" data-id="${data.IdEmpresa}" class="btn btn-sm botonGeneral saldo"><i class="ri-file-list-2-line"></i> Saldo</button>`;
 
-                    return detalle + ' ' + saldo;  
+                    return saldo;  
                     }
                 },
             ],
@@ -96,5 +98,68 @@ $(document).ready(()=>{
             },
         });
 
+    });
+    $(document).on('click', '.excelDetalleSaldos', function(e){
+
+        let empresa = $('#empresaSaldo').val(),
+        examen = $('#examenSaldo').val(),
+        examen2 = $('#examenSaldo2').val();
+
+        swal({
+            title: "¿Estas seguro que deseas generar el reporte?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar) {
+                $.get(exportarDetalle, {
+                    empresa : empresa,
+                    examen : examen,
+                    examen2 : examen2
+                })
+                .done(function(response){
+
+                    createFile("xlsx", response.filePath, "reporte");
+                    toastr.success("Se esta generando el reporte", '', {timeOut: 1000});
+                })
+                .fail(function(jqXHR){
+                    preloader('off');
+                    let errorData = JSON.parse(jqXHR.responseText);            
+                    checkError(jqXHR.status, errorData.msg);
+                    return;  
+                });
+            }
+        });
+    });
+
+     $(document).on('click', '.excelExcel', function(e){
+
+        let empresa = $('#empresaSaldo').val(),
+        examen = $('#examenSaldo').val(),
+        examen2 = $('#examenSaldo2').val();
+
+        swal({
+            title: "¿Estas seguro que deseas generar el reporte?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar) {
+                $.get(exportGeneral, {
+                    empresa : empresa,
+                    examen : examen,
+                    examen2 : examen2
+                })
+                .done(function(response){
+
+                    createFile("xlsx", response.filePath, "reporte");
+                    toastr.success("Se esta generando el reporte", '', {timeOut: 1000});
+                })
+                .fail(function(jqXHR){
+                    preloader('off');
+                    let errorData = JSON.parse(jqXHR.responseText);            
+                    checkError(jqXHR.status, errorData.msg);
+                    return;  
+                });
+            }
+        });
     });
 });

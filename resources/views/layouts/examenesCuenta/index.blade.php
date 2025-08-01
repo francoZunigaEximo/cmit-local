@@ -117,10 +117,12 @@
                                         <button type="button" class="btn btn-sm botonGeneral sieteDias"><i class="ri-calendar-2-line"></i>&nbsp;Ultimos 7 días</button>
                                         <button type="button" class="btn btn-sm botonGeneral tresMeses"><i class="ri-calendar-2-line"></i>&nbsp;Ultimos 3 meses</button>
                                     </div>
+                                    
                                     <div class="col-4 text-end">
                                         <button type="button" class="btn btn-sm botonGeneral botonPagar"><i class=" ri-money-dollar-circle-line"></i>&nbsp;Pagar masivo</button>
                                         <button type="button" class="btn btn-sm botonGeneral quitarPago"><i class=" ri-money-dollar-circle-line"></i>&nbsp;Quitar pago masivo</button>
                                     </div>
+                                    
                                 </div>
 
                                 <div class="table-responsive table-card mt-3 mb-1 mx-auto">
@@ -159,21 +161,32 @@
                     <div class="col p-2 border border-1 border-color" style="border-color: #666666;">
                         
                         <div class="row justify-content-center">
-                            <div class="col-sm-2 mb-3">
+                            <div class="col-sm-3 mb-3">
                                 <label for="empresaSaldo" class="form-label font-weight-bold"><strong>Empresa: </strong></label>
                                 <select class="form-control" name="empresaSaldo" id="empresaSaldo"></select>
                             </div>
 
-                            <div class="col-sm-2 mb-3">
+                            <div class="col-sm-3 mb-3">
                                 <label for="examenSaldo" class="form-label font-weight-bold"><strong>Examen: </strong></label>
                                 <select class="form-control" name="examenSaldo" id="examenSaldo"></select>
                             </div>
 
-                            <div class="col-sm-2 mb-3 d-flex align-items-end">
+                            <div class="col-sm-3 mb-3">
+                                <label for="examenSaldo2" class="form-label font-weight-bold"><strong>Examen 2: </strong></label>
+                                <input type="text" class="form-control" id="examenSaldo2" name="examenSaldo2">
+                            </div>
+
+                            <div class="col-sm-3 mb-3 d-flex align-items-end justify-content-center">
                                 <label class="form-label" for=""></label>
                                 <button type="button" class="btn btn-sm botonGeneral" id="buscarSaldo"><i class="ri-zoom-in-line"></i>&nbsp;Buscar</i></button>
                             </div>
 
+                        </div>
+                    </div>
+                    <div class="row p-3">
+                        <div class="col-2 p-1">
+                            <button type="button" class="btn btn-sm botonGeneral excelDetalleSaldos" id="buscarSaldo">Detalle</button>
+                            <button type="button" class="btn btn-sm botonGeneral excelExcel" id="buscarSaldo">Excel</button>
                         </div>
                     </div>
                 </form>  
@@ -181,7 +194,7 @@
 
             <div class="row auto-mx">
 
-                <div class="table-responsive table-card mt-3 mb-1 mx-auto col-sm-10">
+                <div class="table-responsive table-card mt-3 mb-1 mx-auto">
                     <table id="listadoExCtasSaldos" class="display table table-bordered">
                         <thead class="table-light">
                             <tr>
@@ -214,7 +227,8 @@
     const cambiarPago = "{{ route('cambiarPago') }}";
     const detallesExamenes = "{{ route('detallesExamenes') }}";
     const eliminarExCuenta = "{{ route('eliminarExCuenta') }}";
-    const exportGeneral = "{{ route('exportGeneral') }}";
+    const exportarDetalle = "{{ route('notasCredito.exportarDetalle') }}";
+    const exportGeneral = "{{ route('notasCredito.exportarExcel') }}";
 </script>
 
 @push('styles')
