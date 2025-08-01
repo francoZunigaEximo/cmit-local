@@ -185,8 +185,8 @@
                     </div>
                     <div class="row p-3">
                         <div class="col-2 p-1">
-                            <button type="button" class="btn btn-sm botonGeneral excelDetalleSaldos" id="buscarSaldo">Detalle</button>
-                            <button type="button" class="btn btn-sm botonGeneral excelExcel" id="buscarSaldo">Excel</button>
+                            <button type="button" class="btn btn-sm botonGeneral excelDetalleSaldos" >Detalle</button>
+                            <button type="button" class="btn btn-sm botonGeneral excelExcel" >Excel</button>
                         </div>
                     </div>
                 </form>  
