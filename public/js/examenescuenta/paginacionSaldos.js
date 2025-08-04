@@ -162,4 +162,37 @@ $(document).ready(()=>{
             }
         });
     });
+
+     $(document).on('click', '.saldo', function(e){
+        e.preventDefault();
+        
+        let empresa = $(this).data('id'),
+        examen = $('#examenSaldo').val(),
+        examen2 = $('#examenSaldo2').val();
+
+        swal({
+            title: "¿Estas seguro que deseas generar el reporte?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar) {
+                $.get(exportGeneral, {
+                    empresa : empresa,
+                    examen : examen,
+                    examen2 : examen2
+                })
+                .done(function(response){
+
+                    createFile("xlsx", response.filePath, "reporte");
+                    toastr.success("Se esta generando el reporte", '', {timeOut: 1000});
+                })
+                .fail(function(jqXHR){
+                    preloader('off');
+                    let errorData = JSON.parse(jqXHR.responseText);            
+                    checkError(jqXHR.status, errorData.msg);
+                    return;  
+                });
+            }
+        });
+    });
 });
