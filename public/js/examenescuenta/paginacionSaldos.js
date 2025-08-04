@@ -167,8 +167,8 @@ $(document).ready(()=>{
         e.preventDefault();
         
         let empresa = $(this).data('id'),
-        examen = $('#examenSaldo').val(),
-        examen2 = $('#examenSaldo2').val();
+        examen = null,
+        examen2 = null;
 
         swal({
             title: "¿Estas seguro que deseas generar el reporte?",
