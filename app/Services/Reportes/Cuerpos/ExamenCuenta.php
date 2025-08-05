@@ -75,12 +75,24 @@ use Illuminate\Support\Facades\DB;
 
     private function detalladoExamenesCuenta(int $id): mixed
     {
+        $query = DB::table('pagosacuenta_it')
+            ->join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
+            ->select(
+                DB::raw('COUNT(pagosacuenta_it.IdExamen) as Cantidad'), 
+                'examenes.Nombre as NombreExamen')
+            ->where('pagosacuenta_it.IdPago', $id)
+            ->groupBy('examenes.Nombre');
+        return $query->get();
+    }
+
+    private function detalleCantidadExamenes(int $id): mixed{
         return ExamenCuentaIt::join('examenes', 'examenes.Id', '=', 'pagosacuenta_it.IdExamen')
             ->select(
                 DB::raw('COUNT(pagosacuenta_it.IdExamen) as Cantidad'), 
                 'examenes.Nombre as NombreExamen')
             ->where('pagosacuenta_it.IdPago', $id)
             ->orderBy('examenes.Nombre')
+            ->groupBy('examenes.Nombre')
             ->get();
     }
 

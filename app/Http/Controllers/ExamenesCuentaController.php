@@ -25,6 +25,7 @@ use App\Services\Reportes\Titulos\Basico;
 use App\Services\Reportes\Titulos\Empresa;
 use App\Services\Reportes\Cuerpos\ExamenCuenta as ExCuenta;
 use App\Services\ReportesExcel\ReporteExcel;
+use Illuminate\Support\Facades\Date;
 
 class ExamenesCuentaController extends Controller
 {
@@ -58,7 +59,9 @@ class ExamenesCuentaController extends Controller
         {
             $query = $this->queryBasico();
 
-            $result = $query->groupBy('pagosacuenta.Id', 'pagosacuenta.Tipo', 'pagosacuenta.Suc', 'pagosacuenta.Nro', 'pagosacuenta.Pagado')->limit(7)->orderBy('pagosacuenta.Id', 'DESC');
+            $result = $query->groupBy('pagosacuenta.Id', 'pagosacuenta.Tipo', 'pagosacuenta.Suc', 'pagosacuenta.Nro', 'pagosacuenta.Pagado')
+            ->where('pagosacuenta.Fecha', '=', Date::now()->format('Y-m-d'))
+            ->orderBy('pagosacuenta.Id', 'DESC');
 
             return Datatables::of($result)->make(true);
         }

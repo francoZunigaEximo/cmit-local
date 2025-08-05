@@ -113,7 +113,7 @@
                                 <div class="row">
                                     <div class="col-8 text-start">
                                         <span class="fw-normal">Busquedas rápidas:</span>
-                                        <button type="button" class="btn btn-sm botonGeneral sieteFacturas"><i class="ri-calendar-2-line"></i>&nbsp;Ultimas 7 facturas</button>
+                                        <button type="button" class="btn btn-sm botonGeneral facturasHoy"><i class="ri-calendar-2-line"></i>&nbsp;Hoy</button>
                                         <button type="button" class="btn btn-sm botonGeneral sieteDias"><i class="ri-calendar-2-line"></i>&nbsp;Ultimos 7 días</button>
                                         <button type="button" class="btn btn-sm botonGeneral tresMeses"><i class="ri-calendar-2-line"></i>&nbsp;Ultimos 3 meses</button>
                                     </div>

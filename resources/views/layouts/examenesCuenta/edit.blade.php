@@ -102,7 +102,7 @@
 <div class="row mt-3">
     <div class="col-sm-7 text-end">
         <button type="button" class="btn btn-sm botonGeneral editarMasivo" data-bs-toggle="modal" data-bs-target="#editarDNI"><i class="ri-edit-line"></i> Editar</button>
-        <button type="button" class="btn btn-sm botonGeneral liberarItemMasivo"><i class="ri-logout-circle-line"></i> Liberar</button>
+        <button type="button" class="btn btn-sm botonGeneral liberarItemMasivo"><i class="ri-logout-circle-line"></i> Liberar (dni)</button>
         <button type="button" class="btn btn-sm botonGeneral deleteItemMasivo"><i class="ri-delete-bin-2-line"></i> Eliminar</button>
     </div>
     <div class="col-sm-5 text-center">
