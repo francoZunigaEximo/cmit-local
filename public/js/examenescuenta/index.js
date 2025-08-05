@@ -139,9 +139,11 @@ $(function(){
         
         e.preventDefault();
         let id = $(this).data('id');
+        let nroFactura = $(this).data('nro');
+        let empresa = $(this).data('empresa');
 
         swal({
-            title: "¿Está seguro que desea realizar la operación?",
+            title: "Empresa: "+empresa + " Nro Factura: " + nroFactura + " \n ¿Está seguro que desea realizar la operación?",
             icon: "warning",
             buttons: ["Cancelar", "Aceptar"]
         }).then((confirmar) => {
@@ -239,7 +241,7 @@ $(function(){
         });
     });
 
-    $(document).on('click', '.sieteFacturas', function(e){
+    $(document).on('click', '.facturasHoy', function(e){
         e.preventDefault();
         /*let table = $(tabla).DataTable();
         table.ajax.url(INDEX).page.len(7).load();*/
