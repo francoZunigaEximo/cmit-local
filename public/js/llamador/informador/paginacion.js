@@ -48,6 +48,7 @@ $(function(){
                     d.prestacion = prestacion;
                     d.especialidad = especialidad || especialidadSelect;
                     d.estado = estado;
+                    d.tipoPrestacion = 'informador';
                 }
             },
             dataType: 'json',
@@ -120,11 +121,9 @@ $(function(){
                     width:'100px',
                     render: function(data){
                         
-                        let llamar = `<button type="button" data-id="${data.prestacion}" data-profesional=${data.idProfesional} class="btn btn-sm botonGeneral llamarExamen"><i class="ri-edit-line" ></i>Llamar</button>`;
-                        
-                        let atender = `<button type="button" data-id="${data.prestacion}" data-profesional=${data.idProfesional}" data-especialidades="${data.especialidades}" class="btn btn-sm botonGeneral atenderPaciente" data-bs-toggle="modal" data-bs-target="#atenderEfector"><i class="ri-edit-line"></i>Atender</button>`;
+                        let editar = `<button type="button" data-id="${data.prestacion}" data-profesional=${data.idProfesional} class="btn btn-sm botonGeneral atenderExamen"><i class="ri-edit-line" ></i></button>`;
     
-                        return llamar + ' ' + atender;
+                        return editar ;
                     }
                 }
             ],

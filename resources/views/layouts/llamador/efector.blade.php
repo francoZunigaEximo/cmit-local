@@ -136,7 +136,7 @@
 
 
 <!-- Modales -->
-<div id="atenderEfector" class="modal fadeInUp" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+<div id="atenderEfector" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidde="true" style="display: none">
     <div class="modal-dialog modal-fullscreen">
         <div class="modal-content">
             <div class="modal-header">
@@ -195,7 +195,7 @@
                                     <div class="col-md-4 p-2">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text">Empresa</span>
-                                            <input type="text" class="form-control" id="empresa_var" name="empresa_var readonly="true">
+                                            <input type="text" class="form-control" id="empresa_var" name="empresa_var" readonly="true">
                                         </div>
                                     </div>
 
@@ -264,7 +264,7 @@
                              <div class="table mx-auto text-center col-md-7 col-sm-9 col-12">
                                 <table id="listadoAdjuntosEfectores" class="table table-bordered">
                                     <thead class="table-light">
-                                        <tr>
+                                        <tr class="text-center">
                                             <th>Examen</th>
                                             <th>Descripción</th>
                                             <th>Adjunto</th>
@@ -292,12 +292,49 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
- 
-<div id="cargarArchivo" class="modal fadeInUp" role="dialog">
-    <div class="modal-dialog">
 
+ 
+<div id="cargarArchivo" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidde="true" style="display: none">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel">Subir archivo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <form id="form-efector">
+                   
+                    <div class="mensajeMulti alert alert-info alert-border-left alert-dismissible fade show mb-2" role="alert">
+                        Exámen con multi adjunto habilitado. Elija a que exámen quiere asociar el reporte.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    
+                    <div class="list-group mensajeMulti">
+      
+                        <label class="list-group-item listExamenes">
+
+                        </label>
+               
+                    </div>
+    
+                    
+                    <input type="file" class="form-control fileA" name="fileEfector"/>
+                
+                    <div class="mt-3">
+                        <label for="Descripcion" class="form-label">Descripción</label>
+                        <textarea class="form-control" name="DescripcionE" id="DescripcionE" rows="5"></textarea>
+                        <input type="hidden" id="multi" value="">
+                    </div>
+                </form> 
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn botonGeneral" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn botonGeneral btnAdjEfector" data-iden="">Guardar adjunto</button>
+            </div>
+        </div>
     </div>
 </div>
+
 
 <script>
     const SEARCH = "{{ route('llamador.buscar') }}";
@@ -313,6 +350,11 @@
     const sessionProfesional = "{{ session('Profesional') }}";
     const searchEspecialidad = "{{ route('llamador.buscarEspecialidad') }}";
     const itemPrestacionEstado = "{{ route('llamador.cambioEstado') }}";
+    const getItemPrestacion = "{{ route('llamador.getItemPrestacion')}}";
+    const fileUpload = "{{ route('uploadAdjunto') }}";
+    const descargaE = "@fileUrl('lectura')/AdjuntosEfector";
+    const paginacionByPrestacion = "{{ route('paginacionByPrestacion') }}";
+    const deleteIdAdjunto = "{{ route('deleteIdAdjunto') }}";
 </script>
 
 @push('styles')

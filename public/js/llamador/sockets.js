@@ -17,6 +17,10 @@ $(function(){
             echo: window.Echo.channel('grilla-efectores'),
             canal: '.GrillaEfectoresEvent'
         },
+        grillaInformadores: {
+            echo: window.Echo.channel('listado-informadores'),
+            canal: '.GrillaInformadoresEvent'
+        },
         liberarAtencion: {
             echo: window.Echo.channel('liberar-atencion'),
             canal: '.LiberarPacientesEvent'
@@ -48,6 +52,8 @@ $(function(){
         'Admin SR', 
         'Recepcion SR'
     ];
+
+    const profesionales = ['EFECTOR', 'INFORMADOR', 'COMBINADO'];
 
     socket.selectEfectores
           .echo
@@ -104,7 +110,7 @@ $(function(){
             mensajeOcupado = fila.find('.mensaje-ocupado'),
             result = await $.get(checkLlamado, { id: data.prestacion });
 
-        if (data.status === 'llamado') {
+        if (data.status === 'llamado' && profesionales[0] === 'EFECTOR') {
 
             botonLlamada.removeClass(principal.llamarExamen)
                     .addClass(principal.liberarExamen)
@@ -136,6 +142,9 @@ $(function(){
             botonLlamada.show();
         }
     });
+
+
+
 
     socket.liberarAtencion
         .echo

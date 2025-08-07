@@ -268,6 +268,7 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::post('marcarExamenAdjunto', [ItemPrestacionesController::class, 'marcarExamenAdjunto'])->name('marcarExamenAdjunto');
     Route::get('lstExamenes', [ItemPrestacionesController::class, 'lstExamenes'])->name('lstExamenes');
     Route::get('preExamenes', [ItemPrestacionesController::class, 'preExamenes'])->name('preExamenes');
+    Route::get('paginacionByPrestacion', [ItemPrestacionesController::class, 'paginacionByPrestacion'])->name('paginacionByPrestacion');
    
 
     //Rutas de FacturasdeVenta
@@ -397,6 +398,7 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     //Ruta de llamador
     Route::get('llamador/efector', [LlamadorController::class, 'efector'])->name('llamador.efector');
     Route::get('llamador/informador', [LlamadorController::class, 'informador'])->name('llamador.informador');
+    Route::get('llamador/combinado', [LlamadorController::class, 'combinado'])->name('llamador.combinado');
     Route::get('llamador/evaluador', [LlamadorController::class, 'evaluador'])->name('llamador.evaluador');
     Route::get('llamador/buscar', [LlamadorController::class, 'buscar'])->name('llamador.buscar');
     Route::get('llamador/efector/exportar', [LlamadorController::class, 'exportar'])->name('llamador.exportar');
@@ -404,10 +406,11 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::get('llamador/efector/llamar-paciente',[LlamadorController::class, 'controlLlamado'])->name('llamador.llamar-paciente');
     Route::get('llamador/check-status', [LlamadorController::class, 'checkLlamado'])->name('llamador.check');
     Route::get('llamador/asignar-profesional', [LlamadorController::class, 'asignarProfesional'])->name('llamador.asignarPaciente');
-    Route::get('llamador/informador/buscar', [LlamadorController::class, 'buscarInformador'])->name('llamador.buscarInformador');
+    Route::get('llamador/informador/buscar', [LlamadorController::class, 'buscarInf'])->name('llamador.buscarInformador');
     Route::get('llamador/buscar/especialidad', [LlamadorController::class, 'listadoEspecialidades'])->name('llamador.buscarEspecialidad');
     Route::get('llamador/estado/efector', [LlamadorController::class, 'cambioEstado'])->name('llamador.cambioEstado');
     Route::get('llamador/cerrarAtencion', [LlamadorController::class, 'cerrarAtencion'])->name('llamador.cerrarAtencion');
+    Route::get('llamador.getItemPrestacion', [LlamadorController::class, 'getItemprestacion'])->name('llamador.getItemPrestacion');
 
     //Ruta de Sesiones
     Route::get('sesiones/sesiones-usuarios', [UserSessionsController::class, 'getSessiones'])->name('sesiones.listaSesiones');

@@ -4,15 +4,14 @@ $(function(){
 
     const principal = {
         buscar: $('#buscar'),
-        atenderInformador: $('#atenderInformador')
+        profesional: $('#profesional')
     };
 
     const variables = {
         fechaHasta: $('#fechaHasta'),
         estado: $('#estado'),
-        especialidadSelect: $('#especialidadSelect'),
-        profesional: $('#profesional'),
-        informador: 'Informador',
+        combinado: 'Combinado',
+        especialidadSelect: $('#especialidadSelect')
     };
 
     variables.fechaHasta.val(fechaNow(null, "-", 0));
@@ -21,33 +20,12 @@ $(function(){
     habilitarBoton(sessionProfesional);
     listadoEspecialidades();
 
-    variables.profesional.change(function(){
-        listadoEspecialidades();
-    });
 
-    $(document).on('click', '.atenderExamen', function(e){
-        e.preventDefault();
-
-        $(principal.atenderInformador).modal('show');
-    });
-
-
-    function habilitarBoton(profesional) {
-        let usuarios = ROLESUSER.map(u => u.nombre),
-            administradores = ['Administrador', 'Admin SR', 'Recepcion SR'],
-            admin = usuarios.some(item => administradores.includes(item));
-
-        if(!profesional && !admin) return principal.buscar.hide();
-
-        return (profesionales[1] === profesional || admin) 
-            ? principal.buscar.show()
-            : principal.buscar.hide();
-    }
 
     function listadoEspecialidades() {
 
         preloader('on');
-        $.get(searchEspecialidad, {IdProfesional: variables.profesional.val(), Tipo: variables.informador})
+        $.get(searchEspecialidad, {IdProfesional: variables.profesional.val(), Tipo: variables.efector})
             .done(function(response){
                 preloader('off');
                 
@@ -69,4 +47,19 @@ $(function(){
                 return;
             });
     }
+
+
+    function habilitarBoton(profesional) {
+
+        let usuarios = ROLESUSER.map(u => u.nombre),
+            administradores = ['Administrador', 'Admin SR', 'Recepcion SR'],
+            admin = usuarios.some(item => administradores.includes(item));
+
+        if(!profesional && !admin) return principal.buscar.hide();
+
+        return (profesionales[2] === profesional || admin) 
+            ? principal.buscar.show()
+            : principal.buscar.hide();
+    }
+
 });

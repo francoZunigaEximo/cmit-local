@@ -281,6 +281,49 @@ class ItemPrestacionesController extends Controller
         return response()->json(['resultado' => $query]);
     }
 
+        public function paginacionByPrestacion(Request $request)
+    {
+        $Id = $request->Id;
+
+        if($request->tipo === 'efector')
+        {
+
+            $query = ItemPrestacion::join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
+            ->leftJoin('archivosefector', 'itemsprestaciones.Id', '=', 'archivosefector.IdEntidad')
+            ->join('proveedores', 'itemsprestaciones.IdProveedor', '=', 'proveedores.Id')
+            ->select(
+                'archivosefector.Id as IdE',
+                'examenes.Nombre as NombreExamen',
+                'archivosefector.Descripcion as DescripcionE',
+                'archivosefector.Ruta as RutaE',
+                'examenes.NoImprime as Adjunto',
+                'proveedores.MultiE as MultiE',
+                'itemsprestaciones.Anulado as Anulado'
+            )
+            ->where('archivosefector.IdPrestacion', $Id)
+            ->get();
+
+        }else if($request->tipo === 'informador'){
+
+            $query = ItemPrestacion::join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
+                ->leftJoin('archivosinformador', 'itemsprestaciones.Id', '=', 'archivosinformador.IdEntidad')
+                ->join('proveedores', 'itemsprestaciones.IdProveedor', '=', 'proveedores.Id')
+                ->select(
+                    'archivosinformador.Id as IdI',
+                    'examenes.Nombre as NombreExamen',
+                    'archivosinformador.Descripcion as DescripcionI',
+                    'archivosinformador.Ruta as RutaI',
+                    'examenes.Adjunto as Adjunto',
+                    'itemsprestaciones.Anulado as Anulado'
+                )
+                ->where('archivosinformador.IdPrestacion', $Id)
+                ->get();
+
+        }
+
+        return response()->json(['resultado' => $query]);
+    }
+
     public function updateExamen(Request $request):mixed
     {
         if(empty($request->Id)) {
@@ -505,11 +548,7 @@ class ItemPrestacionesController extends Controller
             'multiInformador' => [ArchivoInformador::max('Id') + 1, 'AINF', $this->rutainternainfo],
         ];
 
-        $examenes = $request->Ids;
-
-        if (!is_array($examenes)) {
-            $examenes = [$examenes];
-        }
+        $examenes = (array) $request->Ids;
 
         foreach ($examenes as $examen) {
             $resultado = "";
@@ -784,10 +823,10 @@ class ItemPrestacionesController extends Controller
                 return response()->json(['msg' => 'No se puede eliminar el examen '.$test.' porque posee archivos adjuntos.Verifique'], 409);
             }
         }
-        
-        foreach ($examenes as $examen) {
 
-            $item = ItemPrestacion::with(['prestaciones','examenes'])->find($examen);
+        $result = ItemPrestacion::with(['prestaciones','examenes'])->whereIn('Id', $examenes)->get();
+        
+        foreach ($result as $item) {
            
             if ($item && ($item->prestaciones->Cerrado === 0 && $item->CInfo != 3 && !in_array($item->CAdj,[3,5]) && $item->IdProfesional === 0 && $item->IdProfesional2 === 0)) {
 
@@ -802,6 +841,7 @@ class ItemPrestacionesController extends Controller
             }
             $resultados[] = $resultado;   
         }
+
         return response()->json($resultados);
     }
 
@@ -1121,46 +1161,6 @@ class ItemPrestacionesController extends Controller
         return ExamenCuentaIt::where('IdPrestacion', $prestacion)
             ->where('IdExamen', $examen)
             ->update(['IdPrestacion' => 0]);
-    }
-
-    private function multiEfector(int $idPrestacion, int $idProfesional, int $idProveedor): mixed
-    {
-        //$itemsprestacione->examenes->IdProveedor
-        return ItemPrestacion::join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
-        ->join('proveedores', 'examenes.IdProveedor', '=', 'proveedores.Id')
-        ->select(
-            'itemsprestaciones.Id as Id',
-            DB::raw('(SELECT COUNT(*) FROM archivosefector WHERE archivosefector.IdEntidad = itemsprestaciones.Id) as archivos_count'),
-            'examenes.Nombre as NombreExamen'
-            )
-        ->where('itemsprestaciones.IdPrestacion', $idPrestacion)
-        ->whereIn('itemsprestaciones.IdProfesional', [$idProfesional, 0])
-        ->where('examenes.IdProveedor', $idProveedor)
-        ->where('proveedores.Multi', 1)
-        ->whereNot('itemsprestaciones.Anulado', 1)
-        ->orderBy('proveedores.Nombre', 'DESC')
-        ->get();
-    }
-
-    private function multiInformador(int $idPrestacion, int $idProfesional, int $idProveedor): mixed
-    {
-        return ItemPrestacion::join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
-        ->join('proveedores', 'examenes.IdProveedor2', '=', 'proveedores.Id')
-        ->join('profesionales', 'itemsprestaciones.IdProfesional2', '=', 'profesionales.Id')
-        ->select('itemsprestaciones.Id', 
-            DB::raw('(SELECT COUNT(*) FROM archivosinformador WHERE archivosinformador.IdEntidad = itemsprestaciones.Id) as archivos_count'),
-            'examenes.Nombre as NombreExamen',
-            'proveedores.Nombre as NombreProveedor'
-        )
-        ->where('itemsprestaciones.IdPrestacion', $idPrestacion)
-        ->whereIn('itemsprestaciones.IdProfesional2', [$idProfesional, 0])
-        ->where('examenes.IdProveedor2', $idProveedor)
-        ->where('proveedores.MultiE', 1)
-        ->where('profesionales.InfAdj', 1)
-        ->whereNot('itemsprestaciones.Anulado', 1)
-        ->whereNot('itemsprestaciones.CInfo', 0)
-        ->orderBy('proveedores.Nombre', 'DESC')
-        ->get();
     }
 
     //Tipo: efector, informador

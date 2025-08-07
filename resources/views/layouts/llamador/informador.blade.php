@@ -134,8 +134,165 @@
     </div>
 </div>
 
+<div id="atenderInformador" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidde="true" style="display: none">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel"> Atender Paciente - Informador</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>
+            </div>
+
+            <div class="modal-body">
+                <hr size="1">
+                <div class="row p-2 fondo-grisClaro">
+                    <div class="col-6 text-start">
+                        <button class="btn btn-sm botonGeneral liberarPrestacion">Liberar</button>
+                    </div>
+                    <div class="col-6 text-end">
+                        <button class="btn btn-sm botonGeneral">Llamar todo</button>
+                    </div>
+                </div>
+                <hr size="1">
+
+                <div class="card card-h-100">
+                    <div class="card-body">
+
+                        <div class="row">
+
+                            <div class="col-md-9 d-flex justify-content-center align-content-center">
+
+                                <div class="row d-flex align-content-center">
+
+                                    <div class="col-md-4 p-2">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">Profesional</span>
+                                            <input type="text" class="form-control" id="profesional_var" name="profesional_var" readonly="true">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-4 p-2">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">Prestación</span>
+                                            <input type="text" class="form-control" id="prestacion_var" name="prestacion_var" readonly="true">
+                                        </div>
+                                    </div>
+        
+                                    <div class="col-md-4 p-2">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">Tipo Exámen</span>
+                                            <input type="text" class="form-control" id="tipo_var" name="tipo_var" readonly="true">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4 p-2">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">ART</span>
+                                            <input type="text" class="form-control" id="art_var" name="art_var" readonly="true">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4 p-2">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">Empresa</span>
+                                            <input type="text" class="form-control" id="empresa_var" name="empresa_var" readonly="true">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4 p-2">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">Para Empresa</span>
+                                            <input type="text" class="form-control" id="paraEmpresa_var" name="paraEmpresa_var" readonly="true">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4 p-2 mt-1">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">Paciente</span>
+                                            <input type="text" class="form-control" id="paciente_var" name="paciente_var" readonly="true">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4 p-2 mt-1">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">Edad</span>
+                                            <input type="text" class="form-control" id="edad_var" name="edad_var" readonly="true">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4 p-2 mt-1">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">Fecha Prestación</span>
+                                            <input type="text" class="form-control" id="fecha_var" name="fecha_var" readonly="true">
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            
+                            <div class="col-md-3">
+                                <img class="round mx-auto d-block img-fluid" id="foto_var" src="" alt="Foto del paciente" width="150px">
+                                <span class="d-flex justify-content-center mt-1">
+                                    <a id="descargaFoto" class="descargaFoto" href="" download>
+                                        <button class="descargarImagen btn btn-sm botonGeneral">Descargar</button>
+                                    </a>
+                                </span>
+                                
+                            </div>
+                            
+                        </div>
+
+                        <hr size="1">
+                   
+                        <div class="row">
+                            <div class="col-md-12 text-end">
+                                <button class="btn btn-sm botonGeneral">Resultados</button>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12" id="tablasExamenes">
+
+                            </div>
+                        </div>
+
+                        <hr size="1">
+
+                        <div class="row justify-content-center">
+                             <div class="table mx-auto text-center col-md-7 col-sm-9 col-12">
+                                <table id="listadoAdjuntosInformadores" class="table table-bordered">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Examen</th>
+                                            <th>Descripción</th>
+                                            <th>Adjunto</th>
+                                            <th>Tipo</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="list form-check-all" id="adjuntosInformadores">
+                        
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer text-center">
+                <button type="button" class="btn btn-sm botonGeneral" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-sm botonGeneral terminarAtencion">Terminar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
-    const SEARCH = "{{ route('llamador.buscar') }}";
+    const SEARCH = "{{ route('llamador.buscarInformador') }}";
     const lnkPres = "{{ route('prestaciones.edit', ['prestacione' => '__item__']) }}";
     const printExportar = "{{ route('llamador.exportar') }}";
     const FOTO = "@fileUrl('lectura')/Fotos/";

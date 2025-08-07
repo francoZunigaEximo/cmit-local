@@ -289,8 +289,8 @@ $(function(){
                         <tr class="listadoAtencion" data-id="${examen.IdItem}">
                             <td>${examen.NombreExamen}</td>
                             <td>${estado(examen.CAdj)}</td>
-                            <td title="Adjunto: ${examen.Adjunto} | Archivo: ${examen.Archivo}">${checkAdjunto(examen.Adjunto, examen.Archivo)}</td>
-                            <td>${[null, undefined, ''].includes(examen.ObsExamen) ? '' : examen.ObsExamen}</td>
+                            <td title="Adjunto: ${examen.Adjunto} | Archivo: ${examen.Archivo}">${checkAdjunto(examen.Adjunto, examen.Archivo, examen.IdItem)}</td>
+                            <td>${!examen.ObsExamen ? '' : examen.ObsExamen}</td>
                             <td>${verificarProfesional(examen, "efector")}</td>
                             <td>${verificarProfesional(examen, "informador")}</td>
                             <td>
@@ -325,7 +325,7 @@ $(function(){
     }
 
     //No Imprime: saber si es fisico o digital / adjunto: si acepta o no adjuntos / condicion: pendiente o adjuntado
-    function checkAdjunto(adjunto, condicion) {
+    function checkAdjunto(adjunto, condicion, idItem) {
         switch (true) {
             case adjunto === 0:
                 return '';
@@ -337,7 +337,7 @@ $(function(){
                 return `<span class="rojo d-flex align-items-center justify-content-between w-100">
                             <span class="me-auto">Pendiente</span>
                             <i class="fs-6 ri-map-pin-line mx-auto"></i>
-                          <i class="fs-6 ri-folder-add-line ms-auto modalArchivo"></i>    
+                            <i class="fs-6 ri-folder-add-line ms-auto" id="modalArchivo" data-id="${idItem}"></i> 
                         </span>`;
 
             case adjunto === 0:
