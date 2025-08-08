@@ -166,6 +166,7 @@ $(function () {
 
     variables.PagoLaboral.change(function(){
         let valor = $(this).val();
+        
         selectorPago(valor);
     });
 
@@ -219,9 +220,8 @@ $(function () {
                     variables.PagoLaboral.find(`option:not([value="${formaPago}"])`).addClass('rojo');
                     variables.PagoLaboral.find(`option[value=""]`).addClass('negro');
 
-                    selectMedioPago(response.FPago);
-
                     setTimeout(() => {
+                        selectMedioPago(response.FPago);
                         variables.PagoLaboral.val() === 'B' && variables.PagoLaboral.attr('disabled', true);
                     }, 2000);
                 });
@@ -255,7 +255,9 @@ $(function () {
                     variables.PagoLaboral.find(`option:not([value="${formaPago}"])`).addClass('rojo');
                     variables.PagoLaboral.find(`option[value=""]`).addClass('negro');
 
-                    selectMedioPago(response.FPago);
+                    setTimeout(()=>{
+                        selectMedioPago(response.FPago);
+                    }, 2000);
 
                     setTimeout(() => {
                         variables.PagoLaboral.val() === 'B' && variables.PagoLaboral.attr('disabled', true);
@@ -285,7 +287,10 @@ $(function () {
                 variables.PagoLaboral.val(formaPago);
                 variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde'); // color solo a la opcion requerida
 
-                selectMedioPago(response.FPago);
+                setTimeout(()=>{
+                    selectMedioPago(response.FPago);
+                },2000)
+                
             });
         }
 
