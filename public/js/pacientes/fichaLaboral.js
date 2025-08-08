@@ -29,7 +29,10 @@ $(function () {
         guardarPrestacion: $('#guardarPrestacion'),
         selectMapaPres: $('.selectMapaPres'),
         selectMapaPresN: $('.selectMapaPresN'),
-        NroFactPrestacion: $('.NroFactPrestacion')
+        NroFactPrestacion: $('.NroFactPrestacion'),
+        motivoModal: $('#motivoModal'),
+        razonSocialModal: $('#razonSocialModal'),
+        identificacionModal: $('#identificacionModal')
     };
 
     const variables = {
@@ -63,7 +66,22 @@ $(function () {
         ElAutorizado: $('#ElAutorizado'),
         ElNroFactProv: $('#ElNroFactProv'),
         NroFactPrestacion: $('#NroFactPrestacion'),
-        facturacion_id: $('#facturacion_id')
+        facturacion_id: $('#facturacion_id'),
+        IdFichaLaboral: $('#IdFichaLaboral'),
+        FechaExArt: $('#FechaExArt'),
+        FechaUltPeriod: $('#FechaUltPeriod'),
+        FechaPreocupacional: $('#FechaPreocupacional'),
+        AntiguedadEmpresa: $('#AntiguedadEmpresa'),
+        AntiguedadPuesto: $('#AntiguedadPuesto'),
+        CCostos: $('#CCostos'),
+        SectorActual: $('#SectorActual'),
+        PuestoActual: $('#PuestoActual'),
+        UltimoPuesto: $('#UltimoPuesto'),
+        ObservacionesFicha: $('#ObservacionesFicha'),
+        Horario: $('#Horario'),
+        TipoJornada: $('#TipoJornada'),
+        TareaRealizar: $('#TareaRealizar'),
+        
     };
 
     const listOpciones = {
@@ -179,12 +197,15 @@ $(function () {
                     let formaPago = !response.FPago ? 'A' : response.FPago;
                     
                     variables.PagoLaboral.val(formaPago);
+                    variables.PagoLaboral.find('option').removeClass('verde rojo');
                     variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde'); // color solo a la opcion requerida
+                    variables.PagoLaboral.find(`option:not([value="${formaPago}"])`).addClass('rojo');
+                    variables.PagoLaboral.find(`option[value=""]`).addClass('negro');
 
-                    selectMedioPago(response.FPago);
-                    setTimeout(() => {
-                        variables.PagoLaboral.val() === 'B' && variables.PagoLaboral.attr('disabled', true);
-                    }, 2000);
+                    // variables.PagoLaboral.find('option').each(function () {
+                    //     console.log($(this).val(), $(this).attr('class'));
+                    // });
+
                 });
             } 
 
@@ -195,6 +216,9 @@ $(function () {
                     
                     variables.PagoLaboral.val(formaPago);
                     variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde'); // color solo a la opcion requerida
+                    variables.PagoLaboral.find(`option:not([value="${formaPago}"])`).addClass('rojo');
+                    variables.PagoLaboral.find(`option[value=""]`).addClass('negro');
+
                     selectMedioPago(response.FPago);
 
                     setTimeout(() => {
@@ -213,7 +237,7 @@ $(function () {
                 <option value="B">Contado</option>
                 <option value="A">Cuenta Corriente</option>`);
             variables.PagoLaboral.css('color', 'black');
-            $('input[name="TipoPrestacion"]').prop('checked', false); //Quitamos todos los checks y dejamos de cero
+            variables.TipoPrestacion.prop('checked', false); //Quitamos todos los checks y dejamos de cero
             
             checkExamenesCuenta(variables.selectClientes.val());
         }
@@ -228,6 +252,8 @@ $(function () {
                     let formaPago = !response.FPago ? 'A' : response.FPago;
                     variables.PagoLaboral.val(formaPago);
                     variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde'); // color solo a la opcion requerida
+                    variables.PagoLaboral.find(`option:not([value="${formaPago}"])`).addClass('rojo');
+                    variables.PagoLaboral.find(`option[value=""]`).addClass('negro');
 
                     selectMedioPago(response.FPago);
 
@@ -248,7 +274,7 @@ $(function () {
                 <option value="B">Contado</option>
                 <option value="A">Cuenta Corriente</option>`);
             variables.PagoLaboral.css('color', 'black');
-            $('input[name="TipoPrestacion"]').prop('checked', false); //Quitamos todos los checks y dejamos de cero
+            variables.TipoPrestacion.prop('checked', false); //Quitamos todos los checks y dejamos de cero
             return;
         
         }else {
@@ -260,13 +286,7 @@ $(function () {
                 variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde'); // color solo a la opcion requerida
 
                 selectMedioPago(response.FPago);
-
-                setTimeout(() => {
-                    variables.PagoLaboral.val() === 'B' && variables.PagoLaboral.attr('disabled', true);
-                }, 2000);
-
             });
-
         }
 
     });
@@ -391,7 +411,7 @@ $(function () {
         let value = $(this).val();
 
         if(!value || value === '0') {
-            $('input[name="TipoPrestacion"]').prop('checked', false);
+            variables.TipoPrestacion.prop('checked', false);
             variables.PagoLaboral.val('');
             principal.SPago
                 .add(principal.Tipo)
@@ -418,30 +438,30 @@ $(function () {
             paciente: ID,
             cliente: variables.selectClientes.val(),
             art: variables.selectArt.val(),
-            tareaRealizar: $('#TareaRealizar').val(),
+            tareaRealizar: variables.TareaRealizar.val(),
             tipoPrestacion: variables.TipoPrestacion.filter(':checked').val(),
-            tipo: $('#TipoJornada').val(),
+            tipo: variables.TipoJornada.val(),
             pago: variables.PagoLaboral.val(),
-            horario: $('#Horario').val(),
-            observaciones: $('#ObservacionesFicha').val(),
-            ultimoPuesto: $('#UltimoPuesto').val(),
-            puestoActual: $('#PuestoActual').val(),
-            sectorActual: $('#SectorActual').val(),
-            ccosto: $('#CCostos').val(),
-            antiguedadPuesto: $('#AntiguedadPuesto').val(),
+            horario: variables.Horario.val(),
+            observaciones: variables.ObservacionesFicha.val(),
+            ultimoPuesto: variables.UltimoPuesto.val(),
+            puestoActual: variables.PuestoActual.val(),
+            sectorActual: variables.SectorActual.val(),
+            ccosto: variables.CCostos.val(),
+            antiguedadPuesto: variables.AntiguedadPuesto.val(),
             fechaIngreso: variables.FechaIngreso.val(),
             fechaEgreso: variables.FechaEgreso.val(),
-            antiguedadEmpresa: $('#AntiguedadEmpresa').val(),
-            fechaPreocupacional: $('#FechaPreocupacional').val(),
-            fechaUltPeriod: $('#FechaUltPeriod').val(),
-            fechaExArt: $('#FechaExArt').val(),
-            Id: $('#IdFichaLaboral').val(),
+            antiguedadEmpresa: variables.AntiguedadEmpresa.val(),
+            fechaPreocupacional: variables.FechaPreocupacional.val(),
+            fechaUltPeriod: variables.FechaUltPeriod.val(),
+            fechaExArt: variables.FechaExArt.val(),
+            Id: variables.IdFichaLaboral.val(),
             Spago: variables.SPago.val(),
             TipoF: variables.Tipo.val(),
             SucursalF: variables.Sucursal.val(),
             NumeroF: variables.NroFactura.val(),
-            NumeroProvF: $('#NroFactProv').val(),
-            Autoriza: $('#Autorizado').val()
+            NumeroProvF: variables.NroFactProv.val(),
+            Autoriza: variables.Autorizado.val()
         };
     
         //Validamos la factura
@@ -540,13 +560,13 @@ $(function () {
     function cargarBloqueo(response){
         let razonSocial = response.RazonSocial, motivo = response.Motivo, identificacion = response.Identificacion;
 
-        $('#razonSocialModal').text(razonSocial);
-        $('#motivoModal').text(motivo);
-        $('#identificacionModal').text(identificacion);
+        principal.razonSocialModal.text(razonSocial);
+        principal.motivoModal.text(motivo);
+        principal.identificacionModal.text(identificacion);
 
         principal.guardarFicha.attr('disabled', 'disabled').attr('title', 'Botón bloqueado').attr('data-toggle', 'tooltip').attr('data-placement', 'top');
 
-        swal("¡Cliente Bloqueado!", "El cliente " +  razonSocial + " | cuit: " + identificacion + " se encuentra bloqueado por el siguiente motivo: " + motivo +  ". No podrá avanzar con el alta. Se ha bloqueado el botón de registro.","info");
+        swal(`¡Cliente Bloqueado!", "El cliente ${razonSocial} | cuit: ${identificacion} se encuentra bloqueado por el siguiente motivo: ${motivo}. No podrá avanzar con el alta. Se ha bloqueado el botón de registro.","info`);
     };
 
     function deshabilitarBloqueo(){
@@ -655,8 +675,10 @@ $(function () {
 
     function calcularAntiguedad(){
     
-        let ingreso = variables.FechaIngreso.val(), egreso = variables.FechaEgreso.val();
-        let dateIngreso = new Date(ingreso), dateEgreso = egreso ? new Date(egreso) : new Date();
+        let ingreso = variables.FechaIngreso.val(), 
+            egreso = variables.FechaEgreso.val(),
+            dateIngreso = new Date(ingreso), 
+            dateEgreso = egreso ? new Date(egreso) : new Date();
 
         let diff =  dateEgreso.getFullYear() - dateIngreso.getFullYear();
 
@@ -664,7 +686,7 @@ $(function () {
             diff--;
         }
 
-        $('#AntiguedadEmpresa').val(diff);
+        variables.AntiguedadEmpresa.val(diff);
     };
 
     function opcionesFicha(option){
@@ -675,7 +697,9 @@ $(function () {
         });
     };
 
-    function selectMedioPago(opcion){
+    async function selectMedioPago(opcion){
+
+        let exaCuenta = await $.get(lstExDisponibles, { Id: variables.selectClientes.val() });
 
         variables.Tipo
                 .add(variables.Sucursal)
@@ -705,15 +729,20 @@ $(function () {
                 variables.SPago
                     .empty()
                     .append(contenido);
+
+                variables.PagoLaboral.val() === 'B' && exaCuenta.length === 0
+                    ? variables.PagoLaboral.attr('disabled', true)
+                    : variables.PagoLaboral.attr('disabled', false)
+
                 break;
             
             case 'A':
                 principal.ObsPres
                 .add(principal.NroFactProv)
+                .add(principal.Factura)
                 .add(principal.SPago)
                 .hide();
             
-                principal.Factura.show();
                 break;
         
             default:
@@ -869,8 +898,6 @@ $(function () {
                 .add(variables.Sucursal)
                 .add(variables.NroFactura)
                 .val('');
-            
-                //aca
         }
 
         if(['B','A', ''].includes(pago)) {
@@ -879,7 +906,7 @@ $(function () {
                 .add(principal.examenesDiponibles)
                 .add(principal.siguienteExCta)
                 .hide();
-            console.log(variables.TipoPrestacion.val());
+
             if(variables.TipoPrestacion.filter(':checked').val() !== 'ART') principal.ultimasPrestacionesFacturadas.show();
             
             principal.guardarPrestacion.show();
@@ -924,10 +951,10 @@ $(function () {
                 principal.alertaExCta.add(principal.verListadoExCta).show();
                 variables.PagoLaboral.find('option[value="P"]').remove();
                 variables.PagoLaboral.append('<option value="P" selected>Examen a cuenta</option>');
-                variables.PagoLaboral.val('P');
-                variables.Pago.val('P');
+                variables.PagoLaboral.find('option[value="P"]').addClass('verde');
                 limpiezaInputsPagos();
                 variables.PagoLaboral.attr('disabled', false);
+                
                 return true;
 
             } else {
@@ -953,10 +980,10 @@ $(function () {
             IdPaciente: data.paciente,
             IdEmpresa: data.cliente === '' ? 0 : data.cliente,
             IdART: data.art === '' ? 0 : data.art,
-            tareaRealizar: data.tareaRealizar === '' ? '' : data.tareaRealizar,
-            TipoPrestacion: data.tipoPrestacion === '' ? '' : data.tipoPrestacion,
+            tareaRealizar: !data.tareaRealizar ? '' : data.tareaRealizar,
+            TipoPrestacion: !data.tipoPrestacion ? '' : data.tipoPrestacion,
             TipoJornada: data.tipo ?? '',
-            Pago: data.pago === '' ? '' : data.pago,
+            Pago: !data.pago ? '' : data.pago,
             Jornada: data.horario ?? '',
             Observaciones: data.observaciones === '' ? '' : data.observaciones,
             TareasEmpAnterior: data.ultimoPuesto === '' ? '' : data.ultimoPuesto,
@@ -972,11 +999,11 @@ $(function () {
             FechaExArt: data.fechaExArt === '' ? '' : data.fechaExArt,
             Id: data.Id,
             SPago: data.Spago === '' ? '' : data.Spago,
-            Tipo: data.Tipo === '' ? '' : data.TipoF,
-            Sucursal: data.SucursalF === '' ? '' : data.SucursalF,
+            Tipo: !data.Tipo ? '' : data.TipoF,
+            Sucursal: !data.SucursalF ? '' : data.SucursalF,
             NroFactura: data.NumeroF === '' ? '' : data.NumeroF,
             NroFactProv: data.NumeroProvF === '' ? '' : data.NumeroProvF,
-            Autorizado: data.Autoriza === '' ? '' :data.Autoriza,   
+            Autorizado: !data.Autoriza ? '' :data.Autoriza,   
             _token: TOKEN,
             }) 
             .done(function(response) {
