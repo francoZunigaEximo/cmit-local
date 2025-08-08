@@ -734,10 +734,6 @@ $(function () {
                     variables.PagoLaboral.attr('disabled', true)
                 }else{
                     variables.PagoLaboral.attr('disabled', false)
-                    principal.NroFactProv
-                        .add(principal.Factura)
-                        .add(principal.SPago)
-                        .hide();
                 }
                 break;
             
@@ -963,7 +959,7 @@ $(function () {
                 variables.PagoLaboral.find('option[value="P"]').addClass('verde');
                 limpiezaInputsPagos();
                 variables.PagoLaboral.attr('disabled', false);
-                principal.SPago.add(principal.NroFactProv)
+                principal.SPago
                         .add(principal.SPago)
                         .add(principal.Factura)
                         .add(principal.NroFactProv)
