@@ -730,10 +730,15 @@ $(function () {
                     .empty()
                     .append(contenido);
 
-                variables.PagoLaboral.val() === 'B' && exaCuenta.length === 0
-                    ? variables.PagoLaboral.attr('disabled', true)
-                    : variables.PagoLaboral.attr('disabled', false)
-
+                if(variables.PagoLaboral.val() === 'B' && exaCuenta.length === 0) {
+                    variables.PagoLaboral.attr('disabled', true)
+                }else{
+                    variables.PagoLaboral.attr('disabled', false)
+                    principal.NroFactProv
+                        .add(principal.Factura)
+                        .add(principal.SPago)
+                        .hide();
+                }
                 break;
             
             case 'A':
