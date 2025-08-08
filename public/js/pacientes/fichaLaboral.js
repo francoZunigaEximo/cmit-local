@@ -914,6 +914,12 @@ $(function () {
         
         }else if(pago === 'P') {
 
+            principal.guardarPrestacion
+                .add(principal.SPago)
+                .add(principal.Factura)
+                .add(principal.NroFactProv)
+                .hide();
+
             preloader('on');
             $.get(lstExDisponibles, {Id: variables.selectClientes.val()})
             .done(function(response){
@@ -924,11 +930,7 @@ $(function () {
                         .add(principal.examenesDiponibles)
                         .add(principal.siguienteExCta)
                         .show();
-                    principal.guardarPrestacion
-                        .add(principal.SPago)
-                        .add(principal.Factura)
-                        .add(principal.NroFactProv)
-                        .hide();
+
                     // checkExamenesCuenta(variables.selectClientes.val())
                 }
             });
