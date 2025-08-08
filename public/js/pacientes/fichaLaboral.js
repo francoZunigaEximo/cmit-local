@@ -214,16 +214,20 @@ $(function () {
             
              $.get(getFormaPagoCli, {Id: variables.selectClientes.val()}, function(response){
                     let formaPago = !response.FPago ? 'A' : response.FPago;
-                    
+                    console.log("TipoPrestacion: " + formaPago);
                     variables.PagoLaboral.val(formaPago);
                     variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde'); // color solo a la opcion requerida
                     variables.PagoLaboral.find(`option:not([value="${formaPago}"])`).addClass('rojo');
                     variables.PagoLaboral.find(`option[value=""]`).addClass('negro');
-
+                    console.log()
                     setTimeout(() => {
-                        selectMedioPago(response.FPago);
                         variables.PagoLaboral.val() === 'B' && variables.PagoLaboral.attr('disabled', true);
                     }, 2000);
+                    let exaCuenta = $.get(lstExDisponibles, { Id: variables.selectClientes.val() });
+                    
+                    if(exaCuenta.length === 0) return selectMedioPago(response.FPago);
+                    
+                    
                 });
         }
     });
@@ -254,13 +258,10 @@ $(function () {
                     variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde'); // color solo a la opcion requerida
                     variables.PagoLaboral.find(`option:not([value="${formaPago}"])`).addClass('rojo');
                     variables.PagoLaboral.find(`option[value=""]`).addClass('negro');
-
-                    setTimeout(()=>{
-                        selectMedioPago(response.FPago);
-                    }, 2000);
-
+                    console.log("Clientes: " + formaPago);
                     setTimeout(() => {
                         variables.PagoLaboral.val() === 'B' && variables.PagoLaboral.attr('disabled', true);
+                        selectMedioPago(response.FPago);
                     }, 2000);
 
                 });
@@ -896,7 +897,7 @@ $(function () {
     };
 
     async function selectorPago(pago) {
-
+        console.log(pago)
         if (pago != 'B') {
 
             variables.SPago
