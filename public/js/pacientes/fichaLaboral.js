@@ -925,6 +925,7 @@ $(function () {
                         .show();
                     principal.guardarPrestacion
                         .add(principal.SPago)
+                        .add(principal.Factura)
                         .add(principal.NroFactProv)
                         .hide();
                     // checkExamenesCuenta(variables.selectClientes.val())
@@ -957,7 +958,11 @@ $(function () {
                 variables.PagoLaboral.find('option[value="P"]').addClass('verde');
                 limpiezaInputsPagos();
                 variables.PagoLaboral.attr('disabled', false);
-                principal.SPago.add(principal.NroFactProv).hide();
+                principal.SPago.add(principal.NroFactProv)
+                        .add(principal.SPago)
+                        .add(principal.Factura)
+                        .add(principal.NroFactProv)
+                        .hide();
                 return true;
 
             } else {
@@ -965,7 +970,8 @@ $(function () {
                     .add(principal.verListadoExCta)
                     .hide();
 
-                variables.PagoLaboral.find('option[value="P"]').remove();               
+                variables.PagoLaboral.find('option[value="P"]').remove();
+                               
                 return;
             }
         } catch (jqXHR) {
