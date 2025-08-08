@@ -890,7 +890,7 @@ $(function () {
             });    
     };
 
-    function selectorPago(pago) {
+    async function selectorPago(pago) {
 
         if (pago != 'B') {
 
@@ -921,7 +921,7 @@ $(function () {
                 .hide();
 
             preloader('on');
-            $.get(lstExDisponibles, {Id: variables.selectClientes.val()})
+            $.get(await lstExDisponibles, {Id: variables.selectClientes.val()})
             .done(function(response){
                 preloader('off');
 
