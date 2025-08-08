@@ -36,6 +36,7 @@ $(function () {
     };
 
     const variables = {
+        PagoLaboralJS: document.getElementById('PagoLaboral'),
         PagoLaboral: $('#PagoLaboral'),
         Pago: $('#Pago'),
         SPago: $('#SPago'),
@@ -198,10 +199,25 @@ $(function () {
                     let formaPago = !response.FPago ? 'A' : response.FPago;
                     
                     variables.PagoLaboral.val(formaPago);
-                    variables.PagoLaboral.find('option').removeClass('verde rojo');
-                    variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde'); // color solo a la opcion requerida
-                    variables.PagoLaboral.find(`option:not([value="${formaPago}"])`).addClass('rojo');
-                    variables.PagoLaboral.find(`option[value=""]`).addClass('negro');
+                    // variables.PagoLaboral.find('option').removeClass('verde rojo');
+                    variables.PagoLaboralJS.querySelectorAll('option').forEach(opt => {
+                        opt.classList.remove('verde', 'rojo');
+                    });
+                    // variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde'); // color solo a la opcion requerida
+                    // variables.PagoLaboral.find(`option:not([value="${formaPago}"])`).addClass('rojo');
+                    // variables.PagoLaboral.find(`option[value=""]`).addClass('negro');
+
+                    variables.PagoLaboralJS
+                        .querySelector(`option[value="${formaPago}"]`)
+                        ?.classList.add('verde');
+
+                    variables.PagoLaboralJS
+                        .querySelectorAll(`option:not([value="${formaPago}"])`)
+                        .forEach(opt => opt.classList.add('rojo'));
+
+                    variables.PagoLaboralJS
+                        .querySelector(`option[value=""]`)
+                        ?.classList.add('negro');
 
                     // variables.PagoLaboral.find('option').each(function () {
                     //     console.log($(this).val(), $(this).attr('class'));
@@ -215,17 +231,29 @@ $(function () {
              $.get(getFormaPagoCli, {Id: variables.selectClientes.val()}, function(response){
                     let formaPago = !response.FPago ? 'A' : response.FPago;
                
-                    variables.PagoLaboral.val(formaPago);
-                    variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde'); // color solo a la opcion requerida
-                    variables.PagoLaboral.find(`option:not([value="${formaPago}"])`).addClass('rojo');
-                    variables.PagoLaboral.find(`option[value=""]`).addClass('negro');
+                    // variables.PagoLaboral.val(formaPago);
+                    variables.PagoLaboralJS.value = formaPago;
+                    // variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde');
+                    variables.PagoLaboralJS.querySelector(`option[value="${formaPago}"]`)?.classList.add('verde');
+
+                    // variables.PagoLaboral.find(`option:not([value="${formaPago}"])`).addClass('rojo');
+                    variables.PagoLaboralJS
+                        .querySelectorAll(`option:not([value="${formaPago}"])`)
+                        .forEach(opt => opt.classList.add('rojo'));
+
+                    // variables.PagoLaboral.find(`option[value=""]`).addClass('negro');
+                    variables.PagoLaboralJS
+                        .querySelector(`option[value=""]`)
+                        ?.classList.add('negro');
       
-                    setTimeout(() => {
-                        variables.PagoLaboral.val() === 'B' && variables.PagoLaboral.attr('disabled', true);
-                    }, 2000);
-                    let exaCuenta = $.get(lstExDisponibles, { Id: variables.selectClientes.val() });
-                    
+                    if(variables.PagoLaboral.val() === 'B') {
+                        selectMedioPago("B");
+                        variables.PagoLaboral.attr('disabled', true);
+                    }
+
+                    let exaCuenta = $.get(lstExDisponibles, { Id: variables.selectClientes.val() });   
                     if(exaCuenta.length === 0) return selectMedioPago(response.FPago);
+                    if(formaPago === 'A') variables.PagoLaboralJS.querySelector(`option[value="B"]`)?.classList.add('negro');
                     
                     
                 });
@@ -254,15 +282,25 @@ $(function () {
                 $.get(getFormaPagoCli, {Id: variables.selectClientes.val()}, async function(response){
 
                     let formaPago = !response.FPago ? 'A' : response.FPago;
-                    variables.PagoLaboral.val(formaPago);
-                    variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde'); // color solo a la opcion requerida
-                    variables.PagoLaboral.find(`option:not([value="${formaPago}"])`).addClass('rojo');
+                    // variables.PagoLaboral.val(formaPago);
+                    variables.PagoLaboralJS.value = formaPago;
+
+                    // variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde');
+                    variables.PagoLaboralJS.querySelector(`option[value="${formaPago}"]`)?.classList.add('verde');
+                    
+                    // variables.PagoLaboral.find(`option:not([value="${formaPago}"])`).addClass('rojo');
+                    variables.PagoLaboralJS
+                        .querySelectorAll(`option:not([value="${formaPago}"])`)
+                        .forEach(opt => opt.classList.add('rojo'));
+                    
                     variables.PagoLaboral.find(`option[value=""]`).addClass('negro');
+                    if(formaPago === 'A') variables.PagoLaboralJS.querySelector(`option[value="B"]`)?.classList.add('negro');
                 
-                    setTimeout(() => {
-                        variables.PagoLaboral.val() === 'B' && variables.PagoLaboral.attr('disabled', true);
-                        selectMedioPago(response.FPago);
-                    }, 2000);
+
+                        if(variables.PagoLaboral.val() === 'B') {
+                            selectMedioPago(formaPago);
+                            variables.PagoLaboral.attr('disabled', true);
+                        }
 
                 });
          }
@@ -285,12 +323,19 @@ $(function () {
             $.get(getFormaPagoCli, {Id: variables.selectArt.val()}, async function(response){
 
                 let formaPago = !response.FPago ? 'A' : response.FPago;
-                variables.PagoLaboral.val(formaPago);
-                variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde'); // color solo a la opcion requerida
+                // variables.PagoLaboral.val(formaPago);
+                variables.PagoLaboralJS.value = formaPago;
+                
+                // variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde');
+                variables.PagoLaboralJS.querySelector(`option[value="${formaPago}"]`)?.classList.add('verde');
 
-                setTimeout(()=>{
-                    selectMedioPago(response.FPago);
-                },2000)
+                if(formaPago === 'A') variables.PagoLaboralJS.querySelector(`option[value="B"]`)?.classList.add('negro');
+
+                if(formaPago === 'B') {
+                    selectMedioPago(formaPago);
+                }
+                    
+
                 
             });
         }
@@ -897,7 +942,7 @@ $(function () {
     };
 
     async function selectorPago(pago) {
-        console.log(pago)
+
         if (pago != 'B') {
 
             variables.SPago
@@ -964,7 +1009,8 @@ $(function () {
                 principal.alertaExCta.add(principal.verListadoExCta).show();
                 variables.PagoLaboral.find('option[value="P"]').remove();
                 variables.PagoLaboral.append('<option value="P" selected>Examen a cuenta</option>');
-                variables.PagoLaboral.find('option[value="P"]').addClass('verde');
+                // variables.PagoLaboral.find('option[value="P"]').addClass('verde');
+                variables.PagoLaboralJS.querySelector('option[value="P"]').classList.add('verde');
                 limpiezaInputsPagos();
                 variables.PagoLaboral.attr('disabled', false);
                 principal.SPago
@@ -1028,7 +1074,7 @@ $(function () {
                 preloader('off');
                 toastr.success(response.msg,'',{timeOut: 1000});
 
-                variables.facturacion_id.val(response.datos_facturacion_id);
+                variables.facturacion_id.val(response.datos_facturacion_id || 0);
 
                 mostrarFinanciador();
                 selectMedioPago(variables.PagoLaboral.val());
