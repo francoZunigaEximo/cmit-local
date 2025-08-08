@@ -14,6 +14,7 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         $schedule->command("app:clean-zombie-sessions")->everyMinute();
+        $schedule->command("app:eliminar-llamador")->everyTenMinutes();
     }
 
     /**

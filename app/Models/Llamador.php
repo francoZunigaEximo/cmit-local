@@ -17,7 +17,7 @@ class Llamador extends Model
         'Id',
         'profesional_id',
 	    'prestacion_id',
-	    'itemprestacion_id',
+	    'especialidad_id',
         'tipo_profesional'
     ];
 
@@ -33,8 +33,4 @@ class Llamador extends Model
         return $this->hasOne(Prestacion::class, 'Id', 'prestacion_id');
     }
 
-    public function itemPrestacion()
-    {
-        return $this->hasOne(ItemPrestacion::class, 'Id', 'itemprestacion_id');
-    }
 }

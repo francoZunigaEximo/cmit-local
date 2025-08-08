@@ -28,7 +28,8 @@ $(function(){
         profesional: $('#profesional'),
         descargaFoto: $('#descargaFoto'),
         efector: 'Efector',
-        especialidadSelect: $('#especialidadSelect')
+        especialidadSelect: $('#especialidadSelect'),
+        especialidad: $('#especialidad'),
     };
 
     variables.fechaHasta.val(fechaNow(null, "-", 0));
@@ -175,7 +176,7 @@ $(function(){
             .removeClass(boton[accion].remover)
             .addClass(boton[accion].agregar);
         
-        $.get(addAtencion, {prestacion: $(this).data('id'), profesional: variables.profesional.val(), Tipo: $(this).data('tipo')})
+        $.get(addAtencion, {prestacion: $(this).data('id'), profesional: variables.profesional.val(), Tipo: $(this).data('tipo'), especialidad: variables.especialidad.data('id') || variables.especialidadSelect.val()})
             .done(function(){
                 toastr.success('Cambio de estado realizado correctamente','',{timeOut: 1000})
             })

@@ -264,7 +264,12 @@ class LlamadorController extends Controller
 
     public function controlLlamado(Request $request)
     {   
-        $query = Llamador::with(['prestacion', 'prestacion.paciente'])->where('prestacion_id', $request->prestacion)->first();
+        $query = Llamador::with(['prestacion', 'prestacion.paciente'])
+            ->where('prestacion_id', $request->prestacion)
+            ->where('profesional_id', $request->profesional)
+            ->where('especialidad_id', $request->especialidad)
+            ->first();
+            
         $data = [];
 
         if ($query) {
@@ -289,7 +294,7 @@ class LlamadorController extends Controller
                 'Id' => Llamador::max('Id') + 1,
                 'profesional_id' => $request->profesional,
 	            'prestacion_id' =>  $request->prestacion,
-                'itemprestacion_id' => 0,
+                'especialidad_id' => $request->especialidad,
                 'tipo_profesional' => session('Profesional') ?? $request->Tipo
             ]);
 

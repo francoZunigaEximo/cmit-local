@@ -930,7 +930,6 @@ CREATE TABLE llamador(
 	itemprestacion_id int(11) NOT NULL,
 	CONSTRAINT FK_ProfesionalLlamador FOREIGN KEY (profesional_id) REFERENCES profesionales(Id),
 	CONSTRAINT FK_PrestacionLlamador FOREIGN KEY (prestacion_id) REFERENCES prestaciones(Id),
-	CONSTRAINT FK_ItemprestacionLlamador FOREIGN KEY (itemprestacion_id) REFERENCES itemsprestaciones(Id),
 	PRIMARY KEY(Id)
 );
 
@@ -956,3 +955,8 @@ ALTER TABLE profesionales_prov MODIFY COLUMN IdRol varchar(20) CHARACTER SET utf
 ALTER TABLE llamador ADD COLUMN tipo_profesional TEXT NOT NULL;
 
 ALTER TABLE user_sessions ADD COLUMN last_heartbeat_at timestamp DEFAULT NULL;
+ALTER TABLE llamador ADD COLUMN start_at DATETIME NOT NULL DEFAULT current_timestamp();
+ALTER TABLE llamador CHANGE itemprestacion_id especialidad_id int(11) NOT NULL;
+ALTER TABLE llamador DROP FOREIGN KEY FK_ItemprestacionLlamador;
+ALTER TABLE llamador ADD CONSTRAINT FK_EspecialidadLlamador FOREIGN KEY (especialidad_id) REFERENCES proveedores(Id);
+
