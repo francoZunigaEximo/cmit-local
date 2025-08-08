@@ -923,7 +923,10 @@ $(function () {
                         .add(principal.examenesDiponibles)
                         .add(principal.siguienteExCta)
                         .show();
-                    principal.guardarPrestacion.hide();
+                    principal.guardarPrestacion
+                        .add(principal.SPago)
+                        .add(principal.NroFactProv)
+                        .hide();
                     // checkExamenesCuenta(variables.selectClientes.val())
                 }
             });
@@ -954,7 +957,7 @@ $(function () {
                 variables.PagoLaboral.find('option[value="P"]').addClass('verde');
                 limpiezaInputsPagos();
                 variables.PagoLaboral.attr('disabled', false);
-                
+                principal.SPago.add(principal.NroFactProv).hide();
                 return true;
 
             } else {
