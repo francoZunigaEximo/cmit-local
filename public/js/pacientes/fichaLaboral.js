@@ -168,7 +168,7 @@ $(function () {
     variables.PagoLaboral.change(function(){
         let valor = $(this).val();
         
-        selectorPago(valor);
+        // selectorPago(valor);
     });
 
     variables.TipoPrestacion.change(function(){
@@ -246,12 +246,10 @@ $(function () {
                         .querySelector(`option[value=""]`)
                         ?.classList.add('negro');
       
-                    if(variables.PagoLaboral.val() === 'B') {
-                        selectMedioPago("B");
-                        variables.PagoLaboral.attr('disabled', true);
-                    }
+                   
 
                     let exaCuenta = $.get(lstExDisponibles, { Id: variables.selectClientes.val() });   
+                    
                     if(exaCuenta.length === 0) return selectMedioPago(response.FPago);
                     if(formaPago === 'A') variables.PagoLaboralJS.querySelector(`option[value="B"]`)?.classList.add('negro');
                     
@@ -296,8 +294,9 @@ $(function () {
                     variables.PagoLaboral.find(`option[value=""]`).addClass('negro');
                     if(formaPago === 'A') variables.PagoLaboralJS.querySelector(`option[value="B"]`)?.classList.add('negro');
                 
+                    let exaCuenta = $.get(lstExDisponibles, { Id: variables.selectClientes.val() }); 
 
-                        if(variables.PagoLaboral.val() === 'B') {
+                        if(variables.PagoLaboral.val() === 'B' && !exaCuenta) {
                             selectMedioPago(formaPago);
                             variables.PagoLaboral.attr('disabled', true);
                         }
@@ -331,7 +330,9 @@ $(function () {
 
                 if(formaPago === 'A') variables.PagoLaboralJS.querySelector(`option[value="B"]`)?.classList.add('negro');
 
-                if(formaPago === 'B') {
+                let check = checkExamenesCuenta(variables.selectClientes.val());
+
+                if(formaPago === 'B' && !check) {
                     selectMedioPago(formaPago);
                 }
                     
@@ -445,9 +446,9 @@ $(function () {
         });
     });
 
-    variables.PagoLaboral.on('change', function() {
-        selectMedioPago(variables.PagoLaboral.val());
-    });
+    // variables.PagoLaboral.on('change', function() {
+    //     selectMedioPago(variables.PagoLaboral.val());
+    // });
 
     //Habilitamos el botón de guardar
     variables.selectClientes.on('change', function(){
@@ -478,6 +479,12 @@ $(function () {
                 .add(variables.NroFactura)
                 .add(variables.NroFactProv)
                 .val('');
+        }
+
+        let check = checkExamenesCuenta(variables.selectClientes.val());
+
+        if(formaPago === 'B' && !check) {
+            selectMedioPago(formaPago);
         }
     });
 
