@@ -264,6 +264,7 @@ $(function () {
 
     variables.selectClientes.on('change', function(){
 
+        selectMedioPago(null);
         variables.PagoLaboral.attr('disabled', false);
 
         if(!variables.selectClientes.val() || variables.selectClientes.val() === '0') {
@@ -312,6 +313,7 @@ $(function () {
 
     variables.selectArt.on('change', function(){
 
+        selectMedioPago(null);
         variables.PagoLaboral.attr('disabled', false);
 
         if((!variables.selectArt.val() || variables.selectArt.val() === '0') && (!variables.selectClientes.val() || variables.selectClientes.val() === '0')) {
