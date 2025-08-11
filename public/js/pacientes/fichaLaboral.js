@@ -165,12 +165,6 @@ $(function () {
         limpiezaInputsPagos();
     });
 
-    variables.PagoLaboral.change(function(){
-        let valor = $(this).val();
-        
-        // selectorPago(valor);
-    });
-
     variables.TipoPrestacion.change(function(){
 
         variables.PagoLaboral.attr('disabled', false);
@@ -197,11 +191,13 @@ $(function () {
                     
             }else if (variables.selectArt.val()) {
 
-                $.get(getFormaPagoCli, {Id: variables.selectArt.val()}, function(response){
-                    let formaPago = !response.FPago ? 'A' : response.FPago;
-                    let filtro = formaPago === 'C' ? 'B' : formaPago;
+                (async () =>{
+
+                    let response = await $.get(getFormaPagoCli, {Id: variables.selectArt.val()}),
+                        formaPago = !response.FPago ? 'A' : response.FPago,
+                        filtro = formaPago === 'C' ? 'B' : formaPago;
                     
-                    variables.PagoLaboral.val(filtro);
+                    variables.PagoLaboralJS.value = filtro;
                     // variables.PagoLaboral.find('option').removeClass('verde rojo');
                     variables.PagoLaboralJS.querySelectorAll('option').forEach(opt => {
                         opt.classList.remove('verde', 'rojo');
@@ -226,39 +222,37 @@ $(function () {
                     //     console.log($(this).val(), $(this).attr('class'));
                     // });
 
-                });
+                })();
             } 
 
         }else if(variables.TipoPrestacion.filter(':checked').val()) {
-
-            selectMedioPago(null);
             
-             $.get(getFormaPagoCli, {Id: variables.selectClientes.val()}, function(response){
-                    let formaPago = !response.FPago ? 'A' : response.FPago,
-                        filtro = formaPago === 'C' ? 'B' : formaPago;
+             (async () => {
 
-                    // variables.PagoLaboral.val(formaPago);
-                    variables.PagoLaboralJS.value = filtro;
-                    // variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde');
-                    variables.PagoLaboralJS.querySelector(`option[value="${filtro}"]`)?.classList.add('verde');
+                let response = await $.get(getFormaPagoCli, { Id: variables.selectClientes.val() });
 
-                    // variables.PagoLaboral.find(`option:not([value="${formaPago}"])`).addClass('rojo');
-                    variables.PagoLaboralJS
-                        .querySelectorAll(`option:not([value="${filtro}"])`)
-                        .forEach(opt => opt.classList.add('rojo'));
+                let formaPago = !response.FPago ? 'A' : response.FPago,
+                    filtro = formaPago === 'C' ? 'B' : formaPago;
 
-                    // variables.PagoLaboral.find(`option[value=""]`).addClass('negro');
-                    variables.PagoLaboralJS
-                        .querySelector(`option[value=""]`)
-                        ?.classList.add('negro');
-      
-                    let exaCuenta = $.get(lstExDisponibles, { Id: variables.selectClientes.val() });   
-
-                    !exaCuenta && filtro === 'B' ? selectMedioPago(filtro) : selectMedioPago(null);
-                    if(filtro === 'A') variables.PagoLaboralJS.querySelector(`option[value="B"]`)?.classList.add('negro');
-                    
-                    
+                variables.PagoLaboralJS.value = filtro;
+                
+                 variables.PagoLaboralJS.querySelectorAll('option').forEach(opt => {
+                    opt.classList.remove('verde', 'rojo');
                 });
+
+                variables.PagoLaboralJS.querySelector(`option[value="${filtro}"]`)?.classList.add('verde');
+                variables.PagoLaboralJS
+                    .querySelectorAll(`option:not([value="${filtro}"])`)
+                    .forEach(opt => opt.classList.add('rojo'));
+                variables.PagoLaboralJS
+                    .querySelector(`option[value=""]`)
+                    ?.classList.add('negro');
+
+                let exaCuenta = await $.get(lstExDisponibles, { Id: variables.selectClientes.val() });
+
+               exaCuenta.length === 0 && filtro === 'B' ? selectMedioPago(filtro) : selectMedioPago(null);
+               filtro === 'A' && variables.PagoLaboralJS.querySelector(`option[value="B"]`)?.classList.add('negro');
+            })();
         }
     });
 
@@ -282,13 +276,18 @@ $(function () {
             variables.TipoPrestacion.filter(':checked').val()
         ) 
             {   
-                $.get(getFormaPagoCli, {Id: variables.selectClientes.val()}, async function(response){
+                (async () => {
 
-                    let formaPago = !response.FPago ? 'A' : response.FPago;
-                    // variables.PagoLaboral.val(formaPago);
-                    let filtro = formaPago === 'C' ? 'B' : formaPago;
+                    let response = await $.get(getFormaPagoCli, {Id: variables.selectClientes.val()}),
+                        formaPago = !response.FPago ? 'A' : response.FPago,
+                        filtro = formaPago === 'C' ? 'B' : formaPago;
+                    
                     variables.PagoLaboralJS.value = filtro;
+                    variables.PagoLaboralJS.querySelectorAll('option').forEach(opt => {
+                        opt.classList.remove('verde', 'rojo');
+                    });
 
+                    console.log("Cliente: " + filtro);
                     // variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde');
                     variables.PagoLaboralJS.querySelector(`option[value="${filtro}"]`)?.classList.add('verde');
                     
@@ -300,16 +299,15 @@ $(function () {
                     variables.PagoLaboral.find(`option[value=""]`).addClass('negro');
                     if(filtro === 'A') variables.PagoLaboralJS.querySelector(`option[value="B"]`)?.classList.add('negro');
                 
-                    let exaCuenta = $.get(lstExDisponibles, { Id: variables.selectClientes.val() }); 
+                    let exaCuenta = await $.get(lstExDisponibles, { Id: variables.selectClientes.val() }); 
 
-                    if(filtro === 'B' && !exaCuenta) {
+                    if(filtro === 'B' && exaCuenta.length === 0) {
                         selectMedioPago(filtro);
                         variables.PagoLaboral.attr('disabled', true);
                     }else{
                         selectMedioPago(null);
                     }
-
-                });
+                })();
          }
     });
 
@@ -328,22 +326,21 @@ $(function () {
         
         }else {
 
-            $.get(getFormaPagoCli, {Id: variables.selectArt.val()}, async function(response){
+            (async () => {
 
-                let formaPago = !response.FPago ? 'A' : response.FPago;
-                // variables.PagoLaboral.val(formaPago);
-                let filtro = formaPago === 'C' ? 'B' : formaPago;
-                variables.PagoLaboralJS.value = filtro;
+                let response = await $.get(getFormaPagoCli, {Id: variables.selectArt.val()}),
+                    formaPago = !response.FPago ? 'A' : response.FPago,
+                    filtro = formaPago === 'C' ? 'B' : formaPago;
                 
-                // variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde');
+                variables.PagoLaboralJS.value = filtro;
                 variables.PagoLaboralJS.querySelector(`option[value="${filtro}"]`)?.classList.add('verde');
 
                 if(filtro === 'A') variables.PagoLaboralJS.querySelector(`option[value="B"]`)?.classList.add('negro');
 
-                let check = checkExamenesCuenta(variables.selectClientes.val());
+                let check = await checkExamenesCuenta(variables.selectClientes.val());
 
-               filtro === 'B' && !check ? selectMedioPago(filtro): selectMedioPago(null);
-            });
+                filtro === 'B' && check.length === 0 ? selectMedioPago(filtro): selectMedioPago(null);
+            })(); 
         }
 
     });
