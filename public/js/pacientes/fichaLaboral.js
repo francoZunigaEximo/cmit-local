@@ -197,6 +197,7 @@ $(function () {
 
                 $.get(getFormaPagoCli, {Id: variables.selectArt.val()}, function(response){
                     let formaPago = !response.FPago ? 'A' : response.FPago;
+                    formaPago === 'C' ? 'B' : formaPago;
                     
                     variables.PagoLaboral.val(formaPago);
                     // variables.PagoLaboral.find('option').removeClass('verde rojo');
@@ -230,6 +231,7 @@ $(function () {
             
              $.get(getFormaPagoCli, {Id: variables.selectClientes.val()}, function(response){
                     let formaPago = !response.FPago ? 'A' : response.FPago;
+                    formaPago === 'C' ? 'B' : formaPago;
                
                     // variables.PagoLaboral.val(formaPago);
                     variables.PagoLaboralJS.value = formaPago;
@@ -281,6 +283,7 @@ $(function () {
 
                     let formaPago = !response.FPago ? 'A' : response.FPago;
                     // variables.PagoLaboral.val(formaPago);
+                    formaPago === 'C' ? 'B' : formaPago;
                     variables.PagoLaboralJS.value = formaPago;
 
                     // variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde');
@@ -296,7 +299,7 @@ $(function () {
                 
                     let exaCuenta = $.get(lstExDisponibles, { Id: variables.selectClientes.val() }); 
 
-                        if(variables.PagoLaboral.val() === 'B' && !exaCuenta) {
+                        if(['B','C'].includes(variables.PagoLaboral.val()) && !exaCuenta) {
                             selectMedioPago(formaPago);
                             variables.PagoLaboral.attr('disabled', true);
                         }
@@ -323,6 +326,7 @@ $(function () {
 
                 let formaPago = !response.FPago ? 'A' : response.FPago;
                 // variables.PagoLaboral.val(formaPago);
+                formaPago === 'C' ? 'B' : formaPago;
                 variables.PagoLaboralJS.value = formaPago;
                 
                 // variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde');
@@ -332,12 +336,9 @@ $(function () {
 
                 let check = checkExamenesCuenta(variables.selectClientes.val());
 
-                if(formaPago === 'B' && !check) {
+                if(['B','C'].includes(formaPago) && !check) {
                     selectMedioPago(formaPago);
-                }
-                    
-
-                
+                }   
             });
         }
 
@@ -446,10 +447,6 @@ $(function () {
         });
     });
 
-    // variables.PagoLaboral.on('change', function() {
-    //     selectMedioPago(variables.PagoLaboral.val());
-    // });
-
     //Habilitamos el botón de guardar
     variables.selectClientes.on('change', function(){
         if($(this).select2('data').map(option => option.id).length === 0){
@@ -483,7 +480,7 @@ $(function () {
 
         let check = checkExamenesCuenta(variables.selectClientes.val());
 
-        if(formaPago === 'B' && !check) {
+        if(['B','C'].includes(formaPago) && !check) {
             selectMedioPago(formaPago);
         }
     });
@@ -766,7 +763,7 @@ $(function () {
                 .val('');
 
         switch (opcion) {
-            case 'B':
+            case 'B','C':
                  const contenido = `
                     <option value="" selected>Elija una opción...</option>
                     <option value="A">Efectivo</option>
