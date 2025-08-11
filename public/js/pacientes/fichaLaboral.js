@@ -185,6 +185,8 @@ $(function () {
 
     variables.TipoPrestacion.change(async function(){
 
+        selectMedioPago(null);
+
         variables.PagoLaboral.attr('disabled', false);
 
         if (variables.TipoPrestacion.filter(':checked').val() === 'ART') {
@@ -228,6 +230,8 @@ $(function () {
             } 
 
         }else if(variables.TipoPrestacion.filter(':checked').val()) {
+
+            selectMedioPago(null);
             
              $.get(getFormaPagoCli, {Id: variables.selectClientes.val()}, function(response){
                     let formaPago = !response.FPago ? 'A' : response.FPago,
