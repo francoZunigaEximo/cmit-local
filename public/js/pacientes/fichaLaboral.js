@@ -197,9 +197,9 @@ $(function () {
 
                 $.get(getFormaPagoCli, {Id: variables.selectArt.val()}, function(response){
                     let formaPago = !response.FPago ? 'A' : response.FPago;
-                    formaPago === 'C' ? 'B' : formaPago;
+                    let filtro = formaPago === 'C' ? 'B' : formaPago;
                     
-                    variables.PagoLaboral.val(formaPago);
+                    variables.PagoLaboral.val(filtro);
                     // variables.PagoLaboral.find('option').removeClass('verde rojo');
                     variables.PagoLaboralJS.querySelectorAll('option').forEach(opt => {
                         opt.classList.remove('verde', 'rojo');
@@ -209,11 +209,11 @@ $(function () {
                     // variables.PagoLaboral.find(`option[value=""]`).addClass('negro');
 
                     variables.PagoLaboralJS
-                        .querySelector(`option[value="${formaPago}"]`)
+                        .querySelector(`option[value="${filtro}"]`)
                         ?.classList.add('verde');
 
                     variables.PagoLaboralJS
-                        .querySelectorAll(`option:not([value="${formaPago}"])`)
+                        .querySelectorAll(`option:not([value="${filtro}"])`)
                         .forEach(opt => opt.classList.add('rojo'));
 
                     variables.PagoLaboralJS
@@ -230,17 +230,17 @@ $(function () {
         }else if(variables.TipoPrestacion.filter(':checked').val()) {
             
              $.get(getFormaPagoCli, {Id: variables.selectClientes.val()}, function(response){
-                    let formaPago = !response.FPago ? 'A' : response.FPago;
-                    formaPago === 'C' ? 'B' : formaPago;
-               
+                    let formaPago = !response.FPago ? 'A' : response.FPago,
+                        filtro = formaPago === 'C' ? 'B' : formaPago;
+
                     // variables.PagoLaboral.val(formaPago);
-                    variables.PagoLaboralJS.value = formaPago;
+                    variables.PagoLaboralJS.value = filtro;
                     // variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde');
-                    variables.PagoLaboralJS.querySelector(`option[value="${formaPago}"]`)?.classList.add('verde');
+                    variables.PagoLaboralJS.querySelector(`option[value="${filtro}"]`)?.classList.add('verde');
 
                     // variables.PagoLaboral.find(`option:not([value="${formaPago}"])`).addClass('rojo');
                     variables.PagoLaboralJS
-                        .querySelectorAll(`option:not([value="${formaPago}"])`)
+                        .querySelectorAll(`option:not([value="${filtro}"])`)
                         .forEach(opt => opt.classList.add('rojo'));
 
                     // variables.PagoLaboral.find(`option[value=""]`).addClass('negro');
@@ -248,12 +248,10 @@ $(function () {
                         .querySelector(`option[value=""]`)
                         ?.classList.add('negro');
       
-                   
-
                     let exaCuenta = $.get(lstExDisponibles, { Id: variables.selectClientes.val() });   
-                    
-                    if(exaCuenta.length === 0) return selectMedioPago(response.FPago);
-                    if(formaPago === 'A') variables.PagoLaboralJS.querySelector(`option[value="B"]`)?.classList.add('negro');
+
+                    if(!exaCuenta.length) return selectMedioPago(filtro);
+                    if(filtro === 'A') variables.PagoLaboralJS.querySelector(`option[value="B"]`)?.classList.add('negro');
                     
                     
                 });
@@ -283,26 +281,26 @@ $(function () {
 
                     let formaPago = !response.FPago ? 'A' : response.FPago;
                     // variables.PagoLaboral.val(formaPago);
-                    formaPago === 'C' ? 'B' : formaPago;
-                    variables.PagoLaboralJS.value = formaPago;
+                    let filtro = formaPago === 'C' ? 'B' : formaPago;
+                    variables.PagoLaboralJS.value = filtro;
 
                     // variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde');
-                    variables.PagoLaboralJS.querySelector(`option[value="${formaPago}"]`)?.classList.add('verde');
+                    variables.PagoLaboralJS.querySelector(`option[value="${filtro}"]`)?.classList.add('verde');
                     
                     // variables.PagoLaboral.find(`option:not([value="${formaPago}"])`).addClass('rojo');
                     variables.PagoLaboralJS
-                        .querySelectorAll(`option:not([value="${formaPago}"])`)
+                        .querySelectorAll(`option:not([value="${filtro}"])`)
                         .forEach(opt => opt.classList.add('rojo'));
                     
                     variables.PagoLaboral.find(`option[value=""]`).addClass('negro');
-                    if(formaPago === 'A') variables.PagoLaboralJS.querySelector(`option[value="B"]`)?.classList.add('negro');
+                    if(filtro === 'A') variables.PagoLaboralJS.querySelector(`option[value="B"]`)?.classList.add('negro');
                 
                     let exaCuenta = $.get(lstExDisponibles, { Id: variables.selectClientes.val() }); 
 
-                        if(['B','C'].includes(variables.PagoLaboral.val()) && !exaCuenta) {
-                            selectMedioPago(formaPago);
-                            variables.PagoLaboral.attr('disabled', true);
-                        }
+                    if(filtro === 'B' && !exaCuenta.length) {
+                        selectMedioPago(filtro);
+                        variables.PagoLaboral.attr('disabled', true);
+                    }
 
                 });
          }
@@ -326,18 +324,18 @@ $(function () {
 
                 let formaPago = !response.FPago ? 'A' : response.FPago;
                 // variables.PagoLaboral.val(formaPago);
-                formaPago === 'C' ? 'B' : formaPago;
-                variables.PagoLaboralJS.value = formaPago;
+                let filtro = formaPago === 'C' ? 'B' : formaPago;
+                variables.PagoLaboralJS.value = filtro;
                 
                 // variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde');
-                variables.PagoLaboralJS.querySelector(`option[value="${formaPago}"]`)?.classList.add('verde');
+                variables.PagoLaboralJS.querySelector(`option[value="${filtro}"]`)?.classList.add('verde');
 
-                if(formaPago === 'A') variables.PagoLaboralJS.querySelector(`option[value="B"]`)?.classList.add('negro');
+                if(filtro === 'A') variables.PagoLaboralJS.querySelector(`option[value="B"]`)?.classList.add('negro');
 
                 let check = checkExamenesCuenta(variables.selectClientes.val());
 
-                if(['B','C'].includes(formaPago) && !check) {
-                    selectMedioPago(formaPago);
+                if(['B','C'].includes(filtro) && !check) {
+                    selectMedioPago(filtro);
                 }   
             });
         }
@@ -352,6 +350,8 @@ $(function () {
         dropdownParent: principal.altaPrestacionModal,
         placeholder: 'Seleccionar Cliente',
         language: 'es',
+        closeOnSelect: true,
+        multiple: false,
         allowClear: true,
         language: {
             noResults: function() {
@@ -384,11 +384,16 @@ $(function () {
         minimumInputLength: 2
     });
 
-    $('#selectArt').select2({
+    variables.selectClientes.on('select2:select', function (e) {
+        $(this).select2('close').blur();
+    });
+
+    variables.selectArt.select2({
         placeholder: 'Seleccionar ART',
         dropdownParent: principal.altaPrestacionModal,
         language: 'es',
         allowClear: true,
+        closeOnSelect: true,
         language: {
             noResults: function() {
                 return "No hay clientes con esos datos";        
@@ -418,6 +423,10 @@ $(function () {
            cache: true,
         },
         minimumInputLength: 2
+    });
+
+     variables.selectArt.on('select2:select', function (e) {
+        $(this).select2('close');
     });
 
     variables.SPago.on('change', function(){
@@ -480,8 +489,8 @@ $(function () {
 
         let check = checkExamenesCuenta(variables.selectClientes.val());
 
-        if(['B','C'].includes(formaPago) && !check) {
-            selectMedioPago(formaPago);
+        if(['B','C'].includes(value) && !check) {
+            selectMedioPago(value);
         }
     });
 
@@ -763,7 +772,7 @@ $(function () {
                 .val('');
 
         switch (opcion) {
-            case 'B','C':
+            case 'B':
                  const contenido = `
                     <option value="" selected>Elija una opción...</option>
                     <option value="A">Efectivo</option>
