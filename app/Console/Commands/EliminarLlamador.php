@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\ItemPrestacion;
 use App\Models\Llamador;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -27,8 +28,10 @@ class EliminarLlamador extends Command
      */
     public function handle()
     {
-        $limite = Carbon::now()->subHours(5);
-        $eliminar = Llamador::where('start_at', '<', $limite)->get();
+        $limite = Carbon::now()->subMinutes(5);
+        $eliminar = Llamador::where('start_at', '<', $limite)->get(['prestacion_id', 'especialidad_id', 'profesional_id']);
+
+        $profesionales = ItemPrestacion::whereIn('IdPrestacion', $eliminar->prestacion_id)->where('IdProveedor', $eliminar->especialidad_id)->get();
 
         
 
