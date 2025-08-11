@@ -254,7 +254,7 @@ $(function () {
       
                     let exaCuenta = $.get(lstExDisponibles, { Id: variables.selectClientes.val() });   
 
-                    if(!exaCuenta && filtro === 'B') return selectMedioPago(filtro);
+                    !exaCuenta && filtro === 'B' ? selectMedioPago(filtro) : selectMedioPago(null);
                     if(filtro === 'A') variables.PagoLaboralJS.querySelector(`option[value="B"]`)?.classList.add('negro');
                     
                     
@@ -302,9 +302,11 @@ $(function () {
                 
                     let exaCuenta = $.get(lstExDisponibles, { Id: variables.selectClientes.val() }); 
 
-                    if(filtro === 'B' && !exaCuenta.length) {
+                    if(filtro === 'B' && !exaCuenta) {
                         selectMedioPago(filtro);
                         variables.PagoLaboral.attr('disabled', true);
+                    }else{
+                        selectMedioPago(null);
                     }
 
                 });
@@ -340,9 +342,7 @@ $(function () {
 
                 let check = checkExamenesCuenta(variables.selectClientes.val());
 
-                if(filtro === 'B' && !check) {
-                    selectMedioPago(filtro);
-                }   
+               filtro === 'B' && !check ? selectMedioPago(filtro): selectMedioPago(null);
             });
         }
 
