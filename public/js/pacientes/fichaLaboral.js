@@ -250,7 +250,7 @@ $(function () {
       
                     let exaCuenta = $.get(lstExDisponibles, { Id: variables.selectClientes.val() });   
 
-                    if(!exaCuenta.length) return selectMedioPago(filtro);
+                    if(!exaCuenta && filtro === 'B') return selectMedioPago(filtro);
                     if(filtro === 'A') variables.PagoLaboralJS.querySelector(`option[value="B"]`)?.classList.add('negro');
                     
                     
@@ -334,7 +334,7 @@ $(function () {
 
                 let check = checkExamenesCuenta(variables.selectClientes.val());
 
-                if(['B','C'].includes(filtro) && !check) {
+                if(filtro === 'B' && !check) {
                     selectMedioPago(filtro);
                 }   
             });
@@ -489,7 +489,7 @@ $(function () {
 
         let check = checkExamenesCuenta(variables.selectClientes.val());
 
-        if(['B','C'].includes(value) && !check) {
+        if(value === 'B' && !check) {
             selectMedioPago(value);
         }
     });
