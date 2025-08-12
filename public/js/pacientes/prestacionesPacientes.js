@@ -68,7 +68,8 @@ $(function(){
         btnExamen: $('.btnExamen'),
         examenesCantidad: $('#examenesCantidad'),
         lstExamenesCtd: $('#lstExamenesCtd'),
-        listadoExamenesCtd: $('#listadoExamenesCtd')
+        listadoExamenesCtd: $('#listadoExamenesCtd'),
+        estudios: $('#estudios')
     };
 
     const variables = {
@@ -150,7 +151,6 @@ $(function(){
     getListado(null);
     listadoConSaldos(variables.selectClientes.val());
     cantidadDisponibles(variables.selectClientes.val());
-    // listadoFacturas(variables.selectClientes.val(), null);
     getUltimasFacturadas(variables.selectClientes.val());
     selectorPago(pagoInput);
     
@@ -322,8 +322,7 @@ $(function(){
 
     variables.addExaCtd.on('click', function(e){
 
-        let examenes = [],
-            idPrestacion = variables.idPrestacion.val();
+        let examenes = [];
 
         $('input[name="itemCheckbox"][type="checkbox"]:checked').each(function(){
             examenes.push($(this).val());
@@ -335,13 +334,13 @@ $(function(){
         }
 
         preloader('on');
-        $.post(saveItemExamenes, {idPrestacion: idPrestacion, idExamen: examenes, _token: TOKEN})
+        $.post(saveItemExamenes, {idPrestacion: variables.idPrestacion.val(), idExamen: examenes, _token: TOKEN})
             .done(function(){
                 principal.listaExamenes.empty();
-                $('#estudios').empty();
-                cargarEstudiosImp(idPrestacion);
-                cargarExamen(idPrestacion);
-                contadorExamenes(idPrestacion);
+                principal.estudios.empty();
+                cargarEstudiosImp(variables.idPrestacion.val());
+                cargarExamen(variables.idPrestacion.val());
+                contadorExamenes(variables.idPrestacion.val());
                 preloader('off');
                 toastr.success('Examenes cargados a la prestación correctamente','',{timeOut: 1000});
 
@@ -438,8 +437,7 @@ $(function(){
                 .add(principal.siguienteExCta)
                 .hide();
                 
-            if(variables.TipoPrestacion.val() !== 'ART') principal.ultimasPrestacionesFacturadas.show();
-
+            variables.TipoPrestacion.val() !== 'ART' && principal.ultimasPrestacionesFacturadas.show();
             principal.guardarPrestacion.show();
 
         }else if(variables.TipoPrestacion.val() !== 'ART') {
@@ -1095,7 +1093,7 @@ $(function(){
                         }
 
                         principal.listaExamenes.empty();
-                        $('#estudios').empty();
+                        principal.estudios.empty();
                         cargarEstudiosImp(IdNueva);
                         variables.exam.val([]).trigger('change.select2');
                         variables.paquetes.val([]).trigger('change.select2');
@@ -1335,7 +1333,7 @@ $(function(){
         $.post(saveItemExamenes,{_token: TOKEN, idPrestacion: idPrestacion, idExamen: idExamen})
             .done(function(){
                 principal.listaExamenes.empty();
-                $('#estudios').empty()
+                principal.estudios.empty()
                 cargarEstudiosImp(idPrestacion);
                 variables.exam.val([]).trigger('change.select2');
                 variables.paquetes.trigger('change.select2');
@@ -1415,16 +1413,13 @@ $(function(){
         console.log("check examenes a cuenta");
         $.get(await lstExDisponibles, {Id: id})
             .done(function(response){
-                // let data = selectorPago(pagoInput);
-                console.log(response);
+
                 if(response && response.length > 0) {
 
                     principal.alertaExCta
                         .add(principal.ultimasFacturadas)
                         .add(principal.siguienteExCta)
                         .show();
-
-                    //variables.PagoLaboral.val('P');
                     
                     principal.guardarPrestacion.hide();
 
@@ -1641,12 +1636,12 @@ $(function(){
 
     }
 
-        async function cargarEstudiosImp(idPrestacion)
+    async function cargarEstudiosImp(idPrestacion)
     {
-        $('#estudios').empty();
+        principal.estudios.empty();
 
         if(!idPrestacion) return;
-        console.log("idPrestacion: " + variables.idPrestacion.val());
+
         preloader('on');
         $.get(await listadoEstudiosImp, {Id: variables.idPrestacion.val()})
 
@@ -1664,7 +1659,7 @@ $(function(){
                             </div>
                         `;
 
-                    $('#estudios').append(contenido);
+                    principal.estudios.append(contenido);
                 }
 
             })
