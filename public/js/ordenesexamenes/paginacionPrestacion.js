@@ -186,7 +186,7 @@ $(function() {
                 {//5
                     data: "NombreCompleto",
                     render: function(data, type, row){
-                        return `<span title="${data}">${[null, undefined, ''].includes(data) ? '' : data}</span>`;
+                        return `<span title="${data}">${!data ? '' : data}</span>`;
                     }
                 },
                 {
@@ -234,7 +234,7 @@ $(function() {
                     render: function(data, type, row){
 
                         let profesional = data;
-                        return ![null, undefined, ''].includes(profesional) ? `<span title="${profesional}" class="text-uppercase">${profesional}</span>` : '';
+                        return profesional ? `<span title="${profesional}" class="text-uppercase">${profesional}</span>` : '';
                     }
                 },
                 {//9
@@ -260,7 +260,7 @@ $(function() {
                     data: "profesionalInformador",
                     render: function(data, type, row){
                         let profesional = data;
-                        return ![null, undefined, ''].includes(profesional) ? `<span title="${profesional}" class="text-uppercase">${profesional}</span>` : '';
+                        return profesional ? `<span title="${profesional}" class="text-uppercase">${profesional}</span>` : '';
                     }
                 },
                 {

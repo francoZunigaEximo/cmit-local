@@ -249,7 +249,7 @@ $(function(){
                     render: function(data){
 
                         let pagos = { 'B': 'Ctdo', 'C': 'Ctdo', 'P': 'ExCta', 'A': 'CC'};
-                        return [null, '', undefined].includes(pagos[data.Pago]) ? 'CC' : pagos[data.Pago];      
+                        return !pagos[data.Pago] ? 'CC' : pagos[data.Pago];      
                     }
                 },
                 {

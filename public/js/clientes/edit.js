@@ -772,7 +772,7 @@ $(function() {
     
     function checkeoEstado(idCliente) {
         
-        if([null, 0, '', undefined].includes(idCliente)) return;
+        if(!idCliente) return;
 
         $.get(checkEstadoTipo, {Id: idCliente}, function(response){
             return response  === true ? $('#TipoCliente').attr('disabled', true) : $('#TipoCliente').attr('disabled', false);

@@ -855,7 +855,7 @@ $(function () {
             </div>
         `;
      
-        if (ID === '') return;
+        if (!ID) return;
         
         elementos.ObBloqueoArt
             .add(elementos.ObBloqueoEmpresa)

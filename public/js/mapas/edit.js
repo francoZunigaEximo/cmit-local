@@ -854,7 +854,7 @@ $(function() {
 
         let id = $('#IdPrestacion').text()
 
-        if ([null, '', undefined, 0].includes(id)) return;
+        if (!id) return;
         preloader('on');
         $.get(vistaPrevia, {Id: id})
             .done(function(response){
