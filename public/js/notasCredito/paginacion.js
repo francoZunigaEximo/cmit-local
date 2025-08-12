@@ -248,7 +248,8 @@ function cargarTablaNotas() {
                 name: 'NC',
                 targets: 2,
                 render: function (data) {
-                    return `<div class="text-start"><span>${data.NroNotaCredito == null ? "" : data.NroNotaCredito}</span></div>`;
+                    var nroFactura = `${data.Tipo}-${String(data.Sucursal).padStart(4, '0')}-${String(data.NroNotaCredito).padStart(8, '0')}`;
+                    return `<div class="text-start"><span>${nroFactura == null ? "" : nroFactura}</span></div>`;
                 }
             },
             {
@@ -352,6 +353,7 @@ function eliminarNotaCredito(id) {
             buttons: ["Cancelar", "Eliminar"],
         }).then((aceptar) => {
             if (aceptar) {
+                preloader('on');
                 $.ajax({
                     url: eliminarNotaCreditoPost,
                     type: 'POST',
@@ -370,6 +372,7 @@ function eliminarNotaCredito(id) {
                         } else {
                             toastr.error(response.message, '', { timeOut: 1000 });
                         }
+                        preloader('off');
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
                         toastr.error(jqXHR.responseJSON.message, '', { timeOut: 1000 });
@@ -478,3 +481,4 @@ function eliminarNotaCreditoMasivo(){
         }
     });
 }
+
