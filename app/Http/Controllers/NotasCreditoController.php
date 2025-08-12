@@ -51,10 +51,11 @@ class NotasCreditoController extends Controller
     public function editarNotasCredito($id)
     {
         $notaCredito = NotaCredito::find($id);
+        $cliente = Cliente::find($notaCredito->IdEmpresa);
         if (!$notaCredito) {
             return redirect()->route('notasCredito.index')->with('error', 'Nota de crédito no encontrada.');
         }
-        return view('layouts.notasCredito.editarnotacredito', ['notaCredito' => $notaCredito]);
+        return view('layouts.notasCredito.editarnotacredito', ['notaCredito' => $notaCredito, 'cliente' => $cliente]);
     }
 
     public function getClientes(Request $request)
@@ -215,19 +216,19 @@ class NotasCreditoController extends Controller
         $notas = DB::table('notascredito')
             ->join('clientes', 'notascredito.IdEmpresa', '=', 'clientes.Id')
             ->where('notascredito.Baja', 0)
-            ->select('notascredito.Id as Id', 'notascredito.Nro as NroNotaCredito', 'notascredito.Fecha as Fecha', 'clientes.ParaEmpresa as Empresa', 'clientes.Identificacion as CUIT', 'notascredito.Obs as Observacion')
+            ->select('notascredito.Id as Id', 'notascredito.Tipo as Tipo', 'notascredito.Sucursal as Sucursal', 'notascredito.Nro as NroNotaCredito', 'notascredito.Fecha as Fecha', 'clientes.ParaEmpresa as Empresa', 'clientes.Identificacion as CUIT', 'notascredito.Obs as Observacion')
             ->orderBy('notascredito.Fecha', 'desc');
 
         if ($request->has('IdEmpresa') && $request->IdEmpresa != 0) {
             $notas->where('notascredito.IdEmpresa', '=', $request->IdEmpresa);
         }
 
-        if ($request->has('nroDesde') && $request->nroDesde != '') {
-            $notas->where('notascredito.Id', '>=', $request->nroDesde);
+        if ($request->has('NroDesde') && $request->NroDesde != '') {
+            $notas->where('notascredito.Nro', '>=', $request->NroDesde);
         }
 
-        if ($request->has('nroHasta') && $request->nroHasta != '') {
-            $notas->where('notascredito.Id', '<=', $request->nroHasta);
+        if ($request->has('NroHasta') && $request->NroHasta != '') {
+            $notas->where('notascredito.Nro', '<=', $request->NroHasta);
         }
 
         if ($request->has('fechaDesde') && $request->fechaDesde != '') {
@@ -303,12 +304,12 @@ class NotasCreditoController extends Controller
 
             $control = $this->eliminarNota($id);
             if ($control == 0) {
-                Auditor::setAuditoria($id, 7,3,Auth::user()->Id);
+                Auditor::setAuditoria($id, 7,3,Auth::user()->name);
                 return response()->json(['success' => true, 'message' => 'Nota de crédito eliminada correctamente.'], 200);
             } else if ($control == 1) {
                 return response()->json(['success' => false, 'message' => 'No se puede eliminar la nota de crédito porque tiene items asociados.'], 400);
             } else {
-                return response()->json(['success' => false, 'message' => 'No se puede eliminar la nota de crédito porque tiene items asociados que no están anulados.'], 400);
+                return response()->json(['success' => false, 'message' => 'No se puede eliminar la nota de crédito porque tiene items asociados que están anulados.'], 400);
             }
         } catch (Exception $e) {
             return response()->json(['success' => false, 'message' => 'Error al eliminar la nota de crédito: ' . $e->getMessage()], 500);
@@ -327,7 +328,7 @@ class NotasCreditoController extends Controller
             // Marcar la nota de crédito como eliminada
             $notaCredito->Baja = 1;
             $notaCredito->save();
-            Auditor::setAuditoria($id, 7,3,Auth::user()->Id);
+            Auditor::setAuditoria($id, 7,3,Auth::user()->name);
             return 0;
         } else {
             return 2;
@@ -360,7 +361,7 @@ class NotasCreditoController extends Controller
                 $result["no_eliminadas"]++;
             }
             
-            Auditor::setAuditoria($id, 7,3,Auth::user()->Id);
+            Auditor::setAuditoria($id, 7,3,Auth::user()->name);
         }
         return response()->json(['success' => true, 'result' => $result], 200);
     }
