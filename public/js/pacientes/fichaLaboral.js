@@ -222,6 +222,8 @@ $(function () {
                     //     console.log($(this).val(), $(this).attr('class'));
                     // });
 
+                    filtro === 'B' ? selectMedioPago(filtro): selectMedioPago(null);
+
                 })();
             } 
 
@@ -334,12 +336,10 @@ $(function () {
                 
                 variables.PagoLaboralJS.value = filtro;
                 variables.PagoLaboralJS.querySelector(`option[value="${filtro}"]`)?.classList.add('verde');
-
+                console.log(filtro);
                 if(filtro === 'A') variables.PagoLaboralJS.querySelector(`option[value="B"]`)?.classList.add('negro');
 
-                let check = await checkExamenesCuenta(variables.selectClientes.val());
-
-                filtro === 'B' && check.length === 0 ? selectMedioPago(filtro): selectMedioPago(null);
+                filtro === 'B' ? selectMedioPago(filtro): selectMedioPago(null);
             })(); 
         }
 
