@@ -190,6 +190,7 @@ $(function () {
                 toastr.warning('¡Debe seleccionar una ART para el tipo de prestación ART!','',{timeOut: 1000});
                     
             }else if (variables.selectArt.val()) {
+                variables.PagoLaboral.attr('disabled', false);
 
                 (async () =>{
 
@@ -222,7 +223,12 @@ $(function () {
                     //     console.log($(this).val(), $(this).attr('class'));
                     // });
 
-                    filtro === 'B' ? selectMedioPago(filtro): selectMedioPago(null);
+                    if(filtro === 'B') {
+                        selectMedioPago(filtro);
+                        variables.PagoLaboral.attr('disabled', true);
+                    } else {
+                        selectMedioPago(null);
+                    }
 
                 })();
             } 
