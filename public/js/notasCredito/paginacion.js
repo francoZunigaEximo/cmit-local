@@ -375,6 +375,7 @@ function eliminarNotaCredito(id) {
                         preloader('off');
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
+                        preloader('off');
                         toastr.error(jqXHR.responseJSON.message, '', { timeOut: 1000 });
                         console.error("Error: ", textStatus, errorThrown);
                     }
@@ -472,6 +473,7 @@ function eliminarNotaCreditoMasivo(){
                     } else {
                         toastr.error(response.message, '', { timeOut: 1000 });
                     }
+                    preloader('off');
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     toastr.error(jqXHR.responseJSON.message, '', { timeOut: 1000 });
