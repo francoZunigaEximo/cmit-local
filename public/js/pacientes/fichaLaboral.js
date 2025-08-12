@@ -346,7 +346,12 @@ $(function () {
 
                 if(filtro === 'A') variables.PagoLaboralJS.querySelector(`option[value="B"]`)?.classList.add('negro');
 
-                filtro === 'B' ? selectMedioPago(filtro): selectMedioPago(null);
+                if(filtro === 'B') {
+                    selectMedioPago(filtro);
+                    variables.PagoLaboral.attr('disabled', true);
+                }else{
+                    selectMedioPago(null);
+                }
             })(); 
         }
 
