@@ -412,7 +412,7 @@ $('#btnRegistrar').on('click', function (e) {
                     preloader('off');
                     toastr.success('Se ha cargado al paquete correctamente', '', { timeOut: 1000 });
                     setTimeout(function() {
-                        history.back();
+                         window.location.href = "editPaqueteFacturacion/"+response.id;
                     }, 1000);
                 },
                 error: function (jqXHR) {

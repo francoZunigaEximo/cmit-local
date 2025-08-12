@@ -12,6 +12,7 @@ $(function(){
         grillaPacientes: $('#grillaPacientes'),
         selectMapaPres: $('.selectMapaPres'),
         ultimasFacturadas: $('.ultimasFacturadas'),
+        ultimasPrestacionesFacturadas: $('.ultimasPrestacionesFacturadas'),
         examenesDisponibles: $('.examenesDisponibles'),
         guardarPrestacion: $('#guardarPrestacion'),
         cargarExPrestacion: $('.cargarExPrestacion'),
@@ -67,7 +68,8 @@ $(function(){
         btnExamen: $('.btnExamen'),
         examenesCantidad: $('#examenesCantidad'),
         lstExamenesCtd: $('#lstExamenesCtd'),
-        listadoExamenesCtd: $('#listadoExamenesCtd')
+        listadoExamenesCtd: $('#listadoExamenesCtd'),
+        estudios: $('#estudios')
     };
 
     const variables = {
@@ -249,8 +251,6 @@ $(function(){
                 principal.volverPrestacionLimpia.trigger('click');
                 principal.listaExamenes.empty();
                 IdNueva = response.nuevoId;
-                nroPrestacion = response.nuevoId;
-                $("#nroPrestacion").text(nroPrestacion);
                 cargarExamen(response.nuevoId);
                 contadorExamenes(response.nuevoId);
                 variables.idPrestacion.val(IdNueva);
@@ -322,8 +322,7 @@ $(function(){
 
     variables.addExaCtd.on('click', function(e){
 
-        let examenes = [],
-            idPrestacion = variables.idPrestacion.val();
+        let examenes = [];
 
         $('input[name="itemCheckbox"][type="checkbox"]:checked').each(function(){
             examenes.push($(this).val());
@@ -335,13 +334,13 @@ $(function(){
         }
 
         preloader('on');
-        $.post(saveItemExamenes, {idPrestacion: idPrestacion, idExamen: examenes, _token: TOKEN})
+        $.post(saveItemExamenes, {idPrestacion: variables.idPrestacion.val(), idExamen: examenes, _token: TOKEN})
             .done(function(){
                 principal.listaExamenes.empty();
-                $('#estudios').empty();
-                cargarEstudiosImp(idPrestacion);
-                cargarExamen(idPrestacion);
-                contadorExamenes(idPrestacion);
+                principal.estudios.empty();
+                cargarEstudiosImp(variables.idPrestacion.val());
+                cargarExamen(variables.idPrestacion.val());
+                contadorExamenes(variables.idPrestacion.val());
                 preloader('off');
                 toastr.success('Examenes cargados a la prestación correctamente','',{timeOut: 1000});
 
@@ -432,12 +431,13 @@ $(function(){
 
     function selectorPago(pago) {
         
-        if(['B','C', ''].includes(pago)) {
+         if(['B','C', ''].includes(pago)) {
             
             principal.ultimasFacturadas
                 .add(principal.siguienteExCta)
                 .hide();
-            
+                
+            variables.TipoPrestacion.val() !== 'ART' && principal.ultimasPrestacionesFacturadas.show();
             principal.guardarPrestacion.show();
 
         }else if(variables.TipoPrestacion.val() !== 'ART') {
@@ -1093,7 +1093,7 @@ $(function(){
                         }
 
                         principal.listaExamenes.empty();
-                        $('#estudios').empty();
+                        principal.estudios.empty();
                         cargarEstudiosImp(IdNueva);
                         variables.exam.val([]).trigger('change.select2');
                         variables.paquetes.val([]).trigger('change.select2');
@@ -1333,7 +1333,7 @@ $(function(){
         $.post(saveItemExamenes,{_token: TOKEN, idPrestacion: idPrestacion, idExamen: idExamen})
             .done(function(){
                 principal.listaExamenes.empty();
-                $('#estudios').empty()
+                principal.estudios.empty()
                 cargarEstudiosImp(idPrestacion);
                 variables.exam.val([]).trigger('change.select2');
                 variables.paquetes.trigger('change.select2');
@@ -1410,10 +1410,9 @@ $(function(){
     }
 
     async function checkExamenesCuenta(id){
-
+        console.log("check examenes a cuenta");
         $.get(await lstExDisponibles, {Id: id})
             .done(function(response){
-                // let data = selectorPago(pagoInput);
 
                 if(response && response.length > 0) {
 
@@ -1421,8 +1420,6 @@ $(function(){
                         .add(principal.ultimasFacturadas)
                         .add(principal.siguienteExCta)
                         .show();
-
-                    variables.PagoLaboral.val('P');
                     
                     principal.guardarPrestacion.hide();
 
@@ -1489,12 +1486,12 @@ $(function(){
         if(variables.PagoLaboral.val() === 'P') {
             principal.paqueteExamen.hide();
             principal.paqueteExCta.show();
-            principal.tituloPrestacion.text('Alta Prestación con Ex. a Cuenta');
+            principal.tituloPrestacion.text('Alta Prestación con Ex. a Cuenta Nro: ' + nroPrestacion);
 
         }else{
             principal.paqueteExamen.show();
             principal.paqueteExCta.hide();
-            principal.tituloPrestacion.text('Alta Prestación');
+            principal.tituloPrestacion.text('Alta Prestación Nro: ' + nroPrestacion);
         }
     }
 
@@ -1639,12 +1636,12 @@ $(function(){
 
     }
 
-        async function cargarEstudiosImp(idPrestacion)
+    async function cargarEstudiosImp(idPrestacion)
     {
-        $('#estudios').empty();
+        principal.estudios.empty();
 
         if(!idPrestacion) return;
-        console.log("idPrestacion: " + variables.idPrestacion.val());
+
         preloader('on');
         $.get(await listadoEstudiosImp, {Id: variables.idPrestacion.val()})
 
@@ -1662,7 +1659,7 @@ $(function(){
                             </div>
                         `;
 
-                    $('#estudios').append(contenido);
+                    principal.estudios.append(contenido);
                 }
 
             })

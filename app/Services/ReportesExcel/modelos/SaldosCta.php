@@ -8,7 +8,7 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Illuminate\Support\Str;
 use App\Helpers\ToolsReportes;
 
-class PaqueteEstudio implements ReporteInterface
+class SaldosCta implements ReporteInterface
 {
     protected $spreadsheet;
     protected $sheet;
@@ -25,14 +25,13 @@ class PaqueteEstudio implements ReporteInterface
     public function columnasYEncabezados($sheet)
     {
         $encabezados = [
-            'A1' => 'Codigo',
-            'B1' => 'Nombre',
-            'C1' => 'Examenes',
-            'D1' => 'Descripcion',
-            'E1' => 'Alias'
+            'A1' => 'Cliente',
+            'B1' => 'Para Empresa',
+            'C1' => 'Cantidad',
+            'D1' => 'Examen'
         ];
 
-        $columnas = ['A', 'B', 'C', 'D', 'E'];
+        $columnas = ['A', 'B', 'C', 'D'];
 
         foreach ($columnas as $columna) {
             $sheet->getColumnDimension($columna)->setAutoSize(true);
@@ -44,27 +43,27 @@ class PaqueteEstudio implements ReporteInterface
         }
     }
 
-    public function datos($sheet, $paquetes)
+    public function datos($sheet, $examenes)
     {
+         $sheet->getStyle('A1:D1')->getFill()
+                ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                ->getStartColor()->setARGB('CCCCCCCC'); 
         $fila = 2;
-        foreach ($paquetes as $paquete) {            
-            $sheet->setCellValue('A' . $fila, $paquete->Id);
-            $sheet->setCellValue('B' . $fila, $paquete->Nombre);
-            $sheet->setCellValue('C' . $fila, $paquete->CantidadExamenes);
-            $sheet->setCellValue('D' . $fila, $paquete->Descripcion);
-            $sheet->setCellValue('E' . $fila, $paquete->Alias);
+        foreach ($examenes as $examen) {
+            $sheet->setCellValue('A' . $fila, $examen->Empresa);
+            $sheet->setCellValue('B' . $fila, $examen->ParaEmpresa);
+            $sheet->setCellValue('C' . $fila, $examen->contadorSaldos);
+            $sheet->setCellValue('D' . $fila, $examen->Examen);
             $fila++;
         }
     }
 
-    public function generar($paquetes)
+    public function generar($examenes)
     {
         $this->columnasYEncabezados($this->sheet);
-        $this->datos($this->sheet, $paquetes);
-        
-        $name = 'paquetes_estudios_' . Str::random(6) . '.xlsx';
+        $this->datos($this->sheet, $examenes);
+
+        $name = 'saldos_cta_' . Str::random(6) . '.xlsx';
         return $this->generarArchivo($this->spreadsheet, $name);
     }
-
-    
 }

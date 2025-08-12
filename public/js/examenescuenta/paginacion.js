@@ -184,12 +184,14 @@ $(function(){
                 orderable: false,
                 targets: 8,
                 render: function(data) {
+                    let nroFactura = data.Tipo + ("0000" + data.Sucursal).slice(-4) + '-' + ("00000000" + data.Numero).slice(-8);
+                    let empresa = data.Empresa;
 
                     let editar = `<a title="Editar" href="${location.href}/${data.IdEx}/edit"><button type="button" class="btn btn-sm iconGeneralNegro"><i class="ri-edit-line"></i></button></a>`,
                 
                         baja = `<button data-id="${data.IdEx}" title="Dar de baja" type="button" class="btn btn-sm iconGeneralNegro deleteExamen" ><i class="ri-delete-bin-2-line"></i></button>`,
                         
-                        pago = `<button type="button" data-id="${data.IdEx}" class="btn btn-sm botonGeneral cambiarBoton">${data.FechaPagado === '0000-00-00' ? 'Pagar' : 'Quitar pago'}</button>`;
+                        pago = `<button type="button" data-id="${data.IdEx}" data-nro="${nroFactura}" data-empresa="${empresa}" class="btn btn-sm botonGeneral cambiarBoton">${data.FechaPagado === '0000-00-00' ? 'Pagar' : 'Quitar pago'}</button>`;
 
                     return editar + ' ' + baja + ' ' + pago;  
                 }
@@ -328,7 +330,7 @@ $(function(){
                     targets: 0,
                     render: function(data){
                    
-                        return `<div class="text-center"><input type="checkbox" name="Id" value="${data.IdEx}" checked></div>`;
+                        return `<div class="text-center"><input type="checkbox" name="Id" value="${data.IdEx}"></div>`;
                     }
                 },
                 {
@@ -403,15 +405,15 @@ $(function(){
                     orderable: false,
                     targets: 8,
                     render: function(data) {
-
-
+                        let nroFactura = data.Tipo + ("0000" + data.Sucursal).slice(-4) + '-' + ("00000000" + data.Numero).slice(-8);
+                        let empresa = data.Empresa;
                         habilitarMasivo(data.Pagado);
 
                         let editar = `<a title="Editar" href="${location.href}/${data.IdEx}/edit"><button type="button" class="btn btn-sm iconGeneralNegro"><i class="ri-edit-line"></i></button></a>`,
                     
                             baja = `<button data-id="${data.IdEx}" title="Dar de baja" type="button" class="btn btn-sm iconGeneralNegro deleteExamen" ><i class="ri-delete-bin-2-line"></i></button>`,
                             
-                            pago = `<button type="button" data-id="${data.IdEx}" class="btn btn-sm botonGeneral cambiarBoton">${data.FechaPagado === '0000-00-00' ? 'Pagar' : 'Quitar pago'}</button>`;
+                            pago = `<button type="button" data-id="${data.IdEx}" data-nro="${nroFactura}" data-empresa="${empresa}" class="btn btn-sm botonGeneral cambiarBoton">${data.FechaPagado === '0000-00-00' ? 'Pagar' : 'Quitar pago'}</button>`;
 
                         return editar + ' ' + baja + ' ' + pago;  
                     }
@@ -495,4 +497,5 @@ $(function(){
 
         
     });
+
 });

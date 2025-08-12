@@ -5,7 +5,7 @@
 @section('content')
 <div class="row mb-4">
     <div class="col-12 text-end">
-        <button onclick="window.history.back()" class="btn btn-warning"><i class="ri-arrow-left-line"></i>&nbsp;Volver</button>
+        <a href="{{ route('grupos.index') }}"  class="btn btn-warning"><i class="ri-arrow-left-line"></i>&nbsp;Volver</a>
     </div>
 </div>
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
@@ -64,7 +64,7 @@
         </tbody>
     </table>
     <div class="col-12 box-information mt-2 text-center">
-        <button type="submit" id="btnRegistrar" class="btn botonGeneral">Editar</button>
+        <button type="submit" id="btnRegistrar" class="btn botonGeneral">Guardar</button>
     </div>
 </div>
 
@@ -79,7 +79,6 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 <link rel="stylesheet" href="{{ asset('css/hacks.css')}}?v={{ time() }}">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
-
 <link rel="stylesheet" href="{{ asset('css/fixSelect2.css') }}">
 
 @endpush

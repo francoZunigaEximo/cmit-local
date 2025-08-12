@@ -342,7 +342,8 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::get('listExCta', [ExamenesCuentaController::class, 'listadoExCta'])->name('listExCta');
     Route::get('exportExcel', [ExamenesCuentaController::class, 'excel'])->name('exportExcel');
     Route::get('exportPDF', [ExamenesCuentaController::class, 'pdf'])->name('exportPDF');
-    Route::get('exportGeneral', [ExamenesCuentaController::class, 'reporteGeneral'])->name('exportGeneral');
+    Route::get('exportarDetalle', [ExamenesCuentaController::class, 'reporteDetalle'])->name('notasCredito.exportarDetalle');
+    Route::get('notasCredito/exportarExcel', [ExamenesCuentaController::class, 'reporteGeneral'])->name('notasCredito.exportarExcel');
     Route::get('/examenesCuenta/disponibilidad', [ExamenesCuentaController::class, 'disponibilidad'])->name('lstExDisponibles');
     Route::get('lstFacturadas', [ExamenesCuentaController::class, 'listadoUltimas'])->name('lstFacturadas');
     Route::get('saldoNoDatatable', [ExamenesCuentaController::class, 'saldoNoDatatable'])->name('saldoNoDatatable');
@@ -462,6 +463,7 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     //ruta paquete estudios id
     Route::post('paquetes/examenesPaqueteId', [PaquetesController::class, 'getExamenesPaqueteId'])->name('paquetes.examenesPaqueteId');
     Route::post('paquetes/examenesPaqueteFacturacionId', [PaquetesController::class, 'getExamenesPaqueteEstudio'])->name('paquetes.examenesPaqueteFacturacionId');
+    Route::get('paquetes/index', [PaquetesController::class, 'index'])->name('paquetes.index');
     Route::resource('paquetes', PaquetesController::class);
 
     //grupos

@@ -139,9 +139,11 @@ $(function(){
         
         e.preventDefault();
         let id = $(this).data('id');
+        let nroFactura = $(this).data('nro');
+        let empresa = $(this).data('empresa');
 
         swal({
-            title: "¿Está seguro que desea realizar la operación?",
+            title: "Empresa: "+empresa + " Nro Factura: " + nroFactura + " \n ¿Está seguro que desea realizar la operación?",
             icon: "warning",
             buttons: ["Cancelar", "Aceptar"]
         }).then((confirmar) => {
@@ -239,45 +241,12 @@ $(function(){
         });
     });
 
-    $(document).on('click', '.sieteFacturas', function(e){
+    $(document).on('click', '.facturasHoy', function(e){
         e.preventDefault();
         /*let table = $(tabla).DataTable();
         table.ajax.url(INDEX).page.len(7).load();*/
         location.reload();
     });
-
-    $(document).on('click', '.detalles, .saldo', function(e){
-        e.preventDefault();
-
-        let id = $(this).data('id'), tipo = $(this).hasClass('detalles') ? 'detalles' : 'saldo';
-
-        if(!id) {
-            toastr.warning("No posee identificador para iniciar el proceso", '', {timeOut: 1000});
-            return;
-        }
-
-        swal({
-            title: "¿Estas seguro que deseas generar el reporte de " + tipo,
-            icon: "warning",
-            buttons: ["Cancelar", "Aceptar"]
-        }).then((confirmar) => {
-            if(confirmar) {
-                $.get(exportGeneral, {Id: id, Tipo: tipo})
-                .done(function(response){
-
-                    createFile("xlsx", response.filePath, "reporte");
-                    toastr.success("Se esta generando el reporte", '', {timeOut: 1000});
-                })
-                .fail(function(jqXHR){
-                    preloader('off');
-                    let errorData = JSON.parse(jqXHR.responseText);            
-                    checkError(jqXHR.status, errorData.msg);
-                    return;  
-                });
-            }
-        });
-    });
-
 
 
 });

@@ -23,15 +23,20 @@ $(function () {
         cerrarlstExCta: $('.cerrarlstExCta'),
         prestacionLimpia: $('.prestacionLimpia'),
         ultimasFacturadas: $('.ultimasFacturadas'),
+        ultimasPrestacionesFacturadas: $('.ultimasPrestacionesFacturadas'),
         examenesDiponibles: $('examenesDisponibles'),
         siguienteExCta: $('#siguienteExCta'),
         guardarPrestacion: $('#guardarPrestacion'),
         selectMapaPres: $('.selectMapaPres'),
         selectMapaPresN: $('.selectMapaPresN'),
-        NroFactPrestacion: $('.NroFactPrestacion')
+        NroFactPrestacion: $('.NroFactPrestacion'),
+        motivoModal: $('#motivoModal'),
+        razonSocialModal: $('#razonSocialModal'),
+        identificacionModal: $('#identificacionModal')
     };
 
     const variables = {
+        PagoLaboralJS: document.getElementById('PagoLaboral'),
         PagoLaboral: $('#PagoLaboral'),
         Pago: $('#Pago'),
         SPago: $('#SPago'),
@@ -62,7 +67,22 @@ $(function () {
         ElAutorizado: $('#ElAutorizado'),
         ElNroFactProv: $('#ElNroFactProv'),
         NroFactPrestacion: $('#NroFactPrestacion'),
-        facturacion_id: $('#facturacion_id')
+        facturacion_id: $('#facturacion_id'),
+        IdFichaLaboral: $('#IdFichaLaboral'),
+        FechaExArt: $('#FechaExArt'),
+        FechaUltPeriod: $('#FechaUltPeriod'),
+        FechaPreocupacional: $('#FechaPreocupacional'),
+        AntiguedadEmpresa: $('#AntiguedadEmpresa'),
+        AntiguedadPuesto: $('#AntiguedadPuesto'),
+        CCostos: $('#CCostos'),
+        SectorActual: $('#SectorActual'),
+        PuestoActual: $('#PuestoActual'),
+        UltimoPuesto: $('#UltimoPuesto'),
+        ObservacionesFicha: $('#ObservacionesFicha'),
+        Horario: $('#Horario'),
+        TipoJornada: $('#TipoJornada'),
+        TareaRealizar: $('#TareaRealizar'),
+        
     };
 
     const listOpciones = {
@@ -145,11 +165,6 @@ $(function () {
         limpiezaInputsPagos();
     });
 
-    variables.PagoLaboral.change(function(){
-        let valor = $(this).val();
-        selectorPago(valor);
-    });
-
     variables.TipoPrestacion.change(function(){
 
         variables.PagoLaboral.attr('disabled', false);
@@ -164,6 +179,8 @@ $(function () {
 
     variables.TipoPrestacion.change(async function(){
 
+        selectMedioPago(null);
+
         variables.PagoLaboral.attr('disabled', false);
 
         if (variables.TipoPrestacion.filter(':checked').val() === 'ART') {
@@ -173,38 +190,84 @@ $(function () {
                 toastr.warning('¡Debe seleccionar una ART para el tipo de prestación ART!','',{timeOut: 1000});
                     
             }else if (variables.selectArt.val()) {
+                variables.PagoLaboral.attr('disabled', false);
 
-                $.get(getFormaPagoCli, {Id: variables.selectArt.val()}, function(response){
-                    let formaPago = !response.FPago ? 'A' : response.FPago;
+                (async () =>{
+
+                    let response = await $.get(getFormaPagoCli, {Id: variables.selectArt.val()}),
+                        formaPago = !response.FPago ? 'A' : response.FPago,
+                        filtro = formaPago === 'C' ? 'B' : formaPago;
                     
-                    variables.PagoLaboral.val(formaPago);
-                    variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde'); // color solo a la opcion requerida
+                    variables.PagoLaboralJS.value = filtro;
+                    // variables.PagoLaboral.find('option').removeClass('verde rojo');
+                    variables.PagoLaboralJS.querySelectorAll('option').forEach(opt => {
+                        opt.classList.remove('verde', 'rojo');
+                    });
+                    // variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde'); // color solo a la opcion requerida
+                    // variables.PagoLaboral.find(`option:not([value="${formaPago}"])`).addClass('rojo');
+                    // variables.PagoLaboral.find(`option[value=""]`).addClass('negro');
 
-                    selectMedioPago(response.FPago);
-                    setTimeout(() => {
-                        variables.PagoLaboral.val() === 'B' && variables.PagoLaboral.attr('disabled', true);
-                    }, 2000);
-                });
+                    variables.PagoLaboralJS
+                        .querySelector(`option[value="${filtro}"]`)
+                        ?.classList.add('verde');
+
+                    variables.PagoLaboralJS
+                        .querySelectorAll(`option:not([value="${filtro}"])`)
+                        .forEach(opt => opt.classList.add('rojo'));
+
+                    variables.PagoLaboralJS
+                        .querySelector(`option[value=""]`)
+                        ?.classList.add('negro');
+
+                    // variables.PagoLaboral.find('option').each(function () {
+                    //     console.log($(this).val(), $(this).attr('class'));
+                    // });
+
+                    if(filtro === 'B') {
+                        selectMedioPago(filtro);
+                        variables.PagoLaboral.attr('disabled', true);
+                    } else {
+                        selectMedioPago(null);
+                    }
+
+                })();
             } 
 
-        }else if(variables.TipoPrestacion.filter(':checked').val()) {
+        }else if(variables.TipoPrestacion.filter(':checked').val() !== 'ART') {
             
-             $.get(getFormaPagoCli, {Id: variables.selectClientes.val()}, function(response){
-                    let formaPago = !response.FPago ? 'A' : response.FPago;
-                    
-                    variables.PagoLaboral.val(formaPago);
-                    variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde'); // color solo a la opcion requerida
-                    selectMedioPago(response.FPago);
+             (async () => {
 
-                    setTimeout(() => {
-                        variables.PagoLaboral.val() === 'B' && variables.PagoLaboral.attr('disabled', true);
-                    }, 2000);
+                let response = await $.get(getFormaPagoCli, { Id: variables.selectClientes.val() });
+
+                let formaPago = !response.FPago ? 'A' : response.FPago,
+                    filtro = formaPago === 'C' ? 'B' : formaPago;
+
+                variables.PagoLaboralJS.value = filtro;
+                
+                 variables.PagoLaboralJS.querySelectorAll('option').forEach(opt => {
+                    opt.classList.remove('verde', 'rojo');
                 });
+
+                variables.PagoLaboralJS.querySelector(`option[value="${filtro}"]`)?.classList.add('verde');
+                variables.PagoLaboralJS
+                    .querySelectorAll(`option:not([value="${filtro}"])`)
+                    .forEach(opt => opt.classList.add('rojo'));
+                variables.PagoLaboralJS
+                    .querySelector(`option[value=""]`)
+                    ?.classList.add('negro');
+
+                let exaCuenta = await $.get(lstExDisponibles, { Id: variables.selectClientes.val() });
+
+               exaCuenta.length === 0 && filtro === 'B' ? selectMedioPago(filtro) : selectMedioPago(null);
+               
+               filtro === 'A' && variables.PagoLaboralJS.querySelector(`option[value="B"]`)?.classList.add('negro');
+            })();
         }
     });
 
     variables.selectClientes.on('change', function(){
 
+        selectMedioPago(null);
         variables.PagoLaboral.attr('disabled', false);
 
         if(!variables.selectClientes.val() || variables.selectClientes.val() === '0') {
@@ -212,7 +275,7 @@ $(function () {
                 <option value="B">Contado</option>
                 <option value="A">Cuenta Corriente</option>`);
             variables.PagoLaboral.css('color', 'black');
-            $('input[name="TipoPrestacion"]').prop('checked', false); //Quitamos todos los checks y dejamos de cero
+            variables.TipoPrestacion.prop('checked', false); //Quitamos todos los checks y dejamos de cero
             
             checkExamenesCuenta(variables.selectClientes.val());
         }
@@ -222,24 +285,44 @@ $(function () {
             variables.TipoPrestacion.filter(':checked').val()
         ) 
             {   
-                $.get(getFormaPagoCli, {Id: variables.selectClientes.val()}, async function(response){
+                (async () => {
 
-                    let formaPago = !response.FPago ? 'A' : response.FPago;
-                    variables.PagoLaboral.val(formaPago);
-                    variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde'); // color solo a la opcion requerida
+                    let response = await $.get(getFormaPagoCli, {Id: variables.selectClientes.val()}),
+                        formaPago = !response.FPago ? 'A' : response.FPago,
+                        filtro = formaPago === 'C' ? 'B' : formaPago;
+                    
+                    variables.PagoLaboralJS.value = filtro;
+                    variables.PagoLaboralJS.querySelectorAll('option').forEach(opt => {
+                        opt.classList.remove('verde', 'rojo');
+                    });
 
-                    selectMedioPago(response.FPago);
+                    
+                    // variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde');
+                    variables.PagoLaboralJS.querySelector(`option[value="${filtro}"]`)?.classList.add('verde');
+                    
+                    // variables.PagoLaboral.find(`option:not([value="${formaPago}"])`).addClass('rojo');
+                    variables.PagoLaboralJS
+                        .querySelectorAll(`option:not([value="${filtro}"])`)
+                        .forEach(opt => opt.classList.add('rojo'));
+                    
+                    variables.PagoLaboral.find(`option[value=""]`).addClass('negro');
+                    if(filtro === 'A') variables.PagoLaboralJS.querySelector(`option[value="B"]`)?.classList.add('negro');
+                
+                    let exaCuenta = await $.get(lstExDisponibles, { Id: variables.selectClientes.val() }); 
 
-                    setTimeout(() => {
-                        variables.PagoLaboral.val() === 'B' && variables.PagoLaboral.attr('disabled', true);
-                    }, 2000);
-
-                });
+                    if(filtro === 'B' && exaCuenta.length === 0) {
+                        selectMedioPago(filtro);
+                        variables.PagoLaboral.attr('disabled', true);
+                    }else{
+                        selectMedioPago(null);
+                    }
+                })();
          }
     });
 
     variables.selectArt.on('change', function(){
 
+        selectMedioPago(null);
         variables.PagoLaboral.attr('disabled', false);
 
         if((!variables.selectArt.val() || variables.selectArt.val() === '0') && (!variables.selectClientes.val() || variables.selectClientes.val() === '0')) {
@@ -247,25 +330,29 @@ $(function () {
                 <option value="B">Contado</option>
                 <option value="A">Cuenta Corriente</option>`);
             variables.PagoLaboral.css('color', 'black');
-            $('input[name="TipoPrestacion"]').prop('checked', false); //Quitamos todos los checks y dejamos de cero
+            variables.TipoPrestacion.prop('checked', false); //Quitamos todos los checks y dejamos de cero
             return;
         
         }else {
 
-            $.get(getFormaPagoCli, {Id: variables.selectArt.val()}, async function(response){
+            (async () => {
 
-                let formaPago = !response.FPago ? 'A' : response.FPago;
-                variables.PagoLaboral.val(formaPago);
-                variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde'); // color solo a la opcion requerida
+                let response = await $.get(getFormaPagoCli, {Id: variables.selectArt.val()}),
+                    formaPago = !response.FPago ? 'A' : response.FPago,
+                    filtro = formaPago === 'C' ? 'B' : formaPago;
+                
+                variables.PagoLaboralJS.value = filtro;
+                variables.PagoLaboralJS.querySelector(`option[value="${filtro}"]`)?.classList.add('verde');
 
-                selectMedioPago(response.FPago);
+                if(filtro === 'A') variables.PagoLaboralJS.querySelector(`option[value="B"]`)?.classList.add('negro');
 
-                setTimeout(() => {
-                    variables.PagoLaboral.val() === 'B' && variables.PagoLaboral.attr('disabled', true);
-                }, 2000);
-
-            });
-
+                if(filtro === 'B') {
+                    selectMedioPago(filtro);
+                    variables.PagoLaboral.attr('disabled', true);
+                }else{
+                    selectMedioPago(null);
+                }
+            })(); 
         }
 
     });
@@ -278,6 +365,8 @@ $(function () {
         dropdownParent: principal.altaPrestacionModal,
         placeholder: 'Seleccionar Cliente',
         language: 'es',
+        closeOnSelect: true,
+        multiple: false,
         allowClear: true,
         language: {
             noResults: function() {
@@ -310,11 +399,16 @@ $(function () {
         minimumInputLength: 2
     });
 
-    $('#selectArt').select2({
+    variables.selectClientes.on('select2:select', function (e) {
+        $(this).select2('close').blur();
+    });
+
+    variables.selectArt.select2({
         placeholder: 'Seleccionar ART',
         dropdownParent: principal.altaPrestacionModal,
         language: 'es',
         allowClear: true,
+        closeOnSelect: true,
         language: {
             noResults: function() {
                 return "No hay clientes con esos datos";        
@@ -346,6 +440,10 @@ $(function () {
         minimumInputLength: 2
     });
 
+     variables.selectArt.on('select2:select', function (e) {
+        $(this).select2('close');
+    });
+
     variables.SPago.on('change', function(){
         let pago = $(this).val();
         return pago === 'G' 
@@ -373,10 +471,6 @@ $(function () {
         });
     });
 
-    variables.PagoLaboral.on('change', function() {
-        selectMedioPago(variables.PagoLaboral.val());
-    });
-
     //Habilitamos el botón de guardar
     variables.selectClientes.on('change', function(){
         if($(this).select2('data').map(option => option.id).length === 0){
@@ -390,7 +484,7 @@ $(function () {
         let value = $(this).val();
 
         if(!value || value === '0') {
-            $('input[name="TipoPrestacion"]').prop('checked', false);
+            variables.TipoPrestacion.prop('checked', false);
             variables.PagoLaboral.val('');
             principal.SPago
                 .add(principal.Tipo)
@@ -407,6 +501,12 @@ $(function () {
                 .add(variables.NroFactProv)
                 .val('');
         }
+
+        let check = checkExamenesCuenta(variables.selectClientes.val());
+
+        if(value === 'B' && !check) {
+            selectMedioPago(value);
+        }
     });
 
     //Guardar FichaLaboral
@@ -417,30 +517,30 @@ $(function () {
             paciente: ID,
             cliente: variables.selectClientes.val(),
             art: variables.selectArt.val(),
-            tareaRealizar: $('#TareaRealizar').val(),
+            tareaRealizar: variables.TareaRealizar.val(),
             tipoPrestacion: variables.TipoPrestacion.filter(':checked').val(),
-            tipo: $('#TipoJornada').val(),
+            tipo: variables.TipoJornada.val(),
             pago: variables.PagoLaboral.val(),
-            horario: $('#Horario').val(),
-            observaciones: $('#ObservacionesFicha').val(),
-            ultimoPuesto: $('#UltimoPuesto').val(),
-            puestoActual: $('#PuestoActual').val(),
-            sectorActual: $('#SectorActual').val(),
-            ccosto: $('#CCostos').val(),
-            antiguedadPuesto: $('#AntiguedadPuesto').val(),
+            horario: variables.Horario.val(),
+            observaciones: variables.ObservacionesFicha.val(),
+            ultimoPuesto: variables.UltimoPuesto.val(),
+            puestoActual: variables.PuestoActual.val(),
+            sectorActual: variables.SectorActual.val(),
+            ccosto: variables.CCostos.val(),
+            antiguedadPuesto: variables.AntiguedadPuesto.val(),
             fechaIngreso: variables.FechaIngreso.val(),
             fechaEgreso: variables.FechaEgreso.val(),
-            antiguedadEmpresa: $('#AntiguedadEmpresa').val(),
-            fechaPreocupacional: $('#FechaPreocupacional').val(),
-            fechaUltPeriod: $('#FechaUltPeriod').val(),
-            fechaExArt: $('#FechaExArt').val(),
-            Id: $('#IdFichaLaboral').val(),
+            antiguedadEmpresa: variables.AntiguedadEmpresa.val(),
+            fechaPreocupacional: variables.FechaPreocupacional.val(),
+            fechaUltPeriod: variables.FechaUltPeriod.val(),
+            fechaExArt: variables.FechaExArt.val(),
+            Id: variables.IdFichaLaboral.val(),
             Spago: variables.SPago.val(),
             TipoF: variables.Tipo.val(),
             SucursalF: variables.Sucursal.val(),
             NumeroF: variables.NroFactura.val(),
-            NumeroProvF: $('#NroFactProv').val(),
-            Autoriza: $('#Autorizado').val()
+            NumeroProvF: variables.NroFactProv.val(),
+            Autoriza: variables.Autorizado.val()
         };
     
         //Validamos la factura
@@ -539,13 +639,13 @@ $(function () {
     function cargarBloqueo(response){
         let razonSocial = response.RazonSocial, motivo = response.Motivo, identificacion = response.Identificacion;
 
-        $('#razonSocialModal').text(razonSocial);
-        $('#motivoModal').text(motivo);
-        $('#identificacionModal').text(identificacion);
+        principal.razonSocialModal.text(razonSocial);
+        principal.motivoModal.text(motivo);
+        principal.identificacionModal.text(identificacion);
 
         principal.guardarFicha.attr('disabled', 'disabled').attr('title', 'Botón bloqueado').attr('data-toggle', 'tooltip').attr('data-placement', 'top');
 
-        swal("¡Cliente Bloqueado!", "El cliente " +  razonSocial + " | cuit: " + identificacion + " se encuentra bloqueado por el siguiente motivo: " + motivo +  ". No podrá avanzar con el alta. Se ha bloqueado el botón de registro.","info");
+        swal(`¡Cliente Bloqueado!", "El cliente ${razonSocial} | cuit: ${identificacion} se encuentra bloqueado por el siguiente motivo: ${motivo}. No podrá avanzar con el alta. Se ha bloqueado el botón de registro.","info`);
     };
 
     function deshabilitarBloqueo(){
@@ -654,8 +754,10 @@ $(function () {
 
     function calcularAntiguedad(){
     
-        let ingreso = variables.FechaIngreso.val(), egreso = variables.FechaEgreso.val();
-        let dateIngreso = new Date(ingreso), dateEgreso = egreso ? new Date(egreso) : new Date();
+        let ingreso = variables.FechaIngreso.val(), 
+            egreso = variables.FechaEgreso.val(),
+            dateIngreso = new Date(ingreso), 
+            dateEgreso = egreso ? new Date(egreso) : new Date();
 
         let diff =  dateEgreso.getFullYear() - dateIngreso.getFullYear();
 
@@ -663,7 +765,7 @@ $(function () {
             diff--;
         }
 
-        $('#AntiguedadEmpresa').val(diff);
+        variables.AntiguedadEmpresa.val(diff);
     };
 
     function opcionesFicha(option){
@@ -674,7 +776,9 @@ $(function () {
         });
     };
 
-    function selectMedioPago(opcion){
+    async function selectMedioPago(opcion){
+
+        let exaCuenta = await $.get(lstExDisponibles, { Id: variables.selectClientes.val() });
 
         variables.Tipo
                 .add(variables.Sucursal)
@@ -704,15 +808,21 @@ $(function () {
                 variables.SPago
                     .empty()
                     .append(contenido);
+
+                if(variables.PagoLaboral.val() === 'B' && exaCuenta.length === 0) {
+                    variables.PagoLaboral.attr('disabled', true)
+                }else{
+                    variables.PagoLaboral.attr('disabled', false)
+                }
                 break;
             
             case 'A':
                 principal.ObsPres
                 .add(principal.NroFactProv)
+                .add(principal.Factura)
                 .add(principal.SPago)
                 .hide();
             
-                principal.Factura.show();
                 break;
         
             default:
@@ -859,7 +969,7 @@ $(function () {
             });    
     };
 
-    function selectorPago(pago) {
+    async function selectorPago(pago) {
 
         if (pago != 'B') {
 
@@ -868,8 +978,6 @@ $(function () {
                 .add(variables.Sucursal)
                 .add(variables.NroFactura)
                 .val('');
-            
-                //aca
         }
 
         if(['B','A', ''].includes(pago)) {
@@ -878,12 +986,21 @@ $(function () {
                 .add(principal.examenesDiponibles)
                 .add(principal.siguienteExCta)
                 .hide();
+
+            if(variables.TipoPrestacion.filter(':checked').val() !== 'ART') principal.ultimasPrestacionesFacturadas.show();
+            
             principal.guardarPrestacion.show();
         
         }else if(pago === 'P') {
 
+            principal.guardarPrestacion
+                .add(principal.SPago)
+                .add(principal.Factura)
+                .add(principal.NroFactProv)
+                .hide();
+
             preloader('on');
-            $.get(lstExDisponibles, {Id: variables.selectClientes.val()})
+            $.get(await lstExDisponibles, {Id: variables.selectClientes.val()})
             .done(function(response){
                 preloader('off');
 
@@ -892,7 +1009,7 @@ $(function () {
                         .add(principal.examenesDiponibles)
                         .add(principal.siguienteExCta)
                         .show();
-                    principal.guardarPrestacion.hide();
+
                     // checkExamenesCuenta(variables.selectClientes.val())
                 }
             });
@@ -920,10 +1037,15 @@ $(function () {
                 principal.alertaExCta.add(principal.verListadoExCta).show();
                 variables.PagoLaboral.find('option[value="P"]').remove();
                 variables.PagoLaboral.append('<option value="P" selected>Examen a cuenta</option>');
-                variables.PagoLaboral.val('P');
-                variables.Pago.val('P');
+                // variables.PagoLaboral.find('option[value="P"]').addClass('verde');
+                variables.PagoLaboralJS.querySelector('option[value="P"]').classList.add('verde');
                 limpiezaInputsPagos();
                 variables.PagoLaboral.attr('disabled', false);
+                principal.SPago
+                        .add(principal.SPago)
+                        .add(principal.Factura)
+                        .add(principal.NroFactProv)
+                        .hide();
                 return true;
 
             } else {
@@ -931,7 +1053,8 @@ $(function () {
                     .add(principal.verListadoExCta)
                     .hide();
 
-                variables.PagoLaboral.find('option[value="P"]').remove();               
+                variables.PagoLaboral.find('option[value="P"]').remove();
+                               
                 return;
             }
         } catch (jqXHR) {
@@ -949,10 +1072,10 @@ $(function () {
             IdPaciente: data.paciente,
             IdEmpresa: data.cliente === '' ? 0 : data.cliente,
             IdART: data.art === '' ? 0 : data.art,
-            tareaRealizar: data.tareaRealizar === '' ? '' : data.tareaRealizar,
-            TipoPrestacion: data.tipoPrestacion === '' ? '' : data.tipoPrestacion,
+            tareaRealizar: !data.tareaRealizar ? '' : data.tareaRealizar,
+            TipoPrestacion: !data.tipoPrestacion ? '' : data.tipoPrestacion,
             TipoJornada: data.tipo ?? '',
-            Pago: data.pago === '' ? '' : data.pago,
+            Pago: !data.pago ? '' : data.pago,
             Jornada: data.horario ?? '',
             Observaciones: data.observaciones === '' ? '' : data.observaciones,
             TareasEmpAnterior: data.ultimoPuesto === '' ? '' : data.ultimoPuesto,
@@ -968,18 +1091,18 @@ $(function () {
             FechaExArt: data.fechaExArt === '' ? '' : data.fechaExArt,
             Id: data.Id,
             SPago: data.Spago === '' ? '' : data.Spago,
-            Tipo: data.Tipo === '' ? '' : data.TipoF,
-            Sucursal: data.SucursalF === '' ? '' : data.SucursalF,
+            Tipo: !data.Tipo ? '' : data.TipoF,
+            Sucursal: !data.SucursalF ? '' : data.SucursalF,
             NroFactura: data.NumeroF === '' ? '' : data.NumeroF,
             NroFactProv: data.NumeroProvF === '' ? '' : data.NumeroProvF,
-            Autorizado: data.Autoriza === '' ? '' :data.Autoriza,   
+            Autorizado: !data.Autoriza ? '' :data.Autoriza,   
             _token: TOKEN,
             }) 
             .done(function(response) {
                 preloader('off');
                 toastr.success(response.msg,'',{timeOut: 1000});
 
-                variables.facturacion_id.val(response.datos_facturacion_id);
+                variables.facturacion_id.val(response.datos_facturacion_id || 0);
 
                 mostrarFinanciador();
                 selectMedioPago(variables.PagoLaboral.val());
