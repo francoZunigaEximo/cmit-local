@@ -233,7 +233,7 @@ $(function () {
                 })();
             } 
 
-        }else if(variables.TipoPrestacion.filter(':checked').val()) {
+        }else if(variables.TipoPrestacion.filter(':checked').val() !== 'ART') {
             
              (async () => {
 
@@ -259,6 +259,7 @@ $(function () {
                 let exaCuenta = await $.get(lstExDisponibles, { Id: variables.selectClientes.val() });
 
                exaCuenta.length === 0 && filtro === 'B' ? selectMedioPago(filtro) : selectMedioPago(null);
+               
                filtro === 'A' && variables.PagoLaboralJS.querySelector(`option[value="B"]`)?.classList.add('negro');
             })();
         }
@@ -295,7 +296,7 @@ $(function () {
                         opt.classList.remove('verde', 'rojo');
                     });
 
-                    console.log("Cliente: " + filtro);
+                    
                     // variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde');
                     variables.PagoLaboralJS.querySelector(`option[value="${filtro}"]`)?.classList.add('verde');
                     
@@ -342,7 +343,7 @@ $(function () {
                 
                 variables.PagoLaboralJS.value = filtro;
                 variables.PagoLaboralJS.querySelector(`option[value="${filtro}"]`)?.classList.add('verde');
-                console.log(filtro);
+
                 if(filtro === 'A') variables.PagoLaboralJS.querySelector(`option[value="B"]`)?.classList.add('negro');
 
                 filtro === 'B' ? selectMedioPago(filtro): selectMedioPago(null);
