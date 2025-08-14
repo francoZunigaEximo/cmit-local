@@ -320,8 +320,8 @@ class LlamadorController extends Controller
     {
         $query = ItemPrestacion::with(['examenes'])->where('Id', $request->Id)->first();
 
-        if($query->examenes->Adjunto === 1 && $this->adjunto($request->Id, 'Efector')) {
-            return response()->json(['msg' => 'No se puede desasignar al profesional porque hay un archivo adjunto en el examen'], 409);
+        if($query->examenes->Adjunto === 1 && $this->adjunto($request->Id, 'Efector') && $query->IdProfesional !== 0) {
+            return response()->json(['msg' => 'No se puede desasignar al profesional porque hay un archivo adjunto en el examen', 'noCheck' => true], 409);
         }
 
         if(in_array($query->CAdj, [3,5])) {

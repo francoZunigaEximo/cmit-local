@@ -24,8 +24,9 @@ $(function(){
 
     $(document).on('click', 'input[type="checkbox"][name^="Id_"]', function () {
 
-        let chequeado = $(this).is(':checked'),
-            idCheck = $(this).val();
+        let checkbox = $(this); 
+            chequeado = checkbox.is(':checked'),
+            idCheck = checkbox.val();
 
         if(!idCheck) return;
 
@@ -38,7 +39,10 @@ $(function(){
             })
             .fail(function(jqXHR) {
                 preloader('off');
-                let errorData = JSON.parse(jqXHR.responseText);            
+                let errorData = JSON.parse(jqXHR.responseText);
+      
+                errorData.noCheck && checkbox.prop('checked', true);
+                      
                 checkError(jqXHR.status, errorData.msg);
                 return;
             });
@@ -155,7 +159,7 @@ $(function(){
             ids.push($(this).val());
         });
 
-        console.log(id, ids, multi, archivo, who);
+        
 
         if(ids.length === 0 && multi == "success"){
             toastr.warning('No hay examenes seleccionados');
@@ -164,13 +168,15 @@ $(function(){
         
         let descripcion = $(obj[who][2]).val(),
             identificacion = (multi == 'success') ? ids : $('#identificacion').val(),
-            prestacion = $('#prestacion').val();
+            prestacion = $('#prestacion_var').val();
         
         who = multi === 'success' && who === 'efector'
                 ? 'multiefector'
                 : (multi === 'success' && who === 'informador'
                     ? 'multiInformador'
                     : who);
+
+        console.log(ids, who, prestacion, identificacion, multi);
         
         if(verificarArchivo(archivo)){
             preloader('on');
@@ -192,8 +198,10 @@ $(function(){
                 processData: false,
                 contentType: false,
                 success: function() {
+                    
                     preloader('off');
                     toastr.success("Se ha cargado el reporte de manera correcta.");
+                    principal.cargarArchivo.modal('show');
                     cargarArchivosEfector(variables.prestacion.val(), response.itemprestacion.Id);
                     actualizarEstadoAdj(response.itemprestacion.examenes.Adjunto, 1, response.itemprestacion.Id)
                 },
