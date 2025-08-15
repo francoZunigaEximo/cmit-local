@@ -281,9 +281,8 @@ class ItemPrestacionesController extends Controller
         return response()->json(['resultado' => $query]);
     }
 
-        public function paginacionByPrestacion(Request $request)
+    public function paginacionByPrestacion(Request $request)
     {
-        $Id = $request->Id;
 
         if($request->tipo === 'efector')
         {
@@ -293,14 +292,18 @@ class ItemPrestacionesController extends Controller
             ->join('proveedores', 'itemsprestaciones.IdProveedor', '=', 'proveedores.Id')
             ->select(
                 'archivosefector.Id as IdE',
+                'archivosefector.IdEntidad as IdItem',
                 'examenes.Nombre as NombreExamen',
                 'archivosefector.Descripcion as DescripcionE',
                 'archivosefector.Ruta as RutaE',
                 'examenes.NoImprime as Adjunto',
                 'proveedores.MultiE as MultiE',
-                'itemsprestaciones.Anulado as Anulado'
+                'itemsprestaciones.Anulado as Anulado',
+                'itemsprestaciones.CAdj as CAdj'
             )
-            ->where('archivosefector.IdPrestacion', $Id)
+            ->where('archivosefector.IdPrestacion', $request->Id)
+            ->where('itemsprestaciones.IdProfesional', $request->IdProfesional)
+            ->where('proveedores.Id', $request->especialidad)
             ->get();
 
         }else if($request->tipo === 'informador'){
@@ -316,7 +319,9 @@ class ItemPrestacionesController extends Controller
                     'examenes.Adjunto as Adjunto',
                     'itemsprestaciones.Anulado as Anulado'
                 )
-                ->where('archivosinformador.IdPrestacion', $Id)
+                ->where('archivosinformador.IdPrestacion', $request->Id)
+                ->where('itemsprestaciones.IdProfesional', $request->IdProfesional)
+                ->where('proveedores.Id', $request->especialidad)
                 ->get();
 
         }

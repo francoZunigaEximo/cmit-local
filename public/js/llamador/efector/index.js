@@ -120,8 +120,9 @@ $(function(){
                 variables.fechaEfector.val(fecha);
                 variables.fotoEfector.attr('src', FOTO + prestacion.paciente.Foto);
                 variables.descargaFoto.attr('href', FOTO + prestacion.paciente.Foto);
-
+                console.log("Atender paciente: " + parseInt(prestacion.Id), parseInt(variables.profesional.val()), variables.especialidad.data('id') || variables.especialidadSelect.val());
                 tablasExamenes(response.itemsprestaciones);
+                cargarArchivosEfector(parseInt(prestacion.Id), parseInt(variables.profesional.val()), variables.especialidad.data('id') || variables.especialidadSelect.val());
 
             })
             .fail(function(jqXHR){
@@ -133,7 +134,6 @@ $(function(){
     });
 
     variables.profesional.change(function(){
-
         listadoEspecialidades();
     });
 
@@ -292,8 +292,8 @@ $(function(){
                             <td>${estado(examen.CAdj)}</td>
                             <td title="Adjunto: ${examen.Adjunto} | Archivo: ${examen.Archivo}">${checkAdjunto(examen.Adjunto, examen.Archivo, examen.IdItem)}</td>
                             <td>${!examen.ObsExamen ? '' : examen.ObsExamen}</td>
-                            <td>${verificarProfesional(examen, "efector")}</td>
-                            <td>${verificarProfesional(examen, "informador")}</td>
+                            <td>${examen.efectorId === 0 ? '' : verificarProfesional(examen, "efector")}</td>
+                            <td>${examen.informadorId === 0 ? '' : verificarProfesional(examen, "informador")}</td>
                             <td>
                                 <input type="checkbox" name="Id_${limpiarAcentosEspacios(especialidad)}_${examen.IdExamen}" value="${examen.IdItem}"  ${checkboxCheck(examen)}>
                             </td>
@@ -371,10 +371,10 @@ $(function(){
 
         switch (true) {
             case tipoProfesional === 'efector':
-                return data.nombreEfector || data.EfectorHistorico || '';
+                return data.EfectorHistorico || data.Efector || '';
             
             case tipoProfesional === 'informador':
-                return data.nombreInformador || data.InformadorHistorico || '';
+                return data.InformadorHistorico || data.Informador || '';
             
             default:
                 return '';
@@ -394,6 +394,7 @@ $(function(){
             ? principal.buscar.show()
             : principal.buscar.hide();
     }
+
 
 
 });

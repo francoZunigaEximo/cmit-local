@@ -5,7 +5,9 @@ $(function(){
         prestacion: $('#prestacion_var'),
         fileA: $('.fileA'),
         DescripcionE: $('#DescripcionE'),
-        prestacion: $('#prestacion_var')
+        prestacion: $('#prestacion_var'),
+        especialidad: $('#especialidad'),
+        especialidadSelect: $('#especialidadSelect')
     };
 
     const principal = {
@@ -114,7 +116,7 @@ $(function(){
             .add(variables.fileA)
             .val('');
 
-        cargarArchivosEfector(variables.prestacion.val(), id);
+        cargarArchivosEfector(variables.prestacion.val(), variables.profesional.val(), variables.especialidad.data('id') || variables.especialidadSelect.val());
         principal.cargarArchivo.modal('show');
         
         if(response.proveedores.Multi === 1) {
@@ -201,9 +203,10 @@ $(function(){
                     
                     preloader('off');
                     toastr.success("Se ha cargado el reporte de manera correcta.");
-                    principal.cargarArchivo.modal('show');
-                    cargarArchivosEfector(variables.prestacion.val(), response.itemprestacion.Id);
-                    actualizarEstadoAdj(response.itemprestacion.examenes.Adjunto, 1, response.itemprestacion.Id)
+                    principal.cargarArchivo.modal('hide');
+                    cargarArchivosEfector(variables.prestacion.val(), variables.profesional.val(), variables.especialidad.data('id') || variables.especialidadSelect.val());
+                    actualizarEstadoAdj(response.itemprestacion.examenes.Adjunto, 1, response.itemprestacion.Id);
+                    
                 },
                 error: function (jqXHR) {
                     preloader('off');
@@ -235,7 +238,7 @@ $(function(){
                     .done(function(response){
                         preloader('off');
                         toastr.success(response.msg);
-                        cargarArchivosEfector(variables.prestacion.val(), itemprestacion);
+                        cargarArchivosEfector(variables.prestacion.val(), variables.profesional.val(), variables.especialidad.data('id') || variables.especialidadSelect.val());
                         actualizarEstadoAdj(1, 0, itemprestacion)   
                     })
                     .fail(function(jqXHR){
@@ -265,54 +268,7 @@ $(function(){
         td.html(html);
     }
 
-    async function cargarArchivosEfector(idPrestacion, idItemPrestacion){
-
-        if(!idPrestacion || !idItemPrestacion) return;
-
-        principal.adjuntosEfectores.empty();
-        preloader('on');
-        $.get(await paginacionByPrestacion, {Id: idPrestacion, tipo: 'efector'})
-            .done(async function(response){
-                preloader('off');
-                let data = await response.resultado;
-                let item = await $.get(getItemPrestacion, {Id: idItemPrestacion});
-                $.each(data, function(index, d){
-
-                    let contenido = `
-                        <tr>
-                            <td>${d.NombreExamen}</td>
-                            <td>${(d.DescripcionE ? d.DescripcionE : '')}</td>
-                            <td>${d.RutaE}</td>
-                            <td>${(d.MultiE === 0 ? '' : '<i class="ri-check-line verde"></i>')}</td>
-                            <td>
-                                <div class="d-flex justify-content-center align-items-center gap-2">
-                                    <div class="edit">
-                                        <a href="${descargaE}/${d.RutaE}" target="_blank">
-                                            <button type="button" class="btn btn-sm iconGeneral" title="Ver"><i class="ri-search-eye-line"></i></button>
-                                        </a>
-                                    </div>
-                                    <div class="download">
-                                        <a href="${descargaE}/${d.RutaE}" target="_blank" download>
-                                            <button type="button" class="btn btn-sm iconGeneral" title="Descargar"><i class="ri-download-2-line"></i></button>
-                                        </a>
-                                    </div>
-                                    ${[3,4,5].includes(item.itemprestacion.CAdj) || (d.Anulado === 1) ? `
-                                    <div class="remove">
-                                        <button data-id="${d.IdE}" data-tipo="efector" data-itempres="${item.itemprestacion.Id}" class="btn btn-sm iconGeneral deleteAdjunto" title="Eliminar">
-                                            <i class="ri-delete-bin-2-line"></i>
-                                        </button>
-                                    </div>
-                                    ` : ``}
-                                    
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-
-                   principal.adjuntosEfectores.append(contenido);
-                });
-            });
-    }
+    
 
 
     function actualizarEstadoAdj(adjunto, condicion, idItem) {

@@ -126,7 +126,7 @@ class LlamadorController extends Controller
     {
         if ($request->ajax()) {
 
-            $query = $this->queryBasico($request->profesional);
+            $query = $this->queryBasico($request->especialidad);
             // $especialidades = ProfesionalProv::where('IdRol',SELF::TIPOS[0])->where('IdProf', $request->profesional)->pluck('IdProv')->toArray();
 
             if (!empty($request->prestacion)){
@@ -138,7 +138,7 @@ class LlamadorController extends Controller
                 $query->when(!empty($request->profesional), function ($query) use ($request){
                     // $query->whereIn('itemsprestaciones.IdProfesional', [$request->profesional, 0])
                         // ->where('itemsprestaciones.IdProfesional', '!=', $request->profesional)
-                        $query->where('examenes.IdProveedor', $request->especialidad)
+                        $query->where('itemsprestaciones.IdProfesional2', 0)
                         ->addSelect(DB::raw('"' . $request->especialidad . '" as especialidades'));
                 });
     
@@ -161,7 +161,8 @@ class LlamadorController extends Controller
                 });
             }
 
-            $query->groupBy('prestaciones.Id')
+            $query->where('itemsprestaciones.IdProveedor', $request->especialidad)
+                  ->groupBy('prestaciones.Id')
                   ->orderBy('prestaciones.Id', 'DESC')
                   ->orderBy('pacientes.Apellido', 'DESC');
 
@@ -185,7 +186,7 @@ class LlamadorController extends Controller
                     $query->where('itemsprestaciones.IdProfesional', '!=', 0)
                         ->whereIn('itemsprestaciones.IdProfesional2', [$request->profesional, 0])
                         ->where('itemsprestaciones.IdProfesional2', '!=', $request->profesional)
-                        ->where('examenes.IdProveedor', $request->especialidad)
+                        ->where('itemsprestaciones.IdProveedor', $request->especialidad)
                         ->addSelect(DB::raw('"' . $request->especialidad . '" as especialidades'));
                 });
     
@@ -431,17 +432,18 @@ class LlamadorController extends Controller
         ]);
     }
 
-    private function queryBasico(?int $idProfesional = null)
+    private function queryBasico()
     {
-        return Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+        return ItemPrestacion::join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
+        ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
         ->join('clientes as empresa', 'prestaciones.IdEmpresa', '=', 'empresa.Id')
         ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
         ->leftJoin('telefonos', 'pacientes.Id', '=', 'telefonos.IdEntidad')
-        ->join('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
         ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
         ->join('proveedores', 'examenes.IdProveedor', '=', 'proveedores.Id')
         ->select(
             DB::raw('DATE_FORMAT(prestaciones.Fecha, "%d/%m/%Y") as fecha'),
+            'itemsprestaciones.IdProfesional2 as IdProfesional2',
             'prestaciones.Id as prestacion',
             'prestaciones.TipoPrestacion as tipo',
             'prestaciones.Cerrado as Cerrado',
@@ -453,25 +455,8 @@ class LlamadorController extends Controller
             'pacientes.FechaNacimiento as fechaNacimiento',
             DB::raw("CONCAT(telefonos.CodigoArea,telefonos.NumeroTelefono) as telefono")
         );
-        
-        if ($idProfesional) {
-            $query->addSelect(DB::raw($idProfesional . ' as idProfesional'));
-        }
-
-        $query->addSelect(DB::raw("
-            CASE 
-                WHEN EXISTS (
-                    SELECT 1 
-                    FROM llamador
-                    WHERE llamador.prestacion_id = prestaciones.Id
-                ) THEN 'true'
-                ELSE 'false'
-            END as estado_llamado
-        "));
-            
-       $query->whereNotNull('prestaciones.Fecha')
-        ->where('prestaciones.Fecha', '<>', '0000-00-00')
-        ->where('prestaciones.Anulado', 0);
+             
+       $query->where('itemsprestaciones.Anulado', 0);
     }
 
     private function queryFull()
@@ -485,6 +470,7 @@ class LlamadorController extends Controller
         ->leftJoin('archivosefector', 'itemsprestaciones.Id', '=', 'archivosefector.IdEntidad')
         ->select(
             DB::raw('DATE_FORMAT(prestaciones.Fecha, "%d/%m/%Y") as fecha'),
+            'itemsprestaciones.IdProfesional2 as IdProfesional2',
             'prestaciones.Id as prestacion',
             'prestaciones.TipoPrestacion as tipo',
             'prestaciones.Cerrado as Cerrado',
