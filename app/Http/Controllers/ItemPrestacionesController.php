@@ -778,36 +778,60 @@ class ItemPrestacionesController extends Controller
 
     }
 
-    public function deleteEx(Request $request): mixed
+    public function deleteEx(Request $request)
     {
-        $examenes = (array) $request->Id;
+        $resultados = [];
 
-        if(empty($examenes)) {
-            return response()->json(['msg' => 'No hay examenes para eliminar'], 409);
+        $examenIds = $request->Id;
+        if (!is_array($examenIds)) {
+            $examenIds = [$examenIds];
         }
 
-        foreach($examenes as $test) {
-            if($this->adjuntoEfector($test) === 1 || $this->adjuntoInformador($test)) {
-                return response()->json(['msg' => 'No se puede eliminar el examen '.$test.' porque posee archivos adjuntos.Verifique'], 409);
-            }
+        $examenIds = array_filter($examenIds, 'is_numeric');
+        if (empty($examenIds)) {
+            return response()->json(['msg' => 'No se proporcionaron IDs válidos.'], 400);
         }
 
-        $result = ItemPrestacion::with(['prestaciones','examenes'])->whereIn('Id', $examenes)->get();
-        
-        foreach ($result as $item) {
-           
-            if ($item && ($item->prestaciones->Cerrado === 0 && $item->CInfo != 3 && !in_array($item->CAdj,[3,5]) && $item->IdProfesional === 0 && $item->IdProfesional2 === 0)) {
+        $items = ItemPrestacion::with(['prestaciones', 'examenes'])->whereIn('Id', $examenIds)->get();
 
-                $item->delete();
-                ItemPrestacion::InsertarVtoPrestacion($item->IdPrestacion);
+        [$itemsConReglas, $itemsValidos] = $items->partition(function ($item) {
+            return $item->prestaciones->Cerrado !== 0
+                || $item->CInfo === 3
+                || in_array($item->CAdj, [3, 5])
+                || $item->IdProfesional !== 0
+                || $item->IdProfesional2 !== 0
+                || $this->adjuntoEfector($item->Id) === 1
+                || $this->adjuntoInformador($item->Id) === 1;
+        });
+
+        foreach ($itemsConReglas as $item) {
+            $resultados[] = ['id' => $item->Id, 'msg' => 'No se eliminó exámen ' . ($item->examenes->Nombre ?? '') . ' porque no cumple las condiciones (prestacion cerrada, examenes efectuados e informados, profesionales asignados o archivos adjuntos).', 'status' => 'warning'];
+        }
+
+        $idsParaEliminar = $itemsValidos->map(fn($itemValido) => $itemValido->Id);
+
+        if (!empty($idsParaEliminar)) {
+            $itemsAEliminar = $itemsValidos->whereIn('Id', $idsParaEliminar);
+            $itemsAEliminar->map(fn($item) => ['IdPrestacion' => $item->IdPrestacion, 'IdExamen' => $item->IdExamen])->all();
+
+            foreach ($itemsAEliminar as $item) {
                 $this->deleteExaCuenta($item->IdPrestacion, $item->IdExamen);
-                
-                $resultado = ['message' => 'Se ha eliminado con éxito el exámen '.$item->examenes->Nombre.'', 'estado' => 'success'];
-            
-            }else{
-                $resultado = ['message' => 'No se elimino exámen '.$item->examenes->Nombre.' porque se encuentra cerrada o el exámen efectuado, informado o con profesionales asignados', 'estado' => 'fail'];
             }
-            $resultados[] = $resultado;   
+
+            $prestacionesIdsUnicos = $itemsAEliminar->pluck('IdPrestacion')->unique()->all();
+            foreach ($prestacionesIdsUnicos as $prestacionId) {
+                ItemPrestacion::InsertarVtoPrestacion($prestacionId);
+            }
+
+            ItemPrestacion::whereIn('Id', $idsParaEliminar)->delete();
+
+            if (count($idsParaEliminar) > 0) {
+                $resultados[] = ['msg' => count($idsParaEliminar) . ' examen(es) eliminado(s) correctamente.', 'status' => 'success'];
+            }
+        }
+
+        if (empty($itemsConReglas) && empty($idsParaEliminar)) {
+            $resultados[] = ['msg' => 'Ningún examen fue procesado o no se encontraron los IDs.', 'status' => 'info'];
         }
 
         return response()->json($resultados);
