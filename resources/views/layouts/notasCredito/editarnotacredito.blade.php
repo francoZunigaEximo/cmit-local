@@ -48,7 +48,7 @@
 <div class="card">
     <div class="card-body">
         <div class="row">
-            <div class="col-12 d-flex justify-content-center">
+            <div class="col-12 d-flex justify-content-end">
                 <button class="btn btn-primary" type="button" id="eliminarMasivo" onclick="eliminarMasivo()">Eliminar Items</button>
             </div>
         </div>

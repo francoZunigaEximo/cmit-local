@@ -13,6 +13,8 @@ $(document).ready(() => {
 });
 
 function cargarTabla() {
+    const url = location.href.replace(/\/$/, '');
+    const urlOriginal = url.replace('/notasCredito', '');
     $('#tablaItemsAnulados').DataTable().clear().destroy();
 
     const tabla = new DataTable("#tablaItemsAnulados", {
@@ -46,7 +48,7 @@ function cargarTabla() {
                 data: null,
                 orderable: false,
                 targets: 0,
-                className: 'select-checkbox',
+                className: 'select-checkbox text-center',
                 defaultContent: '',
                 render: function (data, type, row) {
                     return `<input type="checkbox" class="fila-checkbox" data-factura="${row.NroFactura}" value="${data.Id}" />`;
@@ -116,8 +118,13 @@ function cargarTabla() {
             }
         ],
         language: {
-            processing: "<div style='text-align: center; margin-top: 20px;'><img src='./images/spinner.gif' /><p>Cargando...</p></div>",
-            emptyTable: "No hay paquetes con los datos buscados",
+            processing:
+            `<div class="text-center p-2">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>`,
+            emptyTable: "No hay items anulados con los datos buscados",
             paginate: {
                 first: "Primera",
                 previous: "Anterior",
@@ -140,8 +147,8 @@ function cargarTabla() {
                 let data = rows.data()[0];
                 return `
                 <tr class="grupo">
-                    <td><input type="checkbox" class="grupo-checkbox" data-grupo="${group}" /></td>
-                    <td colspan="3"><strong>Factura ${data.Tipo}-${String(data.Sucursal).padStart(4, '0')}-${String(data.NroFactura).padStart(8, '0')}</strong></td>
+                    <td class="text-center"><input type="checkbox" class="grupo-checkbox" data-grupo="${group}" /></td>
+                    <td colspan="6"><strong>Factura ${data.Tipo}-${String(data.Sucursal).padStart(4, '0')}-${String(data.NroFactura).padStart(8, '0')}</strong></td>
                 </tr>
                 `;
             }
@@ -194,27 +201,8 @@ function reactivar(id) {
     }).then((confirmar) => {
         if (confirmar) {
             preloader('on');
-            $.ajax({
-                url: reactivarItem,
-                type: 'POST',
-                data: {
-                    id: id,
-                    _token: TOKEN
-                },
-                success: function (response) {
-                    if (response.success) {
-                        toastr.success(response.message, '', { timeOut: 1000 });
-                        cargarTabla();
-                    } else {
-                        toastr.warning(response.message, '', { timeOut: 1000 });
-                    }
-                    preloader('off');
-                },
-                error: function (xhr, status, error) {
-                    preloader('off');
-                    toastr.error("Error al reactivar el item.");
-                }
-            });
+            reactivarItemIndividual(id);
+            cargarTabla();
         }
     })
 
@@ -232,8 +220,35 @@ function reactivarMasivo() {
             }).get();
 
             seleccionados.forEach(seleccionar => {
-                reactivar(seleccionar);
+                reactivarItemIndividual(seleccionar);
             });
+            cargarTabla();
+        }
+    });
+}
+
+function reactivarItemIndividual(id) {
+    $.ajax({
+        url: reactivarItem,
+        type: 'POST',
+        data: {
+            id: id,
+            _token: TOKEN
+        },
+        success: function (response) {
+            if (response.success) {
+                toastr.success(response.message, '', { timeOut: 1000 });
+                cargarTabla();
+            } else {
+                toastr.warning(response.message, '', { timeOut: 1000 });
+            }
+        },
+        complete: function () {
+            preloader('off');
+        },
+        error: function (xhr, status, error) {
+            preloader('off');
+            toastr.error("Error al reactivar el item.");
         }
     });
 }

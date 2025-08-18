@@ -69,23 +69,17 @@ class NotasCreditoController extends Controller
 
     public function buildQueryClientes(Request $request)
     {
-        //consulta de items que tienen nota de credito
-        $items_nota = DB::table('notascredito_it')
-            ->select('notascredito_it.IdIP')
-            ->where('notascredito_it.Baja', 0);
-
         //cuando tenga datos completo esta parte
         $query = DB::table('prestaciones')
-            ->select('prestaciones.IdEmpresa')
             ->join('clientes', 'prestaciones.IdEmpresa', '=', 'clientes.Id')
             ->join('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
+            ->leftJoin('notascredito_it', 'itemsprestaciones.Id', '=', 'notascredito_it.IdIP')
             ->where('prestaciones.Id', '<>', 0)
             ->where('prestaciones.Facturado', '=', 1)
             ->where('itemsprestaciones.Anulado', '=', 1)
-            ->where('prestaciones.Cerrado', '=', 0)
-            ->whereNotIn('itemsprestaciones.Id', $items_nota)
+            ->whereNull('notascredito_it.Id')
             ->groupBy('clientes.Id', 'clientes.ParaEmpresa', 'clientes.Identificacion')
-            ->select('clientes.Id as Id', 'clientes.ParaEmpresa as Cliente', 'clientes.Identificacion as CUIT');
+            ->select('clientes.Id as Id', 'clientes.ParaEmpresa as Cliente', 'clientes.Identificacion as CUIT', DB::raw('COUNT(itemsprestaciones.Id) as TotalItems'));
 
         if ($request->has('IdEmpresa') && $request->IdEmpresa != 0) {
             $query->where('prestaciones.IdEmpresa', '=', $request->IdEmpresa);
@@ -156,7 +150,7 @@ class NotasCreditoController extends Controller
         if ($item) {
             $item->Anulado = 0;
             $item->save();
-             Auditor::setAuditoria($id, 8,4,Auth::user()->Id);
+             Auditor::setAuditoria($id, 8,4,Auth::user()->name);
             return response()->json(['success' => true, 'message' => 'Item reactivado correctamente.'], 200);
         } else {
             return response()->json(['success' => false, 'message' => 'Item no encontrado.'], 404);
@@ -197,7 +191,7 @@ class NotasCreditoController extends Controller
             $notaCreditoIt->save();
         }
 
-        Auditor::setAuditoria($notaCredito->Id, 7,1,Auth::user()->Id);
+        Auditor::setAuditoria($notaCredito->Id, 7,1,Auth::user()->name);
 
         return response()->json(['success' => true, 'message' => 'Nota de crédito creada correctamente.'], 200);
     }

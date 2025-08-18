@@ -103,7 +103,12 @@ function cargarTabla() {
             }
         ],
         language: {
-            processing: "<div style='text-align: center; margin-top: 20px;'><img src='./images/spinner.gif' /><p>Cargando...</p></div>",
+            processing:
+            `<div class="text-center p-2">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>`,
             emptyTable: "No hay paquetes con los datos buscados",
             paginate: {
                 first: "Primera",

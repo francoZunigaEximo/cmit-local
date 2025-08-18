@@ -1,4 +1,8 @@
+const url = location.href.replace(/\/$/, '');
+    const urlOriginal = url.replace('/notasCredito', '');
+
 $(function () {
+
     //cargamos los combos de lientes
     $('#cliente').select2({
         language: {
@@ -136,8 +140,18 @@ function cargarTablaClientes() {
             },
             {
                 data: null,
-                name: 'Acciones',
+                name: 'TotalItems',
+                orderable: true,
                 targets: 2,
+                render: function (data) {
+                    return `<div class="text-start"><span>${data.TotalItems == null ? 0 : data.TotalItems}</span></div>`;
+                }
+
+            },
+            {
+                data: null,
+                name: 'Acciones',
+                targets: 3,
                 render: function (data) {
 
                     let editar = '<a title="Items Anulados" href="' + location.href + '/itemsanulados/' + data.Id + '">' + '<button type="button" class="btn btn-sm iconGeneral edit-item-btn"> <i class="ri-edit-line"></i> </button>' + '</a>';
@@ -146,7 +160,12 @@ function cargarTablaClientes() {
             }
         ],
         language: {
-            processing: "<div style='text-align: center; margin-top: 20px;'><img src='./images/spinner.gif' /><p>Cargando...</p></div>",
+            processing: 
+            `<div class="text-center p-2">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>`,
             emptyTable: "No hay paquetes con los datos buscados",
             paginate: {
                 first: "Primera",
@@ -297,7 +316,12 @@ function cargarTablaNotas() {
             }
         ],
         language: {
-            processing: "<div style='text-align: center; margin-top: 20px;'><img src='./images/spinner.gif' /><p>Cargando...</p></div>",
+            processing: 
+            `<div class="text-center p-2">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>`,
             emptyTable: "No hay paquetes con los datos buscados",
             paginate: {
                 first: "Primera",
