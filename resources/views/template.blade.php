@@ -85,7 +85,7 @@
                             <a class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle ms-2" title="Informador" href="{{ route('llamador.informador') }}">
                                 <img src="{{ asset('images/iconos/informador.svg')}}" alt="Informador" width="35px" height="35px">
                             </a>
-                            <a class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle ms-3" title="Combinado" href="#">
+                            <a class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle ms-3" title="Combinado" href="{{ route('llamador.combinado')}}">
                                 <img src="{{ asset('images/iconos/combinado.svg')}}" alt="Combinado" width="52px" height="52px">
                             </a>
                             <a class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle ms-3" title="Evaluador" href="{{ route('llamador.evaluador') }}">
@@ -404,6 +404,7 @@
 
         const PROFESIONAL = "{{ session('Profesional') }}";
         const ESPECIALIDAD = "{{ session('Especialidad') }}";
+        const IDESPECIALIDAD = "{{ session('IdEspecialidad') }}";
 
         const IDPROFESIONAL = "{{ Auth::user()->profesional_id }}";
 
@@ -425,16 +426,11 @@
         const verifyWizard = "{{ route('verifyWizard') }}";
         const TOKEN = "{{ csrf_token() }}";
 
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': TOKEN
-            }
-        });
-
-        const IDLE_TIMEOUT = 300 * 60 * 1000; //5 horas
-        const CHECK_INTERVAL = 1000; //1 segundo
+        const IDLE_TIMEOUT = 300 * 60 * 1000;
+        const CHECK_INTERVAL = 3000; //3 segundo
         const finalizarSesion = "{{ route('usuario.cierreAutomatico') }}";
         const sessionUser = "{{ auth()->user()?->id }}"; 
+        const heartbeat = "{{ route('usuario.heartBeat') }}";
 
         console.log("Total Horas: " + IDLE_TIMEOUT);
 
@@ -449,10 +445,11 @@
         }
 
         function iniciarIdMonitor() {
+            if (idInterval) clearInterval(idInterval);
+
             idInterval = setInterval(() => {
                 const tiempoInactividad = Date.now() - ultimaActividad;
-                // console.log("Tiempo inactividad: " + tiempoInactividad);
-                if (tiempoInactividad >= IDLE_TIMEOUT) {
+                if(tiempoInactividad >= IDLE_TIMEOUT) {
                     cerrarSesion();
                 }
             }, CHECK_INTERVAL);
@@ -471,17 +468,16 @@
             }
 
             $.get(finalizarSesion, { Id: parseInt(sessionUser) }, function(response) {
-                toastr.warning(response.msg);
+                toastr.warning(response.msg || "Tu sesión ha expirado por inactividad.");
                 setTimeout(()=>  {
                     window.location.href = "{{ route('login') }}";
-                }, 5000)
-                
+                }, 5000)      
             });
         }
 
 
         window.addEventListener("storage", function (event) {
-            if (event.key === "cerrar_sesion") {
+            if (event.key === "cerrar_sesion" && !sesionCerrada) {
                 cerrarSesion(); // ejecuta en esta pestaña también
             }
 
@@ -495,8 +491,18 @@
             $(document).on(event, resetUltimaActividad);
         });
 
-        iniciarIdMonitor();
-        resetUltimaActividad(); 
+        if (sessionUser) {
+            iniciarIdMonitor();
+        }
+
+        function sendHeartBeat() {
+            $.post(heartbeat, {_token: TOKEN})
+                .fail(function() {
+                    window.location.reload();
+                });
+        }
+
+        setInterval(sendHeartBeat, 20000); //envia actualizacion de estado cada 20 segundos
 
     </script>
 

@@ -1,31 +1,42 @@
 $(function(){
 
+    const profesionales = ['EFECTOR', 'INFORMADOR', 'COMBINADO'];
+
     const principal = {
         grillaEfector: $('#listaLlamadaEfector'),
         grillaExamenes: $('#tablasExamenes'),
         atenderPaciente: $('.atenderPaciente'),
-        chekAllExamenes: $('.checkAllExamenes')
+        chekAllExamenes: $('.checkAllExamenes'),
+        buscar: $('#buscar'),
     };
 
     const variables = {
         fechaHasta: $('#fechaHasta'),
         estado: $('#estado'),
-        profesionalEfector: $('#profesionalEfector'),
-        prestacionEfector: $('#prestacionEfector'),
-        tipoEfector: $('#tipoEfector'),
-        artEfector: $('#artEfector'),
-        empresaEfector: $('#empresaEfector'),
-        paraEmpresaEfector: $('#paraEmpresaEfector'),
-        pacienteEfector: $('#pacienteEfector'),
-        edadEfector: $('#edadEfector'),
-        fechaEfector: $('#fechaEfector'),
-        fotoEfector: $('#fotoEfector'),
         profesional: $('#profesional'),
-        descargaFoto: $('#descargaFoto')
+        prestacion: $('#prestacion'),
+        prestacionVar: $('#prestacion_var'),
+        profesionalEfector: $('#profesional_var'),
+        tipoEfector: $('#tipo_var'),
+        artEfector: $('#art_var'),
+        empresaEfector: $('#empresa_var'),
+        paraEmpresaEfector: $('#paraEmpresa_var'),
+        pacienteEfector: $('#paciente_var'),
+        edadEfector: $('#edad_var'),
+        fechaEfector: $('#fecha_var'),
+        fotoEfector: $('#foto_var'),
+        profesional: $('#profesional'),
+        descargaFoto: $('#descargaFoto'),
+        efector: 'Efector',
+        especialidadSelect: $('#especialidadSelect'),
+        especialidad: $('#especialidad'),
     };
 
     variables.fechaHasta.val(fechaNow(null, "-", 0));
     variables.estado.val('abierto');
+    
+    habilitarBoton(sessionProfesional);
+    listadoEspecialidades();
 
     $(document).on('click', '.verPrestacion', function(e){
         e.preventDefault();
@@ -54,7 +65,7 @@ $(function(){
         });
 
         preloader('on');
-        $.get(printExportar, {Ids: ids, tipo: 'efector', modo: opcion === 'exportar' ? 'basico' : 'full'})
+        $.get(printExportar, {Ids: ids, modo: opcion === 'exportar' ? 'basico' : 'full'})
             .done(function(response){
                 createFile("xlsx", response.filePath, generarCodigoAleatorio() + '_reporte');
                 preloader('off')
@@ -75,7 +86,7 @@ $(function(){
             especialidades = $(this).data('especialidades');
 
         variables.profesionalEfector
-            .add(variables.prestacionEfector)
+            .add(variables.prestacionVar)
             .add(variables.tipoEfector)
             .add(variables.artEfector)
             .add(variables.empresaEfector)
@@ -98,7 +109,7 @@ $(function(){
 
                 preloader('off');
                 let nombreProfesional = variables.profesional.find(':selected').text();
-                variables.prestacionEfector.val(prestacion.Id);
+                variables.prestacionVar.val(prestacion.Id);
                 variables.profesionalEfector.val(nombreProfesional);
                 variables.tipoEfector.val(prestacion.TipoPrestacion);
                 variables.artEfector.val(prestacion.art.RazonSocial);
@@ -109,8 +120,9 @@ $(function(){
                 variables.fechaEfector.val(fecha);
                 variables.fotoEfector.attr('src', FOTO + prestacion.paciente.Foto);
                 variables.descargaFoto.attr('href', FOTO + prestacion.paciente.Foto);
-
+                console.log("Atender paciente: " + parseInt(prestacion.Id), parseInt(variables.profesional.val()), variables.especialidad.data('id') || variables.especialidadSelect.val());
                 tablasExamenes(response.itemsprestaciones);
+                cargarArchivosEfector(parseInt(prestacion.Id), parseInt(variables.profesional.val()), variables.especialidad.data('id') || variables.especialidadSelect.val());
 
             })
             .fail(function(jqXHR){
@@ -119,6 +131,10 @@ $(function(){
                 checkError(jqXHR.status, errorData.msg);
                 return;
             });
+    });
+
+    variables.profesional.change(function(){
+        listadoEspecialidades();
     });
 
     variables.fotoEfector.hover(
@@ -160,7 +176,7 @@ $(function(){
             .removeClass(boton[accion].remover)
             .addClass(boton[accion].agregar);
         
-        $.get(addAtencion, {prestacion: $(this).data('id'), profesional: variables.profesional.val()})
+        $.get(addAtencion, {prestacion: $(this).data('id'), profesional: variables.profesional.val(), Tipo: $(this).data('tipo'), especialidad: variables.especialidad.data('id') || variables.especialidadSelect.val()})
             .done(function(){
                 toastr.success('Cambio de estado realizado correctamente','',{timeOut: 1000})
             })
@@ -201,8 +217,34 @@ $(function(){
         });
     });
 
+    function listadoEspecialidades() {
+
+        preloader('on');
+        $.get(searchEspecialidad, {IdProfesional: variables.profesional.val(), Tipo: variables.efector})
+            .done(function(response){
+                preloader('off');
+                
+                variables.especialidadSelect.empty();
+
+                for(let index = 0; index < response.length; index++) {
+                    let data = response[index],
+                        contenido = `
+                            <option value="${data.Id}">${data.Nombre}</option>
+                        `;
+                    variables.especialidadSelect.append(contenido);
+                }
+                
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            });
+    }
+
     function tablasExamenes(data) {
-        console.log(data)
+
         principal.grillaExamenes.empty();
         preloader('on');
 
@@ -248,10 +290,10 @@ $(function(){
                         <tr class="listadoAtencion" data-id="${examen.IdItem}">
                             <td>${examen.NombreExamen}</td>
                             <td>${estado(examen.CAdj)}</td>
-                            <td title="NoImprime: ${examen.NoImprime} | Adjunto: ${examen.Adjunto} | Archivo: ${examen.Archivo}">${checkAdjunto(examen.NoImprime, examen.Adjunto, examen.Archivo)}</td>
-                            <td>${[null, undefined, ''].includes(examen.ObsExamen) ? '' : examen.ObsExamen}</td>
-                            <td>${verificarProfesional(examen, "efector")}</td>
-                            <td>${verificarProfesional(examen, "informador")}</td>
+                            <td title="Adjunto: ${examen.Adjunto} | Archivo: ${examen.Archivo}">${checkAdjunto(examen.Adjunto, examen.Archivo, examen.IdItem)}</td>
+                            <td>${!examen.ObsExamen ? '' : examen.ObsExamen}</td>
+                            <td>${examen.efectorId === 0 ? '' : verificarProfesional(examen, "efector")}</td>
+                            <td>${examen.informadorId === 0 ? '' : verificarProfesional(examen, "informador")}</td>
                             <td>
                                 <input type="checkbox" name="Id_${limpiarAcentosEspacios(especialidad)}_${examen.IdExamen}" value="${examen.IdItem}"  ${checkboxCheck(examen)}>
                             </td>
@@ -284,22 +326,22 @@ $(function(){
     }
 
     //No Imprime: saber si es fisico o digital / adjunto: si acepta o no adjuntos / condicion: pendiente o adjuntado
-    function checkAdjunto(adjunto, condicion, noImprime) {
+    function checkAdjunto(adjunto, condicion, idItem) {
         switch (true) {
             case adjunto === 0:
                 return '';
 
-            case adjunto === 1 && condicion > 0 && noImprime === 0:
+            case adjunto === 1 && condicion === 1:
                 return `<span class="verde">Adjuntado <i class="fs-6 ri-map-pin-line"></i><span>`;
 
-            case adjunto === 1 && condicion === 0 && noImprime === 0:
+            case adjunto === 1 && condicion === 0:
                 return `<span class="rojo d-flex align-items-center justify-content-between w-100">
                             <span class="me-auto">Pendiente</span>
                             <i class="fs-6 ri-map-pin-line mx-auto"></i>
-                            <i class="fs-6 ri-folder-add-line ms-auto"></i>
+                            <i class="fs-6 ri-folder-add-line ms-auto" id="modalArchivo" data-id="${idItem}"></i> 
                         </span>`;
 
-            case adjunto === 1 && noImprime === 1:
+            case adjunto === 0:
                 return `<span class="mx-auto"><i class="gris fs-6 ri-map-pin-line"></i><span>`;
 
             default:
@@ -359,16 +401,29 @@ $(function(){
 
         switch (true) {
             case tipoProfesional === 'efector':
-                return data.nombreEfector || data.EfectorHistorico || '';
+                return data.EfectorHistorico || data.Efector || '';
             
             case tipoProfesional === 'informador':
-                return data.nombreInformador || data.InformadorHistorico || '';
+                return data.InformadorHistorico || data.Informador || '';
             
             default:
                 return '';
         }
     }
     
+
+    function habilitarBoton(profesional) {
+
+        let usuarios = ROLESUSER.map(u => u.nombre),
+            administradores = ['Administrador', 'Admin SR', 'Recepcion SR'],
+            admin = usuarios.some(item => administradores.includes(item));
+
+        if(!profesional && !admin) return principal.buscar.hide();
+
+        return (profesionales[0] === profesional || admin) 
+            ? principal.buscar.show()
+            : principal.buscar.hide();
+    }
 
 
 

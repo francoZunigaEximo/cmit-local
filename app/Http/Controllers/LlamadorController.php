@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Events\AsignarProfesionalEvent;
 use App\Events\GrillaEfectoresEvent;
 use App\Events\LstProfesionalesEvent;
+use App\Events\LstProfInformadorEvent;
+use App\Events\LstProfCombinadoEvent;
+use App\Models\ArchivoEfector;
 use App\Models\ItemPrestacion;
 use Illuminate\Http\Request;
 use App\Models\Llamador;
@@ -19,6 +22,8 @@ use App\Services\Llamador\Profesionales;
 use App\Services\ReportesExcel\ReporteExcel;
 use App\Services\Roles\Utilidades;
 
+use App\Traits\ObserverItemsPrestaciones;
+
 
 class LlamadorController extends Controller
 {
@@ -28,7 +33,9 @@ class LlamadorController extends Controller
     protected $utilidades;
 
     const ADMIN = ['Administrador', 'Admin SR', 'Recepcion SR'];
-    const TIPOS = ['Efector', 'Informador'];
+    const TIPOS = ['Efector', 'Informador', 'Combinado'];
+
+    use ObserverItemsPrestaciones;
 
     public function __construct(
         Profesionales $profesionales, 
@@ -49,7 +56,7 @@ class LlamadorController extends Controller
 
         $efectores = null;
 
-        if ($this->utilidades->checkTipoRol($user->name, SELF::ADMIN)) {
+        if($this->utilidades->checkTipoRol($user->name, SELF::ADMIN)) {
 
             $efectores = $this->profesionales->listado('Efector');
             event(new LstProfesionalesEvent($efectores));
@@ -69,20 +76,58 @@ class LlamadorController extends Controller
 
     public function informador()
     {
-        return view('layouts.llamador.informador');
+        $user = Auth::user()->load('personal');
+
+        $informadores = null;
+
+        if($this->utilidades->checkTipoRol($user->name, SELF::ADMIN)) {
+            
+            $informadores = $this->profesionales->listado('Informador');
+            event(new LstProfInformadorEvent($informadores));
+
+        } else if($this->utilidades->checkTipoRol($user->name, [SELF::TIPOS[1]])) {
+  
+            $informadores = collect([
+                (object)[
+                    'Id' => $user->profesional_id,
+                    'NombreCompleto' => $user->personal->nombre_completo,
+                ]
+            ]);
+        }
+
+        return view('layouts.llamador.informador', compact(['informadores']));
     }
 
-    public function evaluador()
+    public function combinado()
     {
-        return view('layouts.llamador.evaluador');
+        $user = Auth::user()->load('personal');
+
+        $combinados = null;
+
+        if($this->utilidades->checkTipoRol($user->name, SELF::ADMIN)) {
+            
+            $combinados = $this->profesionales->listado('Combinado');
+            event(new LstProfCombinadoEvent($combinados));
+
+        } else if($this->utilidades->checkTipoRol($user->name, [SELF::TIPOS[2]])) {
+  
+            $combinados = collect([
+                (object)[
+                    'Id' => $user->profesional_id,
+                    'NombreCompleto' => $user->personal->nombre_completo,
+                ]
+            ]);
+        }
+
+        return view('layouts.llamador.combinado', compact(['combinados']));
     }
 
-    public function buscarEfector(Request $request)
+    public function buscar(Request $request)
     {
         if ($request->ajax()) {
 
-            $query = $this->queryBasico($request->profesional);
-            $especialidades = ProfesionalProv::where('IdRol',SELF::TIPOS[0])->where('IdProf', $request->profesional)->pluck('IdProv')->toArray();
+            $query = $this->queryBasico($request->especialidad);
+            // $especialidades = ProfesionalProv::where('IdRol',SELF::TIPOS[0])->where('IdProf', $request->profesional)->pluck('IdProv')->toArray();
 
             if (!empty($request->prestacion)){
                 
@@ -90,10 +135,11 @@ class LlamadorController extends Controller
             
             } else {
 
-                $query->when(!empty($request->profesional), function ($query) use ($request, $especialidades){
-                    $query->whereIn('itemsprestaciones.IdProfesional', [$request->profesional, 0])
-                        ->whereIn('examenes.IdProveedor', $especialidades)
-                        ->addSelect(DB::raw('"' . implode(',', $especialidades) . '" as especialidades'));
+                $query->when(!empty($request->profesional), function ($query) use ($request){
+                    // $query->whereIn('itemsprestaciones.IdProfesional', [$request->profesional, 0])
+                        // ->where('itemsprestaciones.IdProfesional', '!=', $request->profesional)
+                        $query->where('itemsprestaciones.IdProfesional2', 0)
+                        ->addSelect(DB::raw('"' . $request->especialidad . '" as especialidades'));
                 });
     
                 $query->when(!empty($request->fechaDesde) || !empty($request->fechaHasta), function ($query) use ($request){
@@ -101,15 +147,66 @@ class LlamadorController extends Controller
                 });
     
                 $query->when(!empty($request->estado) && ($request->estado === 'abierto'), function($query) {
-                    $query->whereIn('itemsprestaciones.CAdj', [0, 1, 2]);
+                    $query->whereIn('itemsprestaciones.CAdj', [0, 1, 2])
+                        ->where('prestaciones.Cerrado', 0);
                 });
     
                 $query->when(!empty($request->estado) && ($request->estado === 'cerrado'), function($query) {
-                    $query->whereIn('itemsprestaciones.CAdj', [3, 4, 5]);
+                    $query->whereIn('itemsprestaciones.CAdj', [3, 4, 5])
+                        ->where('prestaciones.Cerrado', 1);
                 });
     
                 $query->when(!empty($request->estado) && ($request->estado === 'todos'), function($query){
                     $query->whereIn('itemsprestaciones.CAdj', [0, 1, 2, 3, 4, 5]);
+                });
+            }
+
+            $query->where('itemsprestaciones.IdProveedor', $request->especialidad)
+                  ->groupBy('prestaciones.Id')
+                  ->orderBy('prestaciones.Id', 'DESC')
+                  ->orderBy('pacientes.Apellido', 'DESC');
+
+            return Datatables::of($query)->make(true);
+        }
+    }
+
+    public function buscarInf(Request $request)
+    {
+        if ($request->ajax()) {
+        
+            $query = $this->queryBasico($request->profesional);
+
+            if (!empty($request->prestacion)){
+                    
+                $query->where('prestaciones.Id', $request->prestacion);
+            
+            } else {
+
+                $query->when(!empty($request->profesional), function ($query) use ($request){
+                    $query->where('itemsprestaciones.IdProfesional', '!=', 0)
+                        ->whereIn('itemsprestaciones.IdProfesional2', [$request->profesional, 0])
+                        ->where('itemsprestaciones.IdProfesional2', '!=', $request->profesional)
+                        ->where('itemsprestaciones.IdProveedor', $request->especialidad)
+                        ->addSelect(DB::raw('"' . $request->especialidad . '" as especialidades'));
+                });
+    
+                $query->when(!empty($request->fechaDesde) || !empty($request->fechaHasta), function ($query) use ($request){
+                    $query->whereBetween('prestaciones.Fecha', [$request->fechaDesde, $request->fechaHasta]);
+                });
+    
+                $query->when(!empty($request->estado) && ($request->estado === 'abierto'), function($query) {
+                        $query->where('itemsprestaciones.CInfo', 1)
+                            ->whereIn('itemsprestaciones.CAdj', [3,5]);
+                });
+    
+                $query->when(!empty($request->estado) && ($request->estado === 'cerrado'), function($query) {
+                    $query->whereIn('itemsprestaciones.CAdj', [3, 5])
+                        ->where('prestaciones.CInfo', 2);
+                });
+    
+                $query->when(!empty($request->estado) && ($request->estado === 'todos'), function($query){
+                    $query->whereIn('itemsprestaciones.CAdj', [3, 5])
+                        ->whereIn('itemsprestaciones.CInfo', [1,2]);
                 });
             }
 
@@ -118,28 +215,27 @@ class LlamadorController extends Controller
                   ->orderBy('pacientes.Apellido', 'DESC');
 
             return Datatables::of($query)->make(true);
-        }
-        
-        return view('layouts.llamador.efector');
+
+            }
     }
 
-    public function imprimirExcel(Request $request)
+    public function exportar(Request $request)
     {
-        if($request->tipo === 'efector' && $request->modo === 'basico') {
+        if($request->modo === 'basico') {
             $prestaciones = $this->queryBasico()->whereIn('prestaciones.Id', $request->Ids)->groupBy('prestaciones.Id')->get();
 
             if($prestaciones) {
-                $reporte = $this->reporteExcel->crear('efectorExportar');
+                $reporte = $this->reporteExcel->crear('llamadorExportar');
                 return $reporte->generar($prestaciones);
             }else{
                 return response()->json(['msg' => 'No existen prestaciones para exportar'], 409);
             }
 
-        }elseif ($request->tipo === 'efector' && $request->modo === 'full') {
+        }elseif ($request->modo === 'full') {
             $prestaciones = $this->queryFull()->whereIn('prestaciones.Id', $request->Ids)->groupBy('itemsprestaciones.Id')->get();
 
             if($prestaciones) {
-                $reporte = $this->reporteExcel->crear('efectorDetalle');
+                $reporte = $this->reporteExcel->crear('llamadorDetalle');
                 return $reporte->generar($prestaciones);
             }else{
                 return response()->json(['msg' => 'No existen prestaciones para exportar'], 409);
@@ -169,11 +265,22 @@ class LlamadorController extends Controller
 
     public function controlLlamado(Request $request)
     {   
-        $query = Llamador::with(['prestacion', 'prestacion.paciente'])->where('prestacion_id', $request->prestacion)->first();
-
+        $query = Llamador::with(['prestacion', 'prestacion.paciente'])
+            ->where('prestacion_id', $request->prestacion)
+            ->where('profesional_id', $request->profesional)
+            ->where('especialidad_id', $request->especialidad)
+            ->first();
+            
         $data = [];
 
         if ($query) {
+
+            $listaExamenes = ItemPrestacion::where('IdPrestacion', $request->prestacion)->pluck('CAdj')->toArray();
+
+            if(in_array(2, $listaExamenes)) {
+                return response()->json(['msg' => 'No se ha liberado la prestacion porque hay examenes con adjunto pero abiertos'], 409);
+            }
+
             $query->delete();
             
             $data = [
@@ -188,7 +295,8 @@ class LlamadorController extends Controller
                 'Id' => Llamador::max('Id') + 1,
                 'profesional_id' => $request->profesional,
 	            'prestacion_id' =>  $request->prestacion,
-                'itemprestacion_id' => 0
+                'especialidad_id' => $request->especialidad,
+                'tipo_profesional' => session('Profesional') ?? $request->Tipo
             ]);
 
             $data = [
@@ -202,13 +310,24 @@ class LlamadorController extends Controller
 
     public function checkLlamado(Request $request)
     {
-        $query = Llamador::where('prestacion_id', $request->id)->first();
+        $query = Llamador::where('prestacion_id', $request->id)
+            ->where('tipo_profesional', session('Profesional'))
+            ->first();
+        
         return response()->json($query);
     }
 
     public function asignarProfesional(Request $request)
     {
-        $query = ItemPrestacion::find($request->Id);
+        $query = ItemPrestacion::with(['examenes'])->where('Id', $request->Id)->first();
+
+        if($query->examenes->Adjunto === 1 && $this->adjunto($request->Id, 'Efector') && $query->IdProfesional !== 0) {
+            return response()->json(['msg' => 'No se puede desasignar al profesional porque hay un archivo adjunto en el examen', 'noCheck' => true], 409);
+        }
+
+        if(in_array($query->CAdj, [3,5])) {
+            return response()->json(['msg' => 'No se puede desasignar al profesional porque el examen se encuentra cerrado (estado)'], 409);
+        }
 
         if($query)  {
             $query->IdProfesional = $request->estado == 'true' ? $request->Profesional : 0;
@@ -231,17 +350,100 @@ class LlamadorController extends Controller
         }
     }
 
-    private function queryBasico(?int $idProfesional = null)
+    public function listadoEspecialidades(Request $request)
     {
-        return Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+        return ProfesionalProv::join('proveedores', 'profesionales_prov.IdProv', '=', 'proveedores.Id')
+            ->select(
+                'proveedores.Nombre as Nombre',
+                'proveedores.Id as Id'
+            )
+            ->whereNot('profesionales_prov.IdRol', '0')
+            ->where('profesionales_prov.IdProf', $request->IdProfesional)
+            ->where('profesionales_prov.IdRol', $request->Tipo)
+            ->get();
+    }
+
+    public function cambioEstado(Request $request)
+    {
+
+        if(empty($request->Id)) {
+            return response()->json(['msg' => 'No hay ID para procesar. Error interno'], 500);
+        }
+        
+        $item = ItemPrestacion::with('examenes')->find($request->Id);
+
+        if(!$item) {
+            return response()->json(['msg' => 'No se encontro el examen'], 404);
+        }
+
+        if(!$item->IdProfesional) {
+            return response()->json(['msg' => 'No tiene profesional efector asignado. Debe asignarse para cerrar'], 409);
+        }
+
+        if ($request->tipo === SELF::TIPOS[0]) {
+
+            //Adjunto "Cero" no lleva adjuntos
+            if ($item->examenes->Adjunto === 0 && $request->accion === 'cerrar') {
+
+                //Tres es cerrado sin adjunto
+                $item->update(['CAdj' => 3]);
+                return response()->json(['msg' => 'Se ha cerrado el examen de manera correcto', 'CAdj' => 3, 'IdItem' => $request->Id], 200);
+            
+            } elseif($item->examenes->Adjunto === 1 && $request->accion === 'cerrar') {
+
+                $archivo = ArchivoEfector::where('IdEntidad', $request->Id)->first();
+
+                if(!$archivo) {
+
+                    return response()->json(['msg' => 'No se puede cerrar el examen porque no se ha adjuntado el archivo'], 409);
+                }
+
+                //Cerrado es cerrado con adjunto
+                $item->update(['CAdj' => 5]);
+                return response()->json(['msg' => 'Se ha cerrado el examen de manera correcto', 'CAdj' => 5, 'IdItem' => $request->Id], 200);
+
+            }       
+        } 
+    }
+
+    public function cerrarAtencion(Request $request)
+    {
+        if(empty($request->Id)) {
+            return response()->json(['msg' => 'No se puede terminar la atencion sin la ID'], 404);
+        }
+
+        $llamador = Llamador::where('prestacion_id', $request->Id)->where('tipo_profesional', $request->tipo)->first();
+
+        if($llamador) {
+            $llamador->delete();
+
+            return response()->json(['msg', 'Se ha liberado la prestación correctamente'], 200);
+        }
+    }
+
+    public function getItemprestacion(Request $request)
+    {
+        $item = ItemPrestacion::find($request->Id);
+
+        return response()->json([
+            'itemprestacion' => $item,
+            'multiEfector' => $this->multiEfector($item->IdPrestacion, $item->IdProfesional, $item->examenes->IdProveedor),
+            'proveedores' => $item->examenes->proveedor1
+        ]);
+    }
+
+    private function queryBasico()
+    {
+        return ItemPrestacion::join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
+        ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
         ->join('clientes as empresa', 'prestaciones.IdEmpresa', '=', 'empresa.Id')
         ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
         ->leftJoin('telefonos', 'pacientes.Id', '=', 'telefonos.IdEntidad')
-        ->join('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
         ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
         ->join('proveedores', 'examenes.IdProveedor', '=', 'proveedores.Id')
         ->select(
             DB::raw('DATE_FORMAT(prestaciones.Fecha, "%d/%m/%Y") as fecha'),
+            'itemsprestaciones.IdProfesional2 as IdProfesional2',
             'prestaciones.Id as prestacion',
             'prestaciones.TipoPrestacion as tipo',
             'prestaciones.Cerrado as Cerrado',
@@ -253,25 +455,8 @@ class LlamadorController extends Controller
             'pacientes.FechaNacimiento as fechaNacimiento',
             DB::raw("CONCAT(telefonos.CodigoArea,telefonos.NumeroTelefono) as telefono")
         );
-        
-        if ($idProfesional !== null) {
-            $query->addSelect(DB::raw($idProfesional . ' as idProfesional'));
-        }
-
-        $query->addSelect(DB::raw("
-            CASE 
-                WHEN EXISTS (
-                    SELECT 1 
-                    FROM llamador
-                    WHERE llamador.prestacion_id = prestaciones.Id
-                ) THEN 'true'
-                ELSE 'false'
-            END as estado_llamado
-        "));
-            
-       $query->whereNotNull('prestaciones.Fecha')
-        ->where('prestaciones.Fecha', '<>', '0000-00-00')
-        ->where('prestaciones.Anulado', 0);
+             
+       $query->where('itemsprestaciones.Anulado', 0);
     }
 
     private function queryFull()
@@ -285,6 +470,7 @@ class LlamadorController extends Controller
         ->leftJoin('archivosefector', 'itemsprestaciones.Id', '=', 'archivosefector.IdEntidad')
         ->select(
             DB::raw('DATE_FORMAT(prestaciones.Fecha, "%d/%m/%Y") as fecha'),
+            'itemsprestaciones.IdProfesional2 as IdProfesional2',
             'prestaciones.Id as prestacion',
             'prestaciones.TipoPrestacion as tipo',
             'prestaciones.Cerrado as Cerrado',

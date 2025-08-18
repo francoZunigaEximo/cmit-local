@@ -1,24 +1,36 @@
 $(function(){
 
+    const variables = {
+        ParaEmpresa: $('#ParaEmpresa'),
+        cuit: $('#Identificacion'),
+        prefijoExtra: $('#prefijoExtra'),
+        numeroExtra: $('#numeroExtra'),
+        obsExtra: $('#obsExtra')
+    };
+
+    const principal = {
+        modal: $('#myModal'),
+        editLink: $('#editLink')
+    };
+
     //Verifica si ya existe ese ParaEmpresa con ese Cuit
     $('#Identificacion, #ParaEmpresa').blur(function () {
-        let cuit = $('#Identificacion').val(),
-            empresa = $('#ParaEmpresa').val();
 
-        if (cuit && empresa) {
+        if (variables.cuit.val() && variables.ParaEmpresa.val()) {
             $.ajax({
                 url: verifyIdentificacion,
                 type: "GET",
                 data: {
-                    Identificacion: cuit,
-                    ParaEmpresa: empresa,
+                    Identificacion: variables.cuit.val(),
+                    ParaEmpresa: variables.ParaEmpresa.val(),
                 },
                 success: function (response) {
-                    if (response && Object.keys(response).length > 0) {
-                            url = editUrl.replace('__cliente__', response.Id);
-                        $('#editLink').attr('href', url);
+                    if (response.existe) {
+                        let cliente = response.cliente,
+                            url = editUrl.replace('__cliente__', cliente.Id);
+                        principal.editLink.attr('href', url);
 
-                        $('#myModal').modal('show');
+                        principal.modal.modal('show');
                     }
                 }
             });
@@ -29,7 +41,7 @@ $(function(){
     //Autocompletamos ParaEmpresa con RazonSocial
     $('#RazonSocial').change(function() {
         let razonSocial = $(this).val(),
-            paraEmpresa = $('#ParaEmpresa');
+            paraEmpresa = variables.ParaEmpresa;
     
         if (paraEmpresa.val().length == 0 && razonSocial.length > 0) {
             paraEmpresa.val(razonSocial);
@@ -65,6 +77,7 @@ $(function(){
     });
 
     function buscarLocalidad(id){
+        
         if(!id) return;
 
         $.ajax({
@@ -80,9 +93,10 @@ $(function(){
             },
             error: function(xhr){
                 console.error(xhr);
-                toastr.error("Hay un error en la busqueda de la localidad. Consulte al administrador", "Error", {timeOut: 1000});
+                toastr.error("Hay un error en la busqueda de la localidad. Consulte al administrador", "Error");
             }
         });
+        
     }
 
     let clonTipoCliente = localStorage.getItem('clon_TipoCliente'),
@@ -125,30 +139,30 @@ $(function(){
     }   
     //Añadimos nuevos números para guardar
     $(document).on('click', '#addNumero', function() {
-        let prefijo = $('#prefijoExtra').val(),
-            numero = $('#numeroExtra').val(),
-            observacion = $('#obsExtra').val();
 
-        if (prefijo && numero && observacion) {
+        if (variables.prefijoExtra.val() && variables.numeroExtra.val() && variables.obsExtra.val()) {
             $('#tablaTelefonos').append(`
                 <tr>
-                    <td>${prefijo !== "" ? prefijo : ""}</td>
-                    <td>${numero !== "" ? numero : ""}</td>
-                    <td>${observacion !== "" ? observacion : ""}</td>
+                    <td>${variables.prefijoExtra.val() ? variables.prefijoExtra.val() : ""}</td>
+                    <td>${variables.numeroExtra.val() ? variables.numeroExtra.val() : ""}</td>
+                    <td>${variables.obsExtra.val() ? variables.obsExtra.val() : ""}</td>
                     <td>
                         <i class="ri-delete-bin-line"></i>
                     </td>
                 </tr>
             `);
 
-            let datosArray = [prefijo, numero, observacion],
+            let datosArray = [variables.prefijoExtra.val(), variables.numeroExtra.val(), variables.obsExtra.val()],
                 datosArrayJSON = JSON.stringify(datosArray);
 
             $('#hiddens').append(`
                 <input type='hidden' class='telefono-input' name='telefonos[]' value='${datosArrayJSON}'>
             `);
 
-            $('#prefijoExtra, #numeroExtra, #obsExtra').val("");
+            variables.prefijoExtra
+                .add(variables.numeroExtra)
+                .add(variables.obsExtra)
+                .val('');
 
             actualizarInputHidden();
         }

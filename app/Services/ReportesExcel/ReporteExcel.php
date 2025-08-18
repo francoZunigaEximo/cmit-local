@@ -10,8 +10,8 @@ use App\Services\ReportesExcel\modelos\DetalladaPrestacionFull;
 use App\Services\ReportesExcel\modelos\Mapa;
 use App\Services\ReportesExcel\modelos\Especialidad;
 use App\Services\ReportesExcel\modelos\Remito;
-use App\Services\ReportesExcel\modelos\EfectorExportar;
-use App\Services\ReportesExcel\modelos\EfectorDetallado;
+use App\Services\ReportesExcel\modelos\LlamadorExportar;
+use App\Services\ReportesExcel\modelos\LlamadorDetallado;
 use App\Services\ReportesExcel\modelos\ResumenTotal;
 use App\Services\ReportesExcel\modelos\SimplePrestacion;
 use App\Services\ReportesExcel\modelos\SimplePrestacionFull;
@@ -40,10 +40,10 @@ class ReporteExcel
                 return new Especialidad();
             case 'remitos':
                 return new Remito();
-            case 'efectorExportar':
-                return new EfectorExportar();
-            case 'efectorDetalle':
-                return new EfectorDetallado();
+            case 'llamadorExportar':
+                return new LlamadorExportar();
+            case 'llamadorDetalle':
+                return new LlamadorDetallado();
             case 'resumenTotal':
                 return new ResumenTotal();
             case 'simplePrestacion':

@@ -25,24 +25,22 @@ trait ObserverPacientes
 
     public function getFichaLaboral($id, $tipo):  mixed
     {
-
-        $result = null;
         $ficha = Fichalaboral::where('IdPaciente', $id)->orderBy('Id', 'desc')->first() ?? '';
 
-        if ($ficha && $tipo == 'art')
-        {
-            $result = Cliente::where('Id', $ficha->IdART)->first();
-        
-        } elseif ($ficha && $tipo == 'empresa')
-        {
-            $result = Cliente::where('Id', $ficha->IdEmpresa)->first();
-        
-        } else if ($ficha && $tipo == null)
-        {
-            $result = $ficha;
+        $tipos = [
+            'art' => $ficha->IdART,
+            'empresa' => $ficha->IdEmpresa
+        ];
+
+        if(!$ficha) {
+            return response()->json(['msg' => 'No se ha encontrado la ficha laboral'], 404);
         }
 
-        return $result;
+        if(!in_array($tipo, ['art', 'empresa'])) {
+            return $ficha;
+        }
+
+        return Cliente::find($tipos[$tipo]);
     }
 
     public function getPrestacion($id):  mixed
@@ -89,7 +87,7 @@ trait ObserverPacientes
 
             return $fileName;
 
-        } elseif(($foto === null || $foto === '') && $tipo === 'create') {
+        } elseif((empty($foto)) && $tipo === 'create') {
             
             return 'foto-default.png';
 

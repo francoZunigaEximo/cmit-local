@@ -33,35 +33,31 @@ class Examenes
                 'examenes.Id as IdExamen',
                 DB::raw("CONCAT(hisEfector.Apellido,' ',hisEfector.Nombre) as EfectorHistorico"),
                 DB::raw("CONCAT(hisInformador.Apellido,' ',hisEfector.Nombre) as InformadorHistorico"),
+                DB::raw("CONCAT(datosEfector.Apellido, ' ', datosEfector.Nombre) as Efector"),
+                DB::raw("CONCAT(datosInformador.Apellido, ' ', datosInformador.Nombre) as Informador"),
                 DB::raw('(SELECT COUNT(*) FROM archivosefector WHERE IdEntidad = itemsprestaciones.Id) as Archivo'),
                 'itemsprestaciones.ObsExamen as ObsExamen',
-                DB::raw("
-                    CASE 
-                        WHEN efector.profesional_id = 0 OR efector.profesional_id IS NULL THEN ''
-                        ELSE CONCAT(datosEfector.Apellido, ' ', datosEfector.Nombre)
-                    END as nombreEfector
-                "),
-                DB::raw("
-                    CASE 
-                        WHEN informador.profesional_id = 0 OR informador.profesional_id IS NULL THEN ''
-                        ELSE CONCAT(datosInformador.Apellido, ' ', datosInformador.Nombre)
-                    END as nombreInformador
-                ")
-            )
-            ->where('itemsprestaciones.IdPrestacion', $id)
-            ->whereIn('examenes.IdProveedor', $especialidades)
-            ->groupBy('examenes.Nombre')
-            ->get();
+            )->where('itemsprestaciones.IdPrestacion', $id)
+                ->where('itemsprestaciones.IdProfesional2', 0)
+                ->whereIn('itemsprestaciones.IdProveedor', $especialidades)
+                ->groupBy('examenes.Nombre')
+                ->get();
     }
 
     public function checkArchivo(string $tipo, int $idPrestacion)
     {
-        if($tipo === 'efector') {
-            return ArchivoEfector::where('IdEntidad', $idPrestacion)->count();
-        
-        }elseif($tipo === 'informador') {
-            return ArchivoInformador::where('IdEntidad', $idPrestacion)->count();
+
+        $modelos = [
+            'efector' => ArchivoEfector::class,
+            'informador' => ArchivoInformador::class
+        ];
+
+        if(!isset($modelos[$tipo])) {
+            return response()->json(['msg' => 'Ha ocurrido un error. No se encuentra el modelo correspondiente en el conteo de archivos'], 404);
         }
+
+        return $modelos[$tipo]::where('IdEntidad', $idPrestacion)->count();
+
     }
 
 }

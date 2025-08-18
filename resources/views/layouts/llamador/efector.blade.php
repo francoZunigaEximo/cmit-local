@@ -21,7 +21,7 @@
 
                                 <div class="row">
 
-                                    <div class="col-sm-3 mb-3">
+                                    <div class="col-sm-2 mb-3">
                                         <label for="profesional" class="form-label fw-bolder">Profesional <span class="required">(*)</span></label>
                                         <select class="form-control" name="profesional" id="profesional">
                                             @if(!is_null($efectores) && $efectores->count() === 1)
@@ -41,10 +41,19 @@
                                             
                                         </select>
                                     </div>
-
                                     <div class="col-sm-2 mb-3">
                                         <label for="especialidad" class="form-label fw-bolder">Especialidad <span class="required">(*)</span></label>
-                                        <input type="text" class="form-control" name="especialidad" id="especialidad">
+                                        @php
+                                            $rolesPermitidos = ['Administrador', 'Admin SR', 'Recepcion SR'];
+                                            $rolesUsuario = Auth::user()->role->pluck('nombre')->toArray();
+                                            $tieneRol = !empty(array_intersect($rolesPermitidos, $rolesUsuario));
+                                        @endphp
+
+                                        @if($tieneRol)
+                                            <select name="especialidadSelect" id="especialidadSelect" class="form-control"></select>
+                                        @else
+                                            <input type="text" class="form-control" name="especialidad" id="especialidad" data-id="{{ session('IdEspecialidad')->Id ?? '' }}" value="{{ session('Profesional') === 'EFECTOR' ? session('Especialidad') : 'Sin Especialidad' }}">
+                                        @endif
                                     </div>
 
                                     <div class="col-sm-2 mb-3">
@@ -72,13 +81,16 @@
                                             <option value="todos">Todos</option>
                                         </select>
                                     </div>
+                                </div>
 
-                                    <div class="col-sm-1 d-flex align-items-center justify-content-end">
-                                        <button class="btn btn-sm botonGeneral" id="buscar">
-                                            <i class="ri-zoom-in-line"></i>Buscar
-                                        </button>
+                                <div class="row">
+                                    <div class="col-12 text-end">
+                                        <div class="d-flex align-items-center justify-content-end">
+                                            <button class="btn btn-sm botonGeneral" id="buscar">
+                                                <i class="ri-zoom-in-line"></i>Buscar
+                                            </button>
+                                        </div>
                                     </div>
-
                                 </div>
 
                                 <div class="row">
@@ -121,8 +133,10 @@
     </div>
 </div>
 
+
+
 <!-- Modales -->
-<div id="atenderEfector" class="modal fadeInUp" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+<div id="atenderEfector" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidde="true" style="display: none">
     <div class="modal-dialog modal-fullscreen">
         <div class="modal-content">
             <div class="modal-header">
@@ -133,7 +147,7 @@
                 <hr size="1">
                 <div class="row p-2 fondo-grisClaro">
                     <div class="col-6 text-start">
-                        <button class="btn btn-sm botonGeneral">Liberar</button>
+                        <button class="btn btn-sm botonGeneral liberarPrestacion">Liberar</button>
                     </div>
                     <div class="col-6 text-end">
                         <button class="btn btn-sm botonGeneral">Llamar todo</button>
@@ -153,63 +167,63 @@
                                     <div class="col-md-4 p-2">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text">Profesional</span>
-                                            <input type="text" class="form-control" id="profesionalEfector" name="profesionalEfector" readonly="true">
+                                            <input type="text" class="form-control" id="profesional_var" name="profesional_var" readonly="true">
                                         </div>
                                     </div>
                                     
                                     <div class="col-md-4 p-2">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text">Prestación</span>
-                                            <input type="text" class="form-control" id="prestacionEfector" name="prestacionEfector" readonly="true">
+                                            <input type="text" class="form-control" id="prestacion_var" name="prestacion_var" readonly="true">
                                         </div>
                                     </div>
         
                                     <div class="col-md-4 p-2">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text">Tipo Exámen</span>
-                                            <input type="text" class="form-control" id="tipoEfector" name="tipoEfector" readonly="true">
+                                            <input type="text" class="form-control" id="tipo_var" name="tipo_var" readonly="true">
                                         </div>
                                     </div>
 
                                     <div class="col-md-4 p-2">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text">ART</span>
-                                            <input type="text" class="form-control" id="artEfector" name="artEfector" readonly="true">
+                                            <input type="text" class="form-control" id="art_var" name="art_var" readonly="true">
                                         </div>
                                     </div>
 
                                     <div class="col-md-4 p-2">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text">Empresa</span>
-                                            <input type="text" class="form-control" id="empresaEfector" name="empresaEfector" readonly="true">
+                                            <input type="text" class="form-control" id="empresa_var" name="empresa_var" readonly="true">
                                         </div>
                                     </div>
 
                                     <div class="col-md-4 p-2">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text">Para Empresa</span>
-                                            <input type="text" class="form-control" id="paraEmpresaEfector" name="paraEmpresaEfector" readonly="true">
+                                            <input type="text" class="form-control" id="paraEmpresa_var" name="paraEmpresa_var" readonly="true">
                                         </div>
                                     </div>
 
                                     <div class="col-md-4 p-2 mt-1">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text">Paciente</span>
-                                            <input type="text" class="form-control" id="pacienteEfector" name="pacienteEfector" readonly="true">
+                                            <input type="text" class="form-control" id="paciente_var" name="paciente_var" readonly="true">
                                         </div>
                                     </div>
 
                                     <div class="col-md-4 p-2 mt-1">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text">Edad</span>
-                                            <input type="text" class="form-control" id="edadEfector" name="edadEfector" readonly="true">
+                                            <input type="text" class="form-control" id="edad_var" name="edad_var" readonly="true">
                                         </div>
                                     </div>
 
                                     <div class="col-md-4 p-2 mt-1">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text">Fecha Prestación</span>
-                                            <input type="text" class="form-control" id="fechaEfector" name="fechaEfector" readonly="true">
+                                            <input type="text" class="form-control" id="fecha_var" name="fecha_var" readonly="true">
                                         </div>
                                     </div>
 
@@ -219,7 +233,7 @@
 
                             
                             <div class="col-md-3">
-                                <img class="round mx-auto d-block img-fluid" id="fotoEfector" src="" alt="Foto del paciente" width="150px">
+                                <img class="round mx-auto d-block img-fluid" id="foto_var" src="" alt="Foto del paciente" width="150px">
                                 <span class="d-flex justify-content-center mt-1">
                                     <a id="descargaFoto" class="descargaFoto" href="" download>
                                         <button class="descargarImagen btn btn-sm botonGeneral">Descargar</button>
@@ -244,6 +258,57 @@
                             </div>
                         </div>
 
+                        <hr size="1">
+
+                        <div class="row justify-content-center">
+                             <div class="table mx-auto text-center col-md-7 col-sm-9 col-12">
+                                <table id="listadoAdjuntosEfectores" class="table table-bordered">
+                                    <thead class="table-light">
+                                        <tr class="text-center">
+                                            <th>Examen</th>
+                                            <th>Descripción</th>
+                                            <th>Adjunto</th>
+                                            <th>Tipo</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="list form-check-all" id="adjuntosEfectores">
+                        
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+
+                        <hr size="1">
+
+                        <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card titulo-tabla">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h4 class="card-title mb-0">Observaciones privadas</h4>
+                                    <button type="button" class="btn bt-sm botonGeneral addObs">Añadir</button>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-card mb-1">
+                                        <table id="lstPrivPrestaciones" class="table table-bordered">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th class="sort text-center" style="width: 100px">Fecha</th>
+                                                    <th class="text-center" style="width: 150px">Usuario</th>
+                                                    <th class="text-center" style="width: 150px">Rol</th>
+                                                    <th class="text-start">Comentario</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="list form-check-all" id="privadoPrestaciones">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     </div>
                 </div>
 
@@ -257,10 +322,75 @@
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+ 
+<div id="cargarArchivo" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidde="true" style="display: none">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel">Subir archivo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <form id="form-efector">
+                   
+                    <div class="mensajeMulti alert alert-info alert-border-left alert-dismissible fade show mb-2" role="alert">
+                        Exámen con multi adjunto habilitado. Elija a que exámen quiere asociar el reporte.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    
+                    <div class="list-group mensajeMulti">
+      
+                        <label class="list-group-item listExamenes">
+
+                        </label>
+               
+                    </div>
+    
+                    
+                    <input type="file" class="form-control fileA" name="fileEfector"/>
+                
+                    <div class="mt-3">
+                        <label for="Descripcion" class="form-label">Descripción</label>
+                        <textarea class="form-control" name="DescripcionE" id="DescripcionE" rows="5"></textarea>
+                        <input type="hidden" id="multi" value="">
+                    </div>
+                </form> 
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn botonGeneral" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn botonGeneral btnAdjEfector" data-iden="">Guardar adjunto</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="openObsPriv" class="modal fadeInUp" tabindex="-1" aria-labelledby="myModalLabel" aria-hidde="true" style="display: none">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel"> Observación privada </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>
+            </div>
+            <div class="modal-body" class="text-center p-3">
+                <div class="modal-body">
+                    <p>Escriba un comentario de la cuestión o situación:</p>
+                   <textarea name="Comentario" id="Comentario" class="form-control" rows="10"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <input type="hidden" id="fase">
+                    <button type="button" class="btn botonGeneral" id="reset" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn botonGeneral confirmarComentarioPriv">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <script>
-    const SEARCH = "{{ route('llamador.buscarEfector') }}";
+    const SEARCH = "{{ route('llamador.buscar') }}";
     const lnkPres = "{{ route('prestaciones.edit', ['prestacione' => '__item__']) }}";
-    const printExportar = "{{ route('llamador.excelEfector') }}";
+    const printExportar = "{{ route('llamador.exportar') }}";
     const FOTO = "@fileUrl('lectura')/Fotos/";
     const dataPaciente = "{{ route('llamador.verPaciente') }}";
     const USERACTIVO = "{{ Auth::user()->profesional_id }}";
@@ -268,6 +398,14 @@
     const checkLlamado = "{{ route('llamador.check') }}";
     const ROLESUSER = @json(Auth::user()->role);
     const asignacionProfesional = "{{ route('llamador.asignarPaciente') }}";
+    const sessionProfesional = "{{ session('Profesional') }}";
+    const searchEspecialidad = "{{ route('llamador.buscarEspecialidad') }}";
+    const itemPrestacionEstado = "{{ route('llamador.cambioEstado') }}";
+    const getItemPrestacion = "{{ route('llamador.getItemPrestacion')}}";
+    const fileUpload = "{{ route('uploadAdjunto') }}";
+    const descargaE = "@fileUrl('lectura')/AdjuntosEfector";
+    const paginacionByPrestacion = "{{ route('paginacionByPrestacion') }}";
+    const deleteIdAdjunto = "{{ route('deleteIdAdjunto') }}";
 </script>
 
 @push('styles')
@@ -279,10 +417,13 @@
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
 
-<script src="{{ asset('/js/llamador/index.js')}}?v={{ time() }}"></script>
-<script src="{{ asset('/js/llamador/paginacion.js')}}?v={{ time() }}"></script>
+<script src="{{ asset('/js/llamador/libreria.js')}}?v={{ time() }}"></script>
+
+<script src="{{ asset('/js/llamador/efector/index.js')}}?v={{ time() }}"></script>
+<script src="{{ asset('/js/llamador/efector/paginacion.js')}}?v={{ time() }}"></script>
 <script src="{{ asset('/js/llamador/sockets.js')}}?v={{ time() }}"></script>
 <script src="{{ asset('/js/llamador/atenderPaciente.js') }}?v={{ time() }}"></script>
+
 
 
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>

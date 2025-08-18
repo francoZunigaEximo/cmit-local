@@ -20,7 +20,8 @@ class UserSession extends Model
         'ip_address',
         'user_agent',
         'login_at',
-        'logout_at'
+        'logout_at',
+        'last_heartbeat_at'
     ];
 
     public $timestamps = false;
