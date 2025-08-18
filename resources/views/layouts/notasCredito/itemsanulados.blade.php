@@ -4,8 +4,10 @@
 
 @section('content')
 
-<div class="page-title-box d-sm-flex align-items-center justify-content-start">
+<div class="page-title-box d-sm-flex align-items-center justify-content-between">
     <h4 class="mb-sm-0">Items Anulados</h4>
+        <a class="btn btn-warning" type="button" href="{{ route('notasCredito.index') }}"><i class="ri-arrow-left-line"></i> Volver</a>
+
 </div>
 <div class="card">
     <div class="card-body">

@@ -70,6 +70,7 @@
                                     <tr>
                                         <th class="sort">Cliente</th>
                                         <th class="sort">CUIT</th>
+                                        <th class="sort">Total Items</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
