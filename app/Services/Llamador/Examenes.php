@@ -46,12 +46,18 @@ class Examenes
 
     public function checkArchivo(string $tipo, int $idPrestacion)
     {
-        if($tipo === 'efector') {
-            return ArchivoEfector::where('IdEntidad', $idPrestacion)->count();
-        
-        }elseif($tipo === 'informador') {
-            return ArchivoInformador::where('IdEntidad', $idPrestacion)->count();
+
+        $modelos = [
+            'efector' => ArchivoEfector::class,
+            'informador' => ArchivoInformador::class
+        ];
+
+        if(!isset($modelos[$tipo])) {
+            return response()->json(['msg' => 'Ha ocurrido un error. No se encuentra el modelo correspondiente en el conteo de archivos'], 404);
         }
+
+        return $modelos[$tipo]::where('IdEntidad', $idPrestacion)->count();
+
     }
 
 }

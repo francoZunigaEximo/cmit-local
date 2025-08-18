@@ -49,3 +49,50 @@ async function cargarArchivosEfector(idPrestacion, idProfesional, idEspecialidad
                 });
             });
     }
+
+async function listaComentariosPrivados(idmapa, opcionFase, tipo){
+
+    $('#privadoPrestaciones').empty();
+    let listaFases = {
+        prestaciones: {
+            id: 2,
+            bodyTable: '#privadoPrestaciones',
+            table: '#lstPrivPrestaciones'
+        },
+        cerrado: {
+            id: 3,
+            bodyTable: '#privadoCerrar',
+            table: '#lstPrivCerrados'
+        },
+
+    }
+
+    $.get(privateComment, {Id: idmapa, obsfasesid: listaFases[opcionFase].id, tipo: tipo})
+        .done(async function(response){
+
+            let data = await response.result;
+
+            $.each(data, function(index, d){
+
+                let contenido =  `
+                    <tr>
+                        <td>${d.Fecha}</td>
+                        <td>${d.IdEntidad}</td>
+                        <td>${d.IdUsuario}</td>
+                        <td>${d.nombre_perfil}</td>
+                        <td>${d.Comentario}</td>
+                    </tr>
+                `;
+
+                $(listaFases[opcionFase].bodyTable).append(contenido);
+            });
+
+            $(listaFases[opcionFase].table).fancyTable({
+                pagination: true,
+                perPage: 15,
+                searchable: false,
+                globalSearch: false,
+                sortable: false, 
+            });
+        })
+}

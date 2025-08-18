@@ -19,7 +19,8 @@ $(function(){
         modalArchivo: $('#modalArchivo'),
         multi: $('#multi'),
         btnAdjEfector: $('.btnAdjEfector'),
-        adjuntosEfectores: $('#adjuntosEfectores')
+        adjuntosEfectores: $('#adjuntosEfectores'),
+        openObsPriv: $('#openObsPriv')
     };
 
     principal.mensajeMulti.hide();
@@ -216,6 +217,10 @@ $(function(){
                 }
             });
         }
+    });
+
+    $(document).on('click', '.addObs', function(e) {
+        principal.openObsPriv.modal('show');
     });
 
     $(document).on('click', '.deleteAdjunto', function(e){

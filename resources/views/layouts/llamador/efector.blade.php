@@ -280,6 +280,35 @@
 
                         </div>
 
+                        <hr size="1">
+
+                        <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card titulo-tabla">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h4 class="card-title mb-0">Observaciones privadas</h4>
+                                    <button type="button" class="btn bt-sm botonGeneral addObs">Añadir</button>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-card mb-1">
+                                        <table id="lstPrivPrestaciones" class="table table-bordered">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th class="sort text-center" style="width: 100px">Fecha</th>
+                                                    <th class="text-center" style="width: 150px">Usuario</th>
+                                                    <th class="text-center" style="width: 150px">Rol</th>
+                                                    <th class="text-start">Comentario</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="list form-check-all" id="privadoPrestaciones">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     </div>
                 </div>
 
@@ -330,6 +359,28 @@
             <div class="modal-footer">
                 <button type="button" class="btn botonGeneral" data-bs-dismiss="modal">Cerrar</button>
                 <button type="button" class="btn botonGeneral btnAdjEfector" data-iden="">Guardar adjunto</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="openObsPriv" class="modal fadeInUp" tabindex="-1" aria-labelledby="myModalLabel" aria-hidde="true" style="display: none">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel"> Observación privada </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>
+            </div>
+            <div class="modal-body" class="text-center p-3">
+                <div class="modal-body">
+                    <p>Escriba un comentario de la cuestión o situación:</p>
+                   <textarea name="Comentario" id="Comentario" class="form-control" rows="10"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <input type="hidden" id="fase">
+                    <button type="button" class="btn botonGeneral" id="reset" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn botonGeneral confirmarComentarioPriv">Confirmar</button>
+                </div>
             </div>
         </div>
     </div>
