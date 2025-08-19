@@ -118,6 +118,11 @@ class RolesController extends Controller
         }
     }
 
+    public function getRoles()
+    {
+        return Auth::user()->role;
+    }
+
     private function addRolProfesionales($roles, $user)
     {
         $buscar = $this->listadoRoles($roles->nombre);

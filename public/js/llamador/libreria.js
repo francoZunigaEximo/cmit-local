@@ -1,7 +1,5 @@
 async function cargarArchivosEfector(idPrestacion, idProfesional, idEspecialidad){
 
-        console.log(idPrestacion, idProfesional, idEspecialidad);
-
         if(!idPrestacion || !idProfesional || !idEspecialidad) return;
 
         $('#adjuntosEfectores').empty();
@@ -10,8 +8,7 @@ async function cargarArchivosEfector(idPrestacion, idProfesional, idEspecialidad
             .done(async function(response){
                 preloader('off');
                 let data = response.resultado;
-                console.log("datos:")
-                console.log(data);
+
                 $.each(data, function(index, d){
 
                     let contenido = `
@@ -46,53 +43,47 @@ async function cargarArchivosEfector(idPrestacion, idProfesional, idEspecialidad
                     `;
 
                    $('#adjuntosEfectores').append(contenido);
-                });
+                }); 
             });
     }
 
-async function listaComentariosPrivados(idmapa, opcionFase, tipo){
+async function comentariosPrivados(id){
 
     $('#privadoPrestaciones').empty();
-    let listaFases = {
-        prestaciones: {
-            id: 2,
-            bodyTable: '#privadoPrestaciones',
-            table: '#lstPrivPrestaciones'
-        },
-        cerrado: {
-            id: 3,
-            bodyTable: '#privadoCerrar',
-            table: '#lstPrivCerrados'
-        },
+    preloader('on');
 
-    }
+    let lstRoles = await $.get(getRoles, function(response){
+        return response;
+    });
 
-    $.get(privateComment, {Id: idmapa, obsfasesid: listaFases[opcionFase].id, tipo: tipo})
-        .done(async function(response){
+    $.get(privateComment, {Id: id,  tipo: 'prestacion'})
+        .done(async function(response){ 
+            let data = await response.result,
+                comentarios = data.filter(comentario => comentario.nombre_perfil.toLowerCase() !== sessionName && comentario.Rol === 'Efector');
+                roles = lstRoles.map(rol => rol.nombre),
+                dataFiltrada = roles.includes('Administrador') ? data : comentarios;
 
-            let data = await response.result;
-
-            $.each(data, function(index, d){
+            $.each(dataFiltrada, function(index, d){
 
                 let contenido =  `
                     <tr>
-                        <td>${d.Fecha}</td>
-                        <td>${d.IdEntidad}</td>
-                        <td>${d.IdUsuario}</td>
-                        <td>${d.nombre_perfil}</td>
-                        <td>${d.Comentario}</td>
+                        <td>${fechaCompleta(d.Fecha)}</td>
+                        <td class="text-capitalize">${d.IdUsuario}</td>
+                        <td class="text-uppercase">${d.nombre_perfil}</td>
+                        <td class="text-start">${d.Comentario}</td>
                     </tr>
                 `;
-
-                $(listaFases[opcionFase].bodyTable).append(contenido);
+                $('#privadoPrestaciones').append(contenido);
             });
 
-            $(listaFases[opcionFase].table).fancyTable({
+            preloader('off');
+
+            $('#lstPrivPrestaciones').fancyTable({
                 pagination: true,
                 perPage: 15,
                 searchable: false,
                 globalSearch: false,
                 sortable: false, 
             });
-        })
+        })   
 }

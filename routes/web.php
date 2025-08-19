@@ -364,6 +364,7 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::get('/roles/listado/asignados', [RolesController::class, 'asignados'])->name('lstRolAsignados');
     Route::post('/roles/agregar', [RolesController::class, 'add'])->name('addRol');
     Route::get('/roles/eliminar', [RolesController::class, 'delete'])->name('deleteRol');
+    Route::get('/roles/obtener', [RolesController::class, 'getRoles'])->name('roles.getRoles');
 
     //Rutas de Personal
     Route::post('/perfil/actualizar', [DatosController::class, 'save'])->name('actualizarDatos');

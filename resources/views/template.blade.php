@@ -410,7 +410,8 @@
         const IDLE_TIMEOUT = 300 * 60 * 1000;
         const CHECK_INTERVAL = 3000; //3 segundo
         const finalizarSesion = "{{ route('usuario.cierreAutomatico') }}";
-        const sessionUser = "{{ auth()->user()?->id }}"; 
+        const sessionUser = "{{ auth()->user()?->id }}";
+        const sessionName = "{{ auth()->user()?->name }}"; 
         const heartbeat = "{{ route('usuario.heartBeat') }}";
 
         let ultimaActividad = Date.now(),

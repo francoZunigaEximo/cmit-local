@@ -136,12 +136,11 @@
 
 
 <!-- Modales -->
-<div id="atenderEfector" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidde="true" style="display: none">
+<div id="atenderEfector" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidde="true" style="display: none" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-fullscreen">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="myModalLabel"> Atender Paciente - Efector</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>
             </div>
             <div class="modal-body">
                 <hr size="1">
@@ -260,61 +259,67 @@
 
                         <hr size="1">
 
-                        <div class="row justify-content-center">
-                             <div class="table mx-auto text-center col-md-7 col-sm-9 col-12">
-                                <table id="listadoAdjuntosEfectores" class="table table-bordered">
-                                    <thead class="table-light">
-                                        <tr class="text-center">
-                                            <th>Examen</th>
-                                            <th>Descripción</th>
-                                            <th>Adjunto</th>
-                                            <th>Tipo</th>
-                                            <th>Acciones</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="list form-check-all" id="adjuntosEfectores">
-                        
-                                    </tbody>
-                                </table>
-                            </div>
-
-                        </div>
-
-                        <hr size="1">
-
                         <div class="row">
-                        <div class="col-lg-12">
-                            <div class="card titulo-tabla">
-                                <div class="card-header d-flex justify-content-between align-items-center">
-                                    <h4 class="card-title mb-0">Observaciones privadas</h4>
-                                    <button type="button" class="btn bt-sm botonGeneral addObs">Añadir</button>
+                            <div class="col-lg-12">
+                                <div class="card titulo-tabla">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h4 class="card-title mb-0">Archivos adjuntos</h4>
+                                    </div>
                                 </div>
                                 <div class="card-body">
-                                    <div class="table-card mb-1">
-                                        <table id="lstPrivPrestaciones" class="table table-bordered">
+                                    <div class="table col-md-7 col-sm-9 col-12">
+                                        <table id="listadoAdjuntosEfectores" class="table table-bordered">
                                             <thead class="table-light">
-                                                <tr>
-                                                    <th class="sort text-center" style="width: 100px">Fecha</th>
-                                                    <th class="text-center" style="width: 150px">Usuario</th>
-                                                    <th class="text-center" style="width: 150px">Rol</th>
-                                                    <th class="text-start">Comentario</th>
+                                                <tr class="text-center">
+                                                    <th>Examen</th>
+                                                    <th>Descripción</th>
+                                                    <th>Adjunto</th>
+                                                    <th>Tipo</th>
+                                                    <th>Acciones</th>
                                                 </tr>
                                             </thead>
-                                            <tbody class="list form-check-all" id="privadoPrestaciones">
+                                            <tbody class="list form-check-all" id="adjuntosEfectores">
+                                
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
+                        <hr size="1">
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="card titulo-tabla">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h4 class="card-title mb-0">Observaciones privadas</h4>
+                                        <button type="button" class="btn bt-sm botonGeneral addObs">Añadir</button>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-card mb-1">
+                                            <table id="lstPrivPrestaciones" class="table table-bordered">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th class="sort text-start" style="width: 150px">Fecha</th>
+                                                        <th class="text-start" style="width: 150px">Usuario</th>
+                                                        <th class="text-start" style="width: 150px">Rol</th>
+                                                        <th class="text-start">Comentario</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="list form-check-all" id="privadoPrestaciones">
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
             </div>
             <div class="modal-footer text-center">
-                <button type="button" class="btn btn-sm botonGeneral" data-bs-dismiss="modal">Cancelar</button>
                 <button type="button" class="btn btn-sm botonGeneral terminarAtencion">Terminar</button>
             </div>
 
@@ -374,7 +379,7 @@
             <div class="modal-body" class="text-center p-3">
                 <div class="modal-body">
                     <p>Escriba un comentario de la cuestión o situación:</p>
-                   <textarea name="Comentario" id="Comentario" class="form-control" rows="10"></textarea>
+                   <textarea name="ComentarioPriv" id="ComentarioPriv" class="form-control" rows="10"></textarea>
                 </div>
                 <div class="modal-footer">
                     <input type="hidden" id="fase">
@@ -406,6 +411,9 @@
     const descargaE = "@fileUrl('lectura')/AdjuntosEfector";
     const paginacionByPrestacion = "{{ route('paginacionByPrestacion') }}";
     const deleteIdAdjunto = "{{ route('deleteIdAdjunto') }}";
+    const savePrivComent = "{{ route('savePrivComent') }}";
+    const privateComment = "{{ route('comentariosPriv') }}";
+    const getRoles = "{{ route('roles.getRoles') }}";
 </script>
 
 @push('styles')
@@ -425,7 +433,7 @@
 <script src="{{ asset('/js/llamador/atenderPaciente.js') }}?v={{ time() }}"></script>
 
 
-
+<script src="{{ asset('js/fancyTable.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/i18n/es.js"></script>
 <script src="{{ asset('js/pages/select2.init.js') }}"></script>

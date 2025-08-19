@@ -1351,16 +1351,17 @@ $(document).ready(()=>{
 
     $(document).on('click', '.confirmarComentarioPriv', function(e){
         e.preventDefault();
-        let comentario = $('#Comentario').val();
+        let comentario = $('#Comentario').val(),
+            profesional = PROFESIONAL[0].toUpperCase() + PROFESIONAL.slice(1).toLowerCase();
 
-        if(comentario === ''){
+        if(!comentario){
             toastr.warning('La observación no puede estar vacía');
             return;
         }
 
         let idp =  $('#idPrestacion').val();
         preloader('on');
-        $.post(savePrivComent, {_token: TOKEN, Comentario: comentario, IdEntidad: idp, obsfasesid: 2})
+        $.post(savePrivComent, {_token: TOKEN, Comentario: comentario, IdEntidad: idp, obsfasesid: 2, Rol: profesional})
             .done(function(){
                 preloader('off');
                 toastr.success('Se ha generado la observación correctamente');

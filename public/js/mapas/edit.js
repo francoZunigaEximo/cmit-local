@@ -796,22 +796,23 @@ $(function() {
         e.preventDefault();
 
         let comentario = $('#Comentario').val(), idprest = $('#mostrarIdPrestacion').text(), fase = $('#fase').text();
+        let profesional = PROFESIONAL[0].toUpperCase() + PROFESIONAL.slice(1).toLowerCase();
 
         let lstFases = {
             prestaciones: 2,
             cerrar: 3
         }
 
-        if(comentario === ''){
+        if(!comentario){
             toastr.warning('La observación no puede estar vacía', 'Atención');
             return;
         }
         preloader('on');
-        $.post(savePrivComent, {_token: TOKEN, Comentario: comentario, IdEntidad: idprest, obsfasesid: lstFases[fase]})
+        $.post(savePrivComent, {_token: TOKEN, Comentario: comentario, IdEntidad: idprest, obsfasesid: lstFases[fase], Rol: profesional})
             .done(function(response){
                 preloader('off');
                 toastr.success(response.msg);
-
+ 
                 setTimeout(() => {
                     $('#privadoPrestaciones, #privadoCerrar').empty();
                     $('#comentarioPrivado').modal('hide');
