@@ -59,7 +59,7 @@ async function comentariosPrivados(id){
     $.get(privateComment, {Id: id,  tipo: 'prestacion'})
         .done(async function(response){ 
             let data = await response.result,
-                comentarios = data.filter(comentario => comentario.nombre_perfil.toLowerCase() !== sessionName && comentario.Rol === 'Efector');
+                comentarios = data.filter(comentario => comentario.nombre_perfil && comentario.nombre_perfil.toLowerCase() !== sessionName && comentario.Rol === 'Efector');
                 roles = lstRoles.map(rol => rol.nombre),
                 dataFiltrada = roles.includes('Administrador') ? data : comentarios;
 
