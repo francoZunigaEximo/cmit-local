@@ -1409,218 +1409,145 @@ $(function(){
         }
     }
 
+    $(document).on('click', '.bloquearExamenes, .bloquearExamen', function(e){
+
+        e.preventDefault();
+
+        let ids = [], id = $(this).data('bloquear');
+        var checkAll ='';
+
+        if ($(this).hasClass('bloquearExamenes')) {
+
+            $('input[name="Id_examenes"]:checked').each(function() {
+                ids.push($(this).val());
+        
+            });
+    
+            checkAll =$('#checkAllExa').prop('checked');
+        
+        }else if($(this).hasClass('bloquearExamen')){
+
+            ids.push(id);
+        }
+
+        if(ids.length === 0 && checkAll === false){
+            toastr.warning('No hay examenes seleccionados', 'Atención');
+            return;
+        }
+    
+        swal({
+            title: "Confirme el bloqueo de los examenes",
+            icon: "warning",
+            buttons: ["Cancelar", "Bloquear"],
+        }).then((confirmar) => {
+            if(confirmar){
+
+                preloader('on');
+                $.ajax({    
+                    url: bloquearItemExamen,
+                    type: 'POST',
+                    data: {
+                        Id: ids,
+                        _token: TOKEN
+                    },
+                    success: function(response){
+                        var estados = [];
+                        
+                        preloader('off')
+                        response.forEach(function(msg) {
+
+                            let tipoRespuesta = {
+                                success: 'success',
+                                fail: 'info'
+                            }
+                            
+                            toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 })
+                            
+                            estados.push(msg.estado)
+                            
+                        });
+                        
+                        if(estados.includes('success')) {
+                            $('#listaExamenes').empty();
+                            $('#exam').val([]).trigger('change.select2');
+                            $('#addPaquete').val([]).trigger('change.select2');
+                            cargarExamen(IdNueva);
+                        }
+                    }
+                });
+            }
+        });     
+    });
+    
+
     async function checkExamenesCuenta(id){
-        console.log("check examenes a cuenta");
-        $.get(await lstExDisponibles, {Id: id})
-            .done(function(response){
+
+        $.get(lstExDisponibles, {Id: id})
+            .done(await function(response){
+                let data = selectorPago(pagoInput);
 
                 if(response && response.length > 0) {
 
-                    principal.alertaExCta
-                        .add(principal.ultimasFacturadas)
-                        .add(principal.siguienteExCta)
-                        .show();
-                    
-                    principal.guardarPrestacion.hide();
-
-
+                    $('#alertaExCta, .examenesDisponibles, .ultimasFacturadas, #siguienteExCta').show();
+                    $('#PagoLaboral, #Pago ').val('P');
+                    $('#guardarPrestacion').hide();
                 } else {
-                    principal.ultimasFacturadas
-                        .add(principal.alertaExCta)
-                        .add(principal.siguienteExCta)
-                        .hide();
 
-                    variables.PagoLaboral.val(data);
-                    
-                    principal.guardarPrestacion.show();
+                    $('examenesDisponibles, .ultimasFacturadas, #siguienteExCta').hide();
+                    $('#PagoLaboral').val(data);
+                    $('#guardarPrestacion').show();
+                    $('#alertaExCta').hide();
                 }
             })
     }
 
-    async function comentariosPrivados() {
+    $(document).on('click', '.confirmarComentarioPriv', function(e){
+        e.preventDefault();
+        let comentario = $('#Comentario').val(),
+            profesional = PROFESIONAL[0].toUpperCase() + PROFESIONAL.slice(1).toLowerCase();
 
-        principal.privadoPrestaciones.empty();
+        if(!comentario){
+            toastr.warning('La observación no puede estar vacía');
+            return;
+        }
+
+        let idp =  $('#idPrestacion').val();
         preloader('on');
-
-        $.get(await privateComment, {Id: variables.idPrestacion.val(),  tipo: 'prestacion'})
-            .done(function(response){
+        $.post(savePrivComent, {_token: TOKEN, Comentario: comentario, IdEntidad: idp, obsfasesid: 2, Rol: profesional})
+            .done(function(){
                 preloader('off');
-                let data = response.result;
+                toastr.success('Se ha generado la observación correctamente');
 
-                for(let index = 0; index < data.length; index++){
-                    let d = data[index],
-                        contenido =  `
-                            <tr>
-                                <td style="width: 120px">${fechaCompleta(d.Fecha)}</td>
-                                <td style="width: 120px" class="text-capitalize">${d.IdUsuario}</td>
-                                <td style="width: 120px" class="text-uppercase">${d.nombre_perfil}</td>
-                                <td>${d.Comentario}</td>
-                                <td style="width: 60px">${USER === d.IdUsuario ? `
-                                    <button type="button" data-id="${d.Id}" data-comentario="${d.Comentario}" class="btn btn-sm iconGeneralNegro editarComentarioBtn"><i class="ri-edit-line"></i></button>
-                                    <button title="Eliminar" type="button" data-id="${d.Id}"  class="btn btn-sm iconGeneralNegro deleteComentario"><i class="ri-delete-bin-2-line"></i></button>` : ''}</td>
-                            </tr>
-                        `;
-                        principal.privadoPrestaciones.append(contenido);
-                }
-
-                principal.lstPrivPrestaciones.fancyTable({
-                    pagination: true,
-                    perPage: 15,
-                    searchable: false,
-                    globalSearch: false,
-                    sortable: false, 
-                });
-            })   
-    }
-
-    function contadorExamenes(idPrestacion) {
-        $.get(contadorEx, {Id: idPrestacion}, function(response){
-            principal.countExamenes
-                .empty()
-                .text(response);
-        });
-    }
-
-    function verificarExamenCuenta()
-    {
-        if(variables.PagoLaboral.val() === 'P') {
-            principal.paqueteExamen.hide();
-            principal.paqueteExCta.show();
-            principal.tituloPrestacion.text('Alta Prestación con Ex. a Cuenta Nro: ' + nroPrestacion);
-
-        }else{
-            principal.paqueteExamen.show();
-            principal.paqueteExCta.hide();
-            principal.tituloPrestacion.text('Alta Prestación Nro: ' + nroPrestacion);
-        }
-    }
-
-    async function tablasExamenes(idCliente, checkVisible, etiquetaId, filtroId = null) {
-        preloader('on');
-
-        try {
-            let data = await $.get(getListaExCta, { Id: idCliente });
-
-            $(etiquetaId).empty();
-
-            const factura = {};
-            data.forEach(function (item) {
-                if (!factura[item.Factura]) {
-                    factura[item.Factura] = [];
-                }
-                factura[item.Factura].push(item);
-            });
-
-            let tablaCompleta = '';
-
-            for (const grupoFactura in factura) {
-                if (factura.hasOwnProperty(grupoFactura)) {
-                    const examenes = factura[grupoFactura];
-                    const documentos = {};
-
-                    examenes.forEach((examen) => {
-                        const documentoKey = examen.Documento || "Sin precarga";
-                        if (!documentos[documentoKey]) {
-                            documentos[documentoKey] = [];
-                        }
-                        documentos[documentoKey].push(examen);
-                    });
-
-                    let contenidoFactura = `
-                        <tr class="fondo-gris">
-                            <td colspan="5">
-                                <span class="fw-bolder text-capitalize">fact </span> ${grupoFactura}
-                            </td>
-                            ${checkVisible ? `<td style="width:5px"><input type="checkbox" class="form-check-input" id="checkAll-${grupoFactura}"></td>` : ''}
-                        </tr>
-                    `;
-
-                    for (const documentoKey in documentos) {
-                        if (documentos.hasOwnProperty(documentoKey)) {
-                            const examenesPorDocumento = documentos[documentoKey];
-                            const idSubgrupo = documentoKey === "Sin precarga" ? `sin_precarga-${grupoFactura}` : documentoKey;
-
-                            contenidoFactura += `
-                                <tr class="fondo-grisClaro mb-2">
-                                    <td colspan="5" class="fw-bolder">
-                                        <span class="fw-bolder precarga">${documentoKey === "Sin precarga" ? "" : "DNI Precargado: "}</span> 
-                                        ${documentoKey}
-                                    </td>
-                                    ${checkVisible ? `<td style="width:5px"><input type="checkbox" class="form-check-input" id="checkAll-${idSubgrupo}"></td>` : ''}
-                                </tr>
-                            `;
-
-                            const listaParaRenderizar = filtroId !== null 
-                                ? examenesPorDocumento.filter((examen) => examen.IdFiltro === parseInt(filtroId, 10))
-                                : examenesPorDocumento;
-
-                            listaParaRenderizar.forEach((examen) => {
-                                contenidoFactura += `
-                                    <tr>
-                                        <td>${examen.CantidadExamenes}</td>
-                                        <td colspan="4">${examen.NombreExamen}</td>
-                                        ${checkVisible ? `
-                                        <td style="width:5px">
-                                            <input type="checkbox" 
-                                                class="form-check-input item-checkbox" 
-                                                data-factura="${grupoFactura}" 
-                                                data-subgrupo="${idSubgrupo}"
-                                                value="${examen.IdEx}">
-                                        </td>
-                                        ` : ''}
-                                    </tr>`;
-                            });
-                        }
-                    }
-                    tablaCompleta += contenidoFactura;
-                }
-            }
-            $(etiquetaId).append(tablaCompleta);
-
-        } catch (error) {
-            let errorData = JSON.parse(error.responseText);
-            checkError(error.status, errorData.msg);
-        } finally {
-            preloader('off');
-        }
-    }
-
-     principal.lstEx.on('click', 'input.form-check-input[id^="checkAll"]', function () {
-        let checkAll = $(this), 
-            isChecked = checkAll.is(':checked'), 
-            fila = checkAll.closest('tr');
-
-        if(fila.hasClass('fondo-gris')) {
-            
-            let rangoFactura = fila.nextUntil('tr.fondo-gris'),
-                checkboxesHijos = rangoFactura.find('input.form-check-input');
-            
-            checkboxesHijos.prop('checked', isChecked);
-        } 
-
-        else if(fila.hasClass('fondo-grisClaro')) {
-
-            let rangoSubgrupo = fila.nextUntil('tr.fondo-gris, tr.fondo-grisClaro'),
-                checkboxesHijos = rangoSubgrupo.find('input.item-checkbox');
-            
-            checkboxesHijos.prop('checked', isChecked);
-        }
+                setTimeout(() => {
+                    $('#privadoPrestaciones').empty();
+                    $("#Comentario").val("");
+                    comentariosPrivados();
+                }, 3000);
+            })
     });
 
-    function tablaExaCantidad(data)
-    {
-        principal.lstExamenesCtd.empty();
+    function comentariosPrivados(){
 
-        const examenes = data.examen;
+        $('#privadoPrestaciones').empty();
+        preloader('on');
+        let idp =  $('#idPrestacion').val();
+        $.get(privateComment, {Id: idp,  tipo: 'prestacion'})
+            .done(async function(response){
+                preloader('off');
+                let data = await response.result;
 
-        for(let index = 1; index < examenes.length; index++) {
-            let examen = examenes[index],
-                contenido = `
-                <tr>
-                    <td>${examen.text}</td>
-                    <td><input type="checkbox" name="itemCheckbox" value="${examen.id}"></td>
-                </tr>
-                `;
+                $.each(data, function(index, d){
+ 
+                    let contenido =  `
+                        <tr>
+                            <td>${fechaCompleta(d.Fecha)}</td>
+                            <td>${d.IdUsuario}</td>
+                            <td>${d.nombre_perfil}</td>
+                            <td>${d.Comentario}</td>
+                        </tr>
+                    `;
+                    $('#privadoPrestaciones').append(contenido);
+                });
 
                 principal.lstExamenesCtd.append(contenido);
         }

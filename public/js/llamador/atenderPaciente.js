@@ -7,7 +7,9 @@ $(function(){
         DescripcionE: $('#DescripcionE'),
         prestacion: $('#prestacion_var'),
         especialidad: $('#especialidad'),
-        especialidadSelect: $('#especialidadSelect')
+        especialidadSelect: $('#especialidadSelect'),
+        ComentarioPriv: $("#ComentarioPriv"),
+        privadoPrestaciones: $('#privadoPrestaciones')
     };
 
     const principal = {
@@ -123,9 +125,7 @@ $(function(){
         if(response.proveedores.Multi === 1) {
             principal.mensajeMulti.show();
             response.proveedores.Multi === 1 ? principal.multi.val('success') : principal.multi.val('fail');
-        } 
-
-        console.log(response.multiEfector);
+        }
 
         if(response.multiEfector) {
             $.each(response.multiEfector, function(index, examen){
@@ -162,8 +162,6 @@ $(function(){
             ids.push($(this).val());
         });
 
-        
-
         if(ids.length === 0 && multi == "success"){
             toastr.warning('No hay examenes seleccionados');
             return;
@@ -178,8 +176,6 @@ $(function(){
                 : (multi === 'success' && who === 'informador'
                     ? 'multiInformador'
                     : who);
-
-        console.log(ids, who, prestacion, identificacion, multi);
         
         if(verificarArchivo(archivo)){
             preloader('on');
@@ -219,10 +215,6 @@ $(function(){
         }
     });
 
-    $(document).on('click', '.addObs', function(e) {
-        principal.openObsPriv.modal('show');
-    });
-
     $(document).on('click', '.deleteAdjunto', function(e){
         e.preventDefault();
         let id = $(this).data('id'), tipo = $(this).data('tipo'), itemprestacion = $(this).data('itempres');
@@ -256,6 +248,54 @@ $(function(){
         });
     });
 
+    $(document).on('click', '.addObs', function(e) {
+        principal.openObsPriv.modal('show');
+    });
+
+    $(document).on('click', '.confirmarComentarioPriv', function(e){
+        e.preventDefault();
+        let comentario = variables.ComentarioPriv.val();
+
+        if(!comentario){
+            toastr.warning('La observación no puede estar vacía', 'Atención');
+            return;
+        }
+
+        let profesional = PROFESIONAL[0].toUpperCase() + PROFESIONAL.slice(1).toLowerCase();
+
+        swal({
+            'title': '¿Estas seguro que quieres guardar el comentario privado?',
+            'icon': 'warning',
+            'buttons': ['Cancelar', 'Aceptar']
+        }).then((confirmar) => {
+            if(confirmar){
+
+                preloader('on');
+                $.post(savePrivComent, {_token: TOKEN, Comentario: comentario, IdEntidad: variables.prestacion.val(), obsfasesid: 2, Rol: profesional})
+                    .done(function(){
+                        preloader('off');
+                        toastr.success('Perfecto', 'Se ha registrado la observacion correctamente');
+
+                        setTimeout(() => {
+                            variables.privadoPrestaciones.empty();
+                            principal.openObsPriv.modal('hide');
+                            variables.ComentarioPriv.val("");
+                            comentariosPrivados(variables.prestacion.val());
+                        }, 3000);
+                    })
+                    .fail(function(jqXHR){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
+                    });
+
+            }
+        });
+
+        
+    });
+
     function estado(CAdj, itemId) {
 
         let fila = $('.listadoAtencion[data-id="' + itemId + '"]'),
@@ -272,9 +312,6 @@ $(function(){
 
         td.html(html);
     }
-
-    
-
 
     function actualizarEstadoAdj(adjunto, condicion, idItem) {
 
@@ -310,7 +347,7 @@ $(function(){
         }
     }
 
-
+    
         
 
 });

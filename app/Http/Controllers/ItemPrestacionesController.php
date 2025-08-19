@@ -318,7 +318,7 @@ class ItemPrestacionesController extends Controller
                 'itemsprestaciones.CAdj as CAdj'
             )
             ->where('archivosefector.IdPrestacion', $request->Id)
-            ->where('itemsprestaciones.IdProfesional', $request->IdProfesional)
+            // ->where('itemsprestaciones.IdProfesional', $request->IdProfesional)
             ->where('proveedores.Id', $request->especialidad)
             ->get();
 
@@ -336,7 +336,7 @@ class ItemPrestacionesController extends Controller
                     'itemsprestaciones.Anulado as Anulado'
                 )
                 ->where('archivosinformador.IdPrestacion', $request->Id)
-                ->where('itemsprestaciones.IdProfesional', $request->IdProfesional)
+                // ->where('itemsprestaciones.IdProfesional', $request->IdProfesional)
                 ->where('proveedores.Id', $request->especialidad)
                 ->get();
 
@@ -384,9 +384,9 @@ class ItemPrestacionesController extends Controller
         $arr['multiefector'] = &$arr['efector'];
         $arr['multiInformador'] = &$arr['informador'];
 
-        if($request->multi === 'success' && isset($arr[$who])) {  //Verificamos si es multiarchivo
-            $who = $arr[3];
-        }
+        // if($request->multi === 'success' && isset($arr[$who])) { 
+        //     $who = $arr[3];
+        // }
  
         if($request->hasFile('archivo')) {
             $fileName = $arr[$who][1].$arr[$who][0]. '_P'. $request->IdPrestacion .'.' . $request->archivo->extension();

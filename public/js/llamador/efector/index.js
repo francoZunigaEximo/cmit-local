@@ -38,6 +38,7 @@ $(function(){
     habilitarBoton(sessionProfesional);
     listadoEspecialidades();
 
+
     $(document).on('click', '.verPrestacion', function(e){
         e.preventDefault();
 
@@ -81,7 +82,7 @@ $(function(){
 
     $(document).on('click', '.atenderPaciente', function(e){
         e.preventDefault();
-
+    
         let id = $(this).data('id'),  
             especialidades = $(this).data('especialidades');
 
@@ -120,7 +121,8 @@ $(function(){
                 variables.fechaEfector.val(fecha);
                 variables.fotoEfector.attr('src', FOTO + prestacion.paciente.Foto);
                 variables.descargaFoto.attr('href', FOTO + prestacion.paciente.Foto);
-                console.log("Atender paciente: " + parseInt(prestacion.Id), parseInt(variables.profesional.val()), variables.especialidad.data('id') || variables.especialidadSelect.val());
+
+                comentariosPrivados(parseInt(prestacion.Id));
                 tablasExamenes(response.itemsprestaciones);
                 cargarArchivosEfector(parseInt(prestacion.Id), parseInt(variables.profesional.val()), variables.especialidad.data('id') || variables.especialidadSelect.val());
 
