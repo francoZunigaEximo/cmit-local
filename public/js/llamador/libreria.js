@@ -64,7 +64,7 @@ async function comentariosPrivados(id){
                 dataFiltrada = roles.includes('Administrador') ? data : comentarios;
 
             $.each(dataFiltrada, function(index, d){
-
+                preloader('off');
                 let contenido =  `
                     <tr>
                         <td>${fechaCompleta(d.Fecha)}</td>
@@ -74,9 +74,15 @@ async function comentariosPrivados(id){
                     </tr>
                 `;
                 $('#privadoPrestaciones').append(contenido);
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
             });
 
-            preloader('off');
+            
 
             $('#lstPrivPrestaciones').fancyTable({
                 pagination: true,
