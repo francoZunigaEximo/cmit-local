@@ -6,7 +6,7 @@
 
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
     <h4 class="mb-sm-0">Items Anulados</h4>
-        <a class="btn btn-warning" type="button" href="{{ route('notasCredito.index') }}"><i class="ri-arrow-left-line"></i> Volver</a>
+    <a class="btn btn-warning" type="button" href="{{ route('notasCredito.index') }}"><i class="ri-arrow-left-line"></i> Volver</a>
 
 </div>
 <div class="card">
@@ -27,6 +27,14 @@
             <div class="col-3">
                 <label for="nroFactura">Nro factura</label>
                 <input type="number" class="form-control" id="nroFactura">
+            </div>
+            <div class="col-6">
+                <label for="cliente">Cliente</label>
+                <input type="text" class="form-control" id="cliente" value="{{ $cliente->RazonSocial }}" disabled>
+            </div>
+            <div class="col-6">
+                <label for="cuit">CUIT</label>
+                <input type="text" class="form-control" id="cuit" value="{{ $cliente->Identificacion }}" disabled>
             </div>
         </div>
         <div class="row mt-3">
@@ -66,44 +74,44 @@
 
 <!-- Modal -->
 <div class="modal fade" id="modalNuevaNC" tabindex="-1" aria-labelledby="modalNuevaNCLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="modalNuevaNCLabel">Crear Nueva Nota de Crédito</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <div class="row">
-            <div class="col-12">
-                <label for="nroNotaCredito" class="form-label">Nro Nota de Crédito</label>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="modalNuevaNCLabel">Crear Nueva Nota de Crédito</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
                 <div class="row">
-                    <div class="col-2">
-                        <input type="text" class="form-control" id="tipo" placeholder="A" required>
+                    <div class="col-12">
+                        <label for="nroNotaCredito" class="form-label">Nro Nota de Crédito</label>
+                        <div class="row">
+                            <div class="col-2">
+                                <input type="text" class="form-control" id="tipo" placeholder="A" required>
+                            </div>
+                            <div class="col-4">
+                                <input type="number" class="form-control" id="sucursal" placeholder="0000" max="9999" min="0" required>
+                            </div>
+                            <div class="col-6">
+                                <input type="number" class="form-control" id="nroNotaCredito" placeholder="00000000" max="99999999" min="0" required>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-4">
-                        <input type="number" class="form-control" id="sucursal" placeholder="0000" max="9999" min="0" required>
+                    <div class="col-12">
+                        <label for="fechaNotaCredito" class="form-label">Fecha</label>
+                        <input type="date" class="form-control" id="fechaNotaCredito" required>
                     </div>
-                    <div class="col-6">
-                        <input type="number" class="form-control" id="nroNotaCredito" placeholder="00000000" max="99999999" min="0" required>
+                    <div class="col-12">
+                        <label for="observacionNotaCredito" class="form-label">Observacion</label>
+                        <textarea class="form-control" id="observacionNotaCredito" rows="3" placeholder="Ingrese una observación"></textarea>
                     </div>
                 </div>
             </div>
-            <div class="col-12">
-                <label for="fechaNotaCredito" class="form-label">Fecha</label>
-                <input type="date" class="form-control" id="fechaNotaCredito" required>
-            </div>
-            <div class="col-12">
-                <label for="observacionNotaCredito" class="form-label">Observacion</label>
-                <textarea class="form-control" id="observacionNotaCredito" rows="3" placeholder="Ingrese una observación"></textarea>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" onclick="altaNotaCredito()">Guardar</button>
             </div>
         </div>
     </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-        <button type="button" class="btn btn-primary" onclick="altaNotaCredito()">Guardar</button>
-      </div>
-    </div>
-  </div>
 </div>
 
 <script>

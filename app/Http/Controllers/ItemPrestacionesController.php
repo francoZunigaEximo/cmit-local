@@ -27,6 +27,7 @@ use App\Models\User;
 use App\Services\Facturas\CheckFacturas;
 use App\Services\ItemsPrestaciones\Helper;
 use App\Services\ItemsPrestaciones\Crud;
+use Illuminate\Support\Facades\Date;
 
 class ItemPrestacionesController extends Controller
 {
@@ -859,19 +860,21 @@ class ItemPrestacionesController extends Controller
 
         foreach ($items as $item) {
 
-            if($item->Anulado === 1){
-                $resultados[] = ['message' => 'No se bloqueo el exámen '.$item->examenes->Nombre.' porque el mismo ya se encuentra en ese estado', 'estado' => 'fail'];
-                continue;
+            if ($item->Anulado === 1) {
+
+                $resultado = ['message' => 'No se bloqueo el exámen ' . $item->examenes->Nombre . ' porque el mismo ya se encuentra en ese estado', 'estado' => 'fail'];
+            } elseif ($item && ($item->prestaciones->Cerrado === 1)) {
+
+                $resultado = ['message' => 'No se bloqueo el exámen ' . $item->examenes->Nombre . ' porque la prestación se encuentra cerrada ', 'estado' => 'fail'];
+            } else {
+                $fechaHoy  = Date::now()->format('Y-m-d');
+                $item->update(['Anulado' => 1]);
+                $item->update(['FechaAnulado' => $fechaHoy]);
+
+                ItemPrestacion::InsertarVtoPrestacion($item->IdPrestacion);
+                $resultado = ['message' => 'Se ha bloqueado con éxito el exámen de ' . $item->examenes->Nombre . '', 'estado' => 'success'];
             }
             
-            if ($item && ($item->prestaciones->Cerrado === 1)) {
-                $resultados[] = ['message' => 'No se bloqueo el exámen '.$item->examenes->Nombre.' porque la prestación se encuentra cerrada ', 'estado' => 'fail'];
-                continue;
-            }
-
-            $item->update(['Anulado' => 1]);
-            ItemPrestacion::InsertarVtoPrestacion($item->IdPrestacion);
-            $resultados[] = ['message' => 'Se ha bloqueado con éxito el exámen de '.$item->examenes->Nombre.'', 'estado' => 'success']; 
         }
 
         return response()->json($resultados);

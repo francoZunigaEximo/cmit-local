@@ -591,7 +591,8 @@ $(function(){
                         : examen.DatosInformadorApellido || (examen.IdInformador && examen.DatosInformadorApellido)) ?? '';
                 
                 console.log(titleEfector);
-
+                let estaCerrado = cerrado == '1' ? 'disabled': '';
+                console.log(estaCerrado);
                 filas += `
                     <tr ${examen.Anulado === 1 ? 'class="filaBaja"' : ''}>
                         <td><input type="checkbox" name="Id_examenes" value="${examen.IdItem}" checked></td>
@@ -639,12 +640,13 @@ $(function(){
                                 </div>
                                 ${examen.Anulado === 0 && examen.IdNotaCredito === null ? `
                                     <div class="bloquear">
-                                        <button data-bloquear="${examen.IdItem}" class="btn btn-sm iconGeneral bloquearExamen" title="Baja">
+                                        <button data-bloquear="${examen.IdItem}" class="btn btn-sm iconGeneral bloquearExamen" title="Baja" type="button" ${estaCerrado}>
                                             <i class="ri-forbid-2-line"></i>
                                         </button>
                                     </div>
-                                ` : examen.IdNotaCredito === null ? `<button class="btn btn-sm iconGeneral edit-item-btn btnReactivar" data-id="${examen.IdItem}" type="button"><i class="ri-arrow-up-circle-fill"></i></button>` 
-                                    : `<button class="btn btn-sm iconGeneral" type="button" title="Este examen esta en una nota de credito"><i class="ri-file-text-fill" style="color: red"></i></button>`}
+                                ` 
+                                : examen.IdNotaCredito === null ? `<button class="btn btn-sm iconGeneral edit-item-btn btnReactivar" data-id="${examen.IdItem}" type="button"  ${estaCerrado}><i class="ri-arrow-up-circle-fill"></i></button>` 
+                                : `<button class="btn btn-sm iconGeneral" type="button" title="Este examen esta en una nota de credito"><i class="ri-file-text-fill" style="color: red"></i></button>`}
                                 <div class="remove">
                                     <button data-delete="${examen.IdItem}" class="btn btn-sm iconGeneral deleteExamen" title="Eliminar">
                                         <i class="ri-delete-bin-2-line"></i>

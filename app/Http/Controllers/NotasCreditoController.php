@@ -45,7 +45,8 @@ class NotasCreditoController extends Controller
 
     public function getItemsAnulados($id)
     {
-        return view('layouts.notasCredito.itemsanulados', ['idEmpresa' => $id]);
+        $cliente = Cliente::find($id);
+        return view('layouts.notasCredito.itemsanulados', ['idEmpresa' => $id, 'cliente' => $cliente]);
     }
 
     public function editarNotasCredito($id)
@@ -122,7 +123,7 @@ class NotasCreditoController extends Controller
             ->where('prestaciones.Facturado', '=', 1)
             //->where('itemsprestaciones.NumeroFacturaVta', '>', 0)
             ->where('itemsprestaciones.Anulado', '=', 1)
-            ->select('itemsprestaciones.Id as Id', 'facturasventa.NroFactura as NroFactura', 'facturasventa.Sucursal as Sucursal', 'facturasventa.Tipo as Tipo', 'facturasventa.Fecha as FechaAnulado', 'prestaciones.Id as Prestacion', 'examenes.Nombre as Examen', 'pacientes.Nombre as Paciente');
+            ->select('itemsprestaciones.Id as Id', 'prestaciones.Cerrado as cerrado','facturasventa.NroFactura as NroFactura', 'facturasventa.Sucursal as Sucursal', 'facturasventa.Tipo as Tipo', 'itemsprestaciones.FechaAnulado as FechaAnulado', 'prestaciones.Id as Prestacion', 'examenes.Nombre as Examen', 'pacientes.Nombre as Paciente');
 
         if ($request->has('fechaDesde') && $request->fechaDesde != '') {
             $items_facturas->where('itemsprestaciones.FechaAnulado', '>=', $request->fechaDesde);
@@ -147,11 +148,15 @@ class NotasCreditoController extends Controller
     {
         $id = $request->id;
         $item = ItemPrestacion::find($id);
-        if ($item) {
+        $prestacion = Prestacion::find($item->IdPrestacion);
+        
+        if ($item && $prestacion->Cerrado == 0) {
             $item->Anulado = 0;
             $item->save();
-             Auditor::setAuditoria($id, 8,4,Auth::user()->name);
+            Auditor::setAuditoria($id, 8,4,Auth::user()->name);
             return response()->json(['success' => true, 'message' => 'Item reactivado correctamente.'], 200);
+        } else if($prestacion->Cerrado == 1) {
+            return response()->json(['success' => false, 'message' => 'La prestación está cerrada.'], 400);
         } else {
             return response()->json(['success' => false, 'message' => 'Item no encontrado.'], 404);
         }

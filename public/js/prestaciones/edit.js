@@ -38,6 +38,10 @@ $(function() {
         $('#modificar').hide();
     });
 
+    if(cerrado === '1') {
+        $('.bloquearExamenes').prop('disabled', true);
+    }
+
     //Hack de carga
     $(document).ready(function(){
         getAutoriza(opcionPago);
