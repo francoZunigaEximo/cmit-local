@@ -1617,6 +1617,7 @@ const checkTipoFactExCta = "{{ route('examenesCuenta.contadoPagos') }}";
 
 //Select
 const selectTipoPrestacion = "{{ $prestacione->TipoPrestacion }}";
+const cerrado = "{{ $prestacione->Cerrado }}";
 </script>
 
 @push('styles')

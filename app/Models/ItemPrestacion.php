@@ -40,6 +40,7 @@ class ItemPrestacion extends Model
         'Devol',
         'CInfo',
         'CAdj',
+        'FechaAnulado'
     ];
 
     public $timestamps = false;

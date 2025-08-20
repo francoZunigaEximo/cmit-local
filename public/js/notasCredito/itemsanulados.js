@@ -60,7 +60,7 @@ function cargarTabla() {
                 orderable: true,
                 targets: 1,
                 render: function (data) {
-                    return `<div class="text-start"><span>${data.FechaAnulado}</span></div>`;
+                    return `<div class="text-start"><span>${data.FechaAnulado.substr(0, 10)}</span></div>`;
                 }
 
             },
@@ -111,7 +111,10 @@ function cargarTabla() {
                 name: 'Acciones',
                 targets: 6,
                 render: function (data) {
-                    let editar = '<button class="btn btn-sm iconGeneral edit-item-btn" onclick="reactivar(' + data.Id + ')" type="button"><i class="ri-arrow-up-circle-fill" style="font-size: 2em;"></i></button>';
+                    let editar =  "";
+                    if(data.cerrado != '1'){
+                        editar = '<button class="btn btn-sm iconGeneral edit-item-btn" onclick="reactivar(' + data.Id + ')" type="button"><i class="ri-arrow-up-circle-fill" style="font-size: 2em;"></i></button>';
+                    }
                     editar += `<button class="btn btn-sm iconGeneral edit-item-btn" onclick="altaModalTabla('${data.Id}')" type="button"><i class="ri-file-text-fill" style="font-size: 2em;"></i></button>`;
                     return editar;
                 }
@@ -310,6 +313,12 @@ function crearNotaCredito(tipo, sucursal, nroNotaCredito, fechaNotaCredito, obse
             if (response.success) {
                 toastr.success(response.message, '', { timeOut: 1000 });
                 cargarTabla();
+                $('#tipo').val("");
+                $('#sucursal').val("");
+                $('#nroNotaCredito').val("");
+                $('#fechaNotaCredito').val("");
+                $('#observacionNotaCredito').val("");
+                $("#modalNuevaNC").modal("hide");
             } else {
                 toastr.warning(response.message, '', { timeOut: 1000 });
             }

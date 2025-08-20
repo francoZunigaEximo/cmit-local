@@ -26,6 +26,7 @@ use App\Models\User;
 use App\Services\Facturas\CheckFacturas;
 use App\Services\ItemsPrestaciones\Helper;
 use App\Services\ItemsPrestaciones\Crud;
+use Illuminate\Support\Facades\Date;
 
 class ItemPrestacionesController extends Controller
 {
@@ -853,8 +854,10 @@ class ItemPrestacionesController extends Controller
 
                 $resultado = ['message' => 'No se bloqueo el exámen ' . $item->examenes->Nombre . ' porque la prestación se encuentra cerrada ', 'estado' => 'fail'];
             } else {
-
+                $fechaHoy  = Date::now()->format('Y-m-d');
                 $item->update(['Anulado' => 1]);
+                $item->update(['FechaAnulado' => $fechaHoy]);
+
                 ItemPrestacion::InsertarVtoPrestacion($item->IdPrestacion);
                 $resultado = ['message' => 'Se ha bloqueado con éxito el exámen de ' . $item->examenes->Nombre . '', 'estado' => 'success'];
             }
