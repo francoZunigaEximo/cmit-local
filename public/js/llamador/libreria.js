@@ -47,43 +47,50 @@ async function cargarArchivosEfector(idPrestacion, idProfesional, idEspecialidad
             });
     }
 
-async function comentariosPrivados(id){
-
+async function comentariosPrivados(id) {
     $('#privadoPrestaciones').empty();
     preloader('on');
 
-    let lstRoles = await $.get(getRoles, function(response){
-        return response;
-    });
+    try {
 
-    $.get(privateComment, {Id: id,  tipo: 'prestacion'})
-        .done(async function(response){ 
-            let data = await response.result,
-                comentarios = data.filter(comentario => comentario.nombre_perfil && comentario.nombre_perfil.toLowerCase() !== sessionName && comentario.Rol === 'Efector');
-                roles = lstRoles.map(rol => rol.nombre),
-                dataFiltrada = roles.includes('Administrador') ? data : comentarios;
+        const lstRoles = await $.get(getRoles);
+        const response = await $.get(privateComment, { Id: id, tipo: 'prestacion' });
+        
+        let data = response.result;
+        let comentarios = data.filter(comentario => comentario.nombre_perfil && comentario.nombre_perfil.toLowerCase() !== sessionName && comentario.Rol === 'Efector');
+        let roles = lstRoles.map(rol => rol.nombre);
+        let dataFiltrada = roles.includes('Administrador') ? data : comentarios;
 
-            $.each(dataFiltrada, function(index, d){
-
-                let contenido =  `
-                    <tr>
-                        <td>${fechaCompleta(d.Fecha)}</td>
-                        <td class="text-capitalize">${d.IdUsuario}</td>
-                        <td class="text-uppercase">${d.nombre_perfil}</td>
-                        <td class="text-start">${d.Comentario}</td>
-                    </tr>
-                `;
-                $('#privadoPrestaciones').append(contenido);
-            });
-
+        if (dataFiltrada.length === 0) {
             preloader('off');
+            return; 
+        }
 
-            $('#lstPrivPrestaciones').fancyTable({
-                pagination: true,
-                perPage: 15,
-                searchable: false,
-                globalSearch: false,
-                sortable: false, 
-            });
-        })   
+        $.each(dataFiltrada, function(index, d) {
+            let contenido = `
+                <tr>
+                    <td>${fechaCompleta(d.Fecha)}</td>
+                    <td class="text-capitalize">${d.IdUsuario}</td>
+                    <td class="text-uppercase">${d.nombre_perfil}</td>
+                    <td class="text-start">${d.Comentario}</td>
+                </tr>
+            `;
+            $('#privadoPrestaciones').append(contenido);
+        });
+
+        preloader('off');
+
+        $('#lstPrivPrestaciones').fancyTable({
+            pagination: true,
+            perPage: 15,
+            searchable: false,
+            globalSearch: false,
+            sortable: false,
+        });
+
+    } catch (jqXHR) {
+        preloader('off');
+        let errorData = JSON.parse(jqXHR.responseText);
+        checkError(jqXHR.status, errorData.msg);
+    }
 }
