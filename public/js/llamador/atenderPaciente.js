@@ -89,7 +89,7 @@ $(function(){
     $(document).on('click', '.terminarAtencion', function(e){
         e.preventDefault();
 
-        $.get(addAtencion, {prestacion: variables.prestacion.val(), Tipo: (principal.efector).toUpperCase(), profesional: variables.profesional.val()})
+        $.get(addAtencion, {prestacion: variables.prestacion.val(), Tipo: (principal.efector).toUpperCase(), profesional: variables.profesional.val(), especialidad: variables.especialidad.data('id') || variables.especialidadSelect.val()})
             .done(function(response){
                 principal.atenderEfector.modal('hide');
             })
