@@ -275,7 +275,10 @@ class LlamadorController extends Controller
 
         if ($query) {
 
-            $listaExamenes = ItemPrestacion::where('IdPrestacion', $request->prestacion)->pluck('CAdj')->toArray();
+            $listaExamenes = ItemPrestacion::where('IdPrestacion', $request->prestacion)
+                ->where('IdProveedor', $request->especialidad)
+                ->pluck('CAdj')
+                ->toArray();
 
             if(in_array(2, $listaExamenes)) {
                 return response()->json(['msg' => 'No se ha liberado la prestacion porque hay examenes con adjunto pero abiertos'], 409);
@@ -310,8 +313,10 @@ class LlamadorController extends Controller
 
     public function checkLlamado(Request $request)
     {
+        $profesional = (empty(session('Profesional')) ? $request->tipo : session('Profesional'));
+
         $query = Llamador::where('prestacion_id', $request->id)
-            ->where('tipo_profesional', session('Profesional'))
+            ->where('tipo_profesional', $profesional)
             ->first();
         
         return response()->json($query);

@@ -150,14 +150,13 @@ $(function(){
                 
             // },
             createdRow: async function(row, data, dataIndex) {
-
                 $('.atenderPaciente').hide();
 
-                let response = await $.get(checkLlamado, { id: data.prestacion });
+                let response = await $.get(checkLlamado, { id: data.prestacion, tipo: 'EFECTOR' });
 
                 preloader('on');
 
-                if (response && Object.keys(response).length !== 0) {
+                if (await response && Object.keys(response).length !== 0) {
                     $(row).css('color', 'red');
 
                     $('.llamarExamen', row)
@@ -180,6 +179,8 @@ $(function(){
 
                         if (!fila.find('.mensaje-ocupado').length && parseInt(USERACTIVO) !== parseInt(response.profesional_id)) {
                             botones.hide();
+                            botones.last().after('<span title="Liberar atencion" class="cerrar-atencion"><i class="ri-logout-box-line"></i></span>');
+                            botones.last().after('<span title="Visualizar actividad" class="vista-admin px-2"><i class="ri-search-eye-line"></span>');
                             botones.last().after('<span class="mensaje-ocupado rojo text-center fs-bolder">Ocupado</span>');
                             fila.find('td').css('color', 'red')
                         }
