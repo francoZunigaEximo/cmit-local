@@ -61,6 +61,11 @@ async function comentariosPrivados(id) {
         let roles = lstRoles.map(rol => rol.nombre);
         let dataFiltrada = roles.includes('Administrador') ? data : comentarios;
 
+        console.log(data);
+        console.log(comentarios);
+        console.log(roles);
+        console.log(dataFiltrada);
+
         if (dataFiltrada.length === 0) {
             preloader('off');
             return; 
