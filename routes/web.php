@@ -400,15 +400,15 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::get('mensajes/modelos/delete', [MensajesController::class, 'deleteModelo'])->name('mensajes.modelos.delete');
     Route::post('mensajes/modelos/save', [MensajesController::class, 'saveModelo'])->name('mensajes.modelos.save');
     Route::post('mensajes/modelos/update', [MensajesController::class, 'actualizarModelo'])->name('mensajes.modelos.update');
-    Route::resource('mensajes', MensajesController::class);
-    Route::get('searchMensaje', [MensajesController::class, 'search'])->name('searchMensaje');
-    Route::post('updateEmail', [MensajesController::class, 'updateEmail'])->name('updateEmail');
-    Route::get('loadModelos', [MensajesController::class, 'loadModelos'])->name('loadModelos');
+    Route::get('mensajes/buscar-mensajes', [MensajesController::class, 'search'])->name('searchMensaje');
+    Route::post('mensajes/update-correo', [MensajesController::class, 'updateEmail'])->name('updateEmail');
+    Route::get('mensajes/cargar-modelos', [MensajesController::class, 'loadModelos'])->name('loadModelos');
     Route::get('loadMensaje', [MensajesController::class, 'loadMensaje'])->name('loadMensaje');
     Route::get('verAuditoria', [MensajesController::class, 'verAuditoria'])->name('verAuditoria');
     Route::get('mensajes/search', [MensajesController::class, 'search'])->name('mensajes.search');
-    Route::get('sendEmails', [MensajesController::class, 'sendEmails'])->name('sendEmails');
-    Route::get('testEmail', [MensajesController::class, 'testEmail'])->name('testEmail');
+    Route::get('mensajes/enviar-emails', [MensajesController::class, 'sendEmails'])->name('sendEmails');
+    Route::get('mensajes/test-email', [MensajesController::class, 'testEmail'])->name('testEmail');
+    Route::resource('mensajes', MensajesController::class);
 
     //Rutas de Notas de Crédito
     Route::get('nota-de-credito/check', [NotasCreditoController::class, 'checkNotaCredito'])->name('nota-de-credito.check');

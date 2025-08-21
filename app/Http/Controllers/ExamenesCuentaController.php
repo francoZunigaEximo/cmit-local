@@ -122,8 +122,7 @@ class ExamenesCuentaController extends Controller
             });
 
             $query->when(!empty($request->estado) && $request->estado === 'pago', function ($query) {
-                $query->where('pagosacuenta.Pagado', 1)
-                      ->whereNot('pagosacuenta.Pagado', 0);
+                $query->where('pagosacuenta.Pagado', 1);
             });
 
             $query->when(!empty($request->estado) && $request->estado === 'todos', function ($query) {
@@ -206,25 +205,22 @@ class ExamenesCuentaController extends Controller
             abort(403);
         }
 
-        $estados = $request->Id;
+        $estados = (array) $request->Id;
         $resultado = [];
 
-        if (!is_array($estados)) {
-            $estados = [$estados];
+        $items = ExamenCuenta::whereIn('Id', $estados)->get();
+
+        if(empty($items)) {
+            return response()->json(['msg' => 'No hay examenes para modificar el pago'], 404);
         }
 
-        foreach($estados as $estado) {
+        foreach($items as $item) {
 
-            $item = ExamenCuenta::find($estado);
+            $pagado = $item->Pagado === 0 ? 1 : 0;
+            $fechaPago = $item->FechaP === '0000-00-00' ? $request->fecha : '0000-00-00';
 
-            if ($item) {
-
-                $item->Pagado = $item->Pagado === 0 ? 1 : 0;
-                $item->FechaP = $item->FechaP === '0000-00-00' ? now()->format('Y-m-d') : '0000-00-00';
-                $item->save();
-                $resultado = ['message' => 'Se ha realizado la actualización correctamente', 'estado' => 'success'];
-                
-            }
+            $item->update(['Pagado' => $pagado, 'FechaP' => $fechaPago]);
+            $resultado = ['msg' => 'Se ha realizado la actualización correctamente'];  
         }
 
         return response()->json($resultado);

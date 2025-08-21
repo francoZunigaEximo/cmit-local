@@ -138,23 +138,39 @@ $(function(){
     $(document).on('click', '.cambiarBoton', function(e) {
         
         e.preventDefault();
-        let id = $(this).data('id');
-        let nroFactura = $(this).data('nro');
-        let empresa = $(this).data('empresa');
+        let id = $(this).data('id'),
+            nroFactura = $(this).data('nro'),
+            textBoton = $(this).text(),
+            hoy = new Date().toISOString().slice(0, 10);
+            empresa = $(this).data('empresa'),
+            title = "¿Estas seguro que deseas marcar como pagado el examen?",
+            contenido = $('<div>').html(`
+                <b>Empresa:</b> ${empresa}<br /> 
+                <b>Nro Factura:</b> ${nroFactura}<br />
+                <b class="mt-2 fechaExamen">Fecha:</b> <input type="date" id="fecha" name="fecha" value="${hoy}">    
+            `);
+
+        if(textBoton === 'Quitar pago') {
+            $('#fecha').val('');
+            contenido.find('#fecha').hide();
+            contenido.find('.fechaExamen').hide();
+            title = "¿Estas seguro que deseas quitar el pago del examen?";
+        }
 
         swal({
-            title: "Empresa: "+empresa + " Nro Factura: " + nroFactura + " \n ¿Está seguro que desea realizar la operación?",
+            title: title,
+            content: contenido[0],
             icon: "warning",
             buttons: ["Cancelar", "Aceptar"]
         }).then((confirmar) => {
             if(confirmar) {
+                let fechaSeleccionada = $('#fecha').val();
+
                 preloader('on');
-                $.post(cambiarPago, {Id: id, _token: TOKEN})
+                $.post(cambiarPago, {Id: id, fecha: fechaSeleccionada, _token: TOKEN})
                     .done(function(response){
                         preloader('off');
-                        let tipoToastr = response.estado == 'success' ? ['success', 'Perfecto'] : ['info', 'Atención'];
-
-                        toastr[tipoToastr[0]](response.message, [tipoToastr[1]], { timeOut: 10000 })
+                        toastr.success(response.msg, { timeOut: 1000 })
                         $(tabla).DataTable().draw(false);
                     })
                     .fail(function(jqXHR){
@@ -204,9 +220,20 @@ $(function(){
     $(document).on('click', '.botonPagar, .quitarPago', function(e){
         e.preventDefault();
 
-        let ids = [];
+        let ids = [], datosEmpresa = [], hoy = new Date().toISOString().slice(0, 10);
+
         $('input[name="Id"]:checked').each(function() {
-            ids.push($(this).val());
+            let checkbox = $(this),
+                fila = checkbox.closest('tr'),
+                empresa = fila.find('td:eq(4)').text().trim(),
+                factura = fila.find('td:eq(2)').text().trim();
+            
+            ids.push(checkbox.val());
+            datosEmpresa.push({
+                factura: factura,
+                empresa: empresa
+            });
+
         });
 
         if (ids.length === 0) {
@@ -214,20 +241,31 @@ $(function(){
             return;
         }
 
+        let filtro = datosEmpresa.filter(item => item.factura !== '');
+        let listaHtml = '<div><ul>';
+        listaHtml += `<b class="mb-2 mt-1 fechaExamen">Fecha:</b> <input type="date" id="fecha" name="fecha" value="${hoy}"><br>`;
+        $.each(filtro, function(index, data){
+            listaHtml += `<li class="fs-6">${data.empresa} | Factura: ${data.factura}</li>`;
+        });
+
+        listaHtml += '</ul></div>';
+
+        let content = $(listaHtml);
+
         swal({
             title: "¿Esta seguro que desea realizar esta operación?",
+            content: content[0],
             icon: "warning",
             buttons: ["Cancelar", "Aceptar"]
         }).then((confirmar) => {
             if(confirmar) {
+
+                let fechaSeleccionada = $('#fecha').val();
                 preloader('on');
-                $.post(cambiarPago, {Id: ids, _token: TOKEN})
+                $.post(cambiarPago, {Id: ids, _token: TOKEN, fecha: fechaSeleccionada})
                     .done(function(response){
-
                         preloader('off');
-                        let tipoToastr = response.estado == 'success' ? ['success', 'Perfecto'] : ['info', 'Atención'];
-
-                        toastr[tipoToastr[0]](response.message, [tipoToastr[1]], { timeOut: 10000 })
+                        toastr.success(response.msg, { timeOut: 10000 })
                         $(tabla).DataTable().draw(false);
 
                     })
