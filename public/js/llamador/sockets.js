@@ -108,6 +108,8 @@ $(function(){
         let botonLlamada = fila.find('.llamarExamen, .liberarExamen'),
             botonAtender = fila.find('.atenderPaciente'),
             mensajeOcupado = fila.find('.mensaje-ocupado'),
+            vistaAdmin = fila.find('.vista-admin'),
+            cerrarAtencion = fila.find('.cerrar-atencion')
             result = await $.get(checkLlamado, { id: data.prestacion, tipo: 'EFECTOR' });
 
         if (data.status === 'llamado' && profesionales[0] === 'EFECTOR') {
@@ -123,10 +125,15 @@ $(function(){
                     .hide();
                 
                 if (!mensajeOcupado.length) {
+                    botonLlamada.last().after('<span title="Liberar atencion" class="cerrar-atencion"><i class="ri-logout-box-line"></i></span>');
+                    botonLlamada.last().after('<span title="Visualizar actividad" class="vista-admin px-2"><i class="ri-search-eye-line"></span>');
                     botonLlamada.last().after('<span class="mensaje-ocupado rojo text-center fs-bolder">Ocupado</span>');
                 }
             } else {
-                mensajeOcupado.remove();
+                mensajeOcupado
+                    .add(vistaAdmin)
+                    .add(cerrarAtencion)
+                    .remove();
                 botonLlamada.show();
             }
 
@@ -137,14 +144,13 @@ $(function(){
                     .html('<i class="ri-edit-line"></i> Llamar');
 
             mensajeOcupado.remove();
+            vistaAdmin.remove();
+            cerrarAtencion.remove();
             botonAtender.hide();
             fila.find('td').css('color', 'green');
             botonLlamada.show();
         }
     });
-
-
-
 
     socket.liberarAtencion
         .echo
