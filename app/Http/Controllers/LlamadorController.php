@@ -275,7 +275,10 @@ class LlamadorController extends Controller
 
         if ($query) {
 
-            $listaExamenes = ItemPrestacion::where('IdPrestacion', $request->prestacion)->pluck('CAdj')->toArray();
+            $listaExamenes = ItemPrestacion::where('IdPrestacion', $request->prestacion)
+                ->where('IdProveedor', $request->especialidad)
+                ->pluck('CAdj')
+                ->toArray();
 
             if(in_array(2, $listaExamenes)) {
                 return response()->json(['msg' => 'No se ha liberado la prestacion porque hay examenes con adjunto pero abiertos'], 409);
