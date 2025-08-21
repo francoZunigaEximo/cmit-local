@@ -281,8 +281,8 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::post('marcarExamenAdjunto', [ItemPrestacionesController::class, 'marcarExamenAdjunto'])->name('marcarExamenAdjunto');
     Route::get('lstExamenes', [ItemPrestacionesController::class, 'lstExamenes'])->name('lstExamenes');
     Route::get('preExamenes', [ItemPrestacionesController::class, 'preExamenes'])->name('preExamenes');
-    Route::get('paginacionByPrestacion', [ItemPrestacionesController::class, 'paginacionByPrestacion'])->name('paginacionByPrestacion');
-   
+    Route::get('itemprestaciones/paginacion-prestacion', [ItemPrestacionesController::class, 'paginacionByPrestacion'])->name('paginacionByPrestacion');
+    Route::resource('itemsprestaciones', ItemPrestacionesController::class);
 
     //Rutas de FacturasdeVenta
     Route::get('getFactura', [FacturasVentaController::class, 'getFactura'])->name('getFactura');
