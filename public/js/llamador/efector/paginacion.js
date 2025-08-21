@@ -151,14 +151,14 @@ $(function(){
                 
             // },
             createdRow: async function(row, data, dataIndex) {
-
+                console.log(data);
                 $('.atenderPaciente').hide();
 
-                let response = await $.get(checkLlamado, { id: data.prestacion });
+                let response = await $.get(checkLlamado, { id: data.prestacion, tipo: 'EFECTOR' });
 
                 preloader('on');
 
-                if (response && Object.keys(response).length !== 0) {
+                if (await response && Object.keys(response).length !== 0) {
                     $(row).css('color', 'red');
 
                     $('.llamarExamen', row)

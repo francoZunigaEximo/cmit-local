@@ -313,8 +313,10 @@ class LlamadorController extends Controller
 
     public function checkLlamado(Request $request)
     {
+        $profesional = (empty(session('Profesional')) ? $request->tipo : session('Profesional'));
+
         $query = Llamador::where('prestacion_id', $request->id)
-            ->where('tipo_profesional', session('Profesional'))
+            ->where('tipo_profesional', $profesional)
             ->first();
         
         return response()->json($query);

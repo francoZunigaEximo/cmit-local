@@ -108,7 +108,7 @@ $(function(){
         let botonLlamada = fila.find('.llamarExamen, .liberarExamen'),
             botonAtender = fila.find('.atenderPaciente'),
             mensajeOcupado = fila.find('.mensaje-ocupado'),
-            result = await $.get(checkLlamado, { id: data.prestacion });
+            result = await $.get(checkLlamado, { id: data.prestacion, tipo: 'EFECTOR' });
 
         if (data.status === 'llamado' && profesionales[0] === 'EFECTOR') {
 

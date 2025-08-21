@@ -153,7 +153,7 @@ $(function(){
 
                 $('.atenderPaciente').hide();
 
-                let response = await $.get(checkLlamado, { id: data.prestacion });
+                let response = await $.get(checkLlamado, { id: data.prestacion, tipo: 'INFORMADOR' });
 
                 preloader('on');
 
