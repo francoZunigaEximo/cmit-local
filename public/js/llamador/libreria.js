@@ -56,7 +56,7 @@ async function comentariosPrivados(id) {
         const lstRoles = await $.get(getRoles);
         const response = await $.get(privateComment, { Id: id, tipo: 'prestacion' });
         
-        let data = response.result;
+        let data = await response.result;
         let comentarios = data.filter(comentario => comentario.nombre_perfil && comentario.nombre_perfil.toLowerCase() !== sessionName && comentario.Rol === 'Efector');
         let roles = lstRoles.map(rol => rol.nombre);
         let dataFiltrada = roles.includes('Administrador') ? data : comentarios;
@@ -95,7 +95,19 @@ async function comentariosPrivados(id) {
 
     } catch (jqXHR) {
         preloader('off');
-        let errorData = JSON.parse(jqXHR.responseText);
-        checkError(jqXHR.status, errorData.msg);
+
+        if (jqXHR.responseText) {
+            try {
+                const errorData = JSON.parse(jqXHR.responseText);
+                
+                if (errorData && errorData.msg) {
+                    errorMsg = errorData.msg;
+                }
+            } catch (e) {
+                console.error("La respuesta de error no era JSON:", jqXHR.responseText);
+            }
+        }
+        
+        checkError(jqXHR.status, errorMsg);
     }
 }
