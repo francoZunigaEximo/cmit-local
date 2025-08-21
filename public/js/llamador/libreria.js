@@ -95,6 +95,7 @@ async function comentariosPrivados(id) {
 
     } catch (jqXHR) {
         preloader('off');
+        let errorMsg = 'Ocurrió un error de red o el servidor no está disponible.';
 
         if (jqXHR.responseText) {
             try {
