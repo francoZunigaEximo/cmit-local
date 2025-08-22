@@ -153,9 +153,8 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::get('verFicha', [FichaAltaController::class, 'verFicha'])->name('verFicha');
     Route::resource('fichalaboral', FichaAltaController::class);
 
-    //Ruta Examenes
-    Route::resource('examenes', ExamenesController::class);
-    Route::get('searchExamen', [ExamenesController::class, 'search'])->name('searchExamen');
+    //Ruta Examenes 
+    Route::get('examenes/buscar', [ExamenesController::class, 'search'])->name('searchExamen');
     Route::post('IdExamen', [ExamenesController::class, 'getId'])->name('IdExamen');
     Route::post('deleteExamen', [ExamenesController::class, 'deleteEx'])->name('deleteExamen');
     Route::post('saveExamen',[ExamenesController::class, 'saveExamen'])->name('saveExamen');
@@ -163,6 +162,7 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::get('searchExamenes', [ExamenesController::class, 'searchExamenes'])->name('searchExamenes');
     Route::post('updateExamen', [ExamenesController::class, 'updateExamen'])->name('updateExamen');
     Route::get('examenes/exportar/excel', [ExamenesController::class, 'excel'])->name('examenes.excel');
+    Route::resource('examenes', ExamenesController::class);
 
     //Ruta de Comentarios de Prestaciones
     Route::post('setComentarioPres', [ComentariosPrestacionesController::class, 'setComentarioPres'])->name('setComentarioPres');
@@ -214,9 +214,9 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     
     //Rutas de Profesionales
     //Route::resource('profesionales', ProfesionalesController::class);
-    Route::get('getEvaluador', [ProfesionalesController::class, 'getEvaluador'])->name('getEvaluador');
-    Route::get('searchProfesionales', [ProfesionalesController::class, 'search'])->name('searchProfesionales');
-    Route::post('estadoProfesional', [ProfesionalesController::class, 'estado'])->name('estadoProfesional');
+    Route::get('profesionales/obtener-evaluador', [ProfesionalesController::class, 'getEvaluador'])->name('getEvaluador');
+    Route::get('profesionales/buscar', [ProfesionalesController::class, 'search'])->name('searchProfesionales');
+    Route::post('profesional/estado', [ProfesionalesController::class, 'estado'])->name('estadoProfesional');
     Route::post('setPerfiles', [ProfesionalesController::class, 'setPerfil'])->name('setPerfiles');
     Route::get('getPerfiles', [ProfesionalesController::class, 'getPerfil'])->name('getPerfiles');
     Route::post('delPerfil', [ProfesionalesController::class, 'delPerfil'])->name('delPerfil');
@@ -352,6 +352,7 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::get('/usuario/checkear/telefono', [UsuariosController::class, 'checkTelefono'])->name('checkTelefono');
     Route::post('/usuarios/update/profesional', [UsuariosController::class, 'updateProfesional'])->name('usuarios.updateProfesional');
     Route::get('usuarios/roles/checkear', [UsuariosController::class, 'checkRoles'])->name('checkRoles');
+    Route::get('usuarios/obtener', [UsuariosController::class, 'getUserName'])->name('usuarios.getUserName');
     
     Route::resource('usuarios', UsuariosController::class);
     Route::get('buscarUsuario', [UsuariosController::class, 'buscar'])->name('buscarUsuario');
