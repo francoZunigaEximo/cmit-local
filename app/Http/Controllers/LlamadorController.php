@@ -324,6 +324,8 @@ class LlamadorController extends Controller
 
     public function asignarProfesional(Request $request)
     {
+        if($request->Id === 'on') return;
+
         $query = ItemPrestacion::with(['examenes'])->where('Id', $request->Id)->first();
 
         if (empty($query)) {
