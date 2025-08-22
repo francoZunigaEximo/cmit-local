@@ -54,19 +54,12 @@ async function comentariosPrivados(id) {
     try {
 
         const lstRoles = await $.get(getRoles);
-        const nameUser = await $.get(getUserName);
         const response = await $.get(privateComment, { Id: id, tipo: 'prestacion' });
         
         let data = await response.result;
-        let comentarios = data.filter(comentario => comentario.IdUsuario && comentario.IdUsuario.toLowerCase() !== nameUser.toLowerCase() && comentario.Rol === 'Efector');
+        let comentarios = data.filter(comentario => comentario.IdUsuario && comentario.IdUsuario.toLowerCase() === sessionName.toLowerCase() && comentario.Rol === 'Efector');
         let roles = lstRoles.map(rol => rol.nombre);
         let dataFiltrada = roles.includes('Administrador') ? data : comentarios;
-
-        console.log(data);
-        console.log(comentarios);
-        console.log(sessionName);
-        console.log(roles);
-        console.log(dataFiltrada);
 
         if (dataFiltrada.length === 0) {
             preloader('off');
