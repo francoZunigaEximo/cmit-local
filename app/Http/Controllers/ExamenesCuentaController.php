@@ -227,7 +227,7 @@ class ExamenesCuentaController extends Controller
         if($request->tipo === 'pagoMasivo') {
 
             $consulta = $this->queryBasico();
-            $subQuery = $consulta->whereIn('pagosacuenta.Id', $estados)->get();
+            $subQuery = $consulta->whereIn('pagosacuenta.Id', $estados)->groupBy('pagosacuenta.Id', 'pagosacuenta.Tipo', 'pagosacuenta.Suc', 'pagosacuenta.Nro', 'pagosacuenta.Pagado')->get();
 
             $reporte = $this->reporteExcel->crear('pagoMasivo'); 
             $excel = $reporte->generar($subQuery);

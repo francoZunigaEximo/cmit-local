@@ -47,11 +47,10 @@ class PagoMasivo implements ReporteInterface {
         $fila = 2;
 
         foreach($datos as $dato) {
+            $factura = $dato->Tipo . str_pad($dato->Sucursal, 4, "0") . str_pad($dato->Nro, 8, "0");
 
-            
-
-            $sheet->setCellValue('A' . $fila, $dato->Factura);
-            $sheet->setCellValue('B' . $fila, $dato->FechaF);
+            $sheet->setCellValue('A' . $fila, $factura);
+            $sheet->setCellValue('B' . $fila, $dato->FechaPagado);
             $sheet->setCellValue('C' . $fila, $dato->Empresa);
             $fila++;
         }
