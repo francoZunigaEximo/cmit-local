@@ -326,7 +326,7 @@ class LlamadorController extends Controller
     {
         $query = ItemPrestacion::with(['examenes'])->where('Id', $request->Id)->first();
 
-        if (empty($item)) {
+        if (empty($query)) {
             return response()->json(['msg' => 'No se pudo procesar la informacion.'], 404);
         }
 
