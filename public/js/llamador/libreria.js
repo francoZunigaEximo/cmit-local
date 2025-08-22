@@ -62,7 +62,8 @@ async function comentariosPrivados(id) {
         let dataFiltrada = roles.includes('Administrador') ? data : comentarios;
 
         console.log(data);
-        console.log(comentarios, comentario.nombre_perfil.toLowerCase(), sessionName);
+        console.log(comentarios);
+        console.log(sessionName);
         console.log(roles);
         console.log(dataFiltrada);
 
