@@ -7,6 +7,7 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 use Illuminate\Support\Str;
 use App\Helpers\ToolsReportes;
+use Carbon\Carbon;
 
 class PagoMasivo implements ReporteInterface {
 
@@ -47,10 +48,10 @@ class PagoMasivo implements ReporteInterface {
         $fila = 2;
 
         foreach($datos as $dato) {
-            $factura = $dato->Tipo . str_pad($dato->Sucursal, 4, "0") . str_pad($dato->Nro, 8, "0");
+            $factura = $dato->Tipo . str_pad($dato->Sucursal, 4, "0") . str_pad($dato->Numero, 8, "0");
 
             $sheet->setCellValue('A' . $fila, $factura);
-            $sheet->setCellValue('B' . $fila, $dato->FechaPagado);
+            $sheet->setCellValue('B' . $fila, !empty($dato->FechaPagado) ? Carbon::parse($dato->FechaPagado)->format('d/m/Y') : '');
             $sheet->setCellValue('C' . $fila, $dato->Empresa);
             $fila++;
         }
