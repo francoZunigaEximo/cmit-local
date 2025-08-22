@@ -144,16 +144,6 @@
             </div>
             <div class="modal-body">
                 <hr size="1">
-                <div class="row p-2 fondo-grisClaro">
-                    <div class="col-6 text-start">
-                        <button class="btn btn-sm botonGeneral liberarPrestacion">Liberar</button>
-                    </div>
-                    <div class="col-6 text-end">
-                        <button class="btn btn-sm botonGeneral">Llamar todo</button>
-                    </div>
-                </div>
-                <hr size="1">
-
                 <div class="card card-h-100">
                     <div class="card-body">
 
