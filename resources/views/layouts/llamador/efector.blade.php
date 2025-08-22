@@ -414,6 +414,7 @@
     const savePrivComent = "{{ route('savePrivComent') }}";
     const privateComment = "{{ route('comentariosPriv') }}";
     const getRoles = "{{ route('roles.getRoles') }}";
+    const getUserName = "{{ route('usuarios.getUserName') }}";
 </script>
 
 @push('styles')

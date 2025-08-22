@@ -162,21 +162,17 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::get('verFicha', [FichaAltaController::class, 'verFicha'])->name('verFicha');
     Route::resource('fichalaboral', FichaAltaController::class);
 
-    //Ruta Examenes
-    Route::get('searchExamen', [ExamenesController::class, 'search'])->name('searchExamen');
-    Route::post('examenes/Id', [ExamenesController::class, 'getId'])->name('IdExamen');
-    Route::post('examenes/eliminar', [ExamenesController::class, 'deleteEx'])->name('deleteExamen');
-    Route::post('examenes/guardar',[ExamenesController::class, 'saveExamen'])->name('saveExamen');
-    Route::get('examenes/buscar', [ExamenesController::class, 'searchExamenes'])->name('searchExamenes');
-    Route::post('examenes/actualizar', [ExamenesController::class, 'updateExamen'])->name('updateExamen');
-    Route::get('examenes/exportar/excel', [ExamenesController::class, 'excel'])->name('examenes.excel');
-    Route::get('reporte/vistaprevia', [ExamenesController::class, 'getVistaPrevia'])->name('examenes.getVistaPrevia');
-    Route::get('examenes/getReportes', [ExamenesController::class, 'getReportes'])->name('examenes.getReportes');
+    //Ruta Examenes 
+    Route::get('examenes/buscar', [ExamenesController::class, 'search'])->name('searchExamen');
+    Route::post('IdExamen', [ExamenesController::class, 'getId'])->name('IdExamen');
+    Route::post('deleteExamen', [ExamenesController::class, 'deleteEx'])->name('deleteExamen');
+    Route::post('saveExamen',[ExamenesController::class, 'saveExamen'])->name('saveExamen');
     Route::get('porcentajeExamen', [ExamenesController::class, 'porcentajeExamen'])->name('porcentajeExamen');
-    Route::get('examenes/listar', [ExamenesController::class, 'getExamenes'])->name('examenes.getExamenes');
-    Route::get('examenes/listar/Id', [ExamenesController::class, 'getById'])->name('examenes.getById');
+    Route::get('searchExamenes', [ExamenesController::class, 'searchExamenes'])->name('searchExamenes');
+    Route::post('updateExamen', [ExamenesController::class, 'updateExamen'])->name('updateExamen');
+    Route::get('examenes/exportar/excel', [ExamenesController::class, 'excel'])->name('examenes.excel');
     Route::resource('examenes', ExamenesController::class);
-    
+
     //Ruta de Comentarios de Prestaciones
     Route::post('comentarios/guardar', [ComentariosPrestacionesController::class, 'setComentarioPres'])->name('setComentarioPres');
     Route::get('comentarios', [ComentariosPrestacionesController::class, 'getComentarioPres'])->name('getComentarioPres');
@@ -227,19 +223,19 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     
     //Rutas de Profesionales
     //Route::resource('profesionales', ProfesionalesController::class);
-    Route::get('profesionales/evaluador', [ProfesionalesController::class, 'getEvaluador'])->name('getEvaluador');
+    Route::get('profesionales/obtener-evaluador', [ProfesionalesController::class, 'getEvaluador'])->name('getEvaluador');
     Route::get('profesionales/buscar', [ProfesionalesController::class, 'search'])->name('searchProfesionales');
-    Route::post('profesionales/estado', [ProfesionalesController::class, 'estado'])->name('estadoProfesional');
-    Route::post('profesionales/perfil/guardar', [ProfesionalesController::class, 'setPerfil'])->name('setPerfiles');
-    Route::get('profesionales/perfil', [ProfesionalesController::class, 'getPerfil'])->name('getPerfiles');
-    Route::post('profesionales/eliminar/perfil', [ProfesionalesController::class, 'delPerfil'])->name('delPerfil');
-    Route::post('profesionales/documento/chequear', [ProfesionalesController::class, 'checkDocumento'])->name('checkDocumento');
-    Route::post('profesionales/opcion/guardar', [ProfesionalesController::class, 'opciones'])->name('profesionales.opciones');
-    Route::post('profesionales/seguro/guardar', [ProfesionalesController::class, 'seguro'])->name('profesionales.seguro');
-    Route::get('profesionales/seleccion-perfil', [ProfesionalesController::class, 'choisePerfil'])->name('choisePerfil');
-    Route::get('profesionales/seleccion-especialidad', [ProfesionalesController::class, 'choiseEspecialidad'])->name('choiseEspecialidad');
-    Route::post('profesionales/prestador/guardar', [ProfesionalesController::class, 'savePrestador'])->name('savePrestador');
-    Route::get('profesionales/listado', [ProfesionalesController::class, 'listGeneral'])->name('listGeneral');
+    Route::post('profesional/estado', [ProfesionalesController::class, 'estado'])->name('estadoProfesional');
+    Route::post('setPerfiles', [ProfesionalesController::class, 'setPerfil'])->name('setPerfiles');
+    Route::get('getPerfiles', [ProfesionalesController::class, 'getPerfil'])->name('getPerfiles');
+    Route::post('delPerfil', [ProfesionalesController::class, 'delPerfil'])->name('delPerfil');
+    Route::post('checkDocumento', [ProfesionalesController::class, 'checkDocumento'])->name('checkDocumento');
+    Route::post('profesionales/opcion/save', [ProfesionalesController::class, 'opciones'])->name('profesionales.opciones');
+    Route::post('profesionales/seguro/save', [ProfesionalesController::class, 'seguro'])->name('profesionales.seguro');
+    Route::get('choisePerfil', [ProfesionalesController::class, 'choisePerfil'])->name('choisePerfil');
+    Route::get('choiseEspecialidad', [ProfesionalesController::class, 'choiseEspecialidad'])->name('choiseEspecialidad');
+    Route::post('savePrestador', [ProfesionalesController::class, 'savePrestador'])->name('savePrestador');
+    Route::get('listGeneral', [ProfesionalesController::class, 'listGeneral'])->name('listGeneral');
 
     //Rutas de Proveedores
     Route::get('/especialidades/select', [ProveedoresController::class, 'getProveedores'])->name('getProveedores');
@@ -375,6 +371,7 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::get('/usuario/checkear/telefono', [UsuariosController::class, 'checkTelefono'])->name('checkTelefono');
     Route::post('/usuarios/update/profesional', [UsuariosController::class, 'updateProfesional'])->name('usuarios.updateProfesional');
     Route::get('usuarios/roles/checkear', [UsuariosController::class, 'checkRoles'])->name('checkRoles');
+    Route::get('usuarios/obtener', [UsuariosController::class, 'getUserName'])->name('usuarios.getUserName');
     
     Route::resource('usuarios', UsuariosController::class);
     Route::get('buscarUsuario', [UsuariosController::class, 'buscar'])->name('buscarUsuario');
