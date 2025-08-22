@@ -24,6 +24,7 @@ use App\Services\ReportesExcel\modelos\PaqueteEstudio;
 use App\Services\ReportesExcel\modelos\PaqueteEstudioDetalle;
 use App\Services\ReportesExcel\modelos\PaqueteFacturacionDetalle;
 use App\Services\ReportesExcel\modelos\SaldosCta;
+use App\Services\ReportesExcel\modelos\PagoMasivo;
 
 class ReporteExcel
 {
@@ -74,6 +75,8 @@ class ReporteExcel
                 return new CuentaCte();
             case 'saldosCte':
                 return new SaldosCta();
+            case 'pagoMasivo':    
+                return new PagoMasivo();
             default:
                 return response()->json(['msg' => 'Tipo de reporte no válido'], 400);
         }

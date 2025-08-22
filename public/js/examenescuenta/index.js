@@ -140,7 +140,7 @@ $(function(){
         e.preventDefault();
         let id = $(this).data('id'),
             nroFactura = $(this).data('nro'),
-            textBoton = $(this).text(),
+            textBoton = $(this).text().trim(),
             hoy = new Date().toISOString().slice(0, 10);
             empresa = $(this).data('empresa'),
             title = "¿Estas seguro que deseas marcar como pagado el examen?",
@@ -170,7 +170,8 @@ $(function(){
                 $.post(cambiarPago, {Id: id, fecha: fechaSeleccionada, _token: TOKEN})
                     .done(function(response){
                         preloader('off');
-                        toastr.success(response.msg, { timeOut: 1000 })
+                        let data = response.resultados
+                        toastr.success(data.msg, { timeOut: 1000 })
                         $(tabla).DataTable().draw(false);
                     })
                     .fail(function(jqXHR){
@@ -220,7 +221,7 @@ $(function(){
     $(document).on('click', '.botonPagar, .quitarPago', function(e){
         e.preventDefault();
 
-        let ids = [], datosEmpresa = [], hoy = new Date().toISOString().slice(0, 10);
+        let ids = [], datosEmpresa = [], hoy = new Date().toISOString().slice(0, 10), tipo = $(this).hasClass('botonPagar') ? 'pagoMasivo' : null, textBoton = $(this).text().trim();
 
         $('input[name="Id"]:checked').each(function() {
             let checkbox = $(this),
@@ -250,11 +251,19 @@ $(function(){
 
         listaHtml += '</ul></div>';
 
-        let content = $(listaHtml);
+        let contenido = $(listaHtml);
+        console.log(textBoton);
+        if(textBoton === 'Quitar pago masivo') {
+            console.log(1)
+            $('#fecha').val('');
+            contenido.find('#fecha').hide();
+            contenido.find('.fechaExamen').hide();
+            title = "¿Estas seguro que deseas quitar los pagos de los examenes?";
+        }
 
         swal({
             title: "¿Esta seguro que desea realizar esta operación?",
-            content: content[0],
+            content: contenido[0],
             icon: "warning",
             buttons: ["Cancelar", "Aceptar"]
         }).then((confirmar) => {
@@ -262,10 +271,18 @@ $(function(){
 
                 let fechaSeleccionada = $('#fecha').val();
                 preloader('on');
-                $.post(cambiarPago, {Id: ids, _token: TOKEN, fecha: fechaSeleccionada})
+                $.post(cambiarPago, {Id: ids, _token: TOKEN, fecha: fechaSeleccionada, tipo: tipo})
                     .done(function(response){
                         preloader('off');
-                        toastr.success(response.msg, { timeOut: 10000 })
+                        let data = response.resultados,
+                            reporte = response.reporte;
+
+                        if(reporte) {
+                            console.log(reporte.original.filePath)
+                            createFile("excel", reporte.original.filePath, generarCodigoAleatorio() + '_reporte');
+                        }
+
+                        toastr.success(data.msg, { timeOut: 10000 })
                         $(tabla).DataTable().draw(false);
 
                     })
