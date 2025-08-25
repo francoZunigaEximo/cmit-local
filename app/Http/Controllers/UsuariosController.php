@@ -402,6 +402,11 @@ class UsuariosController extends Controller
         return response()->json($query->role);
     }
 
+    public function getUserName()
+    {
+        return Auth::user()->name;
+    }
+
 
 }
 

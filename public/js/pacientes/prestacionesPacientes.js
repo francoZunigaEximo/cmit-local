@@ -1550,7 +1550,7 @@ $(function(){
                 });
 
                 principal.lstExamenesCtd.append(contenido);
-        }
+        });
 
         principal.listadoExamenesCtd.fancyTable({
             pagination: true,

@@ -275,7 +275,10 @@ class LlamadorController extends Controller
 
         if ($query) {
 
-            $listaExamenes = ItemPrestacion::where('IdPrestacion', $request->prestacion)->pluck('CAdj')->toArray();
+            $listaExamenes = ItemPrestacion::where('IdPrestacion', $request->prestacion)
+                ->where('IdProveedor', $request->especialidad)
+                ->pluck('CAdj')
+                ->toArray();
 
             if(in_array(2, $listaExamenes)) {
                 return response()->json(['msg' => 'No se ha liberado la prestacion porque hay examenes con adjunto pero abiertos'], 409);
@@ -310,8 +313,10 @@ class LlamadorController extends Controller
 
     public function checkLlamado(Request $request)
     {
+        $profesional = (empty(session('Profesional')) ? $request->tipo : session('Profesional'));
+
         $query = Llamador::where('prestacion_id', $request->id)
-            ->where('tipo_profesional', session('Profesional'))
+            ->where('tipo_profesional', $profesional)
             ->first();
         
         return response()->json($query);
@@ -319,9 +324,15 @@ class LlamadorController extends Controller
 
     public function asignarProfesional(Request $request)
     {
+        if($request->Id === 'on') return;
+
         $query = ItemPrestacion::with(['examenes'])->where('Id', $request->Id)->first();
 
-        if($query->examenes->Adjunto === 1 && $this->adjunto($request->Id, 'Efector') && $query->IdProfesional !== 0) {
+        if (empty($query)) {
+            return response()->json(['msg' => 'No se pudo procesar la informacion.'], 404);
+        }
+
+        if($query->examenes?->Adjunto === 1 && $this->adjunto($request->Id, 'Efector') && $query->IdProfesional !== 0) {
             return response()->json(['msg' => 'No se puede desasignar al profesional porque hay un archivo adjunto en el examen', 'noCheck' => true], 409);
         }
 
