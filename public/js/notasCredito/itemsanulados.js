@@ -60,7 +60,8 @@ function cargarTabla() {
                 orderable: true,
                 targets: 1,
                 render: function (data) {
-                    return `<div class="text-start"><span>${data.FechaAnulado.substr(0, 10)}</span></div>`;
+                    let fechaAnulado = (data.fechaAnulado != null)? data.fechaAnulado.substr(0, 10) : "0000-00-00";
+                    return `<div class="text-start"><span>${fechaAnulado}</span></div>`;
                 }
 
             },

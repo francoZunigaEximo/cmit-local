@@ -1600,3 +1600,5 @@ DELIMITER ;
 INSERT INTO fichaprestacion_factura
 (id, prestacion_id, fichalaboral_id, Tipo, Sucursal, NroFactura, NroFactProv)
 VALUES(0, 0, 0, 'X', 0, 0, '0');
+
+ALTER TABLE itemsprestaciones ADD FechaAnulado DATE NULL DEFAULT NULL;
