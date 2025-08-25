@@ -5,7 +5,6 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Blade;
 use App\Traits\AccessPolicy;
-use App\Helpers\FileHelper;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -27,76 +26,44 @@ class AppServiceProvider extends ServiceProvider
         ini_set('max_execution_time', 300);
         ini_set('memory_limit', '256M');
 
+        $permisos = [
+            'prestaciones' => ['show', 'add', 'report', 'eEnviar'],
+            'etapas' => ['show', 'efector', 'informador', 'eenviar'],
+            'mapas' => ['show', 'cerrar', 'finalizar', 'add', 'edit', 'eenviar'],
+            'clientes' => ['show', 'add', 'edit', 'export'],
+            'pacientes' => ['show', 'add', 'edit', 'delete', 'report'],
+            'noticias' => ['show', 'edit'],
+            'facturacion' => ['show'],
+            'especialidades' => ['show', 'add', 'edit'],
+            'mensajeria' => ['show', 'edit'],
+            'notaCredito' => ['show'],
+            'examenes' => ['show', 'edit', 'add'],
+            'examenCta' => ['show', 'edit', 'add', 'edit', 'delete'],
+            'botones' => ['usuarios', 'todo']
+        ];
+
         Blade::directive('fileUrl', function ($expression) {
             return "<?php echo \\App\\Helpers\\FileHelper::getFileUrl({$expression}); ?>";
         });
+        
+        $this->accesosHabilitados($permisos);
+    }
 
-        $this->gateAccess([
-            "prestaciones_show",
-            "etapas_show",
-            "mapas_show",
-            "clientes_show",
-            "noticias_show",
-            "pacientes_show",
-            "facturacion_show",
-            "especialidades_show",
-            "notaCredito_show",
-            "mensajeria_show",
-            "examenes_show",
-            "examenCta_show",
-        ]);
-
-        $this->gateAccess([
-            "etapas_efector",
-            "etapas_informador",
-            "mapas_cerrar",
-            "mapas_finalizar",
-            "examenCta_edit",
-        ]);
-
-        $this->gateAccess([
-            "prestaciones_add",
-            "clientes_add",
-            "pacientes_add",
-            "especialidades_add",
-            "examenCta_add",
-            "mapas_add",
-            "examenes_add"
-        ]);
-
-        $this->gateAccess([
-            "noticias_edit",
-            "mensajeria_edit",
-            "clientes_edit",
-            "mapas_edit",
-            "especialidades_edit",
-            "examenCta_edit",
-            "examenes_edit",
-            "pacientes_edit"
-        ]);
-
-        $this->gateAccess([
-            "pacientes_delete",
-            "examenCta_delete",
-        ]);
-
-        $this->gateAccess([
-            "paciente_report",
-            "prestaciones_report",
-            "clientes_export",
-            "examenCta_report"
-        ]);
-
-        $this->gateAccess([
-            'boton_usuarios',
-            'boton_todo'
-        ]);
-
-        $this->gateAccess([
-            'etapas_eenviar',
-            'prestaciones_eEnviar',
-            'mapas_eenviar',
-        ]);
+    private function accesosHabilitados(array $datos) 
+    {
+        $habilitados = [];
+        foreach($datos as $permiso => $acciones) {
+            foreach($acciones as $accion) {
+                
+                if($permiso === 'botones'){
+                    $habilitados[] = "boton_" . $accion;
+               
+                }else{
+                    $habilitados[] = $permiso . "_" . $accion;
+                }
+            }
+        }
+        return $this->gateAccess($habilitados);
     }
 
 }

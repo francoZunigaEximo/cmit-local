@@ -317,7 +317,101 @@
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
- 
+<div id="verAtencion" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidde="true" style="display: none">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel">Visualizacion actividad de atención</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="modal-body">
+                    <hr size="1">
+                    <div class="card card-h-100">
+                        <div class="card-body">
+
+                            <div class="row">
+
+                                <div class="col-md-9 d-flex justify-content-center align-content-center">
+                                    <div class="row d-flex align-content-center">
+
+                                        <div class="col-md-4 p-2">
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-text">Profesional</span>
+                                                <input type="text" class="form-control" id="profesional_var" name="profesional_var" readonly="true">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-4 p-2">
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-text">Prestación</span>
+                                                <input type="text" class="form-control" id="prestacion_var" name="prestacion_var" readonly="true">
+                                            </div>
+                                        </div>
+            
+                                        <div class="col-md-4 p-2">
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-text">Tipo Exámen</span>
+                                                <input type="text" class="form-control" id="tipo_var" name="tipo_var" readonly="true">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4 p-2">
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-text">ART</span>
+                                                <input type="text" class="form-control" id="art_var" name="art_var" readonly="true">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4 p-2">
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-text">Empresa</span>
+                                                <input type="text" class="form-control" id="empresa_var" name="empresa_var" readonly="true">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4 p-2">
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-text">Para Empresa</span>
+                                                <input type="text" class="form-control" id="paraEmpresa_var" name="paraEmpresa_var" readonly="true">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4 p-2 mt-1">
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-text">Paciente</span>
+                                                <input type="text" class="form-control" id="paciente_var" name="paciente_var" readonly="true">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4 p-2 mt-1">
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-text">Edad</span>
+                                                <input type="text" class="form-control" id="edad_var" name="edad_var" readonly="true">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4 p-2 mt-1">
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-text">Fecha Prestación</span>
+                                                <input type="text" class="form-control" id="fecha_var" name="fecha_var" readonly="true">
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div> 
+
 <div id="cargarArchivo" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidde="true" style="display: none">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -422,7 +516,7 @@
 <script src="{{ asset('/js/llamador/efector/paginacion.js')}}?v={{ time() }}"></script>
 <script src="{{ asset('/js/llamador/sockets.js')}}?v={{ time() }}"></script>
 <script src="{{ asset('/js/llamador/atenderPaciente.js') }}?v={{ time() }}"></script>
-
+<script src="{{ asset('/js/llamador/verAtencion.js') }}?v={{ time() }}"></script>
 
 <script src="{{ asset('js/fancyTable.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
