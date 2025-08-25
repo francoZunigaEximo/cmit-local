@@ -126,7 +126,7 @@ $(function(){
                 
                 if (!mensajeOcupado.length) {
                     botonLlamada.last().after('<span title="Liberar atencion" class="cerrar-atencion"><i class="ri-logout-box-line"></i></span>');
-                    botonLlamada.last().after('<span title="Visualizar actividad" class="vista-admin px-2"><i class="ri-search-eye-line"></span>');
+                    botonLlamada.last().after('<span title="Visualizar actividad" id="clickAtencion" class="vista-admin px-2"><i class="ri-search-eye-line"></span>');
                     botonLlamada.last().after('<span class="mensaje-ocupado rojo text-center fs-bolder">Ocupado</span>');
                 }
             } else {

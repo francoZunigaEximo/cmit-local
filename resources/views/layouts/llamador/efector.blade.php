@@ -317,7 +317,14 @@
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
- 
+<div id="verAtencion" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidde="true" style="display: none">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            
+        </div>
+    </div>
+</div> 
+
 <div id="cargarArchivo" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidde="true" style="display: none">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -422,7 +429,7 @@
 <script src="{{ asset('/js/llamador/efector/paginacion.js')}}?v={{ time() }}"></script>
 <script src="{{ asset('/js/llamador/sockets.js')}}?v={{ time() }}"></script>
 <script src="{{ asset('/js/llamador/atenderPaciente.js') }}?v={{ time() }}"></script>
-
+<script src="{{ asset('/js/llamador/verAtencion.js') }}?v={{ time() }}"></script>
 
 <script src="{{ asset('js/fancyTable.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
