@@ -250,9 +250,7 @@
                                     </li>
                                     @endcan
                                     <!-- esto lo tengo que cambiar :) -->
-                                    <li class="nav-item">
-                                        <a href="{{ route('notasCredito.index') }}" class="nav-link enlace-blanco" data-key="t-notaCredito"> Nota de crédito </a>
-                                    </li>
+                                    
                                     @can("notaCredito_show")
                                     
                                     @endcan
