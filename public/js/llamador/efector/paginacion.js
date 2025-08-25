@@ -180,7 +180,7 @@ $(function(){
 
                         if (!fila.find('.mensaje-ocupado').length && parseInt(USERACTIVO) !== parseInt(response.profesional_id)) {
                             botones.hide();
-                            botones.last().after('<span title="Liberar atencion" class="cerrar-atencion"><i class="ri-logout-box-line"></i></span>');
+                            botones.last().after('<span id="clickCierreForzado" title="Liberar atencion" class="cerrar-atencion"><i class="ri-logout-box-line"></i></span>');
                             botones.last().after('<span id="clickAtencion" title="Visualizar actividad" class="vista-admin px-2"><i class="ri-search-eye-line"></span>');
                             botones.last().after('<span class="mensaje-ocupado rojo text-center fs-bolder">Ocupado</span>');
                             fila.find('td').css('color', 'red')

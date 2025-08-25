@@ -443,6 +443,17 @@ class LlamadorController extends Controller
         ]);
     }
 
+    public function cierreForzado(Request $request)
+    {
+        if(!$this->hasPermission("pacientes_delete")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
+
+        if(empty($requet->Id)) {
+            return response()->json(['msg' => 'No se ha podido realizar la operacion porque la id no existe'], 404);
+        }
+    }
+
     private function queryBasico()
     {
         return ItemPrestacion::join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
