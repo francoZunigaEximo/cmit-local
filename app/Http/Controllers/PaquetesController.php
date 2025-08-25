@@ -41,10 +41,19 @@ class PaquetesController extends Controller
 
     public function index()
     {
+        if(!$this->hasPermission("paquetes_show")) {
+            return response()->json(["msg" => "No tiene permisos"], 403);
+        }
+
         return view('layouts.paquetes.index');
     }
 
     public function searchExamenes(Request $request){
+        if(!$this->hasPermission("paquetes_show")) {
+            return response()->json(["msg" => "No tiene permisos"], 403);
+        }
+
+
         if ($request->ajax()) {
             $query = $this->buildQuery($request);
             return DataTables::of($query)->make(true);
@@ -99,7 +108,6 @@ class PaquetesController extends Controller
     }
 
     //paquetes examenes
-
     public function crearPaqueteExamen(){
         $codigo = PaqueteEstudio::max('Id') + 1;
         return view('layouts.paquetes.create_paquete_estudios',['Codigo'=>$codigo]);

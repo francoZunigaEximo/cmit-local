@@ -39,6 +39,8 @@ class AppServiceProvider extends ServiceProvider
             'notaCredito' => ['show'],
             'examenes' => ['show', 'edit', 'add'],
             'examenCta' => ['show', 'edit', 'add', 'edit', 'delete'],
+            'grupos' => ["show"],
+            'paquetes' => ["show"],
             'botones' => ['usuarios', 'todo']
         ];
 

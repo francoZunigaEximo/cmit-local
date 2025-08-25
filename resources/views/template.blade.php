@@ -223,6 +223,7 @@
                                         <a href="{{ route('usuarios.index') }}" class="nav-link enlace-blanco" data-key="t-usuarios"> Usuarios </a>
                                     </li>
                                     @endcan
+                                    @can('')
                                     <li class="nav-item">
                                         <a href="{{ route('paquetes.index') }}" class="nav-link enlace-blanco" data-key="t-usuarios"> Paquetes </a>
                                     </li>
@@ -252,7 +253,9 @@
                                     <!-- esto lo tengo que cambiar :) -->
                                     
                                     @can("notaCredito_show")
-                                    
+                                    <li class="nav-item">
+                                        <a href="{{ route('notasCredito.index') }}" class="nav-link enlace-blanco" data-key="t-notaCredito"> Nota de crédito </a>
+                                    </li>
                                     @endcan
                                 </ul>
                             </div>

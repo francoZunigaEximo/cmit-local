@@ -1604,3 +1604,16 @@ INSERT INTO fichaprestacion_factura
 VALUES(0, 0, 0, 'X', 0, 0, '0');
 
 ALTER TABLE itemsprestaciones ADD FechaAnulado DATE NULL DEFAULT NULL;
+
+INSERT INTO permisos (Id, slug, descripcion) VALUES ('83', 'grupos_show', 'Visualizar grupos');
+INSERT INTO permisos (Id, slug, descripcion) VALUES ('84', 'paquetes_show', 'Visualizar grupos');
+
+INSERT INTO rol_permisos (rol_id, permiso_id) VALUES (13, 83);
+INSERT INTO rol_permisos (rol_id, permiso_is) VALUES (2, 83);
+INSERT INTO rol_permisos (rol_id, permiso_is) VALUES (3, 83);
+INSERT INTO rol_permisos (rol_id, permiso_is) VALUES (6, 83);
+
+INSERT INTO rol_permisos (rol_id, permiso_id) VALUES (13, 84);
+INSERT INTO rol_permisos (rol_id, permiso_is) VALUES (2, 84);
+INSERT INTO rol_permisos (rol_id, permiso_is) VALUES (3, 84);
+INSERT INTO rol_permisos (rol_id, permiso_is) VALUES (6, 84);
