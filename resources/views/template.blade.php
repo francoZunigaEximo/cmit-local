@@ -85,18 +85,26 @@
                             <a class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle ms-2" title="Carnet" href="#">
                                 <img src="{{ asset('images/iconos/carnet.svg')}}" alt="Carnet" width="40px" height="40px">
                             </a>
+                            @can('efector_show')
                             <a class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle ms-2" title="Efector" href="{{ route('llamador.efector') }}">
                                 <img src="{{ asset('images/iconos/efector.svg')}}" alt="Efector" width="35px" height="35px">
                             </a>
+                            @endcan
+                            @can('informador_show')
                             <a class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle ms-2" title="Informador" href="{{ route('llamador.informador') }}">
                                 <img src="{{ asset('images/iconos/informador.svg')}}" alt="Informador" width="35px" height="35px">
                             </a>
+                            @endcan
+                            @can('combinado_show')
                             <a class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle ms-3" title="Combinado" href="{{ route('llamador.combinado')}}">
                                 <img src="{{ asset('images/iconos/combinado.svg')}}" alt="Combinado" width="52px" height="52px">
                             </a>
+                            @endcan
+                            @can('evaluador_show')
                             <a class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle ms-3" title="Evaluador" href="{{ route('llamador.evaluador') }}">
                                 <img src="{{ asset('images/iconos/evaluador.svg')}}" alt="Evaluador" width="40px" height="40px">
                             </a>
+                            @endcan
                         </div>
 
                         <div class="dropdown ms-sm-3 header-item topbar-user">
