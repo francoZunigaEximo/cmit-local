@@ -1703,5 +1703,12 @@ $(function(){
         }
     }
 
+    function contadorExamenes(idPrestacion) {
+        $.get(contadorEx, {Id: idPrestacion}, function(response){
+            principal.countExamenes
+                .empty()
+                .text(response);
+        });
+    }
 
 });
