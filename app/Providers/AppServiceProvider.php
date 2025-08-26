@@ -41,7 +41,11 @@ class AppServiceProvider extends ServiceProvider
             'examenCta' => ['show', 'edit', 'add', 'edit', 'delete'],
             'grupos' => ["show"],
             'paquetes' => ["show"],
-            'botones' => ['usuarios', 'todo']
+            'botones' => ["usuarios", "todo"],
+            'efector' => ["show"],
+            'informador' => ["show"],
+            'combinado' => ["show"],
+            'evaluador' => ["show"]
         ];
 
         Blade::directive('fileUrl', function ($expression) {

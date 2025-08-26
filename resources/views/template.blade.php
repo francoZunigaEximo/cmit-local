@@ -67,15 +67,21 @@
                     <div class="d-flex align-items-center">
 
                         <div class="ms-1 header-item d-none d-sm-flex">
+                            @can('prestaciones_add')
                             <button id="prestacionButton" type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle ms-2" title="Prestación rápida (ALT+ P)" data-bs-toggle="offcanvas" data-bs-target="#prestacionFast" aria-controls="offcanvas">
                                 <img src="{{ asset('images/iconos/pacientes.svg')}}" alt="Alta prestación rápida" width="40px" height="40px">
                             </button>
-                            <a class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle ms-2" title="Pacientes (ALT + A)" href="{{ route('prestaciones.index')}}">
+                            @endcan
+                            @can('prestaciones_show')
+                            <a class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle ms-2" title="Grilla prestaciones (ALT + A)" href="{{ route('prestaciones.index')}}">
                                 <img src="{{ asset('images/iconos/prestaciones.svg')}}" alt="Grilla prestaciones" width="40px" height="40px">
                             </a>
+                            @endcan
+                            @can('etapas_show')
                             <a class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle ms-2" title="Etapas (ALT + S)" href="{{ route('ordenesExamen.index')}}">
                                 <img src="{{ asset('images/iconos/etapas.svg')}}" alt="Etapas" width="40px" height="40px">
                             </a>
+                            @endcan
                             <a class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle ms-2" title="Carnet" href="#">
                                 <img src="{{ asset('images/iconos/carnet.svg')}}" alt="Carnet" width="40px" height="40px">
                             </a>
