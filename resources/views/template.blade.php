@@ -82,9 +82,11 @@
                                 <img src="{{ asset('images/iconos/etapas.svg')}}" alt="Etapas" width="40px" height="40px">
                             </a>
                             @endcan
+                            @can('carnet_show')
                             <a class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle ms-2" title="Carnet" href="#">
                                 <img src="{{ asset('images/iconos/carnet.svg')}}" alt="Carnet" width="40px" height="40px">
                             </a>
+                            @endcan
                             @can('efector_show')
                             <a class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle ms-2" title="Efector" href="{{ route('llamador.efector') }}">
                                 <img src="{{ asset('images/iconos/efector.svg')}}" alt="Efector" width="35px" height="35px">
