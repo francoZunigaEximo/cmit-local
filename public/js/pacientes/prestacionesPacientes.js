@@ -1599,4 +1599,95 @@ $(function(){
 
     }
 
+    async function tablasExamenes(idCliente, checkVisible, etiquetaId, filtroId = null) {
+        preloader('on');
+
+        try {
+            let data = await $.get(getListaExCta, { Id: idCliente });
+
+            $(etiquetaId).empty();
+
+            const factura = {};
+            data.forEach(function (item) {
+                if (!factura[item.Factura]) {
+                    factura[item.Factura] = [];
+                }
+                factura[item.Factura].push(item);
+            });
+
+            let tablaCompleta = '';
+
+            for (const grupoFactura in factura) {
+                if (factura.hasOwnProperty(grupoFactura)) {
+                    const examenes = factura[grupoFactura];
+                    const documentos = {};
+
+                    examenes.forEach((examen) => {
+                        const documentoKey = examen.Documento || "Sin precarga";
+                        if (!documentos[documentoKey]) {
+                            documentos[documentoKey] = [];
+                        }
+                        documentos[documentoKey].push(examen);
+                    });
+
+                    let contenidoFactura = `
+                        <tr class="fondo-gris">
+                            <td colspan="5">
+                                <span class="fw-bolder text-capitalize">fact </span> ${grupoFactura}
+                            </td>
+                            ${checkVisible ? `<td style="width:5px"><input type="checkbox" class="form-check-input" id="checkAll-${grupoFactura}"></td>` : ''}
+                        </tr>
+                    `;
+
+                    for (const documentoKey in documentos) {
+                        if (documentos.hasOwnProperty(documentoKey)) {
+                            const examenesPorDocumento = documentos[documentoKey];
+                            const idSubgrupo = documentoKey === "Sin precarga" ? `sin_precarga-${grupoFactura}` : documentoKey;
+
+                            contenidoFactura += `
+                                <tr class="fondo-grisClaro mb-2">
+                                    <td colspan="5" class="fw-bolder">
+                                        <span class="fw-bolder precarga">${documentoKey === "Sin precarga" ? "" : "DNI Precargado: "}</span> 
+                                        ${documentoKey}
+                                    </td>
+                                    ${checkVisible ? `<td style="width:5px"><input type="checkbox" class="form-check-input" id="checkAll-${idSubgrupo}"></td>` : ''}
+                                </tr>
+                            `;
+
+                            const listaParaRenderizar = filtroId !== null 
+                                ? examenesPorDocumento.filter((examen) => examen.IdFiltro === parseInt(filtroId, 10))
+                                : examenesPorDocumento;
+
+                            listaParaRenderizar.forEach((examen) => {
+                                contenidoFactura += `
+                                    <tr>
+                                        <td>${examen.CantidadExamenes}</td>
+                                        <td colspan="4">${examen.NombreExamen}</td>
+                                        ${checkVisible ? `
+                                        <td style="width:5px">
+                                            <input type="checkbox" 
+                                                class="form-check-input item-checkbox" 
+                                                data-factura="${grupoFactura}" 
+                                                data-subgrupo="${idSubgrupo}"
+                                                value="${examen.IdEx}">
+                                        </td>
+                                        ` : ''}
+                                    </tr>`;
+                            });
+                        }
+                    }
+                    tablaCompleta += contenidoFactura;
+                }
+            }
+            $(etiquetaId).append(tablaCompleta);
+
+        } catch (error) {
+            let errorData = JSON.parse(error.responseText);
+            checkError(error.status, errorData.msg);
+        } finally {
+            preloader('off');
+        }
+    }
+
+
 });
