@@ -1623,6 +1623,7 @@ INSERT INTO permisos (Id, slug, descripcion) VALUES (85, 'efector_show', 'Visual
 INSERT INTO permisos (Id, slug, descripcion) VALUES (86, 'informador_show', 'Visualizacion Informador Llamador');
 INSERT INTO permisos (Id, slug, descripcion) VALUES (87, 'combinado_show', 'Visualizacion Combinado Llamador');
 INSERT INTO permisos (Id, slug, descripcion) VALUES (88, 'evaluador_show', 'Visualizacion Evaluador Llamador');
+INSERT INTO permisos (Id, slug, descripcion) VALUES (89, 'notaCredito_show', 'Visualizacion Nota Credito');
 
 INSERT INTO rol_permisos (rol_id, permiso_id) VALUES (8, 85);
 INSERT INTO rol_permisos (rol_id, permiso_id) VALUES (13, 85);
@@ -1632,5 +1633,6 @@ INSERT INTO rol_permisos (rol_id, permiso_id) VALUES (11, 87);
 INSERT INTO rol_permisos (rol_id, permiso_id) VALUES (13, 87);
 INSERT INTO rol_permisos (rol_id, permiso_id) VALUES (12, 88);
 INSERT INTO rol_permisos (rol_id, permiso_id) VALUES (13, 88);
+INSERT INTO rol_permisos (rol_id, permiso_id) VALUES (13, 89);
 
 
