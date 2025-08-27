@@ -8,6 +8,7 @@ $(function(){
         atenderPaciente: $('.atenderPaciente'),
         chekAllExamenes: $('.checkAllExamenes'),
         buscar: $('#buscar'),
+        atenderEfector: $('#atenderEfector')
     };
 
     const variables = {
@@ -97,6 +98,8 @@ $(function(){
             .add(variables.fechaEfector)
             .empty();
 
+        principal.atenderEfector.removeAttr('data-itemp');
+
         variables.fotoEfector.attr('src', '');
 
         preloader('on')
@@ -122,6 +125,10 @@ $(function(){
                 variables.fotoEfector.attr('src', FOTO + prestacion.paciente.Foto);
                 variables.descargaFoto.attr('href', FOTO + prestacion.paciente.Foto);
 
+                principal.atenderEfector.attr('data-itemp', response.itemsprestaciones.IdItem);
+                console.log(response.itemsprestaciones.IdItem)
+                console.log(response.itemsprestaciones);
+   
                 comentariosPrivados(parseInt(prestacion.Id));
                 tablasExamenes(response.itemsprestaciones);
                 cargarArchivosEfector(parseInt(prestacion.Id), parseInt(variables.profesional.val()), variables.especialidad.data('id') || variables.especialidadSelect.val());
@@ -244,145 +251,6 @@ $(function(){
                 return;
             });
     }
-
-    function tablasExamenes(data) {
-
-        principal.grillaExamenes.empty();
-        preloader('on');
-
-        const categoria = {};
-        data.forEach(function (item) {
-            if (!categoria[item.NombreEspecialidad]) {
-                categoria[item.NombreEspecialidad] = [];
-            }
-            categoria[item.NombreEspecialidad].push(item);
-        });
-    
-        // Recorre cada grupo de especialidades
-        for (const especialidad in categoria) {
-            if (categoria.hasOwnProperty(especialidad)) {
-                const examenes = categoria[especialidad];
-    
-                // Crea la tabla para la especialidad actual
-                let contenido = `
-                    <div class="especialidad-grilla mb-2">
-                        <h4>${especialidad}</h4>
-                        <table class="table table-bordered no-footer dataTable">
-                            <thead class="table-light">
-                                <tr>
-                                    <th style="width: 250px">Examen</th>
-                                    <th style="width: 90px">Estado</th>
-                                    <th style="width: 120px">Adjunto</th>
-                                    <th>Observaciones</th>
-                                    <th style="width: 150px">Efector</th>
-                                    <th style="width: 150px">Informador</th>
-                                    <th style="width: 50px">
-                                        <input type="checkbox" class="checkAllExamenes" name="Id_${limpiarAcentosEspacios(especialidad)}">
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                `;
-    
-                
-
-                examenes.forEach(function (examen) {
-
-                    contenido += `
-                        <tr class="listadoAtencion" data-id="${examen.IdItem}">
-                            <td>${examen.NombreExamen}</td>
-                            <td>${estado(examen.CAdj)}</td>
-                            <td title="Adjunto: ${examen.Adjunto} | Archivo: ${examen.Archivo}">${checkAdjunto(examen.Adjunto, examen.Archivo, examen.IdItem)}</td>
-                            <td>${!examen.ObsExamen ? '' : examen.ObsExamen}</td>
-                            <td>${examen.efectorId === 0 ? '' : verificarProfesional(examen, "efector")}</td>
-                            <td>${examen.informadorId === 0 ? '' : verificarProfesional(examen, "informador")}</td>
-                            <td>
-                                <input type="checkbox" name="Id_${limpiarAcentosEspacios(especialidad)}_${examen.IdExamen}" value="${examen.IdItem}"  ${checkboxCheck(examen)}>
-                            </td>
-                        </tr>
-                    `;
-                });
-    
-                contenido += `
-                            </tbody>
-                        </table>
-                    </div>
-                `;
-                preloader('off');
-                principal.grillaExamenes.append(contenido);
-            }
-        }
-    }
-
-    function estado(data) {
-        switch (true) {
-            case [0, 1, 2].includes(data):
-                return `<span class="rojo">Abierto <i class="fs-6 ri-lock-unlock-line cerrar"></i></span>`;
-
-            case [3, 4, 5].includes(data):
-                return `<span class="verde">Cerrado <i class="fs-6 ri-lock-2-line abrir"></i></span>`;
-
-            default:
-                return '';
-        }
-    }
-
-    //No Imprime: saber si es fisico o digital / adjunto: si acepta o no adjuntos / condicion: pendiente o adjuntado
-    function checkAdjunto(adjunto, condicion, idItem) {
-        switch (true) {
-            case adjunto === 0:
-                return '';
-
-            case adjunto === 1 && condicion === 1:
-                return `<span class="verde">Adjuntado <i class="fs-6 ri-map-pin-line"></i><span>`;
-
-            case adjunto === 1 && condicion === 0:
-                return `<span class="rojo d-flex align-items-center justify-content-between w-100">
-                            <span class="me-auto">Pendiente</span>
-                            <i class="fs-6 ri-map-pin-line mx-auto"></i>
-                            <i class="fs-6 ri-folder-add-line ms-auto" id="modalArchivo" data-id="${idItem}"></i> 
-                        </span>`;
-
-            case adjunto === 0:
-                return `<span class="mx-auto"><i class="gris fs-6 ri-map-pin-line"></i><span>`;
-
-            default:
-                return '';
-        }
-    }
-
-    function checkboxCheck(data) {
-
-        switch (true) {
-            case data.informadorId !== 0:
-                return 'disabled';
-        
-            case parseInt(data.efectorId) !== 0 && parseInt(data.efectorId) === parseInt(USERACTIVO):
-                return 'checked';
-
-            case parseInt(data.efectorId) !== 0 && parseInt(data.efectorId) !== parseInt(USERACTIVO):
-                return 'checked disabled';
-         
-            default:
-                return '';
-        }
-    }
-
-    function verificarProfesional(data, tipoProfesional) {
-        if(data.length === 0) return;
-
-        switch (true) {
-            case tipoProfesional === 'efector':
-                return data.EfectorHistorico || data.Efector || '';
-            
-            case tipoProfesional === 'informador':
-                return data.InformadorHistorico || data.Informador || '';
-            
-            default:
-                return '';
-        }
-    }
-
 
     function habilitarBoton(profesional) {
 

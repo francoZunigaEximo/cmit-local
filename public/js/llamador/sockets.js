@@ -44,7 +44,8 @@ $(function(){
         atenderPaciente: $('.atenderPaciente'),
         llamarExamen: $('.llamarExamen'),
         liberarExamen: $('.liberarExamen'),
-        mensajeOcupado: $('.mensaje-ocupado')
+        mensajeOcupado: $('.mensaje-ocupado'),
+        atenderEfector: $('#atenderEfector')
     }
 
     const ADMIN = [
@@ -99,7 +100,7 @@ $(function(){
         .echo
         .listen(socket.grillaEfectores.canal, async(response) => {
         
-            const data = response.grilla;
+        const data = response.grilla;
 
         let fila = $(`tr[data-id="${data.prestacion}"]`);
 
@@ -120,13 +121,21 @@ $(function(){
             botonAtender.show();
             fila.find('td').css('color', 'red');
 
+            let lstRoles = await $.get(getRoles),
+                roles = lstRoles.map(rol => rol.nombre),
+                tienePermiso = ADMIN.some(rol => roles.includes(rol));
+
             if (parseInt(USERACTIVO) !== parseInt(result.profesional_id)) {
                 botonLlamada.add(botonAtender)
                     .hide();
                 
                 if (!mensajeOcupado.length) {
-                    botonLlamada.last().after('<span title="Liberar atencion" id="clickCierreForzado" class="cerrar-atencion"><i class="ri-logout-box-line"></i></span>');
-                    botonLlamada.last().after('<span title="Visualizar actividad" id="clickAtencion" class="vista-admin px-2"><i class="ri-search-eye-line"></span>');
+
+                    if(tienePermiso) {
+                        botonLlamada.last().after(`<span title="Liberar atencion" id="clickCierreForzado" data-profesional="${result.profesional_id}" data-prestacion="${data.prestacion}" class="cerrar-atencion"><i class="ri-logout-box-line"></i></span>`);
+                        botonLlamada.last().after('<span title="Visualizar actividad" id="clickAtencion" class="vista-admin px-2"><i class="ri-search-eye-line"></span>');
+                    }
+                    
                     botonLlamada.last().after('<span class="mensaje-ocupado rojo text-center fs-bolder">Ocupado</span>');
                 }
             } else {
@@ -149,6 +158,15 @@ $(function(){
             botonAtender.hide();
             fila.find('td').css('color', 'green');
             botonLlamada.show();
+
+            //usamos JS Puro para evitar problemas de compatibilidad con otros navegadores xD
+            let modalAtender = document.getElementById('atenderEfector');
+
+            if (modalAtender && modalAtender.classList.contains('show')) {
+                const modalInstancia = bootstrap.Modal.getOrCreateInstance(modalAtender);
+                modalInstancia.hide();
+            }
+
         }
     });
 
@@ -157,6 +175,7 @@ $(function(){
         .listen(socket.liberarAtencion.canal, async function(response) {
 
             let idsAtencion = response.liberar;
+            console.log(idsAtencion);
 
             idsAtencion = [...new Set(idsAtencion)];
 
@@ -168,9 +187,9 @@ $(function(){
                     botonAtender = fila.find('.atenderPaciente'),
                     mensajeOcupado = fila.find('.mensaje-ocupado');
 
-                     botonLlamada.removeClass(principal.liberarExamen)
-                        .addClass(principal.llamarExamen)
-                        .html('<i class="ri-edit-line"></i> Llamar');
+                    botonLlamada.removeClass(principal.liberarExamen)
+                    .addClass(principal.llamarExamen)
+                    .html('<i class="ri-edit-line"></i> Llamar');
                     
                     botonAtender.hide();
                     fila.find('td').css('color', 'green');

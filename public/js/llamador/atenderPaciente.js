@@ -22,7 +22,7 @@ $(function(){
         multi: $('#multi'),
         btnAdjEfector: $('.btnAdjEfector'),
         adjuntosEfectores: $('#adjuntosEfectores'),
-        openObsPriv: $('#openObsPriv')
+        openObsPriv: $('#openObsPriv'),
     };
 
     principal.mensajeMulti.hide();
@@ -35,7 +35,6 @@ $(function(){
 
         if(!idCheck) return;
 
-        // console.log(chequeado, idCheck, variables.profesional.val());
         preloader('on')
         $.get(asignacionProfesional, {Id: idCheck, Profesional: variables.profesional.val(), estado: chequeado})
             .done(function(response) {
@@ -89,8 +88,10 @@ $(function(){
     $(document).on('click', '.terminarAtencion', function(e){
         e.preventDefault();
 
+        preloader('on');
         $.get(addAtencion, {prestacion: variables.prestacion.val(), Tipo: (principal.efector).toUpperCase(), profesional: variables.profesional.val(), especialidad: variables.especialidad.data('id') || variables.especialidadSelect.val()})
-            .done(function(response){
+            .done(function(){
+                preloader('off');
                 principal.atenderEfector.modal('hide');
             })
             .fail(function(jqXHR){
@@ -112,7 +113,7 @@ $(function(){
             etiqueta = $('.list-group-item.listExamenes'),
             response = await $.get(getItemPrestacion, {Id: id});
 
-        principal.btnAdjEfector.attr('data-iden', response.itemprestacion.Id);
+        principal.btnAdjEfector.attr('data-iden', id);
         
         etiqueta.empty();
         variables.DescripcionE
@@ -168,7 +169,7 @@ $(function(){
         }
         
         let descripcion = $(obj[who][2]).val(),
-            identificacion = (multi == 'success') ? ids : $('#identificacion').val(),
+            identificacion = (multi == 'success') ? ids : id,
             prestacion = $('#prestacion_var').val();
         
         who = multi === 'success' && who === 'efector'

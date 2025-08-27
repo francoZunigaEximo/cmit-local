@@ -245,6 +245,10 @@ class LlamadorController extends Controller
 
     public function verPaciente(Request $request)
     {
+        if(empty($request->Especialidades)) {
+            return response()->json(['msg' => 'Verifique la especialidad. No se ha encontrado'], 404);
+        }
+
         $especialidades = explode(',', $request->Especialidades);
 
         $prestacion = Prestacion::with(['paciente','empresa','art'])->where('Id', $request->Id)->first();
@@ -265,6 +269,10 @@ class LlamadorController extends Controller
 
     public function controlLlamado(Request $request)
     {   
+        if(empty($request->prestacion) || empty($request->profesional) || empty($request->especialidad)) {
+            return response()->json(['msg' => 'Faltan datos para poder activar la opción'], 404);
+        }
+
         $query = Llamador::with(['prestacion', 'prestacion.paciente'])
             ->where('prestacion_id', $request->prestacion)
             ->where('profesional_id', $request->profesional)
@@ -445,13 +453,28 @@ class LlamadorController extends Controller
 
     public function cierreForzado(Request $request)
     {
-        if(!$this->hasPermission("pacientes_delete")) {
-            return response()->json(['msg' => 'No tiene permisos'], 403);
-        }
+        // if(!$this->hasPermission("llamador_show")) {
+        //     return response()->json(['msg' => 'No tiene permisos'], 403);
+        // }
 
-        if(empty($requet->Id)) {
+        if(empty($request->profesional) || (empty($request->prestacion))) {
             return response()->json(['msg' => 'No se ha podido realizar la operacion porque la id no existe'], 404);
         }
+
+        $query = Llamador::where('profesional_id', $request->profesional)->where('prestacion_id', $request->prestacion)->first();
+
+        if($query) {
+            $query->delete();
+        }
+
+        $data = [
+                'status' => 'liberado', 
+                'msg' => "Se ha liberado la prestación {$query->Id } del paciente {$query->prestacion->paciente->nombre_completo} ",
+                'prestacion' => $request->prestacion
+            ];
+
+        event(new GrillaEfectoresEvent($data));
+
     }
 
     private function queryBasico()

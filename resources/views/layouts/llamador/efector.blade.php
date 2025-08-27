@@ -499,6 +499,7 @@
     const privateComment = "{{ route('comentariosPriv') }}";
     const getRoles = "{{ route('roles.getRoles') }}";
     const getUserName = "{{ route('usuarios.getUserName') }}";
+    const cierreForzadoLlamado = "{{ route('llamador.cierreForzado') }}";
 </script>
 
 @push('styles')
