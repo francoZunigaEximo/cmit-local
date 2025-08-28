@@ -16,7 +16,7 @@ async function cargarArchivosEfector(idPrestacion, idProfesional, idEspecialidad
         if(!idPrestacion || !idProfesional || !idEspecialidad) return;
 
         $('#adjuntosEfectores, #adjuntosEfectoresVista').empty();
-        preloader('on');
+
         $.get(await paginacionByPrestacion, {Id: idPrestacion, tipo: 'efector', especialidad: idEspecialidad, IdProfesional: idProfesional})
             .done(async function(response){
                
@@ -64,7 +64,7 @@ async function cargarArchivosEfector(idPrestacion, idProfesional, idEspecialidad
                     `;
 
                    $('#adjuntosEfectores, #adjuntosEfectoresVista').append(contenido);
-                    preloader('off');
+             
                 }); 
             });
     }

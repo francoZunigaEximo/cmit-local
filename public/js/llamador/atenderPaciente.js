@@ -115,8 +115,6 @@ $(function(){
             etiqueta = $('.list-group-item.listExamenes'),
             response = await $.get(getItemPrestacion, {Id: id});
 
-        console.log(id);
-
         principal.btnAdjEfector.attr('data-iden', id);
         
         etiqueta.empty();

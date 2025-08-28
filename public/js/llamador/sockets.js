@@ -137,7 +137,7 @@ $(function(){
 
                     if(tienePermiso) {
                         botonLlamada.last().after(`<span title="Liberar atencion" id="clickCierreForzado" data-profesional="${result.profesional_id}" data-prestacion="${data.prestacion}" class="cerrar-atencion"><i class="ri-logout-box-line"></i></span>`);
-                        botonLlamada.last().after('<span title="Visualizar actividad" id="clickAtencion" class="vista-admin px-2"><i class="ri-search-eye-line"></span>');
+                        botonLlamada.last().after(`<span title="Visualizar actividad" id="clickAtencion" class="vista-admin px-2" data-id="${data.prestacion}"><i class="ri-search-eye-line"></span>`);
                     }
                     
                     botonLlamada.last().after('<span class="mensaje-ocupado rojo text-center fs-bolder">Ocupado</span>');
@@ -216,11 +216,4 @@ $(function(){
             console.log("Contenido actual de la celda:", celda.text());
         });
 
-
-    socket.tablaExamenes
-        .echo
-        .listen(socket.tablaExamenes.canal, async function(response){
-            // console.log(response.tablaExamenes.itemsprestaciones);
-            // tablasExamenes(response.tablaExamenes.itemsprestaciones, parseInt(response.tablaExamenes.profesional));
-        });
 });
