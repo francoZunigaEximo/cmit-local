@@ -23,7 +23,7 @@ Broadcast::channel('listado-combinados', fn(User $user) => $user);
 
 
 Broadcast::channel('grilla-efectores', fn(User $user) => $user);
-
+Broadcast::channel('actualizar-tablaExamenes', fn(User $user) => $user);
 
 Broadcast::channel('liberar-atencion', fn(User $user) => $user);
 Broadcast::channel('asignar-profesional', fn(User $user) => $user);

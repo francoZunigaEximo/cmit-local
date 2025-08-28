@@ -28,6 +28,10 @@ $(function(){
         asignarProfesional: {
             echo: window.Echo.channel('asignar-profesional'),
             canal: '.AsignarProfesionalEvent'
+        },
+        tablaExamenes: {
+            echo: window.Echo.channel('actualizar-tablaExamenes'),
+            canal: '.TablaExamenesEvent'
         }
     };
 
@@ -203,11 +207,20 @@ $(function(){
         .listen(socket.asignarProfesional.canal, async function(response) {
             let data = response.profesional,
                 fila = $(`tr.listadoAtencion[data-id="${data.itemprestacion}"]`);
-
-            if(!fila.length) return;
+            
+            if(fila.length === 0) return;
 
             let celda = fila.find('td').eq(4);
+            console.log("Contenido anterior de la celda:", celda.text());
             celda.empty().text(data.profesional);
+            console.log("Contenido actual de la celda:", celda.text());
         });
 
+
+    socket.tablaExamenes
+        .echo
+        .listen(socket.tablaExamenes.canal, async function(response){
+            // console.log(response.tablaExamenes.itemsprestaciones);
+            // tablasExamenes(response.tablaExamenes.itemsprestaciones, parseInt(response.tablaExamenes.profesional));
+        });
 });

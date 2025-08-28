@@ -31,19 +31,6 @@ $(function(){
         $(principal.atenderInformador).modal('show');
     });
 
-
-    function habilitarBoton(profesional) {
-        let usuarios = ROLESUSER.map(u => u.nombre),
-            administradores = ['Administrador', 'Admin SR', 'Recepcion SR'],
-            admin = usuarios.some(item => administradores.includes(item));
-
-        if(!profesional && !admin) return principal.buscar.hide();
-
-        return (profesionales[1] === profesional || admin) 
-            ? principal.buscar.show()
-            : principal.buscar.hide();
-    }
-
     function listadoEspecialidades() {
 
         preloader('on');

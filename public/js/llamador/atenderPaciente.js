@@ -25,6 +25,8 @@ $(function(){
         openObsPriv: $('#openObsPriv'),
     };
 
+    const checkPaciente = checkerRolUser();
+
     principal.mensajeMulti.hide();
 
     $(document).on('click', 'input[type="checkbox"][name^="Id_"]', function () {
@@ -69,10 +71,10 @@ $(function(){
             if(confirmar) {
                 preloader('on')
                 $.get(itemPrestacionEstado, {Id: id, accion: accion, tipo: principal.efector})
-                    .done(function(response){
+                    .done(async function(response){
                         preloader('off');
                         toastr.success(response.msg);
-                        estado(response.CAdj, response.IdItem);
+                        await estado(response.CAdj, response.IdItem, 'edicion');
                         principal.tabla.DataTable().draw(false);
                     })
                     .fail(function(jqXHR){
@@ -113,6 +115,8 @@ $(function(){
             etiqueta = $('.list-group-item.listExamenes'),
             response = await $.get(getItemPrestacion, {Id: id});
 
+        console.log(id);
+
         principal.btnAdjEfector.attr('data-iden', id);
         
         etiqueta.empty();
@@ -149,7 +153,7 @@ $(function(){
                 efector: ['input[name="fileEfector"]', '[id^="Id_multiAdj_"]:checked', '#DescripcionE', '#efectores'],
                 informador: ['input[name="fileInformador"]', '[id^="Id_multiAdjInf_"]:checked', '#DescripcionI', '#informadores']
             };
-
+            
         if(!response.itemprestacion.IdProfesional) {
             toastr.warning('No puede adjuntar porque no posee profesional asignado', '', {timeOut: 1000});
             return;
@@ -297,16 +301,19 @@ $(function(){
         
     });
 
-    function estado(CAdj, itemId) {
+    async function estado(CAdj, itemId) {
 
         let fila = $('.listadoAtencion[data-id="' + itemId + '"]'),
             td = fila.find('td').eq(1),
             html = '';
 
+        const [isAdmin, esUsuarioPermitido] = await checkPaciente;
+        let permiso = isAdmin || (esUsuarioPermitido && !isAdmin);
+
         if ([0, 1, 2].includes(CAdj)) {
-            html = '<span class="rojo">Abierto <i class="fs-6 ri-lock-unlock-line cerrar"></i></span>';
+            html = `<span class="rojo">Abierto ${permiso ? '' : '<i class="fs-6 ri-lock-unlock-line cerrar"></i>'}</span>`;
         } else if ([3, 4, 5].includes(CAdj)) {
-            html = '<span class="verde">Cerrado <i class="fs-6 ri-lock-2-line abrir"></i></span>';
+            html = `<span class="verde">Cerrado ${permiso ? '' : '<i class="fs-6 ri-lock-2-line abrir"></i>'}</span>`;
         } else {
             html = '';
         }

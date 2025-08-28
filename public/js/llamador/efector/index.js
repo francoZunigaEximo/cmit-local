@@ -36,7 +36,7 @@ $(function(){
     variables.fechaHasta.val(fechaNow(null, "-", 0));
     variables.estado.val('abierto');
     
-    habilitarBoton(sessionProfesional);
+    habilitarBoton(sessionProfesional, profesionales[0]);
     listadoEspecialidades();
 
 
@@ -126,11 +126,9 @@ $(function(){
                 variables.descargaFoto.attr('href', FOTO + prestacion.paciente.Foto);
 
                 principal.atenderEfector.attr('data-itemp', response.itemsprestaciones.IdItem);
-                console.log(response.itemsprestaciones.IdItem)
-                console.log(response.itemsprestaciones);
    
                 comentariosPrivados(parseInt(prestacion.Id));
-                tablasExamenes(response.itemsprestaciones);
+                tablasExamenes(response.itemsprestaciones, parseInt(variables.profesional.val()));
                 cargarArchivosEfector(parseInt(prestacion.Id), parseInt(variables.profesional.val()), variables.especialidad.data('id') || variables.especialidadSelect.val());
 
             })
@@ -184,9 +182,10 @@ $(function(){
             .html(boton[accion].texto)
             .removeClass(boton[accion].remover)
             .addClass(boton[accion].agregar);
-        
+        preloader('on');
         $.get(addAtencion, {prestacion: $(this).data('id'), profesional: variables.profesional.val(), Tipo: $(this).data('tipo'), especialidad: variables.especialidad.data('id') || variables.especialidadSelect.val()})
             .done(function(){
+                preloader('off')
                 toastr.success('Cambio de estado realizado correctamente','',{timeOut: 1000})
             })
             .fail(function(jqXHR){
@@ -252,18 +251,6 @@ $(function(){
             });
     }
 
-    function habilitarBoton(profesional) {
-
-        let usuarios = ROLESUSER.map(u => u.nombre),
-            administradores = ['Administrador', 'Admin SR', 'Recepcion SR'],
-            admin = usuarios.some(item => administradores.includes(item));
-
-        if(!profesional && !admin) return principal.buscar.hide();
-
-        return (profesionales[0] === profesional || admin) 
-            ? principal.buscar.show()
-            : principal.buscar.hide();
-    }
 
 
 

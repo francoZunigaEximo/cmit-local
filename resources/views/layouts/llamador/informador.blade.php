@@ -300,7 +300,6 @@
     const USERACTIVO = "{{ Auth::user()->profesional_id }}";
     const addAtencion = "{{ route('llamador.llamar-paciente') }}";
     const checkLlamado = "{{ route('llamador.check') }}";
-    const ROLESUSER = @json(Auth::user()->role);
     const asignacionProfesional = "{{ route('llamador.asignarPaciente') }}";
     const sessionProfesional = "{{ session('Profesional') }}";
     const searchEspecialidad = "{{ route('llamador.buscarEspecialidad') }}";
@@ -317,6 +316,8 @@
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+
+<script src="{{ asset('/js/llamador/libreria.js')}}?v={{ time() }}"></script>
 
 <script src="{{ asset('/js/llamador/informador/index.js')}}?v={{ time() }}"></script>
 <script src="{{ asset('/js/llamador/informador/paginacion.js')}}?v={{ time() }}"></script>

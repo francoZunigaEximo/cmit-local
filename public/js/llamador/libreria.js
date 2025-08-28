@@ -1,13 +1,29 @@
+async function checkerRolUser() {
+
+    let roles = await $.get(getRoles),
+        lista = roles.map(rol => rol.nombre),
+        administradores = ['Administrador', 'Admin SR', 'Recepcion SR'],
+        admin = lista.some(item => administradores.includes(item));
+
+        return [admin, parseInt(USERACTIVO)];
+}
+
+const check = checkerRolUser();
+
+
 async function cargarArchivosEfector(idPrestacion, idProfesional, idEspecialidad){
 
         if(!idPrestacion || !idProfesional || !idEspecialidad) return;
 
-        $('#adjuntosEfectores').empty();
+        $('#adjuntosEfectores, #adjuntosEfectoresVista').empty();
         preloader('on');
         $.get(await paginacionByPrestacion, {Id: idPrestacion, tipo: 'efector', especialidad: idEspecialidad, IdProfesional: idProfesional})
             .done(async function(response){
-                preloader('off');
+               
                 let data = response.resultado;
+
+                const [isAdmin, esUsuarioPermitido] = await check;
+                let permiso = !isAdmin && (esUsuarioPermitido === idProfesional);
 
                 $.each(data, function(index, d){
 
@@ -18,7 +34,7 @@ async function cargarArchivosEfector(idPrestacion, idProfesional, idEspecialidad
                             <td>${d.RutaE}</td>
                             <td>${(d.MultiE === 0 ? '' : '<i class="ri-check-line verde"></i>')}</td>
                             <td>
-                                <div class="d-flex justify-content-center align-items-center gap-2">
+                                    <div class="d-flex justify-content-center align-items-center gap-2">
                                     <div class="edit">
                                         <a href="${descargaE}/${d.RutaE}" target="_blank">
                                             <button type="button" class="btn btn-sm iconGeneral" title="Ver"><i class="ri-search-eye-line"></i></button>
@@ -29,6 +45,8 @@ async function cargarArchivosEfector(idPrestacion, idProfesional, idEspecialidad
                                             <button type="button" class="btn btn-sm iconGeneral" title="Descargar"><i class="ri-download-2-line"></i></button>
                                         </a>
                                     </div>
+                                ${permiso ? 
+                                `
                                     ${[3,4,5].includes(d.CAdj) || (d.Anulado === 1) ? `
                                     <div class="remove">
                                         <button data-id="${d.IdE}" data-tipo="efector" data-itempres="${d.IdItem}" class="btn btn-sm iconGeneral deleteAdjunto" title="Eliminar">
@@ -36,19 +54,23 @@ async function cargarArchivosEfector(idPrestacion, idProfesional, idEspecialidad
                                         </button>
                                     </div>
                                     ` : ``}
+                                ` : ''
+                            }
+                                
                                     
                                 </div>
                             </td>
                         </tr>
                     `;
 
-                   $('#adjuntosEfectores').append(contenido);
+                   $('#adjuntosEfectores, #adjuntosEfectoresVista').append(contenido);
+                    preloader('off');
                 }); 
             });
     }
 
 async function comentariosPrivados(id) {
-    $('#privadoPrestaciones').empty();
+    $('#privadoPrestaciones, #privadoPrestacionesVista').empty();
     preloader('on');
 
     try {
@@ -75,12 +97,12 @@ async function comentariosPrivados(id) {
                     <td class="text-start">${d.Comentario}</td>
                 </tr>
             `;
-            $('#privadoPrestaciones').append(contenido);
+            $('#privadoPrestaciones, #privadoPrestacionesVista').append(contenido);
         });
 
         preloader('off');
 
-        $('#lstPrivPrestaciones').fancyTable({
+        $('#lstPrivPrestaciones, #lstPrivPrestacionesVista').fancyTable({
             pagination: true,
             perPage: 15,
             searchable: false,
@@ -108,9 +130,12 @@ async function comentariosPrivados(id) {
     }
 }
 
-function tablasExamenes(data) {
+async function tablasExamenes(data, usuarioVisita) {
 
-   $('#tablasExamenes').empty();
+    const [isAdmin, esUsuarioPermitido] = await check;
+    let permiso = !isAdmin && (esUsuarioPermitido === usuarioVisita);
+
+   $('#tablasExamenes, #tablasExamenesVista').empty();
     preloader('on');
 
     const categoria = {};
@@ -147,24 +172,26 @@ function tablasExamenes(data) {
                         <tbody>
             `;
 
-            
-
-            examenes.forEach(function (examen) {
+            // examenes.forEach(async function (examen) {
+            for (const examen of examenes) {
+                const estadoCheck = await estado(examen.CAdj, usuarioVisita);
+                const adjunto = await checkAdjunto(examen.Adjunto, examen.Archivo, examen.IdItem, usuarioVisita);
 
                 contenido += `
                     <tr class="listadoAtencion" data-id="${examen.IdItem}">
                         <td>${examen.NombreExamen}</td>
-                        <td>${estado(examen.CAdj)}</td>
-                        <td title="Adjunto: ${examen.Adjunto} | Archivo: ${examen.Archivo}">${checkAdjunto(examen.Adjunto, examen.Archivo, examen.IdItem)}</td>
+                        <td>${estadoCheck}</td>
+                        <td>${adjunto}</td>
                         <td>${!examen.ObsExamen ? '' : examen.ObsExamen}</td>
                         <td>${examen.efectorId === 0 ? '' : verificarProfesional(examen, "efector")}</td>
                         <td>${examen.informadorId === 0 ? '' : verificarProfesional(examen, "informador")}</td>
                         <td>
-                            <input type="checkbox" name="Id_${limpiarAcentosEspacios(especialidad)}_${examen.IdExamen}" value="${examen.IdItem}"  ${checkboxCheck(examen)}>
+                            ${permiso ? `<input type="checkbox" name="Id_${limpiarAcentosEspacios(especialidad)}_${examen.IdExamen}" value="${examen.IdItem}"  ${checkboxCheck(examen)}>`: ''}
                         </td>
                     </tr>
                 `;
-            });
+            // });
+            }
 
             contenido += `
                         </tbody>
@@ -172,26 +199,36 @@ function tablasExamenes(data) {
                 </div>
             `;
             preloader('off');
-           $('#tablasExamenes').append(contenido);
+           $('#tablasExamenes, #tablasExamenesVista').append(contenido);
         }
     }
 }
 
-function estado(data) {
-        switch (true) {
-            case [0, 1, 2].includes(data):
-                return `<span class="rojo">Abierto <i class="fs-6 ri-lock-unlock-line cerrar"></i></span>`;
+async function estado(data, usuarioVisita) {
 
-            case [3, 4, 5].includes(data):
-                return `<span class="verde">Cerrado <i class="fs-6 ri-lock-2-line abrir"></i></span>`;
+    const [isAdmin, esUsuarioPermitido] = await check;
+    let permiso = !isAdmin && (esUsuarioPermitido === usuarioVisita);
 
-            default:
-                return '';
-        }
+    switch (true) {
+        case [0, 1, 2].includes(data):
+            return `<span class="rojo">Abierto ${permiso ? '<i class="fs-6 ri-lock-unlock-line cerrar"></i>' : ''}</span>`;
+
+        case [3, 4, 5].includes(data):
+            return `<span class="verde">Cerrado ${permiso ? '<i class="fs-6 ri-lock-2-line abrir"></i>' : ''}</span>`;
+
+        default:
+            return '';
     }
+}
+
+
 
 //No Imprime: saber si es fisico o digital / adjunto: si acepta o no adjuntos / condicion: pendiente o adjuntado
-function checkAdjunto(adjunto, condicion, idItem) {
+async function checkAdjunto(adjunto, condicion, idItem, usuarioVisita) {
+
+    const [isAdmin, esUsuarioPermitido] = await check;
+    let permiso = !isAdmin && (esUsuarioPermitido === usuarioVisita);
+
     switch (true) {
         case adjunto === 0:
             return '';
@@ -203,7 +240,7 @@ function checkAdjunto(adjunto, condicion, idItem) {
             return `<span class="rojo d-flex align-items-center justify-content-between w-100">
                         <span class="me-auto">Pendiente</span>
                         <i class="fs-6 ri-map-pin-line mx-auto"></i>
-                        <i class="fs-6 ri-folder-add-line ms-auto" id="modalArchivo" data-id="${idItem}"></i> 
+                        ${permiso ? `<i class="fs-6 ri-folder-add-line ms-auto" id="modalArchivo" data-id="${idItem}"></i>` : ''} 
                     </span>`;
 
         case adjunto === 0:
@@ -230,7 +267,7 @@ function verificarProfesional(data, tipoProfesional) {
     }
 }
 
-
+//Habilitar o deshabilitar los checks
 function checkboxCheck(data) {
 
     switch (true) {
@@ -246,4 +283,18 @@ function checkboxCheck(data) {
         default:
             return '';
     }
+}
+
+async function habilitarBoton(profesional, tipo) {
+
+    let roles = await $.get(getRoles),
+        usuarios = roles.map(u => u.nombre),
+        administradores = ['Administrador', 'Admin SR', 'Recepcion SR'],
+        admin = usuarios.some(item => administradores.includes(item));
+
+    if(!profesional && !admin) return $('#buscar').hide();
+
+    return (tipo === profesional || admin) 
+        ? $('#buscar').show()
+        : $('#buscar').hide();
 }

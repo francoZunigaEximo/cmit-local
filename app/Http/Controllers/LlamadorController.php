@@ -7,6 +7,8 @@ use App\Events\GrillaEfectoresEvent;
 use App\Events\LstProfesionalesEvent;
 use App\Events\LstProfInformadorEvent;
 use App\Events\LstProfCombinadoEvent;
+use App\Events\EstadoExamenEvent;
+use App\Events\TablaExamenesEvent;
 use App\Models\ArchivoEfector;
 use App\Models\ItemPrestacion;
 use Illuminate\Http\Request;
@@ -256,7 +258,14 @@ class LlamadorController extends Controller
 
         if (is_numeric($request->IdProfesional) && $request->IdProfesional !== 'undefined') {
             $datos = User::with('personal')->where('profesional_id', $request->IdProfesional)->first();
-        } 
+        }
+
+       $datos = [
+            'profesional' => $request->IdProfesional,
+            'itemsprestaciones' => $itemsprestaciones
+        ];
+
+        event(new TablaExamenesEvent($datos));
 
         if($prestacion) {
             return response()->json([
@@ -265,6 +274,8 @@ class LlamadorController extends Controller
                 'itemsprestaciones' => $itemsprestaciones,
             ]);
         }
+
+        
     }
 
     public function controlLlamado(Request $request)
@@ -406,6 +417,7 @@ class LlamadorController extends Controller
 
                 //Tres es cerrado sin adjunto
                 $item->update(['CAdj' => 3]);
+
                 return response()->json(['msg' => 'Se ha cerrado el examen de manera correcto', 'CAdj' => 3, 'IdItem' => $request->Id], 200);
             
             } elseif($item->examenes->Adjunto === 1 && $request->accion === 'cerrar') {
@@ -419,6 +431,7 @@ class LlamadorController extends Controller
 
                 //Cerrado es cerrado con adjunto
                 $item->update(['CAdj' => 5]);
+
                 return response()->json(['msg' => 'Se ha cerrado el examen de manera correcto', 'CAdj' => 5, 'IdItem' => $request->Id], 200);
 
             }       
