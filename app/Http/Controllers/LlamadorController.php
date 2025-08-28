@@ -7,6 +7,8 @@ use App\Events\GrillaEfectoresEvent;
 use App\Events\LstProfesionalesEvent;
 use App\Events\LstProfInformadorEvent;
 use App\Events\LstProfCombinadoEvent;
+use App\Events\EstadoExamenEvent;
+use App\Events\TablaExamenesEvent;
 use App\Models\ArchivoEfector;
 use App\Models\ItemPrestacion;
 use Illuminate\Http\Request;
@@ -245,6 +247,10 @@ class LlamadorController extends Controller
 
     public function verPaciente(Request $request)
     {
+        if(empty($request->Especialidades)) {
+            return response()->json(['msg' => 'Verifique la especialidad. No se ha encontrado'], 404);
+        }
+
         $especialidades = explode(',', $request->Especialidades);
 
         $prestacion = Prestacion::with(['paciente','empresa','art'])->where('Id', $request->Id)->first();
@@ -252,7 +258,14 @@ class LlamadorController extends Controller
 
         if (is_numeric($request->IdProfesional) && $request->IdProfesional !== 'undefined') {
             $datos = User::with('personal')->where('profesional_id', $request->IdProfesional)->first();
-        } 
+        }
+
+       $datos = [
+            'profesional' => $request->IdProfesional,
+            'itemsprestaciones' => $itemsprestaciones
+        ];
+
+        event(new TablaExamenesEvent($datos));
 
         if($prestacion) {
             return response()->json([
@@ -261,10 +274,16 @@ class LlamadorController extends Controller
                 'itemsprestaciones' => $itemsprestaciones,
             ]);
         }
+
+        
     }
 
     public function controlLlamado(Request $request)
     {   
+        if(empty($request->prestacion) || empty($request->profesional) || empty($request->especialidad)) {
+            return response()->json(['msg' => 'Faltan datos para poder activar la opción'], 404);
+        }
+
         $query = Llamador::with(['prestacion', 'prestacion.paciente'])
             ->where('prestacion_id', $request->prestacion)
             ->where('profesional_id', $request->profesional)
@@ -398,6 +417,7 @@ class LlamadorController extends Controller
 
                 //Tres es cerrado sin adjunto
                 $item->update(['CAdj' => 3]);
+
                 return response()->json(['msg' => 'Se ha cerrado el examen de manera correcto', 'CAdj' => 3, 'IdItem' => $request->Id], 200);
             
             } elseif($item->examenes->Adjunto === 1 && $request->accion === 'cerrar') {
@@ -411,6 +431,7 @@ class LlamadorController extends Controller
 
                 //Cerrado es cerrado con adjunto
                 $item->update(['CAdj' => 5]);
+
                 return response()->json(['msg' => 'Se ha cerrado el examen de manera correcto', 'CAdj' => 5, 'IdItem' => $request->Id], 200);
 
             }       
@@ -445,13 +466,28 @@ class LlamadorController extends Controller
 
     public function cierreForzado(Request $request)
     {
-        if(!$this->hasPermission("pacientes_delete")) {
-            return response()->json(['msg' => 'No tiene permisos'], 403);
-        }
+        // if(!$this->hasPermission("llamador_show")) {
+        //     return response()->json(['msg' => 'No tiene permisos'], 403);
+        // }
 
-        if(empty($requet->Id)) {
+        if(empty($request->profesional) || (empty($request->prestacion))) {
             return response()->json(['msg' => 'No se ha podido realizar la operacion porque la id no existe'], 404);
         }
+
+        $query = Llamador::where('profesional_id', $request->profesional)->where('prestacion_id', $request->prestacion)->first();
+
+        if($query) {
+            $query->delete();
+        }
+
+        $data = [
+                'status' => 'liberado', 
+                'msg' => "Se ha liberado la prestación {$query->Id } del paciente {$query->prestacion->paciente->nombre_completo} ",
+                'prestacion' => $request->prestacion
+            ];
+
+        event(new GrillaEfectoresEvent($data));
+
     }
 
     private function queryBasico()

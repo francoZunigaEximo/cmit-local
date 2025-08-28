@@ -340,69 +340,147 @@
                                         <div class="col-md-4 p-2">
                                             <div class="input-group input-group-sm">
                                                 <span class="input-group-text">Profesional</span>
-                                                <input type="text" class="form-control" id="profesional_var" name="profesional_var" readonly="true">
+                                                <input type="text" class="form-control" id="profesionalVista_var" name="profesionalVista_var" readonly="true">
                                             </div>
                                         </div>
                                         
                                         <div class="col-md-4 p-2">
                                             <div class="input-group input-group-sm">
                                                 <span class="input-group-text">Prestación</span>
-                                                <input type="text" class="form-control" id="prestacion_var" name="prestacion_var" readonly="true">
+                                                <input type="text" class="form-control" id="prestacionVista_var" name="prestacionVista_var" readonly="true">
                                             </div>
                                         </div>
             
                                         <div class="col-md-4 p-2">
                                             <div class="input-group input-group-sm">
                                                 <span class="input-group-text">Tipo Exámen</span>
-                                                <input type="text" class="form-control" id="tipo_var" name="tipo_var" readonly="true">
+                                                <input type="text" class="form-control" id="tipoVista_var" name="tipoVista_var" readonly="true">
                                             </div>
                                         </div>
 
                                         <div class="col-md-4 p-2">
                                             <div class="input-group input-group-sm">
                                                 <span class="input-group-text">ART</span>
-                                                <input type="text" class="form-control" id="art_var" name="art_var" readonly="true">
+                                                <input type="text" class="form-control" id="artVista_var" name="artVista_var" readonly="true">
                                             </div>
                                         </div>
 
                                         <div class="col-md-4 p-2">
                                             <div class="input-group input-group-sm">
                                                 <span class="input-group-text">Empresa</span>
-                                                <input type="text" class="form-control" id="empresa_var" name="empresa_var" readonly="true">
+                                                <input type="text" class="form-control" id="empresaVista_var" name="empresaVista_var" readonly="true">
                                             </div>
                                         </div>
 
                                         <div class="col-md-4 p-2">
                                             <div class="input-group input-group-sm">
                                                 <span class="input-group-text">Para Empresa</span>
-                                                <input type="text" class="form-control" id="paraEmpresa_var" name="paraEmpresa_var" readonly="true">
+                                                <input type="text" class="form-control" id="paraEmpresaVista_var" name="paraEmpresaVista_var" readonly="true">
                                             </div>
                                         </div>
 
                                         <div class="col-md-4 p-2 mt-1">
                                             <div class="input-group input-group-sm">
                                                 <span class="input-group-text">Paciente</span>
-                                                <input type="text" class="form-control" id="paciente_var" name="paciente_var" readonly="true">
+                                                <input type="text" class="form-control" id="pacienteVista_var" name="pacienteVista_var" readonly="true">
                                             </div>
                                         </div>
 
                                         <div class="col-md-4 p-2 mt-1">
                                             <div class="input-group input-group-sm">
                                                 <span class="input-group-text">Edad</span>
-                                                <input type="text" class="form-control" id="edad_var" name="edad_var" readonly="true">
+                                                <input type="text" class="form-control" id="edadVista_var" name="edadVista_var" readonly="true">
                                             </div>
                                         </div>
 
                                         <div class="col-md-4 p-2 mt-1">
                                             <div class="input-group input-group-sm">
                                                 <span class="input-group-text">Fecha Prestación</span>
-                                                <input type="text" class="form-control" id="fecha_var" name="fecha_var" readonly="true">
+                                                <input type="text" class="form-control" id="fechaVista_var" name="fechaVista_var" readonly="true">
                                             </div>
                                         </div>
 
                                     </div>
                                 </div>
+
+                                <div class="col-md-3">
+                                <img class="round mx-auto d-block img-fluid" id="fotoVista_var" src="" alt="Foto del paciente" width="150px">
+                                <span class="d-flex justify-content-center mt-1">
+                                    <a id="descargaFoto" class="descargaFoto" href="" download>
+                                        <button class="descargarImagen btn btn-sm botonGeneral">Descargar</button>
+                                    </a>
+                                </span>
+                                
                             </div>
+
+                        </div>
+
+                        <hr size="1">
+
+                        <div class="row">
+                            <div class="col-md-12" id="tablasExamenesVista">
+
+                            </div>
+                        </div>
+
+                        <hr size="1">
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="card titulo-tabla">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h4 class="card-title mb-0">Archivos adjuntos</h4>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table col-md-7 col-sm-9 col-12">
+                                        <table id="listadoAdjuntosEfectores" class="table table-bordered">
+                                            <thead class="table-light">
+                                                <tr class="text-center">
+                                                    <th>Examen</th>
+                                                    <th>Descripción</th>
+                                                    <th>Adjunto</th>
+                                                    <th>Tipo</th>
+                                                    <th>Acciones</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="list form-check-all" id="adjuntosEfectoresVista">
+                                
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr size="1">
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="card titulo-tabla">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h4 class="card-title mb-0">Observaciones privadas</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-card mb-1">
+                                            <table id="lstPrivPrestacionesVista" class="table table-bordered">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th class="sort text-start" style="width: 150px">Fecha</th>
+                                                        <th class="text-start" style="width: 150px">Usuario</th>
+                                                        <th class="text-start" style="width: 150px">Rol</th>
+                                                        <th class="text-start">Comentario</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="list form-check-all" id="privadoPrestacionesVista">
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         </div>
                     </div>
                 </div>
@@ -499,6 +577,7 @@
     const privateComment = "{{ route('comentariosPriv') }}";
     const getRoles = "{{ route('roles.getRoles') }}";
     const getUserName = "{{ route('usuarios.getUserName') }}";
+    const cierreForzadoLlamado = "{{ route('llamador.cierreForzado') }}";
 </script>
 
 @push('styles')

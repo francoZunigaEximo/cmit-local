@@ -1,5 +1,11 @@
 $(function(){
 
+    const ADMIN = [
+        'Administrador', 
+        'Admin SR', 
+        'Recepcion SR'
+    ];
+
     $(document).on('click', '#buscar', function(e){
         e.preventDefault();
 
@@ -170,7 +176,11 @@ $(function(){
                      $('.atenderPaciente', row).hide();
                 }
 
-                $('button[data-id]').each(function () {
+                let lstRoles = await $.get(getRoles),
+                    roles = lstRoles.map(rol => rol.nombre),
+                    tienePermiso = ADMIN.some(rol => roles.includes(rol));
+
+                $('button[data-id]').each(async function () {
                     let boton = $(this), botonId = boton.data('id');
 
                     if (botonId == response.prestacion_id) {
@@ -179,8 +189,11 @@ $(function(){
 
                         if (!fila.find('.mensaje-ocupado').length && parseInt(USERACTIVO) !== parseInt(response.profesional_id)) {
                             botones.hide();
-                            botones.last().after('<span id="clickCierreForzado" title="Liberar atencion" class="cerrar-atencion"><i class="ri-logout-box-line"></i></span>');
-                            botones.last().after('<span id="clickAtencion" title="Visualizar actividad" class="vista-admin px-2"><i class="ri-search-eye-line"></span>');
+                            
+                            if(tienePermiso) {
+                                botones.last().after(`<span id="clickCierreForzado" title="Liberar atencion" class="cerrar-atencion" data-profesional="${response.profesional_id}" data-prestacion="${data.prestacion}"><i class="ri-logout-box-line"></i></span>`);  
+                            }
+                            botones.last().after(`<span id="clickAtencion" title="Visualizar actividad" class="vista-admin px-2" data-id="${data.prestacion}"><i class="ri-search-eye-line"></span>`);
                             botones.last().after('<span class="mensaje-ocupado rojo text-center fs-bolder">Ocupado</span>');
                             fila.find('td').css('color', 'red')
                         }

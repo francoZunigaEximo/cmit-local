@@ -22,8 +22,10 @@ $(function(){
         multi: $('#multi'),
         btnAdjEfector: $('.btnAdjEfector'),
         adjuntosEfectores: $('#adjuntosEfectores'),
-        openObsPriv: $('#openObsPriv')
+        openObsPriv: $('#openObsPriv'),
     };
+
+    const checkPaciente = checkerRolUser();
 
     principal.mensajeMulti.hide();
 
@@ -35,7 +37,6 @@ $(function(){
 
         if(!idCheck) return;
 
-        // console.log(chequeado, idCheck, variables.profesional.val());
         preloader('on')
         $.get(asignacionProfesional, {Id: idCheck, Profesional: variables.profesional.val(), estado: chequeado})
             .done(function(response) {
@@ -70,10 +71,10 @@ $(function(){
             if(confirmar) {
                 preloader('on')
                 $.get(itemPrestacionEstado, {Id: id, accion: accion, tipo: principal.efector})
-                    .done(function(response){
+                    .done(async function(response){
                         preloader('off');
                         toastr.success(response.msg);
-                        estado(response.CAdj, response.IdItem);
+                        await estado(response.CAdj, response.IdItem, 'edicion');
                         principal.tabla.DataTable().draw(false);
                     })
                     .fail(function(jqXHR){
@@ -89,8 +90,10 @@ $(function(){
     $(document).on('click', '.terminarAtencion', function(e){
         e.preventDefault();
 
+        preloader('on');
         $.get(addAtencion, {prestacion: variables.prestacion.val(), Tipo: (principal.efector).toUpperCase(), profesional: variables.profesional.val(), especialidad: variables.especialidad.data('id') || variables.especialidadSelect.val()})
-            .done(function(response){
+            .done(function(){
+                preloader('off');
                 principal.atenderEfector.modal('hide');
             })
             .fail(function(jqXHR){
@@ -112,7 +115,9 @@ $(function(){
             etiqueta = $('.list-group-item.listExamenes'),
             response = await $.get(getItemPrestacion, {Id: id});
 
-        principal.btnAdjEfector.attr('data-iden', response.itemprestacion.Id);
+        console.log(id);
+
+        principal.btnAdjEfector.attr('data-iden', id);
         
         etiqueta.empty();
         variables.DescripcionE
@@ -148,7 +153,7 @@ $(function(){
                 efector: ['input[name="fileEfector"]', '[id^="Id_multiAdj_"]:checked', '#DescripcionE', '#efectores'],
                 informador: ['input[name="fileInformador"]', '[id^="Id_multiAdjInf_"]:checked', '#DescripcionI', '#informadores']
             };
-
+            
         if(!response.itemprestacion.IdProfesional) {
             toastr.warning('No puede adjuntar porque no posee profesional asignado', '', {timeOut: 1000});
             return;
@@ -168,7 +173,7 @@ $(function(){
         }
         
         let descripcion = $(obj[who][2]).val(),
-            identificacion = (multi == 'success') ? ids : $('#identificacion').val(),
+            identificacion = (multi == 'success') ? ids : id,
             prestacion = $('#prestacion_var').val();
         
         who = multi === 'success' && who === 'efector'
@@ -296,16 +301,19 @@ $(function(){
         
     });
 
-    function estado(CAdj, itemId) {
+    async function estado(CAdj, itemId) {
 
         let fila = $('.listadoAtencion[data-id="' + itemId + '"]'),
             td = fila.find('td').eq(1),
             html = '';
 
+        const [isAdmin, esUsuarioPermitido] = await checkPaciente;
+        let permiso = isAdmin || (esUsuarioPermitido && !isAdmin);
+
         if ([0, 1, 2].includes(CAdj)) {
-            html = '<span class="rojo">Abierto <i class="fs-6 ri-lock-unlock-line cerrar"></i></span>';
+            html = `<span class="rojo">Abierto ${permiso ? '' : '<i class="fs-6 ri-lock-unlock-line cerrar"></i>'}</span>`;
         } else if ([3, 4, 5].includes(CAdj)) {
-            html = '<span class="verde">Cerrado <i class="fs-6 ri-lock-2-line abrir"></i></span>';
+            html = `<span class="verde">Cerrado ${permiso ? '' : '<i class="fs-6 ri-lock-2-line abrir"></i>'}</span>`;
         } else {
             html = '';
         }

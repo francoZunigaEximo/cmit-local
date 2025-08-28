@@ -34,6 +34,7 @@ class PrestacionesObsFasesController extends Controller
 
         $result = $query->get();
             
+        
 
         return response()->json(['result' => $result]);
     }
