@@ -278,10 +278,7 @@ class ExamenesController extends Controller
 
     public function excel(Request $request)
     {
-        $ids = $request->input('Ids');
-        if (! is_array($ids)) {
-            $ids = [$ids];
-        }
+        $ids = (array) $request->input('Ids');
 
         $examenes = Examen::with(['estudios','proveedor1', 'proveedor2', 'reportes'])->whereIn('Id', $ids)->get();
 
