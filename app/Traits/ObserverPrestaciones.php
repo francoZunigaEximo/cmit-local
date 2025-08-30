@@ -2,7 +2,9 @@
 
 namespace App\Traits;
 
+use App\Models\ExamenCuentaIt;
 use App\Models\Fichalaboral;
+use App\Models\ItemPrestacion;
 use App\Models\PrestacionAtributo;
 use App\Models\PrestacionComentario;
 use App\Models\Mapa;
