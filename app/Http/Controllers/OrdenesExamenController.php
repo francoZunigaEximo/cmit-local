@@ -345,18 +345,18 @@ public function searchPrestacion(Request $request)
     public function envioAviso(Request $request)
     {
         $resultados = [];
+        $listaIds = (array) $request->Ids;
+        $prestaciones = Prestacion::with(['paciente', 'empresa','paciente.fichalaboral'])->whereIn('Id', $listaIds)->get();
 
-        foreach($request->Ids as $Id) {
-
-            $prestacion = Prestacion::with(['paciente', 'empresa','paciente.fichalaboral'])->find($Id);
-            $examenes = ItemPrestacion::with('examenes')->where('IdPrestacion', $Id)->where('Anulado', 0)->get();
-
+        foreach($prestaciones as $prestacion) {
+            
 
             if(!empty($prestacion->empresa->EMailInformes)) {
 
                 $emails = $this->getEmailsReporte($prestacion->empresa->EMailInformes);
-
                 $nombreCompleto = $prestacion->paciente->Apellido.' '.$prestacion->paciente->Nombre;
+
+                $examenes = ItemPrestacion::with('examenes')->where('IdPrestacion', $prestacion->Id)->where('Anulado', 0)->get();
 
                 $cuerpo = [
                     'paciente' => $nombreCompleto,
@@ -366,7 +366,7 @@ public function searchPrestacion(Request $request)
                     'RazonSocial' => $prestacion->empresa->RazonSocial,
                     'examenes' => $examenes
                 ];
-                if ($this->checkExCtaImpago($Id) > 0) {
+                if ($this->checkExCtaImpago($prestacion->Id) > 0) {
                 
                     $asunto = 'Solicitud de pago de exámen de '.$nombreCompleto;
         
@@ -374,11 +374,11 @@ public function searchPrestacion(Request $request)
                         ExamenesImpagosJob::dispatch($email, $asunto, $cuerpo)->onQueue('correos');
                     }
         
-                    $resultados[] = ['msg' => 'El cliente '.$prestacion->empresa->RazonSocial.' presenta examenes a cuenta impagos en la prestacion '.$Id.'. Se ha enviado el email correspondiente', 'estado' => 'success'];
+                    $resultados[] = ['msg' => 'El cliente '.$prestacion->empresa->RazonSocial.' presenta examenes a cuenta impagos en la prestacion '.$prestacion->Id.'. Se ha enviado el email correspondiente', 'estado' => 'success'];
                 
                 }else{
 
-                    $resultados[] = ['msg' => 'El cliente '.$prestacion->empresa->RazonSocial.' no presenta examenes a cuenta impagos en la prestacion '.$Id.'. No se le puede realizar ningun aviso de deuda.', 'estado' => 'success'];
+                    $resultados[] = ['msg' => 'El cliente '.$prestacion->empresa->RazonSocial.' no presenta examenes a cuenta impagos en la prestacion '.$prestacion->Id.'. No se le puede realizar ningun aviso de deuda.', 'estado' => 'success'];
                 
                 }
             }else{

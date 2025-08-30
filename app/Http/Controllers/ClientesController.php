@@ -313,10 +313,7 @@ class ClientesController extends Controller
             return response()->json(['msg' => 'No tiene permisos'], 403);
         }
 
-        $ids = $request->input('Id');
-        if (! is_array($ids)) {
-            $ids = [$ids];
-        }
+        $ids = (array) $request->input('Id');
 
         $clientes = Cliente::with(['localidad'])->with(['actividad'])->whereIn('Id', $ids)->get();
 

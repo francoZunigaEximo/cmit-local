@@ -216,4 +216,13 @@ $(function(){
             console.log("Contenido actual de la celda:", celda.text());
         });
 
+    socket.tablaExamenes
+        .echo
+        .listen(socket.tablaExamenes.canal, async function(response) {
+
+            let data = response.tablaExamenes;
+            tablasExamenes(data.itemsprestaciones, data.profesional);
+            toast.info('Actualizando tabla de examenes...','',{timeOut: 1000});
+        });
+
 });

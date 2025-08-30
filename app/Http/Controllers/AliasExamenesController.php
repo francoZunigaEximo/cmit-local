@@ -39,7 +39,7 @@ class AliasExamenesController extends Controller
     }
 
 
-    public function deleteAlias(Request $request): mixed
+    public function deleteAlias(Request $request)
     {
         if(!$this->hasPermission("examenes_delete")) {
             return response()->json(["msg" => "No tiene permisos"], 403);

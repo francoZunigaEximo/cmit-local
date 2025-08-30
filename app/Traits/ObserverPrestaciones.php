@@ -80,6 +80,34 @@ trait ObserverPrestaciones
         } 
     }
 
+    public function registrarExamenCta($array, $id)
+    {
+        $examenesId = [];
+
+        $examenes = ExamenCuentaIt::whereIn('Id', $array)->get();
+
+        foreach($examenes as $examen){
+                $examen->IdPrestacion = $id;
+                array_push($examenesId, $examen->IdExamen);
+                $examen->save();    
+        }
+        
+        return $examenesId;
+    }
+
+    public function registrarExamenes($array, $id)
+    {
+        foreach($array as $examen){
+           
+            ItemPrestacion::create([
+                'Id' => ItemPrestacion::max('Id') + 1,
+                'IdPrestacion' => $id,
+                'IdExamen' => intval($examen),
+                'Fecha' => now()->format('Y-m-d'),       
+            ]);
+        }
+    }
+
     
 
 }

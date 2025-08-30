@@ -6,17 +6,17 @@ $(function(){
         'Recepcion SR'
     ];
 
+    let profesional = $('#profesional').val(),
+        fechaDesde = $('#fechaDesde').val(),
+        fechaHasta = $('#fechaHasta').val(),
+        prestacion = $('#prestacion').val(),
+        estado = $('#estado').val(),
+        especialidad = $('#especialidad').data('id'),
+        especialidadSelect = $('#especialidadSelect').val(),
+        table = $('#listaLlamadaEfector');
+
     $(document).on('click', '#buscar', function(e){
         e.preventDefault();
-
-        let profesional = $('#profesional').val(),
-            fechaDesde = $('#fechaDesde').val(),
-            fechaHasta = $('#fechaHasta').val(),
-            prestacion = $('#prestacion').val(),
-            estado = $('#estado').val(),
-            especialidad = $('#especialidad').data('id'),
-            especialidadSelect = $('#especialidadSelect').val(),
-            table = $('#listaLlamadaEfector');
 
         //La prestacion es individual y no acepta otros filtros
         if(prestacion === ''){
