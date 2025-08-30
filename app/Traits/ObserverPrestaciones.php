@@ -86,15 +86,12 @@ trait ObserverPrestaciones
     {
         $examenesId = [];
 
-        foreach($array as $examen){
-            $item = ExamenCuentaIt::find($examen);
+        $examenes = ExamenCuentaIt::whereIn('Id', $array)->get();
 
-            if($item)
-            {
-                $item->IdPrestacion = $id;
-                array_push($examenesId, $item->IdExamen);
-                $item->save();    
-            }
+        foreach($examenes as $examen){
+                $examen->IdPrestacion = $id;
+                array_push($examenesId, $examen->IdExamen);
+                $examen->save();    
         }
         
         return $examenesId;
