@@ -234,10 +234,8 @@ class PacientesController extends Controller
             return response()->json(['msg' => 'No tiene permisos'], 403);
         }
 
-        $paciente = Paciente::where('Documento', $request->documento)->first();
-        $existe = $paciente !== null;
-
-        return response()->json(['existe' => $existe, 'paciente' => $paciente]);
+        $paciente = Paciente::where('Documento', $request->documento)->first(['Id']);
+        return response()->json($paciente);
     }
 
     public function down(Request $request): mixed
@@ -246,15 +244,11 @@ class PacientesController extends Controller
             return response()->json(['msg' => 'No tiene permisos'], 403);
         }
 
-        $ids = $request->ids;
-        if (!is_array($ids)) {
-            $ids = [$ids];
-        }
+        $ids = (array) $request->ids;
+        $pacientes = Paciente::with('prestaciones')->whereIn('Id', $ids)->get();
         
-        foreach($ids as $id)
+        foreach($pacientes as $paciente)
         {
-            $paciente = Paciente::with('prestaciones')->where('Id', $id)->first();
-
             $contadorAnulados = $paciente->prestaciones->every(function($prestacion) {
                 return $prestacion->Anulado === 1;
             });
@@ -276,24 +270,18 @@ class PacientesController extends Controller
 
     public function exportExcel(Request $request)
     {
-        $ids = $request->Id;
-        if (! is_array($ids)) {
-            $ids = [$ids];
-        }
-        if($request->All == 'true') {
-            $pacientes = Paciente::join('telefonos', 'pacientes.Id', '=', 'telefonos.IdEntidad')->where('pacientes.Estado', 1)->get();
+        $ids = (array) $request->Id;
 
-        }else{
-            $pacientes = Paciente::join('telefonos', 'pacientes.Id', '=', 'telefonos.IdEntidad')->where('pacientes.Estado', 1)->whereIn('pacientes.Id', $ids)->get();
-        }
+        $request->All == 'true'
+            ? $pacientes = Paciente::join('telefonos', 'pacientes.Id', '=', 'telefonos.IdEntidad')->where('pacientes.Estado', 1)->get()
+            : $pacientes = Paciente::join('telefonos', 'pacientes.Id', '=', 'telefonos.IdEntidad')->where('pacientes.Estado', 1)->whereIn('pacientes.Id', $ids)->get();
 
-        if($pacientes) {
-            $reporte = $this->reporteExcel->crear('pacientes');
-            return $reporte->generar($pacientes);
-
-        }else{
+        if(empty($pacientes)) {
             return response()->json(['msg' => 'No se ha podido generar el archivo'], 409);
         }
+
+        $reporte = $this->reporteExcel->crear('pacientes');
+        return $reporte->generar($pacientes);
     }
 
     //Obtenemos listado pacientes
@@ -303,11 +291,7 @@ class PacientesController extends Controller
 
         $resultados = Cache::remember('pacientes_'.$buscar, 5, function () use ($buscar) {
 
-            $pacientes = Paciente::whereRaw("CONCAT(Apellido, ' ', Nombre) LIKE ?", ['%'.$buscar.'%'])
-                ->orWhere('Nombre', 'LIKE', '%'.$buscar.'%')
-                ->orWhere('Apellido', 'LIKE', '%'.$buscar.'%')
-                ->orWhere('Documento', 'LIKE', '%'.$buscar.'%')
-                ->get();
+            $pacientes = $this->getBuscar($buscar);
 
             $resultados = [];
 
@@ -326,17 +310,12 @@ class PacientesController extends Controller
     {
         $paciente = Paciente::find($request->Id);
 
-        if($paciente) {
-
-            $paciente->Foto = 'foto-default.png';
-            $paciente->save();
-
-            return response()->json(['msg' => 'Se ha eliminado la imagen correctamente'], 200);
-        }else{
-            return response()->json(['msg' => 'No se ha podido eliminar. Intentelo nuevamente mas tarde.'], 500);
+        if(empty($paciente)) {
+            return response()->json(['msg' => 'No se ha podido eliminar. Intentelo nuevamente mas tarde.'], 404);
         }
 
-        
+        $paciente->update(['Foto', 'foto-default.png']);
+        return response()->json(['msg' => 'Se ha eliminado la imagen correctamente'], 200);
     }
 
     private function queryBasico()
@@ -373,11 +352,20 @@ class PacientesController extends Controller
 
     private function condicionesBasicas($query, $paciente)
     {
-        $resultado = $query->groupBy('prestaciones.Id')
-                        ->where('prestaciones.Estado', 1)
-                        ->where('prestaciones.IdPaciente', '=', $paciente)
-                        ->orderBy('prestaciones.Id', 'DESC')
-                        ->paginate(500);
-        return $resultado;
+        return $query->groupBy('prestaciones.Id')
+            ->where('prestaciones.Estado', 1)
+            ->where('prestaciones.IdPaciente', '=', $paciente)
+            ->orderBy('prestaciones.Id', 'DESC')
+            ->paginate(500);
+
+    }
+
+    private function getBuscar(string $buscar)
+    {
+       return Paciente::whereRaw("CONCAT(Apellido, ' ', Nombre) LIKE ?", ['%'.$buscar.'%'])
+            ->orWhere('Nombre', 'LIKE', '%'.$buscar.'%')
+            ->orWhere('Apellido', 'LIKE', '%'.$buscar.'%')
+            ->orWhere('Documento', 'LIKE', '%'.$buscar.'%')
+            ->get();
     }
 }

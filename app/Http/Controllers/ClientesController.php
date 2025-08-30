@@ -184,11 +184,10 @@ class ClientesController extends Controller
         }
 
         $cliente = Cliente::find($request->Id);
-        if($cliente)
-        {
-            $cliente->fill($request->all())->save();
-            $this->setTelefono($request->Id, $request->telefonos);
-        }
+        if(empty($cliente)) return;
+
+        $cliente->fill($request->all())->save();
+        $this->setTelefono($request->Id, $request->telefonos);
 
         return back();
 
@@ -314,16 +313,14 @@ class ClientesController extends Controller
         }
 
         $ids = (array) $request->input('Id');
-
         $clientes = Cliente::with(['localidad'])->with(['actividad'])->whereIn('Id', $ids)->get();
 
-        if($clientes) {
-            $reporte = $this->reporteExcel->crear('clientes');
-            return $reporte->generar($clientes);
-
-        }else{
+        if(empty($clientes)) {
             return response()->json(['msg' => 'Error al generar el reporte'], 409);
         }
+
+        $reporte = $this->reporteExcel->crear('clientes');
+        return $reporte->generar($clientes);
     }
 
     public function checkParaEmpresa(Request $request)
@@ -408,7 +405,6 @@ class ClientesController extends Controller
     public function formaPago(Request $request)
     {
         $cliente = Cliente::where('Id', $request->Id)->first(['FPago']);
-
         return response()->json($cliente);
     }
 

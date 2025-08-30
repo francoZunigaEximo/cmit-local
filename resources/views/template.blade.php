@@ -443,7 +443,7 @@
 
         const lnkNuevoPaciente = "{{ route('pacientes.create') }}";
         const lnkExistePaciente = "{{ route('pacientes.edit', ['paciente' => '__paciente__']) }}";
-        const verifyWizard = "{{ route('verifyWizard') }}";
+        const verifyWizard = "{{ route('pacientes.verify') }}";
         const TOKEN = "{{ csrf_token() }}";
 
         const IDLE_TIMEOUT = 300 * 60 * 1000;
