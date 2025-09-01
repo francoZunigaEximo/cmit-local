@@ -111,7 +111,7 @@ class NotasCreditoController extends Controller
     {
         $items_notas = DB::table('notascredito_it')
             ->select('notascredito_it.IdIP')
-            ->where('notascredito_it.Baja', 0);
+            ->where('notascredito_it.Baja', '=', 0);
 
         $items_facturas = DB::table('itemsprestaciones')
             ->join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
@@ -182,7 +182,7 @@ class NotasCreditoController extends Controller
             'IdEmpresa' => $request->IdCliente, // ID del cliente
             'TipoCliente' => $cliente->TipoCliente, // Tipo de cliente
             'TipoNC' => 1, // Tipo de nota de crédito (1 para anulación)
-            'Obs' => $request->Observacion, // Observación de la nota de crédito
+            'Obs' => $request->Observacion != null? $request->Observacion : '', // Observación de la nota de crédito
         ]);
 
         foreach ($request->items as $item) {
@@ -275,7 +275,7 @@ class NotasCreditoController extends Controller
             'Tipo' => $request->Tipo,
             'Sucursal' => $request->Sucursal,
             'Fecha' => $request->Fecha,
-            'Obs' => $request->Observacion,
+            'Obs' => $request->Observacion != null? $request->Observacion : '',
         ]);
 
         // Eliminar los items que se hayan marcado para eliminar
