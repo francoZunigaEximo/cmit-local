@@ -226,15 +226,17 @@ $(function() {
                             $('.cerrar').html('<i class="ri-lock-line"></i>&nbsp;Cerrado');
                             $('.FechaFinalizado').find('span').removeAttr('title').removeClass().addClass('input-group-text finalizar');
                             $('#cerrar').val(fechaNow(response.FechaCierre, '/', 0)).prop('readonly', true);
+                            window.location.reload();
                         } else {
                             
                             if(response.Cerrado === 0 && response.Finalizado === 0 && response.Entregado === 0){
                                 $('.cerrar').html('<i class="ri-lock-unlock-line"></i>&nbsp;Cerrar');
                                 $('.FechaFinalizado').find('span').removeAttr('title').removeClass().addClass('input-group-text');
                                 $('#cerrar').val('').prop('readonly', false);
+                                //recargamos la tabla de examenes
+                                window.location.reload();
                             }
                         }
-                        
                         break;
 
                     case 'finalizar':

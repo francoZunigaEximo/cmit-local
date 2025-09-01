@@ -239,9 +239,6 @@ function cargarTabla() {
         if (!fecha) {
             mensaje += 'Debe ingresar una fecha.\n';
         }
-        if (!observaciones) {
-            mensaje += 'Debe ingresar una observación.\n';
-        }
 
         if (mensaje) {
             toastr.error(mensaje, '', { timeOut: 1000 });
