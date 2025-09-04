@@ -1293,7 +1293,7 @@ const obsNuevaPrestacion = "{{ route('obsNuevaPrestacion') }}";
 const getFormaPagoCli = "{{ route('clientes.formaPago') }}";
 const listadoEstudiosImp = "{{ route('prestaciones.estudioReporte') }}";
 
-const getMapas = "{{ route('getMapas') }}";
+const getMapas = "{{ route('mapas.listado') }}";
 
 const deletePicture = "{{ route('deletePicture') }}";
 const GOINDEX = "{{ route('pacientes.index') }}";

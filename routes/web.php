@@ -192,16 +192,15 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
 
     //Rutas de Mapas
     Route::get('mapas/excel', [MapasController::class, 'export'])->name('mapas.exportar');
-    Route::post('mapas/actualizar', [MapasController::class, 'updateMapa'])->name('updateMapa');
-    Route::post('mapas/eliminar', [MapasController::class, 'delete'])->name('deleteMapa');
-    Route::get('mapas/remitos', [MapasController::class, 'getRemito'])->name('getRemito');
-    Route::get('mapas/listado', [MapasController::class, 'getMapas'])->name('getMapas');
-    Route::get('mapas/pacientes', [MapasController::class, 'getPacienteMapa'])->name('getPacienteMapa');
+    Route::post('mapas/actualizar', [MapasController::class, 'updateMapa'])->name('mapas.actualizar');
+    Route::post('mapas/eliminar', [MapasController::class, 'delete'])->name('mapas.eliminar');
+    Route::get('mapas/remitos', [MapasController::class, 'getRemito'])->name('mapas.remito');
+    Route::get('mapas/listado', [MapasController::class, 'getMapas'])->name('mapas.listado');
+    Route::get('mapas/pacientes', [MapasController::class, 'getPacienteMapa'])->name('mapas.getPacientes');
     Route::get('mapas/prestaciones/examenes', [MapasController::class, 'examenes'])->name('mapas.getExamen');
     Route::get('mapas/prestaciones', [MapasController::class, 'prestaciones'])->name('getPrestaciones');
-    Route::get('mapas/cerrar', [MapasController::class, 'getCerrar'])->name('getCerrar');
-    Route::get('mapas/Finalizados', [MapasController::class, 'getFinalizar'])->name('getFinalizar');
-    Route::get('mapas/Finalizados', [MapasController::class, 'getFinalizar'])->name('getFMapa');
+    Route::get('mapas/cerrar', [MapasController::class, 'getCerrar'])->name('mapas.cerrar');
+    Route::get('mapas/Finalizados', [MapasController::class, 'getFinalizar'])->name('mapas.finalizar');
     Route::get('mapas/buscar', [MapasController::class, 'search'])->name('searchMapas');
     Route::post('mapas/buscar/prestaciones', [MapasController::class, 'searchMapaPres'])->name('searchMapaPres');
     Route::get('mapas/buscar/cerrados', [MapasController::class, 'serchInCerrar'])->name('serchInCerrar');

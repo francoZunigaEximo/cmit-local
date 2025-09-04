@@ -119,18 +119,21 @@
                                                 $rolesPermitidos = ['Efector', 'Informador', 'Combinado', 'Evaluador', 'Evaluador ART'];
                                                 $rolesUsuario = Auth::user()->role->pluck('nombre')->toArray();
                                                 $tieneRol = !empty(array_intersect($rolesPermitidos, $rolesUsuario));
+                                                $multiespecialidad = Auth::user()->profesional->TLP === 1;
                                             @endphp
-
                                             @if(!$tieneRol && empty(session('Profesional')) || session('Profesional') == '0')
                                                 @foreach(Auth::user()->role as $rol)
-                                                    {{ strtoupper($rol->nombre) }}<br>
+                                                    {{ strtoupper($rol->nombre) }}
+                                                    <br />
                                                 @endforeach
+                                            @elseif($multiespecialidad)
+                                                MULTIESPECIALIDAD
                                             @else
                                                 {{ session('Profesional') }} | {{ session('Especialidad') }}
                                             @endif
                                         </span></h6>
                                         
-                                        @if($tieneRol)
+                                        @if($tieneRol && !$multiespecialidad)
                                             <button type="button" data-bs-toggle="modal" data-bs-target="#choisePModal" class="btn btn-primary btn-label rounded-pill"><i class=" ri-anticlockwise-line label-icon align-middle rounded-pill fs-16 me-2"></i> Cambiar perfil</button>
                                         @endif
                                         </span>

@@ -274,11 +274,8 @@ class ProfesionalesController extends Controller
         if($query){
             return response()->json(['data' => $query], 200);
         }else{
-            return response()->json(['msg' => "Sin perfiles. Ingrese uno"], 409);
+            return response()->json(['msg' => "Sin perfiles. Ingrese uno"], 404);
         }
-
-        
-
     }
 
     public function delPerfil(Request $request)
@@ -287,8 +284,7 @@ class ProfesionalesController extends Controller
 
         foreach ($perfiles as $perfil) {
             $perfil->delete();
-        }
-        
+        }  
     }
 
     public function store(Request $request): string
@@ -371,36 +367,37 @@ class ProfesionalesController extends Controller
     {
         $prof = Profesional::find($request->Id);
 
-        if($prof)
-        {
-            $prof->Pago = $request->Pago == 'true' ? 1 : '';
-            $prof->InfAdj = $request->InfAdj == 'true' ? 1 : 0;
-            $prof->TMP = $request->TMP;
-            $prof->TLP = $request->TLP;
-
-            $prof->save();
-
-            return response()->json(['msg' => 'Se han guardado los cambios de manera correcta'], 200);
-        }else{
-            return response()->json(['msg' => 'No se ha encontrado el identificador para guardar'], 409);
+        if(empty($prof)) {
+            return response()->json(['msg' => 'Profesional no encontrado'], 404);
         }
+
+        $prof->update([
+            'Pago' => $request->Pago == 'true' ? 1 : '',
+            'InfAdj' => $request->InfAdj == 'true' ? 1 : 0,
+            'TMP' => $request->TMP,
+            'TLP' => $request->TLP
+        ]);
+
+        return response()->json(['msg' => 'Se han guardado los cambios de manera correcta'], 201);
+        
     }
 
     public function seguro(Request $request): mixed
     {
         $prof = Profesional::find($request->Id);
 
-        if($prof)
-        {
-            $prof->MN = $request->MN;
-            $prof->MP = $request->MP;
-            $prof->SeguroMP = $request->SeguroMP;
-            $prof->save();
-        
-            return response()->json(['msg' => 'Se han guardado los datos'], 200);
-        }else{
-            return response()->json(['msg' => 'No se encontro el identificador'], 409);
+        if(empty($prof)) {
+            return response()->json(['msg' => 'Profesional no encontrado'], 404);
         }
+
+        $prof->update([
+            'MN' => $request->MN,
+            'MP' => $request->MP,
+            'SeguroMP' =>$request->SeguroMP
+        ]);
+    
+        return response()->json(['msg' => 'Se han guardado los datos'], 201);
+
     }
 
     public function choisePerfil(Request $request)
@@ -499,6 +496,11 @@ class ProfesionalesController extends Controller
 
             
         return response()->json(['resultados' => $data]);
+    }
+
+    public function checkMultiEspecialidad()
+    {
+        return Auth::user()->profesional->TLP === 1;
     }
 
 }

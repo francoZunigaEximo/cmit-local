@@ -1534,7 +1534,7 @@
 //Rutas
 const updatePrestacion = "{{ route('updatePrestacion') }}";
 const setEvaluador = "{{ route('setEvaluador') }}";
-const getMapas = "{{ route('getMapas') }}";
+const getMapas = "{{ route('mapas.listado') }}";
 const actualizarEstados = "{{ route('actualizarEstados') }}";
 const GOPRESTACIONES = "{{ route('prestaciones.index') }}";
 const GOPACIENTES = "{{ route('pacientes.index') }}";
