@@ -19,7 +19,6 @@ $(function(){
         .add(variables.fechaDesde)
         .val(fechaNow(null, "-", 0));
 
-
     variables.estado.val('abierto');
 
     habilitarBoton(sessionProfesional);
@@ -27,30 +26,29 @@ $(function(){
 
 
 
-    function listadoEspecialidades() {
+    async function listadoEspecialidades() {
+    preloader('on');
 
-        preloader('on');
-        $.get(searchEspecialidad, {IdProfesional: variables.profesional.val(), Tipo: variables.efector})
-            .done(function(response){
-                preloader('off');
-                
-                variables.especialidadSelect.empty();
-
-                for(let index = 0; index < response.length; index++) {
-                    let data = response[index],
-                        contenido = `
-                            <option value="${data.Id}">${data.Nombre}</option>
-                        `;
-                    variables.especialidadSelect.append(contenido);
-                }
-                
-            })
-            .fail(function(jqXHR){
-                preloader('off');
-                let errorData = JSON.parse(jqXHR.responseText);            
-                checkError(jqXHR.status, errorData.msg);
-                return;
+        try {
+            const response = await $.get(searchEspecialidad, {
+                IdProfesional: variables.profesional.val(),
+                Tipo: variables.efector
             });
+
+            variables.especialidadSelect.empty();
+
+            for (let index = 0; index < response.length; index++) {
+                let data = response[index];
+                let contenido = `<option value="${data.Id}">${data.Nombre}</option>`;
+                variables.especialidadSelect.append(contenido);
+            }
+
+        } catch (jqXHR) {
+            let errorData = JSON.parse(jqXHR.responseText);
+            checkError(jqXHR.status, errorData.msg);
+        } finally {
+            preloader('off');
+        }
     }
 
 

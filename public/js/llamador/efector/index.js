@@ -51,7 +51,7 @@ $(function(){
         window.open(lnkPres.replace('__item__', prestacion), '_blank');
     });
 
-    $(document).on('click','.exportar, .detalles', function(e){
+    $(document).on('click','.exportar, .detalles', async function(e){
         e.preventDefault();
 
         let opcion = $(this).hasClass('exportar') ? 'exportar' : 'detalles';
@@ -71,21 +71,24 @@ $(function(){
         });
 
         preloader('on');
-        $.get(printExportar, {Ids: ids, modo: opcion === 'exportar' ? 'basico' : 'full'})
-            .done(function(response){
+        try {
+            let response = await $.get(printExportar, {Ids: ids, modo: opcion === 'exportar' ? 'basico' : 'full'});
+
+            if(response){
                 createFile("xlsx", response.filePath, generarCodigoAleatorio() + '_reporte');
-                preloader('off')
                 toastr.success(response.msg)
-            })
-            .fail(function(jqXHR){
-                preloader('off');
-                let errorData = JSON.parse(jqXHR.responseText);            
-                checkError(jqXHR.status, errorData.msg);
-                return;
-            })
+            }
+        }catch(jqXHR) {
+            let errorData = JSON.parse(jqXHR.responseText);            
+            checkError(jqXHR.status, errorData.msg);
+            return;
+        
+        }finally {
+            preloader('off');
+        }
     });
 
-    $(document).on('click', '.atenderPaciente', function(e){
+    $(document).on('click', '.atenderPaciente', async function(e){
         e.preventDefault();
     
         let id = $(this).data('id'),  
@@ -105,43 +108,44 @@ $(function(){
         principal.atenderEfector.removeAttr('data-itemp');
 
         variables.fotoEfector.attr('src', '');
+        preloader('on');
+        
+        try {
+            let response =  await $.get(dataPaciente, {Id: id, IdProfesional: variables.profesional.val(), Especialidades: especialidades});
 
-        preloader('on')
-        $.get(dataPaciente, {Id: id, IdProfesional: variables.profesional.val(), Especialidades: especialidades})
-            .done(function(response){
-                const prestacion = response.prestacion;
+            const prestacion = response.prestacion;
 
-                let paciente = prestacion.paciente.Apellido + ' ' + prestacion.paciente.Nombre,
-                    edad = calcularEdad(prestacion.paciente.FechaNacimiento),
-                    fecha = fechaNow(prestacion.Fecha,'/',0);
+            let paciente = prestacion.paciente.Apellido + ' ' + prestacion.paciente.Nombre,
+                edad = calcularEdad(prestacion.paciente.FechaNacimiento),
+                fecha = fechaNow(prestacion.Fecha,'/',0);
 
-                preloader('off');
-                let nombreProfesional = variables.profesional.find(':selected').text();
-                variables.prestacionVar.val(prestacion.Id);
-                variables.profesionalEfector.val(nombreProfesional);
-                variables.tipoEfector.val(prestacion.TipoPrestacion);
-                variables.artEfector.val(prestacion.art.RazonSocial);
-                variables.empresaEfector.val(prestacion.empresa.RazonSocial);
-                variables.paraEmpresaEfector.val(prestacion.empresa.ParaEmpresa);
-                variables.pacienteEfector.val(paciente);
-                variables.edadEfector.val(edad);
-                variables.fechaEfector.val(fecha);
-                variables.fotoEfector.attr('src', FOTO + prestacion.paciente.Foto);
-                variables.descargaFoto.attr('href', FOTO + prestacion.paciente.Foto);
+            let nombreProfesional = variables.profesional.find(':selected').text();
+            variables.prestacionVar.val(prestacion.Id);
+            variables.profesionalEfector.val(nombreProfesional);
+            variables.tipoEfector.val(prestacion.TipoPrestacion);
+            variables.artEfector.val(prestacion.art.RazonSocial);
+            variables.empresaEfector.val(prestacion.empresa.RazonSocial);
+            variables.paraEmpresaEfector.val(prestacion.empresa.ParaEmpresa);
+            variables.pacienteEfector.val(paciente);
+            variables.edadEfector.val(edad);
+            variables.fechaEfector.val(fecha);
+            variables.fotoEfector.attr('src', FOTO + prestacion.paciente.Foto);
+            variables.descargaFoto.attr('href', FOTO + prestacion.paciente.Foto);
 
-                principal.atenderEfector.attr('data-itemp', response.itemsprestaciones.IdItem);
-   
-                comentariosPrivados(parseInt(prestacion.Id));
-                tablasExamenes(response.itemsprestaciones, parseInt(variables.profesional.val()));
-                cargarArchivosEfector(parseInt(prestacion.Id), parseInt(variables.profesional.val()), variables.especialidad.data('id') || variables.especialidadSelect.val());
+            principal.atenderEfector.attr('data-itemp', response.itemsprestaciones.IdItem);
 
-            })
-            .fail(function(jqXHR){
-                preloader('off');
-                let errorData = JSON.parse(jqXHR.responseText);            
-                checkError(jqXHR.status, errorData.msg);
-                return;
-            });
+            comentariosPrivados(parseInt(prestacion.Id));
+            tablasExamenes(response.itemsprestaciones, parseInt(variables.profesional.val()));
+            cargarArchivosEfector(parseInt(prestacion.Id), parseInt(variables.profesional.val()), variables.especialidad.data('id') || variables.especialidadSelect.val());
+
+        }catch (jqXHR){
+            let errorData = JSON.parse(jqXHR.responseText);            
+            checkError(jqXHR.status, errorData.msg);
+            return;
+        
+        }finally {
+            preloader('off');
+        }  
     });
 
     variables.profesional.change(function(){
@@ -187,6 +191,7 @@ $(function(){
             .removeClass(boton[accion].remover)
             .addClass(boton[accion].agregar);
         preloader('on');
+        
         $.get(addAtencion, {prestacion: $(this).data('id'), profesional: variables.profesional.val(), Tipo: $(this).data('tipo'), especialidad: variables.especialidad.data('id') || variables.especialidadSelect.val()})
             .done(function(){
                 preloader('off')
@@ -229,30 +234,35 @@ $(function(){
         });
     });
 
-    function listadoEspecialidades() {
-
+    async function listadoEspecialidades() {
         preloader('on');
-        $.get(searchEspecialidad, {IdProfesional: variables.profesional.val(), Tipo: variables.efector})
-            .done(function(response){
-                preloader('off');
-                
-                variables.especialidadSelect.empty();
+        try {
 
-                for(let index = 0; index < response.length; index++) {
-                    let data = response[index],
-                        contenido = `
-                            <option value="${data.Id}">${data.Nombre}</option>
-                        `;
-                    variables.especialidadSelect.append(contenido);
-                }
-                
-            })
-            .fail(function(jqXHR){
-                preloader('off');
-                let errorData = JSON.parse(jqXHR.responseText);            
-                checkError(jqXHR.status, errorData.msg);
-                return;
-            });
+            let response =  await $.get(searchEspecialidad, 
+                {    
+                    IdProfesional: variables.profesional.val(), 
+                    Tipo: variables.efector
+                });
+
+            variables.especialidadSelect.empty();
+
+            for(let index = 0; index < response.length; index++) {
+                let data = response[index],
+                    contenido = `
+                        <option value="${data.Id}">${data.Nombre}</option>
+                    `;
+                variables.especialidadSelect.append(contenido);
+            }
+
+        }catch(jqXHR) {
+            preloader('off');
+            let errorData = JSON.parse(jqXHR.responseText);            
+            checkError(jqXHR.status, errorData.msg);
+            return;
+
+        }finally {
+            preloader('off');
+        }
     }
 
 

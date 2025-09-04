@@ -327,7 +327,8 @@ class LlamadorController extends Controller
             ];
         }
 
-        event(new GrillaEfectoresEvent($data));   
+        event(new GrillaEfectoresEvent($data));
+        return response()->json(['status' => 'success', 'msg' => 'Cambio de estado realizado correctamente'], 200);
     }
 
     public function checkLlamado(Request $request)
