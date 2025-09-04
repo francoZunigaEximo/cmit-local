@@ -212,9 +212,10 @@ $(function(){
                             $('#listaExamenes').empty();
                             $('#exam').val([]).trigger('change.select2');
                             $('#addPaquete').val([]).trigger('change.select2');
-                            cargarExamen(ID);
                             contadorExamenes(ID);
                         }
+                        $('#listaExamenes').empty();
+                        cargarExamen(ID);
                     }
                 });
             }
@@ -1247,7 +1248,8 @@ $(function(){
                          $('#listaExamenes').empty();
                             $('#exam').val([]).trigger('change.select2');
                             $('#addPaquete').val([]).trigger('change.select2');
-                            cargarExamen();
+                            $('#listaExamenes').empty();
+                            cargarExamen(ID);
                             contadorExamenes(ID);
                     })
                     .fail(function(jqXHR){
