@@ -139,6 +139,7 @@ class RolesController extends Controller
                 'Direccion' => '',
                 'Provincia' => '',
                 'Firma' => '',
+                'Identificacion' => '',
                 'CP' => '',
                 'Inactivo' => 0,
                 'Foto' => $fileName ?? '',

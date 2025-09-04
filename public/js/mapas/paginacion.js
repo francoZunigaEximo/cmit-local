@@ -68,13 +68,10 @@ $(document).ready(()=>{
                             let totalDias = getDias(data.Fecha);
                             let fecha = fechaNow(data.Fecha,'/',0);
 
-                            let contenido = `<div class="text-center">
+                            return `<div class="text-center">
                                                 <span>${fecha === 'NaN/NaN/NaN'? '-' : fecha}</span>
                                                 ${(totalDias <= 0) ? '<span class="custom-badge generalNegro">Cerrado</span>' : ''}
                                             </div>`;
-
-                            return contenido;
-                            
                         }
                     },
                     {
@@ -85,12 +82,11 @@ $(document).ready(()=>{
                             let totalDias = getDias(data.FechaE),
                                 fecha = fechaNow(data.FechaE,'/',0);
 
-                            let contenido = `
+                            return contenido = `
                                 <div class="text-center">
                                     <span>${(fecha === 'NaN/NaN/NaN'? 'Sin fecha' : fecha) }</span>
                                     <span class="custom-badge generalNegro">${(totalDias == 'NaN' || totalDias < 0 ? 0 : totalDias)}</span>
                                 </div>`;
-                                return contenido;
                         }
                     },
                     {
@@ -185,24 +181,18 @@ $(document).ready(()=>{
                 createdRow: function (row, data, dataIndex) {
 
                     let totalDias = getDias(data.FechaE);
-                    let resultado;
 
                     switch(true) {
                         case (totalDias >= 11 && totalDias <= 15 && data.eEnviado === 0):
-                            resultado = $(row).addClass('fondo-amarillo');
-                            break;
+                            return $(row).addClass('fondo-amarillo');
                         case (totalDias >= 1 && totalDias <= 10 && data.eEnviado === 0):
-                            resultado = $(row).addClass('fondo-naranja');
-                            break;
+                            return $(row).addClass('fondo-naranja enlace-blanco');
                         case (totalDias <= 0 && data.eEnviado === 0):
-                            resultado = $(row).addClass('fondo-rojo');
-                            break;
+                            return $(row).addClass('fondo-rojo enlace-blanco');
                         case (data.contadorPrestaciones > 0 && data.contadorPrestaciones === data.cdorEEnviados):
-                            resultado = $(row).addClass('fondo-verde');
-                            break;
+                            return $(row).addClass('fondo-verde enlace-blanco');
                     }
                 
-                    return resultado;
                 },
             });
     

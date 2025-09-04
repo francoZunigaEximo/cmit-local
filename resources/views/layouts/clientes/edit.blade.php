@@ -11,8 +11,10 @@
 </div>
 
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-    <h4 class="mb-sm-0">Cliente <span class="custom-badge original">Nro. {{ $cliente->Id }}</span> {!! ($cliente->Bloqueado === 1) ? '<span class="custom-badge rojo">Bloqueado</span>' : '' !!}</h4>
-
+    <div class="d-flex">
+        <h4 class="mb-sm-0">Cliente <span class="custom-badge original">Nro. {{ $cliente->Id }}</span> {!! ($cliente->Bloqueado === 1) ? '<span class="custom-badge rojo">Bloqueado</span>' : '' !!}</h4>
+        <x-helper>{!!$helper!!}</x-helper>
+    </div>
     <div class="page-title-right"></div>
 </div>
                         
@@ -91,6 +93,7 @@
                                 <option value="E">Empresa</option>
                                 @endif
                             </select>
+                            <span class="text-muted small">El cliente se deshabilita si tiene actividades asociadas.</span>
                         </div>
                     </div>        
                     <div class="col-3 p-2 mb-2" style="background-color: #eeeeee">
@@ -108,7 +111,7 @@
                         <input type="text" class="form-control" value="{{ $cliente->RazonSocial }}" id="RazonSocial" name="RazonSocial">
                     </div><!--end col-->
                     <div class="col-6 mb-3">
-                        <label for="NombreFantasia" class="form-label">Nombre de Fantasía</label>
+                        <label for="NombreFantasia" class="form-label">Alias</label>
                         <input type="text" class="form-control" value="{{ $cliente->NombreFantasia }}" id="NombreFantasia" name="NombreFantasia">
                     </div><!--end col-->
                     
@@ -172,7 +175,7 @@
 
                     <div class="col-2 mb-3">
                         <label for="Descuento" class="form-label">Descuento</label>
-                        <input type="number" class="form-control" id="Descuento" name="Descuento" value="{{ $cliente->Descuento ?? 0 }}">
+                        <input type="text" class="form-control" id="Descuento" name="Descuento" value="{{ $cliente->Descuento ?? 0 }}">
                         <small class="text-muted">El valor representa un porcentaje</small>
                     </div>
 
@@ -611,6 +614,8 @@ const getBloqueo = "{{ route('getBloqueo') }}";
 const lstClientes = "{{ route('lstClientes') }}";
 const listadoDni = "{{ route('listadoDni') }}";
 const listadoEx = "{{ route('listadoEx') }}";
+const checkEstadoTipo = "{{ route('clientes.checkEstado') }}";
+const getListaExCta = "{{ route('examenesCuenta.listado') }}";
 
 </script>
 

@@ -12,7 +12,7 @@ class EEstudio extends Reporte
     public function render(FPDF $pdf, $datos = ['id']): void
     {
         $prestacion = $this->prestacion($datos['id']);
-
+        
         $pdf->Image(url('/').ReporteConfig::$URLPORTADA,1,0,209); 
             $y=220;
         $pdf->SetFont('Arial','B',14);

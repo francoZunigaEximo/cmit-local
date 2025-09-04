@@ -1,14 +1,27 @@
 $(function() {
 
-    const valAbrir = ['3','4','5'], valCerrar = ['0','1','2'], ID = $('#Id').val(), valCerrarI = 3;
-    let cadj = $('#CAdj').val(), CInfo = $('#CInfo').val(), efector = $('#efectores').val(), informador = $('#informadores').val(), provEfector = $('#IdEfector').val(), provInformador = $('#IdInformador').val(), Estado = $('#Estado').val(), EstadoI = $('#EstadoI').val();
+    const valAbrir = ['3','4','5'], 
+          valCerrar = ['0','1','2'], 
+          ID = $('#Id').val(), 
+          IDPRESTACION = $('#prestacion').val(),
+          IDEXAMEN = $('#idExamen').val(),
+          valCerrarI = 3;
+
+    let cadj = $('#CAdj').val(), 
+        CInfo = $('#CInfo').val(), 
+        efector = $('#efectores').val(), 
+        informador = $('#informadores').val(), 
+        provEfector = $('#IdEfector').val(), 
+        provInformador = $('#IdInformador').val(), 
+        Estado = $('#Estado').val(), 
+        EstadoI = $('#EstadoI').val();
 
     $('.abrir, .cerrar, .asignar, .liberar, .asignarI, .liberarI, .cerrarI, .adjuntarEfector, .adjuntarInformador').hide();
     $('#efectores option[value="0"]').text('Elija una opción...');
     $('#informadores option[value="0"]').text('Elija una opción...');
     checkBloq();
     checkAdjunto(IDITEMPRES, 'informador').then(response => {
-        if (response === true) {
+        if (response) {
             $('.adjuntarInformador').show();
         } else {
             $('.adjuntarInformador').hide();
@@ -16,7 +29,7 @@ $(function() {
     });
 
     checkAdjunto(IDITEMPRES, 'efector').then(response => {
-        if (response === true) {
+        if (response) {
             $('.adjuntarEfector').show();
         } else {
             $('.adjuntarEfector').hide();
@@ -34,6 +47,7 @@ $(function() {
     optionsGeneral(provInformador, 'informador');
     listadoE();
     listadoI();
+    checkearFacturas();
 
     $(document).on('click', '.btnAdjEfector, .btnAdjInformador', function (e){
         e.preventDefault();
@@ -54,13 +68,13 @@ $(function() {
         });
 
         if(ids.length === 0 && multi == "success"){
-            toastr.warning('No hay examenes seleccionados');
+            toastr.warning('No hay examenes seleccionados','',{timeOut: 1000});
             return;
         }
         
         let descripcion = $(obj[who][2]).val(),
-            identificacion = (multi == 'success') ? ids : $('#identificacion').val(),
-            prestacion = $('#prestacion').val();
+            identificacion = (multi == 'success') ? ids : ID,
+            prestacion = IDPRESTACION;
         
         who = multi === 'success' && who === 'efector'
                 ? 'multiefector'
@@ -89,7 +103,7 @@ $(function() {
                 contentType: false,
                 success: function() {
                     preloader('off');
-                    toastr.success("Se ha cargado el reporte de manera correcta.");
+                    toastr.success("Se ha cargado el reporte de manera correcta.", '', {timeOut: 1000});
                     setTimeout(() => {
                         location.reload();
                     }, 3000);
@@ -115,7 +129,7 @@ $(function() {
             $.post(updateItem, {Id : ID, _token: TOKEN, CAdj: lista[cadj], Para: 'abrir' })
                 .done(function(){
                     preloader('off');
-                    toastr.success('Se ha realizado la acción correctamente');
+                    toastr.success('Se ha realizado la acción correctamente', '', {timeOut: 1000});
                     setTimeout(() => {
                         location.reload();
                     }, 3000);
@@ -138,8 +152,8 @@ $(function() {
         e.preventDefault();
         let id = $(this).data('id'), tipo = $(this).data('tipo');
 
-        if(id === '' || tipo === ''){
-            toastr.warning("Hay un problema porque no podemos identificar el tipo o la id a eliminar");
+        if(!id || !tipo){
+            toastr.warning("Hay un problema porque no podemos identificar el tipo o la id a eliminar", '', {timeOut: 1000});
             return;
         }
         
@@ -153,7 +167,7 @@ $(function() {
                 $.get(deleteIdAdjunto, {Id: id, Tipo: tipo, ItemP: ID})
                     .done(function(response){
                         preloader('off');
-                        toastr.success(response.msg);
+                        toastr.success(response.msg, '', {timeOut: 1000});
                         
                         setTimeout(() => {
                             location.reload();
@@ -180,7 +194,7 @@ $(function() {
             $.post(updateItem, {Id : ID, _token: TOKEN, CAdj: listaE[cadj], Para: who })
                 .done(function(){
                     preloader('off');
-                    toastr.success('Se ha cerrado al efector correctamente');
+                    toastr.success('Se ha cerrado al efector correctamente', '', {timeOut: 1000});
                     setTimeout(() => {
                         location.reload();
                     }, 3000);
@@ -198,7 +212,7 @@ $(function() {
             $.post(updateItem, {Id : ID, _token: TOKEN, CInfo: 3, Para: who })
                 .done(function(){
                     preloader('off');
-                    toastr.success('Se ha cerrado al informador correctamente');
+                    toastr.success('Se ha cerrado al informador correctamente', '', {timeOut: 1000});
                     setTimeout(() => {
                         location.reload();
                     }, 3000);
@@ -219,8 +233,8 @@ $(function() {
         let who = $(this).hasClass('asignar') ? 'asignar' : 'asignarI',
             check = (who === 'asignar') ? $('#efectores').val() : $('#informadores').val();
 
-        if(['', null, 0, '0'].includes(check)) {
-            toastr.warning("Debe seleccionar un Efector/Informador para poder asignar uno");
+        if(!check) {
+            toastr.warning("Debe seleccionar un Efector/Informador para poder asignar uno", '', {timeOut: 1000});
             return;
         }
 
@@ -235,7 +249,7 @@ $(function() {
                 $.post(updateAsignado, { Id: ID, _token: TOKEN, IdProfesional: check, fecha: 1, Para: who})
                     .done(function(){
                         preloader('off');
-                        toastr.success('Se ha actualizado la información de manera correcta');
+                        toastr.success('Se ha actualizado la información de manera correcta', '', {timeOut: 1000});
                         setTimeout(() => {
                             location.reload();             
                         }, 3000); 
@@ -255,7 +269,7 @@ $(function() {
 
         let checkEmptyE = $('#efectores').val(), checkEmptyI = $('#informadores').val(), who = $(this).attr('id') === 'liberar' ? checkEmptyE : checkEmptyI;
         
-        if (who != '0') {
+        if (who) {
 
             swal({
                 title: "¿Esta seguro que desea liberar el exámen?",
@@ -268,7 +282,7 @@ $(function() {
                     $.post(updateAsignado, { Id: ID, _token: TOKEN, IdProfesional: 0, fecha: 0, Para: $(this).attr('id') === 'liberar' ? 'asignar' : 'asignarI'})
                     .done(function(response){
                         preloader('off');
-                        toastr.success(response.msg);
+                        toastr.success(response.msg, '', {timeOut: 1000});
                         setTimeout(() => {
                             location.reload();
                         }, 3000);
@@ -291,12 +305,12 @@ $(function() {
 
         let lista = {1: 2, 4: 5, 2: 1, 5: 4};
 
-        if (cadj === '0' || cadj === null) return;
+        if (!cadj || cadj === '0') return;
 
         if (cadj in lista) {
             $.post(updateAdjunto, {Id: ID, _token: TOKEN, CAdj: lista[cadj]})
                 .done(function(response){
-                    toastr.success(response.msg);
+                    toastr.success(response.msg, '', {timeOut: 1000});
                     setTimeout(() => {
                         location.reload();
                     }, 3000);
@@ -314,12 +328,14 @@ $(function() {
     $(document).on('click', '#actualizarExamen', function(e){
         e.preventDefault();
 
-        let ObsExamen = $('#ObsExamen').val(), Profesionales2 = $('#informadores').val(), Obs = $('#Obs').val(), Fecha = $('#Fecha').val();
+        let ObsExamen = $('#ObsExamen').val(), 
+            Profesionales2 = $('#informadores').val(), 
+            Obs = $('#Obs').val(), 
+            Fecha = $('#Fecha').val();
         
         $.post(updateItemExamen, {Id: ID, _token: TOKEN, ObsExamen: ObsExamen, Profesionales2: Profesionales2, Obs: Obs, Fecha: Fecha})
             .done(function(response) {
-
-                toastr.success(response.msg);
+                toastr.success(response.msg, '', {timeOut: 1000});
                 setTimeout(() => {
                     location.reload();
                 }, 3000);
@@ -364,7 +380,7 @@ $(function() {
                 contentType: false,
                 success: function(response) {
                     preloader('off');
-                    toastr.success(response.msg);
+                    toastr.success(response.msg, '', {timeOut: 1000});
                     setTimeout(() => {
                         listadoE();
                         listadoI();
@@ -413,17 +429,11 @@ $(function() {
                 final = await (efector !== '0' && informador !== '0') && (Estado === 'Cerrado' && EstadoI === 'Cerrado');
 
             if(resultado){
-   
-                $('.cerrarI').show();
+                $('.cerrarI, .adjuntarInformador').show();
                 $('.abrir').hide();
-                $('.adjuntarInformador').show();
 
             }else if(final){
-
-                $('.cerrarI').hide();
-                $('.abrir').hide();
-                $('.liberarI').hide();
-                $('.adjuntarInformador').hide();
+                $('.cerrarI, .abrir, .liberarI, .adjuntarInformador').hide();
             }
         }
     }
@@ -446,9 +456,8 @@ $(function() {
             let resultado = await ([0,null,''].includes(e)) && (efector !== '0');
             
             if (resultado) {
-                $('.asignarI').show();
+                $('.asignarI, .abrir').show();
                 $('.liberarI').hide();
-                $('.abrir').show();
             }
         }
     }
@@ -458,21 +467,19 @@ $(function() {
         
         if(tipo === 'efector') {
 
-            let resultado = await (!['',null,'0'].includes(e) && valCerrar.includes(val));
+            let resultado = await (e && e !== '0') && valCerrar.includes(val);
             
             if (resultado) {
-                $('.liberar').show();
+                $('.liberar, .adjuntarEfector').show();
                 $('.asignarI').hide();
-                $('.adjuntarEfector').show();
             } 
         }else if(tipo === 'informador') {
 
-            let resultado = await (!['',null,'0'].includes(e) && valCerrarI !== val);
+            let resultado = await (e && e !== '0') && valCerrarI !== val;
         
             if (resultado) {
-                $('.liberarI').show();
+                $('.liberarI, .adjuntarInformador').show();
                 $('.asignarI').hide();
-                $('.adjuntarInformador').show();
             }  
 
         }
@@ -615,9 +622,9 @@ $(function() {
         $.get(getBloqueoItemPrestacion, {Id: ID})
             .done(async function(response){
 
-                if(await response.prestacion === true){
+                if(await response.prestacion){
 
-                    $('#Fecha, #ObsExamen, #efectores, #informadores').prop('disabled', true);
+                    $('#Fecha, #ObsExamen, #efectores, #informadores, #actualizarExamen').prop('disabled', true);
                     $('button').removeClass('asignar abrir cerrar asignarI cerrarI');
                     //p$('button').removeAttr('id');
                     $('i.ri-play-list-add-line').removeClass('addPaquete');
@@ -646,4 +653,34 @@ $(function() {
                 });
         });
     }
+
+    function checkearFacturas() {
+
+        if(!ID) return;
+
+        $.get(checkFacturas, {IdPrestacion: IDPRESTACION, IdExamen: IDEXAMEN})
+            .done(function(response){
+   
+                switch (response.tipo) {
+                    case 'examenCuenta':
+                         $('#NroFacturaVta').val(response.data.NroFactura);
+                         $('#FechaFacturaVta').val(response.data.Fecha);
+                        return;
+                    case 'facturaDeVenta':
+                         $('#NroFacturaVta').val(response.data.NroFactura);
+                         $('#FechaFacturaVta').val(response.data.Fecha);
+                        return 
+                    default:
+                        $('#NroFacturaVta').val();
+                        $('#FechaFacturaVta').val();
+                        return;
+                }
+            })
+            .fail(function(jqXHR){
+                let errorData = JSON.parse(jqXHR.responseText);
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            })
+    }
+
 });

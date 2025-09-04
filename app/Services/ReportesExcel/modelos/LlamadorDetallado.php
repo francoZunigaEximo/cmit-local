@@ -74,7 +74,7 @@ class LlamadorDetallado implements ReporteInterface
             $sheet->setCellValue('M'.$fila, $efector->estadoEfector ?? '');
             $sheet->setCellValue('N'.$fila, $efector->estadoAdj ?? '');
             $sheet->setCellValue('O'.$fila, $efector->estadoInformador ?? '');
-            $sheet->setCellValue('P'.$fila, $efector->obsExamen ?? '');
+            $sheet->setCellValue('P'.$fila, strip_tags($efector->obsExamen) ?? '');
             $fila++;
         }
     }

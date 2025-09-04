@@ -32,7 +32,7 @@
                 <div class="col-2">
                     <div class="mb-2">
                         <select id="TipoCliente" name="TipoCliente" class="form-select">
-                            <option value="" disabled selected hidden>Tipo</option>
+                            <option value="" >Empresa y ART</option>
                             <option value="E">Empresa</option>
                             <option value="A">ART</option>
                         </select>
@@ -56,7 +56,7 @@
                 <div class="col-2">
                     <div class="mb-2">
                         <select id="FPago" name="FPago" class="form-select">
-                            <option value="" disabled selected hidden>F.Pago</option>
+                            <option value="">F.Pago</option>
                             <option value="A">CC.</option>
                             <option value="B">Ctdo.</option>
                             <option value="C">Ctdo(CC Bloq)</option>
@@ -66,17 +66,16 @@
                 <div class="col-3">
                     <div class="" style="width: 100%;">
                         <input type="text" name="buscar" class="form-control" id="buscar" placeholder="CUIT, R. Social o ParaEmpresa">
-                        <p class="text-muted" id="search-instructions">ENTER para buscar</p>
                     </div>
                 </div>
                 <div class="col-1 v-flex justify-content-end align-items-center">
                     <div>
-                        <a href="{{ route('clientes.index') }}" class="btn btn-sm botonGeneral">Reiniciar</a>
+                        <button id="buscarBtn" class="btn btn-sm botonGeneral"><i class="ri-zoom-in-line"></i>&nbsp;Buscar</button>
                     </div>
                 </div>
             </div>
 
-            <div class="table-responsive table-card mb-1">
+            <div class="table-responsive table-card mb-1 mt-2">
                 <table id="listaClientes" class="display table table-bordered" style="width:100%">
                     <thead class="table-light">
                         <tr>
@@ -104,9 +103,8 @@
 <script>
 //Rutas
 const exportExcelClientes = "{{ route('exportExcelClientes') }}";
-const multipleDown = "{{ route('clientes.multipleDown') }}";
+const multipleDown = "{{ route('clientes.baja') }}";
 const SEARCH = "{{ route('searchClientes') }}";
-const baja = "{{ route('baja') }}";
 
 //Constantes
 const GOINDEX = "{{ route('clientes.index') }}";
@@ -125,12 +123,6 @@ const GOINDEX = "{{ route('clientes.index') }}";
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
 
 <script src="{{ asset('js/clientes/index.js')}}?=v{{ time() }}"></script>
 <script src="{{ asset('js/clientes/utils.js')}}?=v{{ time() }}"></script>

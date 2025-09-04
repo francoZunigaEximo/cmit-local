@@ -12,4 +12,6 @@ class Relpaqfact extends Model
     protected $table = 'relpaqfact';
 
     protected $primaryKey = 'Id';
+
+    public $timestamps = false;
 }

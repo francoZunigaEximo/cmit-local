@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\ArchivoEfector;
 use App\Models\ArchivoInformador;
 use App\Models\Auditor;
@@ -18,9 +19,15 @@ use App\Models\ExamenPrecioProveedor;
 use App\Traits\CheckPermission;
 use App\Helpers\FileHelper;
 use App\Helpers\Tools;
+use App\Models\NotaCredito;
+use App\Models\NotaCreditoIt;
 use App\Models\Profesional;
 use App\Models\Proveedor;
 use App\Models\User;
+use App\Services\Facturas\CheckFacturas;
+use App\Services\ItemsPrestaciones\Helper;
+use App\Services\ItemsPrestaciones\Crud;
+use Illuminate\Support\Facades\Date;
 
 class ItemPrestacionesController extends Controller
 {
@@ -30,28 +37,42 @@ class ItemPrestacionesController extends Controller
     private $rutainf = '/var/IMPORTARPDF/SALIDAINFORMADOR/';
     private $rutainternaefectores = 'AdjuntosEfector';
     private $rutainternainfo = 'AdjuntosInformador';
-    
+
+    private $checkFacturas;
+    private $itemsHelper;
+    private $crud;
+
+    public function __construct(
+        CheckFacturas $checkFacturas,
+        Helper $itemsHelper,
+        Crud $crud
+    ) {
+        $this->checkFacturas = $checkFacturas;
+        $this->itemsHelper = $itemsHelper;
+        $this->crud = $crud;
+    }
+
     public function edit(ItemPrestacion $itemsprestacione)
     {
         $data = $this->obtenerDatosItemPrestacion($itemsprestacione->Id);
-        
+
         if (!$data) {
             return abort(404, 'No se encuentra la información solicitada');
         }
         return view('layouts.itemsprestaciones.edit', compact(['data']));
     }
-    
+
     public function editModal(Request $request)
     {
         $data = $this->obtenerDatosItemPrestacion($request->Id);
-    
+
         if (!$data) {
             return response()->json(['msg' => 'No se encuentra la información solicitada'], 400);
         }
-    
+
         return response()->json($data, 200);
     }
-    
+
 
     public function updateItem(Request $request)
     {
@@ -101,10 +122,8 @@ class ItemPrestacionesController extends Controller
 
         foreach($items as $item) {
 
-            if ($item && $item->prestaciones->Cerrado === 0) 
-            {   
-                if(in_array($item->CAdj, [0,1,2]))
-                {
+            if ($item && $item->prestaciones->Cerrado === 0) {
+                if (in_array($item->CAdj, [0, 1, 2])) {
                     $resultado = ['message' => 'El exámen no se encuentra cerrado', 'estado' => 'fail'];
 
                 }else{
@@ -113,7 +132,7 @@ class ItemPrestacionesController extends Controller
                 }
             } else {
 
-                $resultado = ['message' => 'EL exámen '.$item->examenes->Nombre.' no se puede abrir porque la prestación se encuentra Cerrada', 'estado' => 'fail'];
+                $resultado = ['message' => 'EL exámen ' . $item->examenes->Nombre . ' no se puede abrir porque la prestación se encuentra Cerrada', 'estado' => 'fail'];
             }
 
             $resultados[] = $resultado;
@@ -192,7 +211,7 @@ class ItemPrestacionesController extends Controller
     {
         $asignado = $request->Para === 'asignar' ? 'efector' : 'informador';
 
-        $item = ItemPrestacion::with(['examenes','examenes.proveedor1', 'examenes.proveedor2','profesionales1', 'profesionales2'])->find($request->Id);
+        $item = ItemPrestacion::with(['examenes', 'examenes.proveedor1', 'examenes.proveedor2', 'profesionales1', 'profesionales2'])->find($request->Id);
 
         if(!$item) {
             return response()->json(['msg' => 'No se ha podido actualizar el '. $asignado], 500);
@@ -243,25 +262,23 @@ class ItemPrestacionesController extends Controller
     {
         $Id = $request->Id;
 
-        if($request->tipo === 'efector')
-        {
+        if ($request->tipo === 'efector') {
 
             $query = ItemPrestacion::join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
-            ->leftJoin('archivosefector', 'itemsprestaciones.Id', '=', 'archivosefector.IdEntidad')
-            ->join('proveedores', 'itemsprestaciones.IdProveedor', '=', 'proveedores.Id')
-            ->select(
-                'archivosefector.Id as IdE',
-                'archivosefector.Ruta as Nombre',
-                'archivosefector.Descripcion as DescripcionE',
-                'archivosefector.Ruta as RutaE',
-                'examenes.NoImprime as Adjunto',
-                'proveedores.MultiE as MultiE',
-                'itemsprestaciones.Anulado as Anulado'
-            )
-            ->where('archivosefector.IdEntidad', $Id)
-            ->get();
-
-        }else if($request->tipo === 'informador'){
+                ->leftJoin('archivosefector', 'itemsprestaciones.Id', '=', 'archivosefector.IdEntidad')
+                ->join('proveedores', 'itemsprestaciones.IdProveedor', '=', 'proveedores.Id')
+                ->select(
+                    'archivosefector.Id as IdE',
+                    'archivosefector.Ruta as Nombre',
+                    'archivosefector.Descripcion as DescripcionE',
+                    'archivosefector.Ruta as RutaE',
+                    'examenes.NoImprime as Adjunto',
+                    'proveedores.MultiE as MultiE',
+                    'itemsprestaciones.Anulado as Anulado'
+                )
+                ->where('archivosefector.IdEntidad', $Id)
+                ->get();
+        } else if ($request->tipo === 'informador') {
 
             $query = ItemPrestacion::join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
                 ->leftJoin('archivosinformador', 'itemsprestaciones.Id', '=', 'archivosinformador.IdEntidad')
@@ -276,7 +293,6 @@ class ItemPrestacionesController extends Controller
                 )
                 ->where('archivosinformador.IdEntidad', $Id)
                 ->get();
-
         }
 
         return response()->json(['resultado' => $query]);
@@ -397,8 +413,8 @@ class ItemPrestacionesController extends Controller
             
             if($request->multi === 'success'){
                 $examenes = explode(',', $request->IdEntidad);
-            
-                foreach($examenes as $examen){
+
+                foreach ($examenes as $examen) {
 
                     $item = ItemPrestacion::find($examen);
                     $this->registarArchivo(null, $examen, $request->Descripcion, $fileName, $item->IdPrestacion, $who);
@@ -416,11 +432,9 @@ class ItemPrestacionesController extends Controller
                     Auditor::setAuditoria($item->IdPrestacion, 1, $who === 'efector' ? 36 : 37, $usuario); 
                 }
 
-                if(count($examenes) > 1) {
+                if (count($examenes) > 1) {
                     $this->marcarPrimeraCarga($request->Id, $request->who);
                 }
-                
-                   
             }
         }
     }
@@ -437,20 +451,21 @@ class ItemPrestacionesController extends Controller
 
         foreach ($items as $item) {
             $resultado = "";
+            $item = ItemPrestacion::with('prestaciones','proveedores')->where('Id', $item->Id)->first(['IdPrestacion', 'IdExamen', 'IdProveedor']);
 
             if($item && $item->proveedores->Multi === 0)
             { 
                 $archivo = $this->generarCodigo($item->IdPrestacion, $item->IdExamen, $item->prestaciones->IdPaciente);
-                $ruta = $this->ruta.$archivo;
+                $ruta = $this->ruta . $archivo;
                 $buscar = glob($ruta);
-                
+
                 if (count($buscar) === 1) {
 
-                    copy($ruta, $this->ruta."AdjuntadasAuto/".$archivo);
+                    copy($ruta, $this->ruta . "AdjuntadasAuto/" . $archivo);
 
                     $nuevoId = ArchivoEfector::max('Id') + 1;
-                    $nuevoNombre = 'AEF'.$nuevoId.'_P'.$item->IdPrestacion.'.pdf';
-                    $nuevaRuta = storage_path('app/public/ArchivosEfectores/'.$nuevoNombre);
+                    $nuevoNombre = 'AEF' . $nuevoId . '_P' . $item->IdPrestacion . '.pdf';
+                    $nuevaRuta = storage_path('app/public/ArchivosEfectores/' . $nuevoNombre);
 
                     $this->registarArchivo($nuevoId, $item->Id, "Cargado por automático", $nuevoNombre, $item->IdPrestacion, "efector");
                     ItemPrestacion::find($item->Id)->update(['CAdj' => 5]);
@@ -465,29 +480,29 @@ class ItemPrestacionesController extends Controller
 
                     $resultado = ["message" => "No hay archivo con coincidencias para el exámen {$item->Id}", "estado" => "fail"];
                 }
-
             } else {
 
                 $prestaciones = ItemPrestacion::where('IdPrestacion', $item->IdPrestacion)->get();
 
                 if ($prestaciones) {
 
-                    foreach($prestaciones as $prestacion) {
+                    foreach ($prestaciones as $prestacion) {
 
                         $archivo = $this->generarCodigo($prestacion->IdPrestacion, $prestacion->IdExamen, $prestacion->prestaciones->IdPaciente);
-                        $ruta = $this->ruta.$archivo;
+                        $ruta = $this->ruta . $archivo;
                         $buscar = glob($ruta);
-                        return response()->json($ruta);exit;
+                        return response()->json($ruta);
+                        exit;
                         if (count($buscar) === 1) {
 
-                            copy($ruta, $this->ruta."AdjuntadasAuto/".$archivo);
+                            copy($ruta, $this->ruta . "AdjuntadasAuto/" . $archivo);
 
                             $nuevoId = ArchivoEfector::max('Id') + 1;
-                            $nuevoNombre = 'AEF'.$nuevoId.'_P'.$prestacion->IdPrestacion.'.pdf';
-                            $nuevaRuta = storage_path('app/public/ArchivosEfectores/'.$nuevoNombre);
+                            $nuevoNombre = 'AEF' . $nuevoId . '_P' . $prestacion->IdPrestacion . '.pdf';
+                            $nuevaRuta = storage_path('app/public/ArchivosEfectores/' . $nuevoNombre);
 
                             $actualizarItem = ItemPrestacion::where('IdPrestacion', $prestacion->IdPrestacion)->first();
-                        
+
                             if ($actualizarItem) {
                                 $actualizarItem->CAdj = 5;
                                 $actualizarItem->save();
@@ -498,16 +513,14 @@ class ItemPrestacionesController extends Controller
                             Auditor::setAuditoria($prestacion->IdPrestacion, 1, 36, Auth::user()->name);
 
                             $resultado = ["message" => "Se ha adjuntado automáticamente un archivo a un MultiExamen {$examen}", "estado" => "success"];
-
-                        } elseif(count($buscar) === 0) {
+                        } elseif (count($buscar) === 0) {
 
                             $resultado = ["message" => "No hay archivo con coincidencias para la prestacion {$prestacion->IdPrestacion} multi exámen", "estado" => "fail"];
                         }
-
                     }
-                }   
+                }
             }
-            
+
             $resultados[] = $resultado;
         }
 
@@ -536,16 +549,16 @@ class ItemPrestacionesController extends Controller
             if($item && $item->examenes->proveedor2->MultiE === 0 && !in_array($item->examenes->proveedor2->Id, $idsLaboratorios))
             {
                 $archivo = $this->generarCodigo($item->IdPrestacion, $item->IdExamen, $item->prestaciones->IdPaciente);
-                $ruta = $this->rutainf.$archivo;
+                $ruta = $this->rutainf . $archivo;
                 $buscar = glob($ruta);
 
                 if (count($buscar) === 1) {
 
-                    copy($ruta, $this->rutainf."AdjuntadasAuto/".$archivo);
+                    copy($ruta, $this->rutainf . "AdjuntadasAuto/" . $archivo);
 
                     $nuevoId = ArchivoEfector::max('Id') + 1;
-                    $nuevoNombre = 'AEF'.$nuevoId.'_P'.$item->IdPrestacion.'.pdf';
-                    $nuevaRuta = FileHelper::getFileUrl('lectura').'/'.$this->rutainternaefectores.'/'.$nuevoNombre;
+                    $nuevoNombre = 'AEF' . $nuevoId . '_P' . $item->IdPrestacion . '.pdf';
+                    $nuevaRuta = FileHelper::getFileUrl('lectura') . '/' . $this->rutainternaefectores . '/' . $nuevoNombre;
 
                     $this->registarArchivo($nuevoId, $item->Id, "Cargado por automático", $nuevoNombre, $item->IdPrestacion, "efector");
                     ItemPrestacion::find($item->Id)->update(['CInfo' => 3]);
@@ -566,18 +579,18 @@ class ItemPrestacionesController extends Controller
             if($item && $item->examenes->proveedor2->MultiE === 1 && !in_array($item->examenes->proveedor2->Id, $idsLaboratorios)) {
 
                 $prestaciones = ItemPrestacion::where('IdPrestacion', $item->IdPrestacion)->get();
-                
-                    if ($prestaciones) {
 
-                        foreach($prestaciones as $prestacion) {
+                if ($prestaciones) {
 
-                            $archivo = $this->generarCodigo($prestacion->IdPrestacion, $prestacion->IdExamen, $prestacion->prestaciones->IdPaciente);
-                            $ruta = $this->rutainf.$archivo;
-                            $buscar = glob($ruta);
+                    foreach ($prestaciones as $prestacion) {
 
-                            if (count($buscar) === 1) {
+                        $archivo = $this->generarCodigo($prestacion->IdPrestacion, $prestacion->IdExamen, $prestacion->prestaciones->IdPaciente);
+                        $ruta = $this->rutainf . $archivo;
+                        $buscar = glob($ruta);
 
-                                copy($ruta, $this->rutainf."AdjuntadasAuto/".$archivo);
+                        if (count($buscar) === 1) {
+
+                            copy($ruta, $this->rutainf . "AdjuntadasAuto/" . $archivo);
 
                                 $nuevoId = ArchivoInformador::max('Id') + 1;
                                 $nuevoNombre = 'AINF'.$nuevoId.'_P'.$prestacion->IdPrestacion.'.pdf';
@@ -598,8 +611,8 @@ class ItemPrestacionesController extends Controller
                                     Auditor::setAuditoria($request->IdPrestacion, 1, 37, Auth::user()->name);
                                 }
 
-                                copy($ruta, $nuevaRuta);
-                                chmod($nuevaRuta, 0664);
+                            copy($ruta, $nuevaRuta);
+                            chmod($nuevaRuta, 0664);
 
                                 $resultado = ["message" => "Se ha adjuntado automáticamente un archivo a un MultiExamen {$item->Id}", "estado" => "success"];
 
@@ -615,17 +628,17 @@ class ItemPrestacionesController extends Controller
             if($item && $item->examenes->proveedor2->MultiE === 0 && in_array($item->examenes->proveedor2->Id, $idsLaboratorios)) {
 
                 $formatFecha = str_replace('-', '', $item->Fecha);
-                $archivoEncontrar = $formatFecha.'_'.$item->prestaciones->paciente->Documento;
-                $ruta = $this->rutainf.$archivoEncontrar.'*.pdf';
+                $archivoEncontrar = $formatFecha . '_' . $item->prestaciones->paciente->Documento;
+                $ruta = $this->rutainf . $archivoEncontrar . '*.pdf';
                 $buscar = glob($ruta);
 
                 if (count($buscar) === 1) {
 
-                    copy($ruta, $this->rutainf."AdjuntadasAuto/".$archivoEncontrar);
+                    copy($ruta, $this->rutainf . "AdjuntadasAuto/" . $archivoEncontrar);
 
                     $nuevoId = ArchivoEfector::max('Id') + 1;
-                    $nuevoNombre = 'AINF'.$nuevoId.'_P'.$item->IdPrestacion.'.pdf';
-                    $nuevaRuta = FileHelper::getFileUrl('lectura').'/'.$this->rutainternainfo.'/'.$nuevoNombre;
+                    $nuevoNombre = 'AINF' . $nuevoId . '_P' . $item->IdPrestacion . '.pdf';
+                    $nuevaRuta = FileHelper::getFileUrl('lectura') . '/' . $this->rutainternainfo . '/' . $nuevoNombre;
 
                     $this->registarArchivo($nuevoId, $item->Id, "Cargado por automático", $nuevoNombre, $item->IdPrestacion, "efector");
                     ItemPrestacion::find($item->Id)->update(['CInfo' => 3]);
@@ -650,33 +663,33 @@ class ItemPrestacionesController extends Controller
             if($item && $item->examenes->proveedor2->MultiE === 1 && in_array($item->examenes->proveedor2->Id, $idsLaboratorios)) {
                 
                 $formatFecha = str_replace('-', '', $item->Fecha);
-                $archivoEncontrar = $formatFecha.'_'.$item->prestaciones->paciente->Documento;
-                $ruta = $this->rutainf.$archivoEncontrar.'*.pdf';
+                $archivoEncontrar = $formatFecha . '_' . $item->prestaciones->paciente->Documento;
+                $ruta = $this->rutainf . $archivoEncontrar . '*.pdf';
                 $archivo = glob($ruta);
 
-                if(count($archivo) === 1) {
-                   
+                if (count($archivo) === 1) {
+
                     $nuevaRuta = implode("", $archivo);
                     $filename = pathinfo($nuevaRuta, PATHINFO_FILENAME);
 
-                    $nuevoDestino = $this->rutainf."AdjuntadasAuto/".$filename.'.pdf';
+                    $nuevoDestino = $this->rutainf . "AdjuntadasAuto/" . $filename . '.pdf';
                     copy($nuevaRuta, $nuevoDestino);
                     chmod($nuevoDestino, 0664);
 
                     $nuevoId = ArchivoInformador::max('Id') + 1;
-                    $nuevoNombre = 'AINF'.$nuevoId.'_P'.$item->IdPrestacion.'.pdf';
-                    $dirStorage = FileHelper::getFileUrl('lectura').'/'.$this->rutainternainfo.'/'.$nuevoNombre;
+                    $nuevoNombre = 'AINF' . $nuevoId . '_P' . $item->IdPrestacion . '.pdf';
+                    $dirStorage = FileHelper::getFileUrl('lectura') . '/' . $this->rutainternainfo . '/' . $nuevoNombre;
 
                     $cat = ItemPrestacion::with(['examenes.proveedor2:Id'])->where('Id', $request->Ids)->first();
-    
-                    $exam = ItemPrestacion::with('examenes.proveedor2')
-                            ->where('itemsprestaciones.IdPrestacion', $request->IdPrestacion)
-                            ->whereHas('examenes.proveedor2', function ($query) use ($cat) {
-                                $query->where('Id', $cat->examenes->proveedor2->Id);
-                            })->get();
 
-                    foreach($exam as $ex) {
-                        
+                    $exam = ItemPrestacion::with('examenes.proveedor2')
+                        ->where('itemsprestaciones.IdPrestacion', $request->IdPrestacion)
+                        ->whereHas('examenes.proveedor2', function ($query) use ($cat) {
+                            $query->where('Id', $cat->examenes->proveedor2->Id);
+                        })->get();
+
+                    foreach ($exam as $ex) {
+
                         $this->registarArchivo(null, $ex->Id, $request->Descripcion, $nuevoNombre, $request->IdPrestacion, $request->who);
                         $this->updateEstado($request->who, $ex->Id, null, $arr[$request->who][0], 'multi', null);
                         Auditor::setAuditoria($request->IdPrestacion, 1, 37, Auth::user()->name);
@@ -690,13 +703,12 @@ class ItemPrestacionesController extends Controller
                 }elseif(count($archivo) > 1) {
 
                     $resultado = ["message" => "Hay archivos duplicados para ese paciente. Verifique la carpeta de carga", "estado" => "fail"];
-                }else{
+                } else {
 
                     $resultado = ["message" => "No hay archivo con coincidencias para el exámen {$item->Id}", "estado" => "fail"];
                 }
-                
             }
-            
+
             $resultados[] = $resultado;
         }
 
@@ -709,13 +721,13 @@ class ItemPrestacionesController extends Controller
 
         if ($request->multi === 'true') {
 
-            $preExamen = $request->Tipo === 'efector' 
-                ? ArchivoEfector::find($request->Id, ['Ruta']) 
+            $preExamen = $request->Tipo === 'efector'
+                ? ArchivoEfector::find($request->Id, ['Ruta'])
                 : ArchivoInformador::find($request->Id, ['Ruta']);
 
             if ($preExamen) {
-                $examenes = $request->Tipo === 'efector' 
-                    ? ArchivoEfector::where('Ruta', $preExamen->Ruta)->pluck('Id') 
+                $examenes = $request->Tipo === 'efector'
+                    ? ArchivoEfector::where('Ruta', $preExamen->Ruta)->pluck('Id')
                     : ArchivoInformador::where('Ruta', $preExamen->Ruta)->pluck('Id');
             } else {
 
@@ -724,17 +736,21 @@ class ItemPrestacionesController extends Controller
         }
 
         foreach ($examenes as $examen) {
-            $adjunto = $request->Tipo === 'efector' 
-                ? ArchivoEfector::find($examen) 
+            $adjunto = $request->Tipo === 'efector'
+                ? ArchivoEfector::find($examen)
                 : ArchivoInformador::find($examen);
 
             if ($adjunto instanceof \Illuminate\Database\Eloquent\Model) {
                 try {
                     $adjunto->delete();
-                    $this->updateEstado($request->Tipo, $request->ItemP, 
-                        $request->Tipo === 'efector' ? $request->Id : null, 
-                        $request->Tipo === 'informador' ? $examen : null, 
-                        null, null);
+                    $this->updateEstado(
+                        $request->Tipo,
+                        $request->ItemP,
+                        $request->Tipo === 'efector' ? $request->Id : null,
+                        $request->Tipo === 'informador' ? $examen : null,
+                        null,
+                        null
+                    );
                 } catch (\Exception $e) {
                     return response()->json(['msg' => "Error al eliminar el adjunto: " . $e->getMessage()], 500);
                 }
@@ -754,28 +770,25 @@ class ItemPrestacionesController extends Controller
             'efector' => [ArchivoEfector::find($request->Id), $this->rutainternaefectores],
             'informador' => [ArchivoInformador::find($request->Id), $this->rutainternainfo]
         ];
-        
-        if ($request->hasFile('archivo')) 
-        {
+
+        if ($request->hasFile('archivo')) {
             $query = $arr[$request->who][0];
-            
-            $fotoExistente = $arr[$request->who][1] ."/". $query->Ruta;
+
+            $fotoExistente = $arr[$request->who][1] . "/" . $query->Ruta;
             if (Storage::exists($fotoExistente)) {
                 Storage::delete($fotoExistente);
             }
-            
-            $filename = pathinfo($query->Ruta, PATHINFO_FILENAME). '.' . $request->archivo->extension();
-            FileHelper::uploadFile(FileHelper::getFileUrl('escritura').'/'.$arr[$request->who][1].'/', $request->archivo, $filename);
+
+            $filename = pathinfo($query->Ruta, PATHINFO_FILENAME) . '.' . $request->archivo->extension();
+            FileHelper::uploadFile(FileHelper::getFileUrl('escritura') . '/' . $arr[$request->who][1] . '/', $request->archivo, $filename);
 
             $query->update(['Ruta' => $filename]);
             $data = ItemPrestacion::find($query->IdEntidad, ['Id', 'IdPrestacion']);
 
             return response()->json(['msg' => 'Se ha reemplazado el archivo de manera correcta. Se actualizará el contenido en unos segundos', 'data' => $data], 200);
-
-        }else{
+        } else {
             return response()->json(['msg' => 'No se ha encontrado el archivo para reemplazar'], 500);
         }
-
     }
 
     public function deleteEx(Request $request)
@@ -847,150 +860,51 @@ class ItemPrestacionesController extends Controller
 
         foreach ($items as $item) {
 
-            if($item->Anulado === 1){
-                $resultados[] = ['message' => 'No se bloqueo el exámen '.$item->examenes->Nombre.' porque el mismo ya se encuentra en ese estado', 'estado' => 'fail'];
-                continue;
+            if ($item->Anulado === 1) {
+
+                $resultado = ['message' => 'No se bloqueo el exámen ' . $item->examenes->Nombre . ' porque el mismo ya se encuentra en ese estado', 'estado' => 'fail'];
+            } elseif ($item && ($item->prestaciones->Cerrado === 1)) {
+
+                $resultado = ['message' => 'No se bloqueo el exámen ' . $item->examenes->Nombre . ' porque la prestación se encuentra cerrada ', 'estado' => 'fail'];
+            } else {
+                $fechaHoy  = Date::now()->format('Y-m-d');
+                $item->update(['Anulado' => 1]);
+                $item->update(['FechaAnulado' => $fechaHoy]);
+
+                ItemPrestacion::InsertarVtoPrestacion($item->IdPrestacion);
+                $resultado = ['message' => 'Se ha bloqueado con éxito el exámen de ' . $item->examenes->Nombre . '', 'estado' => 'success'];
             }
             
-            if ($item && ($item->prestaciones->Cerrado === 1)) {
-                $resultados[] = ['message' => 'No se bloqueo el exámen '.$item->examenes->Nombre.' porque la prestación se encuentra cerrada ', 'estado' => 'fail'];
-                continue;
-            }
-
-            $item->update(['Anulado' => 1]);
-            ItemPrestacion::InsertarVtoPrestacion($item->IdPrestacion);
-            $resultados[] = ['message' => 'Se ha bloqueado con éxito el exámen de '.$item->examenes->Nombre.'', 'estado' => 'success']; 
         }
 
         return response()->json($resultados);
     }
 
-        
-    public function getExamenes(Request $request): mixed
+    public function getExamenesStd(Request $request)
     {
         if (!$this->hasPermission("prestaciones_edit")) {
             return response()->json(['msg' => 'No tienes permisos'], 403);
         }
 
-        $query = ItemPrestacion::leftJoin('profesionales as efector', 'itemsprestaciones.IdProfesional', '=', 'efector.Id') //ok
-            ->leftJoin('users as userEfector', 'efector.Id', '=', 'userEfector.profesional_id') // ok
-            ->leftJoin('datos as datosEfector', 'userEfector.datos_id', '=', 'datosEfector.Id') // ok
-            ->leftJoin('profesionales as informador', 'itemsprestaciones.IdProfesional2', '=', 'informador.Id')
-            ->leftJoin('users as userInformador', 'informador.Id', '=', 'userInformador.profesional_id') // Relación directa con usuarios
-            ->leftJoin('datos as datosInformador', 'userInformador.datos_id', '=', 'datosInformador.Id') // Relación con datos de informador
-            ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
-            ->join('proveedores as proveedor2', 'examenes.IdProveedor', '=', 'proveedor2.Id')
-            ->join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
-            ->leftJoin('archivosefector', 'itemsprestaciones.Id', '=', 'archivosefector.IdEntidad')
-            ->leftJoin('archivosinformador', 'itemsprestaciones.Id', '=', 'archivosinformador.IdEntidad')
-            ->select(
-                'examenes.Nombre as Nombre',
-                'examenes.Id as IdExamen',
-                'examenes.Adjunto as ExaAdj',
-                'examenes.Informe as Informe',
-                'informador.InfAdj as InfAdj',
-                'examenes.NoImprime as ExaNI',
-                DB::raw('CONCAT(efector.Apellido, " ", efector.Nombre) as EfectorFullName'), //ok
-                DB::raw('CONCAT(informador.Apellido, " ", informador.Nombre) as InformadorFullName'),
-                DB::raw('CONCAT(datosEfector.Apellido, " ", datosEfector.Nombre) as DatosEfectorFullName'),
-                DB::raw('CONCAT(datosInformador.Apellido, " ", datosInformador.Nombre) as DatosInformadorFullName'),
-                'efector.Apellido as EfectorApellido', // ok
-                'informador.Apellido as InformadorApellido',
-                'datosEfector.Apellido as DatosEfectorApellido',
-                'datosInformador.Apellido as DatosInformadorApellido',
-                'efector.RegHis as RegHis',
-                'itemsprestaciones.Ausente as Ausente',
-                'itemsprestaciones.Forma as Forma',
-                'itemsprestaciones.Incompleto as Incompleto',
-                'itemsprestaciones.SinEsc as SinEsc',
-                'itemsprestaciones.Devol as Devol',
-                'itemsprestaciones.CAdj as CAdj',
-                'itemsprestaciones.CInfo as CInfo',
-                'itemsprestaciones.Id as IdItem',
-                'itemsprestaciones.Anulado as Anulado',
-                DB::raw('(SELECT COUNT(*) FROM archivosefector WHERE IdEntidad = itemsprestaciones.Id) as archivos'),
-                DB::raw('(SELECT COUNT(*) FROM archivosinformador WHERE IdEntidad = itemsprestaciones.Id) as archivosI'),
-                'efector.Id as IdEfector',
-                'informador.Id as IdInformador',
-                'userEfector.id as IdUserEfector',
-                'userInformador.id as IdUserInformador'
-            );                
-
-        if ($request->tipo === 'listado' && is_array($request->IdExamen)) {
-
-                $query->whereIn('examenes.Id', $request->IdExamen)
-                        ->where('itemsprestaciones.IdPrestacion', $request->Id);
-        } 
-
-        $result = $query->orderBy('efector.IdProveedor', 'ASC')
-            ->orderBy('examenes.Nombre', 'ASC')
-            ->orderBy('itemsprestaciones.Fecha', 'ASC')
-            ->groupBy('itemsprestaciones.Id')->get();
- 
-        return $result;
-        //return response()->json(['examenes' => $query]);
-   
+        return DB::Select("CALL getExamenesEstandar(?,?)", [intval($request->Id), $request->tipo]);
     }
 
-    public function show(){}
+    public function getExamenes(Request $request)
+    {
+        if (!$this->hasPermission("prestaciones_edit")) {
+            return response()->json(['msg' => 'No tienes permisos'], 403);
+        }
+
+        return DB::Select("CALL getExamenes(?,?)", [$request->Id, $request->tipo]);
+    }
+
+    public function show() {}
 
     public function save(Request $request): void
     {
+        $examenes = (array) $request->idExamen;
 
-        $examenes = $request->idExamen;
-
-        if (!is_array($examenes)) {
-            $examenes = [$examenes];
-        }
-
-        foreach ($examenes as $examen) {
-            
-            $itemPrestacion = ItemPrestacion::where('IdPrestacion', $request->idPrestacion)->where('IdExamen', $examen)->first();
-
-            if(!$itemPrestacion){
-
-                $examen = Examen::find($examen);
-                $honorarios = $this->honorarios($examen->Id, $examen->IdProveedor);
-
-                ItemPrestacion::create([
-                    'Id' => ItemPrestacion::max('Id') + 1,
-                    'IdPrestacion' => $request->idPrestacion,
-                    'IdExamen' => $examen->Id,
-                    'Fecha' => now()->format('Y-m-d'),
-                    'CAdj' => $examen->Cerrado === 1 
-                               ? ($examen->Adjunto === 0 ? 3 : 4) 
-                               : 1,
-                    'CInfo' => $examen->Informe,
-                    'IdProveedor' => $examen->IdProveedor,
-                    'VtoItem' => $examen->DiasVencimiento,
-                    'SinEsc' => $examen->SinEsc,
-                    'Forma' => $examen->Forma,
-                    'Ausente' => $examen->Ausente,
-                    'Devol' => $examen->Devol,
-                    'IdProfesional' => $examen->Cerrado === 1 ? 26 : 0,
-                    'Honorarios' => $honorarios == 'true' ? $honorarios->Honorarios : 0
-                ]);
-
-                ItemPrestacion::InsertarVtoPrestacion($request->idPrestacion);
-            }   
-        }
-    }
-
-    public function check(Request $request): mixed
-    {
-        if (!$this->hasPermission("prestaciones_edit")) {
-            return response()->json(['msg' => 'No tienes permisos'], 403);
-        }
-
-        $examenes = ItemPrestacion::where('IdPrestacion', $request->Id)->get() ?? '';
-
-        $idExamenes = [];
-
-        foreach ($examenes as $examen) {
-            $idExamenes[] = $examen->IdExamen;
-        }
-
-        return response()->json(['respuesta' => ! $examenes->isEmpty(), 'examenes' => $idExamenes]);
+        $this->crud->create($examenes, $request->idPrestacion, $request->idExaCta);
     }
 
     public function itemExamen(Request $request)
@@ -1000,22 +914,22 @@ class ItemPrestacionesController extends Controller
         }
 
         $item = ItemPrestacion::find($request->Id);
-        
-        if($item){
-          
+
+        if ($item) {
+
             switch ($request->opcion) {
                 case 'Incompleto':
                     $estado = $item->Incompleto;
                     $cambio = ($estado == 0 || $estado == null ? $item->Incompleto = 1 : $item->Incompleto = 0);
                     $item->Incompleto = $cambio;
                     break;
-                
+
                 case 'Ausente':
                     $estado = $item->Ausente;
                     $cambio = ($estado == 0 || $estado == null ? $item->Ausente = 1 : $item->Ausente = 0);
                     $item->Ausente = $cambio;
                     break;
-               
+
                 case 'Forma':
                     $estado = $item->Forma;
                     $cambio = ($estado == 0 || $estado == null ? $item->Forma = 1 : $item->Forma = 0);
@@ -1027,7 +941,7 @@ class ItemPrestacionesController extends Controller
                     $cambio = ($estado == 0 || $estado == null ? $item->SinEsc = 1 : $item->SinEsc = 0);
                     $item->SinEsc = $cambio;
                     break;
-                
+
                 case 'Devol':
                     $estado = $item->Devol;
                     $cambio = ($estado == 0 || $estado == null ? $item->Devol = 1 : $item->Devol = 0);
@@ -1039,10 +953,9 @@ class ItemPrestacionesController extends Controller
 
             return response()->json(['msg' => 'Se ha actualizado el estado del exámen de manera correcta'], 200);
         }
-
     }
 
-    
+
     public function asignarProfesional(Request $request): mixed
     {
         $examenes = (array) $request->Ids;
@@ -1113,7 +1026,7 @@ class ItemPrestacionesController extends Controller
             $resultado = $this->adjunto($request->Id, "Informador") && $query->profesionales2->InfAdj === 1;
        }
 
-       return response()->json($resultado);
+        return response()->json($resultado);
     }
 
     public function checkPrimeraCarga(Request $request)
@@ -1123,30 +1036,31 @@ class ItemPrestacionesController extends Controller
             : ArchivoInformador::join('itemsprestaciones', 'archivosinformador.IdEntidad', '=', 'itemsprestaciones.Id')->join('proveedores', 'itemsprestaciones.IdProveedor', '=', 'proveedores.Id')->where('itemsprestaciones.IdPrestacion', $request->Id)->where('proveedores.MultiE', 1)->where('archivosinformador.PuntoCarga', 1)->pluck('itemsprestaciones.Id');
 
         return response()->json($query);
+    }
 
+    public function contadorExamenes(Request $request)
+    {
+        $query = ItemPrestacion::where('IdPrestacion', $request->Id)->count();
+        return response()->json($query);
+    }
+
+    public function checkFacturaItemPrestacion(Request $request)
+    {
+        $examenCuenta = $this->checkFacturas->examenCuenta($request->IdPrestacion, $request->IdExamen);
+        $facturaVenta = $this->checkFacturas->facturaDeVenta(($request->IdPrestacion));
+
+        if ($examenCuenta) {
+            return response()->json(['data' => $examenCuenta, 'tipo' => 'examenCuenta']);
+        } elseif ($facturaVenta) {
+            return response()->json(['data' => $facturaVenta, 'tipo' => 'facturaDeVenta']);
+        }
     }
 
     private function generarCodigo(int $idprest, int $idex, int $idpac)
     {
-        return 'A'.str_pad($idprest, 9, "0", STR_PAD_LEFT).str_pad($idex, 5, "0", STR_PAD_LEFT).str_pad($idpac, 7, "0", STR_PAD_LEFT).".pdf";
+        return 'A' . str_pad($idprest, 9, "0", STR_PAD_LEFT) . str_pad($idex, 5, "0", STR_PAD_LEFT) . str_pad($idpac, 7, "0", STR_PAD_LEFT) . ".pdf";
     }
 
-    private function HoraAsegundos($hora){
-        list($h,$m,$s) = explode(":",$hora);
-        $segundos = ($h*3600)+($m*60) + $s;
-        return $segundos;
-    }
-
-    private function SegundosAminutos($segundos){
-        $horas = floor($segundos / 3600);
-        $minutos = floor(($segundos - ($horas * 3600)) / 60);
-        return str_pad($horas,2, "0", STR_PAD_LEFT).':'.str_pad($minutos,2, "0", STR_PAD_LEFT);
-    }
-    
-    private function honorarios(int $idExamen, int $idProveedor)
-    {
-        return ExamenPrecioProveedor::where('IdExamen', $idExamen)->where('IdProveedor', $idProveedor)->first(['Honorarios']);
-    }
 
     private function deleteExaCuenta($prestacion, $examen)
     {
@@ -1159,7 +1073,7 @@ class ItemPrestacionesController extends Controller
     private function getProfesional(int $id)
     {
         $query = Profesional::leftJoin('users', 'profesionales.Id', '=', 'users.profesional_id')
-                            ->leftJoin('datos', 'users.datos_id', '=', 'datos.Id')
+            ->leftJoin('datos', 'users.datos_id', '=', 'datos.Id')
             ->select(
                 'profesionales.Id as Id',
                 'profesionales.Nombre as NombreProfesional',
@@ -1170,30 +1084,43 @@ class ItemPrestacionesController extends Controller
                 'users.profesional_id as userProfesional'
             )->find($id);
 
-            if($query) {
-                return collect(
-                    (object) [
-                        'id' => $query->Id,
-                        'NombreCompleto' => $query->RegHis === 1 
-                            ? $query->ApellidoProfesional ." ". $query->NombreProfesional
-                            : (in_array($query->userProfesional,[0,'',null], true) ? '' : $query->ApellidoDatos . " " . $query->NombreDatos)
-                    ]
-                );
-            }
+        if ($query) {
+            return collect(
+                (object) [
+                    'id' => $query->Id,
+                    'NombreCompleto' => $query->RegHis === 1
+                        ? $query->ApellidoProfesional . " " . $query->NombreProfesional
+                        : (in_array($query->userProfesional, [0, '', null], true) ? '' : $query->ApellidoDatos . " " . $query->NombreDatos)
+                ]
+            );
+        }
+    }
+
+    private function getNotaCredito(int $id): mixed
+    {
+
+        $item_nota_credito = NotaCreditoIt::where('IdIP', $id)->first();
+        if ($item_nota_credito) {
+            $notaCredito = NotaCredito::where('Id', $item_nota_credito->IdNC)->first();
+        } else {
+            $notaCredito = null;
+        }
+
+        return $notaCredito;
     }
 
     private function marcarPrimeraCarga(int $id, string $who): void
     {
-        if($who === 'multiefector'){
-            
-            $query = ArchivoEfector::where('IdEntidad', $id)->first(); 
+        if ($who === 'multiefector') {
+
+            $query = ArchivoEfector::where('IdEntidad', $id)->first();
             if ($query) {
                 $query->PuntoCarga = 1;
                 $query->save();
             }
         }
 
-        if($who === 'multiInformador') {
+        if ($who === 'multiInformador') {
             $query = ArchivoInformador::where('IdEntidad', $id)->first();
 
             if ($query) {
@@ -1210,7 +1137,7 @@ class ItemPrestacionesController extends Controller
 
         if ($query) {
             $paciente = $this->getPaciente($query->IdPrestacion);
-            
+
             $data = [
                 'itemprestacion' => $query,
                 'paciente' => $paciente,
@@ -1220,7 +1147,8 @@ class ItemPrestacionesController extends Controller
                 'multiEfector' => $this->multiEfector($query->IdPrestacion, $query->IdProfesional, $query->examenes->IdProveedor),
                 'multiInformador' => $this->multiInformador($query->IdPrestacion, $query->IdProfesional2, $query->examenes->IdProveedor2),
                 'efectores' => $this->getProfesional($query->IdProfesional),
-                'informadores' => $this->getProfesional($query->IdProfesional2)
+                'informadores' => $this->getProfesional($query->IdProfesional2),
+                'notacredito' => $this->getNotaCredito($id)
             ];
         }
 

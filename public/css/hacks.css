@@ -207,6 +207,7 @@ label {
 
 .fondo-amarillo {
 	background-color: yellow;
+	color: black;
 }
 
 .fondo-blanco {
@@ -256,6 +257,10 @@ label {
 
 .blanco {
 	color: white !important;
+}
+
+.negro {
+	color: black !important;
 }
 
 .gris {
@@ -357,7 +362,6 @@ label {
 	border: 1px #eee solid !important; 
 	padding: 0.5em !important; 
 	border-radius:10px !important; 
-	margin-right: 2em !important;
 	background-color: rgba(144, 144, 144, 0.055) !important;
 }
 
@@ -766,4 +770,36 @@ table th {
 
 #cargarArchivo {
     z-index: 1060 !important;
+}
+
+#cargarArchivo {
+    z-index: 1060 !important;
+}
+
+.navbar-menu {
+	position:fixed !important;
+}
+
+tr.enlace-blanco button.btn {
+    color: white !important;
+}
+
+tr.enlace-blanco button.btn i {
+    color: white !important;
+}
+
+tr.enlace-negro button.btn {
+    color: black !important;
+}
+
+tr.enlace-negro button.btn i {
+    color: black !important;
+}
+
+:root {
+	--vz-border-color: #887c78 !important;
+}
+
+.navbar-brand-box {
+	width: 68px !important;
 }

@@ -70,6 +70,7 @@ trait DetallesReportes
     {
         //chmod($ruta, 666);
         dd($ruta);
+        die();
         $imagensize = getimagesize($ruta);
         $ancho = $imagensize[0];
         $alto = $imagensize[1]; 

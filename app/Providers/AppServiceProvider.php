@@ -39,7 +39,13 @@ class AppServiceProvider extends ServiceProvider
             'notaCredito' => ['show'],
             'examenes' => ['show', 'edit', 'add'],
             'examenCta' => ['show', 'edit', 'add', 'edit', 'delete'],
-            'botones' => ['usuarios', 'todo']
+            'grupos' => ["show"],
+            'paquetes' => ["show"],
+            'botones' => ["usuarios", "todo"],
+            'efector' => ["show"],
+            'informador' => ["show"],
+            'combinado' => ["show"],
+            'evaluador' => ["show"]
         ];
 
         Blade::directive('fileUrl', function ($expression) {

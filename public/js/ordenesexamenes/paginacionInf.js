@@ -7,22 +7,22 @@ $(function() {
             fechaHasta = $('#fechaHastaInf').val(),
             nroPrestacion = $('#prestacionInf').val();
 
-        if ((fechaDesde === '' || fechaHasta === '') && nroPrestacion === '') {
-            toastr.warning("Las fechas son obligatorias");
+        if ((!fechaDesde || !fechaHasta) && !nroPrestacion) {
+            toastr.warning("Las fechas son obligatorias",'',{timeOut: 1000});
             return;
         }
 
         var especialidad = $('#especialidadInf').val();
 
-        if (especialidad === '' && nroPrestacion === '') {
-            toastr.warning('Debe seleccionar una especialidad para continuar', 'Atención');
+        if (!especialidad && !nroPrestacion) {
+            toastr.warning('Debe seleccionar una especialidad para continuar', 'Atención',{timeOut: 1000});
             return;
         }
 
         $(document).on('change', '#especialidadInf', function(){
             let nuevoValor = $(this).val();
 
-            if(['',0, undefined].includes(nuevoValor)) return; //evitamos la recarga vacia
+            if(!nuevoValor) return; //evitamos la recarga vacia
             
             if (nuevoValor !== especialidad) {
                 especialidad = nuevoValor;
@@ -124,7 +124,6 @@ $(function() {
                 },
             ],
             language: {
-                processing: "<div style='text-align: center; margin-top: 20px;'><img src='./images/spinner.gif' /><p>Cargando...</p></div>",
                 emptyTable: "No hay examenes con los datos buscados",
                 paginate: {
                     first: "Primera",

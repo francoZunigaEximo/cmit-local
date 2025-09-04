@@ -14,12 +14,22 @@ class PedidoProveedores extends Reporte
     {
         $idp = str_pad($datos['id'], 8, "0", STR_PAD_LEFT);
         $y = 0;
-        $controlcorte = 0;
 
         $prestaciones = $this->prestaciones($datos['id']);
         $itemsprestaciones = $this->itemsprestaciones($datos['id']);
 
         foreach($itemsprestaciones as $item) {
+
+            $examenes = $this->examenes($item->examenes->IdProveedor, $datos['id']);
+            $cantlineas = count($examenes);
+
+            $espacioNecesario = 45 + ($cantlineas * 4); 
+
+            if (($pdf->GetY() + $espacioNecesario) > 273) {
+                $pdf->AddPage(); 
+                $y = 0; 
+                $controlcorte = 0;
+            }
 
             //encabezado clte
             $pdf->SetY($y);
@@ -35,18 +45,11 @@ class PedidoProveedores extends Reporte
             $pdf->SetFont('Arial','B',8);$pdf->SetXY(171,$y+30);$pdf->Cell(20,3,$prestaciones->TipoPrestacion,0,0,'R');
 
 
-            $examenes = $this->examenes($item->IdProveedor, $datos['id']);
-
-            $cantlineas = count($examenes);
-	        $controlcorte = $pdf->GetY();
-
-            if (($controlcorte+45+4+$cantlineas*4)>273){$pdf->AddPage();$y=0;$controlcorte=0;}
-            
              //examenes x proveedor
             $pdf->Rect(10,$y+42,180,10); $pdf->SetFont('Arial','B',8);
-            $pdf->SetXY(11,$y+43);$pdf->Cell(0,3,$item->examenes->Nombre,0,0,'L');$pdf->SetFont('Arial','',7);
-            $pdf->SetXY(11,$y+46);$pdf->Cell(0,3,substr($item->proveedores->Direccion ?? '',0,50).' -  '.$item->proveedores->localidad->Nombre.' -  '.$item->proveedores->localidad->Provincia->Nombre,0,0,'L');
-            $pdf->SetXY(11,$y+49);$pdf->Cell(0,3,$item->proveedores->Telefono,0,0,'L');$pdf->SetFont('Arial','B',8);
+            $pdf->SetXY(11,$y+43);$pdf->Cell(0,3,$item->examenes->proveedor1->Nombre,0,0,'L');$pdf->SetFont('Arial','',7);
+            $pdf->SetXY(11,$y+46);$pdf->Cell(0,3,substr($item->examenes->proveedor1->Direccion ?? '',0,50).' -  '.$item->examenes->proveedor1->localidad->Nombre.' -  '.$item->examenes->proveedor1->localidad->Provincia->Nombre,0,0,'L');
+            $pdf->SetXY(11,$y+49);$pdf->Cell(0,3,$item->examenes->proveedor1->Telefono,0,0,'L');$pdf->SetFont('Arial','B',8);
             $pdf->SetXY(10,$y+53);$pdf->Cell(0,3,'Examenes Solicitados:',0,0,'L');$pdf->SetFont('Arial','',8);$pdf->Ln(5);	
 
            //mostrar examenes
@@ -65,6 +68,7 @@ class PedidoProveedores extends Reporte
         }
     }
 
+
     private function prestaciones(int $id): mixed
     {
         return Prestacion::with(['paciente', 'empresa', 'paciente.localidad', 'paciente.localidad.provincia'])->find($id);
@@ -72,8 +76,14 @@ class PedidoProveedores extends Reporte
 
     private function itemsprestaciones(int $id): mixed
     {
-        return ItemPrestacion::with(['proveedores', 'proveedores.localidad', 'proveedores.localidad.provincia', 'examenes'])->where('Anulado', 0)->where('IdPrestacion', $id)->distinct()->get();
-
+        return ItemPrestacion::join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
+            ->join('proveedores', 'examenes.IdProveedor', '=', 'proveedores.Id')
+            ->join('localidades', 'proveedores.IdLocalidad', '=', 'localidades.Id')
+            ->join('provincias', 'localidades.IdPcia', '=', 'provincias.Id')
+            ->where('itemsprestaciones.Anulado', 0)
+            ->where('itemsprestaciones.IdPrestacion', $id)
+            ->groupBy('proveedores.Nombre')
+            ->get();
     }
 
     private function examenes(int $idProveedor, int $idPrestacion): mixed
@@ -82,13 +92,12 @@ class PedidoProveedores extends Reporte
             ->select(
                 'examenes.Nombre as Nombre',
                 'examenes.Cod2 as Cod2',
-                'itemsprestaciones.ObsExamen as ObsExamen'
+                'itemsprestaciones.ObsExamen as ObsExamen',
             )
             ->where('itemsprestaciones.Anulado', 0)
             ->where('itemsprestaciones.IdPrestacion', $idPrestacion)
-            ->where('itemsprestaciones.IdProveedor', $idProveedor)
+            ->where('examenes.IdProveedor', $idProveedor)
             ->orderBy('examenes.Nombre')
-            ->distinct()
             ->get();
     }
 

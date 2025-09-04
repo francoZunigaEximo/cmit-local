@@ -1,20 +1,21 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <!--<html lang="en" data-layout="vertical" data-topbar="light" data-sidebar="light" data-sidebar-size="sm-hover" data-sidebar-image="none" data-preloader="enabled" data-layout-width="fluid">-->
-    <html lang="en" data-layout="vertical" data-topbar="light" data-sidebar="light" data-sidebar-size="sm" data-sidebar-image="none" data-preloader="enable" data-sidebar-visibility="show" data-layout-style="default" data-layout-mode="light" data-layout-width="fluid" class="__web-inspector-hide-shortcut__">
+    <html lang="en" data-layout="vertical" data-topbar="light" data-sidebar="light" data-sidebar-size="sm" data-sidebar-image="none" data-preloader="disable" data-sidebar-visibility="show" data-layout-style="default" data-layout-mode="light" data-layout-width="fluid" data-layout-position="fixed">
 <head>
 
     <meta charset="utf-8" />
     <title>@yield('title') | Salud Ocupacional SRL</title>
 
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/apple-touch-icon.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/apple-touch-icon.png')  }}">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/favicon-32x32.png') }}">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/favicon-16x16.png') }}">
     <link rel="mask-icon" href="{{ asset('images/safari-pinned-tab.svg') }}" color="#5bbad5">
 
     <link rel="shortcut icon" href="{{ asset('images/favicon.ico') }}">
     <link href="{{ asset('css/bootstrap.min.css') }}?v={{ time() }}" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('css/all.min.css') }}" rel="stylesheet" type="text/css" />
+    {{-- <link href="{{ asset('css/all.min.css') }}" rel="stylesheet" type="text/css" /> --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     @stack('styles')
 
     <link rel="stylesheet" href="{{ asset('css/autoComplete.css') }}">
@@ -25,7 +26,9 @@
     <link href="{{ asset('css/app.min.css') }}?v={{ time() }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('css/custom.min.css') }}?v={{ time() }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('css/screen.css') }}?v={{ time() }}" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=help" />
     <link href="{{ asset('css/toastr.min.css') }}" rel="stylesheet">
+
 
     <script src="{{ asset('js/jquery.min.js') }}"></script>
     <script src="{{ asset('js/basicos.js') }}?v={{ time() }}"></script>
@@ -64,35 +67,52 @@
                     <div class="d-flex align-items-center">
 
                         <div class="ms-1 header-item d-none d-sm-flex">
+                            @can('prestaciones_add')
                             <button id="prestacionButton" type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle ms-2" title="Prestación rápida (ALT+ P)" data-bs-toggle="offcanvas" data-bs-target="#prestacionFast" aria-controls="offcanvas">
                                 <img src="{{ asset('images/iconos/pacientes.svg')}}" alt="Alta prestación rápida" width="40px" height="40px">
                             </button>
-                            <a class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle ms-2" title="Pacientes (ALT + A)" href="{{ route('prestaciones.index')}}">
+                            @endcan
+                            @can('prestaciones_show')
+                            <a class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle ms-2" title="Grilla prestaciones (ALT + A)" href="{{ route('prestaciones.index')}}">
                                 <img src="{{ asset('images/iconos/prestaciones.svg')}}" alt="Grilla prestaciones" width="40px" height="40px">
                             </a>
+                            @endcan
+                            @can('etapas_show')
                             <a class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle ms-2" title="Etapas (ALT + S)" href="{{ route('ordenesExamen.index')}}">
                                 <img src="{{ asset('images/iconos/etapas.svg')}}" alt="Etapas" width="40px" height="40px">
                             </a>
+                            @endcan
+                            @can('carnet_show')
                             <a class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle ms-2" title="Carnet" href="#">
                                 <img src="{{ asset('images/iconos/carnet.svg')}}" alt="Carnet" width="40px" height="40px">
                             </a>
+                            @endcan
+                            @can('efector_show')
                             <a class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle ms-2" title="Efector" href="{{ route('llamador.efector') }}">
                                 <img src="{{ asset('images/iconos/efector.svg')}}" alt="Efector" width="35px" height="35px">
                             </a>
+                            @endcan
+                            @can('informador_show')
                             <a class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle ms-2" title="Informador" href="{{ route('llamador.informador') }}">
                                 <img src="{{ asset('images/iconos/informador.svg')}}" alt="Informador" width="35px" height="35px">
                             </a>
+                            @endcan
+                            @can('combinado_show')
                             <a class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle ms-3" title="Combinado" href="{{ route('llamador.combinado')}}">
                                 <img src="{{ asset('images/iconos/combinado.svg')}}" alt="Combinado" width="52px" height="52px">
                             </a>
+                            @endcan
+                            @can('evaluador_show')
                             <a class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle ms-3" title="Evaluador" href="{{ route('llamador.evaluador') }}">
                                 <img src="{{ asset('images/iconos/evaluador.svg')}}" alt="Evaluador" width="40px" height="40px">
                             </a>
+                            @endcan
                         </div>
 
                         <div class="dropdown ms-sm-3 header-item topbar-user">
                             <button type="button" class="btn" id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span class="d-flex align-items-center">
+                                    <img class="rounded-circle header-profile-user" src="{{ asset('images/users/cmit.jpg') }}" alt="Header Avatar">
                                     <span class="text-start ms-xl-2">
                                         <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text">{{ ucfirst(Auth::user()->personal->nombre_completo) }}<h6><span class="badge text-bg-info">
                                             @php
@@ -219,6 +239,16 @@
                                         <a href="{{ route('usuarios.index') }}" class="nav-link enlace-blanco" data-key="t-usuarios"> Usuarios </a>
                                     </li>
                                     @endcan
+                                    @can('paquetes_show')
+                                    <li class="nav-item">
+                                        <a href="{{ route('paquetes.index') }}" class="nav-link enlace-blanco" data-key="t-usuarios"> Paquetes </a>
+                                    </li>
+                                    @endcan
+                                    @can('grupos_show')
+                                    <li class="nav-item">
+                                        <a href="{{ route('grupos.index') }}" class="nav-link enlace-blanco" data-key="t-usuarios"> Grupos </a>
+                                    </li>
+                                    @endcan
                                 </ul>
                             </div>
                         </li>
@@ -239,9 +269,11 @@
                                         <a href="{{ route('facturas.index') }}" class="nav-link enlace-blanco" data-key="t-factura"> Facturación </a>
                                     </li>
                                     @endcan
+                                    <!-- esto lo tengo que cambiar :) -->
+                                    
                                     @can("notaCredito_show")
                                     <li class="nav-item">
-                                        <a href="#" class="nav-link enlace-blanco" data-key="t-notaCredito"> Nota de crédito </a>
+                                        <a href="{{ route('notasCredito.index') }}" class="nav-link enlace-blanco" data-key="t-notaCredito"> Nota de crédito </a>
                                     </li>
                                     @endcan
                                 </ul>
@@ -328,7 +360,14 @@
 
     @stack('modal')
 
-    <div id="choisePModal" class="modal fadeInUp" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div id="choisePModal" 
+        class="modal fadeInUp" 
+        tabindex="-1" 
+        aria-labelledby="myModalLabel" 
+        aria-hidden="true" 
+        data-bs-backdrop="static" 
+        data-bs-keyboard="false"
+        style="display: none;">
         <div class="modal-dialog">
             <div class="modal-content">
                 
@@ -404,7 +443,7 @@
 
         const lnkNuevoPaciente = "{{ route('pacientes.create') }}";
         const lnkExistePaciente = "{{ route('pacientes.edit', ['paciente' => '__paciente__']) }}";
-        const verifyWizard = "{{ route('verifyWizard') }}";
+        const verifyWizard = "{{ route('pacientes.verify') }}";
         const TOKEN = "{{ csrf_token() }}";
 
         const IDLE_TIMEOUT = 300 * 60 * 1000;
@@ -414,12 +453,16 @@
         const sessionName = "{{ auth()->user()?->name }}"; 
         const heartbeat = "{{ route('usuario.heartBeat') }}";
 
-        let ultimaActividad = Date.now(),
-            idInterval = null,
-            sesionCerrada = false;
+        console.log("Total Horas: " + IDLE_TIMEOUT);
+
+        let sesionCerrada = false,
+            idInterval = null
+            ultimaActividad = parseInt(localStorage.getItem('ultima_actividad')) || Date.now(); // Inicializa con un ahora
+;
 
         function resetUltimaActividad() {
             ultimaActividad = Date.now();
+            localStorage.setItem('ultima_actividad', ultimaActividad); //Sincroniza las pestañas
         }
 
         function iniciarIdMonitor() {
@@ -458,7 +501,12 @@
             if (event.key === "cerrar_sesion" && !sesionCerrada) {
                 cerrarSesion(); // ejecuta en esta pestaña también
             }
+
+            if (event.key === "ultima_actividad") {
+                ultimaActividad = parseInt(event.newValue) || Date.now();
+            }
         });
+        
 
         ['mousemove', 'keydown', 'scroll', 'click'].forEach(event => {
             $(document).on(event, resetUltimaActividad);

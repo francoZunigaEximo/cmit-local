@@ -60,7 +60,7 @@ $(function(){
 
         if(!lista.data().any()){
             lista.clear().destroy();
-            toastr.warning('No hay datos para exportar');
+            toastr.warning('No hay datos para exportar', '', {timeOut: 1000});
             return;
         }
 
@@ -76,16 +76,15 @@ $(function(){
 
             if(response){
                 createFile("xlsx", response.filePath, generarCodigoAleatorio() + '_reporte');
-                toastr.success(response.msg)
-            }
-        }catch(jqXHR) {
-            let errorData = JSON.parse(jqXHR.responseText);            
-            checkError(jqXHR.status, errorData.msg);
-            return;
-        
-        }finally {
-            preloader('off');
-        }
+                preloader('off')
+                toastr.success(response.msg, '', {timeOut: 1000});
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            })
     });
 
     $(document).on('click', '.atenderPaciente', async function(e){

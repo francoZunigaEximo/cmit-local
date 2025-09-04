@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(function() {
 
     $("#form-update, #form-create").off();
     $("#form-update, #form-create").validate({
@@ -52,20 +52,20 @@ $(document).ready(function() {
         return value !== "0";
     }, "Por favor, selecciona un valor distinto de 0");
 
-    $("#form-create").on("submit", function(event) {
+    $("#form-create").on("submit", function(e) {
         // Verificar si el formulario es válido
         if ($(this).valid()) {
             if($(this).attr("id") == "form-create"){
-                toastr.success('¡Se ha generado el exámen de manera correcta.', 'Felicitaciones');
+                toastr.success('¡Se ha generado el exámen de manera correcta.', 'Felicitaciones', {timeOut: 1000});
                 setTimeout(() => {
                     $(this).unbind("submit").submit();
                 }, 3000);   
             }
 
         } else {
-            toastr.warning('Por favor, complete todos los campos requeridos correctamente.', 'Atención');
+            toastr.warning('Por favor, complete todos los campos requeridos correctamente.', 'Atención', {timeOut: 1000});
         }
         
-        event.preventDefault();
+        e.preventDefault();
      });
 });

@@ -5,18 +5,29 @@ namespace App\Http\Controllers;
 use App\Models\Cliente;
 use App\Models\Provincia;
 use App\Models\Localidad;
+use App\Models\Prestacion;
 use App\Traits\ObserverClientes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Yajra\DataTables\DataTables;
 use App\Traits\CheckPermission;
 use App\Services\ReportesExcel\ReporteExcel;
+use PhpOffice\PhpSpreadsheet\Calculation\Logical\Boolean;
 
 class ClientesController extends Controller
 {
     use ObserverClientes, CheckPermission;
 
     protected $reporteExcel;
+
+    public $helper = '
+    <ul>
+        <li>Los <b class="negrita_verde">EMail Masivos</b> se usan en Clientes. Enviar</li>
+        <li>Los <b class="negrita_verde">EMail Informes</b> se usan en Prestaciones</li>
+        <li>Los <b class="negrita_verde">EMail Factura</b> se usan en Facturas. Enviar</li>
+        <li>Los <b class="negrita_verde">Email Solo Anexo</b> se usan reporte eAnexos</li>
+    </ul>
+    ';
 
     public function __construct(ReporteExcel $reporteExcel)
     {
@@ -47,18 +58,19 @@ class ClientesController extends Controller
         return view('layouts.clientes.index');
     }
 
+
     public function search(Request $request)
     {
-
-        if (!$this->hasPermission("clientes_show")) {abort(403);}
+        if (!$this->hasPermission("clientes_show")) {
+            abort(403);
+        }
 
         if ($request->ajax()) {
-
-            $tipo = trim($request->tipo);
             $filtro = $request->filtro;
             $buscar = trim($request->buscar);
             $fpago = $request->formaPago;
 
+            // Filtrar solo registros con Estado = 0
             $query = Cliente::select(
                 'Identificacion',
                 'RazonSocial',
@@ -66,10 +78,47 @@ class ClientesController extends Controller
                 'TipoCliente',
                 'Bloqueado',
                 'Id',
-                'FPago');
+                'FPago',
+                'Estado'
+            )->where('Estado', 1); 
 
-            $query->when(!empty($filtro) && (is_array($filtro) && in_array('bloqueados', $filtro)), function ($query) {
-                $query->where('Bloqueado', 1);
+            $query->when(!empty($filtro) && is_array($filtro), function ($query) use ($filtro) {
+                if (in_array('bloqueados', $filtro)) {
+                    $query->where('Bloqueado', 1);
+                }
+
+                if (in_array('sinMailFact', $filtro)) {
+                    $query->where('EmailFactura', '');
+                }
+
+                if (in_array('entregaDomicilio', $filtro)) {
+                    $opciones = [5, 4, 3, 2, 1];
+                    $intersectedOptions = array_intersect($opciones, $filtro);
+
+                    if (!empty($intersectedOptions)) {
+                        $query->whereIn('Entrega', $intersectedOptions);
+                    }
+                }
+
+                if (in_array('sinMailInfor', $filtro)) {
+                    $query->where('EMailInformes', 1);
+                }
+
+                if (in_array('sinMailResultados', $filtro)) {
+                    $query->where('EMailResultados', 1);
+                }
+
+                if (in_array('retiraFisico', $filtro)) {
+                    $query->where('RF', 1);
+                }
+
+                if (in_array('factSinPaquetes', $filtro)) {
+                    $query->where('SinPF', 1);
+                }
+
+                if (in_array('sinEval', $filtro)) {
+                    $query->where('SinEval', 1);
+                }
             });
 
             $query->when(!empty($fpago) && $fpago !== 'A', function ($query) use ($fpago) {
@@ -80,96 +129,28 @@ class ClientesController extends Controller
                 $query->whereIn('FPago', [null, '', 'A']);
             });
 
-            $query->when(!empty($request->tipo), function ($query) use ($request) {
-                $query->where('TipoCliente', $request->tipo);
+            $query->when(!empty($buscar) && strlen($buscar) >= 3, function ($query) use ($buscar) {
+                $formatearIdent = $this->formatearIdentificacion($buscar);
+
+                $query->where(function ($query) use ($buscar, $formatearIdent) {
+                    $query->where('ParaEmpresa', 'LIKE', '%' . $buscar . '%')
+                        ->orWhere('Identificacion', 'LIKE', '%' . $formatearIdent . '%')
+                        ->orWhere('RazonSocial', 'LIKE', '%' . $buscar . '%');
+                });
             });
 
-            $query->when(is_array($filtro) && in_array('sinMailFact', $filtro), function ($query) {
-                $query->where('EmailFactura', '');
-            });
-
-            $query->when(!empty($filtro) && is_array($filtro) && in_array('entregaDomicilio', $filtro), function ($query) use ($filtro) {
-                $opciones = [5, 4, 3, 2, 1];
-                $intersectedOptions = array_intersect($opciones, $filtro);
-
-                if (! empty($intersectedOptions)) {
-                    $query->whereIn('Entrega', $intersectedOptions);
-                }
-            });
-
-            $query->when(!empty($filtro) && is_array($filtro) && in_array('sinMailInfor', $filtro), function ($query) {
-                $query->where('EMailInformes', 1);
-            });
-
-            $query->when(!empty($filtro) && is_array($filtro) && in_array('sinMailResultados', $filtro), function ($query) {
-                $query->where('EMailResultados', 1);
-            });
-
-            $query->when(!empty($filtro) && is_array($filtro) && in_array('retiraFisico', $filtro), function ($query) {
-                $query->where('RF', 1);
-            });
-
-            $query->when(!empty($filtro) && is_array($filtro) && in_array('factSinPaquetes', $filtro), function ($query) {
-                $query->where('SinPF', 1);
-            });
-
-            $query->when(!empty($filtro) && is_array($filtro) && in_array('sinEval', $filtro), function ($query) {
-                $query->where('SinEval', 1);
-            });
-
-            $query->when(!empty($buscar), function ($query) use ($buscar) {
-                $query->where('ParaEmpresa', 'LIKE', '%'.$buscar.'%')
-                    ->orWhere(function ($query) use ($buscar) {
-                        $formatearIdent = $buscar;
-                        if (!strpos($buscar, '-')) {
-                            if (strlen($buscar) === 11) {
-                                $formatearIdent = substr($buscar, 0, 2).'-'.substr($buscar, 2, 8).'-'.substr($buscar, -1);
-                            } elseif (strlen($buscar) >= 3 && strlen($buscar) <= 10) {
-
-                                $partes = explode('-', $buscar);
-                                if (count($partes) === 1) {
-
-                                    $formatearIdent = substr($buscar, 0, 2).'-'.str_pad(substr($buscar, 2), 8, '0', STR_PAD_RIGHT);
-                                } else {
-
-                                    $formatearIdent = preg_replace('/(\d{2})(\d{1,8})(\d)?/', '$1-$2-$3', $buscar);
-                                }
-                            } else {
-
-                                $formatearIdent = substr($buscar, 0, 2).'-'.str_pad(substr($buscar, 2), 8, '0', STR_PAD_LEFT);
-                            }
-                        } else {
-                            $partes = explode('-', $buscar);
-
-                            if (count($partes) === 3 && strlen($partes[0]) === 2 && strlen($partes[2]) === 1) {
-                                if (strlen($partes[1]) < 8) {
-
-                                    $partes[1] = str_pad($partes[1], 8, '0', STR_PAD_LEFT);
-                                }
-                                $formatearIdent = implode('-', $partes);
-                            }
-                        }
-
-                        $query->where('Identificacion', 'LIKE', '%'.$formatearIdent.'%');
-                    })
-                    ->orWhere('RazonSocial', 'LIKE', '%'.$buscar.'%')
-                    ->orWhere(function ($query) use ($buscar) {
-                        $query->where('ParaEmpresa', 'LIKE', '%'.$buscar.'%')
-                            ->where('RazonSocial', 'LIKE', '%'.$buscar.'%');
-                    });
-            });
-
-            $result = $query->where('Estado', 1)->orderBy('Id', 'DESC');
+            $result = $query->orderBy('Id', 'DESC');
 
             return Datatables::of($result)->make(true);
         }
+
         return view('layouts.clientes.index');
     }
 
     public function create()
     {
         if (!$this->hasPermission("clientes_add")) {abort(403);}
-        return view('layouts.clientes.create')->with('provincias', Provincia::all());
+        return view('layouts.clientes.create', ['helper' => $this->helper])->with('provincias', Provincia::all());
     }
 
 
@@ -178,32 +159,11 @@ class ClientesController extends Controller
         if (!$this->hasPermission("clientes_edit")) {
             return response()->json(['msg' => 'No tiene permisos'], 403);
         }
-
-        $nuevoId = Cliente::max('Id') + 1;
-
-        Cliente::create([
-            'Id' => $nuevoId,
-            'TipoCliente' => $request->TipoCliente,
-            'Identificacion' => $request->Identificacion,
-            'ParaEmpresa' => $request->ParaEmpresa,
-            'RazonSocial' => $request->RazonSocial,
-            'CondicionIva' => $request->CondicionIva,
-            'NombreFantasia' => $request->NombreFantasia,
-            'EMail' => $request->EMail ?? '',
-            'Telefono' => $request->Telefono,
-            'ObsEMail' => $request->ObsEMail ?? '',
-            'Direccion' => $request->Direccion ?? '',
-            'IdLocalidad' => $request->IdLocalidad,
-            'Provincia' => $request->Provincia,
-            'CP' => $request->CP,
-            'Bloqueado' => '0',
-            'FPago' => $request->FPago
-        ]);
         
-        $this->setTelefono($nuevoId, $request->telefonos);
+        $cliente = Cliente::create($request->all());
+        $this->setTelefono($cliente->Id, $request->telefonos);
 
-        return redirect()->route('clientes.edit', ['cliente' => $nuevoId]);
-
+        return redirect()->route('clientes.edit', ['cliente' => $cliente->Id]);
     }
 
     public function edit(Cliente $cliente)
@@ -214,7 +174,7 @@ class ClientesController extends Controller
         $detailsLocalidad = Localidad::where('Id', $cliente->IdLocalidad)->first(['Nombre', 'CP', 'Id']);
         $paraEmpresas = Cliente::where('Identificacion', $cliente->Identificacion)->get();
 
-        return view('layouts.clientes.edit', compact(['cliente', 'provincias', 'detailsLocalidad', 'paraEmpresas']));
+        return view('layouts.clientes.edit', compact(['cliente', 'provincias', 'detailsLocalidad', 'paraEmpresas']), ['helper' => $this->helper]);
     }
 
     public function update(Request $request, Cliente $cliente)
@@ -224,44 +184,31 @@ class ClientesController extends Controller
         }
 
         $cliente = Cliente::find($request->Id);
-        if($cliente)
-        {
-            $cliente->fill($request->all())->save();
-            $this->setTelefono($request->Id, $request->telefonos);
-        }
+        if(empty($cliente)) return;
+
+        $cliente->fill($request->all())->save();
+        $this->setTelefono($request->Id, $request->telefonos);
 
         return back();
 
     }
 
-    public function multipleDown(Request $request): mixed
+    public function baja(Request $request): mixed
     {
-
         if (!$this->hasPermission("clientes_delete")) {
             return response()->json(['msg' => 'No tiene permisos'], 403);
         }
 
         $ids = (array) $request->input('ids');
 
+        if(empty($ids)) {
+            response()->json(['msg' => 'No hay clientes para dar de baja'], 409);
+        }
+
         Cliente::whereIn('id', $ids)->update(['Estado' => 0]);
         return response()->json(['msg' => 'Se ha dado de baja correctamente'], 200);
     }
 
-    public function baja(Request $request)
-    {
-        if (!$this->hasPermission("clientes_delete")) {
-            return response()->json(['msg' => 'No tiene permisos'], 403);
-        }
-
-        $cliente = Cliente::find($request->Id);
-        
-        if($cliente)
-        {
-            $cliente->update(['Estado' => 0]);
-            return response()->json(['msg' => 'Se ha dado de baja correctamente'], 200);
-        }
-
-    }
 
     public function block(Request $request)
     {
@@ -269,39 +216,33 @@ class ClientesController extends Controller
             return response()->json(['msg' => 'No tiene permisos'], 403);
         }
 
-        $cliente = Cliente::find($request->cliente);
-        if($cliente)
-        {
-            $cliente->update(['Motivo' => $request->motivo, 'Bloqueado' => '1']);
-            return response()->json(['msg' => 'El bloqueo se ha realizado de manera correcta'], 200);
+        if(empty($request->cliente)) {
+            response()->json(['msg' => 'No hay clientes para bloquear'], 409);
         }
 
+        Cliente::find($request->cliente)->update(
+            ['Motivo' => $request->motivo, 
+            'Bloqueado' => '1']
+        );
+        
+        return response()->json(['msg' => 'El bloqueo se ha realizado de manera correcta'], 200);
     }
 
-    public function verifyIdentificacion(Request $request): mixed
+    public function verificarCuit(Request $request): mixed
     {
         if (!$this->hasPermission("clientes_edit")) {
             return response()->json(['msg' => 'No tiene permisos'], 403);
         }
 
-        $cliente = Cliente::where('Identificacion', $request->Identificacion)->first();
-        $existe = $cliente !== null;
+        $query = Cliente::where('Identificacion', $request->Identificacion);
 
-        return response()->json(['existe' => $existe, 'cliente' => $cliente]);
-    }
-
-    public function verifyCuitEmpresa(Request $request): mixed
-    {
-        if (!$this->hasPermission("clientes_edit")) {
-            return response()->json(['msg' => 'No tiene permisos'], 403);
+        if(!empty($request->ParaEmpresa)) {
+            $query->where('ParaEmpresa', $request->ParaEmpresa);
         }
 
-        $cliente = Cliente::where('Identificacion', $request->Identificacion)
-            ->where('ParaEmpresa', $request->ParaEmpresa)
-            ->first();
-        $existe = $cliente !== null;
+        $cliente = $query->first();
 
-        return response()->json(['existe' => $existe, 'cliente' => $cliente]);
+        return response()->json($cliente);
     }
 
     public function setObservaciones(Request $request)
@@ -372,16 +313,14 @@ class ClientesController extends Controller
         }
 
         $ids = (array) $request->input('Id');
+        $clientes = Cliente::with(['localidad'])->with(['actividad'])->whereIn('Id', $ids)->get();
 
-        $clientes = Cliente::with(['localidad'])->whereIn('Id', $ids)->get();
-
-        if($clientes) {
-            $reporte = $this->reporteExcel->crear('clientes');
-            return $reporte->generar($clientes);
-
-        }else{
+        if(empty($clientes)) {
             return response()->json(['msg' => 'Error al generar el reporte'], 409);
         }
+
+        $reporte = $this->reporteExcel->crear('clientes');
+        return $reporte->generar($clientes);
     }
 
     public function checkParaEmpresa(Request $request)
@@ -456,5 +395,44 @@ class ClientesController extends Controller
         });
 
         return response()->json(['clientes' => $resultados]);
+    }
+
+    public function cambioEstado(Request $request)
+    {
+        return response()->json($this->checkPrestaciones($request->Id));
+    }
+
+    public function formaPago(Request $request)
+    {
+        $cliente = Cliente::where('Id', $request->Id)->first(['FPago']);
+        return response()->json($cliente);
+    }
+
+    public function getLocalidad(Request $request)
+    {
+        $localidad = Localidad::where('Id', $request->Id)->first(['Nombre', 'CP']);
+        return response()->json(['localidad' => $localidad]);
+    }
+
+    private function formatearIdentificacion($identificacion)
+    {
+        if (strpos($identificacion, '-') !== false) {
+            return $identificacion;
+        }
+
+        if (strlen($identificacion) < 3) {
+            return $identificacion;
+        }
+
+        $parte1 = substr($identificacion, 0, 2);
+        $parte2 = str_pad(substr($identificacion, 2, 8), 8, '0', STR_PAD_RIGHT);
+        $parte3 = substr($identificacion, -1);
+
+        return "{$parte1}-{$parte2}-{$parte3}";
+    }
+
+    private function checkPrestaciones(int $idCliente)
+    {
+        return Prestacion::where('IdEmpresa', $idCliente)->orWhere('IdART', $idCliente)->exists();
     }
 }

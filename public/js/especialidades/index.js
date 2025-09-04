@@ -8,8 +8,8 @@ $(function() {
             ids.push($(this).val());
         });
 
-        if (ids.length == 0) {
-            toastr.warning("Debe seleccionar alguna especialidad para generar el reporte");
+        if (!ids) {
+            toastr.warning("Debe seleccionar alguna especialidad para generar el reporte", "", {timeOut: 1000});
             return;
         }
 
@@ -29,7 +29,7 @@ $(function() {
                     success: function(response) {
                         preloader('off');
                         createFile("xlsx", response.filePath, generarCodigoAleatorio() + '_reporte');
-                        toastr.success(response.msg);
+                        toastr.success(response.msg, '', {timeOut: 1000});
                     
                     },                    
                     error: function(jqXHR) {
@@ -44,21 +44,32 @@ $(function() {
         });       
     });
 
-    $(document).on('click', '#btnBajaMultiple', function(e) {
+    $(document).on('click', '#baja, #multiple', function(e) {
         e.preventDefault();
 
-        let ids = [];
-        $('input[name="Id"]:checked').each(function() {
-            ids.push($(this).val());
-        });
+        let ids = [],
+            tipo = $(this).is('#baja') ? 'baja' : 'multiple';
 
-        if (ids.length === 0) {
-            toastr.warning("Debe seleccionar al menos una especialidad para la baja múltiple");
+
+        if(tipo === 'multiple') {
+
+            $('input[name="Id"]:checked').each(function() {
+                ids.push($(this).val());
+            });
+        
+        }else{
+            ids.push($(this).data('id'));
+        }
+
+        if (!ids) {
+            toastr.warning("Debe seleccionar al menos una especialidad para la baja múltiple", "", {timeOut: 1000});
             return; 
         }
 
+        let ids_cleans = ids.filter(item => !isNaN(item) && isFinite(item));
+
         swal({
-            title: "¿Estás seguro de que deseas realizar la baja múltiple de las especialidades seleccionadas?",
+            title: "¿Estás seguro de que deseas realizar la baja de o las especialidades seleccionadas?",
             icon: "warning",
             buttons: ["Cancelar", "Aceptar"]
         }).then((confirmar => {
@@ -69,14 +80,14 @@ $(function() {
                     type: "POST",
                     data: {
                         _token: TOKEN,
-                        ids: ids
+                        ids: ids_cleans
                     },
                     success: function(response) {
                         preloader('off');
-                        toastr.success(response.msg);
+                        toastr.success(response.msg, '', {timeOut: 1000});
                         $('#listaEspecialidades').DataTable().draw(false);
                     },
-                    error: function(xhr) {
+                    error: function(jqXHR) {
                         preloader('off');            
                         let errorData = JSON.parse(jqXHR.responseText);            
                         checkError(jqXHR.status, errorData.msg);
@@ -88,38 +99,5 @@ $(function() {
         }));  
     });
 
-    $(document).on('click', '.blockEsp', function(e){
-        e.preventDefault();
-
-        let especialidad = $(this).data('id');
-        
-        if(especialidad === '') return;
-
-        swal({
-            title: "¿Está seguro que desea dar de baja la especialidad?",
-            icon: "warning",
-            buttons: ["Cancelar", "Aceptar"]
-        }).then((confirmar) => {
-            if(confirmar){
-                preloader('on');
-                $.post(bajaEspecialidad, {_token: TOKEN, Id: especialidad})
-                .done(function(response){
-                    preloader('off');
-                    toastr.success(response.msg);
-                    setTimeout(()=>{
-                        $('#listaEspecialidades').DataTable().draw(false);
-                    },3000);
-                })
-                .fail(function(jqXHR){
-                    preloader('off');            
-                    let errorData = JSON.parse(jqXHR.responseText);            
-                    checkError(jqXHR.status, errorData.msg);
-                    return; 
-                });
-            }
-        });
-
-            
-    });
 
 });

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ExamenCuenta;
 use App\Models\ExamenCuentaIt;
+use App\Models\ItemPrestacion;
 use App\Models\Relpaqest;
 use App\Models\Relpaqfact;
 use Illuminate\Http\Request;
@@ -18,19 +19,34 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use App\Traits\CheckPermission;
 
 use App\Services\Reportes\ReporteService;
+use App\Services\ItemsPrestaciones\Helper as ItemSupport;
+use App\Services\ItemsPrestaciones\Crud;
 use App\Services\Reportes\Titulos\Basico;
 use App\Services\Reportes\Titulos\Empresa;
 use App\Services\Reportes\Cuerpos\ExamenCuenta as ExCuenta;
+use App\Services\ReportesExcel\ReporteExcel;
+use Illuminate\Support\Facades\Date;
 
 class ExamenesCuentaController extends Controller
 {
     use ObserverExamenesCuenta, CheckPermission;
 
-    protected $reporteService;
+    private $reporteService;
+    private $itemSupport;
+    private $itemCrud;
+    protected $reporteExcel;
 
-    public function __construct(ReporteService $reporteService)
+
+    public function __construct(
+        ReporteService $reporteService, 
+        ItemSupport $itemSupport,
+        Crud $itemCrud,
+        ReporteExcel $reporteExcel)
     {
         $this->reporteService = $reporteService;
+        $this->itemSupport = $itemSupport;
+        $this->itemCrud = $itemCrud;
+        $this->reporteExcel = $reporteExcel;
     }
 
     public function index(Request $request)
@@ -43,7 +59,9 @@ class ExamenesCuentaController extends Controller
         {
             $query = $this->queryBasico();
 
-            $result = $query->groupBy('pagosacuenta.Id', 'pagosacuenta.Tipo', 'pagosacuenta.Suc', 'pagosacuenta.Nro', 'pagosacuenta.Pagado')->limit(7)->orderBy('pagosacuenta.Id', 'DESC');
+            $result = $query->groupBy('pagosacuenta.Id', 'pagosacuenta.Tipo', 'pagosacuenta.Suc', 'pagosacuenta.Nro', 'pagosacuenta.Pagado')
+            ->where('pagosacuenta.Fecha', '=', Date::now()->format('Y-m-d'))
+            ->orderBy('pagosacuenta.Id', 'DESC');
 
             return Datatables::of($result)->make(true);
         }
@@ -59,6 +77,15 @@ class ExamenesCuentaController extends Controller
 
         if ($request->ajax())
         {
+            $result = $this->buildQuery($request);
+
+            return Datatables::of($result)->make(true);
+        }
+
+        return view('layouts.examenesCuenta.index');
+    }
+
+    public function buildQuery(Request $request){
             $query = $this->queryBasico();
             
             $FactDesde = explode('-', $request->rangoDesde);
@@ -95,8 +122,7 @@ class ExamenesCuentaController extends Controller
             });
 
             $query->when(!empty($request->estado) && $request->estado === 'pago', function ($query) {
-                $query->where('pagosacuenta.Pagado', 1)
-                      ->whereNot('pagosacuenta.Pagado', 0);
+                $query->where('pagosacuenta.Pagado', 1);
             });
 
             $query->when(!empty($request->estado) && $request->estado === 'todos', function ($query) {
@@ -104,11 +130,7 @@ class ExamenesCuentaController extends Controller
             });
 
             $result = $query->groupBy('pagosacuenta.Id', 'pagosacuenta.Tipo', 'pagosacuenta.Suc', 'pagosacuenta.Nro', 'pagosacuenta.Pagado');
-
-            return Datatables::of($result)->make(true);
-        }
-
-        return view('layouts.examenesCuenta.index');
+            return $result;
     }
 
     public function saldo(Request $request)
@@ -119,12 +141,27 @@ class ExamenesCuentaController extends Controller
 
         if ($request->ajax())
         {
-            $query = ExamenCuenta::join('pagosacuenta_it', 'pagosacuenta.Id', '=', 'pagosacuenta_it.IdPago')
+            $result = $this->buildQuerySaldo($request);
+            return Datatables::of($result)->make(true);
+        }
+
+        return view('layouts.examenesCuenta.index');
+    }
+
+    public function buildQuerySaldo(Request $request){
+        $query = ExamenCuenta::join('pagosacuenta_it', 'pagosacuenta.Id', '=', 'pagosacuenta_it.IdPago')
             ->join('clientes', 'pagosacuenta.IdEmpresa', '=', 'clientes.Id')
             ->join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
             ->join('prestaciones', 'pagosacuenta_it.IdPrestacion', '=', 'prestaciones.Id')
             ->select(
                 'clientes.RazonSocial as Empresa',
+                'clientes.ParaEmpresa as ParaEmpresa',
+                'pagosacuenta.Tipo as Tipo',
+                'pagosacuenta.Suc as Suc',
+                'pagosacuenta.Nro', 
+                'pagosacuenta.Pagado',
+                'pagosacuenta.Fecha',
+                'pagosacuenta.Id as IdEx',
                 'examenes.Nombre as Examen',
                 'pagosacuenta.IdEmpresa as IdEmpresa'
             );
@@ -151,15 +188,15 @@ class ExamenesCuentaController extends Controller
                     ->groupBy(['clientes.Id', 'clientes.RazonSocial', 'clientes.ParaEmpresa', 'clientes.Identificacion', 'examenes.Nombre']);
             });
 
+            if(!empty($request->examen2)) {
+                $query->where('examenes.Nombre', 'like', '%' . $request->examen2 . '%');
+            }
+
             $result = $query->havingRaw('contadorSaldos > 0')
                 ->whereNot('pagosacuenta_it.Obs', 'provisorio')
                 ->orderBy('clientes.RazonSocial')
                 ->orderBy('examenes.Nombre');
-
-            return Datatables::of($result)->make(true);
-        }
-
-        return view('layouts.examenesCuenta.index');
+            return $result;
     }
 
     public function cambiarPago(Request $request)
@@ -168,28 +205,35 @@ class ExamenesCuentaController extends Controller
             abort(403);
         }
 
-        $estados = $request->Id;
+        $estados = (array) $request->Id;
         $resultado = [];
+        $excel = null;
 
-        if (!is_array($estados)) {
-            $estados = [$estados];
+        $items = ExamenCuenta::whereIn('Id', $estados)->get();
+
+        if(empty($items)) {
+            return response()->json(['msg' => 'No hay examenes para modificar el pago'], 404);
         }
 
-        foreach($estados as $estado) {
+        foreach($items as $item) {
 
-            $item = ExamenCuenta::find($estado);
+            $pagado = $item->Pagado === 0 ? 1 : 0;
+            $fechaPago = $item->FechaP === '0000-00-00' ? $request->fecha : '0000-00-00';
 
-            if ($item) {
-
-                $item->Pagado = $item->Pagado === 0 ? 1 : 0;
-                $item->FechaP = $item->FechaP === '0000-00-00' ? now()->format('Y-m-d') : '0000-00-00';
-                $item->save();
-                $resultado = ['message' => 'Se ha realizado la actualización correctamente', 'estado' => 'success'];
-                
-            }
+            $item->update(['Pagado' => $pagado, 'FechaP' => $fechaPago]);
+            $resultado = ['msg' => 'Se ha realizado la actualización correctamente'];  
         }
 
-        return response()->json($resultado);
+        if($request->tipo === 'pagoMasivo') {
+
+            $consulta = $this->queryBasico();
+            $subQuery = $consulta->whereIn('pagosacuenta.Id', $estados)->groupBy('pagosacuenta.Id', 'pagosacuenta.Tipo', 'pagosacuenta.Suc', 'pagosacuenta.Nro', 'pagosacuenta.Pagado')->get();
+
+            $reporte = $this->reporteExcel->crear('pagoMasivo'); 
+            $excel = $reporte->generar($subQuery);
+        }
+
+        return response()->json(['resultados' => $resultado, 'reporte' => empty($excel) ? null : $excel]);
     }
 
     public function create()
@@ -275,6 +319,7 @@ class ExamenesCuentaController extends Controller
                 'pacientes.Apellido as ApellidoPaciente'
             )
             ->where('pagosacuenta.Id', $request->Id)
+            ->whereNot('pagosacuenta_it.Obs', 'provisorio')
             ->orderBy('pacientes.Apellido', 'ASC')
             ->get();
 
@@ -288,19 +333,13 @@ class ExamenesCuentaController extends Controller
         }
 
         $examen = ExamenCuenta::find($request->Id);
-        $resultado = [];
 
-        if ($examen) 
-        {
-            $examen->delete();
-            $resultado = ['message' => 'Se ha eliminado el examen a cuenta de manera correcta', 'estado' => 'success'];
-
-        } else {
-
-            $resultado = ['message' => 'Ha ocurrido un error en el ID de eliminación. Verifique por favor', 'estado' => 'fail'];
+        if(empty($examen)) {
+            return response()->json(['message' => 'Ha ocurrido un error en el ID de eliminación. Verifique por favor', 'estado' => 'fail']);
         }
 
-        return response()->json($resultado);
+        $examen->delete();
+        return response()->json(['message' => 'Se ha eliminado el examen a cuenta de manera correcta', 'estado' => 'success']);
     }
 
     public function deleteItem(Request $request)
@@ -309,16 +348,11 @@ class ExamenesCuentaController extends Controller
             return response()->json(['msg' => 'No tiene permisos'], 403);
         }
 
-        $examenes = $request->Id;
+        $examenes = (array) $request->Id;
+        $items = ExamenCuentaIt::whereIn('Id', $examenes)->get();
 
-        if (!is_array($examenes)) {
-            $examenes = [$examenes];
-        }
-
-        foreach($examenes as $examen) {
-
-            $item = ExamenCuentaIt::find($examen);
-            $item && $item->delete();
+        foreach($items as $item) {
+            $item->delete();
         }
     }
 
@@ -328,20 +362,11 @@ class ExamenesCuentaController extends Controller
             return response()->json(['msg' => 'No tiene permisos'], 403);
         }
 
-        $examenes = $request->Id;
+        $examenes = (array) $request->Id;
+        $items = ExamenCuentaIt::whereIn('Id', $examenes)->get();
 
-        if (!is_array($examenes)) {
-            $examenes = [$examenes];
-        }
-
-        foreach($examenes as $examen) {
-
-            $item = ExamenCuentaIt::find($examen);
-            if($item) 
-            {
-                $item->Precarga = 0;
-                $item->save();
-            }
+        foreach($items as $item) {
+            $item->update(['Precarga' => 0]);
         }
     }
 
@@ -351,36 +376,30 @@ class ExamenesCuentaController extends Controller
             return response()->json(['msg' => 'No tiene permisos'], 403);
         }
 
-        $examenes = $request->Id;
+        $examenes = (array) $request->Id;
+        $items = ExamenCuentaIt::whereIn('Id', $examenes)->get();
 
-        if (!is_array($examenes)) {
-            $examenes = [$examenes];
-        }
-
-        foreach($examenes as $examen) {
-
-            $item = ExamenCuentaIt::find($examen);
-            if($item) 
-            {
-                $item->Precarga = $request->Precarga;
-                $item->save();
-            }
+        foreach($items as $item) {
+            $item->update(['Precarga' => $request->Precarga]);
         }
     }
 
     public function listado(Request $request)
     {
+        if ($request->ajax()) {
         if(!$this->hasPermission("examenCta_show")) {
             return response()->json(['msg' => 'No tiene permisos'], 403);
         }
 
         $query = ExamenCuentaIt::join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
             ->join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
+            ->join('estudios', 'estudios.Id', '=', 'examenes.IdEstudio')
             ->join('prestaciones', 'pagosacuenta_it.IdPrestacion', '=', 'prestaciones.Id')
             ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
             ->select(
                 'pagosacuenta_it.Precarga as Precarga',
                 'examenes.Nombre as Examen',
+                'estudios.Nombre as Estudio',
                 'prestaciones.Id as Prestacion',
                 'pacientes.Nombre as NombrePaciente',
                 'pacientes.Apellido as ApellidoPaciente',
@@ -390,9 +409,8 @@ class ExamenesCuentaController extends Controller
             ->whereNot('pagosacuenta_it.Obs', 'provisorio')
             ->orderBy('pagosacuenta_it.Precarga', 'Desc')
             ->get();
-
-        return response()->json($query);
-
+            return DataTables::of($query)->make(true);
+        }
 
     }
 
@@ -628,7 +646,7 @@ class ExamenesCuentaController extends Controller
         $examenes = $this->examenesReporte($examen->Id);
 
         $sheet->setCellValue('A8', 'Prestación');
-        $sheet->setCellValue('B8', 'Estudio');
+        $sheet->setCellValue('B8', 'Especialidad');
         $sheet->setCellValue('C8', 'Examen');
         $sheet->setCellValue('D8', 'Paciente');
 
@@ -710,7 +728,7 @@ class ExamenesCuentaController extends Controller
             Empresa::class,
             ExCuenta::class,
             null,
-            "imprimir",
+            "guardar",
             storage_path('app/public/archivo.pdf'),
             $request->Id,
             $paramsTitulo, 
@@ -727,81 +745,25 @@ class ExamenesCuentaController extends Controller
             return response()->json(['msg' => 'No tiene permisos'], 403);
         }
 
-        $examenes = $this->querySalDet($request->Id);
+        $examenes = $this->buildQuerySaldo($request);
 
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-        $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
-
-        $columnas = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
-
-        foreach ($columnas as $columna) {
-            $sheet->getColumnDimension($columna)->setAutoSize(true);
-        }
-
-        $condicion = $request->Tipo === 'detalles' ? 'G' : 'D';
-
-        $sheet->getStyle('A1:'.$condicion.'1')->getFill()
-                ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                ->getStartColor()->setARGB('CCCCCCCC'); 
-        
-        $fila = 2;
-
-        switch ($request->Tipo) {
-            case 'detalles':
-                $sheet->setCellValue('A1', 'Numero ');
-                $sheet->setCellValue('B1', 'Pago ');
-                $sheet->setCellValue('C1', 'Fecha ');
-                $sheet->setCellValue('D1', 'Cliente ');
-                $sheet->setCellValue('E1', 'Empresa ');
-                $sheet->setCellValue('F1', 'Cant ');
-                $sheet->setCellValue('G1', 'Examen ');
-
-                foreach($examenes as $examen){
-                    $factura = $examen->Tipo . sprintf('%04d', $examen->Suc) . sprintf('%08d', $examen->Nro);
-
-                    $sheet->setCellValue('A'.$fila, $examen->Id);
-                    $sheet->setCellValue('B'.$fila, $factura);
-                    $sheet->setCellValue('C'.$fila, $examen->Fecha);
-                    $sheet->setCellValue('D'.$fila, $examen->Empresa);
-                    $sheet->setCellValue('E'.$fila, $examen->ParaEmpresa);
-                    $sheet->setCellValue('F'.$fila, $examen->Cantidad);
-                    $sheet->setCellValue('G'.$fila, $examen->NombreExamen);
-                    $fila++;
-                }
-                
-                break;
-            
-            case 'saldo':
-                $sheet->setCellValue('A1', 'Cliente ');
-                $sheet->setCellValue('B1', 'ParaEmpresa ');
-                $sheet->setCellValue('C1', 'Cantidad ');
-                $sheet->setCellValue('D1', 'Examen ');
-
-                foreach($examenes as $examen){
-                    $sheet->setCellValue('A'.$fila, $examen->Empresa);
-                    $sheet->setCellValue('B'.$fila, $examen->ParaEmpresa);
-                    $sheet->setCellValue('C'.$fila, $examen->Cantidad);
-                    $sheet->setCellValue('D'.$fila, $examen->NombreExamen);
-                    $fila++;
-                }
-
-                break;
-        }
-
-        // Generar un nombre aleatorio para el archivo
-        $name = Str::random(10).'.xlsx';
-
-        // Guardar el archivo en la carpeta de almacenamiento
-        $filePath = storage_path('app/public/'.$name);
-
-        $writer = new Xlsx($spreadsheet);
-        $writer->save($filePath);
-        chmod($filePath, 0777);
-
+        $reporte = $this->reporteExcel->crear('saldosCte'); 
         // Devolver la ruta del archivo generado
-        return response()->json(['filePath' => $filePath]);      
+        
+        return $reporte->generar($examenes->get());
+    }
 
+    public function reporteDetalle(Request $request){
+         if(!$this->hasPermission("examenCta_report")) {
+            return response()->json(['msg' => 'No tiene permisos'], 403);
+        }
+
+        $examenes = $this->buildQuerySaldo($request);
+
+        $reporte = $this->reporteExcel->crear('cuentaCte'); 
+        // Devolver la ruta del archivo generado
+        
+        return $reporte->generar($examenes->get());
     }
 
     public function disponibilidad(Request $request)
@@ -816,7 +778,9 @@ class ExamenesCuentaController extends Controller
             ->select(
                 'pagosacuenta.Id as Id',
                 'pagosacuenta_it.Obs as Precarga',
-                'examenes.Nombre as NombreExamen', 
+                'examenes.Nombre as NombreExamen',
+                'examenes.Id as IdExamen',
+                'pagosacuenta_it.Id as Id'
                 //DB::raw('COUNT(pagosacuenta_it.IdExamen) as Cantidad')
             )
             ->where('pagosacuenta.IdEmpresa', $request->Id)
@@ -828,6 +792,7 @@ class ExamenesCuentaController extends Controller
 
         return response()->json($examen);  
     }
+    
 
     public function listadoUltimas(Request $request)
     {
@@ -882,107 +847,97 @@ class ExamenesCuentaController extends Controller
         return response()->json($query);
     }
 
-    public function disponibles(Request $request)
+    public function listExCta(Request $request)
     {
-        if(!$this->hasPermission("examenCta_show")) {
-            return response()->json(['msg' => 'No tiene permisos'], 403);
+        $query = DB::Select('CALL getListaExCta(?)', [$request->Id]);
+        return response()->json($query);
+    }
+
+    public function cargarExCtaPrestacion(Request $request)
+    {
+        if (!isset($request->Ids) || !is_array($request->Ids)) {
+            return response()->json(['error' => 'No hay examenes a cuenta para procesar'], 400);
         }
 
+        $ids = $request->Ids;
+        $examenesCta = ExamenCuentaIt::whereIn('id', $ids)->get();
+        $resultados = [];
+
+        foreach ($examenesCta as $examenCta) {
+
+            $itemPrestacion = ItemPrestacion::where('IdPrestacion', $request->IdPrestacion)
+                ->where('IdExamen', $examenCta->IdExamen)
+                ->exists(); // Seguridad de que no exista un examen con la prestacion
+
+            if ($itemPrestacion) {
+                $resultados[] = ['msg' => 'El examen ya está registrado en esta prestación', 'status' => 'warning'];
+            
+            } else {
+
+                $examenCta->IdPrestacion = $request->IdPrestacion;
+                $examenCta->save();
+
+                $this->addItemPrestacion($request->IdPrestacion, $examenCta->IdExamen);
+
+                $resultados[] = ['msg' => 'Examen a cuenta cargado correctamente.', 'status' => 'success'];
+            }
+        }
+
+        return response()->json($resultados);
+    }
+
+    public function listaExCtaEmpresa(Request $request)
+    {
+         $subquery = DB::table('pagosacuenta_it')
+            ->join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
+            ->join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
+            ->select(
+                'examenes.Id',
+                DB::raw('COUNT(*) as total_examenes')
+            )
+            ->where('pagosacuenta_it.IdPrestacion', 0)
+            ->where('pagosacuenta_it.Obs', '!=', 'provisorio')
+            ->where('pagosacuenta.IdEmpresa', $request->Id)
+            ->groupBy('examenes.Id');
+
         $query = ExamenCuenta::join('pagosacuenta_it', 'pagosacuenta.Id', '=', 'pagosacuenta_it.IdPago')
+            ->join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
+            ->joinSub($subquery, 'conteo', function ($join) {
+                $join->on('examenes.Id', '=', 'conteo.Id');
+            })
+            ->select(
+                'examenes.Id as IdExamen',
+                'examenes.Nombre as NombreExamen',
+                'pagosacuenta_it.Id as IdPagoCuenta',
+                'conteo.total_examenes as total'
+            )
             ->where('pagosacuenta.IdEmpresa', $request->Id)
             ->where('pagosacuenta_it.IdPrestacion', 0)
             ->whereNot('pagosacuenta_it.Obs', 'provisorio')
-            ->count();
+            ->groupBy('examenes.Nombre')
+            ->orderBy('examenes.Nombre', 'desc')
+            ->get();
 
         return response()->json($query);
     }
 
-     //Listado dentro de Pacientes en Alta de Prestación - Muestra las facturas en la grilla
-     public function lstExClientes(Request $request)
-     {
-        if(!$this->hasPermission("prestaciones_show")) {
-            return response()->json(['msg' => 'No tiene permisos'], 403);
-        }
-
-         $clientes = ExamenCuentaIt::join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
-             ->join('pagosacuenta', function($join) use ($request) {
-                $join->on('pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id');
-                    $join->where('pagosacuenta.IdEmpresa', $request->Id);
-             })
-             ->select(
-                 'examenes.Nombre as NombreExamen',
-                 'pagosacuenta.Tipo as Tipo',
-                 'pagosacuenta.Suc as Suc',
-                 'pagosacuenta.Nro as Nro',
-                 'pagosacuenta.Obs as Obs',
-                 'pagosacuenta.Id as Id'
-             )
-             ->where('pagosacuenta_it.IdPrestacion', 0)
-             ->whereNot('pagosacuenta_it.Obs', 'provisorio')
-             ->groupBy(['pagosacuenta.Tipo', 'pagosacuenta.Suc','pagosacuenta.Nro'])
-             ->get();
- 
-         return response()->json($clientes);
-     }
-
-    //Listado dentro de Pacientes en Alta de Prestación con todos los DNI precargados
-    public function listadoPrecarga(Request $request)
+    public function contadorPagos(Request $request)
     {
-        if(!$this->hasPermission("prestaciones_show")) {
-            return response()->json(['msg' => 'No tiene permisos'], 403);
-        }
-
-        $clientes = ExamenCuentaIt::join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
+        $query = ExamenCuentaIt::join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
             ->select(
-                'pagosacuenta_it.Precarga as Documento',
-                'pagosacuenta_it.IdPrestacion as IdPrestacion',
-                'pagosacuenta_it.IdPago as IdPago'
+                'pagosacuenta.Tipo as Tipo',
+                'pagosacuenta.Suc as Sucursal',
+                'pagosacuenta.Nro as NroFactura',
+                 DB::raw('COUNT(DISTINCT pagosacuenta_it.IdPago) as contador')
             )
-            ->where('pagosacuenta_it.IdPago', $request->Id);
-
-            $clientes->when(!empty($request->IdExamen), function ($query) use ($request) {
-                $query->where('pagosacuenta_it.IdExamen', $request->IdExamen)
-                        ->whereNot('pagosacuenta_it.IdExamen', '<>', $request->IdExamen);
-            });
-            $clientes = $clientes->where('pagosacuenta_it.IdPrestacion', 0)
-            ->groupBy('pagosacuenta_it.Precarga')  
-            ->orderBy('pagosacuenta_it.Precarga', 'Desc')
+            ->where('pagosacuenta_it.IdPrestacion', $request->Id)
+            ->distinct()
+            ->groupBy('pagosacuenta.Tipo', 'pagosacuenta.Suc', 'pagosacuenta.Nro')
             ->get();
 
-        return response()->json($clientes);
+        return response()->json($query);
     }
 
-    //Listado dentro de Pacientes en Alta de Prestación
-    public function listadoExCta(Request $request)
-    {
-        if(!$this->hasPermission("prestaciones_show")) {
-            return response()->json(['msg' => 'No tiene permisos'], 403);
-        }
-
-        $clientes = ExamenCuentaIt::join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
-            ->join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
-            ->select(
-                'examenes.Nombre as NombreExamen',
-                'examenes.Id as IdTest',
-                'pagosacuenta_it.Id as IdEx',
-                'pagosacuenta.Pagado as Pagado',
-                DB::raw('(SELECT COUNT(*) FROM pagosacuenta_it WHERE IdPago = pagosacuenta.Id AND IdExamen = examenes.Id AND IdPrestacion = 0) as Cantidad')
-            )
-            ->where(function ($query) use ($request) {
-                $query->where('pagosacuenta_it.Precarga', $request->Id)
-                        ->orWhereNull('pagosacuenta_it.Precarga');
-            })
-            ->where('pagosacuenta_it.IdPrestacion', 0)
-            ->where('pagosacuenta.Id', $request->IdPago)
-            ->whereNot('pagosacuenta_it.IdExamen', 0);
-
-            $clientes = $clientes->groupBy('examenes.Id')->orderBy('pagosacuenta_it.IdPrestacion', 'ASC')
-            ->get();
-        
-        return response()->json($clientes);
-        
-    }
-    
     private function tituloReporte(?int $id): mixed
     {
         return ExamenCuenta::join('clientes', 'pagosacuenta.IdEmpresa', '=', 'clientes.Id')
@@ -1046,9 +1001,9 @@ class ExamenesCuentaController extends Controller
         return ExamenCuentaIt::where('IdPago', $id)->where('IdPrestacion', 0)->count();
     }
 
-    private function querySalDet(?int $id): mixed
+    private function querySalDet(Request $request): mixed
     {
-        return ExamenCuenta::join('pagosacuenta_it', function($join) {
+        $query = ExamenCuenta::join('pagosacuenta_it', function($join) {
             $join->on('pagosacuenta.Id', '=', 'pagosacuenta_it.IdPago')
                     ->where('pagosacuenta_it.IdPrestacion', 0);
             })
@@ -1064,9 +1019,22 @@ class ExamenesCuentaController extends Controller
                 'clientes.ParaEmpresa as ParaEmpresa',
                 'examenes.Nombre as NombreExamen',
                 DB::raw('COUNT(pagosacuenta_it.IdExamen) as Cantidad')
-            )
-            ->where('pagosacuenta.IdEmpresa', $id)
-            ->groupBy('examenes.Nombre')
+            );
+
+            if(!empty($request->empresa)){
+                $query->where('pagosacuenta.IdEmpresa', $request->empresa);
+            }
+
+            if(!empty($request->examen)){
+                $query->where('pagosacuenta_it.IdExamen', $request->examen);
+            }
+
+            if(!empty($request->examen2)){
+                $query->where('examenes.Nombre','LIKE','%'.$request->examen2.'%');
+            }
+
+
+            $query->groupBy('examenes.Nombre')
             ->orderBy('clientes.RazonSocial', 'DESC')
             ->orderBy('clientes.ParaEmpresa', 'DESC')
             ->orderBy('pagosacuenta.Tipo', 'DESC')
@@ -1074,6 +1042,8 @@ class ExamenesCuentaController extends Controller
             ->orderBy('pagosacuenta.Nro', 'DESC')
             ->orderBy('examenes.Nombre', 'DESC')
             ->get();
+
+        return $query;
     }
 
     private function queryBasico(): mixed
@@ -1099,4 +1069,11 @@ class ExamenesCuentaController extends Controller
             'examenes.Nombre as Examen'
         );
     }
+
+    private function addItemPrestacion(int $idPrestacion, int $idExamen)
+    {
+        $examenes = (array) $idExamen;
+        $this->itemCrud->create($examenes, $idPrestacion, null);
+    }
+
 }

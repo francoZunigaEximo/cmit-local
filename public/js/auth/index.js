@@ -109,7 +109,7 @@ $(function(){
     $(document).on('click', '.baja', function(e){
         let id = $(this).data('id');
 
-        if([null, undefined, 0].includes(id)) return;
+        if(!id) return;
 
         swal({
             title: "¿Estas seguro que deseas eliminar al usuario?",
@@ -145,7 +145,7 @@ $(function(){
     $(document).on('click', '.bloquear', function(e){
         let id = $(this).data('id');
 
-        if([null, undefined, 0].includes(id)) return;
+        if(!id) return;
 
         swal({
             title: "¿Estas seguro que deseas realizar la acción?",
@@ -159,7 +159,7 @@ $(function(){
 
                 $.get(bloquearUsuario, {Id: id})
                     .done(function(response){
-                        toastr.success(response.msg);
+                        toastr.success(response.msg, '', {timeOut: 1000});
                         $('#listaUsuarios').DataTable().ajax.reload(function(){
                             $('#listaUsuarios tbody').show();
                             $('.dataTables_processing').hide();
@@ -179,7 +179,7 @@ $(function(){
     $(document).on('click', '.cambiarPass', function(e){
         let id = $(this).data('id');
 
-        if([null, undefined, 0].includes(id)) return;
+        if(!id) return;
 
         swal({
             title: "¿Estas seguro que deseas resetear la contraseña?",
@@ -191,7 +191,7 @@ $(function(){
                 $.get(cambiarPassUsuario, {Id: id})
                     .done(function(response){
                         preloader('off');
-                        toastr.success(response.msg);
+                        toastr.success(response.msg, '', {timeOut: 1000});
                     }); 
             }
         });      
@@ -214,7 +214,7 @@ $(function(){
 
         let id = $(this).data('id');
 
-        if([null, 0, undefined, ''].includes(id)) return;
+        if(!id) return;
 
         swal({
             title: "¿Esta seguro que deseas cerrar la sesion del usuario?",

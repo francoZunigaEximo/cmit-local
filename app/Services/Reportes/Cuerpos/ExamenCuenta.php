@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
     ]): void
     {
         //titulos columnas
-        $pdf->Cell(31,5,'ESTUDIO',0,0,'L');
+        $pdf->Cell(31,5,'ESPECIALIDAD',0,0,'L');
         $pdf->Cell(75,5,'EXAMEN',0,0,'L');
         $pdf->Cell(20,5,'PRESTACION',0,0,'R');
         $pdf->Cell(60,5,'PACIENTE',0,0,'L');
@@ -75,12 +75,24 @@ use Illuminate\Support\Facades\DB;
 
     private function detalladoExamenesCuenta(int $id): mixed
     {
+        $query = DB::table('pagosacuenta_it')
+            ->join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
+            ->select(
+                DB::raw('COUNT(pagosacuenta_it.IdExamen) as Cantidad'), 
+                'examenes.Nombre as NombreExamen')
+            ->where('pagosacuenta_it.IdPago', $id)
+            ->groupBy('examenes.Nombre');
+        return $query->get();
+    }
+
+    private function detalleCantidadExamenes(int $id): mixed{
         return ExamenCuentaIt::join('examenes', 'examenes.Id', '=', 'pagosacuenta_it.IdExamen')
             ->select(
                 DB::raw('COUNT(pagosacuenta_it.IdExamen) as Cantidad'), 
                 'examenes.Nombre as NombreExamen')
             ->where('pagosacuenta_it.IdPago', $id)
             ->orderBy('examenes.Nombre')
+            ->groupBy('examenes.Nombre')
             ->get();
     }
 

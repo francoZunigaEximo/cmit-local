@@ -16,7 +16,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
-use App\Exports\PrestacionesExport;
 use App\Helpers\FileHelper;
 use App\Helpers\Tools;
 use App\Models\ArchivoEfector;
@@ -25,8 +24,6 @@ use App\Models\ExamenCuentaIt;
 use App\Models\Fichalaboral;
 use App\Models\ItemPrestacion;
 use App\Services\Reportes\Cuerpos\AdjuntosAnexos;
-use Maatwebsite\Excel\Facades\Excel;
-use stdClass;
 use Illuminate\Support\Facades\Auth;
 use App\Traits\CheckPermission;
 use Illuminate\Support\Facades\Artisan;
@@ -46,6 +43,7 @@ use App\Services\Reportes\Cuerpos\ControlPaciente;
 use App\Services\Reportes\Titulos\NroPrestacion;
 use App\Services\Reportes\Cuerpos\EnviarOpciones;
 use App\Services\Reportes\Titulos\EEstudio;
+use App\Services\Reportes\Cuerpos\PDFREPE1;
 
 use App\Jobs\EnviarReporteJob;
 use App\Jobs\ExamenesImpagosJob;
@@ -54,22 +52,19 @@ use App\Jobs\ExamenesResultadosJob;
 use App\Helpers\ToolsEmails;
 use App\Jobs\EnviarAvisoJob;
 use App\Jobs\EnvioReporteEspecialJob;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\EnviarReporte;
-use App\Mail\ExamenesResultadosMail;
+// use Illuminate\Support\Facades\Mail;
+// use App\Mail\EnviarReporte;
+// use App\Mail\ExamenesResultadosMail;
 use App\Models\ArchivoPrestacion;
 use App\Models\HistorialPrestacion;
-use App\Models\PrestacionObsFase;
-use App\Traits\ReporteExcel;
-use PhpOffice\PhpSpreadsheet\Calculation\Logical\Boolean;
+use App\Services\ReportesExcel\ReporteExcel;
 
 use Illuminate\Support\Facades\File;
-
-use FPDF;
+use App\Services\Facturas\PrestaFichaFactura;
 
 class PrestacionesController extends Controller
 {
-    use ObserverPrestaciones, ObserverFacturasVenta, CheckPermission, ReporteExcel, ToolsEmails;
+    use ObserverPrestaciones, ObserverFacturasVenta, CheckPermission, ToolsEmails;
 
     protected $reporteService;
     protected $outputPath;
@@ -81,14 +76,44 @@ class PrestacionesController extends Controller
     protected $sendFile2;
     protected $sendFile3;
 
+    protected $reporteExcel;
+    protected $detalleFactura;
 
-    public function __construct(ReporteService $reporteService)
+    public $helper = '
+        <ul>
+            <li>No se podrán <b class="negrita_verde">Cerrar</b> las Prestaciones con exámenes Incompletos o Ausentes</li>
+            <li>No se podrán <b class="negrita_verde">Finalizar</b> las Prestaciones con Sin Escanear, Forma o devolución</li>
+            <li>Para Borrar Prestaciones con exámenes provenientes de <b class="negrita_verde">exámenes a Cuenta</b> primero deben eliminarse los exámenes</li>
+        </ul>
+    ';
+
+    public $helperEdit = '
+        <ul>
+            <li>No se podrán <b class="negrita_verde">Cerrar</b> las Prestaciones con exámenes Incompletos o Ausentes</li>
+            <li>No se podrán <b class="negrita_verde">Finalizar</b> las Prestaciones con Preliminar RX, Sin Escanear, Forma o devolución</li>
+            <li>Solo se podrán <b class="negrita_verde">Reactivar</b> las Prestaciones sin No asociadas</li>
+            <li>El botón <b class="negrita_verde">Todo</b> Cierra, Envia la Calificacion Laboral e Imprime Resumen, o reste y formularios Anexos para completar </li>
+            <li>Para poder enviar <b class="negrita_verde">Resultados</b>, el Cliente debe tener Mail Informes, no registrar Sin Envio de Mails y no contar con Examenes a Cuenta impagos asociados</li>
+            <li>Solo puede <b class="negrita_verde">e-Enviar</b> si la prestacion esta Cerrada y los examenes estan cerrados, adjuntados e informados (incluidos los anexos)</li>
+            <li>Envia los reportes al <b class="negrita_verde">Email Informes</b> de la Empresa o ART, segun el Tipo de Prestación</li>
+            <li>Si el <b class="negrita_verde">Tipo</b> es OTRO/CARNET/REC MED/S/C_OCUPACIONAL (Sin Calificacion Laboral), el e-Estudio NO genera hoja de aptitud, solo Adjuntos</li>    
+            <li>No es posible cambiar Empresa y ART si la Prestaciones esta Anulada, Facturada o tiene Constancia Entrega</li>
+        </ul>
+    ';
+
+    public function __construct(
+        ReporteService $reporteService, 
+        ReporteExcel $reporteExcel,
+        PrestaFichaFactura $detalleFactura
+        )
     {
         $this->reporteService = $reporteService;
         $this->outputPath = storage_path('app/public/temp/fusionar.pdf');
         $this->sendPath = storage_path('app/public/temp/cmit-'.Tools::randomCode(15).'-informe.pdf');
         $this->fileNameExport = 'reporte-'.Tools::randomCode(15);
         $this->tempFile = 'app/public/temp/file-';
+        $this->reporteExcel = $reporteExcel;
+        $this->detalleFactura = $detalleFactura;
     }
 
     public function index(Request $request): mixed
@@ -102,7 +127,7 @@ class PrestacionesController extends Controller
             return Datatables::of($query)->make(true);
         }
 
-        return view('layouts.prestaciones.index');
+        return view('layouts.prestaciones.index', ['helper' => $this->helper]);
     }
     
     public function create()
@@ -130,7 +155,7 @@ class PrestacionesController extends Controller
         $fichalaboral = Fichalaboral::where('IdPaciente', $prestacione->IdPaciente)->orderBy('Id', 'Desc')->first();
         $tiposPrestacionOtros = PrestacionesTipo::whereNotIn('Nombre', $tiposPrestacionPrincipales)->get();
 
-        return view('layouts.prestaciones.edit', compact(['tipoPrestacion', 'prestacione', 'financiador', 'auditorias', 'fichalaboral', 'tiposPrestacionOtros']));
+        return view('layouts.prestaciones.edit', compact(['tipoPrestacion', 'prestacione', 'financiador', 'auditorias', 'fichalaboral', 'tiposPrestacionOtros']), ['helper'=> $this->helperEdit]);
     }
 
     public function estados(Request $request)
@@ -272,45 +297,44 @@ class PrestacionesController extends Controller
             return response()->json(['msg' => 'No tienes permisos'], 403);
         }
 
-        if ($this->checkPacientePresMapa($request->paciente, $request->mapas) > 0 && $request->mapas !== 0 && $request->tipoPrestacion === 'ART') {
+        if ($this->checkPacientePresMapa($request->IdPaciente, $request->IdMapa) > 0 && $request->IdMapa !== 0 && $request->TipoPrestacion === 'ART') {
             return response()->json(['msg' => 'El paciente ya se encuentra incluido en el mapa'], 409);
         }
 
         $nuevoId = Prestacion::max('Id') + 1;
-
-        Prestacion::create([
-            'Id' => $nuevoId,
-            'IdPaciente' => $request->paciente,
-            'TipoPrestacion' => $request->tipoPrestacion,
-            'IdMapa' => $request->tipoPrestacion <> 'ART' ? 0 : ($request->mapas ?? 0),
-            'Pago' => $request->pago,
-            'SPago' => $request->spago ?? '',
-            'Observaciones' => $request->observaciones ??  '',
-            'IdEmpresa' => $request->IdEmpresa,
-            'IdART' => $request->IdART,
-            'Fecha' => now()->format('Y-m-d'),
-            'Financiador' => $request->financiador,
-            'NroFactProv' => $request->NroFactProv
+        $data = $request->only([
+            'IdPaciente',
+            'TipoPrestacion',
+            'Pago',
+            'SPago',
+            'Observaciones',
+            'IdEmpresa',
+            'IdART',
+            'datos_facturacion_id'
         ]);
 
+        $data['Id'] = $nuevoId;
+        $data['Fecha'] = now()->format('Y-m-d');
+        $data['IdMapa'] = $request->TipoPrestacion != 'ART' ? 0 : ($request->IdMapa ?? 0);
+
+        Prestacion::create($data);
         Auditor::setAuditoria($nuevoId, 1, 44, Auth::user()->name);
 
-        $empresa = ($request->tipoPrestacion === 'ART' ? $request->IdART : $request->IdEmpresa);
+        $empresa = ($request->TipoPrestacion === 'ART' ? $request->IdART : $request->IdEmpresa);
 
-        $request->mapas && $this->updateMapeados($request->mapas, "quitar");
+        $request->IdMapa && $this->updateMapeados($request->IdMapa, "quitar");
 
-        if (!in_array($request->examenCuenta, [0, null, ''])) {
-            $examenes = $this->registrarExamenCta($request->examenCuenta, $nuevoId);
-        } 
-    
-        if (isset($examenes) && is_array($examenes) && !in_array($examenes, [0, null, ''])) {
-            $this->registrarExamenes($examenes, $nuevoId);
-        }
-
-        if($request->tipo && $request->sucursal && $request->nroFactura && $nuevoId)
+        if ($request->Tipo && 
+            $request->Sucursal && 
+            $request->NroFactura && 
+            $nuevoId && 
+            in_array($request->Pago, ['A', 'B'])
+            )
         {
-            $this->addFactura($request->tipo, $request->sucursal, $request->nroFactura, $empresa, $request->tipoPrestacion, $nuevoId);
-        }
+            $this->addFactura($request->Tipo, $request->Sucursal, $request->NroFactura, $empresa, $request->TipoPrestacion, $nuevoId);
+            $this->detalleFactura->modificar(['prestacion_id' => intval($nuevoId)], intval($request->datos_facturacion_id));
+
+        } 
     
         return response()->json(['nuevoId' => $nuevoId, 'msg' => 'Se ha generado la prestación del paciente.'], 200);
     }
@@ -383,7 +407,7 @@ class PrestacionesController extends Controller
         return response()->json(['paraEmpresas' => $resultados]);
     }
 
-    public function getPresPaciente(Request $request): mixed
+    public function getPresPaciente(Request $request)
     {
         if (!$this->hasPermission("prestaciones_show") || !$this->hasPermission("prestaciones_edit")) {
             return response()->json(['msg' => 'No tienes permisos'], 403);
@@ -410,38 +434,30 @@ class PrestacionesController extends Controller
         } 
     }
 
-    public function verifyWizard(Request $request)
-    {
-        if (!$this->hasPermission("prestaciones_show") || !$this->hasPermission("prestaciones_edit")) {
-            return response()->json(['msg' => 'No tienes permisos'], 403);
-        }
-
-        $query = Paciente::where('Documento', $request->Documento)->first();
-        $existe = $query !== null;
-
-        return response()->json(['existe' => $existe, 'paciente' => $query]);
-    }
-
     public function exportExcel(Request $request)
     {
         /*if (!$this->hasPermission("prestaciones_report")) {
             return response()->json(['msg' => 'No tienes permisos'], 403);
         }*/
-
-        $ids        = $request->ids ? explode(",", $request->ids) : []; 
-        $filters    = $request->filters ? explode(",", $request->filters) : [];
-        $tipo       = $request->tipo;
-
-        if($filters){
-            $filtersAux = new stdClass() ;
-            foreach ($filters as $filter) {
-                $value = explode(":", $filter);
-                $filtersAux->{$value[0]} = isset($value[1]) ? $value[1] : "";
-            }
-            $filters = $filtersAux;
-        }
+    
+        $data = [];
+        $filters = $this->procesarFiltros($request->filters);
         
-        return Excel::download(new PrestacionesExport($ids, $filters, $tipo), 'prestaciones.xlsx');
+        array_push($data, $request->ids);
+        $data['filters'] = $filters;
+
+        switch ($request->tipo) {
+            case 'simple':
+                $reporte = $this->reporteExcel->crear('simplePrestacionFull');
+                return $reporte->generar($data);
+            case 'detallado':
+                $reporte = $this->reporteExcel->crear('detalladaPrestacionFull');
+                return $reporte->generar($data);
+            case 'completo':
+                $reporte = $this->reporteExcel->crear('completoPrestacionFull');
+                return $reporte->generar($data);
+        }
+
     }
 
     public function getBloqueo(Request $request)
@@ -528,9 +544,9 @@ class PrestacionesController extends Controller
         $acciones = [
             'adjAnexos' => 'adjAnexos',
             'eEnvio' => ['eEstudio', 'adjAnexos', 'adjGenerales'],
-            'adjDigitales' => ['adjDigitalFisico' => 3],
-            'adjFisicos' => ['adjDigitalFisico' => 1],
-            'adjFisicosDigitales' => ['adjDigitalFisico' => 2],
+            'adjDigitales' => ['adjDigitalFisico' => 1],
+            'adjFisicos' => ['adjDigitalFisico' => 2],
+            'adjFisicosDigitales' => ['adjDigitalFisico' => 3],
             'adjGenerales' => 'adjGenerales',
             'infInternos' => 'infInternos',
             'pedProveedores' => 'pedProveedores',
@@ -633,24 +649,7 @@ class PrestacionesController extends Controller
             File::copy($this->adjAnexos($request->Id), FileHelper::getFileUrl('escritura').'/EnviarOpciones/eAnexos'.$request->Id.'_'.$this->getIdArchivoEfector($request->Id).'.pdf');
         }
 
-        if ($request->adjDigitales == 'true') {
-            array_push($listado, $this->adjDigitalFisico($request->Id, 3));
-        }
-
-        if ($request->adjFisicos == 'true') {
-            array_push($listado, $this->adjDigitalFisico($request->Id, 1));
-        }
-
-        if ($request->adjGenerales == 'true') {
-            array_push($listado, $this->adjGenerales($request->Id));
-            File::copy($this->adjGenerales($request->Id), FileHelper::getFileUrl('escritura').'/EnviarOpciones/eAdjuntos'.$request->Id.'.pdf');
-        }
-
-        if ($request->resAdmin == 'true') {
-            array_push($listado, $this->resAdmin($request->Id));
-        }
-
-        if ($request->consEstDetallado == 'true') {
+        if ($request->adjDigitales == 'true') {//
             array_push($listado, $this->consEstDetallado($request->Id));
             File::copy($this->consEstDetallado($request->Id), FileHelper::getFileUrl('escritura').'/EnviarOpciones/eConstanciaD'.$request->Id.'.pdf');
         }
@@ -799,7 +798,9 @@ class PrestacionesController extends Controller
         $prestacion = Prestacion::find($request->Id);
 
         if($prestacion) {
-            return $this->resumenPrestacion($prestacion);
+            $reporte = $this->reporteExcel->crear('resumenTotal');
+            return $reporte->generar($prestacion);
+            
         }else{
             return response()->json(['msg' => 'No se ha podido generar el archivo'], 409);
         }
@@ -932,6 +933,11 @@ class PrestacionesController extends Controller
 
     }
 
+    public function pdfPrueba(Request $request){
+        
+        return $this->addEstudioExamen($request->Id, $request->Examen, $request->vistaPrevia == "true" ? true : false);
+    }
+
     public function uploadAdjuntoPrestacion(Request $request)
     {
         $id = ArchivoPrestacion::max('Id') + 1;
@@ -986,11 +992,13 @@ class PrestacionesController extends Controller
     {
         if ($request->Tipo === 'exportSimple') {
 
-            return $this->SimplePrestacion($this->querySimple($request->IdPaciente));
-            
+            $reporte = $this->reporteExcel->crear('simplePrestacion');
+            return $reporte->generar($this->querySimple($request->IdPaciente));
+
         }elseif($request->Tipo === 'exportDetallado') {
             
-            return $this->detalladaPrestacion($this->queryDetallado($request->IdPaciente));  
+            $reporte = $this->reporteExcel->crear('detalladaPrestacion');
+            return $reporte->generar($this->queryDetallado($request->IdPaciente));
         }
         return response()->json(['msg' => 'No se ha podido generar el archivo'], 409);
     }
@@ -1053,16 +1061,16 @@ class PrestacionesController extends Controller
     private function resumenEvaluacion(int $idPrestacion): mixed
     {
         return $this->reporteService->generarReporte(
-            Reducido::class,
-            null,
             EvaluacionResumen::class,
+            null,
+            null,
             null,
             'guardar',
             storage_path($this->tempFile.Tools::randomCode(15).'-'.Auth::user()->name.'.pdf'),
             null,
-            [],
-            [],
             ['id' => $idPrestacion, 'firmaeval' => 0, 'opciones' => 'no', 'eEstudio' => 'no'],
+            [],
+            [],
             [],
             null
         );
@@ -1086,7 +1094,7 @@ class PrestacionesController extends Controller
         );
     }
 
-    private function adjDigitalFisico(int $idPrestacion, int $tipo): mixed // 1 es Digital, 2 es Fisico,Digital
+    private function adjDigitalFisico(int $idPrestacion, int $tipo): mixed // 1 es Digital, 2 es Fisico
     {
         return $this->reporteService->generarReporte(
             AdjuntosDigitales::class,
@@ -1487,24 +1495,17 @@ class PrestacionesController extends Controller
 
                 $this->updateMapeados($prestacion->IdMapa, "agregar");
             } 
-        
-            $prestacion->IdEmpresa = $request->Empresa ?? 0;
-            $prestacion->IdART = $request->Art ?? 0;
-            $prestacion->Fecha = $request->Fecha ?? '';
-            $prestacion->TipoPrestacion = $request->TipoPrestacion ?? '';
-            $prestacion->IdMapa = $mapa;
-            $prestacion->Pago = $request->Pago ?? '';
-            $prestacion->SPago = $request->SPago ?? '';
+
+            $prestacion->fill($request->all());
             $prestacion->Financiador = ($request->TipoPrestacion == 'ART' ? $request->Art : $request->Empresa) ?? 0;
-            $prestacion->Observaciones = $request->Observaciones ?? '';
-            $prestacion->NumeroFacturaVta = $request->NumeroFacturaVta ?? 0;
-            $prestacion->IdEvaluador = $request->IdEvaluador ?? 0;
-            $prestacion->Evaluacion = $request->Evaluacion ?? 0;
-            $prestacion->Calificacion = $request->Calificacion ?? 0;
-            $prestacion->ObsExamenes = $request->ObsExamenes ?? '';
             $prestacion->FechaAnul = $request->FechaAnul ?? '0000-00-00';
-            $prestacion->NroFactProv = $request->NroFactProv ?? '';
+            $prestacion->IdMapa = $mapa;
             $prestacion->save();
+            $prestacion->refresh();
+
+            $guardar = [
+                'prestacion_id' => $prestacion->Id
+            ];
             
             $request->SinEval && $this->setPrestacionAtributo($request->Id, $request->SinEval);
             $request->Obs && $this->setPrestacionComentario($request->Id, $request->Obs);
@@ -1513,12 +1514,17 @@ class PrestacionesController extends Controller
 
             $this->updateFichaLaboral($request->IdPaciente, $request->Art, $request->Empresa);
             $this->addFactura($request->tipo, $request->sucursal, $request->nroFactura, $empresa, $request->tipoPrestacion, $request->Id);
+            
+            if(!empty($request->datos_facturacion_id)) {
+                $this->detalleFactura->modificar($guardar, $request->datos_facturacion_id);
+            }
+
             Auditor::setAuditoria($request->Id, 1, 2, Auth::user()->name);
         }
 
     }
 
-    private function addEstudioExamen(int $idPrestacion, int $idExamen): mixed
+    private function addEstudioExamen(int $idPrestacion, int $idExamen, bool $vistaPrevia = false): mixed
     {
 
         return $this->reporteService->generarReporte(
@@ -1533,7 +1539,8 @@ class PrestacionesController extends Controller
             [],
             [],
             [],
-            null
+            null,
+            $vistaPrevia
         );
     }
 
@@ -1669,6 +1676,32 @@ class PrestacionesController extends Controller
         return ExamenCuentaIt::join('prestaciones', 'pagosacuenta_it.IdPrestacion', '=', 'prestaciones.Id')
             ->join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
             ->where('pagosacuenta_it.IdPrestacion', $idPrestacion)->where('pagosacuenta.Pagado', 0)->count();
+    }
+
+    private function procesarFiltros(?string $filtro = null): array
+    {
+        $filters = [];
+    
+        if (!empty($filtro)) {
+            $filtersArray = explode(",", $filtro);
+    
+            foreach ($filtersArray as $filter) {
+                $parts = explode(":", $filter, 2);
+    
+                // Verificar que haya exactamente dos partes (clave y valor)
+                if (count($parts) === 2) {
+                    $key = trim($parts[0]);
+                    $value = trim($parts[1]);
+    
+                    // Agregar el filtro solo si el valor no está vacío ni es 'undefined'
+                    if (!empty($value) && $value !== 'undefined') {
+                        $filters[$key] = $value;
+                    }
+                }
+            }
+        }
+    
+        return $filters;
     }
 
 }

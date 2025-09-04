@@ -10,7 +10,7 @@ $(document).ready(function(){
 
         let documento = $(this).val();
 
-        if(documento === '') return '';
+        if(!documento) return;
         
         $.post(checkDocumento, { _token: TOKEN, Documento: documento})
             .done(function(response){

@@ -1,4 +1,4 @@
-$(document).ready(function(){
+$(function(){
 
     listado();
 
@@ -144,26 +144,26 @@ $(document).ready(function(){
             contador = [examen, paquete, facturacion].filter(conteo => conteo !== null).length;
 
         if (contador !== 1) {
-            toastr.warning("Solo puede elegir un paquete o examen para aplicar a la vez. No puede seleccionar más de uno", {timeOut: 2000});
+            toastr.warning("Solo puede elegir un paquete o examen para aplicar a la vez. No puede seleccionar más de uno", {timeOut: 1000});
             return;
         }
 
         if  (cantidad <= 0 || cantidad === '') {
-            toastr.warning("Debe seleccionar una cantidad");
+            toastr.warning("Debe seleccionar una cantidad", {timeOut: 1000});
             return;
         }
 
         let valor = examen !== null ? examen : paquete !== null ? paquete : facturacion !== null ? facturacion : 0;
         let tipo = examen !== null ? 'examen' : paquete !== null ? 'paquete' : facturacion !== null ? 'facturacion' : 0;
 
-        if(valor === 0 || tipo === 0) { toastr.warning("Hay un problema en la selección del paquete. Verifique la selección"); return; }
+        if(valor === 0 || tipo === 0) { toastr.warning("Hay un problema en la selección del paquete. Verifique la selección", '', {timeOut: 1000}); return; }
 
         preloader('on');
 
         $.post(savePaquete, {_token: TOKEN, Id: ID, Tipo: tipo, examen: valor, precarga: dni, cantidad: cantidad})
             .done(function(){
                 preloader('off');
-                toastr.success('Se ha realizado ha cargado el o los examenes.')
+                toastr.success('Se ha realizado ha cargado el o los examenes.','',{timeOut: 1000});
                 setTimeout(()=> {
                     listado();
                 }, 3000);
@@ -184,7 +184,7 @@ $(document).ready(function(){
             partes = Factura.split('-');
 
         if (condiciones.some(condicion => condicion === '' || condicion === null) === true) {
-            toastr.warning("Los campos marcados con astericos son obligatorios");
+            toastr.warning("Los campos marcados con astericos son obligatorios", "", {timeOut: 1000});
             return;
         }
 
@@ -198,7 +198,7 @@ $(document).ready(function(){
                 $.post(updateExamenCuenta, {_token: TOKEN, IdEmpresa: empresa, Fecha: Fecha, Tipo: partes[0], Suc: parseInt(partes[1], 10), Nro: parseInt(partes[2], 10), Obs: Obs, FechaP: FechaPago, Id: ID})
                     .done(function(response){
                         preloader('off');
-                        toastr.success('Se ha actualizado el examen a cuenta correctamente');
+                        toastr.success('Se ha actualizado el examen a cuenta correctamente','', {timeOut: 1000});
                     })
             }
          });
@@ -207,23 +207,166 @@ $(document).ready(function(){
     });
 
     function listado() {
-        preloader('on');
-        $('#lstSaldos').empty();
     
-        $.get(listadoExCta, {Id: ID})
+        $('#listadoSaldos').DataTable().clear().destroy();
+
+        new DataTable("#listadoSaldos", {
+            searching: false,
+            ordering: true,
+            order: [[0, 'asc']],
+            processing: true,
+            lengthChange: false,
+            pageLength: 100,
+            responsive: false,
+            serverSide: true,
+            deferRender: true,
+            scrollCollapse: true,
+            autoWidth: false,
+            select: {
+                style: 'multi'
+            },
+            ajax: {
+                url: listadoExCta,
+                data: function(e) {
+                    e.Id = ID;
+                }
+            },
+            dataType: 'json',
+            type: 'GET',
+            columnDefs: [
+                {
+                    data: null,
+                    name: 'IdEx',
+                    orderable: true,
+                    targets: 0,
+                    render: function(data){
+                        return `<div class="text-center"><input type="checkbox" name="Id" value="${data.IdEx}"></div>`;
+                    }
+
+                },
+                {
+                    data: null,
+                    name: 'Precarga',
+                    targets: 1,
+                    orderable: true,
+                    render: function(data){
+                        return `<div class="text-center"><span>${data.Precarga === '' ? '-' : data.Precarga}</span></div>`;
+                    }
+                },
+                {
+                    data: null,
+                    name: 'Estudio',
+                    target: 2,
+                    orderable: true,
+                    render: function(data){
+                        return `<div class="text-center"><span>${data.Estudio}</span></div>`;
+                    }
+                },
+                {
+                    data: null,
+                    name: 'Examen',
+                    target: 3,
+                    orderable: true,
+                    render: function(data){
+                        return `<div class="text-center"><span>${data.Examen}</span></div>`;
+                    }
+                },
+                {
+                    data: null,
+                    name: 'Prestacion',
+                    target: 4,
+                    orderable: true,
+                    render: function(data){
+                        return `<div class="text-center"><span>${data.Prestacion}</span></div>`;
+                    }
+                },
+                {
+                    data: null,
+                    name: 'Paciente',
+                    target: 5,      
+                    orderable: true,
+                    render: function(data){
+                        return `<div class="text-center"><span>${ data.ApellidoPaciente + ' ' + data.NombrePaciente}</span></div>`;
+                    }
+                },
+                {
+                    data: null,
+                    name: 'Acciones',
+                    target: 6,      
+                    orderable: true,
+                    render: function(data){
+                        return `<div class="text-center">
+                                    <button data-id="${data.IdEx}" type="button" class="btn iconGeneral editarDNI" title="Agregar/Editar DNI" data-bs-toggle="modal" data-bs-target="#editarDNI">
+                                        <i class="ri-edit-line"></i>
+                                    </button>
+                                    <button data-id="${data.IdEx}" type="button" class="btn iconGeneral deleteItem" title="Eliminar examen">
+                                        <i class="ri-delete-bin-2-line"></i>
+                                    </button>
+                                </div>`;
+                    }
+                }
+            ],
+            language: {
+                processing: "<div style='text-align: center; margin-top: 20px;'><img src='/images/spinner.gif' /><p>Cargando...</p></div>",
+                emptyTable: "No hay prestaciones con los datos buscados",
+                paginate: {
+                    first: "Primera",
+                    previous: "Anterior",
+                    next: "Siguiente",
+                    last: "Última"
+                },
+                aria: {
+                    paginate: {
+                        first: "Primera",
+                        previous: "Anterior",
+                        next: "Siguiente",
+                        last: "Última"
+                    }
+                },
+                info: "Mostrando _START_ a _END_ de _TOTAL_ de prestaciones",
+            },
+            stateLoadCallback: function(settings, callback) {
+                $.ajax({
+                    url: SEARCH,
+                    dataType: 'json',
+                    success: function(json) {
+
+                        // Pasar el objeto json a callback
+                        callback(json);
+                    }
+                });
+            },
+            stateSaveCallback: function(settings, data) {
+                $.ajax({
+                    url: SEARCH,
+                    type: 'POST',
+                    data: {
+                        
+                    },
+                    dataType: "json",
+                    success: function(response) {},
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.error("Error: ", textStatus, errorThrown);
+                    }
+                });
+            },
+        });
+
+        /*$.get(listadoExCta, {Id: ID})
             .done(function(response){
                 preloader('off');                
                 let dniAnterior = '';
-                $.each(response, function(index, r){
-                    
-                    let nombreCompleto = r.ApellidoPaciente + ' ' + r.NombrePaciente;
-                    let contenido = `
+
+                for(let index = 0; index < response.length; index++) {
+                    let r = response[index], nombreCompleto = r.ApellidoPaciente + ' ' + r.NombrePaciente,
+                    contenido = `
                         <tr>
                             <td><div class="text-center"><input type="checkbox" name="Id" value="${r.IdEx}"></div></td>
                             <td>${r.Precarga === '' ? '-' : r.Precarga}</td>
-                            <td title="${r.Examen}">${acortadorTexto(r.Examen, 10)}</td>
+                            <td>${r.Estudio}</td>
+                            <td title="${r.Examen}">${r.Examen}</td>
                             <td>${r.Prestacion}</td>
-                            <td title="${nombreCompleto}">${acortadorTexto(nombreCompleto)}</td>
+                            <td title="${nombreCompleto}">${nombreCompleto}</td>
                             <td>
                                 <button data-id="${r.IdEx}" type="button" class="btn iconGeneral editarDNI" title="Agregar/Editar DNI" data-bs-toggle="modal" data-bs-target="#editarDNI">
                                     <i class="ri-edit-line"></i>
@@ -241,13 +384,11 @@ $(document).ready(function(){
                     if (dniAnterior && dniAnterior !== r.Precarga) {
                         $('#lstSaldos tr:last-child').prev().addClass('border-grueso');
                     }
-    
                     dniAnterior = r.Precarga;
-                });
-    
+                    
+                }
                 // Agrega la clase al último registro
                 $('#lstSaldos tr:last-child').addClass('border-grueso');
-    
                 $("#listadoSaldos").fancyTable({
                     pagination: true,
                     perPage: 15,
@@ -255,14 +396,14 @@ $(document).ready(function(){
                     globalSearch: false,
                     sortable: false, 
                 });
-            })
+            })*/
     }
     
 
     $(document).on('click', '.editarDNI, .editarMasivo', function(e){
         e.preventDefault();
 
-        var id, ids = [];
+        let id, ids = [];
         $(".saveCambiosEdit").show();
         $("#dniNuevo").attr("disabled", false);
 
@@ -282,7 +423,7 @@ $(document).ready(function(){
             if(ids.length === 0 && checkAll === false){
                 $(".saveCambiosEdit").hide();
                 $("#dniNuevo").attr("disabled", true);
-                toastr.warning('No hay items seleccionados');
+                toastr.warning('No hay items seleccionados','', {timeOut: 1000});
                 return;
             }
 
@@ -296,7 +437,7 @@ $(document).ready(function(){
         let id = $('#cargarId').val(), dniNuevo = $('#dniNuevo').val();
         
         if(dniNuevo.length > 8 || dniNuevo.length === 0) {
-            toastr.warning("El dni debe llevar un máximo de 8 digitos");
+            toastr.warning("El dni debe llevar un máximo de 8 digitos",'',{timeOut: 1000});
             return;
         }
 
@@ -304,7 +445,7 @@ $(document).ready(function(){
         $.post(savePrecarga, {_token: TOKEN, Id: id.includes(',') ? id = id.split(",") : id, Precarga: dniNuevo})
             .done(function(){
                 preloader('off');
-                toastr.success('Se ha cambiado el dni de la precarga');
+                toastr.success('Se ha cambiado el dni de la precarga','', {timeOut: 1000});
                 setTimeout(()=>{
                     $('#editarDNI').modal('hide');
                     listado();
@@ -323,7 +464,7 @@ $(document).ready(function(){
         });
 
         if(id.length === 0 && checkAll === false){
-            toastr.warning('No hay items seleccionados', 'Atención');
+            toastr.warning('No hay items seleccionados', 'Atención', {timeOut: 1000});
             return;
         }
 
@@ -338,7 +479,7 @@ $(document).ready(function(){
                 $.get(liberarItemExCta, {Id: id})
                     .done(function(){
                         preloader('off');
-                        toastr.success("Se ha realizado la liberación de los items correctamente");
+                        toastr.success("Se ha realizado la liberación de los items correctamente",'',{timeOut: 1000});
                         setTimeout(()=>{
                             listado()
                         },2000);
@@ -350,12 +491,12 @@ $(document).ready(function(){
     $(document).on('click', '.deleteItem, .deleteItemMasivo', function(e){
         e.preventDefault();
          
-        var id;
+        let id;
 
-        if ($(this).hasClass('deleteItem') === true ){
+        if ($(this).hasClass('deleteItem')){
 
             id = $(this).data('id');
-            if(id === null || id === '') return;
+            if(!id) return;
         
         } else {
 
@@ -367,8 +508,8 @@ $(document).ready(function(){
 
             let checkAll =$('#checkAll').prop('checked');
 
-            if(id.length === 0 && checkAll === false){
-                toastr.warning('No hay items seleccionados', 'Atención');
+            if(id.length === 0 && !checkAll){
+                toastr.warning('No hay items seleccionados', 'Atención','', {timeOut: 1000});
                 return;
             }
         }
@@ -383,7 +524,7 @@ $(document).ready(function(){
                 $.get(deleteItemExCta, {Id: id})
                     .done(function(){
                         preloader('off');
-                        toastr.success("Se ha realizado la eliminación");
+                        toastr.success("Se ha realizado la eliminación",'',{timeOut: 1000});
                         setTimeout(()=>{
                             listado()
                         },2000);
@@ -397,9 +538,10 @@ $(document).ready(function(){
         e.preventDefault();
 
         let id = $(this).data('id'), tipo = $(this).hasClass('exportar') ? 'excel' : 'pdf';
-
-        if([null, undefined, ""].includes(id)) {
-            toastr.warning('No hay datos para exportar');
+        console.log(id, tipo);
+        let extencion = tipo === 'excel' ? 'xlsx' : 'pdf';
+        if(!id) {
+            toastr.warning('No hay datos para exportar','', {timeOut: 1000});
             return;
         }
 
@@ -418,15 +560,11 @@ $(document).ready(function(){
                     },
                     success: function(response) {
                         preloader('off');
-                        const jsonPattern = /{.*}/s;
-                        const match = response.match(jsonPattern);
 
-                        if(match) {
-                            const jsonResponse = match[0];
-                            const data = JSON.parse(jsonResponse);
-
-                            createFile(tipo, data.filePath, data.name);
-                            toastr.success(data.msg);
+                        if(tipo == 'excel') {
+                            createFile(tipo, response.filePath, generarCodigoAleatorio() + "_examen_cta");
+                        }else{
+                            createFile(tipo, response, generarCodigoAleatorio() + "_examen_cta");
                         }
                     },
                     error: function(jqXHR) {

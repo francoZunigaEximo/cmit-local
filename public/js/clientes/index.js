@@ -1,22 +1,25 @@
-$(document).ready(function(){
+$(function(){
 
-    const tabla = "#listaClientes";
-
-    $('#btnBajaMultiple').click(function(e) {
+    $(document).on('click', '.btnBajaMultiple, .downCliente', function(e) {
         e.preventDefault();
 
         let ids = [];
-        $('input[name="Id"]:checked').each(function() {
-            ids.push($(this).val());
-        });
 
-        if (ids.length === 0) {
-            toastr.warning('Debe seleccionar al menos un cliente para la baja múltiple');
+        if( $(this).hasClass('btnBajaMultiple')) {
+            $('input[name="Id"]:checked').each(function() {
+                ids.push($(this).val());
+            });
+        }else{
+            ids.push($(this).data('id'));
+        }
+        
+        if (!ids) {
+            toastr.warning('Debe seleccionar al menos un cliente para la baja múltiple', '', { timeOut: 1000 });
             return; 
         }
 
         swal({
-            title: "¿Estás seguro de que deseas realizar la baja múltiple de los clientes seleccionados?",
+            title: "¿Estás seguro de que deseas realizar la baja de él o los clientes seleccionados?",
             icon: "warning",
             buttons: ["Cancelar", "Aceptar"]
         }).then((confirmar)=> {
@@ -33,7 +36,9 @@ $(document).ready(function(){
                         ids: ids
                     },
                     success: function(response) {
-                        toastr.success(response.msg);
+                        preloader('off');
+                        toastr.success(response.msg, '', { timeOut: 2000 });
+
                         $('#listaClientes').DataTable().ajax.reload(function() {
                             $('#listaClientes tbody').show();
                             $(".dataTables_processing").hide();
@@ -53,16 +58,22 @@ $(document).ready(function(){
 
 
     //Exportar Excel a clientes
-    $('#excel').click(function(e) {
+    $(document).on('click', '#excel', function(e){
         e.preventDefault();
 
-        let ids = [];
-        $('input[name="Id"]:checked').each(function() {
-            ids.push($(this).val());
+        let ids = [], table = $('#listaClientes').DataTable();
+
+        table.rows().every(function() {
+            let row = this.node(); 
+            let checkbox = $(row).find('input[name="Id"]');
+
+            if (checkbox.is(':checked')) {
+                ids.push(checkbox.val());
+            }
         });
 
-        if(ids.length === 0) {
-            toastr.warning('Debes seleccionar al menos un cliente para exportar.');
+        if(!ids) {
+            toastr.warning('Debes seleccionar al menos un cliente para exportar.', '', { timeOut: 1000 });
             return;
         }
 
@@ -96,50 +107,5 @@ $(document).ready(function(){
             }
         });
     });
-
-    //Reset de busquedas
-    $(document).on('keydown', function(event) {
-        if (event.keyCode === 27) {
-            window.location.href = GOINDEX;
-        }
-    });
-
-    $(document).on('click', '.downCliente', function(e){
-        e.preventDefault();
-        let cliente = $(this).data('id');
-        
-        if(cliente === '') return;
-
-        swal({
-            title: "¿Está seguro que desea dar de baja al cliente?",
-            icon: "warning",
-            buttons: ["Cancelar", "Aceptar"]
-        }).then((confirmar)=>{
-            if(confirmar){
-
-                $('#listaClientes tbody').hide();
-                $(".dataTables_processing").show();
-
-                $.post(baja, {_token: TOKEN, Id: cliente})
-                .done(function(response){
-                    toastr.success(response.msg);
-                    
-                    $('#listaClientes').DataTable().ajax.reload(function(){
-                        $('#listaClientes tbody').show();
-                        $(".dataTables_processing").hide();
-                    }, false);
-
-                })
-                .fail(function(jqXHR, xhr){
-                    preloader('off');            
-                    let errorData = JSON.parse(jqXHR.responseText);            
-                    checkError(jqXHR.status, errorData.msg);
-                    return;                
-                }); 
-
-            }
-        });       
-    });
-
 
 });

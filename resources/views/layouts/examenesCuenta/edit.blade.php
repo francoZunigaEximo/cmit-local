@@ -27,7 +27,7 @@
                 <div class="col-sm-2 mb-3">
                     <label for="empresa" class="form-label fw-bolder">Empresa: <span class="required small">(*)</span></label>
                     <select class="form-control" name="empresa" id="empresa">
-                        <option value="{{ $examenesCuentum->IdEmpresa ?? '' }}">{{ $examenesCuentum->empresa[0]->RazonSocial ?? '' }}</option>
+                        <option value="{{ $examenesCuentum->IdEmpresa ?? '' }}">{{ $examenesCuentum->empresa->RazonSocial ?? '' }}</option>
                     </select>
                 </div>
 
@@ -102,7 +102,7 @@
 <div class="row mt-3">
     <div class="col-sm-7 text-end">
         <button type="button" class="btn btn-sm botonGeneral editarMasivo" data-bs-toggle="modal" data-bs-target="#editarDNI"><i class="ri-edit-line"></i> Editar</button>
-        <button type="button" class="btn btn-sm botonGeneral liberarItemMasivo"><i class="ri-logout-circle-line"></i> Liberar</button>
+        <button type="button" class="btn btn-sm botonGeneral liberarItemMasivo"><i class="ri-logout-circle-line"></i> Liberar (dni)</button>
         <button type="button" class="btn btn-sm botonGeneral deleteItemMasivo"><i class="ri-delete-bin-2-line"></i> Eliminar</button>
     </div>
     <div class="col-sm-5 text-center">
@@ -118,13 +118,14 @@
                 <tr>
                     <th class="text-center"><input type="checkbox" id="checkAll" name="Id"></th>
                     <th class="sort">Precarga</th>
+                    <th class="sort">Especialidad</th>
                     <th class="sort">Examen</th>
                     <th class="sort">Prestación</th>
                     <th class="sort">Paciente</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
-            <tbody class="list form-check-all" id="lstSaldos">
+            <tbody class="list form-check-all">
 
             </tbody>
         </table>
@@ -180,6 +181,10 @@
 @endpush
 
 @push('scripts')
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/inputmask/dist/jquery.inputmask.min.js"></script>
 <script src="{{ asset('js/examenescuenta/edit.js')}}?=v{{ time() }}"></script>
 

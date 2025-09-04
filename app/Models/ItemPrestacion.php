@@ -14,7 +14,6 @@ class ItemPrestacion extends Model
     protected $primaryKey = 'Id';
 
     protected $fillable = [
-        'Id',
         'IdPrestacion',
         'IdExamen',
         'ObsExamen',
@@ -41,6 +40,7 @@ class ItemPrestacion extends Model
         'Devol',
         'CInfo',
         'CAdj',
+        'FechaAnulado'
     ];
 
     public $timestamps = false;

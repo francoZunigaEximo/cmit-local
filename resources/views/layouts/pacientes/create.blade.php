@@ -46,10 +46,19 @@
                         <input type="text" class="form-control" id="identificacion" name="Identificacion">
                     </div>
 
-                    <div class="input-group input-group-sm">
+                    <div class="input-group input-group-sm mb-3">
                         <span class="input-group-text">Fecha de nacimiento&nbsp;<span class="required">(*)</span></span>
                         <input type="date" class="form-control" id="fecha" name="FechaNacimiento">
                         <input type="text" class="form-control" id="edad" title="Edad">
+                    </div>
+
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text">Sexo</span>
+                        <select class="form-select" id="Sexo" name="Sexo">
+                            <option selected value="">Elija una opción... </option>
+                            <option value="M">Masculino</option>
+                            <option value="F">Femenino</option>
+                        </select>
                     </div>
                 </div>
 
@@ -160,7 +169,7 @@
 
 <script>
 //Rutas
-const verify = "{{ route('verify') }}";
+const verify = "{{ route('pacientes.verify') }}";
 const getLocalidades = "{{ route('getLocalidades') }}";
 const getCodigoPostal = "{{ route('getCodigoPostal') }}";
 

@@ -1,10 +1,15 @@
-$(document).ready(()=>{
+$(function(){
 
-    let idExamen = [];
+    let idExamen = [],
+        empresa = $('#empresa').val();
 
-    const valAbrir = [3, 4, 5], valCerrar = [0, 1, 2], valCerrarI = 3;
+    const valAbrir = [3, 4, 5], 
+          valCerrar = [0, 1, 2], 
+          valCerrarI = 3;
 
-    cargarExamen();
+    cargarExamen(ID);
+    contadorExamenes(ID);
+    listadoSelectExCta(empresa);
 
     $('#exam').select2({
         placeholder: 'Seleccionar exámen...',
@@ -50,8 +55,8 @@ $(document).ready(()=>{
         
         let paquete = $('#paquetes').val();
         
-        if([null, undefined, ''].includes(paquete)){
-            toastr.warning("Debe seleccionar un paquete para poder añadirlo en su totalidad");
+        if(!paquete){
+            toastr.warning("Debe seleccionar un paquete para poder añadirlo en su totalidad",'',{timeOut: 1000});
             return;
         }
         preloader('on');
@@ -61,16 +66,15 @@ $(document).ready(()=>{
             data: {
                 _token: TOKEN,
                 IdPaquete: paquete,
+                IdPrestacion: ID
             },
 
             success:function(response){
-
                 preloader('off');
-                let data = response.examenes,
-                    ids = data.map(function(item) {
-                    return item.Id;
-                  });
-                saveExamen(ids);  
+                $('#listaExamenes').empty();
+                cargarExamen(ID);
+                contadorExamenes(ID);
+                listadoSelectExCta(empresa)
                 $('.addPaquete').val([]).trigger('change.select2');
             },
             error: function(jqXHR){
@@ -102,8 +106,8 @@ $(document).ready(()=>{
             ids.push(id);
         }
 
-        if(ids.length === 0 && checkAll === false){
-            toastr.warning('No hay examenes seleccionados');
+        if(ids.length === 0 && !checkAll){
+            toastr.warning('No hay examenes seleccionados','',{timeOut: 1000});
             return;
         }  
     
@@ -115,44 +119,34 @@ $(document).ready(()=>{
             if (confirmar){
 
                 preloader('on');
-                $.ajax({
-                    url: deleteItemExamen,
-                    type: 'POST',
-                    data: {
-                        Id: ids,
-                        _token: TOKEN
-                    },
-                    success: function(response){
+                $.post(deleteItemExamen, {Id: ids,  _token: TOKEN})
+                    .done(function(response){
+                    
                         preloader('off');
-                        var estados = [];
-                        
-                        response.forEach(function(msg) {
-                            
-                            let tipoRespuesta = {
-                                success: 'success',
-                                fail: 'info'
-                            }
-                            toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 });
-                            estados.push(msg.estado);
-        
-                        });
-
-                        if(estados.includes('success')) {
-                            $('#listaExamenes').empty();
-                            $('#exam').val([]).trigger('change.select2');
-                            $('#addPaquete').val([]).trigger('change.select2');
-                            cargarExamen();
-                            checkExamenes(ID);
+                        for (let i = 0; i < response.length; i++) {
+                            let data = response[i];
+                            toastr[data.status](data.msg, "", { timeOut: 1000 }); 
                         }
 
-                    },
-                    error: function(jqXHR){
+                        countSuccess = response.filter(item => item.status === 'success').length;
+
+                        if(countSuccess > 0) {
+                            $('#listaExamenes').empty();
+                            $('#exam').val([]).trigger('change.select2');
+                            $('#paquetes').val([]).trigger('change.select2');
+                            cargarExamen(ID);
+                            listadoSelectExCta(empresa);
+                            contadorExamenes(ID);
+                        }
+
+                        
+                    })
+                    .fail(function(jqXHR){
                         preloader('off');
                         let errorData = JSON.parse(jqXHR.responseText);            
                         checkError(jqXHR.status, errorData.msg);
                         return; 
-                    }
-                });
+                    });
             }
             
         });
@@ -179,8 +173,8 @@ $(document).ready(()=>{
             ids.push(id);
         }
 
-        if(ids.length === 0 && checkAll === false){
-            toastr.warning('No hay examenes seleccionados');
+        if(ids.length === 0 && !checkAll){
+            toastr.warning('No hay examenes seleccionados','',{timeOut: 1000});
             return;
         }
     
@@ -203,25 +197,25 @@ $(document).ready(()=>{
                         var estados = [];
                         
                         preloader('off')
-                        response.forEach(function(msg) {
-
-                            let tipoRespuesta = {
-                                success: 'success',
-                                fail: 'info'
-                            }
-                            
-                            toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 })
-                            
-                            estados.push(msg.estado)
-                            
-                        });
+                        for(let index = 0; index < response.length; index++){
+                            let msg = response[index],
+                                tipoRespuesta = {
+                                    success: 'success',
+                                    fail: 'info'
+                                }
+                           
+                            toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 });
+                            estados.push(msg.estado);
+                        }
                         
                         if(estados.includes('success')) {
                             $('#listaExamenes').empty();
                             $('#exam').val([]).trigger('change.select2');
                             $('#addPaquete').val([]).trigger('change.select2');
-                            cargarExamen();
+                            contadorExamenes(ID);
                         }
+                        $('#listaExamenes').empty();
+                        cargarExamen(ID);
                     }
                 });
             }
@@ -239,8 +233,8 @@ $(document).ready(()=>{
 
         let checkAll = $('#checkAllExamenes').prop('checked');
 
-        if(ids.length === 0 && checkAll === false){
-            toastr.warning('No hay examenes seleccionados');
+        if(ids.length === 0 && !checkAll){
+            toastr.warning('No hay examenes seleccionados','',{timeOut: 1000});
             return;
         }
 
@@ -262,22 +256,23 @@ $(document).ready(()=>{
                     success: function(response){
                         var estados = [];
                         preloader('off');
-                        response.forEach(function(msg) {
-                            
-                            let tipoRespuesta = {
-                                success: 'success',
-                                fail: 'info'
-                            }
+
+                        for(let index=0; index < response.length; index++){
+                            let msg = response[index],
+                                tipoRespuesta = {
+                                    success: 'success',
+                                    fail: 'info'
+                                }
                            
                             toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 });
                             estados.push(msg.estado);
-                        });
+                        }
 
                         if(estados.includes('success')) {
                             $('#listaExamenes').empty();
                             $('#exam').val([]).trigger('change.select2');
                             $('#addPaquete').val([]).trigger('change.select2');
-                            cargarExamen();
+                            cargarExamen(ID);
                         }
 
                     }
@@ -300,8 +295,8 @@ $(document).ready(()=>{
 
         let checkAll = $('#checkAllExamenes').prop('checked');
 
-        if(ids.length === 0 && checkAll === false){
-            toastr.warning('No hay examenes seleccionados');
+        if(ids.length === 0 && !checkAll){
+            toastr.warning('No hay examenes seleccionados','',{timeOut: 1000});
             return;
         }
 
@@ -323,23 +318,24 @@ $(document).ready(()=>{
                     success: function(response){
                         var estados = [];
                         preloader('off');
-                        response.forEach(function(msg) {
-                            
-                            let tipoRespuesta = {
-                                success: 'success',
-                                fail: 'info'
-                            }
-                            
-                            toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 });
-                            estados.push(msg.estado);
-        
-                        });
+
+                        for(let index = 0; index < response.length; index++){
+                            let msg = response[index],
+                                tipoRespuesta = {
+                                    success: 'success',
+                                    fail: 'info'
+                                }
+
+                                toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 });
+                                estados.push(msg.estado);
+                        }
 
                         if(estados.includes('success')) {
                             $('#listaExamenes').empty();
                             $('#exam').val([]).trigger('change.select2');
                             $('#addPaquete').val([]).trigger('change.select2');
-                            cargarExamen();
+                            cargarExamen(ID);
+                            contadorExamenes(ID);
                         }
 
                     }
@@ -360,8 +356,8 @@ $(document).ready(()=>{
 
         let checkAll = $('#checkAllExamenes').prop('checked');
 
-        if(ids.length === 0 && checkAll === false){
-            toastr.warning('No hay examenes seleccionados');
+        if(ids.length === 0 && !checkAll){
+            toastr.warning('No hay examenes seleccionados','',{timeOut: 1000});
             return;
         }
 
@@ -398,7 +394,8 @@ $(document).ready(()=>{
                             $('#listaExamenes').empty();
                             $('#exam').val([]).trigger('change.select2');
                             $('#addPaquete').val([]).trigger('change.select2');
-                            cargarExamen();
+                            cargarExamen(ID);
+                            contadorExamenes(ID);
                         }
 
                     }
@@ -407,16 +404,18 @@ $(document).ready(()=>{
         });     
     });
 
-    $(document).on('click', '.addExamen', function(e){
+    $(document).on('click', '.addExamen, .addExamenCta', function(e){
         e.preventDefault();
 
-        let id = $("#exam").val();
-        
-        if(['', null, undefined].includes(id)) {
-            toastr.warning("Debe seleccionar un examen para poder añadirlo a la lista");
+        let id = $(this).hasClass('addExamen') ? $("#exam").val() : $('#exaCtaDisp').val(),
+            idExaCta = $('#exaCtaDisp option:selected').data('id');
+
+        if(!id) {
+            toastr.warning("Debe seleccionar un examen para poder añadirlo a la lista",'',{timeOut: 1000});
             return;
         }
-        saveExamen(id);
+
+        saveExamen(id, idExaCta);
     });
 
     $(window).on('popstate', function() {
@@ -459,22 +458,23 @@ $(document).ready(()=>{
     $('#modalExamen').on('hidden.bs.modal', function () {
         $('#listaExamenes').empty();
         cargarExamen(ID);
+        contadorExamenes(ID);
     });
 
     
-    function saveExamen(id){
+    function saveExamen(id, idExaCta = null){
 
         idExamen = [];
         if (Array.isArray(id)) {
-            $.each(id, function(index, item) {
-                idExamen.push(item);
-              });
+            for(let index = 0; index < id.length; index++) {
+                idExamen.push(id[index]);
+            }
         }else{
             idExamen.push(id);
         }
 
         if (idExamen.length === 0) {
-            toastr.warning("No existe el exámen o el paquete no contiene examenes");
+            toastr.warning("No existe el exámen o el paquete no contiene examenes",'',{timeOut: 1000});
             return;
         }
         preloader('on');
@@ -485,14 +485,17 @@ $(document).ready(()=>{
             data: {
                 _token: TOKEN,
                 idPrestacion: ID,
-                idExamen: idExamen
+                idExamen: idExamen,
+                idExaCta: idExaCta
             },
             success: function(){
                 preloader('off');
                 $('#listaExamenes').empty();
                 $('#exam').val([]).trigger('change.select2');
                 $('#addPaquete').val([]).trigger('change.select2');
-                cargarExamen();
+                cargarExamen(ID);
+                contadorExamenes(ID);
+                listadoSelectExCta(empresa)
         },
             error: function(jqXHR){
                 preloader('off');
@@ -516,7 +519,7 @@ $(document).ready(()=>{
             },
             success: function(response){
                 preloader('off');
-                toastr.success(response.msg);
+                toastr.success(response.msg,'',{timeOut: 1000});
 
                 let fila = $('td#' + item).closest('tr'), 
                     span= fila.find('span#' + opcion.toLowerCase()),
@@ -537,7 +540,7 @@ $(document).ready(()=>{
 
     async function checkerIncompletos(idPrestacion)
     {
-        if([null,'',0].includes(idPrestacion)) return;
+        if(!idPrestacion) return;
 
         $.get(await checkInc, { Id: idPrestacion }, function(response) {
 
@@ -553,154 +556,122 @@ $(document).ready(()=>{
         });
     }
 
-    async function cargarExamen() {
-        preloader('on');
+    async function cargarExamen(id) {
     
-        try {
-            const result = await $.ajax({
-                url: checkItemExamen,
-                method: 'GET',
-                data: { Id: ID },
-            });
-    
+        try {    
+            preloader('on');
+
+            let response = await $.get(getExamenes,{Id: id, tipo: 'listado'});
+
+            const cargaEfector = await primeraCarga(id, "efector");
+            const cargaInformador = await primeraCarga(id, "informador");
+            
+            checkExamenes(id);
+            contadorExamenes(id);
+            
+            let filas = '';
+
             preloader('off');
-            let estado = result.respuesta;
-            let examenes = result.examenes;
-    
-            if (estado) {
-                preloader('on');
-                const response = await $.ajax({
-                    url: getItemExamenes,
-                    type: 'POST',
-                    data: {
-                        _token: TOKEN,
-                        IdExamen: examenes,
-                        Id: ID,
-                        tipo: 'listado'
-                    },
-                });
+            for (let i = 0; i < response.length; i++) {
+                const examen = response[i];
 
-                const cargaEfector = await primeraCarga(ID, "efector");
-                const cargaInformador = await primeraCarga(ID, "informador");
+                let titleEfector = (examen.RegHis === 1 
+                    ? examen.EfectorFullName || (examen.IdEfector && examen.DatosEfectorFullName)
+                    : examen.DatosEfectorFullName || (examen.IdEfector && examen.DatosEfectorFullName)) ?? '',
+                    
+                    fullNameEfector = (examen.RegHis === 1 
+                        ? examen.EfectorApellido || (examen.IdEfector && examen.DatosEfectorApellido)
+                        : examen.DatosEfectorApellido || (examen.IdEfector && examen.DatosEfectorApellido)) ?? '';
+
+                let titleInformador = (examen.Informe === 1 && examen.RegHis === 1 
+                        ? examen.InformadorFullName || (examen.IdInformador && examen.DatosInformadorFullName)
+                        : examen.DatosInformadorFullName || (examen.IdInformador && examen.DatosInformadorFullName)) ?? '',
+
+                    fullNameInformador = (examen.Informe === 1 && examen.RegHis === 1
+                        ? examen.InformadorApellido || (examen.IdInformador && examen.DatosInformadorApellido)
+                        : examen.DatosInformadorApellido || (examen.IdInformador && examen.DatosInformadorApellido)) ?? '';
                 
-                let registros = response;
-                checkExamenes(ID);
-                
-                let filas = '';
-
-                preloader('off');
-                for (let i = 0; i < registros.length; i++) {
-                    const examen = registros[i];
-
-                    let titleEfector = examen.RegHis === 1 
-                        ? ![undefined,null,0].includes(examen.EfectorFullName) && (examen.EfectorFullName).length > 0 
-                            ? examen.EfectorFullName 
-                            : (examen.IdEfector  === 0 ? '' : examen.DatosEfectorFullName)
-                        : ![undefined,null,0].includes(examen.DatosEfectorFullName) && (examen.DatosEfectorFullName).length > 0 
-                            ? (examen.IdEfector === 0 ? '' : examen.DatosEfectorFullName)
-                            : '',
-                        
-                        fullNameEfector = examen.RegHis === 1 
-                            ? ![undefined,null,0].includes(examen.EfectorApellido) && (examen.EfectorApellido).length > 0 
-                                ? examen.EfectorApellido 
-                                : (examen.IdEfector === 0 ? '' : examen.DatosEfectorApellido)
-                            : ![undefined,null,0].includes(examen.DatosEfectorApellido) && (examen.DatosEfectorApellido).length > 0 
-                                ? (examen.IdEfector === 0 ? '' : examen.DatosEfectorApellido)
-                                : '';
-
-                    let titleInformador = examen.Informe === 1 
-                        ? examen.RegHis === 1 
-                            ? ![undefined,null,0].includes(examen.InformadorFullName) && (examen.InformadorFullName).length > 0 
-                                ? examen.InformadorFullName
-                                : (examen.IdInformador === 0 ? '' : examen.DatosInformadorFullName)
-                            : ![undefined,null,0].includes(examen.DatosInformadorFullName) && (examen.DatosInformadorFullName).length > 0 ? (examen.IdInformador === 0 ? '' : examen.DatosInformadorFullName) : ''
-                        : '',
-
-                        fullNameInformador = examen.Informe === 1
-                        ? examen.RegHis === 1
-                            ? ![undefined,null,0].includes(examen.InformadorApellido) && (examen.InformadorApellido).length > 0 
-                                ? examen.InformadorApellido
-                                : (examen.IdInformador === 0 ? '' : examen.DatosInformadorApellido)
-                            : ![undefined,null,0].includes(examen.DatosInformadorApellido) && (examen.DatosInformadorApellido).length > 0 ? (examen.IdInformador === 0 ?  '' : examen.DatosInformadorApellido) : ''
-                        : '';
-
-                    filas += `
-                        <tr ${examen.Anulado === 1 ? 'class="filaBaja"' : ''}>
-                            <td><input type="checkbox" name="Id_examenes" value="${examen.IdItem}" checked></td>
-                            <td data-idexam="${examen.IdExamen}" id="${examen.IdItem}" style="text-align:left">${examen.Nombre} ${examen.Anulado === 1 ? '<span class="custom-badge rojo">Bloqueado</span>' : ''} ${cargaEfector.includes(examen.IdItem) ? '<i title="Carga multiple, efector, desde este exámen" class="ri-file-mark-line verde"></i>' : ''} ${cargaInformador.includes(examen.IdItem) ? '<i title="Carga multiple, informador, desde este exámen" class="ri-file-mark-line naranja"></i>' : ''}</td>
-                            <td>
-                                <span id="incompleto" class="${(examen.Incompleto === 0 || examen.Incompleto === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
-                                    <i class="ri-flag-2-line ${examen.Anulado === 0 ? 'incompleto' : ''}"></i>
-                                </span>
-                            </td>
-                            <td>
-                                <span id="ausente" class="${(examen.Ausente === 0 || examen.Ausente === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
-                                    <i class="ri-flag-2-line ${examen.Anulado === 0 ? 'ausente' : ''}"></i>
-                                </span>
-                            </td>
-                            <td>
-                                <span id="forma" class="${(examen.Forma === 0 || examen.Forma === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
-                                    <i class="ri-flag-2-line ${examen.Anulado === 0 ? 'forma' : ''}"></i>
-                                </span>
-                            </td>
-                            <td>
-                                <span id="sinesc" class="${(examen.SinEsc === 0 || examen.SinEsc === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
-                                    <i class="ri-flag-2-line ${examen.Anulado === 0 ? 'sinesc' : ''}"></i>
-                                </span>
-                            </td>
-                            <td>
-                                <span id="devol" class="${(examen.Devol === 0 || examen.Devol === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
-                                    <i class="ri-flag-2-line ${examen.Anulado === 0 ? 'devol' : ''}"></i>
-                                </span>
-                            </td>
-                            <td class="date text-center capitalize" title="${titleEfector}">${fullNameEfector}
-                                <span class="badge badge-soft-${([0,1,2].includes(examen.CAdj) ? 'danger': ([3,4,5].includes(examen.CAdj) ? 'success' : ''))}">
-                                    ${([0,1,2].includes(examen.CAdj) ? 'Abierto': ([3,4,5].includes(examen.CAdj) ? 'Cerrado' : ''))}
-                                </span>
-                                ${examen.ExaAdj === 1 ? `<i class="ri-attachment-line ${examen.archivos > 0 ? 'verde' : 'gris'}"></i>`: ``}    
-                            </td>
-                            <td class="date text-center capitalize" title="${titleInformador}">${fullNameInformador}
-                                <span class="badge badge-soft-${(examen.CInfo === 0 ? 'dark' :(examen.CInfo === 3 ? 'success' : ([1,2].includes(examen.CInfo)) ? 'danger' : ''))}">${(examen.CInfo === 0 || examen.InfAdj === 0 ? '' : (examen.CInfo === 3 ? 'Cerrado' : (examen.CInfo == 2 ? 'Borrador' : (examen.CInfo === 1 ? 'Pendiente': ''))))}</span>
-                                ${examen.InfAdj === 1 ? (examen.CInfo !== 0 ? `<i class="ri-attachment-line ${examen.archivosI > 0 ? 'verde' : 'gris'}"></i>`: ``) : ''}   
-                            </td>
-                            <td class="phone"><span class="${examen.Facturado === 1 ? 'badge badge-soft-success' : 'custom-badge rojo'}"><i class="ri-check-line"></i></span></td>
-                            <td>
-                                <div class="d-flex gap-2">
-                                    <div class="edit">
-                                        <button data-id="${examen.IdItem}" type="button" class="btn btn-sm iconGeneral verExamen" title="Ver" data-bs-toggle="modal" data-bs-target="#modalExamen"><i class="ri-search-eye-line"></i></button>
-                                    </div>
-                                    ${examen.Anulado === 0 ? `
-                                        <div class="bloquear">
-                                            <button data-bloquear="${examen.IdItem}" class="btn btn-sm iconGeneral bloquearExamen" title="Baja">
-                                                <i class="ri-forbid-2-line"></i>
-                                            </button>
-                                        </div>
-                                    ` : ''}
-                                    <div class="remove">
-                                        <button data-delete="${examen.IdItem}" class="btn btn-sm iconGeneral deleteExamen" title="Eliminar">
-                                            <i class="ri-delete-bin-2-line"></i>
-                                        </button>
-                                    </div>  
+                console.log(titleEfector);
+                let estaCerrado = cerrado == '1' ? 'disabled': '';
+                console.log(estaCerrado);
+                filas += `
+                    <tr ${examen.Anulado === 1 ? 'class="filaBaja"' : ''}>
+                        <td><input type="checkbox" name="Id_examenes" value="${examen.IdItem}" checked></td>
+                        <td data-idexam="${examen.IdExamen}" id="${examen.IdItem}" style="text-align:left">${examen.Nombre} ${examen.Anulado === 1 ? '<span class="custom-badge rojo">Bloqueado</span>' : ''} ${cargaEfector.includes(examen.IdItem) ? '<i title="Carga multiple, efector, desde este exámen" class="ri-file-mark-line verde"></i>' : ''} ${cargaInformador.includes(examen.IdItem) ? '<i title="Carga multiple, informador, desde este exámen" class="ri-file-mark-line naranja"></i>' : ''}</td>
+                        <td>
+                            <span id="incompleto" class="${(examen.Incompleto === 0 || examen.Incompleto === null  ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
+                                <i class="ri-flag-2-line ${examen.Anulado === 0 ? 'incompleto' : ''}"></i>
+                            </span>
+                        </td>
+                        <td>
+                            <span id="ausente" class="${(examen.Ausente === 0 || examen.Ausente === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
+                                <i class="ri-flag-2-line ${examen.Anulado === 0 ? 'ausente' : ''}"></i>
+                            </span>
+                        </td>
+                        <td>
+                            <span id="forma" class="${(examen.Forma === 0 ||  examen.Forma === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
+                                <i class="ri-flag-2-line ${examen.Anulado == 0 ? 'forma' : ''}"></i>
+                            </span>
+                        </td>
+                        <td>
+                            <span id="sinesc" class="${(examen.SinEsc === 0 || examen.SinEsc === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
+                                <i class="ri-flag-2-line ${examen.Anulado === 0 ? 'sinesc' : ''}"></i>
+                            </span>
+                        </td>
+                        <td>
+                            <span id="devol" class="${(examen.Devol === 0 || examen.Devol === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
+                                <i class="ri-flag-2-line ${examen.Anulado === 0 ? 'devol' : ''}"></i>
+                            </span>
+                        </td>
+                        <td class="date text-center capitalize" title="${titleEfector}">${fullNameEfector === 0 ? '' : fullNameEfector}
+                            <span class="badge badge-soft-${([0,1,2].includes(examen.CAdj) ? 'danger': ([3,4,5].includes(examen.CAdj) ? 'success' : ''))}">
+                                ${([0,1,2].includes(examen.CAdj) ? 'Abierto': ([3,4,5].includes(examen.CAdj) ? 'Cerrado' : ''))}
+                            </span>
+                            ${examen.ExaAdj === 1 ? `<i class="ri-attachment-line ${examen.archivos > 0 ? 'verde' : 'gris'}"></i>`: ``}    
+                        </td>
+                        <td class="date text-center capitalize" title="${titleInformador}">${examen.CInfo === 0 ? '' : (fullNameInformador === 0 ? '' :  fullNameInformador)}
+                            <span class="badge badge-soft-${(examen.CInfo === 0 ? 'dark' :(examen.CInfo === 3 ? 'success' : ([1,2].includes(examen.CInfo)) ? 'danger' : ''))}">${(examen.CInfo === 0 || examen.InfAdj === 0 ? '' : (examen.CInfo === 3 ? 'Cerrado' : (examen.CInfo == 2 ? 'Borrador' : (examen.CInfo === 1 ? 'Pendiente': ''))))}</span>
+                            ${examen.InfAdj === 1 ? (examen.CInfo ? `<i class="ri-attachment-line ${examen.archivosI > 0 ? 'verde' : 'gris'}"></i>`: ``) : ''}   
+                        </td>
+                        <td class="phone"><span class="${examen.Facturado === 1 ? 'badge badge-soft-success' : 'custom-badge rojo'}"><i class="ri-check-line"></i></span></td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <div class="edit">
+                                    <button data-id="${examen.IdItem}" type="button" class="btn btn-sm iconGeneral verExamen" title="Ver" data-bs-toggle="modal" data-bs-target="#modalExamen"><i class="ri-search-eye-line"></i></button>
                                 </div>
-                            </td>
-                        </tr>`;
-                }
-    
-                        $('#listaExamenes').append(filas);
-                        $("#listado").fancyTable({
-                            pagination: true,
-                            perPage: 50,
-                            searchable: false,
-                            globalSearch: false,
-                            sortable: false,
-                        });
-                    } else {
-                        console.warn('No hay registros disponibles');
-                    }
-                } catch (error) {
-            preloader('off');
-            console.error('Error en la carga del examen:', error);
-        }
+                                ${examen.Anulado === 0 && examen.IdNotaCredito === null ? `
+                                    <div class="bloquear">
+                                        <button data-bloquear="${examen.IdItem}" class="btn btn-sm iconGeneral bloquearExamen" title="Baja" type="button" ${estaCerrado}>
+                                            <i class="ri-forbid-2-line"></i>
+                                        </button>
+                                    </div>
+                                ` 
+                                : examen.IdNotaCredito === null ? `<button class="btn btn-sm iconGeneral edit-item-btn btnReactivar" data-id="${examen.IdItem}" type="button"  ${estaCerrado}><i class="ri-arrow-up-circle-fill"></i></button>` 
+                                : `<button class="btn btn-sm iconGeneral" type="button" title="Este examen esta en una nota de credito"><i class="ri-file-text-fill" style="color: red"></i></button>`}
+                                <div class="remove">
+                                    <button data-delete="${examen.IdItem}" class="btn btn-sm iconGeneral deleteExamen" title="Eliminar">
+                                        <i class="ri-delete-bin-2-line"></i>
+                                    </button>
+                                </div>  
+                            </div>
+                        </td>
+                    </tr>`;
+            }
+
+                    $('#listaExamenes').append(filas);
+                    $("#listado").fancyTable({
+                        pagination: true,
+                        perPage: 50,
+                        searchable: false,
+                        globalSearch: false,
+                        sortable: false,
+                    });
+            } catch (error) {
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;  
+            }
     }
     
     
@@ -718,7 +689,7 @@ $(document).ready(()=>{
 
     function loadModalExamen(id) {
         preloader('on');
-        $.get(editModal, {Id: id})
+        $.get(editModal, {Id: id, _token: TOKEN})
             .done(function(response){
 
                 const estadoAbierto = [0, 1, 2], 
@@ -727,7 +698,7 @@ $(document).ready(()=>{
                       pacientes = response.paciente.paciente,
                       examenes = itemprestaciones.examenes,
                       factura = itemprestaciones.facturadeventa,
-                      notaCreditoEx = itemprestaciones?.notaCreditoIt?.notaCredito;
+                      notaCreditoEx = response.notacredito;
 
                 const eventos = [
                     eventoAbrir,
@@ -756,7 +727,6 @@ $(document).ready(()=>{
                     tipo = factura.Tipo || '',
                     sucursal = factura.Sucursal || '',
                     nroFactura = factura.NroFactura || '',
-                    facturaExamen = tipo + sucursal + nroFactura,
                     tipoNc = notaCreditoEx?.Tipo || '',
                     sucursalNc = notaCreditoEx?.Sucursal || '',
                     nroNc = notaCreditoEx?.Nro || '',
@@ -769,6 +739,7 @@ $(document).ready(()=>{
                 $('#ex-anulado').empty().html(anulado);
                 $('#ex-identificacion').val(itemprestaciones.Id || '');
                 $('#ex-prestacion').val(itemprestaciones.IdPrestacion || '');
+                $('#ex-idExamen').val(itemprestaciones.IdExamen || '')
                 $('#ex-prestacionTitulo').empty().text(itemprestaciones.IdPrestacion || '');
                 $('#ex-fecha').val(itemprestaciones.prestaciones.Fecha || '');
                 $('#ex-examen').val(examenes.Nombre || '');
@@ -803,8 +774,7 @@ $(document).ready(()=>{
                 $('#ex-EstadoInf').empty().css(colorAdjInformador);
                 $('#ex-Obs').val(stripTags(itemprestaciones?.itemsInfo?.Obs));
 
-                $('#ex-FechaFacturaVta').val(factura?.Fecha);
-                $('#ex-NroFacturaVta').val(facturaExamen);
+                checkearFacturas(); //Verifica si es Examen a cuenta o Factura de Venta
 
                 $('#ex-FechaNC').val(notaCreditoEx?.Fecha);
                 $('#ex-NumeroNC').val(notaCEx);
@@ -945,7 +915,7 @@ $(document).ready(()=>{
                                 preloader('off');
                                 let query = response[0].data;
 
-                                toastr.success('Se ha cerrado al informador correctamente');
+                                toastr.success('Se ha cerrado al informador correctamente','',{timeOut: 1000});
                                 loadModalExamen(query.Id);
                                 
                             })
@@ -968,8 +938,8 @@ $(document).ready(()=>{
             let who = $(this).hasClass('ex-asignar') ? 'asignar' : 'asignarI',
                 check = (who === 'asignar') ? $('#ex-efectores').val() : $('#ex-informadores').val();
     
-            if(['', null, 0, '0'].includes(check)) {
-                toastr.warning("Debe seleccionar un Efector/Informador para poder asignar uno");
+            if(!check || check === '0') {
+                toastr.warning("Debe seleccionar un Efector/Informador para poder asignar uno",'',{timeOut: 1000});
                 return;
             }
     
@@ -985,7 +955,7 @@ $(document).ready(()=>{
                         .done(function(response){
                             preloader('off');
                             const itemprestaciones = response.data;
-                            toastr.success(response.msg);
+                            toastr.success(response.msg,'',{timeOut: 1000});
 
                             if (who === 'asignar') {
 
@@ -1031,7 +1001,7 @@ $(document).ready(()=>{
                         $.post(updateAsignado, { Id: id, _token: TOKEN, IdProfesional: 0, fecha: 0, Para: $(this).attr('id') === 'ex-liberar' ? 'asignar' : 'asignarI'})
                         .done(function(response){
                             preloader('off');
-                            toastr.success(response.msg);
+                            toastr.success(response.msg,'',{timeOut: 1000});
                             loadModalExamen(response.data.Id);
                             
                         })
@@ -1067,7 +1037,7 @@ $(document).ready(()=>{
             });
 
             if(ids.length === 0 && multi == "success"){
-                toastr.warning('No hay examenes seleccionados');
+                toastr.warning('No hay examenes seleccionados','',{timeOut: 1000});
                 return;
             }
             
@@ -1129,7 +1099,7 @@ $(document).ready(()=>{
                 tipo = $(this).data('tipo'),
                 idExOriginal = $('#ex-identificacion').val();
     
-            if(id === '' || tipo === ''){
+            if(!id || !tipo){
                 toastr.warning("Hay un problema porque no podemos identificar el tipo o la id a eliminar");
                 return;
             }
@@ -1260,6 +1230,38 @@ $(document).ready(()=>{
 
     });
   
+    $(document).on('click', '.btnReactivar', function(e) {
+        e.preventDefault();
+        let id = $(this).data('id');
+
+        swal({
+            title: "¿Está seguro que desea reactivar el examen?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if (confirmar) {
+                preloader('on');
+                $.post(reactivarItem, {id: id, _token: TOKEN})
+                    .done(function(response){
+                        preloader('off');
+                        toastr.success(response.msg,'',{timeOut: 1000});
+                         $('#listaExamenes').empty();
+                            $('#exam').val([]).trigger('change.select2');
+                            $('#addPaquete').val([]).trigger('change.select2');
+                            $('#listaExamenes').empty();
+                            cargarExamen(ID);
+                            contadorExamenes(ID);
+                    })
+                    .fail(function(jqXHR){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
+                    });
+            }
+        });
+    })
+
     async function asignarModal(e, tipo){
 
         let efector = $('#ex-efectores').val();
@@ -1292,7 +1294,7 @@ $(document).ready(()=>{
 
         if(tipo === 'efector') {
                                     
-            let resultado = await (![null,undefined,'',0].includes(number) && valCerrar.includes(parseInt(val, 10)));
+            let resultado = await (number && valCerrar.includes(parseInt(val, 10)));
 
             if (resultado) {
                 await borrarCache();
@@ -1301,7 +1303,7 @@ $(document).ready(()=>{
 
         }else if(tipo === 'informador') {
 
-            let resultado = await (![null,undefined,'',0].includes(number) && valCerrarI !== parseInt(val, 10));
+            let resultado = await (number && valCerrarI !== parseInt(val, 10));
 
             if (resultado) {
                 await borrarCache();
@@ -1342,15 +1344,14 @@ $(document).ready(()=>{
             num = parseInt(e, 10);
         
         if (tipo === 'efector') {
-            let valido = ![null,undefined,'',0].includes(num);
-            let resultado = await (valCerrar.includes(parseInt(val, 10)) && valido);
+            let resultado = await (valCerrar.includes(parseInt(val, 10)) && num);
 
             if(resultado){
                 await borrarCache();
                 $('.ex-liberar, .ex-cerrar').show();   
             
                 checkAdjunto(idItemprestacion, 'efector').then(response => {
-                    if (response === true) {
+                    if (response) {
                         $('.ex-adjuntarEfector').show();
                     } else {
                         $('.ex-adjuntarEfector').hide();
@@ -1372,7 +1373,7 @@ $(document).ready(()=>{
                 $('.ex-adjuntarInformador').show();
 
                 checkAdjunto(idItemprestacion, 'informador').then(response => {
-                    response === true ? $('.ex-adjuntarInformador').show() : $('.ex-adjuntarInformador').hide();
+                    response ? $('.ex-adjuntarInformador').show() : $('.ex-adjuntarInformador').hide();
                 });
 
             }else if(errorEfector) {
@@ -1413,13 +1414,13 @@ $(document).ready(()=>{
             $.get(await listGeneral, { proveedor: id, tipo: tipo })
                 .done(function (response) {
                     let data = response.resultados;
-
                     etiqueta.empty().append('<option value="">Elija una opción</option>');
 
-                    $.each(data, function (index, d) {
-                        let contenido = `<option value="${d.Id}">${d.NombreCompleto}</option>`;
-                        etiqueta.append(contenido);
-                    });
+                    for(let i = 0; i < data.length; i++) {
+                        let d = data[i],
+                            contenido = `<option value="${d.Id}">${d.NombreCompleto}</option>`;
+                            etiqueta.append(contenido);
+                    }
                 });
         }
     }
@@ -1427,18 +1428,21 @@ $(document).ready(()=>{
     async function listadoEModal(id){
         
         $('#listaefectores').empty();
-        let Estado = $('#ex-EstadoEx').val();
+        
         preloader('on');
         $.get(await paginacionGeneral, {Id: id, tipo: 'efector'})
             .done(function(response){
                 let data = response.resultado;
                 preloader('off');
-                $.each(data, function(index, d){
+
+                for(let index = 0; index < data.length; index++) {
+                    let d = data[index],
+                        Estado = $('#ex-EstadoEx').val();
 
                     let contenido = `
                         <tr>
                             <td>${d.Nombre}</td>
-                            <td>${(![null, undefined, ''].includes(d.DescripcionE) ? d.DescripcionE : '')}</td>
+                            <td>${(d.DescripcionE ?? '')}</td>
                             <td>${(d.Adjunto === 0 ? 'Físico' : 'Digital')}</td>
                             <td>${(d.MultiE === 0 ? 'Simple' : 'Multi')}</td>
                             <td>
@@ -1474,7 +1478,7 @@ $(document).ready(()=>{
                     `;
 
                     $('#listaefectores').append(contenido);
-                });
+                }
             })
     }
 
@@ -1487,56 +1491,61 @@ $(document).ready(()=>{
             .done(function(response){
                 let data = response.resultado;
                 preloader('off');
-                $.each(data, function(index, d){
 
-                    let contenido = `
-                        <tr>
-                            <td>${d.Nombre}</td>
-                            <td>${(![null, undefined, ''].includes(d.DescripcionI) ? d.DescripcionI : '')}</td>
-                            <td>
-                                <div class="d-flex justify-content-center align-items-center gap-2">
-                                    <div class="edit">
-                                        <a href="${descargaI}/${d.RutaI}" target="_blank">
-                                            <button type="button" class="btn btn-sm iconGeneral" title="Ver"><i class="ri-search-eye-line"></i></button>
-                                        </a>
-                                    </div>
-                                    <div class="download">
-                                        <a href="${descargaI}/${d.RutaI}" target="_blank" download>
-                                            <button type="button" class="btn btn-sm iconGeneral" title="Descargar"><i class="ri-download-2-line"></i></button>
-                                        </a>
-                                    </div>
-                                    ${(EstadoI === 'Cerrado') ? `
-                                    <div class="replace">
-                                        <button data-id="${d.IdI}" data-tipo="informador" data-bs-toggle="offcanvas" data-bs-target="#replaceAdjunto" class="btn btn-sm iconGeneral replaceAdjunto" title="Reemplazar archivo">
-                                            <i class="ri-file-edit-line"></i>
-                                        </button> 
-                                    </div>
-                                        `:``}
-                                    ${(EstadoI === 'Cerrado' || d.Anulado === 1) ? `
-                                    <div class="remove">
-                                        <button data-id="${d.IdI}" data-tipo="informador" class="btn btn-sm iconGeneral deleteAdjunto" title="Eliminar">
-                                            <i class="ri-delete-bin-2-line"></i>
-                                        </button>
-                                    </div>
-                                    ` : ''}
+                for(let index = 0; index < data.length; index++) {
+                    let d = data[index],
+                        contenido = `
+                    <tr>
+                        <td>${d.Nombre}</td>
+                        <td>${(d.DescripcionI ?? '')}</td>
+                        <td>
+                            <div class="d-flex justify-content-center align-items-center gap-2">
+                                <div class="edit">
+                                    <a href="${descargaI}/${d.RutaI}" target="_blank">
+                                        <button type="button" class="btn btn-sm iconGeneral" title="Ver"><i class="ri-search-eye-line"></i></button>
+                                    </a>
                                 </div>
-                            </td>
-                        </tr>
-                    `;
+                                <div class="download">
+                                    <a href="${descargaI}/${d.RutaI}" target="_blank" download>
+                                        <button type="button" class="btn btn-sm iconGeneral" title="Descargar"><i class="ri-download-2-line"></i></button>
+                                    </a>
+                                </div>
+                                ${(EstadoI === 'Cerrado') ? `
+                                <div class="replace">
+                                    <button data-id="${d.IdI}" data-tipo="informador" data-bs-toggle="offcanvas" data-bs-target="#replaceAdjunto" class="btn btn-sm iconGeneral replaceAdjunto" title="Reemplazar archivo">
+                                        <i class="ri-file-edit-line"></i>
+                                    </button> 
+                                </div>
+                                    `:``}
+                                ${(EstadoI === 'Cerrado' || d.Anulado === 1) ? `
+                                <div class="remove">
+                                    <button data-id="${d.IdI}" data-tipo="informador" class="btn btn-sm iconGeneral deleteAdjunto" title="Eliminar">
+                                        <i class="ri-delete-bin-2-line"></i>
+                                    </button>
+                                </div>
+                                ` : ''}
+                            </div>
+                        </td>
+                    </tr>
+                `;
 
-                    $('#listainformadores').append(contenido);
-                });
+                $('#listainformadores').append(contenido);     
+                }     
             })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            });
     }
 
     function ocultarCampos() {
         const elements = document.querySelectorAll('.ex-abrir, .ex-cerrar, .ex-asignar, .ex-liberar, .ex-asignarI, .ex-liberarI, .ex-cerrarI, .ex-adjuntarEfector, .ex-adjuntarInformador');
 
-        elements.forEach(element => {
-            element.style.display = 'none';
-        });
-
-
+        for(let i = 0; i < elements.length; i++) {
+            elements[i].style.display = 'none';
+        }
     }
 
     function multiExEfector(data) {
@@ -1545,21 +1554,19 @@ $(document).ready(()=>{
 
     function listaExEfector(data) {
 
-        if([null, undefined, ''].includes(data)) return;
+        if(!data) return;
         $('.listaGrupoEfector').empty();
 
-        $.each(data, function(index, examen) {
-
-            let contenido = `
+        for(let index = 0; index < data.length; index++) {
+            let examen = data[index],
+                contenido = `
                 <label class="list-group-item">
                     <input class="form-check-input me-1" type="checkbox" id="Id_multiAdj_${ examen.Id }" value="${examen.Id}" ${ examen.archivos_count > 0 ? 'disabled' : 'checked' }> 
                     ${ examen.archivos_count > 0 ? examen.NombreExamen + ' <i title="Con archivo adjunto" class="ri-attachment-line verde"></i>' : examen.NombreExamen}
                 </label>
             `;
-
             $('.listaGrupoEfector').append(contenido);
-    });
-
+        }
     }
 
     function multiExInformador(data) {
@@ -1567,19 +1574,19 @@ $(document).ready(()=>{
     }
 
     function listaExInformador(data) {
-        if([null, undefined, ''].includes(data)) return;
+        if(!data) return;
         
         $('.listaGrupoInformador').empty();
-            $.each(data, function(index, examen) {
-
-                let contenido = `
+        for(let index = 0; index < data.length; index++) {
+            let examen = data[index],
+                contenido = `
                     <label class="list-group-item">
                         <input class="form-check-input me-1" type="checkbox" id="Id_multiAdjInf_${ examen.Id }" value="${ examen.Id}" ${ examen.archivos_count > 0 ? 'disabled' : 'checked' }> 
                         ${ examen.archivos_count > 0 ? examen.NombreExamen + ' (' + examen.NombreProveedor + ') <i title="Con archivo adjunto" class="ri-attachment-line verde"></i>' : examen.NombreExamen + ' (' + examen.NombreProveedor + ')'}
                     </label>
                 `;
                 $('.listaGrupoInformador').append(contenido);
-            });
+        }
         
     }
 
@@ -1627,7 +1634,7 @@ $(document).ready(()=>{
 
 
     async function checkAdjunto(id, tipo) {
-        if (['', 0, null].includes(id)) return;
+        if (!id) return;
 
         return new Promise((resolve, reject) => {
             $.get(checkAdj, { Id: id, Tipo: tipo })
@@ -1670,5 +1677,72 @@ $(document).ready(()=>{
         return resultado;
     }
 
+    function contadorExamenes(idPrestacion) {
+        $.get(contadorEx, {Id: idPrestacion}, function(response){
+            $('#countExamenes').empty().text(response);
+        });
+    }
+
+    function checkearFacturas() {
+        let id = $('#ex-identificacion').val();
+
+        if(!id) return;
+
+        $.get(checkFacturas, {IdPrestacion: $('#ex-prestacion').val(), IdExamen: $('#ex-idExamen').val()})
+            .done(function(response){
+
+                switch (response.tipo) {
+                    case 'examenCuenta':
+                         $('#ex-NroFacturaVta').val(response.data.NroFactura);
+                         $('#ex-FechaFacturaVta').val(response.data.Fecha);
+                        return;
+                    case 'facturaDeVenta':
+                         $('#ex-NroFacturaVta').val(response.data.NroFactura);
+                         $('#ex-FechaFacturaVta').val(response.data.Fecha);
+                        return 
+                    default:
+                        $('#ex-NroFacturaVta').val();
+                        $('#ex-FechaFacturaVta').val();
+                        return;
+                }
+            })
+            .fail(function(jqXHR){
+                let errorData = JSON.parse(jqXHR.responseText);
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            })
+    }
+
+        function listadoSelectExCta(id) {
+        $('#exaCtaDisp').empty()
+
+        if(!id) return;
+
+        preloader('on');
+        $.get(listaExCuenta, {Id: id})
+            .done(function(response){
+             
+                let contenido = '';
+                if(response && response.length > 0) {
+
+                    $('#exaCtaDisp').append('<option selected value="">Examenes disponibles..</option>');
+
+                    $.each(response, function(index, data){
+                        contenido += `<option value="${data.IdExamen}" data-id="${data.IdPagoCuenta}">${data.NombreExamen} (Cantidad: ${data.total})</option>`;
+                    });
+
+                    $('#exaCtaDisp').append(contenido);
+
+                }else{
+                    $('#exaCtaDisp').append('<option selected value="">Sin examenes disponibles</option>');
+                }  
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return; 
+            })
+    }
 
 });

@@ -3,16 +3,52 @@
 namespace App\Http\Controllers;
 
 use App\Models\Examen;
+use App\Models\Reporte;
+use App\Services\Reportes\Estudios\PDFREPE1;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Yajra\DataTables\DataTables;
 use App\Traits\ObserverExamenes;
 use App\Traits\CheckPermission;
 use App\Traits\ReporteExcel;
+use App\Services\Reportes\ReporteService;
+use App\Helpers\Tools;
 
 class ExamenesController extends Controller
 {
+    protected $reporteService;
+    protected $outputPath;
+    protected $sendPath;
+    protected $fileNameExport;
+    private $tempFile;
+
     use ObserverExamenes, CheckPermission, ReporteExcel;
+
+    public $helper = '
+        <div class="d-flex">
+            <span class="fondo-celeste p-1 small">Con prioridad de impresión</span>
+            <span class="rojo p-1 small">Inactivo</span>
+        </div>
+    ';
+
+    public $helpeEditar = '
+        <ul>
+            <li>Los examenes <b class="negrita_verde">Exclusivos Evaluador</b> son eAnexos. No se muestran en e-estudio</li>
+            <li>Los examenes <b class="negrita_verde">Exporta con Anexos</b> se asignan a Efector pero también deben verse en pdf anexos</li>
+            <li>No se podrán <b class="negrita_verde">Cerrar</b> las Prestaciones con Examenes Ausentes</li>
+            <li>No se podrán <b class="negrita_verde">Finalizar</b> las Prestaciones con Examenes Sin Escanear, Forma o Devolución</li>
+            <li>Los que tengan <b class="negrita_verde">Prioridad</b> se imprimirán primero al generar los reportes de la Prestación</li>
+        </ul>
+    ';
+
+    public function __construct(ReporteService $reporteService) {
+
+        $this->reporteService = $reporteService;
+        $this->outputPath = storage_path('app/public/temp/fusionar-' . Tools::randomCode(15) . '.pdf');
+        $this->sendPath = storage_path('app/public/temp/cmit-' . Tools::randomCode(15) . '-informe.pdf');
+        $this->fileNameExport = 'reporte-' . Tools::randomCode(15);
+        $this->tempFile = 'app/public/temp/file-';
+    }
 
     public function index()
     {
@@ -20,8 +56,10 @@ class ExamenesController extends Controller
             abort(403);
         }
 
-        return view("layouts.examenes.index");
+        return view("layouts.examenes.index", ['helper'=> $this->helper]);
     }
+
+    public function show() {}
 
     public function create()
     {
@@ -30,11 +68,10 @@ class ExamenesController extends Controller
         }
 
         $estudios = $this->getEstudios();
-        $reportes = $this->getReportes();
         $proveedores = $this->getProveedor();
         $aliasexamenes = $this->getAliasExamenes();
 
-        return view("layouts.examenes.create", compact(['estudios', 'reportes', 'proveedores','aliasexamenes']));
+        return view("layouts.examenes.create", compact(['estudios', 'proveedores','aliasexamenes']), ['helper'=>$this->helpeEditar]);
     }
 
     public function store(Request $request)
@@ -59,6 +96,7 @@ class ExamenesController extends Controller
             'Ausente' => $request->Ausente ?? 0,
             'Devol' => ($request->Devolucion === 'on' ? '1' : '0'),
             'Informe' => ($request->Informe === 'on' ? '1' : '0'),
+            'Cerrado' => ($request->Cerrado === 'on' ? '1' : '0'),
             'Adjunto' => ($request->Adjunto === 'on' ? '1' : '0'),
             'NoImprime' => ($request->Fisico === 'on' ? '1' : '0'),
             'PI' => ($request->priImpresion === 'on' ? '1' : '0'),
@@ -77,11 +115,14 @@ class ExamenesController extends Controller
         }
         
         $estudios = $this->getEstudios();
-        $reportes = $this->getReportes();
         $proveedores = $this->getProveedor();
         $aliasexamenes = $this->getAliasExamenes();
-
-        return view("layouts.examenes.edit", compact(['examene', 'estudios', 'reportes', 'proveedores', 'aliasexamenes']));
+        if($examene->IdReporte > 0) {
+            $reporte = Reporte::find($examene->IdReporte);
+        } else {
+            $reporte = null ;
+        }
+        return view("layouts.examenes.edit", compact(['examene', 'estudios', 'proveedores', 'aliasexamenes', 'reporte']), ['helper'=>$this->helpeEditar]);
     }
 
     public function search(Request $request): mixed
@@ -261,6 +302,7 @@ class ExamenesController extends Controller
             $examen->Ausente = $request->Ausente ?? 0;
             $examen->Devol = ($request->Devol === 'true' ? '1' : '0');
             $examen->Informe = ($request->Informe === 'true' ? '1' : '0');
+            $examen->Cerrado = ($request->Cerrado === 'true' ? '1' : '0');
             $examen->Adjunto = ($request->Adjunto === 'true' ? '1' : '0');
             $examen->NoImprime = ($request->NoImprime === 'true' ? '1' : '0');
             $examen->PI = ($request->PI === 'true' ? '1' : '0');
@@ -289,5 +331,56 @@ class ExamenesController extends Controller
         }
     }
 
+    public function getVistaPrevia(Request $request){
+        $id = $request->input("Id");
+        if($id){
+            $reporte = Reporte::find($request->Id);
+            return response()->json($reporte);
+        }else{
+            return response()->noContent();
+        }
+    }
+
+    public function getExamenes(Request $request){
+        $buscar = $request->buscar;
+        $resultados = Examen::where('Nombre', 'like', "%".$buscar."%")->get();
+        
+        $retorno = [];
+
+        foreach($resultados as $examen){
+            array_push($retorno, [
+                'id' => $examen->Id,
+                'text' => $examen->Nombre
+            ]);
+        }
+
+        return response()->json($retorno);
+    }
+
+    public function getById(Request $request){
+        $id = $request->Id;
+        return response()->json( Examen::find($id));
+    }
+
+    public function getReportes(Request $request): mixed
+    {
+
+        $buscar = $request->buscar;
+
+        $reportes = Reporte::where('Nombre', 'LIKE', '%' . $buscar . '%')->get();
+
+        $resultados = [];
+
+        foreach ($reportes as $reporte) {
+            $resultados[] = [
+                'id' => $reporte->Id,
+                'text' => $reporte->Nombre,
+            ];
+        }
+
+        return $resultados;
+
+        return response()->json(['paquete' => $resultados]);
+    }
 }
  

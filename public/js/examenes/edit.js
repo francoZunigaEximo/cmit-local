@@ -1,4 +1,4 @@
-$(document).ready(()=>{
+$(function(){
 
     quitarDuplicados('#Estudio');
     quitarDuplicados('#Reporte');
@@ -24,6 +24,7 @@ $(document).ready(()=>{
             ProvEfector = $('#ProvEfector').val(),
             ProvInformador = $('#ProvInformador').val(),
             Informe = $('#Informe').prop('checked'),
+            Cerrado = $('#Cerrado').prop('checked'),
             Fisico = $('#Fisico').prop('checked'),
             Adjunto = $('#Adjunto').prop('checked'),
             Ausente = $('#Ausente').prop('checked'),
@@ -40,10 +41,10 @@ $(document).ready(()=>{
                 }).then((confirmar) => {
                     if(confirmar) {
                         preloader('on');
-                        $.post(updateExamen, {_token: TOKEN, Id: ID, Examen:Examen, IdEstudio: Estudio, Descripcion: Descripcion, IdReporte: Reporte, Cod: CodigoEx, Cod2: CodigoE, IdForm: Formulario, DiasVencimiento: DiasVencimiento, Inactivo: Inactivo, PI: priImpresion, IdProveedor: ProvEfector, IdProveedor2: ProvInformador, Informe: Informe, NoImprime: Fisico, Adjunto: Adjunto, Ausente: Ausente, Devol: Devolucion, Evaluador: EvalExclusivo, EvalCopia: ExpAnexo, aliasexamen: aliasexamen})
+                        $.post(updateExamen, {_token: TOKEN, Id: ID, Examen:Examen, IdEstudio: Estudio, Descripcion: Descripcion, IdReporte: Reporte, Cod: CodigoEx, Cod2: CodigoE, IdForm: Formulario, DiasVencimiento: DiasVencimiento, Inactivo: Inactivo, PI: priImpresion, IdProveedor: ProvEfector, IdProveedor2: ProvInformador, Informe: Informe, NoImprime:  Fisico, Cerrado: Cerrado, Adjunto: Adjunto, Ausente: Ausente, Devol: Devolucion, Evaluador: EvalExclusivo, EvalCopia: ExpAnexo, aliasexamen: aliasexamen})
                         .done(function(response){
                             preloader('off')
-                            toastr.success(response.msg);
+                            toastr.success(response.msg, '', {timeOut: 1000});
                             setTimeout(() => {
                                 location.reload();
                             }, 3000);
@@ -75,6 +76,7 @@ $(document).ready(()=>{
             ProvEfector = $('#ProvEfector').val(),
             ProvInformador = $('#ProvInformador').val(),
             Informe = $('#Informe').prop('checked'),
+            Cerrado = $('#Cerrado').prop('checked'),
             Fisico = $('#Fisico').prop('checked'),
             Adjunto = $('#Adjunto').prop('checked'),
             Ausente = $('#Ausente').prop('checked'),
@@ -101,6 +103,7 @@ $(document).ready(()=>{
                 localStorage.setItem('clon_ProvEfector', ProvEfector);
                 localStorage.setItem('clon_ProvInformador', ProvInformador);
                 localStorage.setItem('clon_Informe', Informe);
+                localStorage.setItem('clon_Cerrado', Cerrado);
                 localStorage.setItem('clon_Fisico', Fisico);
                 localStorage.setItem('clon_Adjunto', Adjunto);
                 localStorage.setItem('clon_Ausente', Ausente);
@@ -127,12 +130,12 @@ $(document).ready(()=>{
                 .done(function(estatus){
 
                     if (estatus.estatus === true) {
-                        toastr.warning('No se puede eliminar el exámen porque esta siendo utilizada por una prestación');
+                        toastr.warning('No se puede eliminar el exámen porque esta siendo utilizada por una prestación','',{timeOut: 1000});
                         return;
             
                     } else if(estatus.estatus === false){
 
-                        toastr.success('Se ha eliminado correctamente el exámen. Se redireccionará a la pantalla de creación de examenes');
+                        toastr.success('Se ha eliminado correctamente el exámen. Se redireccionará a la pantalla de creación de examenes','',{timeOut: 1000});
                         setTimeout(()=>{
                             location.href = GOINDEX;
                         }, 3000);

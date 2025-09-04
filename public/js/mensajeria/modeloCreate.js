@@ -1,4 +1,4 @@
-$(document).ready(function(){
+$(function(){
 
     let atributos = {
                 
@@ -173,7 +173,7 @@ $(document).ready(function(){
             $.post(crearModelo, data)
                 .done(function(response){
                     preloader('off');
-                    toastr.success(response.msg);
+                    toastr.success(response.msg, '', {timeOut: 1000});
                     $('#form-create').trigger('reset');
                     $('.Cuerpo').html('');
                     setTimeout(() => {
@@ -182,17 +182,9 @@ $(document).ready(function(){
                 })
                 .fail(function(jqXHR){
                     preloader('off');
-                    if(jqXHR.status === 403){
-                        toastr.warning(jqXHR.responseJSON.msg);
-                        return;
-                    
-                    }else if(jqXHR.status === 500){
-                        toastr.warning(jqXHR.responseJSON.msg);
-                        return;
-                    }else{
-                        toastr.error("Error: Consulte con el administrador");
-                        console.error(jqXHR);
-                    }   
+                    let errorData = JSON.parse(jqXHR.responseText);            
+                    checkError(jqXHR.status, errorData.msg);
+                    return; 
                 });
         }
     });

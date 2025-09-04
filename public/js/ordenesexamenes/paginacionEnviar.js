@@ -13,8 +13,8 @@ $(function() {
             cerrado = $(this).hasClass('cerradoEE') ? "activo" : null,
             impago = $(this).hasClass('impagoEE') ? "activo" : null;
 
-        if ((completo !== 'activo' || abierto !== 'activo' || cerrado !== 'activo' || impago !== 'activo') && (fechaDesde === '' || fechaHasta === '')) {
-            toastr.warning("Las fechas son obligatorias");
+        if ((completo !== 'activo' || abierto !== 'activo' || cerrado !== 'activo' || impago !== 'activo') && (!fechaDesde || !fechaHasta)) {
+            toastr.warning("Las fechas son obligatorias",'',{timeOut: 1000});
             return;
         }
 
@@ -126,7 +126,6 @@ $(function() {
                 },
             ],
             language: {
-                processing: "<div style='text-align: center; margin-top: 20px;'><img src='./images/spinner.gif' /><p>Cargando...</p></div>",
                 emptyTable: "No hay examenes con los datos buscados",
                 paginate: {
                     first: "Primera",

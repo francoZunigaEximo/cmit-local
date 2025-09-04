@@ -77,7 +77,7 @@ function format(rowData) {
 }
 
 
-$(document).ready(()=>{
+$(function(){
 
     $('.botonPagar, .quitarPago').prop('disabled', true);
     mostrarBotonesPago($('#estado').val());
@@ -184,12 +184,14 @@ $(document).ready(()=>{
                 orderable: false,
                 targets: 8,
                 render: function(data) {
+                    let nroFactura = data.Tipo + ("0000" + data.Sucursal).slice(-4) + '-' + ("00000000" + data.Numero).slice(-8);
+                    let empresa = data.Empresa;
 
                     let editar = `<a title="Editar" href="${location.href}/${data.IdEx}/edit"><button type="button" class="btn btn-sm iconGeneralNegro"><i class="ri-edit-line"></i></button></a>`,
                 
                         baja = `<button data-id="${data.IdEx}" title="Dar de baja" type="button" class="btn btn-sm iconGeneralNegro deleteExamen" ><i class="ri-delete-bin-2-line"></i></button>`,
                         
-                        pago = `<button type="button" data-id="${data.IdEx}" class="btn btn-sm botonGeneral cambiarBoton">${data.FechaPagado === '0000-00-00' ? 'Pagar' : 'Quitar pago'}</button>`;
+                        pago = `<button type="button" data-id="${data.IdEx}" data-nro="${nroFactura}" data-empresa="${empresa}" class="btn btn-sm botonGeneral cambiarBoton">${data.FechaPagado === '0000-00-00' ? 'Pagar' : 'Quitar pago'}</button>`;
 
                     return editar + ' ' + baja + ' ' + pago;  
                 }
@@ -224,15 +226,12 @@ $(document).ready(()=>{
             $('.botonPagar').prop('disabled', true);
 
             $('#listadoExamenesCuentas tbody').off('click', 'td.details-control').on('click', 'td.details-control', function(){
-                var tr = $(this).closest('tr');
-                var row = tableIndex.row(tr);
+                let tr = $(this).closest('tr'), row = tableIndex.row(tr);
             
                 if(row.child.isShown()){
-                    // This row is already open - close it
                     row.child.hide();
                     tr.removeClass('shown');
                 } else {
-                    // Open this row
                     format(row.data()).then(function(div){
                         row.child(div).show();
                         tr.addClass('shown');
@@ -242,26 +241,18 @@ $(document).ready(()=>{
                 }
             });
         
-            // Handle click on "Expand All" button
             $(document).on('click', '#btn-show-all-children', function(){
-                // Enumerate all rows
                 tableIndex.rows().every(function(){
-                    // If row has details collapsed
                     if(!this.child.isShown()){
-                        // Open this row
                         this.child(format(this.data())).show();
                         $(this.node()).addClass('shown');
                     }
                 });
             });
         
-            // Handle click on "Collapse All" button
             $(document).on('click', '#btn-hide-all-children', function(){
-                // Enumerate all rows
                 tableIndex.rows().every(function(){
-                    // If row has details expanded
                     if(this.child.isShown()){
-                        // Collapse row details
                         this.child.hide();
                         $(this.node()).removeClass('shown');
                     }
@@ -297,7 +288,7 @@ $(document).ready(()=>{
         console.log(typeof(fechaDesde), typeof(fechaHasta));return; */
 
         if (fechaDesde === '' || fechaHasta === '') {
-            toastr.warning("Las fechas son obligatorias");
+            toastr.warning("Las fechas son obligatorias", "", {timeOut: 1000});
             return;
         }
 
@@ -339,7 +330,7 @@ $(document).ready(()=>{
                     targets: 0,
                     render: function(data){
                    
-                        return `<div class="text-center"><input type="checkbox" name="Id" value="${data.IdEx}" checked></div>`;
+                        return `<div class="text-center"><input type="checkbox" name="Id" value="${data.IdEx}"></div>`;
                     }
                 },
                 {
@@ -414,15 +405,15 @@ $(document).ready(()=>{
                     orderable: false,
                     targets: 8,
                     render: function(data) {
-
-
+                        let nroFactura = data.Tipo + ("0000" + data.Sucursal).slice(-4) + '-' + ("00000000" + data.Numero).slice(-8);
+                        let empresa = data.Empresa;
                         habilitarMasivo(data.Pagado);
 
                         let editar = `<a title="Editar" href="${location.href}/${data.IdEx}/edit"><button type="button" class="btn btn-sm iconGeneralNegro"><i class="ri-edit-line"></i></button></a>`,
                     
                             baja = `<button data-id="${data.IdEx}" title="Dar de baja" type="button" class="btn btn-sm iconGeneralNegro deleteExamen" ><i class="ri-delete-bin-2-line"></i></button>`,
                             
-                            pago = `<button type="button" data-id="${data.IdEx}" class="btn btn-sm botonGeneral cambiarBoton">${data.FechaPagado === '0000-00-00' ? 'Pagar' : 'Quitar pago'}</button>`;
+                            pago = `<button type="button" data-id="${data.IdEx}" data-nro="${nroFactura}" data-empresa="${empresa}" class="btn btn-sm botonGeneral cambiarBoton">${data.FechaPagado === '0000-00-00' ? 'Pagar' : 'Quitar pago'}</button>`;
 
                         return editar + ' ' + baja + ' ' + pago;  
                     }
@@ -506,4 +497,5 @@ $(document).ready(()=>{
 
         
     });
+
 });

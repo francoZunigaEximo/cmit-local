@@ -1,70 +1,74 @@
-$(document).ready(function(){
+$(function(){
+
+    const principal = {
+        provincia: $('#provincia'),
+        multiVolver: $('.multiVolver'),
+        exportSimple: $('.exportSimple'),
+        exportDetallado: $('.exportDetallado'),
+        verPrestacion: $('.verPrestacion'),
+        exportExcel: $('.exportExcel'),
+        listaPacientes: $('#listaPacientes')
+    };
+
+    const variables = {
+        localidad: $('#localidad'),
+        codigoPostal: $('#codigoPostal')
+    };
 
     quitarDuplicados("#tipoDocumento");
     quitarDuplicados("#provincia");
     quitarDuplicados("#tipoIdentificacion");
+    quitarDuplicados("#Sexo");
     checkProvincia();
     lstResultadosPrest(ID);
-
     
-    $('#provincia').change(function() {
+    principal.provincia.change(function() {
         let provincia = $(this).val();
 
-        $.ajax({
-            url: getLocalidades,
-            type: "GET",
-            data: {
-                provincia: provincia,
-            },
-            success: function(response) {
+        $.get(getLocalidades, {provincia: provincia})
+            .done(function(response){
                 let localidades = response.localidades;
 
-                $('#localidad').empty().append('<option selected>Elija una opción...</option>');
+                variables.localidad.empty().append('<option selected>Elija una opción...</option>');
 
-                localidades.forEach(function(localidad) {
-                    $('#localidad').append('<option value="' + localidad.id + '">' + localidad.nombre + '</option>');
-                });
-            }
-        });
+                for(let index = 0; index < localidades.length; index++){
+                    let localidad = localidades[index];
+                    variables.localidad.append('<option value="' + localidad.id + '">' + localidad.nombre + '</option>');
+                }
+            });
     });
-
  
 
-    $('#localidad').change(function() {
+    variables.localidad.change(function() {
         let localidadId = $(this).val();
 
-        // Realizar la solicitud Ajax
-        $.ajax({
-            url: getCodigoPostal,
-            type: "GET",
-            data: {
-                localidadId: localidadId,
-            },
-            success: function(response) {
-                // Actualizar el valor del input de Código Postal
-                $('#codigoPostal').val(response.codigoPostal);
-            }
-        });
+        $.get(getCodigoPostal,{localidadId: localidadId})
+            .done(function(response){
+                variables.codigoPostal.val(response.codigoPostal);
+            });
+        
     });
 
-    $(document).on('click', '.multiVolver', function(e) {
+    principal.multiVolver.on('click', function(e) {
+        e.preventDefault();
         window.history.back();
     });
 
-    $(document).on('click', '.exportSimple, .exportDetallado', function(e){
+    principal.exportSimple.add(principal.exportDetallado).on('click', function(e){
         e.preventDefault();
 
         let id = $(this).data('id'),
             tipo = $(this).hasClass('exportSimple') ? 'exportSimple' : 'exportDetallado';
 
-        if([0, null, undefined, ''].includes(id)) return;
+        if(!id) return;
 
         preloader('on');
         $.get(exResultado, {IdPaciente: id, Tipo: tipo})
             .done(function(response){
+
                 createFile("excel", response.filePath, generarCodigoAleatorio() + '_reporte');
                 preloader('off');
-                toastr.success('Se ha generado el archivo correctamente');
+                toastr.success('Se ha generado el archivo correctamente','',{timeOut: 1000});
             })
             .fail(function(jqXHR){
                 preloader('off');
@@ -74,7 +78,7 @@ $(document).ready(function(){
             });
     });
 
-    $(document).on('click', '.verPrestacion', function(e){
+    principal.verPrestacion.on('click',function(e){
         e.preventDefault();
 
         let link = url.replace('__prestacion__', $(this).data('id'));
@@ -82,39 +86,70 @@ $(document).ready(function(){
 
     });
 
+    principal.exportExcel.on('click', function(e){
+        e.preventDefault();
+        let tipo = $(this).data('id'), ids = [], filters = "";
+        const table = principal.listaPacientes.find('tbody tr');
+    
+        ids = table.map(function(){
+            return $(this).data('id');
+        }).get();
+    
+        if (ids.length === 0) { 
+            toastr.warning('No existen registros para exportar');
+            return;
+        }
+
+        swal({
+            title: "¿Está seguro que desea exportar la lista de prestaciones?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"],
+        }).then((aceptar) => {
+            if(aceptar) {
+                preloader('on');
+                $.get(sendExcel, {ids: ids, filters: filters, tipo: tipo})
+                .done(function(response){
+                    preloader('off');
+                    createFile("excel", response.filePath, generarCodigoAleatorio() + "_reporte_" + tipo);
+                        preloader('off');
+                        toastr.success(response.msg);
+                        return;
+                })
+                .fail(function(jqXHR) {
+                    preloader('off');
+                    let errorData = JSON.parse(jqXHR.responseText);            
+                    checkError(jqXHR.status, errorData.msg);
+                    return; 
+                });
+
+            };
+        });
+
+    });
 
     function checkProvincia(){
 
-        let provincia = $('#provincia').val();
-        let localidad = $('#localidad').val();
+        let provincia = $('#provincia').val(), localidad = $('#localidad').val();
 
         if (provincia === 0)
         {
-            $.ajax({
-                url: checkP,
-                type: 'GET',
-                data: {
-                    localidad: localidad,
-                },
-                success: function(response){
-                    
-                    let provinciaNombre = response.fillProvincia;
-                        
-                    let nuevoOption = $('<option>', {
+            $.get(checkP, {localidad: localidad})
+                .done(function(response){
+                    let provinciaNombre = response.fillProvincia,
+                        nuevoOption = $('<option>', {
                         value: provinciaNombre,
                         text: provinciaNombre,
                         selected: true,
                     });
 
-                    $('#provincia').append(nuevoOption);
-                },
-                error: function(xhr){
+                    variables.provincia.append(nuevoOption);
+                })
+                .fail(function(jqXHR){
                     preloader('off');
                     let errorData = JSON.parse(jqXHR.responseText);
                     checkError(jqXHR.status, errorData.msg);
                     return;
-                }
-            });
+                });
         }
     }
 
@@ -128,16 +163,16 @@ $(document).ready(function(){
             .done(function(response){
 
                 preloader('off');
-                $.each(response, function(index, r){
 
-                    let icon = r.Evaluacion === 0 ? `<span class="custom-badge generalNegro">Antiguo</span>` : '',
-                        evaluacion = r.Evaluacion === 0 ? '' : r.Evaluacion.slice(2),
+                for(let index = 0; index < response.length; index++) {
+                    let r = response[index],
+                        icon = r.Evaluacion === 0 ? `<span class="custom-badge generalNegro">Antiguo</span>` : '',
+                        evaluacion = r.Evaluacion ? r.Evaluacion.slice(2) : '' ,
                         calificacion = r.Calificacion ? r.Calificacion.slice(2) : '',
                         boton = r.Evaluacion !== 0 ? `<button data-id="${r.Id}" class="btn btn-sm iconGeneral verPrestacion" title="Ver">
                                     <i class="ri-search-eye-line"></i>
-                                </button>` : '';
-
-                    let contenido = `
+                                </button>` : '',
+                        contenido = `
                         <tr>
                             <td style="width: 50px">${fechaNow(r.Fecha, "/", 0)}</td>
                             <td style="width: 50px">${r.Id} ${icon}</td>
@@ -153,8 +188,7 @@ $(document).ready(function(){
                     `;
 
                     $('#lstResultadosPres, #lstResultadosPres2').append(contenido);
-
-                });
+                }
 
                 $("#listadoResultadosPres").fancyTable({
                     pagination: true,

@@ -58,7 +58,6 @@
                 <div class="col-sm-12">
                     <span class="small">
                         <span class="required">(*)</span> El campo es obligatorio
-                        <span class="required">(**)</span> Debe definir la especialidad para listar
                     </span>
                 </div>
             </div>
@@ -118,19 +117,18 @@
                                                         <option value="pendientes">Pendientes</option>
                                                         <option value="borrador">Borrador</option>
                                                         <option value="pendienteYborrador">Pendiente y borrador</option>
-                                                        <option value="todos">Todos</option>
                                                     </select>
                                                 </div>
 
                                                 <div class="col-sm-2 mb-3">
-                                                    <label for="profEfePres" class="form-label font-weight-bold"><strong>Prof. Efector: <span class="required">(**)</span></strong></label>
+                                                    <label for="profEfePres" class="form-label font-weight-bold"><strong>Prof. Efector: </strong></label>
                                                     <select name="profEfePres" id="profEfePres" class="form-control">
                                                         <option value="" selected>Elija una opción...</option>
                                                     </select>
                                                 </div>
 
                                                 <div class="col-sm-2 mb-3">
-                                                    <label for="profInfPres" class="form-label font-weight-bold"><strong>Prof. Informador: <span class="required">(**)</span></strong></label>
+                                                    <label for="profInfPres" class="form-label font-weight-bold"><strong>Prof. Informador: </strong></label>
                                                     <select name="profInfPres" id="profInfPres" class="form-control">
                                                         <option value="" selected>Elija una opción...</option>
                                                     </select>
@@ -197,26 +195,26 @@
             
                                 </div>
             
-                                <div class="table mt-3 mb-1 mx-auto">
-                                    <table id="listaOrdenesPrestaciones" class="table table-bordered">
+                                <div class="table-responsive mt-3 mb-1 mx-auto" style="overflow-x: auto;">
+                                    <table id="listaOrdenesPrestaciones" class="table table-striped">
                                         <thead class="table-light">
                                             <tr>
-                                                <th class="sort">Especialidad</th>
-                                                <th class="sort">Fecha</th>
-                                                <th class="sort">Prestación</th>
-                                                <th class="sort">Empresa</th>
-                                                <th class="sort">Paciente</th>
+                                                <th>Especialidad</th>
+                                                <th>Fecha</th>
+                                                <th>Prestación</th>
+                                                <th>Empresa</th>
+                                                <th>Paciente</th>
                                                 <th>DNI</th>
-                                                <th class="sort">E_Presta</th>
+                                                <th>E_Presta</th>
                                                 <th>eEnv</th>
-                                                <th class="sort">Examen</th>
-                                                <th class="sort">Efector</th>
-                                                <th class="sort">E_EFE</th>
-                                                <th class="sort">ADJ</th>
-                                                <th class="sort">Informador</th>
-                                                <th class="sort">E_INF</th>
+                                                <th>Examen</th>
+                                                <th>Efector</th>
+                                                <th>E_EFE</th>
+                                                <th>ADJ</th>
+                                                <th>Informador</th>
+                                                <th>E_INF</th>
                                                 <th>Fecha Vto</th>
-                                                <th class="sort">Acción</th>
+                                                <th>Acción</th>
                                             </tr>
                                         </thead>
                                         <tbody class="list form-check-all">
@@ -351,7 +349,7 @@
                     
                                         </div>
                     
-                                        <div class="table mt-3 mb-1 mx-auto">
+                                        <div class="table-responsive mt-3 mb-1 mx-auto">
                                             <table id="listaOrdenesEfectores" class="table table-bordered">
                                                 <thead class="table-light">
                                                     <tr>
@@ -473,7 +471,7 @@
                     
                                         </div>
                     
-                                        <div class="table mt-3 mb-1 mx-auto">
+                                        <div class="table-responsive mt-3 mb-1 mx-auto">
                                             <table id="listaOrdenesEfectoresAsig" class="table table-bordered">
                                                 <thead class="table-light">
                                                     <tr>
@@ -573,7 +571,7 @@
                                             <div class="preloader"></div>
                                         </div>
                     
-                                        <div class="table mt-3 mb-1 mx-auto">
+                                        <div class="table-responsive mt-3 mb-1 mx-auto">
                                             <table id="listaOrdenesEfectoresAdj" class="table table-bordered"">
                                                 <thead class="table-light">
                                                     <tr>
@@ -723,7 +721,7 @@
                     
                                         </div>
                     
-                                        <div class="table mt-3 mb-1 mx-auto">
+                                        <div class="table-responsive mt-3 mb-1 mx-auto">
                                             <table id="listaOrdenesInformadores" class="table table-bordered">
                                                 <thead class="table-light">
                                                     <tr>
@@ -833,7 +831,7 @@
                     
                                         </div>
                     
-                                        <div class="table mt-3 mb-1 mx-auto">
+                                        <div class="table-responsive mt-3 mb-1 mx-auto">
                                             <table id="listaOrdenesInformadoresAsig" class="table table-bordered">
                                                 <thead class="table-light">
                                                     <tr>
@@ -933,7 +931,7 @@
                                             </div>
                                         </div>
                     
-                                        <div class="table mt-3 mb-1 mx-auto">
+                                        <div class="table-responsive mt-3 mb-1 mx-auto">
                                             <table id="listaOrdenesInformadoresAdj" class="table table-bordered">
                                                 <thead class="table-light">
                                                     <tr>
@@ -1036,7 +1034,7 @@
                                                 </div>
                                             </div>
 
-                                            <div class="table mt-3 mb-1 mx-auto">
+                                            <div class="table-responsive mt-3 mb-1 mx-auto">
                                                 <table id="listaOrdenesEEnviar" class="table table-bordered">
                                                     <thead class="table-light">
                                                         <tr>
@@ -1112,12 +1110,11 @@
 <link rel="stylesheet" href="{{ asset('css/fixSelect2.css') }}">
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<link rel="stylesheet" href="{{ asset('css/dataTables.dataTables.min.css') }}">
 @endpush
 
 @push('scripts')
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+<script src="{{ asset('js/dataTables.min.js') }}"></script>
 
 <script src="{{ asset('js/jquery.validate.min.js') }}"></script>
 <script src="{{ asset('js/ordenesexamenes/validaciones.js')}}?v={{ time() }}"></script>

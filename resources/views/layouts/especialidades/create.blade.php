@@ -38,15 +38,6 @@
                         </select>
                     </div>  
         
-                    <div class="col-3 mt-3">
-                        <label for="Inactivo" class="form-label">Inactivo <span class="required">(*)</span></label>
-                        <select class="form-control" name="Inactivo" id="Inactivo">
-                            <option value="" selected>Elija una opción...</option>
-                            <option value="1">Sí</option>
-                            <option value="0">No</option>
-                        </select>
-                    </div>
-        
                     <div class="col-6 Telefono mt-3">
                         <label for="Telefono" class="form-label">Teléfono</label>
                         <input type="number" class="form-control" name="Telefono" id="Telefono" placeholder="2996547532">
@@ -121,7 +112,6 @@
 
 <script>
     const getLocalidad ="{{ route('getLocalidades') }}";
-
     let editUrl = "{{ route('especialidades.edit', ['especialidade' => '__especialidades__']) }}";
     const checkProveedor = "{{ route('checkProveedor') }}";
     const saveBasico = "{{ route('saveBasico') }}";

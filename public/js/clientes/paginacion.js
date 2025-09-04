@@ -1,6 +1,13 @@
-$(document).ready(()=>{
+$(function(){
 
-    $('#buscar, #FPago, #TipoCliente, #filtro').on('change', function() {
+    $(document).on('click', '#buscarBtn', function(e) {
+            e.preventDefault();
+
+            let buscar = $('#buscar').val(),
+                formaPago = $('#FPago').val(),
+                filtro = $('#filtro').val(),
+                tipoCliente = $('#TipoCliente').val();
+
 
             $('#listaClientes').DataTable().clear().destroy();
 
@@ -22,11 +29,11 @@ $(document).ready(()=>{
                 ajax: {
                     url: SEARCH,
                     data: function(d){
-                        d.tipo = $('#TipoCliente').val();
+                        d.tipo = tipoCliente;
                         //d.filtro = $('#filtro').select2('data').map(option => option.id);
-                        d.filtro = $('#filtro').val();
-                        d.formaPago = $('#FPago').val();
-                        d.buscar = $('#buscar').val();
+                        d.filtro = filtro;
+                        d.formaPago = formaPago;
+                        d.buscar = buscar;
                     }
                 },    
                 columns: [
@@ -39,13 +46,13 @@ $(document).ready(()=>{
                     {
                         data: null,
                         render: function(data){
-                            return `<span title="${data.RazonSocial}">${acortadorTexto((data.RazonSocial).toUpperCase(), 20)}</span>`;
+                            return `<span title="${data.RazonSocial}">${(data.RazonSocial).toUpperCase()}</span>`;
                         }
                     },
                     {
                         data: null,
                         render: function(data){
-                            return `<span title="${data.ParaEmpresa}">${acortadorTexto((data.ParaEmpresa).toUpperCase(), 20)}</span>`;
+                            return `<span title="${data.ParaEmpresa}">${(data.ParaEmpresa).toUpperCase()}</span>`;
                         }
                     },
                     {

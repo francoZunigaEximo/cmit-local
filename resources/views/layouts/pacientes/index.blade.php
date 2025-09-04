@@ -57,7 +57,8 @@
                         <table id="listaPac" class="display table table-bordered" style="width:100%">
                             <thead class="table-light">
                                 <tr>
-                                    <th><input type="checkbox" id="checkAll" name="Id"></th>
+                                    <th class="text-center"><input type="checkbox" id="checkAll" name="Id"></th>
+                                    <th>Nro</th>
                                     <th class="sort">Apellido y Nombre</th>
                                     <th class="sort">Documento</th>
                                     <th class="sort">Teléfono</th>
@@ -92,13 +93,16 @@ const ROUTE = "{{ route('pacientes.index') }}";
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/hacks.css')}}?v={{ time() }}">
+<link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.css">
 @endpush
 
 @push('scripts')
 <!--datatable js-->
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+{{-- <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script> --}}
+
+<script src="https://cdn.datatables.net/2.2.2/js/dataTables.js"></script>
 
 <script src="{{ asset('js/scripts.js') }}?v={{ time() }}"></script>
 <script src="{{ asset('js/pacientes/index.js')}}?v={{ time() }}"></script>

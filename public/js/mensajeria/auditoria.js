@@ -1,4 +1,4 @@
-$(document).ready(function(){
+$(function(){
 
     let hoy = new Date().toLocaleDateString('en-CA');
     $('#fechaHasta').val(hoy);
@@ -11,8 +11,8 @@ $(document).ready(function(){
             mensaje: '.verMensaje'
         };
 
-        if([null, undefined, ''].includes(id)) {
-            toastr.warning("No se hay id");
+        if(!id) {
+            toastr.warning("La existe el identificador", "", {timeOut: 1000});
             return;
         }
         preloader('on');

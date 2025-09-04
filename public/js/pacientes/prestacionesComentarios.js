@@ -1,8 +1,16 @@
-$(document).ready(function(){
+$(function(){
+
+    const principal = {
+        prestacionModal: $('#prestacionModal')
+    };
+
+    const variables = {
+        comentario: $("#comentario")
+    };
 
      //Cerramos el modal y reset de comentarios de la DB
-     $('#prestacionModal').on('hidden.bs.modal', function(){
-        $("#comentario").val("");
+     principal.prestacionModal.on('hidden.bs.modal', function(){
+        variables.comentario.val("");
     });
 
     //Limpiamos el ID para evitar bug

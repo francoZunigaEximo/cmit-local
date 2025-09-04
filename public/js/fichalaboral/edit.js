@@ -1,4 +1,4 @@
-$(document).ready(function () {
+$(function () {
  
     quitarDuplicados("#Horario");
     quitarDuplicados("#Tipo");
@@ -120,14 +120,8 @@ $(document).ready(function () {
     });
 
     $(document).on('change', '#SPago', function(){
-
         let pago = $(this).val();
-
-        if(pago === 'G'){
-            $('.Autoriza').show();
-        }else{
-            $('.Autoriza').hide();
-        }
+        return pago === 'G' ? $('.Autoriza').show() : $('.Autoriza').hide();
     });
     
     //Alerta - verificacion de clientes bloqueados
@@ -194,27 +188,27 @@ $(document).ready(function () {
         }
 
         if([0, null, undefined, ''].includes(tipoPrestacion)){
-            toastr.warning('¡El campo tipo de prestación es obligatorio!');
+            toastr.warning('¡El campo tipo de prestación es obligatorio!', '', {timeOut: 1000});
             return;
         }
 
         if([0, null, undefined, ''].includes(cliente) && [0, null, undefined, ''].includes(art)){
-            toastr.warning('¡Debe seleccionar una empresa o una art!');
+            toastr.warning('¡Debe seleccionar una empresa o una art!','', {timeOut: 1000});
             return;
         }
         
         if(tipoPrestacion === 'ART' && ([0, null, undefined, ''].includes(art))){
-            toastr.warning('¡Debe seleccionar una ART para el tipo de prestación ART!');
+            toastr.warning('¡Debe seleccionar una ART para el tipo de prestación ART!','', {timeOut: 1000});
             return;
         }
 
         if(tipoPrestacion === 'ART' && (![0, null, undefined, ''].includes(art)) && ([0, null, undefined, ''].includes(cliente))){
-            toastr.warning('¡Debe seleccionar una Empresa para el tipo de prestación ART y la ART seleccionada!');
+            toastr.warning('¡Debe seleccionar una Empresa para el tipo de prestación ART y la ART seleccionada!','', {timeOut: 1000});
             return;
         }
         
         if(tipoPrestacion !== 'ART' && ([0, null, undefined, ''].includes(cliente))){
-            toastr.warning('¡Debe seleccionar una empresa para el tipo de prestación seleccionado!');
+            toastr.warning('¡Debe seleccionar una empresa para el tipo de prestación seleccionado!','',{timeOut: 1000});
             return;
         }
 
@@ -246,7 +240,7 @@ $(document).ready(function () {
             }) 
             .done(function(response) {
                 preloader('off');
-                toastr.success(response.msg);
+                toastr.success(response.msg,'', {timeOut: 1000});
                 swal('Atención', 'Se actualizará la pantalla en segundos...', 'success');
                 setTimeout(() => {
                     window.location.reload();
@@ -264,7 +258,6 @@ $(document).ready(function () {
     //Calcular Antiguedad en la Empresa en FichaLaboral
     $('#FechaIngreso, #FechaEgreso').change(function(){
         calcularAntiguedad();
-
     });
 
     $(document).on("select2:open", () => {
@@ -305,12 +298,12 @@ $(document).ready(function () {
                 let tiposPrestacion = response.tiposPrestacion;
                 
                 if(tiposPrestacion) {
-                    $('#tipoPrestacionPres').empty();
-                    $('#tipoPrestacionPres').append('<option value="" selected>Elija una opción...</option>');
+                    $('#tipoPrestacionPres').empty().append('<option value="" selected>Elija una opción...</option>');
 
-                    tiposPrestacion.forEach(function(tipoPrestacion) {
+                    for(let index = 0; index < tiposPrestacion.length; index++){
+                        let tipoPrestacion = tiposPrestacion[index];
                         $('#tipoPrestacionPres').append('<option value="' + tipoPrestacion.nombre + '">' + tipoPrestacion.nombre + '</option>');
-                    });
+                    }
                     
                     if(estado) {    
                         $('#tipoPrestacionPres').val(estado);

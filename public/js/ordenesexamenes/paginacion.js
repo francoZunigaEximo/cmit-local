@@ -8,8 +8,8 @@ $(function() {
             fechaHasta = $('#fechaHasta').val(),
             prestacion = $('#prestacion').val();
 
-        if ((fechaDesde === '' || fechaHasta === '') && prestacion === '') {
-            toastr.warning("Las fechas son obligatorias", "Atención");
+        if ((!fechaDesde || !fechaHasta) && !prestacion) {
+            toastr.warning("Las fechas son obligatorias", "Atención", {timeOut: 1000});
             return;
         }
 
@@ -18,15 +18,15 @@ $(function() {
         $(document).on('change', '#especialidad', function(){
             let nuevoValor = $(this).val();
 
-            if(['',0, undefined].includes(nuevoValor)) return; //evitamos la recarga vacia
+            if(!nuevoValor) return; //evitamos la recarga vacia
             
             if (nuevoValor !== especialidad) {
                 especialidad = nuevoValor;
             }
         });
 
-        if (especialidad === '') {
-            toastr.warning("Debe seleccionar una especialidad");
+        if (!especialidad) {
+            toastr.warning("Debe seleccionar una especialidad",'',{timeOut: 1000});
             return;
         }
 
@@ -112,7 +112,6 @@ $(function() {
                 },
             ],
             language: {
-                processing: "<div style='text-align: center; margin-top: 20px;'><img src='./images/spinner.gif' /><p>Cargando...</p></div>",
                 emptyTable: "No hay examenes con los datos buscados",
                 paginate: {
                     first: "Primera",

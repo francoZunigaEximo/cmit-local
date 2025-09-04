@@ -1,4 +1,4 @@
-$(document).ready(function(){
+$(function(){
  
     $(document).on('click', '.buscar', function(e){
 
@@ -12,8 +12,8 @@ $(document).ready(function(){
             fechaHasta = $('#fechaHasta').val(),
             bloqueado = $('#bloqueado').val();
 
-        if([null, '', 0].includes(fechaHasta) || (![null, '', 0].includes(fechaDesde) && [null, '', 0].includes(fechaHasta))) {
-            toastr.warning("La fecha hasta es obligatoria. Tampoco puede faltar si la fecha desde esta incluida");
+        if(!fechaHasta) {
+            toastr.warning("La fecha hasta es obligatoria. Tampoco puede faltar si la fecha desde esta incluida", "", {timeOut: 1000});
             return;
         }
 
@@ -49,8 +49,7 @@ $(document).ready(function(){
                     data: null,
                     width: "30px",
                     render: function(data){
-                        let codigo = (data.Id).toString().padStart(6, '0');
-                        return codigo;
+                        return (data.Id).toString().padStart(6, '0');
                     },
                     style: {
                         fontSize: '1px'

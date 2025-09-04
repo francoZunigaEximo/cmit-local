@@ -74,14 +74,14 @@ class DetalladaPrestacion implements ReporteInterface
             $sheet->setCellValue('I'.$fila, $prestacion->CCosto ?? '');
             $sheet->setCellValue('J'.$fila, $prestacion->NroCEE ?? '');
             $sheet->setCellValue('K'.$fila, $prestacion->Anulado === 1 ? 'SI' : 'NO');
-            $sheet->setCellValue('L'.$fila, $prestacion->ObsAnulado ?? '');
+            $sheet->setCellValue('L'.$fila, strip_tags($prestacion->ObsAnulado) ?? '');
             $sheet->setCellValue('M'.$fila, $prestacion->Examen ?? '');
             $sheet->setCellValue('N'.$fila, $prestacion->ObsExamen ?? '');
             $sheet->setCellValue('O'.$fila, $prestacion->Incompleto ?? '');
             $sheet->setCellValue('P'.$fila, $prestacion->Ausente ?? '');
             $sheet->setCellValue('Q'.$fila, $prestacion->Forma ?? '');
             $sheet->setCellValue('R'.$fila, $prestacion->Devol ?? '');
-            $sheet->setCellValue('S'.$fila, $prestacion->ObsEstado ?? '');
+            $sheet->setCellValue('S'.$fila, strip_tags($prestacion->ObsEstado) ?? '');
             $fila++;
         }
     }

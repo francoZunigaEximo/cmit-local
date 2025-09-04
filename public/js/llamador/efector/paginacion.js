@@ -22,15 +22,14 @@ $(function(){
         if(prestacion === ''){
 
             if(!profesional){ 
-                toastr.warning('El campo profesional no puede estar vacío');
+                toastr.warning('El campo profesional no puede estar vacío', '', {timeOut: 1000});
                 return;
             }
     
-            if(fechaDesde == '' || fechaHasta == ''){
+            if(!fechaDesde || !fechaHasta){
                 swal('Alerta','La fecha "Desde" y "Hasta" son obligatorias.', 'warning');
                 return;
             }
-
         }
         
         table.DataTable().clear().destroy();

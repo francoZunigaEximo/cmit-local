@@ -213,13 +213,13 @@ $(function() {
             ids.push($(this).val());
         });
 
-        if (profesional == '' || profesional == '0') { 
-            toastr.warning('No se ha seleccionado un Profesional para asignar');
+        if (!profesional|| profesional === '0') { 
+            toastr.warning('No se ha seleccionado un Profesional para asignar','',{timeOut: 1000});
             return;
         }
     
         if(ids.length === 0 && checkAll === false){
-            toastr.warning('No hay ningun exámen seleccionado para asignar');
+            toastr.warning('No hay ningun exámen seleccionado para asignar','',{timeOut: 1000});
             return;
         }
         
@@ -234,7 +234,7 @@ $(function() {
                 .done(function(response){
                     preloader('off');
                     let data = response.message;
-                    toastr.success(data, "Información");
+                    toastr.success(data, "Información", { timeOut: 1000 });
                     $(obj[seleccion][2]).DataTable().draw(false)
 
                 })
@@ -260,8 +260,8 @@ $(function() {
 
         let checkAll =$('#checkAllAsignado').prop('checked');
 
-        if(ids.length === 0 && checkAll === false){
-            toastr.warning('No hay examenes seleccionados', 'Atención');
+        if(ids.length === 0 && !checkAll){
+            toastr.warning('No hay examenes seleccionados', 'Atención', {timeOut: 1000});
             return;
         }
         
@@ -275,7 +275,7 @@ $(function() {
                 $.post(updateItem, {Id : ids, _token: TOKEN, Para: 'abrir' })
                 .done(function(){
                     preloader('off');
-                    toastr.success('Se ha realizado la acción correctamente');                 
+                    toastr.success('Se ha realizado la acción correctamente', '', {timeOut: 1000});                 
                     $('#listaOrdenesEfectoresAsig').DataTable().draw(false);
                 })
                 .fail(function(jqXHR){
@@ -300,7 +300,7 @@ $(function() {
         let checkAll =$('#checkAllAsignado').prop('checked');
 
         if(ids.length === 0 && checkAll === false){
-            toastr.warning('No hay examenes seleccionados', 'Atención');
+            toastr.warning('No hay examenes seleccionados', 'Atención', {timeOut: 1000});
             return;
         }
 
@@ -314,7 +314,7 @@ $(function() {
                 $.post(updateItem, {Id : ids, _token: TOKEN, Para: 'cerrar' })
                 .done(function(){
                     preloader('off');
-                    toastr.success('Se ha realizado la acción correctamente');
+                    toastr.success('Se ha realizado la acción correctamente','', {timeOut: 1000});
                     $('#listaOrdenesEfectoresAsig').DataTable().draw(false);
                 })
                 .fail(function(jqXHR){
@@ -346,8 +346,8 @@ $(function() {
 
         let checkAll =$(obj[seleccion][1]).prop('checked');
 
-        if(ids.length === 0 && checkAll === false){
-            toastr.warning('No hay examenes seleccionados');
+        if(ids.length === 0 && !checkAll){
+            toastr.warning('No hay examenes seleccionados','',{timeOut: 1000});
             return;
         }
        
@@ -362,7 +362,7 @@ $(function() {
                 $.post(asignarProfesional, { _token: TOKEN, Ids: ids, IdProfesional: 0, tipo: obj[seleccion][3]})
                 .done(function(response){
                     preloader('off');
-                    toastr.success(response.message);
+                    toastr.success(response.message,'',{timeOut: 1000});
                     $(obj[seleccion][2]).DataTable().draw(false);
                 })
                 .fail(function(jqXHR) {
@@ -519,7 +519,7 @@ $(function() {
                 contentType: false,
                 success: function() {
                     preloader('off');
-                    toastr.success("Se ha cargado el reporte de manera correcta.");
+                    toastr.success("Se ha cargado el reporte de manera correcta.",'', {timeOut: 1000});
                     $(tabla).DataTable().clear().draw(false);
                 },
                 error: function (jqXHR) {
@@ -558,8 +558,8 @@ $(function() {
     
         let checkAll = $(obj[opcion][1]).prop('checked');
 
-        if(ids.length === 0 && checkAll === false){
-            toastr.warning('No hay examenes seleccionados', 'Atención');
+        if(ids.length === 0 && !checkAll){
+            toastr.warning('No hay examenes seleccionados', 'Atención', {timeOut: 1000});
             return;
         }
 
@@ -603,7 +603,7 @@ $(function() {
         });
 
         if(ids.length === 0) {
-            toastr.warning('No hay examenes para exportar');
+            toastr.warning('No hay examenes para exportar', 'Atención', {timeOut: 1000});
             return;
         }
 
@@ -618,7 +618,7 @@ $(function() {
                     .done(function(response){
                         preloader('off');
                         createFile("excel", response.filePath, generarCodigoAleatorio() + '_reporte');
-                        toastr.success("Se esta generando el reporte");
+                        toastr.success("Se esta generando el reporte",'',{timeOut: 1000});
                     })
             }
         });
@@ -633,7 +633,7 @@ $(function() {
         });
         
         if(ids.length === 0){
-            toastr.warning('No hay prestaciones seleccionados para visualizar');
+            toastr.warning('No hay prestaciones seleccionados para visualizar', '', {timeOut: 1000});
             return;
         }
 
@@ -649,7 +649,6 @@ $(function() {
                     .done(function(response){
                         e.preventDefault();
 
-                        console.log(Array.isArray(response));
                         let contador = 1
                         $.each(response, function(index, link){
                             
@@ -661,7 +660,7 @@ $(function() {
                         });
                         
                         preloader('off');
-                        toastr.success("Se ha generado la vista previa");
+                        toastr.success("Se ha generado la vista previa", '', {timeOut: 1000});
                     })
                     .fail(function(jqXHR){
                         let errorData = JSON.parse(jqXHR.responseText);
@@ -681,7 +680,7 @@ $(function() {
         });
 
         if(ids.length === 0){
-            toastr.warning('No hay prestaciones seleccionados para visualizar');
+            toastr.warning('No hay prestaciones seleccionados para visualizar', '', {timeOut: 1000});
             return;
         }
 
@@ -697,7 +696,7 @@ $(function() {
                         preloader('off');
             
                         $.each(response, function(index, r){
-                            r.estado == 'success' ? toastr.success(r.msg) : toastr.warning(r.msg);
+                            r.estado == 'success' ? toastr.success(r.msg,'',{timeOut:1000}) : toastr.warning(r.msg,'',{timeOut:1000});
                         });
 
                     })
@@ -721,7 +720,7 @@ $(function() {
         });
 
         if(ids.length === 0){
-            toastr.warning('No hay prestaciones seleccionados para visualizar');
+            toastr.warning('No hay prestaciones seleccionados para visualizar', '', {timeOut: 1000});
             return;
         }
 
@@ -736,7 +735,7 @@ $(function() {
                     .done(function(response){
                         preloader('off');
                         $.each(response, function(index, r){
-                            r.estado == 'success' ? toastr.success(r.msg) : toastr.warning(r.msg);
+                            r.estado == 'success' ? toastr.success(r.msg,'',{timeOut:1000}) : toastr.warning(r.msg,'',{timeOut:1000});
                         });
                     })
                     .fail(function(jqXHR){
@@ -751,19 +750,19 @@ $(function() {
     function verificarArchivo(archivo){
 
         if (!archivo || archivo.size === 0) {
-            toastr.warning("El archivo se encuentra vacío o no es PDF");
+            toastr.warning("El archivo se encuentra vacío o no es PDF",'',{timeOut: 1000});
             return false;
         }
 
         if (!archivo.name.includes('.')) {
-            toastr.warning("El archivo no tiene extensión o la misma es invalida");
+            toastr.warning("El archivo no tiene extensión o la misma es invalida",'',{timeOut: 1000});
             return false;
         }
 
         let tipoArchivo = archivo.type.toLowerCase();
 
         if(tipoArchivo !== 'application/pdf') {
-            toastr.warning("Los archivos permitidos son PDF");
+            toastr.warning("Los archivos permitidos son PDF",'',{timeOut: 1000});
             return false;
         }
 
@@ -787,12 +786,12 @@ $(function() {
 
             lstEspecialidades.empty().append('<option value="" selected>Elige una opción...</option>');
 
-            $.each(response.result, function(index, r){
+            for(let index = 0; index < response.length; index++) {
+                let r = response[index],
+                contenido = `<option value="${r.Id}">${r.Nombre}</option>`;
+                lstEspecialidades.append(contenido);    
 
-                contenido = `<option title="${r.Nombre}" value="${r.Id}">${r.Nombre}</option>`;
-
-                lstEspecialidades.append(contenido);
-            });
+            }
         });
     }
 

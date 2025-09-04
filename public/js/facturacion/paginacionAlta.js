@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(function() {
 
     $(document).on('click', '.buscarAlta', function(e) {
         e.preventDefault();
@@ -10,12 +10,12 @@ $(document).ready(function() {
             tipo = $('#tipo').val();
     
         if(fechaDesde === '' || fechaHasta === ''){
-            toastr.warning('Seleccione un rango de fecha');
+            toastr.warning('Seleccione un rango de fecha','',{timeOut: 1000});
             return;
         }
 
         if([null, undefined, '', 0].includes(empresa)) {
-            toastr.warning("Debe seleccionar una empresa para listar las prestaciones");
+            toastr.warning("Debe seleccionar una empresa para listar las prestaciones", "", {timeOut: 1000});
             return;
         }
 

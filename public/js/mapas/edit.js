@@ -1,7 +1,12 @@
 $(function() { 
 
-    let hoy = new Date().toLocaleDateString('en-CA'), 
-        maxCaracteres = 100;
+    let hoy = new Date().toLocaleDateString('en-CA'), maxCaracteres = 100;
+
+    let checks = {
+        '#checkAllCerrar': 'Id_cerrar',
+        '#checkAllFinalizar': 'Id_finalizar',
+        '#checkAllEnviar': 'Id_enviar'
+    }
 
     quitarDuplicados("#Estado");
     getPrestaMapas();
@@ -12,11 +17,14 @@ $(function() {
     lstAuditorias();
     listaComentariosPrivados(IDMAPA, 'prestaciones','mapa');
     listaComentariosPrivados(IDMAPA, 'cerrado','mapa');
+    listaComentariosPrivados(IDMAPA, 'finalizado','mapa');
+    listaComentariosPrivados(IDMAPA, 'eEnviado','mapa');
     listarRemitos(IDMAPA);
 
     $('#remitoFechaE').val(hoy);
     $('.comentarioObsEstado').hide();
     $('#EstadoCerrar').val('abierto');
+    $('#modificar').hide();
 
     $('.seccionPrestaciones').show();
     $('.seccionOpciones').hide(); 
@@ -30,10 +38,20 @@ $(function() {
         });
     });
 
+    $('#comentarioPrivado').on('hide.bs.modal', function () {
+        $('#confirmar').show();
+        $('#modificar').hide();
+    });
 
     $('#verPrestacionModa').on('hide.bs.modal', function () {
         $(".ComObsEstado").val("");
         $('.comentarioObsEstado').hide();
+    });
+
+    $.each(checks, function(checkAllId, nombre) {
+        $(checkAllId).on('click', function() {
+            $('input[type="checkbox"][name="' + nombre + '"]:not(' + checkAllId + ')').prop('checked', this.checked);
+        });
     });
     
     //Exportar
@@ -58,7 +76,7 @@ $(function() {
         tipo = $(this).hasClass('pdf') ? 'pdf' : 'excel';
 
         if (id.length === 0) {
-            toastr.warning('Debes seleccionar al menos un mapa para exportar.');
+            toastr.warning('Debes seleccionar al menos un mapa para exportar.', '', {timeOut: 1000});
             return;
         }
             
@@ -76,12 +94,12 @@ $(function() {
                     success: function(response, ) {
                         createFile(arr[tipo].archivo, response.filePath, generarCodigoAleatorio() + "_reporte");
                         preloader('off');
-                        toastr.success(response.msg);
+                        toastr.success(response.msg, '', {timeOut: 1000});
                     },
                     error: function(jqXHR) {
                         preloader('off');
                         let errorData = JSON.parse(jqXHR.responseText);            
-                        checkError(jqXHR.status, errorData.msg);
+                        checkError(jqXHR.status, errorData.msg,);
                         return;
                     }
                 });
@@ -110,7 +128,7 @@ $(function() {
                 
                 .done(function(response){
                     preloader('off');
-                    toastr.success(response.msg);
+                    toastr.success(response.msg, '', {timeOut: 1000});
                     setTimeout(() => {
                         location.reload();
                     }, 3000);
@@ -156,19 +174,19 @@ $(function() {
             remitoFechaE = $('#remitoFechaE').val();
 
         if(['', null, 0].includes(nroRemito)) {
-            toastr.warning('No se puede realizar la entrega porque no posee numero de remito. Debe Finalizar la Prestación.');
+            toastr.warning('No se puede realizar la entrega porque no posee numero de remito. Debe Finalizar la Prestación.','',{timeOut: 1000});
             $(this).prop('disabled', false);
             return;
         }
     
         if(['', null].includes(remitoFechaE)) {
-            toastr.warning('Debe especificar una fecha de entrega');
+            toastr.warning('Debe especificar una fecha de entrega','',{timeOut: 1000});
             $(this).prop('disabled', false);
             return;
         }
 
         if(['', null].includes(remitoObs)){
-            toastr.warning('Debe escribir una observación');
+            toastr.warning('Debe escribir una observación','',{timeOut: 1000});
             $(this).prop('disabled', false);
             return;
         }
@@ -183,7 +201,7 @@ $(function() {
                 $.post(saveRemitos, {_token: TOKEN, Obs: remitoObs, FechaE: remitoFechaE, Id: nroRemito})
                 .done(function(response){
                     preloader('off');
-                    toastr.success(response.msg);
+                    toastr.success(response.msg, '', {timeOut: 1000});
                     setTimeout(()=>{
                         $('#remitoObs').val('');
                         $('#entregarModal').modal('hide');
@@ -199,9 +217,7 @@ $(function() {
                     return;
                 });
             }
-        });
-
-        
+        }); 
     });
     
     
@@ -221,7 +237,7 @@ $(function() {
                 $.post(reverseRemito, {_token: TOKEN, Id: remito})
                     .done(function(response){
                         preloader('off');   
-                        toastr.success(response.msg);
+                        toastr.success(response.msg, '', {timeOut: 1000});
                         setTimeout(()=>{
                             listarRemitos(IDMAPA);
                             $('.revertirEntrega').prop('disabled', false);
@@ -249,7 +265,7 @@ $(function() {
             condiciones = [NroRemito, NroPrestacion, Etapa, Estado];
 
         if(condiciones.every(condicion => condicion === '')){
-            toastr.warning('Debe utilizar algun filtro', 'Atención');
+            toastr.warning('Debe utilizar algun filtro', 'Atención', {timeOut: 1000});
             return;
         }
 
@@ -270,14 +286,14 @@ $(function() {
                 let data = response.result;
 
                 if(data === ''){
-                    toastr.warning('No se han encontrado resultados', 'Atención');
+                    toastr.warning('No se han encontrado resultados', 'Atención', {timeOut: 1000});
                 }
 
                 $('#prestaMapa').empty();
 
-                $.each(data, function(index, dat) {
-
-                    let contenido = `
+                for(let index = 0; index < data.length; index++){
+                    let dat = data[index],
+                        contenido = `
                         <tr>
                             <td>${dat.IdPrestacion}</td>
                             <td>${fecha(dat.Fecha)}</td>
@@ -311,8 +327,7 @@ $(function() {
 
                     $('#prestaMapa').append(contenido);
                     $('#NroPrestacion, #NroRPrestacion, #etapaPrestacion, #estadoPrestacion').val("");
-
-                    });
+                }
 
                 $("#listaPresMapa").fancyTable({
                     pagination: true,
@@ -355,9 +370,10 @@ $(function() {
                 preloader('off');
                 let examen = response;
                 $('#examenMapa').empty();
-                
-                $.each(examen, function(index, e) {
-                    
+
+                for(let index = 0; index < examen.length; index++) {
+                    let e = examen[index];
+
                     let arrCompleto = [3,4,5,6], efectuadoOk = arrCompleto.includes(e.CAdj), arrCerrado = [3,4,5], cerradoOk = arrCerrado.includes(e.CAdj);
                     
                     let efectorCompleto = e.RegHisEfector === 1 
@@ -394,8 +410,7 @@ $(function() {
                     `;
                     
                     $('#examenMapa').append(contenido);
-
-                });
+                }
 
                 $("#listaExaMapa").fancyTable({
                     pagination: true,
@@ -428,9 +443,8 @@ $(function() {
 
             let data = response.result;
 
-            $.each(data, function(index, d) {
-                
-                let contenido = `
+            for(let index = 0; index < data.length; index++) {
+                let d = data[index], contenido = `
                     <tr>
                         <td>${d.IdPrestacion}</td>
                         <td>${fecha(d.Fecha)}</td>
@@ -449,8 +463,7 @@ $(function() {
 
                 $('#cerrarMapa').append(contenido);
                 $('#NroPresCerrar, #EstadoCerrar').val('');
-                
-            });
+            }
 
             $("#listaCerrar").fancyTable({
                 pagination: true,
@@ -511,7 +524,7 @@ $(function() {
         let checkAll =$('#checkAllCerrar').prop('checked');
 
         if(ids.length === 0 && checkAll === false){
-            toastr.warning('No hay ninguna prestación seleccionada para cerrar', 'Atención');
+            toastr.warning('No hay ninguna prestación seleccionada para cerrar', 'Atención', {timeOut: 1000});
             return;
         }
         preloader('on');
@@ -549,9 +562,9 @@ $(function() {
                 $('#finalizarMapa').empty();
                 let data = response.result;
 
-                $.each(data, function(index, f){
-                
-                let contenido = `
+                for(let index = 0; index < data.length; index++) {
+                    let f = data[index],
+                        contenido = `
                     <tr>
                         <td>${f.NroRemito == 0 ? '-' : f.NroRemito}</td>
                         <td>${fecha(f.Fecha)}</td>
@@ -559,7 +572,11 @@ $(function() {
                         <td>${f.ApellidoPaciente} ${f.NombrePaciente}</td>
                         <td>${f.Documento}</td>
                         <td><span style="text-align=center" class="custom-badge pequeno">${f.Finalizado === 1 ? `Finalizado` : `Cerrado`}</span></td>
-                        <td><button data-id="${f.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
+                        <td><button data-id="${f.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button>
+                        <button title="Observaciones privadas" type="button" class="iconGeneral btn btn-sm comentarioPrivado" data-bs-toggle="modal" data-bs-target="#comentarioPrivado" data-id="${f.IdPrestacion}" data-nombre="${f.ApellidoPaciente} ${f.NombrePaciente}" data-fase="finalizado">
+                                <i class="ri-chat-quote-line"></i>
+                            </button>
+                        </td>
                         <td>${f.Finalizado === 1 ? '<input type="checkbox" disabled>' : `<input type="checkbox" name="Id_finalizar" value="${f.IdPrestacion}" checked>`}</td>
                         
                     </tr>
@@ -567,7 +584,7 @@ $(function() {
 
                     $('#finalizarMapa').append(contenido);
                     $('#NroPresFinal, #NroRemitoFinal').val("");
-                });
+                }
 
                 $("#listaFinalizar").fancyTable({
                     pagination: true,
@@ -597,7 +614,7 @@ $(function() {
         let checkAll =$('#checkAllFinalizar').prop('checked');
 
         if(ids.length === 0 && checkAll === false){
-            toastr.warning('No hay ninguna prestación seleccionada para finalizar', 'Atención');
+            toastr.warning('No hay ninguna prestación seleccionada para finalizar', 'Atención', {timeOut: 1000});
             return;
         }
         preloader('on');
@@ -639,7 +656,7 @@ $(function() {
         let arr = [fDesde, fHasta, NroPresEnviar, eEnviadoEnviar, NroPresRemito];
 
         if(arr.every(condicion => condicion === '')) {
-            toastr.warning("No hay un filtro seleccionado");
+            toastr.warning("No hay un filtro seleccionado", "", {timeOut: 1000});
             return;
         }
         
@@ -651,9 +668,8 @@ $(function() {
                 preloader('off');
                 $('#eenviarMapa').empty();
 
-                $.each(data, function(index, en){
-                    
-                    let contenido = `
+                for(let index = 0; index < data.length; index++) {
+                    let en = data[index], contenido = `
                         <tr>
                             <td>${en.NroRemito}</td>
                             <td>${fechaNow(en.Fecha,"/",1)}</td>
@@ -664,13 +680,15 @@ $(function() {
                             <td>
                                 <button data-id="${en.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button>
                                 <button data-id="${en.IdPrestacion}" class="btn btn-sm iconGeneral vistaPreviaEnviar" title="Vista previa"><i class="ri-file-search-line"></i></button>
+                                <button title="Observaciones privadas" type="button" class="iconGeneral btn btn-sm comentarioPrivado" data-bs-toggle="modal" data-bs-target="#comentarioPrivado"  data-id="${en.IdPrestacion}" data-nombre="${en.ApellidoPaciente} ${en.NombrePaciente}" data-fase="eEnviado">
+                                    <i class="ri-chat-quote-line"></i>
+                            </button>
                             </td>
                             <td>${en.eEnviado === 1 ? '' : en.eEnviado === 0 && en.Finalizado === 1 && en.Cerrado === 1 && en.Etapa === 'Completo' ? `<input type="checkbox" name="Id_enviar" value="${en.IdPrestacion}" checked>` : '<span class="custom-badge pequeno">Bloqueado</span>'}</td>     
                         </tr>
                     `;
                     $('#eenviarMapa').append(contenido);
-                    
-                });
+                }
 
                 $("#listaeenviar").fancyTable({
                     pagination: true,
@@ -692,9 +710,7 @@ $(function() {
     });
 
     $(document).on('click', '.eArt, .eEmpresa', function(e){
-
         e.preventDefault();
-
         $('.eTipo').val($(this).hasClass('eArt') ? "eArt" : "eEmpresa");
     });
 
@@ -709,7 +725,7 @@ $(function() {
         let checkAll =$('#checkAllEnviar').prop('checked');
 
         if (ids.length === 0 && checkAll === false) {
-            toastr.warning('No hay ninguna prestación seleccionada para eEnviar');
+            toastr.warning('No hay ninguna prestación seleccionada para eEnviar', '', {timeOut: 1000});
             return;
         }
 
@@ -720,12 +736,12 @@ $(function() {
             contarTrue = condiciones.filter(condicion => condicion === true).length;
 
         if (contarTrue !== 1){
-            toastr.warning("Debe seleccionar una opción");
+            toastr.warning("Debe seleccionar una opción", "", {timeOut: 1000});
             return;
         }
 
         if (condiciones.every(condicion => condicion === false)) {
-            toastr.warning("Debe seleccionar una de las opciones de envío");
+            toastr.warning("Debe seleccionar una de las opciones de envío", "", {timeOut: 1000});
             return;
         }
 
@@ -736,14 +752,14 @@ $(function() {
                
                 $.each(response, function(index, r){
                     if(r.icon === 'art-impresion' || r.icon === 'empresa-impresion') {
-                        toastr.success(r.msg);
+                        toastr.success(r.msg, '', {timeOut: 1000});
                         createFile("pdf", r.filePath, r.name);
                     
                     }else if(r.icon === 'art-email') {
-                        toastr.success(r.msg);
+                        toastr.success(r.msg, '', {timeOut: 1000});
                     
                     }else if(r.icon === 'empresa-email') {
-                        toastr.success(r.msg);
+                        toastr.success(r.msg, '', {timeOut: 1000});
                     }
                 });
                
@@ -767,7 +783,6 @@ $(function() {
     });
 
     $(document).on('click', '.verItemPrestacion', function(){
-
         let id = $(this).data('id');
         window.open(lnkItemsprestaciones.replace('__item__', id), '_blank');
     });
@@ -800,7 +815,10 @@ $(function() {
 
         let lstFases = {
             prestaciones: 2,
-            cerrar: 3
+            cerrar: 3,
+            finalizado: 4,
+            entregado: 5,
+            eEnviado: 6
         }
 
         if(!comentario){
@@ -819,6 +837,8 @@ $(function() {
                     $("#Comentario").val("");
                     listaComentariosPrivados(IDMAPA, 'prestaciones','mapa');
                     listaComentariosPrivados(IDMAPA, 'cerrado','mapa');
+                    listaComentariosPrivados(IDMAPA, 'finalizado','mapa');
+                    listaComentariosPrivados(IDMAPA, 'eEnviado','mapa');
                 }, 3000);
             })
             .fail(function(jqXHR){
@@ -840,7 +860,7 @@ $(function() {
         $.get(vistaPrevia, {Id: id})
             .done(function(response){
                 preloader('off');
-                toastr.success("Generando vista previa");
+                toastr.success("Generando vista previa", '', {timeOut: 1000});
                 window.open(response, '_blank');
             })
             .fail(function(jqXHR){
@@ -865,14 +885,14 @@ $(function() {
         let prestacion = $('#IdPrestacion').text(), observacion = $('.ComObsEstado').val();
 
         if(observacion === ''){
-            toastr.warning('Debe escribir un observación de la prestación');
+            toastr.warning('Debe escribir un observación de la prestación', '', {timeOut: 1000});
             return;
         }
         preloader('on');
         $.post(setComentarioPres, {_token: TOKEN, Id: prestacion, observacion: observacion})
             .done(function(response){
                 preloader('off');
-                toastr.success(response.msg);
+                toastr.success(response.msg, '', {timeOut: 1000});
                 setTimeout(()=>{
                     $('.comentarioObsEstado').hide();
                 }, 2000);
@@ -898,19 +918,7 @@ $(function() {
         $('.seccionOpciones').hide();
         $('.seccionPrestaciones').show(); 
     });
-
-    $('#checkAllCerrar').on('click', function() {
-        $('input[type="checkbox"][name="Id_cerrar"]:not(#checkAllCerrar)').prop('checked', this.checked);
-    });
-
-    $('#checkAllFinalizar').on('click', function() {
-        $('input[type="checkbox"][name="Id_finalizar"]:not(#checkAllFinalizar)').prop('checked', this.checked);
-    });
-
-    $('#checkAllEnviar').on('click', function() {
-        $('input[type="checkbox"][name="Id_enviar"]:not(#checkAllEnviar)').prop('checked', this.checked);
-    });
-
+    
     $(document).on('click', '.reiniciarPresMapa', function(e){
         e.preventDefault();
         preloader('on');
@@ -933,7 +941,7 @@ $(function() {
         $.get(vistaPrevia, {Id: id})
             .done(function(response){
                 preloader('off');
-                toastr.success("Generando vista previa");
+                toastr.success("Generando vista previa", '', {timeOut: 1000});
                 window.open(response, '_blank');
             })
             .fail(function(jqXHR){
@@ -966,8 +974,6 @@ $(function() {
             estudios = [],
             IdPres = $('#IdPrestacion').text();
 
-            
-
         let verificar = [
             evaluacion,
             eEstudio,
@@ -989,12 +995,12 @@ $(function() {
         ];
             
         if (verificar.every(val => !val)) {
-            toastr.warning('Debe seleccionar algun check para obtener el reporte');
+            toastr.warning('Debe seleccionar algun check para obtener el reporte', '', {timeOut: 1000});
             return;
         }
 
         if ([0,'',null,undefined].includes(IdPres)) {
-            toastr.warning('No hay ninguna prestación activa');
+            toastr.warning('No hay ninguna prestación activa', '', {timeOut: 1000});
             return;
         }
 
@@ -1007,7 +1013,7 @@ $(function() {
             .done(function(response){
                 createFile("pdf", response.filePath, response.name);
                 preloader('off')
-                toastr.success(response.msg)
+                toastr.success(response.msg, '', {timeOut: 1000});
             })
             .fail(function(jqXHR){
                 preloader('off');
@@ -1017,15 +1023,88 @@ $(function() {
             });    
     });
 
+    $(document).on('click', '.deleteComentario', function(e){
+        e.preventDefault;
+
+        let id = $(this).data('id');
+
+        if(['',0, undefined, null].includes(id)) return;
+
+        swal({
+            title: "¿Está seguro que desea eliminar el comentario privado?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar) {
+
+                preloader('on')
+                $.get(eliminarComentario, {Id: id})
+                    .done(function(response){
+                        preloader('off');
+                        toastr.success(response.msg,'',{timeOut: 1000});
+                        listaComentariosPrivados(IDMAPA, 'prestaciones','mapa');
+                        listaComentariosPrivados(IDMAPA, 'cerrado','mapa');
+                        listaComentariosPrivados(IDMAPA, 'finalizado','mapa');
+                        listaComentariosPrivados(IDMAPA, 'eEnviado','mapa');
+                    })
+                    .fail(function(jqXHR){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
+                    });
+
+            }
+        })
+    });
+
+    $(document).off('click', '.editarComentario').on('click', '.editarComentario', async function(){
+        await borrarCache();
+
+        let id = $(this).data('id'),
+            data  = await $.get(getComentario,{Id: id});
+        $('#comentarioPrivado').modal('show');
+        $('#comentarioPrivado').attr('aria-hidden', 'false');
+        $('#confirmar').hide();
+        $('#modificar').show();
+        $('#IdComentarioFase').empty().val(data[0].Id)
+        $('#mostrarIdPrestacion').empty().text(data[0].IdEntidad);
+        $('#mostrarNombre').empty().text(data[0].NombreCompleto);
+        $('#Comentario').val(data[0].Comentario);
+    });
+
+    $(document).off('click', '.editarComentarioPriv').on('click', '.editarComentarioPriv', function(e){
+        
+        let comentario = $('#Comentario').val(), id = $('#IdComentarioFase').val();
+
+        preloader('on')
+        $.get(editarComentario, {Id: id, Comentario: comentario})
+            .done(function(response){
+                $('#confirmar').show();
+                $('#modificar').hide();
+                $('#comentarioPrivado').modal('hide');
+                preloader('off')
+                toastr.success(response.msg,'',{timeOut: 1000});
+                listaComentariosPrivados(IDMAPA, 'prestaciones','mapa');
+                listaComentariosPrivados(IDMAPA, 'cerrado','mapa');
+                listaComentariosPrivados(IDMAPA, 'finalizado','mapa');
+                listaComentariosPrivados(IDMAPA, 'eEnviado','mapa');
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            });
+    });
+
     function updateContador() {
-        let longitud = $('#remitoObs').val();
-        let caracteres = longitud.length;
+        let longitud = $('#remitoObs').val(), caracteres = longitud.length;
         $('#contadorRemitoObs').text(caracteres + '/' + maxCaracteres);
     }
 
     function blockExcedente(e) {
-        let longitud = $('#remitoObs').val();
-        let caracteres = longitud.length;
+        let longitud = $('#remitoObs').val(), caracteres = longitud.length;
         if (caracteres >= maxCaracteres) {
             e.preventDefault();
         }
@@ -1039,11 +1118,10 @@ $(function() {
         $.get(getPrestaciones, {mapa: MAPA })
             .done(function(presta){
                 preloader('off');
-                $.each(presta, function(index, d) {
 
-                   let estado = (d.Cerrado === 1 && d.Finalizado === 1) ? 'Finalizado' : (d.Cerrado === 1 && d.Finalizado === 0) ? 'Cerrado' : (d.Cerrado === 0 && d.Finalizado === 0) ? 'Abierto' : '-';
-
-                    let contenido = `
+                for(let index = 0; index < presta.length; index++){
+                    let d = presta[index], estado = (d.Cerrado === 1 && d.Finalizado === 1) ? 'Finalizado' : (d.Cerrado === 1 && d.Finalizado === 0) ? 'Cerrado' : (d.Cerrado === 0 && d.Finalizado === 0) ? 'Abierto' : '-',
+                    contenido = `
                         <tr>
                             <td>${d.IdPrestacion}</td>
                             <td>${fecha(d.Fecha)}</td>
@@ -1064,23 +1142,22 @@ $(function() {
                                 <button data-id="${d.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal">
                                     <i class="ri-search-eye-line"></i>
                                 </button>
-                                <button title="Observaciones privadas" type="button" class="iconGeneral btn btn-sm comentarioPrivado" data-bs-toggle="modal" data-bs-target="#comentarioPrivado"  data-id="${d.IdPrestacion}"data-nombre="${d.Apellido} ${d.Nombre}" data-fase="prestaciones">
+                                <button title="Observaciones privadas" type="button" class="iconGeneral btn btn-sm comentarioPrivado" data-bs-toggle="modal" data-bs-target="#comentarioPrivado"  data-id="${d.IdPrestacion}" data-nombre="${d.Apellido} ${d.Nombre}" data-fase="prestaciones">
                                     <i class="ri-chat-quote-line"></i>
                                 </button>
                             </td>
                         </tr>`;
 
                     $('#prestaMapa').append(contenido);
+                }
 
-                    });
-
-                    $("#listaPresMapa").fancyTable({
-                        pagination: true,
-                        perPage: 15,
-                        searchable: false,
-                        globalSearch: false,
-                        sortable: false, 
-                    });
+                $("#listaPresMapa").fancyTable({
+                    pagination: true,
+                    perPage: 15,
+                    searchable: false,
+                    globalSearch: false,
+                    sortable: false, 
+                });
             })
             .fail(function(jqXHR){
                 preloader('off');
@@ -1099,9 +1176,8 @@ $(function() {
                 preloader('off');
                 let data = response.result;
 
-                $.each(data, function(index, c) {
- 
-                    let contenido = `
+                for(let index = 0; index < data.length; index++) {
+                    let c = data[index], contenido = `
                         <tr>
                             <td>${fecha(c.Fecha)}</td>
                             <td>${c.IdPrestacion}</td>
@@ -1119,8 +1195,8 @@ $(function() {
                         </tr>
                     `;
     
-                    $('#cerrarMapa').append(contenido);        
-                });
+                    $('#cerrarMapa').append(contenido);  
+                }
 
                 $("#listaCerrar").fancyTable({
                     pagination: true,
@@ -1150,9 +1226,9 @@ $(function() {
             $('#finalizarMapa').empty();
             let data = response.result;
 
-            $.each(data, function(index, f){
-            
-            let contenido = `
+            for(let index = 0; index < data.length; index++) {
+                let f = data[index],
+                    contenido = `
                 <tr>
                     <td>${fecha(f.Fecha)}</td>
                     <td>${f.NroRemito == 0 ? '-' : f.NroRemito}</td>
@@ -1160,15 +1236,17 @@ $(function() {
                     <td>${f.ApellidoPaciente} ${f.NombrePaciente}</td>
                     <td>${f.Documento}</td>
                     <td><span style="text-align=center" class="custom-badge pequeno">${f.Finalizado === 1 ? `Finalizado` : `Cerrado`}</span></td>
-                    <td><button data-id="${f.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button></td>
+                    <td><button data-id="${f.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button>
+                     <button title="Observaciones privadas" type="button" class="iconGeneral btn btn-sm comentarioPrivado" data-bs-toggle="modal" data-bs-target="#comentarioPrivado"  data-id="${f.IdPrestacion}" data-nombre="${f.ApellidoPaciente} ${f.NombrePaciente}" data-fase="finalizado">
+                                    <i class="ri-chat-quote-line"></i>
+                    </button></td>
                     <td>${f.Finalizado === 1 ? `<input type="checkbox" disabled>` : `<input type="checkbox" name="Id_finalizar" value="${f.IdPrestacion}" checked>`}</td>
                 </tr>
             `;
 
                 $('#finalizarMapa').append(contenido);
                 $('#NroPresFinal, #NroRemitoFinal').val("");
-                
-            });
+            }
 
             $("#listaFinalizar").fancyTable({
                 pagination: true,
@@ -1206,27 +1284,32 @@ $(function() {
                 preloader('off');
                 let data = response.result;
 
-                $.each(data, function(index, en){
-
-                    let contenido = `
-                        <tr>
-                            <td> ${en.NroRemito}</td>
-                            <td>${fecha(en.Fecha)}</td>
-                            <td>${en.IdPrestacion} ${en.EmpresaSinEnvio === 1 ? `<i title="La empresa no tiene habilitado los envios de Emails" class="ri-mail-forbid-line rojo"></i>` : ``} ${en.ArtSinEnvio === 1 ? `<i title="La ART no tiene habilitado los envios de Emails" class="ri-mail-forbid-line rojo"></i>` : ``}</td>
-                            <td>${en.ApellidoPaciente} ${en.NombrePaciente}</td>
-                            <td>${en.Documento}</td>
-                            <td><span class="custom-badge pequeno">${(en.eEnviado === 1 ? 'eEnviado':'No eEnviado')}</span></td>
-                            <td>
-                                <button data-id="${en.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button>
-                                <button data-id="${en.IdPrestacion}" class="btn btn-sm iconGeneral vistaPreviaEnviar" title="Vista previa"><i class="ri-file-search-line"></i></button>
-                            </td>
-                            <td>${en.eEnviado === 1 ? '' : en.eEnviado === 0 && en.Finalizado === 1 && en.Cerrado === 1 && en.Etapa === 'Completo' ? `<input type="checkbox" name="Id_enviar" value="${en.IdPrestacion}" checked>` : `<span class="custom-badge pequeno">Bloqueado</span>`}
-                            </td> 
-                        </tr>
-                    `;
-                    $('#eenviarMapa').append(contenido);
-                    
-                });
+                for(let index = 0; index < data.length; index++) {
+                    let en = data[index],
+                        contenido = `
+                    <tr>
+                        <td> ${en.NroRemito}</td>
+                        <td>${fecha(en.Fecha)}</td>
+                        <td>${en.IdPrestacion} ${en.EmpresaSinEnvio === 1 ? `<i title="La empresa no tiene habilitado los envios de Emails" class="ri-mail-forbid-line rojo"></i>` : ``} ${en.ArtSinEnvio === 1 ? `<i title="La ART no tiene habilitado los envios de Emails" class="ri-mail-forbid-line rojo"></i>` : ``}</td>
+                        <td>${en.ApellidoPaciente} ${en.NombrePaciente}</td>
+                        <td>${en.Documento}</td>
+                        <td>
+                            <span class="custom-badge pequeno">${(en.eEnviado === 1 ? 'eEnviado':'No eEnviado')}</span>
+                        </td>
+                        <td>
+                            <button data-id="${en.IdPrestacion}" class="btn btn-sm iconGeneral verPrestacion" title="Ver"  data-bs-toggle="modal" data-bs-target="#verPrestacionModal"><i class="ri-search-eye-line"></i></button>
+                            <button data-id="${en.IdPrestacion}" class="btn btn-sm iconGeneral vistaPreviaEnviar" title="Vista previa"><i class="ri-file-search-line"></i></button>
+                             <button title="Observaciones privadas" type="button" class="iconGeneral btn btn-sm comentarioPrivado" data-bs-toggle="modal" data-bs-target="#comentarioPrivado"  data-id="${en.IdPrestacion}" data-nombre="${en.ApellidoPaciente} ${en.NombrePaciente}" data-fase="eEnviado">
+                                    <i class="ri-chat-quote-line"></i>
+                            </button>
+                        </td>
+                        <td>
+                            ${en.eEnviado === 1 ? '' : en.eEnviado === 0 && en.Finalizado === 1 && en.Cerrado === 1 && en.Etapa === 'Completo' ? `<input type="checkbox" name="Id_enviar" value="${en.IdPrestacion}" checked>` : `<span class="custom-badge pequeno">Bloqueado</span>`}
+                        </td> 
+                    </tr>
+                `;
+                $('#eenviarMapa').append(contenido);
+                }
 
                 $("#listaeenviar").fancyTable({
                     pagination: true,
@@ -1267,7 +1350,7 @@ $(function() {
 
     function listaComentariosPrivados(idmapa, opcionFase, tipo){
 
-        $('#privadoPrestaciones').empty();
+        $('#privadoPrestaciones, #privadoCerrar, #privadoFinalizar, #privadoEntregar, #privadoEnviar').empty();
         let listaFases = {
             prestaciones: {
                 id: 2,
@@ -1279,35 +1362,55 @@ $(function() {
                 bodyTable: '#privadoCerrar',
                 table: '#lstPrivCerrados'
             },
+            finalizado: {
+                id: 4,
+                bodyTable: '#privadoFinalizar',
+                table: '#lstPrivFinalizados'
+            },
+            entregado: {
+                id: 5,
+                bodyTable: '#privadoEntregar',
+                table: '#lstPrivEntregados'
+            },
+            eEnviado: {
+                id: 6,
+                bodyTable: '#privadoEnviar',
+                table: '#lstPrivEnviados'
+            },
 
         }
 
         $.get(privateComment, {Id: idmapa, obsfasesid: listaFases[opcionFase].id, tipo: tipo})
             .done(async function(response){
+                
+                let data = await response.result,
+                    roles = await $.get(listadoRoles, {Id: null, Nombre: USER}), array = roles || []; isAdmin = array.includes('Administrador');
 
-                let data = await response.result;
-
-                $.each(data, function(index, d){
- 
+                for(let index = 0; index < data.length; index++) {
+                    let d = data[index];
+                        
                     let contenido =  `
                         <tr>
-                            <td>${d.Fecha}</td>
-                            <td>${d.IdEntidad}</td>
-                            <td>${d.IdUsuario}</td>
-                            <td>${d.nombre_perfil}</td>
+                            <td style="width: 120px">${fechaCompleta(d.Fecha)}</td>
+                            <td style="width: 120px" class="text-capitalize">${d.IdEntidad}</td>
+                            <td style="width: 120px" class="text-uppercase">${d.IdUsuario}</td>
+                            <td style="width: 120px">${typeof(d.nombre_perfil) === 'int' ? '-' : d.nombre_perfil}</td>
                             <td>${d.Comentario}</td>
+                            <td style="width: 60px">${USER === d.IdUsuario || isAdmin ? `
+                                <button type="button" data-id="${d.Id}" class="btn btn-sm iconGeneralNegro editarComentario"><i class="ri-edit-line"></i></button>
+                                <button title="Eliminar" data-id="${d.Id}" type="button" class="btn btn-sm iconGeneralNegro deleteComentario"><i class="ri-delete-bin-2-line"></i></button>` : ''}</td>
                         </tr>
                     `;
 
                     $(listaFases[opcionFase].bodyTable).append(contenido);
-                });
+                }
 
                 $(listaFases[opcionFase].table).fancyTable({
                     pagination: true,
-                    perPage: 15,
+                    perPage: 10,
                     searchable: false,
                     globalSearch: false,
-                    sortable: false, 
+                    sortable: true, 
                 });
             })
     }
@@ -1330,7 +1433,8 @@ $(function() {
                 preloader('off');
                 let data = response.result;
 
-                $.each(data, function(index, r){
+                for(let index = 0; index < data.length; index++) {
+                    let r = data[index];
 
                     let contenido = `
                         <tr>
@@ -1355,7 +1459,7 @@ $(function() {
                     `;
 
                     $('#remitoMapa').append(contenido);
-                });
+                }
 
                 $("#listaRemito").fancyTable({
                     pagination: true,
@@ -1387,8 +1491,10 @@ $(function() {
         $.get(listadoAuditorias, {Id: IDMAPA})
         .done(function(response){
             preloader('off');
-            $.each(response, function(index, r){
-                let contenido = `
+
+            for(let index = 0; index < response.length; index++) {
+                let r = response[index],
+                    contenido = `
                     <tr>
                         <th>${fechaCompleta(r.Fecha)}</th>
                         <th>${r.auditar_accion.Nombre}</th>
@@ -1396,10 +1502,11 @@ $(function() {
                     </tr>
                 `;
 
-                $('#lstAuditorias').append(contenido);
-            })
+                $('#auditoriaPres').append(contenido);
 
-            $("#auditoriaPres").fancyTable({
+            }
+
+            $("#lstAuditorias").fancyTable({
                 pagination: true,
                 perPage: 10,
                 searchable: false,
@@ -1415,5 +1522,8 @@ $(function() {
         });
     }
 
+    function borrarCache() {
+        $.post(cacheDelete, {_token: TOKEN}, function(){});
+    }
 
 });

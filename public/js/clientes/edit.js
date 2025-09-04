@@ -1,4 +1,4 @@
-$(document).ready(()=> {
+$(function() {
 
     let messageClientes = $('#messageClientes');
 
@@ -10,7 +10,8 @@ $(document).ready(()=> {
     quitarDuplicados("#CondicionIva");
     quitarDuplicados("#FPago");
     checkBloq();
-    examenes();
+    tablasExamenes(ID, false, '#lstFact')
+    checkeoEstado(ID);
 
     $(document).on('click', '.delete-icon', function(e) {
         e.preventDefault();
@@ -26,7 +27,7 @@ $(document).ready(()=> {
             },
             success: function(){
                 preloader('off');
-                toastr.success('El autorizado ha sido eliminado correctamente');
+                toastr.success('El autorizado ha sido eliminado correctamente', '', {timeOut: 1000});
                 $('.body-autorizado').empty();
                 cargarAutorizados();
             },
@@ -53,13 +54,13 @@ $(document).ready(()=> {
             motivo = $('#MotivoB').val();
 
     
-        if(correo == true && mensajeria == true){
-            toastr.warning('¡No puede tener la opcion Mensajeria y Correo seleccionadas. Debe escoger por una opción!');
+        if(correo && mensajeria){
+            toastr.warning('¡No puede tener la opcion Mensajeria y Correo seleccionadas. Debe escoger por una opción!', '', {timeOut: 1000});
             return;
         }
 
-        if(motivo === '' && bloqueado === 1){
-            toastr.warning('¡El motivo es un campo obligatorio si ha seleccionado la opción bloquear. Debe escribir un motivo!');
+        if(!motivo && bloqueado === 1){
+            toastr.warning('¡El motivo es un campo obligatorio si ha seleccionado la opción bloquear. Debe escribir un motivo!', '', {timeOut: 1000});
             return;
         }
         
@@ -81,13 +82,12 @@ $(document).ready(()=> {
             },
             success: function(){
                 preloader('off');
-                toastr.success('¡Los datos se han guardado correctamente. Se recargará la página');
+                toastr.success('¡Los datos se han guardado correctamente. Se recargará la página', '', {timeOut: 1000});
                 setTimeout(()=> {
                     location.reload();
                 }, 3000);
                 
                if(bloqueado === 1 && motivo !== ''){
-
                     $.ajax({
                         url: block,
                         type: 'POST',
@@ -97,11 +97,10 @@ $(document).ready(()=> {
                             cliente: ID
                         },
                         success: function() {
-                            
                             swal('Atención', 'Se recargará la app tras el bloqueo', 'warning');
                             setTimeout(()=> {
                                 location.reload();
-                            }, 3000);
+                            }, 2000);
                             
         
                         },
@@ -115,7 +114,6 @@ $(document).ready(()=> {
 
                }
                 return;
-          
             },
             error: function(jqXHR){
                 preloader('off');
@@ -128,7 +126,7 @@ $(document).ready(()=> {
     });
 
     //Registro de autorizado
-    $('#btnAutorizado').click(function (e) {
+    $(document).on('click', '#btnAutorizado', function(e) {
         e.preventDefault();
 
         let TipoEntidad = $('#TipoEntidad').val(),
@@ -140,22 +138,22 @@ $(document).ready(()=> {
         let camposBasicos = [Nombre, Apellido, DNI, Derecho];
 
         if (camposBasicos.every(contenido => contenido === '')) {
-            toastr.warning('Por favor, complete todos los campos obligatorios.');
+            toastr.warning('Por favor, complete todos los campos obligatorios.', '', {timeOut: 1000});
             return;
         }
 
         if(DNI.length > 8 || parseInt(DNI) < 0){
-            toastr.warning("El dni no puede contener más de 8 digitos o ser negativo");
+            toastr.warning("El dni no puede contener más de 8 digitos o ser negativo", '', {timeOut: 1000});
             return;
         }
 
         if(Nombre.length > 25){
-            toastr.warning("El nombre no puede contener mas de 25 caracteres");
+            toastr.warning("El nombre no puede contener mas de 25 caracteres", '', {timeOut: 1000});
             return;
         }
 
         if(Apellido.length > 30){
-            toastr.warning("El apellido no puede contener mas de 30 caracteres");
+            toastr.warning("El apellido no puede contener mas de 30 caracteres", '', {timeOut: 1000});
             return;
         }
         preloader('on');
@@ -173,7 +171,7 @@ $(document).ready(()=> {
             },
             success: function(){
                 preloader('off');
-                toastr.success('El autorizado se registró correctamente');
+                toastr.success('El autorizado se registró correctamente', '', {timeOut: 1000});
                 cargarAutorizados();
                 $('#Nombre, #Apellido, #DNI, #Derecho').val('');
             },
@@ -188,7 +186,6 @@ $(document).ready(()=> {
 
     //Chequeo de email. Carga de datos
     $(document).on('click', '#guardarEmail', function(e) {
-        console.log("prueba")
         e.preventDefault();
         
         // Verificación de correos
@@ -196,9 +193,8 @@ $(document).ready(()=> {
             emailsInformes = $('#EMailInformes').val(),
             emailsFactura = $('#EMailFactura').val(),
             emailsAnexo = $('#EMailAnexo').val(),
-            sinEnvio = $('#SEMail').prop('checked');
-
-        let isValidEmails = true;
+            sinEnvio = $('#SEMail').prop('checked'),
+            isValidEmails = true;
 
         // Función para verificar si un email no está vacío y es válido
         function checkEmailValidity(emails) {
@@ -237,7 +233,7 @@ $(document).ready(()=> {
                 },
                 success: function(response){
                     preloader('off');
-                    toastr.success(response.msg);
+                    toastr.success(response.msg, '', {timeOut: 1000});
                     return;
                 },
                 error: function(jqXHR){
@@ -277,7 +273,7 @@ $(document).ready(()=> {
             },
             success: function(){
                 preloader('off');
-                toastr.success('Las observaciones se han cargado correctamente');
+                toastr.success('Las observaciones se han cargado correctamente', '', {timeOut: 1000});
             },
             error: function(jqXHR){
                 preloader('off');
@@ -348,8 +344,9 @@ $(document).ready(()=> {
 
                 }else{
 
-                    $.each(autorizados, function(index, autorizado) {
-                        let contenido = `<div class="d-flex align-items-center mb-3">
+                    for(let index = 0; index < autorizados.length; index++) {
+                        let autorizado = autorizados[index],
+                            contenido = `<div class="d-flex align-items-center mb-3">
                                             <div class="flex-shrink-0 avatar-sm">
                                                 <div class="avatar-title bg-light text-primary rounded-3 fs-18">
                                                     <i class="ri-shield-user-line"></i>
@@ -364,7 +361,7 @@ $(document).ready(()=> {
                                         </div>`;
 
                         $('.body-autorizado').append(contenido);
-                    });
+                    }
                 }
             },
             error: function(jqXHR){
@@ -380,7 +377,7 @@ $(document).ready(()=> {
 
         let provincia = $('#Provincia').val(), localidad = $('#IdLocalidad').val();
 
-        if ((provincia.length == 0 || provincia == 0) && (localidad.length > 0 || localidad == true))
+        if ((provincia.length == 0 || !provincia) && (localidad.length > 0 || localidad))
         {
             $.ajax({
                 url: checkProvController,
@@ -412,7 +409,7 @@ $(document).ready(()=> {
     $(document).on('click', '#addNumero', function(e) {
         e.preventDefault();
         let prefijo = $('#prefijoExtra').val(), numero = $('#numeroExtra').val(), observacion = $('#obsExtra').val();
-
+        
         if (prefijo !== '' && numero !== '' && observacion !== '') {
             $('#tablaTelefonos').append(`
                 <tr>
@@ -432,10 +429,7 @@ $(document).ready(()=> {
                 <input type='hidden' class='telefono-input' name='telefonos[]' value='${datosArrayJSON}'>
             `);
 
-            $('#prefijoExtra').val("");
-            $('#numeroExtra').val("");
-            $('#obsExtra').val("");
-
+            $('#prefijoExtra, #numeroExtra, #obsExtra').val("");
             actualizarInputHidden();
 
         }
@@ -460,7 +454,6 @@ $(document).ready(()=> {
     $(document).on('click', '.editarTelefono', function(e){
         e.preventDefault();
         let telefonoId = $(this).data('id');
-
         verTelefono(telefonoId);
     });
 
@@ -473,18 +466,17 @@ $(document).ready(()=> {
         let Id = $('#Id').val(), CodigoArea = $('#nuevoPrefijo').val(), NumeroTelefono = $('#nuevoNumero').val(), Observaciones = $('#nuevaObservacion').val();
 
         if(CodigoArea == "" || NumeroTelefono == "") {
-            toastr.warning("Faltan datos en el número de teléfono del cliente. No pueden haber campos vacíos.");
+            toastr.warning("Faltan datos en el número de teléfono del cliente. No pueden haber campos vacíos.", '', {timeOut: 1000});
             return;
         }
 
         if(Observaciones == ""){
-            toastr.warning("Debe escribir alguna referencia en la observación.");
+            toastr.warning("Debe escribir alguna referencia en la observación.", '', {timeOut: 1000});
             return;
         }
 
         saveEdicion(Id, CodigoArea, NumeroTelefono, Observaciones);
         telefonos();
-        
     });
 
     $(document).on('click', '.nuevoExamen', function(e){
@@ -492,6 +484,13 @@ $(document).ready(()=> {
         localStorage.setItem('nuevaId', $(this).data('id'));
         localStorage.setItem('nuevaRazonSocial', $(this).data('name'));
         window.location.href = RUTAEXAMEN;
+    });
+
+    $('#Descuento').on('input', function () {
+        let valor = $(this).val().replace('%', '');
+        if (!isNaN(valor) && valor) {
+            $(this).val(valor + '%');
+        }
     });
 
     function actualizarInputHidden() {
@@ -515,16 +514,17 @@ $(document).ready(()=> {
 
                 if(telefonos.length > 0) {
 
-                    $.each(telefonos, function(index, result) {
+                    for(let index = 0; index < telefonos.length; index++){
+                        let result = telefonos[index];
+
                         let contenido = `<tr>
                                             <td>${result.CodigoArea}</td>
                                             <td>${result.NumeroTelefono}</td>
                                             <td>${result.Observaciones}</td>
                                             <td><div class="telefonoAcciones"><i data-id="${result.Id}" class="ri-edit-2-line editarTelefono" title="Editar" data-bs-toggle="modal" data-bs-target="#editTelefonoModal" id="editarTelefono"></i> <i data-id="${result.Id}" class="ri-delete-bin-line eliminarTelefono" title="Eliminar" id="eliminarTelefono"></i></li> <span class="badge text-bg-success" title="Este registro ya se encuentra en la base de datos">Base de datos</span></div></td>
                                         </tr>`;
-                        
                         $('#tablaTelefonos').append(contenido);
-                    });
+                    }
                 } else {
 
                     let contenido = '<p> Sin telefonos adicionales </p>';
@@ -553,7 +553,7 @@ $(document).ready(()=> {
             },
             success: function(){
                 preloader('off');
-                toastr.success("El número de telefono adicional se ha borrado de la base de datos.");
+                toastr.success("El número de telefono adicional se ha borrado de la base de datos.", '', {timeOut: 1000});
                 return;
             },
             error: function(jqXHR){ 
@@ -696,94 +696,87 @@ $(document).ready(()=> {
             });
     }
 
-    function examenes(){
-    $('#lstFact').empty();
-    preloader('on');
-    $.get(lstClientes, {Id: ID})
-        .done(async function(response){
-            preloader('off');
-            let promises = response.map(async function(r) {
-                if(response && response.length) {
-                    let suc = (r.Suc).toString().padStart(4, '0'), numero = (r.Nro).toString().padStart(8, '0');
-                    let moduloResult = await modulo(r.Id);
-                    let contenido = `
-                    <tr class="fondo-gris mb-2">
-                        <td><span class="fw-bolder text-capitalize">fecha </span> ${fechaNow(r.Fecha,'/',0)}</td>
-                        <td><span class="fw-bolder text-capitalize">factura </span> ${r.Tipo}${suc}${numero}</td>
-                        <td><span class="fw-bolder text-capitalize">cantidad Pacientes </span>${r.Cantidad}</td>
-                        <td>
-                            <tr>
-                                <td colspan="4">
-                                    <span class="fw-bolder text-capitalize">Observación: </span><span>${r.Obs}</span>
+    async function tablasExamenes(idCliente, checkVisible, etiquetaId) { 
+    
+        let data = await $.get(getListaExCta, {Id: idCliente});
+    
+        if (!Array.isArray(data) || data.length === 0) {
+            $(etiquetaId).append('<tr><td>No hay historial de facturas disponible</td></tr>');
+            return;
+        }
+    
+        $(etiquetaId).empty();
+    
+        const factura = {};
+        
+        data.forEach(function (item) {
+            if (!factura[item.Factura]) {
+                factura[item.Factura] = [];
+            }
+            factura[item.Factura].push(item);
+        });
+    
+        for (const grupoFactura in factura) {
+            if (factura.hasOwnProperty(grupoFactura)) {
+                const examenes = factura[grupoFactura];
+    
+                const documentos = {};
+                examenes.forEach((examen) => {
+                    const documentoKey = examen.Documento || "Sin precarga";
+                    if (!documentos[documentoKey]) {
+                        documentos[documentoKey] = [];
+                    }
+                    documentos[documentoKey].push({
+                        IdEx: examen.IdEx,
+                        CantidadExamenes: examen.CantidadExamenes,
+                        NombreExamen: examen.NombreExamen
+                    });
+                });
+    
+                let contenido = `
+                    <tr class="fondo-gris">
+                        <td colspan="6">
+                            <span class="fw-bolder text-capitalize">fact </span> ${grupoFactura}
+                        </td>
+                    </tr>
+                `;
+    
+                for (const documentoKey in documentos) {
+                    if (documentos.hasOwnProperty(documentoKey)) {
+                        const examenesPorDocumento = documentos[documentoKey];
+    
+                        contenido += `
+                            <tr class="fondo-grisClaro mb-2">
+                                <td colspan="5" class="fw-bolder">
+                                    <span class="fw-bolder">${documentoKey === "Sin precarga" ? "" : "DNI Precargado: "}</span> 
+                                    ${documentoKey}
                                 </td>
                             </tr>
-                        </td>  
-                        ${moduloResult}
-                    </tr>`;
-                    return contenido;
-                }else{
-                    return '<tr class="mb-2"><td>No hay historial de facturas disponible</td></tr>';
-                } 
-            });
-            let contents = await Promise.all(promises);
-            contents.forEach(content => $('#lstFact').append(content));
-        });
-    }
-
-    async function modulo(id) {
-        return new Promise((resolve, reject) => {
-            preloader('on');
-            $.get(listadoDni, {Id: id})
-                .done(async function(response){
-                    preloader('off');
-                    if (response && response.length) {
-                        let result = '';
-                        for (let r of response) {
-                            let detallesResult = await detalles(r.IdPrestacion, r.IdPago); 
-                            result += `
-                                <tr class="fondo-grisClaro">
-                                    <td colspan="4" class="fw-bolder"><span class="fw-bolder">${r.IdPrestacion === 0 ? 'Generales' : 'DNI'}</span> ${r.IdPrestacion === 0 ? '' : r.Documento}</td>
-                                    ${detallesResult}
-                                </tr>
-                            `;
-                        }
-                        resolve(result);
+                        `;
+    
+                        examenesPorDocumento.forEach((examen) => {
+                            contenido += `
+                                <tr>
+                                    <td>${examen.CantidadExamenes}</td>
+                                    <td>${examen.NombreExamen}</td>
+                                    ${checkVisible === true ? `<td style="width:5px"><input type="checkbox" class="form-check-input" value="${examen.IdEx}"></td>` : ''}
+                                </tr>`;
+                        });
                     }
-                })
-                .fail(function(error){
-                    reject(error);
-                });
-        });
+                }
+    
+                $(etiquetaId).append(contenido);
+            }
+        }
     }
     
-
-    async function detalles(id, idpago) {
-        return new Promise((resolve, reject) => {
-            preloader('on');
-            $.get(listadoEx, {Id: id, IdPago: idpago})
-                .done(async function(response){
-                    preloader('off');
-                    if (response && response.length) {
-                        let result =  '';
-                        for (let r of response) {
-                            let suc = [null, undefined, 0, ''].includes(r.Suc) ? '' : (r.Suc).toString().padStart(4, '0'), 
-                                numero = [null, undefined, 0, ''].includes(r.Nro) ? '' : (r.Nro).toString().padStart(8, '0');
-                            result += `
-                            <tr>
-                                <td>${r.Cantidad}</td>
-                                <td>${r.NombreExamen}</td>
-                                <td colspan="2"><span class="${r.Pagado === 0 ? 'rojo': ''}">${[null, undefined, 0, ''].includes(r.Tipo) ? '' : r.Tipo}${suc}${numero}</span></td>
-                            </tr>
-                            `;
-                        }
-                        resolve(result);
-                    }
-                })
-                .fail(function(error){
-                    reject(error);
-                });
-        });
+    function checkeoEstado(idCliente) {
         
-    }    
+        if([null, 0, '', undefined].includes(idCliente)) return;
+
+        $.get(checkEstadoTipo, {Id: idCliente}, function(response){
+            return response  === true ? $('#TipoCliente').attr('disabled', true) : $('#TipoCliente').attr('disabled', false);
+        });
+    }
 
 });

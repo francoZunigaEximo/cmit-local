@@ -6,7 +6,6 @@
 
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
     <h4 class="mb-sm-0">Exámen prestación <span class="custom-badge original">N°{{ $data['itemprestacion']->IdPrestacion  }}</span> | Paciente <span class="custom-badge original">{{ $data['paciente']->paciente->Nombre ?? ''}} {{ $data['paciente']->Apellido ?? '' }}</span> {!! ($data['itemprestacion']->Anulado === 1) ? '<span class="custom-badge rojo">Bloqueado</span>' : '' !!}</h4>
-    <input type="hidden" value="{{ $data['itemprestacion']->Id }}" id="Id">
     <div class="page-title-right d-inline">
         <p><strong>QR:</strong> {{ $data['qrTexto'] ?? ''}}</p>
     </div>
@@ -19,8 +18,9 @@
             <div class="messageExamen"></div>
 
             <div class="row">
-                <input type="hidden" id="identificacion" value="{{ $data['itemprestacion']->Id }}">
+                <input type="hidden" id="Id" value="{{ $data['itemprestacion']->Id }}">
                 <input type="hidden" id="prestacion" value="{{ $data['itemprestacion']->IdPrestacion}}">
+                <input type="hidden" id="idExamen" value="{{ $data['itemprestacion']->IdExamen}}">
 
                 <div class="col-6">
                     <div class="input-group input-group-sm mb-2 size50porcent">
@@ -203,11 +203,11 @@
                 <div class="col-md-4">
                     <div class="input-group input-group-sm mb-2">
                         <span class="input-group-text">Fecha Factura</span>
-                        <input type="date" class="form-control" id="FechaFacturaVta" name="FechaFacturaVta" value="{{ $data['itemprestacion']->facturadeventa->Fecha ?? ''}}" @readonly(true)>
+                        <input type="date" class="form-control" id="FechaFacturaVta" name="FechaFacturaVta" value="" @readonly(true)>
                     </div>
                     <div class="input-group input-group-sm mb-2">
                         <span class="input-group-text">Nro Factura</span>
-                        <input type="text" class="form-control" id="NroFacturaVta" name=" NroFacturaVta" value="{{ $data['itemprestacion']->facturadeventa->Tipo ?? ''}}{{ $data['itemprestacion']->facturadeventa->Sucursal ?? ''}}{{ $data['itemprestacion']->facturadeventa->NroFactura ?? ''}}" @readonly(true)>
+                        <input type="text" class="form-control" id="NroFacturaVta" name=" NroFacturaVta" value="" @readonly(true)>
                     </div>
                 </div>
 
@@ -404,6 +404,7 @@
     const replaceIdAdjunto = "{{ route('replaceIdAdjunto') }}";
     const getBloqueoItemPrestacion = "{{ route('getBloqueoItemPrestacion') }}";
     const checkAdj = "{{ route('itemsprestaciones.checkAdjuntos') }}";
+    const checkFacturas = "{{ route('itemsprestaciones.checkFacturas') }}";
 
 
 

@@ -1,16 +1,16 @@
-$(document).ready(function(){
+$(function(){
     
     $('#Provincia').val('NEUQUEN');
     $('#IdLocalidad').val(3); //Elije la ciudad de Neuquen como default
     $('.Telefono, .Direccion, .Provincia, .IdLocalidad, .Obs').hide();
- 
-    $(document).on('change', '#Externo', function(){
+
+    $(document).on('change', '#Externo', function() {
 
         let externo = $(this).val();
-        if(externo === '1'){
+    
+        if (externo === '1') {
             $('.Telefono, .Direccion, .Provincia, .IdLocalidad, .Obs').show();
-        
-        } else if(['',0,null].includes(externo)){
+        } else if (['', '0'].includes(externo)) {
             $('.Telefono, .Direccion, .Provincia, .IdLocalidad, .Obs').hide();
         }
     });
@@ -23,20 +23,20 @@ $(document).ready(function(){
     $(document).on('click', '#saveBasico', function(e){
         e.preventDefault();
 
-        let Nombre = $('#Nombre').val(), Externo = $('#Externo').val(), Inactivo = $('#Inactivo').val(), Telefono = $('#Telefono').val(), Direccion = $('#Direccion').val(), IdLocalidad = $('#IdLocalidad').val(), Obs = $('#Obs').val();
+        let Nombre = $('#Nombre').val(), Externo = $('#Externo').val(), Inactivo = 1, Telefono = $('#Telefono').val(), Direccion = $('#Direccion').val(), IdLocalidad = $('#IdLocalidad').val(), Obs = $('#Obs').val();
 
-        if([0,null,''].includes(Nombre)) {
-            toastr.warning('El campo Nombre es obligatorio');
+        if(!Nombre) {
+            toastr.warning('El campo Nombre es obligatorio', '', {timeOut: 1000});
             return;
         }
 
-        if([0,null,''].includes(Externo)) {
-            toastr.warning('Debe especificar si es externo');
+        if(!Externo) {
+            toastr.warning('Debe especificar si es externo', '', {timeOut: 1000});
             return;
         }
 
-        if([0,null,''].includes(Inactivo)) {
-            toastr.warning('Debe especificar si el campo es inactivo o no');
+        if(!Inactivo) {
+            toastr.warning('Debe especificar si el campo es inactivo o no', '', {timeOut: 1000});
             return;
         }
 
@@ -53,7 +53,7 @@ $(document).ready(function(){
                         preloader('off');
                         let data = response.especialidad;
 
-                        toastr.success(response.msg);
+                        toastr.success(response.msg, '', {timeOut: 1000});
                         setTimeout(() => {
                             let nuevo = location.href.replace("create", "");
                             let lnk = nuevo + "" + data + "/edit";
@@ -77,8 +77,8 @@ $(document).ready(function(){
         $.get(checkProveedor, {Nombre: nombre})
             .done(function(response){
 
-                if (response.existe) {
-                    let especialidad = response.especialidades, url = editUrl.replace('__especialidades__', especialidad.Id);
+                if (response && Object.keys(response).length > 0) {
+                    let especialidad = response, url = editUrl.replace('__especialidades__', especialidad.Id);
                     
                     $('#editLink').attr('href', url);
                     $('#advertencia').modal('show');
@@ -100,11 +100,12 @@ $(document).ready(function(){
             },
             success: function(response) {
                 let localidades = response.localidades;
-                $('#IdLocalidad').empty();
-                $('#IdLocalidad').append('<option selected>Elija una opción...</option>');
-                localidades.forEach(function(localidad) {
+
+                $('#IdLocalidad').empty().append('<option selected>Elija una opción...</option>');
+                for(let index = 0; index < localidades.length; index++){
+                    let localidad = localidades[index];
                     $('#IdLocalidad').append('<option value="' + localidad.id + '">' + localidad.nombre + '</option>');
-                });
+                }
             }
         });
     }

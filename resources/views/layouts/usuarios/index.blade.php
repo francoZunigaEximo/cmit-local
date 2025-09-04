@@ -4,8 +4,9 @@
 
 @section('content')
 
-<div class="page-title-box d-sm-flex align-items-center justify-content-between">
+<div class="page-title-box d-sm-flex align-items-center justify-content-start">
     <h4 class="mb-sm-0">Usuarios</h4>
+    <x-helper>{!!$helper!!}</x-helper>
 </div>
 
 <div class="row">

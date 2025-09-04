@@ -18,7 +18,7 @@ $(function(){
 
         if (variables.cuit.val() && variables.ParaEmpresa.val()) {
             $.ajax({
-                url: verifycuitEmpresa,
+                url: verifyIdentificacion,
                 type: "GET",
                 data: {
                     Identificacion: variables.cuit.val(),
@@ -60,18 +60,20 @@ $(function(){
                 Identificacion: cuit,
             },
             success: function(response){
-                
-                if(response.existe){
-                    toastr.warning('Ya existe ese cuit registrado en la base de datos');
+
+                if(response && Object.keys(response).length > 0){
+                    toastr.warning('Ya existe ese cuit registrado en la base de datos','',{timeOut: 1000});
+                    return;
                 }
             }
         });
     });
 
-    $('#Descuento').inputmask('99%', { 
-        numericInput: true, 
-        placeholder: '0%', 
-        rightAlignNumerics: false 
+    $('#Descuento').on('input', function () {
+        let valor = $(this).val().replace('%', '');
+        if (!isNaN(valor) && valor) {
+            $(this).val(valor + '%');
+        }
     });
 
     function buscarLocalidad(id){

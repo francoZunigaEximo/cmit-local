@@ -26,19 +26,20 @@ class ReporteService
         $paramsSubtitulo = [], 
         $paramsCuerpo = [],
         $paramsSubCuerpo = [],
-        ?string $newPath
+        ?string $newPath,
+        bool $vistaPrevia = false
     ): string
     {
-
         $pdf = new Fpdi('P', 'mm', 'A4');
         $pdf->AddPage();
+        $pdf->SetFont('Arial','',8);
     
         $titulo = new $tituloClass();
-        $titulo->render($pdf, $paramsTitulo);
+        $titulo->render($pdf, $paramsTitulo, $vistaPrevia);
     
         if ($subtituloClass !== null) {
             $subtitulo = new $subtituloClass();
-            $subtitulo->render($pdf, $paramsSubtitulo);
+            $subtitulo->render($pdf, $paramsSubtitulo, $vistaPrevia);
         }
     
         if ($cuerpoClass !== null) {
@@ -48,7 +49,7 @@ class ReporteService
 
         if ($subcuerpoClass !== null) {
             $subcuerpo = new $subcuerpoClass();
-            $subcuerpo->render($pdf, $paramsSubCuerpo);
+            $subcuerpo->render($pdf, $paramsSubCuerpo, $vistaPrevia);
         }
         
         if($filePath !== null) {

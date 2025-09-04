@@ -34,7 +34,8 @@ class ResumenAdministrativo extends Reporte
         $pdf->SetXY(11,$y+33);$pdf->Cell(0,3,'Empresa: '.$prestacion->empresa->ParaEmpresa,0,0,'L');
         $pdf->SetFont('Arial','B',12);
         $pdf->SetXY(120,$y+15);$pdf->Cell(0,4,'RESUMEN ADMINISTRATIVO',0,0,'L');
-        $pdf->Code39(130,$y+22,$idp,1,10);
+        $pdf->SetXY(120,$y+22);$pdf->Cell(0,2,$prestacion->TipoPrestacion);
+        $pdf->SetXY(120,$y+28);$pdf->Cell(0,2, $idp);
         $pdf->SetXY(10,$y+45);$pdf->SetFont('Arial','',8);
         
         //examenes

@@ -25,7 +25,7 @@ trait ObserverItemsPrestaciones
         ]);
     }
 
-    public function updateItemPrestacionInfo(int $id, string $observacion)
+    public function updateItemPrestacionInfo(int $id, ?string $observacion)
     {
         $query = ItemPrestacionInfo::where('IdIP', $id)->first();
         $query->Obs = $observacion;

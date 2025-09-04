@@ -11,8 +11,10 @@
 </div>
 
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-    <h4 class="mb-sm-0">Mapas</h4>
-
+    <div class="d-flex align-items-center">
+        <h4 class="mb-sm-0">Mapas</h4>
+        <x-helper>{!!$helper!!}</x-helper>
+    </div>
     <div class="page-title-right">
 
     </div>
@@ -259,6 +261,34 @@
                 </table>
             </div>
 
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h4 class="card-title mb-0">Observaciones privadas</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive table-card mt-3 mb-1">
+                                <table id="lstPrivPrestaciones" class="display table table-bordered" style="100%">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Fecha</th>
+                                            <th>Nro prestación</th>
+                                            <th>Usuario</th>
+                                            <th>Rol</th>
+                                            <th>Comentario</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="list form-check-all" id="privadoPrestaciones">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         <div class="tab-pane" id="remitos" role="tabpanel">
@@ -280,6 +310,7 @@
                     </tbody>
                 </table>
             </div>
+
         </div>
         @can('mapas_cerrar')
         <div class="tab-pane" id="cerrar" role="tabpanel">
@@ -338,11 +369,12 @@
                                 <table id="lstPrivCerrados" class="display table table-bordered" style="width: 100%">
                                     <thead class="table-light">
                                         <tr>
-                                            <th class="sort">Fecha</th>
-                                            <th class="sort">Nro prestación</th>
+                                            <th>Fecha</th>
+                                            <th>Nro prestación</th>
                                             <th>Usuario</th>
                                             <th>Rol</th>
                                             <th>Comentario</th>
+                                            <th>Acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody class="list form-check-all" id="privadoCerrar">
@@ -414,6 +446,34 @@
     
                     </tbody>
                 </table>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h4 class="card-title mb-0">Observaciones privadas</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive table-card mt-3 mb-1">
+                                <table id="lstPrivFinalizados" class="display table table-bordered" style="100%">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Fecha</th>
+                                            <th>Nro prestación</th>
+                                            <th>Usuario</th>
+                                            <th>Rol</th>
+                                            <th>Comentario</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="list form-check-all" id="privadoFinalizar">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -515,6 +575,35 @@
                     </div>
                 </div>
             </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h4 class="card-title mb-0">Observaciones privadas</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive table-card mt-3 mb-1">
+                                <table id="lstPrivEnviados" class="display table table-bordered" style="100%">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Fecha</th>
+                                            <th>Nro prestación</th>
+                                            <th>Usuario</th>
+                                            <th>Rol</th>
+                                            <th>Comentario</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="list form-check-all" id="privadoEnviar">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
         @endcan
 
@@ -797,8 +886,10 @@
                 </div>
                 <div class="modal-footer">
                     <input type="hidden" id="fase">
+                    <input type="hidden" id="IdComentarioFase">
                     <button type="button" class="btn botonGeneral" id="reset" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn botonGeneral confirmarComentarioPriv">Confirmar</button>
+                    <button id="confirmar" type="button" class="btn botonGeneral confirmarComentarioPriv">Confirmar</button>
+                    <button id="modificar" type="button" class="btn botonGeneral editarComentarioPriv">Confirmar</button>
                 </div>
             </div>
         </div>
@@ -837,9 +928,15 @@ const reverseRemito = "{{ route('reverseRemito') }}";
 const vistaPrevia = "{{ route('mapas.vistaPrevia') }}";
 const listadoAuditorias = "{{ route('mapas.auditorias') }}";
 const exportPdf = "{{ route('prestaciones.pdf') }}";
+const listadoRoles = "{{ route('comentariosPrivados.checkRoles')}}"
+const eliminarComentario = "{{ route('comentariosPriv.eliminar') }}";
+const editarComentario = "{{ route('comentariosPriv.editar') }}";
+const getComentario = "{{ route('comentariosPriv.data') }}";
+const cacheDelete = "{{ route('prestaciones.cacheDelete') }}";
 //Extras
 const MAPA = "{{ $mapa->Nro }}";
 const IDMAPA = "{{ $mapa->Id }}";
+const USER = "{{ Auth::user()->name }}";
 </script>
 
 @push('styles')

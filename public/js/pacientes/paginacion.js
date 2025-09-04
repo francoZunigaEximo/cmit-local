@@ -1,28 +1,31 @@
-$(document).ready(()=>{
+$(function(){
 
     $(document).on('click', '.btnBuscar', function(e){
         e.preventDefault();
 
         let buscar = $('#buscar').val();
 
-        if (buscar === '') {
-            toastr.warning('Debe escribir un nombre, apellido o dni');
+        if (!buscar) {
+            toastr.warning('Debe escribir un nombre, apellido o dni','Atención',{timeOut: 1000});
             return;
         }
 
         $('#listaPac').DataTable().clear().destroy();
-        
-        new DataTable('#listaPac', {
 
+        new DataTable('#listaPac', {
+            lengthMenu: [
+                [25, 50, 100, 500,],
+                [25, 50, 100, 500,]
+            ],
+            pageLength: 500,
             searching: false,
             ordering: false,
             processing: true,
-            lengthChange: false,
-            pageLength: 50,
+            lengthChange: true,
             deferRender: true,
             responsive: false,
             serverSide: true,
-            stateSave: true,
+            stateSave: false,
             dataType: 'json',
             type: 'POST',
             ajax: {
@@ -35,8 +38,12 @@ $(document).ready(()=>{
                 {
                     data: null,
                     render: function(data){
-                        return `<div class="text-center"><input type="checkbox" name="Id" value="${data.Id}" checked></div>`;
+                        return `<div class="text-center"><input type="checkbox" class="fila-checkbox" name="Id" value="${data.Id}"></div>`;
                     }
+                },
+                {
+                    data: 'Id',
+                    name: 'Id'
                 },
                 {
                     data: null,
@@ -68,7 +75,6 @@ $(document).ready(()=>{
                 }
             ],
             language: {
-                processing: "<div style='text-align: center; margin-top: 20px;'><img src='./images/spinner.gif' /><p>Cargando...</p></div>",
                 emptyTable: "No hay pacientes con los datos buscados",
                 paginate: {
                     first: "Primera",
@@ -98,13 +104,16 @@ $(document).ready(()=>{
             drawCallback: function(settings) {
                 $("#listaPac").show();
                 $(".dataTables_processing").hide();
+
+                $("#checkAll").on('change', function() {
+                    const check = this.checked;
+                    $('.fila-checkbox').prop('checked', check);
+                })   
             },
-            
         });
-
     });
-            
 
+     
 
 });
 

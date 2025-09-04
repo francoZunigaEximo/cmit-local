@@ -22,12 +22,10 @@ class PrestacionesExport implements FromCollection,WithHeadings
         $this->tipo     = $tipo;
     }
 
-    /**
-    * @return \Illuminate\Support\Collection
-    */
     public function headings(): array
     {
         switch ($this->tipo) {
+
             case 'simple':
                 return [
                     'Fecha',
@@ -59,7 +57,7 @@ class PrestacionesExport implements FromCollection,WithHeadings
                     'DEV',
                     'OBS ESTADOS'
                 ];
-                break;
+ 
             case 'detallado':
                 return [
                     'Fecha',
@@ -82,7 +80,7 @@ class PrestacionesExport implements FromCollection,WithHeadings
                     'DEV',
                     'OBS ESTADOS'
                 ];
-                break;
+                
             case 'completo':
                 return [
                     'Fecha',
@@ -129,7 +127,6 @@ class PrestacionesExport implements FromCollection,WithHeadings
                     'Obs. Informador',
                     'Obs. Privadas',
                 ];
-                break;
                 case 'basico':
                     return [
                         'Fecha',
@@ -147,7 +144,6 @@ class PrestacionesExport implements FromCollection,WithHeadings
                         'FP',
                         'FC'
                     ];
-                    break;
         }
     }
     
@@ -235,11 +231,11 @@ class PrestacionesExport implements FromCollection,WithHeadings
             $prestacionExcel->cliente           = $prestacion->EmpresaRazonSocial . ' ' . $prestacion->EmpresaIdentificacion ?? '-'; 
             $prestacionExcel->empresa           = $prestacion->EmpresaParaEmp ?? '-';
             $prestacionExcel->art               = $prestacion->ArtRazonSocial ?? '-';
-            $prestacionExcel->cerrado           = $prestacion->Cerrado ?? '-';
-            $prestacionExcel->finalizado        = $prestacion->Finalizado ?? '-';
-            $prestacionExcel->entregado         = $prestacion->Entregado ?? '-';
-            $prestacionExcel->eEnviado          = $prestacion->eEnviado ?? '-';
-            $prestacionExcel->facturado         = $prestacion->Facturado ?? '-';
+            $prestacionExcel->cerrado           = ($prestacion->Cerrado <> '0000-00-00' ? Carbon::parse($prestacion->Cerrado)->format('d/m/Y') : '');
+            $prestacionExcel->finalizado        = ($prestacion->Finalizado <> '0000-00-00' ? Carbon::parse($prestacion->Finalizado)->format('d/m/Y') : '');
+            $prestacionExcel->entregado         = ($prestacion->Entregado <> '0000-00-00' ? Carbon::parse($prestacion->Entregado)->format('d/m/Y') : '');
+            $prestacionExcel->eEnviado          = ($prestacion->eEnviado <> '0000-00-00' ? Carbon::parse($prestacion->eEnviado)->format('d/m/Y') : '');
+            $prestacionExcel->facturado         = ($prestacion->Facturado <> '0000-00-00' ? Carbon::parse($prestacion->Facturado)->format('d/m/Y') : '');
             $prestacionExcel->factura           = $prestacion->Tipo.(sprintf('%05d', $prestacion->Sucursal))."-".$prestacion->NroFactura ?? '-';
 
             switch ($prestacion->Pago) {
@@ -257,7 +253,7 @@ class PrestacionesExport implements FromCollection,WithHeadings
                     break;
             }
 
-            $prestacionExcel->vencimiento       = $prestacion->FechaVto ?? '';
+            $prestacionExcel->vencimiento       = ($prestacion->FechaVto <> '0000-00-00' ? Carbon::parse($prestacion->FechaVto) : '');
             $prestacionExcel->evaluacion        = $prestacion->Evaluacion ?? '';
             $prestacionExcel->calificacion      = $prestacion->Calificacion ?? '';
             $prestacionExcel->obsResultado      = $prestacion->Observaciones ?? '';
@@ -333,11 +329,11 @@ class PrestacionesExport implements FromCollection,WithHeadings
             $prestacionExcel->nroCe             = $prestacion->NroCEE ?? ' ';
             $prestacionExcel->anulada           = $prestacion->Anulado ?? ' ';
             $prestacionExcel->obsAnulado        = $prestacion->ObsAnulado ?? ' ';
-            $prestacionExcel->cerrado           = $prestacion->Cerrado ?? ' ';
-            $prestacionExcel->finalizado        = $prestacion->Finalizado ?? ' ';
-            $prestacionExcel->entregado         = $prestacion->Entregado ?? ' ';
-            $prestacionExcel->eEnviado          = $prestacion->eEnviado ?? ' ';
-            $prestacionExcel->vencimiento       = $prestacion->FechaVto ?? ' ';
+            $prestacionExcel->cerrado           = ($prestacion->Cerrado <> '0000-00-00' ? Carbon::parse($prestacion->Cerrado)->format('d/m/Y') : '');
+            $prestacionExcel->finalizado        = ($prestacion->Finalizado <> '0000-00-00' ? Carbon::parse($prestacion->Finalizado)->format('d/m/Y') : '');
+            $prestacionExcel->entregado         = ($prestacion->Entregado <> '0000-00-00' ? Carbon::parse($prestacion->Entregado)->format('d/m/Y') : '');
+            $prestacionExcel->eEnviado          = ($prestacion->eEnviado <> '0000-00-00' ? Carbon::parse($prestacion->eEnviado)->format('d/m/Y') : '');
+            $prestacionExcel->vencimiento       = ($prestacion->FechaVto  <> '0000-00-00' ? Carbon::parse($prestacion->FechaVto) : '');
             $prestacionExcel->evaluacion        = $prestacion->Evaluacion ?? ' ';
             $prestacionExcel->calificacion      = $prestacion->Calificacion ?? ' ';
             $prestacionExcel->obsResultado      = $prestacion->Observaciones ?? ' ';
@@ -348,7 +344,7 @@ class PrestacionesExport implements FromCollection,WithHeadings
             $prestacionExcel->for               = $prestacion->Forma === 1 ? 'Sí' : ' ';
             $prestacionExcel->dev               = $prestacion->Devol === 1 ? 'Sí' : ' ';
             $prestacionExcel->observacionEstado = $prestacion->ObsEstado ?? ' ';
-            $prestacionExcel->facturado         = $prestacion->Facturado ?? ' ';
+            $prestacionExcel->facturado         = ($prestacion->Facturado <> '0000-00-00' ? Carbon::parse($prestacion->Facturado)->format('d/m/Y') : '');
             $prestacionExcel->factura           = $prestacion->Tipo."".(sprintf('%05d', $prestacion->Sucursal))."-".$prestacion->NroFactura ?? '-';
 
             switch ($prestacion->Pago) {
@@ -369,13 +365,13 @@ class PrestacionesExport implements FromCollection,WithHeadings
             $prestacionExcel->facturado             = $prestacion->Facturado ?? ' ';
             $prestacionExcel->EspecialidadEfector   = $prestacion->EspecialidadEfector ?? ' ';
             $prestacionExcel->Efector               = $prestacion->apellidoEfector . " " . $prestacion->nombreEfector;
-            $prestacionExcel->asignado              = $prestacion->asignado ?? ' ';
-            $prestacionExcel->asignadoI             = $prestacion->asignadoI ?? ' ';
+            $prestacionExcel->asignado              = ($prestacion->asignado <> '0000-00-00' ? Carbon::parse($prestacion->asignado)->format('d/m/Y') : '');
+            $prestacionExcel->asignadoI             = ($prestacion->asignadoI <> '0000-00-00' ? Carbon::parse($prestacion->asignadoI)->format('d/m/Y') : '');
             $prestacionExcel->horaAsignado          = $prestacion->horaAsignado ?? ' ';
             $prestacionExcel->horaAsignadoI         = $prestacion->horaAsignadoI ?? ' ';
             $prestacionExcel->Informador            = $prestacion->apellidoInformador . " " . $prestacion->nombreInformador ??' ';
-            $prestacionExcel->Pagadoef              = $prestacion->pagadoEfector ?? ' ';
-            $prestacionExcel->PagadoInf             = $prestacion->pagadoInformador ?? ' ';
+            $prestacionExcel->Pagadoef              = (($prestacion->pagadoEfector <> '0000-00-00' ? Carbon::parse($prestacion->pagadoEfector)->format('d/m/Y') : ''));
+            $prestacionExcel->PagadoInf             = ($prestacion->pagadoInformador <> '0000-00-00' ? Carbon::parse($prestacion->pagadoInformador)->format('d/m/Y') : '');
             $prestacionExcel->ObsExamen             = $prestacion->ObsExamen ?? ' ';
             $prestacionExcel->ObsEfector            = '-'; // Consultar
             $prestacionExcel->ObsInformador         = $prestacion->ObsInformador ?? ' ';
@@ -514,7 +510,6 @@ class PrestacionesExport implements FromCollection,WithHeadings
             return $query->whereIn('prestaciones.Id', $this->ids)
             ->orderBy('prestaciones.Id', 'DESC')
             ->groupBy('prestaciones.Id')
-            ->groupBy('fichaslaborales.Id')
             ->get();
         }
         else {

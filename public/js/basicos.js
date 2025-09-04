@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(function() {
     toastr.options = {
         closeButton: true,   
         progressBar: true,    
@@ -92,8 +92,9 @@ function createFile(tipo, array, name){
         path = match ? match[1] : '';
 
     let url = new URL(location.href),
-        baseUrl = url.origin,
-        fullPath = baseUrl + '/cmit/storage' + path;
+        checkPublic = url.href.includes("public") ? '/cmit/storage' : '/storage',
+        baseUrl = url.origin + checkPublic,
+        fullPath = baseUrl + path;
 
     console.log(baseUrl);
     console.log(fullPath);
@@ -109,6 +110,18 @@ function createFile(tipo, array, name){
         document.body.removeChild(link);
     }, 100);
 }
+
+function convertToUrl(filePath, path) {
+    // Remueve el prefijo absoluto del sistema
+    const regex = new RegExp(`${path}/file-[^/]+\\.pdf`);
+    const match = filePath.match(regex);
+    
+    let url = new URL(location.href);
+    let checkPublic = url.href.includes("public") ? '/cmit/public/storage' : '/storage';
+    // Construye la URL completa
+    return `${url.origin}${checkPublic}/${match[0]}`;
+}
+
 
 function generarCodigoAleatorio() {
 
@@ -197,19 +210,19 @@ function stripTags(html) {
 function verificarArchivo(archivo){
 
     if (!archivo || archivo.size === 0) {
-        toastr.warning("Debe seleccionar un archivo", "Atención");
+        toastr.warning("Debe seleccionar un archivo", "Atención", {timeOut: 1000});
         return false;
     }
 
     if (!archivo.name.includes('.')) {
-        toastr.warning("El archivo no tiene extensión o la misma es invalida", "Atención");
+        toastr.warning("El archivo no tiene extensión o la misma es invalida", "Atención", {timeOut: 1000});
         return false;
     }
 
     let tipoArchivo = archivo.type.toLowerCase();
 
     if(tipoArchivo !== 'application/pdf') {
-        toastr.warning("Solo se admite archivos PDF", "Atención");
+        toastr.warning("Solo se admite archivos PDF", "Atención", {timeOut: 1000});
         return false;
     }
 
@@ -240,6 +253,11 @@ function calcularEdad(fechaNacimiento) {
 
     return edad;
 }
+
+function removerCeroSelect2(selector) {
+    $(selector).find('option[value="0"]').remove();
+}
+
 
 function limpiarUserAgent(data) {
     let navegador = 'Desconocido',

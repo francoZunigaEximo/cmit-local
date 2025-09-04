@@ -11,18 +11,18 @@ $(function() {
             nroPrestacion = $('#prestacionAsignados').val(),
             especialidad = $('#especialidadAsignados').val();
 
-        if ((fechaDesde === '' || fechaHasta === '') && nroPrestacion === '') {
-            toastr.warning("Las fechas son obligatorias");
+        if ((!fechaDesde || !fechaHasta) && !nroPrestacion) {
+            toastr.warning("Las fechas son obligatorias",'',{timeOut: 1000});
             return;
         }
 
-        if (especialidad === '') {
-            toastr.warning('Debe seleccionar una especialidad para continuar', 'Atención');
+        if (!especialidad) {
+            toastr.warning('Debe seleccionar una especialidad para continuar', 'Atención',{timeOut: 1000});
             return;
         }
 
-        if ((estado == '' || estado == 0) && nroPrestacion === '') {
-            toastr.warning("Debe seleccionar un estado para continuar", "Atención");
+        if (!estado && !nroPrestacion) {
+            toastr.warning("Debe seleccionar un estado para continuar", "Atención",{timeOut: 1000});
             return;
         }
 
@@ -160,7 +160,6 @@ $(function() {
                 },
             ],
             language: {
-                processing: "<div style='text-align: center; margin-top: 20px;'><img src='./images/spinner.gif' /><p>Cargando...</p></div>",
                 emptyTable: "No hay examenes con los datos buscados",
                 paginate: {
                     first: "Primera",
@@ -180,28 +179,6 @@ $(function() {
             }
         });
 
-        function fechaNow(fechaAformatear, divider, format) {
-            let dia, mes, anio; 
-        
-            if (fechaAformatear === null) {
-                let fechaHoy = new Date();
-        
-                dia = fechaHoy.getDate().toString().padStart(2, '0');
-                mes = (fechaHoy.getMonth() + 1).toString().padStart(2, '0');
-                anio = fechaHoy.getFullYear();
-            } else {
-                let nuevaFecha = fechaAformatear === undefined ? '' : fechaAformatear.split("-"); 
-                dia = nuevaFecha[0]; 
-                mes = nuevaFecha[1]; 
-                anio = nuevaFecha[2];
-            }
-        
-            return (format === '0') ? `${dia}${divider}${mes}${divider}${anio}` : `${anio}${divider}${mes}${divider}${dia}`;
-        }
-
-        function acortadorTexto(cadena, nroCaracteres = 10) {
-            return cadena.length <= nroCaracteres ? cadena : cadena.substring(0,nroCaracteres);
-        }
 
     });
 });

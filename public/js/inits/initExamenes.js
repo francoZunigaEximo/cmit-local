@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(function() {
 
     $('#exam').select2({
         placeholder: 'Seleccionar exámen...',

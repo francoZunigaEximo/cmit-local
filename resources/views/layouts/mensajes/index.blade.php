@@ -87,6 +87,7 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-sm-12 text-end">
+                                                <button type="button" class="btn btn-sm botonGeneral modelos"><i class="ri-article-line"></i>Modelos</button>
                                                 <button type="button" class="btn botonGeneral Testear"><i class="ri-settings-3-line"></i>Testear Conexión</button>
                                                 <button type="type" class="btn btn-sm botonGeneral buscar"><i class="ri-search-line"></i>Buscar</button>
                                             </div>

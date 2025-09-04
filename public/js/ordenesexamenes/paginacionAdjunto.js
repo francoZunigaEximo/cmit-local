@@ -9,23 +9,21 @@ $(function() {
             fechaHasta = $('#fechaHastaAdjunto').val(),
             especialidad = $('#especialidadAdjunto').val();
 
-        if (fechaDesde === '' || fechaHasta === '') {
-            toastr.warning("Las fechas son obligatorias", "Atención");
+        if (!fechaDesde || !fechaHasta) {
+            toastr.warning("Las fechas son obligatorias", "Atención", {timeOut: 1000});
             return;
         }
 
-        if (especialidad === '') {
-            toastr.warning('Debe seleccionar una especialidad para continuar', 'Atención');
+        if (!especialidad) {
+            toastr.warning('Debe seleccionar una especialidad para continuar', 'Atención', {timeOut: 1000});
             return;
         }
 
         $(document).on('change', '#estadoAsignados', function(){
-            var nuevoValor = $(this).val();
+            let nuevoValor = $(this).val();
             
             if (nuevoValor !== estado) {
-
                 estado = nuevoValor;
-
             }
         });
 
@@ -108,7 +106,6 @@ $(function() {
                     render: function(data) {
 
                         let abierto = [0, 1, 2], cerrado = [3, 4, 5], estatus = data.Estado;
-
                         let mostrar = abierto.includes(estatus)
                                         ? 'Abierto'
                                         : cerrado.includes(estatus)
@@ -121,7 +118,6 @@ $(function() {
                 {
                     data: null,
                     render: function(data) {
-                        
                         return  `<input type="checkbox" name="Id_adjunto" value="${data.IdItem}" checked>`;      
                     }
                 },
@@ -140,7 +136,6 @@ $(function() {
                 }
             ],
             language: {
-                processing: "<div style='text-align: center; margin-top: 20px;'><img src='./images/spinner.gif' /><p>Cargando...</p></div>",
                 emptyTable: "No hay examenes con los datos buscados",
                 paginate: {
                     first: "Primera",

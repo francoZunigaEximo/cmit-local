@@ -1,4 +1,4 @@
-$(document).ready(function(){
+$(function(){
 
     let opciones = $('#opciones')
         opcionesClass = $('.opciones'),
@@ -21,13 +21,16 @@ $(document).ready(function(){
     $(document).on('change', "#atributos", function() {
         const data = $(this).val();
     
-        opcionesClass.hide();
-        activoClass.hide();
-        estadoClass.hide();
+        opcionesClass
+            .add(activoClass)
+            .add(estadoClass)
+            .hide();
         
-        activo.val('');
-        estado.val('');
-        opciones.val('');
+        activo
+            .add(estado)
+            .add(opciones)
+            .val('');
+
     
         switch (data) {
             case 'opciones':
@@ -51,13 +54,17 @@ $(document).ready(function(){
     reset.click(function(){ 
         $('#form-index :input, #form-index select').val('');
         examen.val([]).trigger('change.select2');
-        activoClass.hide();
-        opcionesClass.hide();
-        activo.val('');
-        estado.val('');
-        opciones.val('');
-        atributos.val('');
-        especialidad.val('');
+        activoClass
+            .add(opcionesClass)
+            .hide();
+
+        activo
+            .add(estado)
+            .add(opciones)
+            .add(atributos)
+            .add(especialidad)
+            .val('');
+
         $('#listaExamenes').DataTable().clear().destroy();
     });
 
@@ -102,7 +109,7 @@ $(document).ready(function(){
     
         if (!table.data().any() ) {
             table.destroy();
-            toastr.warning('No existen registros para exportar');
+            toastr.warning('No existen registros para exportar', '', {timeOut: 1000});
             return;
         }
 
@@ -115,7 +122,7 @@ $(document).ready(function(){
             .done(function(response){
                 createFile("excel", response.filePath, generarCodigoAleatorio() + "_reporte");
                 preloader('off')
-                toastr.success(response.msg)
+                toastr.success(response.msg, '', {timeOut: 1000});
             })
             .fail(function(jqXHR){
                 preloader('off');
@@ -131,12 +138,11 @@ $(document).ready(function(){
 
             especialidad.empty().append('<option value="" selected>Elige una opción...</option>');
 
-            $.each(response.result, function(index, r){
-
+            for(let index = 0; index < response.length; index++) {
+                let r = response[index],
                 contenido = `<option value="${r.Id}">${r.Nombre}</option>`;
-
                 especialidad.append(contenido);
-            });
+            }
         });
     }
 

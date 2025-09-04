@@ -1,6 +1,11 @@
-$(document).ready(()=> {
+$(function() {
 
-    let fecha = $('#FechaVto').val(), opcion = $('#pago').val(), opcionPago = $('#SPago').val(), empresa = $('#empresa').val(), art = $('#art').val();
+    let fecha = $('#FechaVto').val(), 
+        opcion = $('#pago').val(), 
+        opcionPago = $('#SPago').val(), 
+        empresa = $('#empresa').val(), 
+        art = $('#art').val(),
+        paraEmpresa =$('#paraEmpresa').val();
 
     precargaMapa(empresa, art);
     examenesCta(empresa);
@@ -9,13 +14,7 @@ $(document).ready(()=> {
     checkEstadoEnviar(ID);
     loadListAdjPrestacion();
     lstResultadosPrest(IDPACIENTE);
-    
-    $(document).on('change', '#empresa, #art, #TipoPrestacion', function(){
-        let emp = $('#empresa').val(), art = $('#art').val();
-        examenesCta(emp);
-        precargaMapa(emp, art);
-    });
-    
+
     quitarDuplicados("#tipoPrestacion");
     quitarDuplicados("#pago");
     quitarDuplicados("#SPago");
@@ -23,19 +22,37 @@ $(document).ready(()=> {
     quitarDuplicados("#Calificacion");
     quitarDuplicados("#TipoPrestacion");
     quitarDuplicados("#mapas");
+    quitarDuplicados("#Tipo");
 
     cambiosVencimiento(fecha);
-    selectMedioPago(opcion);
+    selectMedioPago(opcion, ID);
     getFact();
     checkBloq();
     comentariosPrivados();
     cargarAutorizados();
+
+    $('#modificar').hide();
+
+    $('#addObs').on('hide.bs.modal', function () {
+        $('#confirmar').show();
+        $('#modificar').hide();
+    });
+
+    if(cerrado === '1') {
+        $('.bloquearExamenes').prop('disabled', true);
+    }
 
     //Hack de carga
     $(document).ready(function(){
         getAutoriza(opcionPago);
     });
     
+    $(document).on('change', '#empresa, #art, #TipoPrestacion', function(){
+        let emp = $('#empresa').val(), art = $('#art').val();
+        examenesCta(emp);
+        precargaMapa(emp, art);
+    });
+
     $('.alert').hide();
 
     $(document).on('change', '#pago', function(){
@@ -47,7 +64,7 @@ $(document).ready(()=> {
         getAutoriza(data);
     });
 
-    $('#actualizarPrestacion').on('click', function(e) {
+    $(document).on('click', '#actualizarPrestacion', function(e){
         e.preventDefault();
 
         let tipoPrestacion = $('#TipoPrestacion').val(),
@@ -55,7 +72,7 @@ $(document).ready(()=> {
             fecha = $('#Fecha').val();
             empresa = $('#empresa').val(),
             art = $('#art').val(),
-            IdPaciente = $('#IdPaciente').val();
+            IdPaciente = $('#IdPaciente').val(),
             spago = $('#SPago').val(),
             observaciones = $('#Observaciones').val(),
             tipo = $('#Tipo').val(),
@@ -72,48 +89,49 @@ $(document).ready(()=> {
             Obs = $('#Obs').val();
             NroFactProv = $('#NroFactProv').val();
  
+        let factura = [tipo, sucursal, nroFactura];
+
          //Validamos la factura
-        if (spago === 'G' && autorizado === ''){ 
-            toastr.warning('Si el medio de pago es gratuito, debe seleccionar quien autoriza.');
+        if (spago === 'G' && !autorizado){ 
+            toastr.warning('Si el medio de pago es gratuito, debe seleccionar quien autoriza.', '', {timeOut: 1000});
             return;
         }
 
-        if (pago === 'B' && spago === '') {
-            toastr.warning('Debe seleccionar un "medio de pago" cuando la "forma de pago" es "contado"');
+        if (pago === 'B' && !spago) {
+            toastr.warning('Debe seleccionar un "medio de pago" cuando la "forma de pago" es "contado"','', {timeOut: 1000});
             return;
         }
        
-        if (['', null, undefined].includes(pago)) {
-            toastr.warning('Debe seleccionar una "forma de pago"');
+        if (!pago) {
+            toastr.warning('Debe seleccionar una "forma de pago"','', {timeOut: 1000});
             return;
         }
 
-        if (pago === 'B' && (tipo == '' || sucursal === '' || nroFactura === '')){
-            toastr.warning('El pago es contado, asi que debe agregar el número de factura para continuar.');
+        if (pago === 'B' && (factura.some(condicion => !condicion))){
+            toastr.warning('El pago es contado, asi que debe agregar el número de factura para continuar.','', {timeOut: 1000});
             return;
         }
 
-        if (tipoPrestacion === ''){
-            toastr.warning("Atención", "El tipo de prestación no puede ser un campo vacío", "warning");
+        if (!tipoPrestacion){
+            toastr.warning("Atención", "El tipo de prestación no puede ser un campo vacío", "warning", {timeOut: 1000});
             return;
         }
         
-        if ([0, null, '', '0'].includes(art) && tipoPrestacion === 'ART') {
-            toastr.warning("Debe seleccionar un cliente ART si el tipo de prestación es ART");
+        if (!art && tipoPrestacion === 'ART') {
+            toastr.warning("Debe seleccionar un cliente ART si el tipo de prestación es ART",'', {timeOut: 1000});
             return;
         }
         
-        if (![0, null, undefined, '0'].includes(art) && tipoPrestacion === 'ART' && (['', null, 0].includes(mapas))) {
-            toastr.warning("Debe seleccionar un mapa vigente si la prestación es ART y tiene un cliente ART cargado");
+        if ((!art || art === '0') && tipoPrestacion === 'ART' && !mapas) {
+            toastr.warning("Debe seleccionar un mapa vigente si la prestación es ART y tiene un cliente ART cargado",'', {timeOut: 1000});
             return;
         }
 
-        if (tipoPrestacion === 'ART' && ['', 0, null].includes(mapas)) {
-            toastr.warning("Debe seleccionar un mapa si la prestación es ART");
+        if (tipoPrestacion === 'ART' && !mapas) {
+            toastr.warning("Debe seleccionar un mapa si la prestación es ART",'', {timeOut: 1000});
             return;
         }
-
-        
+   
         preloader('on');
         $.ajax({
             url: updatePrestacion,
@@ -144,7 +162,7 @@ $(document).ready(()=> {
             },
             success: function(response){
                 preloader('off');
-                toastr.success(response.msg);
+                toastr.success(response.msg,'', {timeOut: 1000});
                 setTimeout(function(){
                     location.reload();
                 }, 3000);  
@@ -159,7 +177,7 @@ $(document).ready(()=> {
 
     });
 
-    $("#btnVolver").on("click", function(e) {
+    $(document).on('click', '#btnVolver', function(e){
         e.preventDefault();
         let location = UBICACION;
         return location === 'prestaciones' ? window.location.replace(GOPRESTACIONES) : window.location.replace(GOPACIENTES);
@@ -169,25 +187,20 @@ $(document).ready(()=> {
 
         let empresa = $(this).val();
         
-        if(empresa === null) return;
+        if(!empresa) return;
 
         $.get(checkParaEmpresa, {empresa: empresa})
             .done(function(response){
-
                 let data = response.cliente;
-
                 $('#paraEmpresa').val(data.ParaEmpresa);
             })
             .fail(function(jqXHR){
-
                 let errorData = JSON.parse(jqXHR.responseText);            
                 checkError(jqXHR.status, errorData.msg);
                 return;  
             });
     });
 
-    
- 
     $(document).on('click','.cerrar, .finalizar, .entregar, .eEnviar', function(e) {
         e.preventDefault();
         $(this).prop('readonly', false);
@@ -213,16 +226,17 @@ $(document).ready(()=> {
                             $('.cerrar').html('<i class="ri-lock-line"></i>&nbsp;Cerrado');
                             $('.FechaFinalizado').find('span').removeAttr('title').removeClass().addClass('input-group-text finalizar');
                             $('#cerrar').val(fechaNow(response.FechaCierre, '/', 0)).prop('readonly', true);
-                            
+                            window.location.reload();
                         } else {
                             
                             if(response.Cerrado === 0 && response.Finalizado === 0 && response.Entregado === 0){
                                 $('.cerrar').html('<i class="ri-lock-unlock-line"></i>&nbsp;Cerrar');
                                 $('.FechaFinalizado').find('span').removeAttr('title').removeClass().addClass('input-group-text');
                                 $('#cerrar').val('').prop('readonly', false);
+                                //recargamos la tabla de examenes
+                                window.location.reload();
                             }
                         }
-                        
                         break;
 
                     case 'finalizar':
@@ -433,9 +447,7 @@ $(document).ready(()=> {
     });
 
     $(document).on('change', '#pago', function(){
-        
-        let option = $(this).val();
-        selectMedioPago(option);
+        selectMedioPago($(this).val());
     });
 
     $('#TipoPrestacion').change(function(empresa, art){
@@ -451,14 +463,14 @@ $(document).ready(()=> {
         let comentario = $('#Comentario').val();
 
         if(comentario === ''){
-            toastr.warning('La observación no puede estar vacía', 'Atención');
+            toastr.warning('La observación no puede estar vacía', 'Atención', {timeOut: 1000});
             return;
         }
         preloader('on');
         $.post(savePrivComent, {_token: TOKEN, Comentario: comentario, IdEntidad: ID, obsfasesid: 2})
             .done(function(){
                 preloader('off');
-                toastr.success('Perfecto', 'Se ha generado la observación correctamente');
+                toastr.success('Perfecto', 'Se ha generado la observación correctamente', {timeOut: 1000});
 
                 setTimeout(() => {
                     $('#privadoPrestaciones').empty();
@@ -475,7 +487,6 @@ $(document).ready(()=> {
     
     $(document).on('click', '.imprimirReporte', function(e){
         e.preventDefault();
-
 
         let evaluacion = $('#evaluacion').prop('checked'),
             eEstudio = $('#eEstudio').prop('checked'),
@@ -516,7 +527,7 @@ $(document).ready(()=> {
         ];
             
         if (verificar.every(val => !val)) {
-            toastr.warning('Debe seleccionar algun check para obtener el reporte');
+            toastr.warning('Debe seleccionar algun check para obtener el reporte', '', {timeOut: 1000});
             return;
         }
 
@@ -529,7 +540,7 @@ $(document).ready(()=> {
             .done(function(response){
                 createFile("pdf", response.filePath, response.name);
                 preloader('off')
-                toastr.success(response.msg)
+                toastr.success(response.msg, '', {timeOut: 1000});
             })
             .fail(function(jqXHR){
                 preloader('off');
@@ -554,7 +565,7 @@ $(document).ready(()=> {
                         
                         createFile("excel", response.filePath, generarCodigoAleatorio() + '_reporte');
                         preloader('off');
-                        toastr.success(response.msg);
+                        toastr.success(response.msg, '', {timeOut: 1000});
                     })
                     .fail(function(jqXHR){
                         preloader('off');
@@ -578,10 +589,9 @@ $(document).ready(()=> {
                 preloader('on');
                 $.get(exportPdf, {Id: ID, adjAnexos: 'true', buttonEA: 'true'})
                     .done(function(response){
-
                         createFile("pdf", response.filePath, response.name);
                         preloader('off')
-                        toastr.success(response.msg)
+                        toastr.success(response.msg, '', {timeOut: 1000});
                     })
                     .fail(function(jqXHR){
                         preloader('off');
@@ -591,8 +601,6 @@ $(document).ready(()=> {
                     }); 
             }
         });
-
-           
     });
 
     $(document).on('click', '.EnviarAviso', function(e){
@@ -609,7 +617,7 @@ $(document).ready(()=> {
                 $.get(eEnviarAviso, {Id: ID})
                     .done(function(response){
                         preloader('off');
-                        toastr.success(response.msg);
+                        toastr.success(response.msg, '', {timeOut: 1000});
                     })
                     .fail(function(jqXHR){
                         preloader('off');
@@ -617,11 +625,8 @@ $(document).ready(()=> {
                         checkError(jqXHR.status, errorData.msg);
                         return;
                     });
-
             }
         });
-
-        
     });
 
     $(document).on('click', '.eEnviarReporte', function(e){
@@ -638,7 +643,7 @@ $(document).ready(()=> {
                 $.get(eEnviarEspecial, {Id: ID})
                     .done(function(response){
                         preloader('off');
-                        toastr.success(response.msg);
+                        toastr.success(response.msg, '', {timeOut: 1000});
                     })
                     .fail(function(jqXHR){
                         preloader('off');
@@ -646,7 +651,6 @@ $(document).ready(()=> {
                         checkError(jqXHR.status, errorData.msg);
                         return;
                     });
-
             }
         });
 
@@ -668,7 +672,7 @@ $(document).ready(()=> {
                     .done(function(response){
                         createFile("pdf", response.filePath, response.name);
                         preloader('off')
-                        toastr.success(response.msg)
+                        toastr.success(response.msg, '', {timeOut: 1000});
                     })
                     .fail(function(jqXHR){
                         preloader('off');
@@ -677,9 +681,7 @@ $(document).ready(()=> {
                         return;
                     });  
             }
-        })
-        
-          
+        })   
     });
 
     $(document).on('click', '.enviarReporte', function(e){
@@ -719,12 +721,12 @@ $(document).ready(()=> {
         ];
 
         if (verificar.some(val => val)) {
-            toastr.warning('Alguno de los reportes seleccionados no es apto para enviar');
+            toastr.warning('Alguno de los reportes seleccionados no es apto para enviar','',{timeOut: 1000});
             return;
         }
 
-        if (verificarCorreos(EMailInformes) === false) {
-            toastr.warning('Alguno de los correos no es válido o el mismo se encuentra vacío');
+        if (!verificarCorreos(EMailInformes)) {
+            toastr.warning('Alguno de los correos no es válido o el mismo se encuentra vacío', '', {timeOut: 1000});
             return;
         }
 
@@ -732,7 +734,7 @@ $(document).ready(()=> {
         $.get(enviarReporte, {evaluacion: evaluacion, eAnexo: eAnexo, adjDigitales: adjDigitales, adjFisicos: adjFisicos, adjPrestacion: adjPrestacion, resAdmin: resAdmin, consEstDetallado: consEstDetallado, consEstSimple: consEstSimple, EMailInformes: EMailInformes, Id: ID})
             .done(function(response){
                 preloader('off');
-                toastr.success(response.msg);
+                toastr.success(response.msg, '', {timeOut: 1000});
             })
             .fail(function(jqXHR){
                 preloader('off');
@@ -784,9 +786,9 @@ $(document).ready(()=> {
                     
                     if(response.icon === 'success') {
                         createFile("pdf", response.filePath, response.name);
-                        toastr.success(response.msg);
+                        toastr.success(response.msg, '', {timeOut: 1000});
                     }else{
-                        toastr.success(response.msg);
+                        toastr.success(response.msg, '', {timeOut: 1000});
                     }
                 })
                 .fail(function(jqXHR){
@@ -797,9 +799,6 @@ $(document).ready(()=> {
                 });  
             }
        });
-
-
-        
     });
 
     $('#opciones').on('show.bs.modal', function () {
@@ -832,7 +831,7 @@ $(document).ready(()=> {
                     $('#addAdjPres').modal('hide');
                     $('#DescripcionAdjPrestacion, input[name="fileAdjPrestacion"]').val('');
                     preloader('off');
-                    toastr.success("Se ha cargado el adjunto de manera correcta.");
+                    toastr.success("Se ha cargado el adjunto de manera correcta.", '', {timeOut: 1000});
                 },
                 error: function (jqXHR) {
                     preloader('off');
@@ -850,7 +849,7 @@ $(document).ready(()=> {
 
         let id = $(this).data('id');
         
-        if([null, 0, ''].includes(id)) return;
+        if(!id) return;
 
         swal({
             title: "¿Estás seguro que deseas eliminar?",
@@ -863,7 +862,7 @@ $(document).ready(()=> {
                     .done(function(response){
                         loadListAdjPrestacion();
                         preloader('off');
-                        toastr.success(response.msg);
+                        toastr.success(response.msg,'', {timeOut: 1000});
                     })
                     .fail(function(jqXHR){
                         preloader('off');
@@ -886,17 +885,16 @@ $(document).ready(()=> {
     $(document).on('click', '.exportSimple, .exportDetallado', function(e){
         e.preventDefault();
 
-        let id = $(this).data('id'),
-            tipo = $(this).hasClass('exportSimple') ? 'exportSimple' : 'exportDetallado';
+        let id = $(this).data('id'), tipo = $(this).hasClass('exportSimple') ? 'exportSimple' : 'exportDetallado';
 
-        if([0, null, undefined, ''].includes(id)) return;
+        if(!id) return;
 
         preloader('on');
         $.get(exResultado, {IdPaciente: id, Tipo: tipo})
             .done(function(response){
                 createFile("excel", response.filePath, generarCodigoAleatorio() + '_reporte');
                 preloader('off');
-                toastr.success('Se ha generado el archivo correctamente');
+                toastr.success('Se ha generado el archivo correctamente','', {timeOut: 1000});
             })
             .fail(function(jqXHR){
                 preloader('off');
@@ -906,6 +904,81 @@ $(document).ready(()=> {
             });
     });
 
+    $(document).on('click', '.deleteComentario', function(e){
+        e.preventDefault;
+
+        let id = $(this).data('id');
+
+        if(!id) return;
+
+        swal({
+            title: "¿Está seguro que desea eliminar el comentario privado?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar) {
+
+                preloader('on')
+                $.get(eliminarComentario, {Id: id})
+                    .done(function(response){
+                        preloader('off');
+                        toastr.success(response.msg,'',{timeOut: 1000});
+                        comentariosPrivados();
+                    })
+                    .fail(function(jqXHR){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
+                    })
+
+            }
+        })   
+    });
+
+    $(document).off('click', '.editarComentario').on('click', '.editarComentario', async function(){
+        borrarCache();
+
+        let id = $(this).data('id'),
+            data  = await $.get(getComentario,{Id: id});
+
+        $('#addObs').modal('show');
+        $('#addObs').attr('aria-hidden', 'false');
+        $('#confirmar').hide();
+        $('#modificar').show();
+        $('#IdComentarioFase').empty().val(data[0].Id)
+        $('#Comentario').val(data[0].Comentario);
+    });
+
+    $(document).off('click', '.editarComentarioPriv').on('click', '.editarComentarioPriv', function(e){
+        e.preventDefault();
+        let comentario = $('#Comentario').val(), id = $('#IdComentarioFase').val();
+
+        preloader('on')
+        $.get(editarComentario, {Id: id, Comentario: comentario})
+            .done(function(response){
+                $('#confirmar').show();
+                $('#modificar').hide();
+                $('#addObs').modal('hide');
+                preloader('off')
+                toastr.success(response.msg,'',{timeOut: 1000});
+                comentariosPrivados();
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            });
+    });
+
+    $(document).on('click', '.agregarComentario', function(e){
+        $('#addObs').modal('show');
+        $('#confirmar').show();
+        $('#modificar').hide();
+        $('#Comentario').val('');
+    });
+
     function loadListAdjPrestacion() {
 
         $('#adjPrestacion').empty();
@@ -913,7 +986,9 @@ $(document).ready(()=> {
         $.get(loadlistadoAdjPres, {Id: ID})
             .done(function(response){
 
-                $.each(response, function(index, r){
+                for (let index = 0; index < response.length; index++) {
+                    let r = response[index];
+                    
                     let contenido = `
                         <tr>
                             <td>${r.Descripcion}</td>
@@ -933,9 +1008,10 @@ $(document).ready(()=> {
                             </td>
                         </tr>
                     `;
-
+                
                     $('#adjPrestacion').append(contenido);
-                });
+                }
+                
                 
             })
             .fail(function(jqXHR){
@@ -950,26 +1026,27 @@ $(document).ready(()=> {
     {
         $('#estudios').empty();
 
-        if([null, 0, ''].includes(ID)) return;
+        if(!ID) return;
         
         preloader('on');
         $.get(await listadoEstudiosImp, {Id: ID})
 
           .done(function(response){
                 preloader('off');
-                $.each(response, function(index, data){
-                    let forNombre = (data.NombreExamen).replace(" ", "-");
-                    let contenido = `
-                        <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" id="${data.IdReporte}" data-examen="${data.IdExamen}" data-nosend>
-                            <label class="form-check-label" for="${forNombre}">
-                                ${data.NombreExamen}
-                            </label>
-                        </div>
-                    `;
+                for(let index = 0; index < response.length; index++) {
+                    let data = response[index],
+                        forNombre = (data.NombreExamen).replace(" ", "-"),
+                        contenido = `
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="${data.IdReporte}" data-examen="${data.IdExamen}" data-nosend>
+                                <label class="form-check-label" for="${forNombre}">
+                                    ${data.NombreExamen}
+                                </label>
+                            </div>
+                        `;
 
                     $('#estudios').append(contenido);
-                });
+                }
             })
             .fail(function(jqXHR){
                 preloader('off');
@@ -984,7 +1061,7 @@ $(document).ready(()=> {
         
         let val = $('#TipoPrestacion').val(), val2 = $('#art').val();
 
-        if (val === 'ART' && (!['','0', null].includes(val2))) {
+        if (val === 'ART' && (val2)) {
             $('.mapas').show();
             getMap(empresa, art)
         } else {
@@ -995,7 +1072,7 @@ $(document).ready(()=> {
 
     function cambiosVencimiento(actual){
 
-        if(actual == '') return;
+        if(!actual) return;
 
         let hoy = new Date().toLocaleDateString('en-CA');
         if(hoy > actual){
@@ -1014,19 +1091,36 @@ $(document).ready(()=> {
         }
     }
 
-    function selectMedioPago(opcion)
+    function selectMedioPago(opcion, id = null)
     {
-        if(opcion === 'B'){
-            $('.SPago').show();
-            $('.Factura').show();
-            $('.NroFactProv').show();
-            $('.Autoriza').hide();
-        }else {
-            $('.SPago').hide();
-            $('.ObsPres').hide();
-            $('.Factura').hide();
-            $('.NroFactProv').hide();
-            $('.Autoriza').hide();
+         $('.SPago, .ObsPres, .Factura, .NroFactProv, .Autoriza, .NroFactExCta').hide();
+        
+         switch (opcion) {
+            case 'B':
+                $('.SPago, .Factura, .NroFactProv').show();
+                $('.Autoriza').hide();
+                break;
+            case 'A':
+                $('.Factura').show();
+                break;
+            case 'P':
+                
+                $.get(checkTipoFactExCta, {Id: id}, function(response) {
+                     $('.NroFactExCta').show();
+
+                    if(response.length > 1) {
+                        $('#NroFactExCta').val("Multi Examen");
+
+                    }else if(response.length === 1){
+                        
+                        let factura = `${response[0].Tipo}` +
+                            `${response[0].Sucursal}`.padStart(4, '0') +
+                            `${response[0].NroFactura}`.padStart(8, '0');
+
+                            $('#NroFactExCta').val(factura);
+                    }
+                })
+                break;
         }
     }
 
@@ -1050,27 +1144,23 @@ $(document).ready(()=> {
 
         $.get(await getMapas, {empresa: empresaIn, art: artIn})
             .done(function(response){
-                
                 let mapas = response.mapas;
                 
                 if(![undefined, null].includes(mapas))
                 {
-                    $.each(mapas, function(index, d){
-
-                        let contenido = `<option value="${d.Id}">${d.Nro} | Empresa: ${d.RSE} - ART: ${d.RSArt}</option>`;
-    
+                    for(let index = 0; index < mapas.length; index++) {
+                        let d = mapas[index],
+                        contenido = `<option value="${d.Id}">${d.Nro} | Empresa: ${d.RSE} - ART: ${d.RSArt}</option>`;
+                        
                         $('#mapas').append(contenido);
-                    });
-                }
-                
-            })
+                    }
+                } 
+            });
     }
 
     function getFact(){
-
         $.get(getFactura, {Id: ID})
             .done(function(response){
-
                 let data = response.factura;
 
                 if(data){
@@ -1115,22 +1205,26 @@ $(document).ready(()=> {
                 preloader('off');
                 let data = await response.result;
 
-                $.each(data, function(index, d){
- 
+                for(let index = 0; index < data.length; index++){
+                    let d = data[index];
+
                     let contenido =  `
                         <tr>
-                            <td>${fechaCompleta(d.Fecha)}</td>
-                            <td class="text-capitalize">${d.IdUsuario}</td>
-                            <td class="text-uppercase">${d.nombre_perfil}</td>
+                            <td style="width: 120px">${fechaCompleta(d.Fecha)}</td>
+                            <td style="width: 120px" class="text-capitalize">${d.IdUsuario}</td>
+                            <td style="width: 120px" class="text-uppercase">${d.nombre_perfil}</td>
                             <td class="text-start">${d.Comentario}</td>
+                            <td style="width: 60px">${USER === d.IdUsuario ? `
+                                <button type="button" data-id="${d.Id}" class="btn btn-sm iconGeneralNegro editarComentario"><i class="ri-edit-line"></i></button>
+                                <button title="Eliminar" data-id="${d.Id}" type="button" class="btn btn-sm iconGeneralNegro deleteComentario"><i class="ri-delete-bin-2-line"></i></button>` : ''}</td>
                         </tr>
                     `;
                     $('#privadoPrestaciones').append(contenido);
-                });
+                }
 
                 $('#lstPrivPrestaciones').fancyTable({
                     pagination: true,
-                    perPage: 15,
+                    perPage: 10,
                     searchable: false,
                     globalSearch: false,
                     sortable: false, 
@@ -1156,8 +1250,10 @@ $(document).ready(()=> {
                     $('.body-autorizado').append(contenido);
 
                 }else{
+                    for(let index = 0; index < autorizados.length; index++){
 
-                    $.each(autorizados, function(index, autorizado) {
+                        let autorizado = autorizados[index];
+
                         let contenido = `
                         <tr>
                             <td>${autorizado.Nombre} ${autorizado.Apellido}</td>
@@ -1166,6 +1262,14 @@ $(document).ready(()=> {
                         </tr>
                         `;
                         $('#autorizadosPres').append(contenido);
+                    }
+
+                    $("#lstAutorizados").fancyTable({
+                        pagination: true,
+                        perPage: 10,
+                        searchable: false,
+                        globalSearch: false,
+                        sortable: false, 
                     });
                 }
             },
@@ -1184,20 +1288,21 @@ $(document).ready(()=> {
 
         $.get(lstExDisponibles, {Id: id})
             .done(function(response) {
-                var contenido = '';
+                let contenido = '';
                 preloader('off');
 
                 if(response && response.length > 0){
 
-                    $.each(response, function(index, r) {
-                    
-                        contenido += `
-                        <tr>
-                            <td>${r.Precarga === '' ? '-' : r.Precarga}</td>
-                            <td>${r.NombreExamen}</td>
-                        </tr>
+                    for(let index = 0; index < response.length; index++){
+                        let r = response[index],
+                            contenido = `
+                            <tr>
+                                <td>${r.Precarga === '' ? '-' : r.Precarga}</td>
+                                <td>${r.NombreExamen}</td>
+                            </tr>
                         `;
-                    });
+                        $('#lstSaldos').append(contenido);
+                    }
                 }else{
                     contenido = `
                         <tr>
@@ -1212,10 +1317,8 @@ $(document).ready(()=> {
     }
 
     async function checkExamenes(id) {
-
         $.get(await buscarEx, {Id: id}, function(response){
-
-            response === 0 
+            !response
                 ? $('.auditoria, .autorizados, .evaluacion, .banderas').hide()
                 : $('.auditoria, .autorizados, .evaluacion, .banderas').show()  
         })
@@ -1224,28 +1327,23 @@ $(document).ready(()=> {
     async function checkerIncompletos(idPrestacion)
     {
         if([null,'',0].includes(idPrestacion)) return;
-
-        $.get(await checkInc, {Id: idPrestacion}, function(){
-            console.log("Actualizados los estados");
-        });
+        $.get(await checkInc, {Id: idPrestacion});
     }
 
     function checkEstadoEnviar(id) {
         
-        if([0, null, ''].includes(id)) return;
+        if(!id) return;
 
         $.get(btnVisibleEnviar, {Id: id})
             .done(function(response){
-                let arr = ['pagado', 'completos', 'evaluado', 'pagado'],
-                    allTrue = arr.every(key => response[key] === true);
-
+                let arr = ['pagado', 'completos', 'evaluado', 'pagado'], allTrue = arr.every(key => response[key] === true);
                 return allTrue === true ? $('#eEnviarReporte').show() : $('#eEnviarReporte').hide();
             });
     }
 
     async function lstResultadosPrest(idPaciente){
 
-        if([0,null,'', undefined].includes(idPaciente)) return;
+        if(!idPaciente) return;
 
         $('#lstResultadosPrestacion').empty();
         preloader('on');
@@ -1253,10 +1351,10 @@ $(document).ready(()=> {
             .done(function(response){
                 
                 preloader('off');
-                $.each(response, function(index, r){
-
-                    let icon = r.Evaluacion === 0 ? `<span class="custom-badge generalNegro">Antiguo</span>` : '',
-                        evaluacion = r.Evaluacion === 0 ? '' : r.Evaluacion.slice(2),
+                for(let index = 0; index < response.length; index++){
+                    let r = response[index],
+                        icon = r.Evaluacion === 0 ? `<span class="custom-badge generalNegro">Antiguo</span>` : '',
+                        evaluacion = r.Evaluacion ? r.Evaluacion.slice(2) : '',
                         calificacion = r.Calificacion ? r.Calificacion.slice(2) : '',
                         boton = r.Evaluacion !== 0 ? `<button data-id="${r.Id}" class="btn btn-sm iconGeneral verPrestacion" title="Ver">
                                     <i class="ri-search-eye-line"></i>
@@ -1278,8 +1376,7 @@ $(document).ready(()=> {
                     `;
 
                     $('#lstResultadosPrestacion').append(contenido);
-
-                });
+                }
 
                 $("#listadoResultadosPrestacion").fancyTable({
                     pagination: true,
@@ -1289,9 +1386,12 @@ $(document).ready(()=> {
                     sortable: false, 
                 });
             });
-
     }
 
     
+    function borrarCache() {
+        $.post(cacheDelete, {_token: TOKEN}, function(){});
+    }
 
+  
 });

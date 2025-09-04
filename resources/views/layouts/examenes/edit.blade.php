@@ -11,8 +11,10 @@
 </div>
 
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-    <h4 class="mb-sm-0">Examen&nbsp;<span class="custom-badge original">{{ $examene->Id }}</span> {!! ($examene->Inactivo === 3) ? '<span class="custom-badge rojo">Deshabilitado</span>' : '' !!}</h4>
-
+    <div class="d-flex aling-items-center">
+        <h4 class="mb-sm-0">Examen&nbsp;<span class="custom-badge original">{{ $examene->Id }}</span> {!! ($examene->Inactivo === 3) ? '<span class="custom-badge rojo">Deshabilitado</span>' : '' !!}</h4>
+        <x-helper>{!!$helper!!}</x-helper>
+    </div>
     <div class="page-title-right">
         <button type="button" id="clonar" class="btn botonGeneral"><i class="ri-file-copy-2-line"></i> Clonar</button>
         <button type="button" {!! $examene->Inactivo === 3 ? 'disabled' : 'id="eliminar"' !!} class="btn botonGeneral"><i class="ri-delete-bin-line"></i> Eliminar</button>
@@ -55,13 +57,15 @@
                         <div class="col-6 mt-3">
                             <div class="input-group input-group-sm size80porcent mx-auto">
                                 <span class="input-group-text">Reporte</span></span>
-                                <select class="form-control" id="Reporte" name="Reporte">
-                                    <option value="{{ $examene->reportes->Id ?? ''}}" selected>{{ ($examene->reportes->Nombre === '' ? 'Elija una opción...' : $examene->reportes->Nombre  ?? 'Elija una opción...') }}</option>
-                                    @foreach($reportes as $reporte)
-                                        <option value="{{ $reporte->Id }}">{{ $reporte->Nombre }}</option>
-                                    @endforeach
+                                <div style="width: 65% !important;">
+                                <select id="Reporte" name="Reporte">
+                                        
                                 </select>
-                                <button type="button" class="btn btn-sm botonGeneral" title="Vista previa"><i class="ri-search-line vistaPrevia"></i></button>
+                                </div>
+                                <!-- Button trigger modal -->
+                                <button type="button" class="btn btn-sm botonGeneral" id="vistaPrevia" title="Vista previa">
+                                    <i class="ri-search-line vistaPrevia"></i>
+                                </button>
                             </div>
                         </div>
 
@@ -156,7 +160,7 @@
                                 </div>
 
                                 <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="checkbox" id="Cerrado" name="Cerrado" {{ ($examene->Cerrado === 1 ? 'checked' : '') }} {{ (Auth::user()->Rol === 'Admin' && Auth::user()->profesional->T1 === 1 ? '' : 'disabled title="Debe ser Administrador y Efector"') }}>
+                                        <input class="form-check-input" type="checkbox" id="Cerrado" name="Cerrado" {{ ($examene->Cerrado === 1 ? 'checked' : '') }} {{ (Auth::user()->role()->where('nombre', 'Administrador')->exists() ? '' : 'disabled title="Debe ser Administrador y Efector"') }}>
                                     <label class="form-check-label" for="Informe">Cerrado</label>
                                 </div>
 
@@ -215,18 +219,31 @@
     const delAlias = "{{ route('aliasExamenes.del') }}";
     const cargar = "{{ route('aliasExamenes.getList') }}";
     const optionEx = "{{ route('aliasExamenes.getExamenSelect')}}"
+
+    const getReportes = "{{ Route('examenes.getReportes') }}";
+    const getReporte = "{{ Route('prestaciones.pdfPrueba')}}";
+    const reporte = JSON.parse('{!! json_encode($reporte) !!}');
 </script>
 
 @push('styles')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 <link rel="stylesheet" href="{{ asset('css/hacks.css')}}?v={{ time() }}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
+
+<link rel="stylesheet" href="{{ asset('css/fixSelect2.css') }}">
 @endpush
 
 @push('scripts')
 <script src="{{ asset('js/jquery.validate.min.js') }}"></script>
 <script src="{{ asset('js/fancyTable.js') }}"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/i18n/es.js"></script>
+<script src="{{ asset('js/pages/select2.init.js') }}"></script>
+
 <script src="{{ asset('js/examenes/edit.js') }}?v={{ time() }}"></script>
 <script src="{{ asset('js/examenes/validaciones.js')}}?v={{ time() }}"></script>
+<script src="{{ asset('js/examenes/vistaprevia.js')}}?v={{ time()}}"></script>
 @endpush
 
 @endsection

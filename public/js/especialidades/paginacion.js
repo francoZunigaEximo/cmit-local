@@ -1,12 +1,12 @@
-$(document).ready(function(){
+$(function(){
 
     $(document).on('click', '#buscar', function(){
         
         let especialidad = $('#especialidad').val(), opciones = $('#opciones').val();
 
-        if(especialidad === '' && opciones === ''){
+        if(!especialidad && !opciones){
 
-            toastr.warning("Debe escribir que desea buscar o bien seleccionar un filtro", "Atención");
+            toastr.warning("Debe escribir que desea buscar o bien seleccionar un filtro", "Atención", {timeOut: 1000});
             return;
         } 
  
@@ -37,7 +37,7 @@ $(document).ready(function(){
                 {
                     data: null,
                     render: function(data){
-                        return `<div class="text-center"><input type="checkbox" name="Id" value="${data.IdEspecialidad}" checked></div>`;
+                        return `<div class="text-center"><input type="checkbox" name="Id" value="${data.IdEspecialidad}"></div>`;
                     }
                 },
                 {
@@ -92,7 +92,7 @@ $(document).ready(function(){
                                 </a>
                             </div>
                             <div class="bloquear">
-                                <button data-id="${data.IdEspecialidad}" class="blockEsp btn btn-sm iconGeneral" title="Inhabilitar">
+                                <button data-id="${data.IdEspecialidad}" id="baja" class="btn btn-sm iconGeneral" title="Inhabilitar">
                                     <i class="ri-forbid-2-line"></i>
                                 </button>
                             </div>

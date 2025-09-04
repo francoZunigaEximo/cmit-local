@@ -1,6 +1,14 @@
-$(document).ready(function(){
+$(function(){
 
-    $('#btnBajaMultiple').click(function(e) {
+    const principal = {
+        btnBajaMultiple: $('#btnBajaMultiple'),
+        listaPac: $('#listaPac '),
+        dataTables_processing: $(".dataTables_processing"),
+        excel: $('#excel'),
+        downPaciente: $('.downPaciente')
+    };
+
+    principal.btnBajaMultiple.click(function(e) {
         e.preventDefault();
 
         let ids = [];
@@ -9,7 +17,7 @@ $(document).ready(function(){
         });
 
         if (ids.length === 0) {
-            toastr.warning("Debe seleccionar al menos un paciente para la baja múltiple");
+            toastr.warning("Debe seleccionar al menos un paciente para la baja múltiple",'',{timeOut: 1000});
             return; 
         }
 
@@ -20,8 +28,10 @@ $(document).ready(function(){
         }).then((confirmar) => {
             if(confirmar) {
 
-                $('#listaPac tbody').hide();
-                $(".dataTables_processing").show();
+                principal.listaPac
+                .find('tbody')
+                .hide();
+                principal.dataTables_processing.show();
 
                 $.post(down, {_token: TOKEN, ids: ids})
                 .done(function(response) {
@@ -35,9 +45,11 @@ $(document).ready(function(){
                         toastr[tipo[data.status]](data.msg);
                     });
                     
-                    $('#listaPac').DataTable().ajax.reload(function() {
-                        $('#listaPac tbody').show();
-                        $(".dataTables_processing").hide();
+                    principal.listaPac.DataTable().ajax.reload(function() {
+                        principal.listaPac
+                            .find('tbody')
+                            .show();
+                        principal.dataTables_processing.hide();
                     }, false);
 
                 })
@@ -50,17 +62,17 @@ $(document).ready(function(){
         });
     });
 
-
-    $('#excel').click(function(e) {
+    principal.excel.on('click', function(e){
         e.preventDefault();
-
+        
         let ids = [];
-        $('input[name="Id"]:checked').each(function() {
+        
+        $('input[name="Id"]:checked').each(function(){
             ids.push($(this).val());
-        });
+        })
 
         if (ids.length === 0) {
-            toastr.warning('Debes seleccionar al menos un paciente para exportar.');
+            toastr.warning('Debes seleccionar al menos un paciente para exportar.','',{timeOut: 1000});
             return;
         }
 
@@ -71,29 +83,23 @@ $(document).ready(function(){
         }).then((confirmar) => {
             if(confirmar){
                 preloader('on');
-                $.ajax({
-                    url: exportExcel,
-                    type: "GET",
-                    data: {
-                        Id: ids
-                    },
-                    success: function(response) {
+
+                $.post(exportExcel, {Id: ids, All: false, _token: TOKEN})
+                    .done(function(response){
                         preloader('off');
                         let tipoToastr = response.estado === 'success' ? 'success' : 'warning';
                         createFile("excel", response.filePath, generarCodigoAleatorio() + "_reporte");
                         toastr[tipoToastr](response.msg);
                         return;
-                    },                    
-                    error: function(jqXHR) {
+                    })
+                    .fail(function(jqXHR){
                         preloader('off');
                         let errorData = JSON.parse(jqXHR.responseText);
                         checkError(jqXHR.status, errorData.msg);
                         return;
-                    }
-                });
+                    });
             }
         });
-
     });
 
     $(document).on('click', '.downPaciente', function(e){
@@ -107,8 +113,11 @@ $(document).ready(function(){
         }).then((confirmar) => {
             if(confirmar) {
                 
-                $('#listaPac tbody').hide();
-                $(".dataTables_processing").show();
+                principal.listaPac
+                    .find('tbody')
+                    .show();
+                
+                principal.dataTables_processing.show();
 
                 $.post(down, {_token: TOKEN, ids: paciente})
                 .done(function(response){
@@ -122,9 +131,12 @@ $(document).ready(function(){
                     response.forEach(function(data) {
                         toastr[tipo[data.status]](data.msg);
                     });
-                    $('#listaPac').DataTable().ajax.reload(function() {
-                        $('#listaPac tbody').show();
-                        $(".dataTables_processing").hide();
+                    
+                    principal.listaPac.DataTable().ajax.reload(function() {
+                        principal.listaPac
+                            .find('tbody')
+                            .show();
+                        principal.dataTables_processing.hide();
                     }, false);
 
                 })
@@ -139,5 +151,8 @@ $(document).ready(function(){
         });
   
     });
+
+
+
 
 });

@@ -1,4 +1,4 @@
-$(document).ready(function(){
+$(function(){
 
     nuevoEmpresa(localStorage.getItem('nuevaId'), localStorage.getItem('nuevaRazonSocial'));
 
@@ -8,8 +8,8 @@ $(document).ready(function(){
             condiciones = [empresaCreate, FechaCreate, FacturaCreate],
             partes = FacturaCreate.split('-');
 
-        if (condiciones.some(condicion => condicion === '' || condicion === null) === true) {
-            toastr.warning("Los campos marcados con astericos son obligatorios");
+        if (condiciones.some(condicion => !condicion)) {
+            toastr.warning("Los campos marcados con astericos son obligatorios", "", {timeOut: 1000});
             return;
         }
 
@@ -23,7 +23,7 @@ $(document).ready(function(){
                 $.post(saveExamenCuenta, {_token: TOKEN, IdEmpresa: empresaCreate, Fecha: FechaCreate, Tipo: partes[0], Suc: parseInt(partes[1], 10), Nro: parseInt(partes[2], 10), Obs: ObsPago, FechaP: FechaPago})
                     .done(function(response){
                         preloader('off');
-                        toastr.success('Se ha realizado la operación correctamente. Se habilitarán las opciones');
+                        toastr.success('Se ha realizado la operación correctamente. Se habilitarán las opciones', '', {timeOut: 1000});
                         setTimeout(()=> {
                             let nuevo = location.href.replace("create", "");
                             let lnk = nuevo + response.id + "/edit";
