@@ -20,8 +20,12 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
 
+use App\Traits\CheckPermission;
+
 class PaquetesController extends Controller
 {
+    use CheckPermission;
+
     protected $reporteService;
     protected $outputPath;
     protected $sendPath;
