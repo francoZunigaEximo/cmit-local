@@ -9,13 +9,17 @@ $(function(){
 
     const variables = {
         fechaHasta: $('#fechaHasta'),
+        fechaDesde: $('#fechaDesde'),
         estado: $('#estado'),
         especialidadSelect: $('#especialidadSelect'),
         profesional: $('#profesional'),
         informador: 'Informador',
     };
 
-    variables.fechaHasta.val(fechaNow(null, "-", 0));
+    variables.fechaHasta
+        .add(variables.fechaDesde)
+        .val(fechaNow(null, "-", 0));
+    
     variables.estado.val('abierto');
 
     habilitarBoton(sessionProfesional);
