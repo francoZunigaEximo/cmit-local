@@ -78,13 +78,16 @@ $(function(){
                 createFile("xlsx", response.filePath, generarCodigoAleatorio() + '_reporte');
                 preloader('off')
                 toastr.success(response.msg, '', {timeOut: 1000});
-            })
-            .fail(function(jqXHR){
-                preloader('off');
-                let errorData = JSON.parse(jqXHR.responseText);            
-                checkError(jqXHR.status, errorData.msg);
-                return;
-            })
+            }
+            
+        }catch(jqXHR) {
+            let errorData = JSON.parse(jqXHR.responseText);            
+            checkError(jqXHR.status, errorData.msg);
+            return;
+
+        }finally {
+            preloader('off');
+        }      
     });
 
     $(document).on('click', '.atenderPaciente', async function(e){
