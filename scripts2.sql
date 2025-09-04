@@ -960,3 +960,4 @@ ALTER TABLE llamador CHANGE itemprestacion_id especialidad_id int(11) NOT NULL;
 ALTER TABLE llamador DROP FOREIGN KEY FK_ItemprestacionLlamador;
 ALTER TABLE llamador ADD CONSTRAINT FK_EspecialidadLlamador FOREIGN KEY (especialidad_id) REFERENCES proveedores(Id);
 
+INSERT INTO auditoriatablas (Id, Nombre) VALUES(9, 'LLAMADOR');

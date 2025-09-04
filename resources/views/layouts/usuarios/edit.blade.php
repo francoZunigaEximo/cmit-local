@@ -242,6 +242,9 @@
                                
                             <input class="form-check-input" type="checkbox" id="InfAdj" {{ ($query->InfAdj === 1 ? 'checked' : '') ?? ''}}>
                             <label class="form-check-label" for="InfAdj"> Informe Adjunto </label>
+
+                            <input class="form-check-input" type="checkbox" id="tlp" {{ ($query->TLP === 1 ? 'checked' : '') ?? ''}}>
+                            <label class="form-check-label" for="InfAdj"> Multi Especialidad </label>
                     </div>
                 </div>
                 

@@ -14,7 +14,7 @@ $(function() {
     function opcionesChoise(id)
     {
         const select = $("#choisePerfil");
-        if([0,'',null,undefined].includes(id)) return;
+        if(!i) return;
 
         select.empty().append('<option value="" selected>Elija una opción...</option>');
 
