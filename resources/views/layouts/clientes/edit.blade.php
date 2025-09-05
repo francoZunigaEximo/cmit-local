@@ -597,18 +597,18 @@ const GOCREATE = "{{ route('clientes.create') }}";
 const RUTAEXAMEN = "{{ route('examenesCuenta.create') }}";
 
 //Rutas
-const deleteAutorizado = "{{ route('deleteAutorizado') }}";
-const altaAutorizado = "{{ route('clientes.altaAutorizado') }}";
-const getAutorizados = "{{ route('getAutorizados') }}";
+const deleteAutorizado = "{{ route('autorizados.eliminar') }}";
+const altaAutorizado = "{{ route('autorizados.crear') }}";
+const getAutorizados = "{{ route('autorizados.listar') }}";
 const checkOpciones = "{{ route('checkOpciones') }}";
 const checkEmail = "{{ route('checkEmail') }}";
 const getLocalidad = "{{ route('getLocalidades') }}";
 const getCodigoPostal = "{{ route('getCodigoPostal') }}";
 const checkProvController = "{{ route('checkProvincia') }}";
 const setObservaciones = "{{ route('clientes.setObservaciones') }}";
-const getTelefonos = "{{ route('getTelefonos') }}";
-const deleteTelefono = "{{ route('deleteTelefono') }}";
-const saveTelefono = "{{ route('saveTelefono') }}";
+const getTelefonos = "{{ route('telefonos.obtener') }}";
+const deleteTelefono = "{{ route('telefonos.eliminar') }}";
+const saveTelefono = "{{ route('telefonos.guardar') }}";
 const block = "{{ route('clientes.block') }}";
 const getBloqueo = "{{ route('getBloqueo') }}";
 const lstClientes = "{{ route('lstClientes') }}";

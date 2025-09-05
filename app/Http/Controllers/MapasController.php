@@ -555,7 +555,7 @@ class MapasController extends Controller
         return response()->json(['result' => $result]);
     }
 
-    public function serchInCerrar(Request $request): mixed
+    public function serchCerrados(Request $request): mixed
     {
         $NroPresCerrar = $request->prestacion;
         $EstadoCerrar = $request->estado;
@@ -652,7 +652,7 @@ class MapasController extends Controller
     }
 
 
-    public function searchInFinalizar(Request $request): mixed
+    public function searchFinalizados(Request $request): mixed
     {
         $NroRemito = $request->remito;
         $NroPrestacion = $request->prestacion;
@@ -723,7 +723,7 @@ class MapasController extends Controller
         return response()->json($respuestas);
     }
 
-    public function searchInEnviar(Request $request): mixed
+    public function searchEnviados(Request $request): mixed
     {
         $desde = $request->desde;
         $hasta = $request->hasta;

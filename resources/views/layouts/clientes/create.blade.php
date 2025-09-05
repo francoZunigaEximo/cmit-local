@@ -217,7 +217,7 @@ const getLocalidad = "{{ route('getLocalidades') }}";
 const getCodigoPostal = "{{ route('getCodigoPostal') }}";
 const checkProvincia = "{{ route('checkProvincia') }}";
 const verifyIdentificacion = "{{ route('verifyIdentificacion') }}";
-const searchLocalidad = "{{ route('searchLocalidad') }}";
+const searchLocalidad = "{{ route('localidades.buscar') }}";
 
 
 </script>

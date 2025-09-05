@@ -20,7 +20,7 @@ class AutorizadoController extends Controller
         ]);
     }
 
-    public function getAut(Request $request)
+    public function listado(Request $request)
     {
         $autorizados = Autorizado::where('IdEntidad', $request->Id)->orderBy('Id', 'DESC')->get();
 

@@ -868,6 +868,7 @@ $(function () {
             .prop('disabled', false)
             .removeAttr('title');
 
+        preloader('on')
         try {
             const response = await $.get(checkObs, { Id: ID });
             let obsArt = response.obsArt, obsEmpresa = response.obsEmpresa, obsPaciente = response.obsPaciente;
@@ -931,42 +932,43 @@ $(function () {
             let errorData = JSON.parse(jqXHR.responseText);
             checkError(jqXHR.status, errorData.msg);
             return;
+        } finally {
+            preloader('off');
         }
     };
 
-    function examenesCta(id) {
+    async function examenesCta(id) {
 
         principal.lstSaldos.empty();
         preloader('on');
 
-        $.get(lstExDisponibles, {Id: id})
-            .done(function(response) {
-                let contenido = '';
-                preloader('off');
+        let response =  await $.get(lstExDisponibles, {Id: id}),
+            contenido = '';
 
-                if(response && response.length > 0){
+        preloader('off');
+        if(response && response.length > 0){
 
-                    for(let index = 0; index < response.length; index++) {
-                        let r = response[index];
+            for(let index = 0; index < response.length; index++) {
+                let r = response[index];
 
-                        contenido += `
-                        <tr>
-                            <td>${r.Precarga === '' ? '-' : r.Precarga}</td>
-                            <td>${r.NombreExamen}</td>
-                        </tr>
-                        `;
-                    }
-                }else{
-                    contenido = `
-                        <tr>
-                            <td>No hay registros de examenes a cuenta</td>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                        `;
-                }
-                principal.lstSaldos.append(contenido); 
-            });    
+                contenido += `
+                <tr>
+                    <td>${r.Precarga === '' ? '-' : r.Precarga}</td>
+                    <td>${r.NombreExamen}</td>
+                </tr>
+                `;
+            }
+        }else{
+            contenido = `
+                <tr>
+                    <td>No hay registros de examenes a cuenta</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                `;
+        }
+        principal.lstSaldos.append(contenido); 
+              
     };
 
     async function selectorPago(pago) {
@@ -1000,19 +1002,17 @@ $(function () {
                 .hide();
 
             preloader('on');
-            $.get(await lstExDisponibles, {Id: variables.selectClientes.val()})
-            .done(function(response){
-                preloader('off');
+            let response = await $.get(lstExDisponibles, {Id: variables.selectClientes.val()});
+            preloader('off');
 
-                if(response.length > 0) {
-                    principal.ultimasFacturadas
-                        .add(principal.examenesDiponibles)
-                        .add(principal.siguienteExCta)
-                        .show();
+            if(response.length > 0) {
+                principal.ultimasFacturadas
+                    .add(principal.examenesDiponibles)
+                    .add(principal.siguienteExCta)
+                    .show();
 
-                    // checkExamenesCuenta(variables.selectClientes.val())
-                }
-            });
+                // checkExamenesCuenta(variables.selectClientes.val())
+            }  
         }
     };
 
@@ -1024,7 +1024,7 @@ $(function () {
                     .hide();
                 return;
         }
-
+        preloader('on');
         try {
             const response = await $.get(lstExDisponibles, { Id: id });
             let checkbox = $("input[name='TipoPrestacion']:checked").val();
@@ -1057,11 +1057,14 @@ $(function () {
                                
                 return;
             }
+
         } catch (jqXHR) {
-            preloader('off');
             let errorData = JSON.parse(jqXHR.responseText);
             checkError(jqXHR.status, errorData.msg);
             return;
+        
+        }finally {
+            preloader('off');
         }
     };
 

@@ -1559,7 +1559,7 @@ const getFactura = "{{route('getFactura') }}";
 const getBloqueoPrestacion = "{{ route('getBloqueoPrestacion') }}";
 const privateComment = "{{ route('comentariosPriv') }}";
 const savePrivComent = "{{ route('savePrivComent') }}";
-const getAutorizados = "{{ route('getAutorizados') }}";
+const getAutorizados = "{{ route('autorizados.listar') }}";
 const lstExDisponibles = "{{ route('lstExDisponibles') }}";
 const buscarEx = "{{ route('buscarEx')}}";
 const saveFichaAlta = "{{ route('saveFichaAlta') }}";
@@ -1592,7 +1592,7 @@ const fileUploadPres = "{{ route('prestaciones.uploadAdjPres') }}";
 const loadlistadoAdjPres = "{{ route('prestaciones.listaAdjPres') }}";
 const loadResultadosPres = "{{ route('prestaciones.resultados') }}";
 const exResultado = "{{ route('prestaciones.exportarResultado') }}";
-const mapaPrestacion = "{{ route('prestaciones.mapaPrestacionId') }}";
+const mapaPrestacion = "{{ route('mapas.prestacionId') }}";
 const listaExCuenta = "{{ route('examenesCuenta.listaEmpresa') }}";
 
 const reactivarItem = "{{ route('notasCredito.reactivarItem') }}";
