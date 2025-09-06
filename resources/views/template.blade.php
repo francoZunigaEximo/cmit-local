@@ -455,8 +455,7 @@
         const sessionUser = "{{ auth()->user()?->id }}";
         const sessionName = "{{ auth()->user()?->name }}"; 
         const heartbeat = "{{ route('usuario.heartBeat') }}";
-
-        console.log("Total Horas: " + IDLE_TIMEOUT);
+        const multiEspecialidadCheck = "{{ route('profesionales.multiEspecialidad') }}";
 
         let sesionCerrada = false,
             idInterval = null

@@ -41,7 +41,7 @@ $(function(){
     variables.estado.val('abierto');
     
     habilitarBoton(sessionProfesional, profesionales[0]);
-    listadoEspecialidades();
+    listadoEspecialidades(variables.efector);
 
 
     $(document).on('click', '.verPrestacion', function(e){
@@ -151,7 +151,7 @@ $(function(){
     });
 
     variables.profesional.change(function(){
-        listadoEspecialidades();
+        listadoEspecialidades(variables.efector);
     });
 
     variables.fotoEfector.hover(
@@ -236,36 +236,7 @@ $(function(){
         });
     });
 
-    async function listadoEspecialidades() {
-        preloader('on');
-        try {
-
-            let response =  await $.get(searchEspecialidad, 
-                {    
-                    IdProfesional: variables.profesional.val(), 
-                    Tipo: variables.efector
-                });
-
-            variables.especialidadSelect.empty();
-
-            for(let index = 0; index < response.length; index++) {
-                let data = response[index],
-                    contenido = `
-                        <option value="${data.Id}">${data.Nombre}</option>
-                    `;
-                variables.especialidadSelect.append(contenido);
-            }
-
-        }catch(jqXHR) {
-            preloader('off');
-            let errorData = JSON.parse(jqXHR.responseText);            
-            checkError(jqXHR.status, errorData.msg);
-            return;
-
-        }finally {
-            preloader('off');
-        }
-    }
+    
 
 
 

@@ -38,7 +38,7 @@ $(function(){
         if(!idCheck) return;
 
         preloader('on')
-        $.get(asignacionProfesional, {Id: idCheck, Profesional: variables.profesional.val(), estado: chequeado})
+        $.post(asignacionProfesional, {Id: idCheck, Profesional: variables.profesional.val(), estado: chequeado, TOKEN: _token})
             .done(function(response) {
                 preloader('off')
                 toastr.success(response.msg);

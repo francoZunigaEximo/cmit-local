@@ -30,6 +30,10 @@ $(function() {
         let response = await $.get(choisePerfil, {Id: id}),
             resultado = response.some(item => profesionales.includes(item.Nombre));
 
+        let multiCheck = await $.get(multiEspecialidadCheck); 
+
+        if(multiCheck) return;
+
         if(resultado && (!profesional || !especialidad)) {
             choisePModal.modal('show');
         }
@@ -65,10 +69,8 @@ $(function() {
 
         $.post(savePrestador, {perfil: select.val(), especialidad: especialidad.val(), _token: TOKEN})
             .done(function(){
-
                 choisePModal.modal('hide');
                 location.reload();
-
             })
             .fail(function(){
                 seleccionPerfil(PROFESIONAL, ESPECIALIDAD, IDSESSION);

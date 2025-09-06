@@ -21,35 +21,35 @@
 
                                 <div class="row">
 
+                                    @php
+                                        $rolesPermitidos = ['Administrador', 'Admin SR', 'Recepcion SR'];
+                                        $rolesUsuario = Auth::user()->role->pluck('nombre')->toArray();
+                                        $tieneRol = !empty(array_intersect($rolesPermitidos, $rolesUsuario));
+                                    @endphp
+
                                     <div class="col-sm-2 mb-3">
                                         <label for="profesional" class="form-label fw-bolder">Profesional <span class="required">(*)</span></label>
                                         <select class="form-control" name="profesional" id="profesional">
-                                            @if(!is_null($efectores) && $efectores->count() === 1)
-                                                <option value="{{ $efectores->first()->Id ?? 0}}">{{ $efectores->first()->NombreCompleto ?? '' }}</option>
-                                            @elseif(!is_null($efectores))
-                                                <option value="" selected>Elija una opción...</option>
+
+                                            @if($efectores && ($tieneRol || $multiEspecialidad))
+                                                {{ $multiEspecialidad ? '' : '<option value="" selected>Elija una opción...</option><option value="todos">Listar Todo</opcion>' }}
 
                                                 @forelse($efectores as $efector)
                                                     <option value="{{ $efector->Id ?? 0}}">{{ $efector->NombreCompleto ?? '' }}</option>
                                                 @empty
                                                     <option value="">Sin usuarios activos</option>
                                                 @endforelse
-                                            @else
-                                                <option value="" selected disabled>No habilitado</option>
-                                            @endif
 
-                                            
+                                            @else
+                                                <option value="{{ Auth::user()->profesional->Id ?? 0 }}">{{ Auth::user()->personal->Nombre ?? ''}} {{ Auth::user()->personal->Apellido ?? '' }}</option>
+                                            @endif
+ 
                                         </select>
                                     </div>
                                     <div class="col-sm-2 mb-3">
                                         <label for="especialidad" class="form-label fw-bolder">Especialidad <span class="required">(*)</span></label>
-                                        @php
-                                            $rolesPermitidos = ['Administrador', 'Admin SR', 'Recepcion SR'];
-                                            $rolesUsuario = Auth::user()->role->pluck('nombre')->toArray();
-                                            $tieneRol = !empty(array_intersect($rolesPermitidos, $rolesUsuario));
-                                        @endphp
-
-                                        @if($tieneRol)
+                                        
+                                        @if($tieneRol || $multiEspecialidad)
                                             <select name="especialidadSelect" id="especialidadSelect" class="form-control"></select>
                                         @else
                                             <input type="text" class="form-control" name="especialidad" id="especialidad" data-id="{{ session('IdEspecialidad')->Id ?? '' }}" value="{{ session('Profesional') === 'EFECTOR' ? session('Especialidad') : 'Sin Especialidad' }}">

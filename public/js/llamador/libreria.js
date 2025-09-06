@@ -131,7 +131,6 @@ async function comentariosPrivados(id) {
 }
 
 async function tablasExamenes(data, usuarioVisita) {
-
     const [isAdmin, esUsuarioPermitido] = await check;
     let permiso = !isAdmin && (esUsuarioPermitido === usuarioVisita);
 
@@ -205,7 +204,6 @@ async function tablasExamenes(data, usuarioVisita) {
 }
 
 async function estado(data, usuarioVisita) {
-
     const [isAdmin, esUsuarioPermitido] = await check;
     let permiso = !isAdmin && (esUsuarioPermitido === usuarioVisita);
 
@@ -225,7 +223,6 @@ async function estado(data, usuarioVisita) {
 
 //No Imprime: saber si es fisico o digital / adjunto: si acepta o no adjuntos / condicion: pendiente o adjuntado
 async function checkAdjunto(adjunto, condicion, idItem, usuarioVisita) {
-
     const [isAdmin, esUsuarioPermitido] = await check;
     let permiso = !isAdmin && (esUsuarioPermitido === usuarioVisita);
 
@@ -252,7 +249,6 @@ async function checkAdjunto(adjunto, condicion, idItem, usuarioVisita) {
 }
 
 function verificarProfesional(data, tipoProfesional) {
-
     if(data.length === 0) return;
 
     switch (true) {
@@ -267,9 +263,7 @@ function verificarProfesional(data, tipoProfesional) {
     }
 }
 
-//Habilitar o deshabilitar los checks
 function checkboxCheck(data) {
-
     switch (true) {
         case data.informadorId !== 0:
             return 'disabled';
@@ -288,7 +282,7 @@ function checkboxCheck(data) {
 async function habilitarBoton(profesional, tipo) {
 
     let roles = await $.get(getRoles),
-        usuarios = roles.map(u => u.nombre),
+        usuarios = roles.map(u => u.nombre),a
         administradores = ['Administrador', 'Admin SR', 'Recepcion SR'],
         admin = usuarios.some(item => administradores.includes(item));
 
@@ -297,4 +291,31 @@ async function habilitarBoton(profesional, tipo) {
     return (tipo === profesional || admin) 
         ? $('#buscar').show()
         : $('#buscar').hide();
+}
+
+async function listadoEspecialidades(tipo) {
+    preloader('on');
+    try {
+        let response =  await $.get(searchEspecialidad, 
+            {    
+                IdProfesional: $('#profesional').val(), 
+                Tipo: tipo
+            });
+
+        $('#especialidadSelect').empty();
+
+        for(let index = 0; index < response.length; index++) {
+            let data = response[index],
+                contenido = `<option value="${data.Id}">${data.Nombre}</option>`;
+            $('#especialidadSelect').append(contenido);
+        }
+
+    }catch(jqXHR) {
+        let errorData = JSON.parse(jqXHR.responseText);            
+        checkError(jqXHR.status, errorData.msg);
+        return;
+
+    }finally {
+        preloader('off');
+    }
 }

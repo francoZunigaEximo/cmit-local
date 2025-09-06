@@ -57,23 +57,16 @@ class LlamadorController extends Controller
         $user = Auth::user()->load('personal');
 
         $efectores = null;
+        $multiEspecialidad = $this->checkMultiEspecialidad();
 
-        if($this->utilidades->checkTipoRol($user->name, SELF::ADMIN)) {
+        if($this->utilidades->checkTipoRol($user->name, SELF::ADMIN) || $multiEspecialidad === 1) {
 
             $efectores = $this->profesionales->listado('Efector');
             event(new LstProfesionalesEvent($efectores));
 
-        }else if($this->utilidades->checkTipoRol($user->name, [SELF::TIPOS[0]])) {
-
-            $efectores = collect([
-                (object)[
-                    'Id' => $user->profesional_id,
-                    'NombreCompleto' => $user->personal->nombre_completo,
-                ]
-            ]);
         }
 
-        return view('layouts.llamador.efector', compact(['efectores']));
+        return view('layouts.llamador.efector', compact(['efectores', 'multiEspecialidad']));
     }
 
     public function informador()
@@ -273,9 +266,7 @@ class LlamadorController extends Controller
                 'profesional' => $datos->personal->nombre_completo ?? '',
                 'itemsprestaciones' => $itemsprestaciones,
             ]);
-        }
-
-        
+        }    
     }
 
     public function controlLlamado(Request $request)
@@ -573,6 +564,11 @@ class LlamadorController extends Controller
         )->whereNot('prestaciones.Fecha', null)
         ->whereNot('prestaciones.Fecha', '0000-00-00')
         ->where('prestaciones.Anulado', 0);
+    }
+
+    private function checkMultiEspecialidad()
+    {
+        return Auth::user()->profesional->TLP === 1;
     }
 
 }
