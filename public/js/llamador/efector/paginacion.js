@@ -6,17 +6,25 @@ $(function(){
         'Recepcion SR'
     ];
 
-    let profesional = $('#profesional').val(),
+    const profesional = $('#profesional').val(),
         fechaDesde = $('#fechaDesde').val(),
         fechaHasta = $('#fechaHasta').val(),
         prestacion = $('#prestacion').val(),
         estado = $('#estado').val(),
-        especialidad = $('#especialidad').data('id'),
-        especialidadSelect = $('#especialidadSelect').val(),
         table = $('#listaLlamadaEfector');
+
+       
 
     $(document).on('click', '#buscar', function(e){
         e.preventDefault();
+
+        console.log($('#especialidad').data('id'));
+        console.log($('#especialidadSelect').val());
+
+        if (!$('#especialidad').data('id') && !$('#especialidadSelect').val()) {
+            toastr.warning('Debe seleccionar una especialidad', '', {timeOut: 1000});
+            return;
+        }
 
         //La prestacion es individual y no acepta otros filtros
         if(prestacion === ''){
@@ -51,7 +59,7 @@ $(function(){
                     d.fechaDesde = fechaDesde;
                     d.fechaHasta = fechaHasta;
                     d.prestacion = prestacion;
-                    d.especialidad = especialidad || especialidadSelect;
+                    d.especialidad = $('#especialidad').data('id') || $('#especialidadSelect').val();
                     d.estado = estado;
                 }
             },

@@ -284,13 +284,17 @@ async function habilitarBoton(profesional, tipo) {
     let roles = await $.get(getRoles),
         usuarios = roles.map(u => u.nombre),a
         administradores = ['Administrador', 'Admin SR', 'Recepcion SR'],
-        admin = usuarios.some(item => administradores.includes(item));
+        admin = usuarios.some(item => administradores.includes(item)),
+        mespecialidad = await $.get(multiespecialidad);
 
-    if(!profesional && !admin) return $('#buscar').hide();
+    let esProfesional = (tipo === profesional);
+    let esMultiespecialidad = (mespecialidad === "1");
 
-    return (tipo === profesional || admin) 
-        ? $('#buscar').show()
-        : $('#buscar').hide();
+    if(esProfesional || admin || esMultiespecialidad) {
+        $('#buscar').show();
+    } else {
+        $('#buscar').hide();
+    }
 }
 
 async function listadoEspecialidades(tipo) {
@@ -302,7 +306,13 @@ async function listadoEspecialidades(tipo) {
                 Tipo: tipo
             });
 
-        $('#especialidadSelect').empty();
+        let especialidad = await $.get(multiespecialidad);
+
+        $('#especialidadSelect').empty().append('<option selected value="">Elija una opción</option>');
+
+        if(especialidad) {
+            $('#especialidadSelect').append('<option value="todos">TODO</option>');
+        }
 
         for(let index = 0; index < response.length; index++) {
             let data = response[index],

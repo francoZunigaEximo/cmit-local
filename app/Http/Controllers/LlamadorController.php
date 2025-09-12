@@ -121,7 +121,7 @@ class LlamadorController extends Controller
     {
         if ($request->ajax()) {
 
-            $query = $this->queryBasico($request->especialidad);
+            $query = $this->queryBasico();
             // $especialidades = ProfesionalProv::where('IdRol',SELF::TIPOS[0])->where('IdProf', $request->profesional)->pluck('IdProv')->toArray();
 
             if (!empty($request->prestacion)){
@@ -154,14 +154,21 @@ class LlamadorController extends Controller
                 $query->when(!empty($request->estado) && ($request->estado === 'todos'), function($query){
                     $query->whereIn('itemsprestaciones.CAdj', [0, 1, 2, 3, 4, 5]);
                 });
+
+                if ($request->especialidad === 'todos') {
+                    $especialidades = $this->lstEspecialidades(Auth::user()->profesional_id, self::TIPOS[0]);
+                    $query->whereIn('itemsprestaciones.IdProveedor', $especialidades->pluck('Id'));
+
+                } elseif (!empty($request->especialidad)) {
+                    $query->where('itemsprestaciones.IdProveedor', $request->especialidad);
+                }
             }
 
-            $query->where('itemsprestaciones.IdProveedor', $request->especialidad)
-                  ->groupBy('prestaciones.Id')
+            $result = $query->groupBy('prestaciones.Id')
                   ->orderBy('prestaciones.Id', 'DESC')
                   ->orderBy('pacientes.Apellido', 'DESC');
 
-            return Datatables::of($query)->make(true);
+            return Datatables::of($result)->make(true);
         }
     }
 
@@ -374,15 +381,8 @@ class LlamadorController extends Controller
 
     public function listadoEspecialidades(Request $request)
     {
-        return ProfesionalProv::join('proveedores', 'profesionales_prov.IdProv', '=', 'proveedores.Id')
-            ->select(
-                'proveedores.Nombre as Nombre',
-                'proveedores.Id as Id'
-            )
-            ->whereNot('profesionales_prov.IdRol', '0')
-            ->where('profesionales_prov.IdProf', $request->IdProfesional)
-            ->where('profesionales_prov.IdRol', $request->Tipo)
-            ->get();
+        return $this->lstEspecialidades($request->IdProfesional, $request->Tipo);
+
     }
 
     public function cambioEstado(Request $request)
@@ -482,6 +482,11 @@ class LlamadorController extends Controller
 
     }
 
+    public function multiespecialidadChecker()
+    {
+        return $this->checkMultiEspecialidad();
+    }
+
     private function queryBasico()
     {
         return ItemPrestacion::join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
@@ -569,6 +574,23 @@ class LlamadorController extends Controller
     private function checkMultiEspecialidad()
     {
         return Auth::user()->profesional->TLP === 1;
+    }
+
+    private function lstEspecialidades(int $IdProfesional, string $Tipo)
+    {
+         if(is_null($IdProfesional) || is_null($Tipo)) {
+            return collect();
+        }
+
+        return ProfesionalProv::join('proveedores', 'profesionales_prov.IdProv', '=', 'proveedores.Id')
+            ->select(
+                'proveedores.Nombre as Nombre',
+                'proveedores.Id as Id'
+            )
+            ->whereNot('profesionales_prov.IdRol', '0')
+            ->where('profesionales_prov.IdProf', $IdProfesional)
+            ->where('profesionales_prov.IdRol', $Tipo)
+            ->get();
     }
 
 }

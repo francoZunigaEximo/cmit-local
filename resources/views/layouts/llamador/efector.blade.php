@@ -32,7 +32,6 @@
                                         <select class="form-control" name="profesional" id="profesional">
 
                                             @if($efectores && ($tieneRol || $multiEspecialidad))
-                                                {{ $multiEspecialidad ? '' : '<option value="" selected>Elija una opción...</option><option value="todos">Listar Todo</opcion>' }}
 
                                                 @forelse($efectores as $efector)
                                                     <option value="{{ $efector->Id ?? 0}}">{{ $efector->NombreCompleto ?? '' }}</option>
@@ -49,6 +48,8 @@
                                     <div class="col-sm-2 mb-3">
                                         <label for="especialidad" class="form-label fw-bolder">Especialidad <span class="required">(*)</span></label>
                                         
+                                        
+
                                         @if($tieneRol || $multiEspecialidad)
                                             <select name="especialidadSelect" id="especialidadSelect" class="form-control"></select>
                                         @else
@@ -578,6 +579,7 @@
     const getRoles = "{{ route('roles.getRoles') }}";
     const getUserName = "{{ route('usuarios.getUserName') }}";
     const cierreForzadoLlamado = "{{ route('llamador.cierreForzado') }}";
+    const multiespecialidad = "{{ route('llamador.multiespecialidad') }}";
 </script>
 
 @push('styles')
