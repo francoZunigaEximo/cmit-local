@@ -305,12 +305,9 @@ async function listadoEspecialidades(tipo) {
                 IdProfesional: $('#profesional').val(), 
                 Tipo: tipo
             });
-
-        let especialidad = await $.get(multiespecialidad);
-
         $('#especialidadSelect').empty().append('<option selected value="">Elija una opción</option>');
 
-        if(especialidad) {
+        if(response) {
             $('#especialidadSelect').append('<option value="todos">TODO</option>');
         }
 

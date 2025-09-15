@@ -94,7 +94,13 @@ $(function(){
         e.preventDefault();
     
         let id = $(this).data('id'),  
-            especialidades = $(this).data('especialidades');
+            especialidades = $(this).data('especialidades'),
+            arrayEspecialidades = especialidades;
+
+        if(especialidades === 'todos') {
+            arrayEspecialidades = await $.get(searchEspecialidad, {IdProfesional: variables.profesional.val(), Tipo: 'Efector'});
+            arrayEspecialidades = arrayEspecialidades.map(id => id.Id);
+        }
 
         variables.profesionalEfector
             .add(variables.prestacionVar)
@@ -113,9 +119,10 @@ $(function(){
         preloader('on');
         
         try {
-            let response =  await $.get(dataPaciente, {Id: id, IdProfesional: variables.profesional.val(), Especialidades: especialidades});
+            let response =  await $.get(dataPaciente, {Id: id, IdProfesional: variables.profesional.val(), Especialidades: arrayEspecialidades});
 
             const prestacion = response.prestacion;
+
 
             let paciente = prestacion.paciente.Apellido + ' ' + prestacion.paciente.Nombre,
                 edad = calcularEdad(prestacion.paciente.FechaNacimiento),

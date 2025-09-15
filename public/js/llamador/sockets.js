@@ -222,7 +222,7 @@ $(function(){
 
             let data = response.tablaExamenes;
             tablasExamenes(data.itemsprestaciones, data.profesional);
-            toast.info('Actualizando tabla de examenes...','',{timeOut: 1000});
+            toastr.info('Actualizando tabla de examenes...','',{timeOut: 1000});
         });
 
 });

@@ -15,7 +15,7 @@ class Examenes
             ->join('proveedores', 'examenes.IdProveedor', '=', 'proveedores.Id')
             ->join('users as efector', 'itemsprestaciones.IdProfesional', '=', 'efector.profesional_id')
             ->join('users as informador', 'itemsprestaciones.IdProfesional2', '=', 'informador.profesional_id')
-            ->join('datos as datosEfector', 'efector.datos_id', '=', 'datosEfector.Id')
+            ->leftJoin('datos as datosEfector', 'efector.datos_id', '=', 'datosEfector.Id')
             ->join('datos as datosInformador', 'informador.datos_id', '=', 'datosInformador.Id')
             ->leftJoin('archivosefector', 'itemsprestaciones.Id', '=', 'archivosefector.IdEntidad')
             ->join('profesionales as hisEfector', 'itemsprestaciones.IdProfesional' , '=', 'hisEfector.Id')

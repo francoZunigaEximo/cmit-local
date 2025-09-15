@@ -18,9 +18,6 @@ $(function(){
     $(document).on('click', '#buscar', function(e){
         e.preventDefault();
 
-        console.log($('#especialidad').data('id'));
-        console.log($('#especialidadSelect').val());
-
         if (!$('#especialidad').data('id') && !$('#especialidadSelect').val()) {
             toastr.warning('Debe seleccionar una especialidad', '', {timeOut: 1000});
             return;

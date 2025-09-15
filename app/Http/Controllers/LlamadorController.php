@@ -122,7 +122,6 @@ class LlamadorController extends Controller
         if ($request->ajax()) {
 
             $query = $this->queryBasico();
-            // $especialidades = ProfesionalProv::where('IdRol',SELF::TIPOS[0])->where('IdProf', $request->profesional)->pluck('IdProv')->toArray();
 
             if (!empty($request->prestacion)){
                 
@@ -130,38 +129,39 @@ class LlamadorController extends Controller
             
             } else {
 
-                $query->when(!empty($request->profesional), function ($query) use ($request){
-                    // $query->whereIn('itemsprestaciones.IdProfesional', [$request->profesional, 0])
-                        // ->where('itemsprestaciones.IdProfesional', '!=', $request->profesional)
-                        $query->where('itemsprestaciones.IdProfesional2', 0)
-                        ->addSelect(DB::raw('"' . $request->especialidad . '" as especialidades'));
+                $query->when($request->profesional, function ($query) use ($request){
+                    $query->where('itemsprestaciones.IdProfesional2', 0)
+                        ->addSelect(DB::raw('"' . $request->profesional . '" as profesional'));
                 });
-    
+
+                $query->when(!empty($request->especialidad), function ($query) use ($request){
+
+                    if($request->especialidad === 'todos') {
+                        $todos = $this->lstEspecialidades(Auth::user()->profesional_id, "Efector")->pluck('Id')->toArray();
+                        $query->whereIn('itemsprestaciones.IdProveedor', $todos)
+                            ->addSelect(DB::raw('"' . $request->especialidad . '" as especialidades'));
+
+                    }else{
+                        $query->where('itemsprestaciones.IdProveedor', $request->especialidad)
+                            ->addSelect(DB::raw('"' . $request->especialidad . '" as especialidades'));
+                    }
+                });
+
                 $query->when(!empty($request->fechaDesde) || !empty($request->fechaHasta), function ($query) use ($request){
                     $query->whereBetween('prestaciones.Fecha', [$request->fechaDesde, $request->fechaHasta]);
                 });
     
                 $query->when(!empty($request->estado) && ($request->estado === 'abierto'), function($query) {
-                    $query->whereIn('itemsprestaciones.CAdj', [0, 1, 2])
-                        ->where('prestaciones.Cerrado', 0);
+                        $query->whereIn('itemsprestaciones.CAdj', [0,1,2]);
                 });
     
                 $query->when(!empty($request->estado) && ($request->estado === 'cerrado'), function($query) {
-                    $query->whereIn('itemsprestaciones.CAdj', [3, 4, 5])
-                        ->where('prestaciones.Cerrado', 1);
+                    $query->whereIn('itemsprestaciones.CAdj', [3,4,5]);
                 });
     
                 $query->when(!empty($request->estado) && ($request->estado === 'todos'), function($query){
-                    $query->whereIn('itemsprestaciones.CAdj', [0, 1, 2, 3, 4, 5]);
+                    $query->whereIn('itemsprestaciones.CAdj', [0,1,2,3,4,5]);
                 });
-
-                if ($request->especialidad === 'todos') {
-                    $especialidades = $this->lstEspecialidades(Auth::user()->profesional_id, self::TIPOS[0]);
-                    $query->whereIn('itemsprestaciones.IdProveedor', $especialidades->pluck('Id'));
-
-                } elseif (!empty($request->especialidad)) {
-                    $query->where('itemsprestaciones.IdProveedor', $request->especialidad);
-                }
             }
 
             $result = $query->groupBy('prestaciones.Id')
@@ -251,7 +251,7 @@ class LlamadorController extends Controller
             return response()->json(['msg' => 'Verifique la especialidad. No se ha encontrado'], 404);
         }
 
-        $especialidades = explode(',', $request->Especialidades);
+        $especialidades = (array) $request->Especialidades;
 
         $prestacion = Prestacion::with(['paciente','empresa','art'])->where('Id', $request->Id)->first();
         $itemsprestaciones = $this->getExamenes->getAllItemsprestaciones($request->Id, $especialidades);
@@ -381,8 +381,16 @@ class LlamadorController extends Controller
 
     public function listadoEspecialidades(Request $request)
     {
-        return $this->lstEspecialidades($request->IdProfesional, $request->Tipo);
 
+       return ProfesionalProv::join('proveedores', 'profesionales_prov.IdProv', '=', 'proveedores.Id')
+            ->select(
+                'proveedores.Nombre as Nombre',
+                'proveedores.Id as Id'
+            )
+            ->whereNot('profesionales_prov.IdRol', '0')
+            ->where('profesionales_prov.IdProf', $request->IdProfesional)
+            ->where('profesionales_prov.IdRol',$request->Tipo)
+            ->get();
     }
 
     public function cambioEstado(Request $request)
@@ -485,7 +493,7 @@ class LlamadorController extends Controller
     public function multiespecialidadChecker()
     {
         return $this->checkMultiEspecialidad();
-    }
+    }   
 
     private function queryBasico()
     {
