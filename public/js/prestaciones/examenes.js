@@ -591,9 +591,7 @@ $(function(){
                         ? examen.InformadorApellido || (examen.IdInformador && examen.DatosInformadorApellido)
                         : examen.DatosInformadorApellido || (examen.IdInformador && examen.DatosInformadorApellido)) ?? '';
                 
-                console.log(titleEfector);
                 let estaCerrado = cerrado == '1' ? 'disabled': '';
-                console.log(estaCerrado);
                 filas += `
                     <tr ${examen.Anulado === 1 ? 'class="filaBaja"' : ''}>
                         <td><input type="checkbox" name="Id_examenes" value="${examen.IdItem}" checked></td>
@@ -646,7 +644,7 @@ $(function(){
                                         </button>
                                     </div>
                                 ` 
-                                : examen.IdNotaCredito === null ? `<button class="btn btn-sm iconGeneral edit-item-btn btnReactivar" data-id="${examen.IdItem}" type="button"  ${estaCerrado}><i class="ri-arrow-up-circle-fill"></i></button>` 
+                                : examen.Anulado === 1 && examen.IdNotaCredito === null ? `<button title="Reactivar" class="btn btn-sm iconGeneral edit-item-btn btnReactivar" data-id="${examen.IdItem}" type="button"  ${estaCerrado}><i class="ri-arrow-up-circle-fill"></i></button>` 
                                 : `<button class="btn btn-sm iconGeneral" type="button" title="Este examen esta en una nota de credito"><i class="ri-file-text-fill" style="color: red"></i></button>`}
                                 <div class="remove">
                                     <button data-delete="${examen.IdItem}" class="btn btn-sm iconGeneral deleteExamen" title="Eliminar">
