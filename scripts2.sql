@@ -2227,7 +2227,8 @@ BEGIN
 	    informador.Id AS IdInformador,
 	    userEfector.id AS IdUserEfector,
 	    userInformador.id AS IdUserInformador,
-	    notascredito_it.IdNC as IdNotaCredito 
+	    notascredito_it.IdNC as IdNotaCredito,
+		notascredito.Baja as Baja
 	FROM itemsprestaciones
 	LEFT JOIN profesionales AS efector ON itemsprestaciones.IdProfesional = efector.Id
 	LEFT JOIN users AS userEfector ON efector.Id = userEfector.profesional_id
@@ -2239,6 +2240,7 @@ BEGIN
 	JOIN examenes ON itemsprestaciones.IdExamen = examenes.Id
 	JOIN proveedores AS proveedor2 ON examenes.IdProveedor = proveedor2.Id
 	JOIN prestaciones ON itemsprestaciones.IdPrestacion = prestaciones.Id
+	LEFT JOIN notascredito ON notascredito.IdP = prestaciones.Id
 	LEFT JOIN archivosefector ON itemsprestaciones.Id = archivosefector.IdEntidad
 	LEFT JOIN archivosinformador ON itemsprestaciones.Id = archivosinformador.IdEntidad
 	WHERE 1=1

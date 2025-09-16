@@ -1306,7 +1306,7 @@ const ID = "{{ $paciente->Id }}";
 let checkFichaLaboral = "{{ $fichaLaboral->Id ?? ''}}";
 const getTipoPrestacion = "{{ route('getTipoPrestacion') }}";
 
-const checkObs = "{{ route('fichalaboral.chequearObs') }}";
+const getExamenes = "{{ route('fichalaboral.chequearObs') }}";
 const excelPrestaciones = "{{ route('prestaciones.excel') }}";
 const USER = "{{ Auth::user()->name }}";
 const eliminarComentario = "{{ route('comentariosPriv.eliminar') }}";

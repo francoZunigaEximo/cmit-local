@@ -644,7 +644,7 @@ $(function(){
                                         </button>
                                     </div>
                                 ` 
-                                : examen.Anulado === 1 && examen.IdNotaCredito === null ? `<button title="Reactivar" class="btn btn-sm iconGeneral edit-item-btn btnReactivar" data-id="${examen.IdItem}" type="button"  ${estaCerrado}><i class="ri-arrow-up-circle-fill"></i></button>` 
+                                : examen.Anulado === 1 && examen.IdNotaCredito !== null && examen.Baja === 1 ? `<button title="Reactivar" class="btn btn-sm iconGeneral edit-item-btn btnReactivar" data-id="${examen.IdItem}" type="button"  ${estaCerrado}><i class="ri-arrow-up-circle-fill"></i></button>` 
                                 : `<button class="btn btn-sm iconGeneral" type="button" title="Este examen esta en una nota de credito"><i class="ri-file-text-fill" style="color: red"></i></button>`}
                                 <div class="remove">
                                     <button data-delete="${examen.IdItem}" class="btn btn-sm iconGeneral deleteExamen" title="Eliminar">
