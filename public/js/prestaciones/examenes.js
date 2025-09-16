@@ -637,14 +637,14 @@ $(function(){
                                 <div class="edit">
                                     <button data-id="${examen.IdItem}" type="button" class="btn btn-sm iconGeneral verExamen" title="Ver" data-bs-toggle="modal" data-bs-target="#modalExamen"><i class="ri-search-eye-line"></i></button>
                                 </div>${examen.Anulado} | ${examen.IdNotaCredito} | ${examen.Baja}
-                                ${examen.Anulado === 0 && examen.IdNotaCredito === null && examen.Baja === 0 ? `
+                                ${examen.Anulado === 0 && examen.Baja === 0 ? `
                                     <div class="bloquear">
                                         <button data-bloquear="${examen.IdItem}" class="btn btn-sm iconGeneral bloquearExamen" title="Baja" type="button" ${estaCerrado}>
                                             <i class="ri-forbid-2-line"></i>
                                         </button>
                                     </div>
                                 ` 
-                                : examen.Anulado === 1 && examen.IdNotaCredito !== null && examen.Baja === 1 ? `<button title="Reactivar" class="btn btn-sm iconGeneral edit-item-btn btnReactivar" data-id="${examen.IdItem}" type="button"  ${estaCerrado}><i class="ri-arrow-up-circle-fill"></i></button>` 
+                                : examen.Anulado === 1 && examen.Baja === 1 ? `<button title="Reactivar" class="btn btn-sm iconGeneral edit-item-btn btnReactivar" data-id="${examen.IdItem}" type="button"  ${estaCerrado}><i class="ri-arrow-up-circle-fill"></i></button>` 
                                 : `<button class="btn btn-sm iconGeneral" type="button" title="Este examen esta en una nota de credito"><i class="ri-file-text-fill" style="color: red"></i></button>`}
                                 <div class="remove">
                                     <button data-delete="${examen.IdItem}" class="btn btn-sm iconGeneral deleteExamen" title="Eliminar">
