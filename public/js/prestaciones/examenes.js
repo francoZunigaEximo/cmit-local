@@ -636,7 +636,7 @@ $(function(){
                             <div class="d-flex gap-2">
                                 <div class="edit">
                                     <button data-id="${examen.IdItem}" type="button" class="btn btn-sm iconGeneral verExamen" title="Ver" data-bs-toggle="modal" data-bs-target="#modalExamen"><i class="ri-search-eye-line"></i></button>
-                                </div>${examen.Anulado} | ${examen.IdNotaCredito} | ${examen.Baja}
+                                </div>
                                 ${examen.Anulado === 0 && examen.Baja === 0 ? `
                                     <div class="bloquear">
                                         <button data-bloquear="${examen.IdItem}" class="btn btn-sm iconGeneral bloquearExamen" title="Baja" type="button" ${estaCerrado}>
