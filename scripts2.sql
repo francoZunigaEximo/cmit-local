@@ -2228,7 +2228,7 @@ BEGIN
 	    userEfector.id AS IdUserEfector,
 	    userInformador.id AS IdUserInformador,
 	    notascredito_it.IdNC as IdNotaCredito,
-		notascredito.Baja as Baja
+		notascredito_it.Baja as Baja
 	FROM itemsprestaciones
 	LEFT JOIN profesionales AS efector ON itemsprestaciones.IdProfesional = efector.Id
 	LEFT JOIN users AS userEfector ON efector.Id = userEfector.profesional_id
