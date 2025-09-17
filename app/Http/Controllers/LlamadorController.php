@@ -59,10 +59,9 @@ class LlamadorController extends Controller
         $efectores = null;
         $multiEspecialidad = $this->checkMultiEspecialidad();
 
-        if($this->utilidades->checkTipoRol($user->name, SELF::ADMIN) || $multiEspecialidad === 1) {
+        if($this->utilidades->checkTipoRol($user->name, SELF::ADMIN)) {
 
             $efectores = $this->profesionales->listado('Efector');
-            event(new LstProfesionalesEvent($efectores));
 
         }
 
@@ -74,23 +73,15 @@ class LlamadorController extends Controller
         $user = Auth::user()->load('personal');
 
         $informadores = null;
+        $multiEspecialidad = $this->checkMultiEspecialidad();
 
         if($this->utilidades->checkTipoRol($user->name, SELF::ADMIN)) {
             
             $informadores = $this->profesionales->listado('Informador');
-            event(new LstProfInformadorEvent($informadores));
 
-        } else if($this->utilidades->checkTipoRol($user->name, [SELF::TIPOS[1]])) {
-  
-            $informadores = collect([
-                (object)[
-                    'Id' => $user->profesional_id,
-                    'NombreCompleto' => $user->personal->nombre_completo,
-                ]
-            ]);
         }
 
-        return view('layouts.llamador.informador', compact(['informadores']));
+        return view('layouts.llamador.informador', compact(['informadores', 'multiEspecialidad']));
     }
 
     public function combinado()
@@ -98,23 +89,15 @@ class LlamadorController extends Controller
         $user = Auth::user()->load('personal');
 
         $combinados = null;
+        $multiEspecialidad = $this->checkMultiEspecialidad();
 
         if($this->utilidades->checkTipoRol($user->name, SELF::ADMIN)) {
             
             $combinados = $this->profesionales->listado('Combinado');
-            event(new LstProfCombinadoEvent($combinados));
 
-        } else if($this->utilidades->checkTipoRol($user->name, [SELF::TIPOS[2]])) {
-  
-            $combinados = collect([
-                (object)[
-                    'Id' => $user->profesional_id,
-                    'NombreCompleto' => $user->personal->nombre_completo,
-                ]
-            ]);
         }
 
-        return view('layouts.llamador.combinado', compact(['combinados']));
+        return view('layouts.llamador.combinado', compact(['combinados', 'multiEspecialidad']));
     }
 
     public function buscar(Request $request)
@@ -128,6 +111,10 @@ class LlamadorController extends Controller
                 $query->where('prestaciones.Id', $request->prestacion);
             
             } else {
+
+                $query->when(!empty($request->fechaDesde) || !empty($request->fechaHasta), function ($query) use ($request){
+                    $query->whereBetween('prestaciones.Fecha', [$request->fechaDesde, $request->fechaHasta]);
+                });
 
                 $query->when($request->profesional, function ($query) use ($request){
                     $query->where('itemsprestaciones.IdProfesional2', 0)
@@ -145,10 +132,6 @@ class LlamadorController extends Controller
                         $query->where('itemsprestaciones.IdProveedor', $request->especialidad)
                             ->addSelect(DB::raw('"' . $request->especialidad . '" as especialidades'));
                     }
-                });
-
-                $query->when(!empty($request->fechaDesde) || !empty($request->fechaHasta), function ($query) use ($request){
-                    $query->whereBetween('prestaciones.Fecha', [$request->fechaDesde, $request->fechaHasta]);
                 });
     
                 $query->when(!empty($request->estado) && ($request->estado === 'abierto'), function($query) {
@@ -493,14 +476,29 @@ class LlamadorController extends Controller
     public function multiespecialidadChecker()
     {
         return $this->checkMultiEspecialidad();
-    }   
+    }
+
+    public function consultarAtencion(Request $request)
+    {
+        if(empty($request->Id)) return;
+
+        $query = Llamador::join('profesionales', 'llamador.profesional_id', '=', 'profesionales.Id')
+            ->join('users', 'profesionales.Id', '=', 'users.profesional_id')
+            ->join('datos', 'users.datos_id', '=', 'datos.Id')
+            ->select(
+                DB::raw("CONCAT(datos.Apellido, ' ', datos.Nombre) as profesional")
+            )->where('llamador.prestacion_id', $request->Id)
+            ->first();
+
+        return response()->json($query);
+    }
 
     private function queryBasico()
     {
         return ItemPrestacion::join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
         ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
         ->join('clientes as empresa', 'prestaciones.IdEmpresa', '=', 'empresa.Id')
-        ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
+        ->leftJoin('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
         ->leftJoin('telefonos', 'pacientes.Id', '=', 'telefonos.IdEntidad')
         ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
         ->join('proveedores', 'examenes.IdProveedor', '=', 'proveedores.Id')

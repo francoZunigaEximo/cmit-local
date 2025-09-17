@@ -6,17 +6,17 @@ $(function(){
         'Recepcion SR'
     ];
 
-    const profesional = $('#profesional').val(),
-        fechaDesde = $('#fechaDesde').val(),
-        fechaHasta = $('#fechaHasta').val(),
-        prestacion = $('#prestacion').val(),
-        estado = $('#estado').val(),
-        table = $('#listaLlamadaEfector');
-
-       
-
-    $(document).on('click', '#buscar', function(e){
+    $(document).on('click', '#buscar', async function(e){
         e.preventDefault();
+
+        const profesional = $('#profesional').val(),
+            fechaDesde = $('#fechaDesde').val(),
+            fechaHasta = $('#fechaHasta').val(),
+            prestacion = $('#prestacion').val(),
+            estado = $('#estado').val(),
+            table = $('#listaLlamadaEfector');
+
+
 
         if (!$('#especialidad').data('id') && !$('#especialidadSelect').val()) {
             toastr.warning('Debe seleccionar una especialidad', '', {timeOut: 1000});
@@ -78,27 +78,25 @@ $(function(){
                 {
                     data: 'empresa',
                     name: 'empresa',
-                    width: '100px'
                 },
                 {
                     data: 'paraEmpresa',
                     name: 'paraEmpresa',
-                    width: '100px'
+   
                 },
                 {
                     data: 'art',
                     name: 'art',
-                    width: '100px'
                 },
                 {
                     data: null,
-                    width: '120px',
                     render: function(data) {
-                        return `<span class="text-uppercase">${data.paciente} <span class="custom-badge generalNegro"></span></span>`;
+                        return `<span class="text-uppercase">${data.paciente} <span class="badge-atencion" data-prestacion-id="${data.prestacion}"></span></span>`;
                     }
                 },
                 {
                     data: 'dni',
+                    width: '50px',
                     name: 'dni'
                 },
                 {
@@ -109,12 +107,14 @@ $(function(){
                 },
                 {
                     data:null,
+                    width: '50px',
                     render: function(data){
                         return calcularEdad(data.fechaNacimiento);
                     }
                 },
                 {
                     data: null,
+                    width: '50px',
                     render: function(data){
                         return [0, null, '', undefined].includes(data.telefono) ? '' : data.telefono;
                     }
@@ -163,9 +163,21 @@ $(function(){
             createdRow: async function(row, data, dataIndex) {
                 $('.atenderPaciente').hide();
 
-                let response = await $.get(checkLlamado, { id: data.prestacion, tipo: 'EFECTOR' });
+                let response = await $.get(checkLlamado, { id: data.prestacion, tipo: 'EFECTOR' }),
+                    badgeSpan = $(row).find(`.badge-atencion[data-prestacion-id="${data.prestacion}"]`);
 
                 preloader('on');
+
+                try {
+                    const check = await $.get(checkAtencion, { Id: data.prestacion });
+                     badgeSpan.removeClass('custom-badge generalNegro px-2').text('');
+
+                    if (check) {
+                        badgeSpan.addClass('custom-badge generalNegro px-2').text(check.profesional);
+                    }
+                } catch (e) {
+                    console.error("Error al verificar la atención:", e);
+                }
 
                 if (await response && Object.keys(response).length !== 0) {
                     $(row).css('color', 'red');
@@ -179,6 +191,7 @@ $(function(){
                 }else{
                      $(row).find('td').css('color', 'green');
                      $('.atenderPaciente', row).hide();
+                     badgeSpan.removeClass('custom-badge generalNegro px-2').text('');
                 }
 
                 let lstRoles = await $.get(getRoles),

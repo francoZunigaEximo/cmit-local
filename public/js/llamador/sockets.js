@@ -60,44 +60,44 @@ $(function(){
 
     const profesionales = ['EFECTOR', 'INFORMADOR', 'COMBINADO'];
 
-    socket.selectEfectores
-          .echo
-          .listen(socket.selectEfectores.canal, (response) => {
-                const efectores = response.efectores;
-                variables.profesional.empty();
+    // socket.selectEfectores
+    //       .echo
+    //       .listen(socket.selectEfectores.canal, (response) => {
+    //             const efectores = response.efectores;
+    //             variables.profesional.empty();
 
-                let roles = ROLESUSER.map(r => r.nombre)
-                    checkRoles = roles.some(rol => ADMIN.includes(rol)),
-                    usuarios = efectores.map(e => e.Id);
+    //             let roles = ROLESUSER.map(r => r.nombre)
+    //                 checkRoles = roles.some(rol => ADMIN.includes(rol)),
+    //                 usuarios = efectores.map(e => e.Id);
                 
-                if(!checkRoles && usuarios.includes(parseInt(USERACTIVO))) {
+    //             if(!checkRoles && usuarios.includes(parseInt(USERACTIVO))) {
 
-                    variables.profesional.append(
-                        `<option value="${efectores[0].Id}" selected>${efectores[0].NombreCompleto}</option>`
-                    );
-                } else if(checkRoles) {
+    //                 variables.profesional.append(
+    //                     `<option value="${efectores[0].Id}" selected>${efectores[0].NombreCompleto}</option>`
+    //                 );
+    //             } else if(checkRoles) {
 
-                    toastr.info('Se ha actualizado el listado de profesionales');
-                    variables.profesional.append('<option value="" selected>Elija una opción...</option>');
+    //                 toastr.info('Se ha actualizado el listado de profesionales');
+    //                 variables.profesional.append('<option value="" selected>Elija una opción...</option>');
 
-                    for(let index = 0; index < efectores.length; index++) {
-                        let value = efectores[index],
-                            contenido = `<option value="${value?.Id}">${value?.NombreCompleto || ''}</option>`;
+    //                 for(let index = 0; index < efectores.length; index++) {
+    //                     let value = efectores[index],
+    //                         contenido = `<option value="${value?.Id}">${value?.NombreCompleto || ''}</option>`;
 
-                        variables.profesional.append(contenido);
-                    }
+    //                     variables.profesional.append(contenido);
+    //                 }
 
-                    if(efectores.length === 0) {
-                        variables.especialidad.add(variables.especialidadSelect).empty(); 
-                    }
+    //                 if(efectores.length === 0) {
+    //                     variables.especialidad.add(variables.especialidadSelect).empty(); 
+    //                 }
 
-                } else {
-                    variables.profesional.append(
-                        `<option value="" selected>No hay efectores</option>`
-                    );
-                    variables.especialidad.add(variables.especialidadSelect).empty(); //limpiamos la especialidad del efector o admin si no hay efectores
-                }
-    });
+    //             } else {
+    //                 variables.profesional.append(
+    //                     `<option value="" selected>No hay efectores</option>`
+    //                 );
+    //                 variables.especialidad.add(variables.especialidadSelect).empty(); //limpiamos la especialidad del efector o admin si no hay efectores
+    //             }
+    // });
 
    
     socket.grillaEfectores
@@ -106,7 +106,8 @@ $(function(){
         
         const data = response.grilla;
 
-        let fila = $(`tr[data-id="${data.prestacion}"]`);
+        let fila = $(`tr[data-id="${data.prestacion}"]`),
+            idFila = fila.find('.badge-atencion').data('prestacion-id');
 
         if (fila.length === 0) return;
 
@@ -125,9 +126,19 @@ $(function(){
             botonAtender.show();
             fila.find('td').css('color', 'red');
 
+            let check = await $.get(checkAtencion, {Id: idFila});
+        
+            if(check) {
+                fila.find('.badge-atencion[data-prestacion-id="' + idFila +'"]')
+                         .addClass('custom-badge generalNegro px-2')
+                         .text(check.profesional);
+            }
+
             let lstRoles = await $.get(getRoles),
                 roles = lstRoles.map(rol => rol.nombre),
                 tienePermiso = ADMIN.some(rol => roles.includes(rol));
+
+            
 
             if (parseInt(USERACTIVO) !== parseInt(result.profesional_id)) {
                 botonLlamada.add(botonAtender)
@@ -143,6 +154,8 @@ $(function(){
                     botonLlamada.last().after('<span class="mensaje-ocupado rojo text-center fs-bolder">Ocupado</span>');
                 }
             } else {
+                
+                badgeSpan.removeClass('custom-badge generalNegro px-2').text('');
                 mensajeOcupado
                     .add(vistaAdmin)
                     .add(cerrarAtencion)
@@ -162,6 +175,8 @@ $(function(){
             botonAtender.hide();
             fila.find('td').css('color', 'green');
             botonLlamada.show();
+
+            badgeSpan.removeClass('custom-badge generalNegro px-2').text('');
 
             //usamos JS Puro para evitar problemas de compatibilidad con otros navegadores xD
             let modalAtender = document.getElementById('atenderEfector');
