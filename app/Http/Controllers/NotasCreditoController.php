@@ -80,7 +80,7 @@ class NotasCreditoController extends Controller
             ->where('itemsprestaciones.Anulado', '=', 1)
             ->whereNull('notascredito_it.Id')
             ->groupBy('clientes.Id', 'clientes.ParaEmpresa', 'clientes.Identificacion')
-            ->select('clientes.Id as Id', 'clientes.ParaEmpresa as Cliente', 'clientes.Identificacion as CUIT', DB::raw('COUNT(itemsprestaciones.Id) as TotalItems'));
+            ->select('clientes.Id as Id', 'clientes.ParaEmpresa as Cliente', 'clientes.Identificacion as CUIT', DB::raw('COUNT(clientes.Id) as TotalItems'));
 
         if ($request->has('IdEmpresa') && $request->IdEmpresa != 0) {
             $query->where('prestaciones.IdEmpresa', '=', $request->IdEmpresa);
