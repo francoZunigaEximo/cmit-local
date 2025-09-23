@@ -43,7 +43,7 @@ class AutorizadoController extends Controller
 
         if ($autorizado) {
 
-            Auditor::setAuditoria($request->Id, 3, 3, Auth::user()->name, "Se ha eliminado un autorizado");
+            Auditor::setAuditoria($request->IdRegistro, 3, 3, Auth::user()->name, "Se ha eliminado un autorizado");
             return $autorizado->delete();
         }
 
