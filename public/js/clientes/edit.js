@@ -24,6 +24,7 @@ $(function() {
             type: 'Post',
             data: {
                 Id: Id,
+                IdRegistro: ID,
                 _token: TOKEN,
             },
             success: function(){
