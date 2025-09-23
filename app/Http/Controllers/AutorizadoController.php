@@ -21,7 +21,7 @@ class AutorizadoController extends Controller
             'IdEntidad' => $request->Id,
         ]);
 
-        Auditor::setAuditoria($request->Id, 3, 2, Auth::user()->name, `Se ha creado un nuevo autorizado. ({$request->Nombre} {$request->Apellido})`);
+        Auditor::setAuditoria($request->Id, 3, 2, Auth::user()->name, 'Se ha creado un nuevo autorizado. (' . $request->Nombre . ' ' .$request->Apellido .')');
 
         return response()->json(['msg' => 'El autorizado se registró correctamente'], 201);
     }
