@@ -20,7 +20,7 @@ $(function(){
                 ordering: false,
                 processing: true,
                 lengthChange: false,
-                pageLength: 50,
+                pageLength: 500,
                 responsive: true,
                 serverSide: true,
                 deferRender: true,
