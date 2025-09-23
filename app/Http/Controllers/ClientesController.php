@@ -13,6 +13,9 @@ use Yajra\DataTables\DataTables;
 use App\Traits\CheckPermission;
 use App\Services\ReportesExcel\ReporteExcel;
 use PhpOffice\PhpSpreadsheet\Calculation\Logical\Boolean;
+use App\Models\Auditor;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ClientesController extends Controller
 {
@@ -163,6 +166,8 @@ class ClientesController extends Controller
         $cliente = Cliente::create($request->all());
         $this->setTelefono($cliente->Id, $request->telefonos);
 
+        Auditor::setAuditoria($cliente->Id, 3, 44, Auth::user()->name);
+
         return redirect()->route('clientes.edit', ['cliente' => $cliente->Id]);
     }
 
@@ -189,6 +194,8 @@ class ClientesController extends Controller
         $cliente->fill($request->all())->save();
         $this->setTelefono($request->Id, $request->telefonos);
 
+         Auditor::setAuditoria($request->Id, 3, 2, Auth::user()->name, "Cambios en los datos basicos");
+
         return back();
 
     }
@@ -206,6 +213,11 @@ class ClientesController extends Controller
         }
 
         Cliente::whereIn('id', $ids)->update(['Estado' => 0]);
+
+        foreach($ids as $id){
+            Auditor::setAuditoria($id, 3, 3, Auth::user()->name);
+        }
+
         return response()->json(['msg' => 'Se ha dado de baja correctamente'], 200);
     }
 
@@ -224,6 +236,8 @@ class ClientesController extends Controller
             ['Motivo' => $request->motivo, 
             'Bloqueado' => '1']
         );
+
+        Auditor::setAuditoria($request->cliente, 3, 12, Auth::user()->name, "Cliente bloqueado");
         
         return response()->json(['msg' => 'El bloqueo se ha realizado de manera correcta'], 200);
     }
@@ -257,6 +271,8 @@ class ClientesController extends Controller
         {
             $cliente->fill($request->all());
             $cliente->save();
+
+            Auditor::setAuditoria($request->Id, 3, 1, Auth::user()->name, "Se agrega una observacion.");
         }
     }
 
@@ -277,6 +293,8 @@ class ClientesController extends Controller
             ]);
             $cliente->SEMail = ($request->sinEnvio === 'true') ? 1 : 0;
             $cliente->save();
+
+             Auditor::setAuditoria($request->cliente, 3, 1, Auth::user()->name, "Se agrega una observacion.");
         }
 
         return response()->json(['msg' => '¡Se han registrado los cambios correctamente!'], 200);
@@ -302,6 +320,8 @@ class ClientesController extends Controller
             ]);
             $cliente->Entrega = ($request->mensajeria === 'true' ? 2 : ($request->correo === 'true' ? 4 : 0)); 
             $cliente->save();
+
+            Auditor::setAuditoria($request->cliente, 3, 2, Auth::user()->name, "Se realizan cambios en las opciones");
         }
     }
 
@@ -412,6 +432,34 @@ class ClientesController extends Controller
     {
         $localidad = Localidad::where('Id', $request->Id)->first(['Nombre', 'CP']);
         return response()->json(['localidad' => $localidad]);
+    }
+
+    public function getAuditorias(Request $request)
+    {
+        if($request->ajax()) {
+
+            $query = Auditor::join('auditoriatablas', 'auditoria.IdTabla', '=', 'auditoriatablas.Id')
+                ->join('auditoriaacciones', 'auditoria.IdAccion', '=', 'auditoriaacciones.Id')
+                ->select(
+                    DB::raw('DATE_FORMAT(auditoria.Fecha, "%d/%m/%Y") as fecha'),
+                    'auditoria.IdUsuario as usuario',
+                    'auditoriaacciones.Nombre as accion',
+                    'auditoria.Observaciones as observacion'
+                )->where('auditoria.IdRegistro', $request->Id);
+
+            $query->when(!empty($request->usuario), function($query) use ($request) {
+                $query->where('auditoria.IdUsuario', $request->usuario);
+            });
+
+            $query->when(!empty($request->fecha), function ($query) use ($request) {
+                $query->whereDate('auditoria.Fecha', $request->fecha);
+            });
+         
+
+            $result = $query->orderBy('auditoria.Fecha', 'DESC');
+
+            return Datatables::of($result)->make(true);
+        }
     }
 
     private function formatearIdentificacion($identificacion)

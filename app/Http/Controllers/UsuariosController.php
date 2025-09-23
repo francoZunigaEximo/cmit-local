@@ -407,6 +407,19 @@ class UsuariosController extends Controller
         return Auth::user()->name;
     }
 
+    public function listadoUsuarios()
+    {
+        $query = User::join('datos', 'users.datos_id', '=', 'datos.Id')
+            ->select(
+                'users.Id as Id', 
+                'users.name as name',
+                DB::raw('CONCAT(datos.Nombre," ",datos.Apellido) as NombreCompleto')
+            )
+            ->orderBy('Id', 'DESC')
+            ->get();
 
+        return response()->json($query);
+    }
+    
 }
 

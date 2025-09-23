@@ -114,6 +114,7 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::get('cliente/exportar-excel', [ClientesController::class, 'excel'])->name('exportExcelClientes');
     Route::get('cliente/check-paraempresa', [ClientesController::class, 'checkParaEmpresa'])->name('checkParaEmpresa');
     Route::get('cliente/bloquear', [ClientesController::class, 'getBloqueo'])->name('getBloqueo');
+    Route::get('cliente/auditoria', [ClientesController::class, 'getAuditorias'])->name('clientes.buscarAuditoria');
     Route::resource('clientes', ClientesController::class);
 
 
@@ -372,6 +373,7 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::post('/usuarios/update/profesional', [UsuariosController::class, 'updateProfesional'])->name('usuarios.updateProfesional');
     Route::get('usuarios/roles/checkear', [UsuariosController::class, 'checkRoles'])->name('checkRoles');
     Route::get('usuarios/obtener', [UsuariosController::class, 'getUserName'])->name('usuarios.getUserName');
+    Route::get('usuarios/listado', [UsuariosController::class, 'listadoUsuarios'])->name('usuarios.getListado');
     
     Route::resource('usuarios', UsuariosController::class);
     Route::get('buscarUsuario', [UsuariosController::class, 'buscar'])->name('buscarUsuario');
