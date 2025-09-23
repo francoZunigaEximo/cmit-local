@@ -436,6 +436,10 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::get('llamador.getItemPrestacion', [LlamadorController::class, 'getItemprestacion'])->name('llamador.getItemPrestacion');
     Route::post('llamador/cierreForzado', [LlamadorController::class, 'cierreForzado'])->name('llamador.cierreForzado');
     Route::get('llamador/check-multiespecialidad', [LlamadorController::class, 'multiespecialidadChecker'])->name('llamador.multiespecialidad');
+    Route::get('llamador/check-atencion-prestacion', [LlamadorController::class, 'consultarAtencion'])->name('llamador.checkAtencion');
+    Route::get('llamador/admin', [LlamadorController::class, 'admin'])->name('llamador.admin');
+    Route::get('llamador/admin/buscar', [LlamadorController::class, 'buscarAdmin'])->name('llamador.buscarRegistros');
+    Route::get('llamador/admin/carga-admins', [LlamadorController::class, 'listadoAdministradores'])->name('llamador.loadAdministradores');
 
     //Ruta de Sesiones
     Route::get('sesiones/sesiones-usuarios', [UserSessionsController::class, 'getSessiones'])->name('sesiones.listaSesiones');

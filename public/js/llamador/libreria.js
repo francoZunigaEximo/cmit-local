@@ -132,7 +132,7 @@ async function comentariosPrivados(id) {
 
 async function tablasExamenes(data, usuarioVisita) {
     const [isAdmin, esUsuarioPermitido] = await check;
-    let permiso = !isAdmin && (esUsuarioPermitido === usuarioVisita);
+    let permiso = isAdmin || (esUsuarioPermitido === parseInt(usuarioVisita));
 
    $('#tablasExamenes, #tablasExamenesVista').empty();
     preloader('on');
@@ -152,7 +152,7 @@ async function tablasExamenes(data, usuarioVisita) {
 
             // Crea la tabla para la especialidad actual
             let contenido = `
-                <div class="especialidad-grilla mb-2">
+                <div class="especialidad-grilla mb-2" data-name="${especialidad}">
                     <h4>${especialidad}</h4>
                     <table class="table table-bordered no-footer dataTable">
                         <thead class="table-light">
@@ -204,8 +204,11 @@ async function tablasExamenes(data, usuarioVisita) {
 }
 
 async function estado(data, usuarioVisita) {
+
     const [isAdmin, esUsuarioPermitido] = await check;
-    let permiso = !isAdmin && (esUsuarioPermitido === usuarioVisita);
+    let permiso = isAdmin || (esUsuarioPermitido === parseInt(usuarioVisita));
+
+    console.log(data);
 
     switch (true) {
         case [0, 1, 2].includes(data):
@@ -224,7 +227,7 @@ async function estado(data, usuarioVisita) {
 //No Imprime: saber si es fisico o digital / adjunto: si acepta o no adjuntos / condicion: pendiente o adjuntado
 async function checkAdjunto(adjunto, condicion, idItem, usuarioVisita) {
     const [isAdmin, esUsuarioPermitido] = await check;
-    let permiso = !isAdmin && (esUsuarioPermitido === usuarioVisita);
+    let permiso = isAdmin || (esUsuarioPermitido === parseInt(usuarioVisita));
 
     switch (true) {
         case adjunto === 0:

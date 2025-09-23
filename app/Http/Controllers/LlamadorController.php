@@ -4,10 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Events\AsignarProfesionalEvent;
 use App\Events\GrillaEfectoresEvent;
-use App\Events\LstProfesionalesEvent;
-use App\Events\LstProfInformadorEvent;
-use App\Events\LstProfCombinadoEvent;
-use App\Events\EstadoExamenEvent;
 use App\Events\TablaExamenesEvent;
 use App\Models\ArchivoEfector;
 use App\Models\ItemPrestacion;
@@ -25,6 +21,9 @@ use App\Services\ReportesExcel\ReporteExcel;
 use App\Services\Roles\Utilidades;
 
 use App\Traits\ObserverItemsPrestaciones;
+use App\Models\Auditor;
+
+use App\Services\Llamador\Utils;
 
 
 class LlamadorController extends Controller
@@ -33,6 +32,8 @@ class LlamadorController extends Controller
     protected $reporteExcel;
     protected $getExamenes;
     protected $utilidades;
+    protected $utils;
+
 
     const ADMIN = ['Administrador', 'Admin SR', 'Recepcion SR'];
     const TIPOS = ['Efector', 'Informador', 'Combinado'];
@@ -43,13 +44,15 @@ class LlamadorController extends Controller
         Profesionales $profesionales, 
         ReporteExcel $reporteExcel,
         Examenes $getExamenes,
-        Utilidades $utilidades
+        Utilidades $utilidades,
+        Utils $utils
         )
     {
         $this->profesionales = $profesionales;
         $this->reporteExcel = $reporteExcel;
         $this->getExamenes = $getExamenes;
         $this->utilidades = $utilidades;
+        $this->utils = $utils;
     }
 
     public function efector(Request $request) 
@@ -59,10 +62,9 @@ class LlamadorController extends Controller
         $efectores = null;
         $multiEspecialidad = $this->checkMultiEspecialidad();
 
-        if($this->utilidades->checkTipoRol($user->name, SELF::ADMIN) || $multiEspecialidad === 1) {
+        if($this->utilidades->checkTipoRol($user->name, SELF::ADMIN)) {
 
             $efectores = $this->profesionales->listado('Efector');
-            event(new LstProfesionalesEvent($efectores));
 
         }
 
@@ -74,23 +76,15 @@ class LlamadorController extends Controller
         $user = Auth::user()->load('personal');
 
         $informadores = null;
+        $multiEspecialidad = $this->checkMultiEspecialidad();
 
         if($this->utilidades->checkTipoRol($user->name, SELF::ADMIN)) {
             
             $informadores = $this->profesionales->listado('Informador');
-            event(new LstProfInformadorEvent($informadores));
 
-        } else if($this->utilidades->checkTipoRol($user->name, [SELF::TIPOS[1]])) {
-  
-            $informadores = collect([
-                (object)[
-                    'Id' => $user->profesional_id,
-                    'NombreCompleto' => $user->personal->nombre_completo,
-                ]
-            ]);
         }
 
-        return view('layouts.llamador.informador', compact(['informadores']));
+        return view('layouts.llamador.informador', compact(['informadores', 'multiEspecialidad']));
     }
 
     public function combinado()
@@ -98,23 +92,15 @@ class LlamadorController extends Controller
         $user = Auth::user()->load('personal');
 
         $combinados = null;
+        $multiEspecialidad = $this->checkMultiEspecialidad();
 
         if($this->utilidades->checkTipoRol($user->name, SELF::ADMIN)) {
             
             $combinados = $this->profesionales->listado('Combinado');
-            event(new LstProfCombinadoEvent($combinados));
 
-        } else if($this->utilidades->checkTipoRol($user->name, [SELF::TIPOS[2]])) {
-  
-            $combinados = collect([
-                (object)[
-                    'Id' => $user->profesional_id,
-                    'NombreCompleto' => $user->personal->nombre_completo,
-                ]
-            ]);
         }
 
-        return view('layouts.llamador.combinado', compact(['combinados']));
+        return view('layouts.llamador.combinado', compact(['combinados', 'multiEspecialidad']));
     }
 
     public function buscar(Request $request)
@@ -129,6 +115,10 @@ class LlamadorController extends Controller
             
             } else {
 
+                $query->when(!empty($request->fechaDesde) || !empty($request->fechaHasta), function ($query) use ($request){
+                    $query->whereBetween('prestaciones.Fecha', [$request->fechaDesde, $request->fechaHasta]);
+                });
+
                 $query->when($request->profesional, function ($query) use ($request){
                     $query->where('itemsprestaciones.IdProfesional2', 0)
                         ->addSelect(DB::raw('"' . $request->profesional . '" as profesional'));
@@ -137,7 +127,8 @@ class LlamadorController extends Controller
                 $query->when(!empty($request->especialidad), function ($query) use ($request){
 
                     if($request->especialidad === 'todos') {
-                        $todos = $this->lstEspecialidades(Auth::user()->profesional_id, "Efector")->pluck('Id')->toArray();
+                        $todos = $this->lstEspecialidades($request->profesional, "Efector")->pluck('Id')->toArray();
+
                         $query->whereIn('itemsprestaciones.IdProveedor', $todos)
                             ->addSelect(DB::raw('"' . $request->especialidad . '" as especialidades'));
 
@@ -145,10 +136,6 @@ class LlamadorController extends Controller
                         $query->where('itemsprestaciones.IdProveedor', $request->especialidad)
                             ->addSelect(DB::raw('"' . $request->especialidad . '" as especialidades'));
                     }
-                });
-
-                $query->when(!empty($request->fechaDesde) || !empty($request->fechaHasta), function ($query) use ($request){
-                    $query->whereBetween('prestaciones.Fecha', [$request->fechaDesde, $request->fechaHasta]);
                 });
     
                 $query->when(!empty($request->estado) && ($request->estado === 'abierto'), function($query) {
@@ -302,6 +289,10 @@ class LlamadorController extends Controller
             }
 
             $query->delete();
+
+            if($this->utilidades->checkTipoRol(Auth::user()->name, SELF::ADMIN)) {
+                Auditor::setAuditoria($request->prestacion, $this->utils->getIdAuditoria()->Id, $this->utils->getIdLiberado()->Id, Auth::user()->name, Auth::user()->name . ' en el rol de ' . $this->profesionales->getProfesional($request->profesional)->NombreCompleto);
+            }
             
             $data = [
                 'status' => 'liberado', 
@@ -318,6 +309,10 @@ class LlamadorController extends Controller
                 'especialidad_id' => $request->especialidad,
                 'tipo_profesional' => session('Profesional') ?? $request->Tipo
             ]);
+
+            if($this->utilidades->checkTipoRol(Auth::user()->name, SELF::ADMIN)) {
+                Auditor::setAuditoria($request->prestacion, $this->utils->getIdAuditoria()->Id, $this->utils->getIdLlamado()->Id, Auth::user()->name, Auth::user()->name . ' en el rol de ' . $this->profesionales->getProfesional($request->profesional)->NombreCompleto);
+            }
 
             $data = [
                 'status' => 'llamado', 
@@ -362,6 +357,13 @@ class LlamadorController extends Controller
             $query->IdProfesional = $request->estado == 'true' ? $request->Profesional : 0;
             $query->save();
 
+            if($this->utilidades->checkTipoRol(Auth::user()->name, SELF::ADMIN) && $request->estado == 'true') {
+                Auditor::setAuditoria($query->IdPrestacion, $this->utils->getIdAuditoria()->Id, $this->utils->getIdAsignarEfector()->Id, Auth::user()->name, Auth::user()->name . ' en el rol de ' . $this->profesionales->getProfesional($request->Profesional)->NombreCompleto . ' para el itemprestacion ' . $query->Id);
+            
+            }elseif($this->utilidades->checkTipoRol(Auth::user()->name, SELF::ADMIN) && $request->estado != 'true') {
+                Auditor::setAuditoria($query->IdPrestacion, $this->utils->getIdAuditoria()->Id, $this->utils->getIdDesasignarEfector()->Id, Auth::user()->name, Auth::user()->name . ' en el rol de ' . $this->profesionales->getProfesional($request->Profesional)->NombreCompleto . ' para el itemprestacion ' . $query->Id);
+            }
+
             $msg = $request->estado == 'true'
                 ? 'Se ha asignado el profesional al exámen'
                 : 'Se ha desasignado el profesional al exámen';
@@ -395,7 +397,6 @@ class LlamadorController extends Controller
 
     public function cambioEstado(Request $request)
     {
-
         if(empty($request->Id)) {
             return response()->json(['msg' => 'No hay ID para procesar. Error interno'], 500);
         }
@@ -418,6 +419,10 @@ class LlamadorController extends Controller
                 //Tres es cerrado sin adjunto
                 $item->update(['CAdj' => 3]);
 
+                if($this->utilidades->checkTipoRol(Auth::user()->name, SELF::ADMIN)) {
+                    Auditor::setAuditoria($item->IdPrestacion, $this->utils->getIdAuditoria()->Id, $this->utils->getIdCerrado()->Id, Auth::user()->name, Auth::user()->name . ' en el rol de ' . $this->profesionales->getProfesional($item->IdProfesional)->NombreCompleto . ' del itemprestacion ' . $item->Id);
+                }
+
                 return response()->json(['msg' => 'Se ha cerrado el examen de manera correcto', 'CAdj' => 3, 'IdItem' => $request->Id], 200);
             
             } elseif($item->examenes->Adjunto === 1 && $request->accion === 'cerrar') {
@@ -431,6 +436,10 @@ class LlamadorController extends Controller
 
                 //Cerrado es cerrado con adjunto
                 $item->update(['CAdj' => 5]);
+
+                 if($this->utilidades->checkTipoRol(Auth::user()->name, SELF::ADMIN)) {
+                    Auditor::setAuditoria($item->IdPrestacion, $this->utils->getIdAuditoria()->Id, $this->utils->getIdCerrado()->Id, Auth::user()->name, Auth::user()->name . ' en el rol de ' . $this->profesionales->getProfesional($item->IdProfesional)->NombreCompleto . ' del itemprestacion ' . $item->Id);
+                }
 
                 return response()->json(['msg' => 'Se ha cerrado el examen de manera correcto', 'CAdj' => 5, 'IdItem' => $request->Id], 200);
 
@@ -480,6 +489,10 @@ class LlamadorController extends Controller
             $query->delete();
         }
 
+        if($this->utilidades->checkTipoRol(Auth::user()->name, SELF::ADMIN)) {
+            Auditor::setAuditoria($request->prestacion, $this->utils->getIdAuditoria()->Id, $this->utils->getIdLiberado()->Id, Auth::user()->name, Auth::user()->name . ' en el rol de ' . $this->profesionales->getProfesional($request->profesional)->NombreCompleto);
+        }
+
         $data = [
                 'status' => 'liberado', 
                 'msg' => "Se ha liberado la prestación {$query->Id } del paciente {$query->prestacion->paciente->nombre_completo} ",
@@ -493,14 +506,69 @@ class LlamadorController extends Controller
     public function multiespecialidadChecker()
     {
         return $this->checkMultiEspecialidad();
-    }   
+    }
+
+    public function consultarAtencion(Request $request)
+    {
+        if(empty($request->Id)) return;
+
+        $query = Llamador::join('profesionales', 'llamador.profesional_id', '=', 'profesionales.Id')
+            ->join('users', 'profesionales.Id', '=', 'users.profesional_id')
+            ->join('datos', 'users.datos_id', '=', 'datos.Id')
+            ->select(
+                DB::raw("CONCAT(datos.Apellido, ' ', datos.Nombre) as profesional")
+            )->where('llamador.prestacion_id', $request->Id)
+            ->first();
+
+        return response()->json($query);
+    }
+
+    public function admin()
+    {
+        return view('layouts.llamador.admin');
+    }
+
+    public function buscarAdmin(Request $request)
+    {
+        if($request->ajax()) {
+
+            $query = Auditor::join('auditoriaacciones', 'auditoria.IdAccion', '=', 'auditoriaacciones.Id')
+                ->select(
+                    DB::raw('DATE_FORMAT(auditoria.Fecha, "%d/%m/%Y") as fecha'),
+                    'auditoria.IdUsuario as usuario',
+                    'auditoria.IdRegistro as prestacion',
+                    'auditoriaacciones.Nombre as accion',
+                    'auditoria.Observaciones as observaciones'
+                );
+            
+                $query->when(!empty($request->prestacion), function($query) use ($request){
+                    $query->where('auditoria.IdRegistro', $request->prestacion);
+                });
+
+                $query->when(!empty($request->usuario), function($query) use ($request){
+                    $query->where('auditoria.IdUsuario', $request->usuario);
+                });
+
+                $query->where('auditoria.IdTabla', $this->utils->getIdAuditoria()->Id)
+                    ->orderBy('auditoria.Id', 'DESC');
+
+            return Datatables::of($query)->make(true);
+        }
+    }
+
+    public function listadoAdministradores()
+    {
+        $query = $this->profesionales->listadoAdmin();
+
+        return $query ? response()->json($query) : null;
+    }
 
     private function queryBasico()
     {
         return ItemPrestacion::join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
         ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
         ->join('clientes as empresa', 'prestaciones.IdEmpresa', '=', 'empresa.Id')
-        ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
+        ->leftJoin('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
         ->leftJoin('telefonos', 'pacientes.Id', '=', 'telefonos.IdEntidad')
         ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
         ->join('proveedores', 'examenes.IdProveedor', '=', 'proveedores.Id')
@@ -599,6 +667,11 @@ class LlamadorController extends Controller
             ->where('profesionales_prov.IdProf', $IdProfesional)
             ->where('profesionales_prov.IdRol', $Tipo)
             ->get();
+    }
+
+    private function limpiarUser(string $usuario): string
+    {
+        return preg_replace('/\s+en el rol.*/', '', $usuario);
     }
 
 }

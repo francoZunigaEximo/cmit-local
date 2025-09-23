@@ -33,11 +33,9 @@
 
                                             @if($efectores && ($tieneRol || $multiEspecialidad))
 
-                                                @forelse($efectores as $efector)
+                                                @foreach($efectores as $efector)
                                                     <option value="{{ $efector->Id ?? 0}}">{{ $efector->NombreCompleto ?? '' }}</option>
-                                                @empty
-                                                    <option value="">Sin usuarios activos</option>
-                                                @endforelse
+                                                @endforeach
 
                                             @else
                                                 <option value="{{ Auth::user()->profesional->Id ?? 0 }}">{{ Auth::user()->personal->Nombre ?? ''}} {{ Auth::user()->personal->Apellido ?? '' }}</option>
@@ -580,6 +578,7 @@
     const getUserName = "{{ route('usuarios.getUserName') }}";
     const cierreForzadoLlamado = "{{ route('llamador.cierreForzado') }}";
     const multiespecialidad = "{{ route('llamador.multiespecialidad') }}";
+    const checkAtencion = "{{ route('llamador.checkAtencion') }}";
 </script>
 
 @push('styles')
