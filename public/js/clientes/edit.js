@@ -170,9 +170,9 @@ $(function() {
                Id: ID,
                Derecho: Derecho
             },
-            success: function(){
+            success: function(response){
                 preloader('off');
-                toastr.success('El autorizado se registró correctamente', '', {timeOut: 1000});
+                toastr.success(response.msg, '', {timeOut: 1000});
                 cargarAutorizados();
                 $('#Nombre, #Apellido, #DNI, #Derecho').val('');
             },
