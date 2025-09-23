@@ -321,7 +321,7 @@ class ClientesController extends Controller
             $cliente->Entrega = ($request->mensajeria === 'true' ? 2 : ($request->correo === 'true' ? 4 : 0)); 
             $cliente->save();
 
-            Auditor::setAuditoria($request->cliente, 3, 2, Auth::user()->name, "Se realizan cambios en las opciones");
+            Auditor::setAuditoria($request->Id, 3, 2, Auth::user()->name, "Se realizan cambios en las opciones");
         }
     }
 
