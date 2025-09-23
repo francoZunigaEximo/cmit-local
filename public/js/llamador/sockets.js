@@ -148,6 +148,7 @@ $(function(){
 
                     if(tienePermiso) {
                         botonLlamada.last().after(`<span title="Liberar atencion" id="clickCierreForzado" data-profesional="${result.profesional_id}" data-prestacion="${data.prestacion}" class="cerrar-atencion"><i class="ri-logout-box-line"></i></span>`);
+                        botonLlamada.last().after(`<span data-id="${data.prestacion}" data-profesional=${data.idProfesional}" data-especialidades="${data.especialidades}" class="icon iconoGeneral atenderPaciente px-2" data-bs-toggle="modal" data-bs-target="#atenderEfector"><i class="ri-edit-line"></i></span>`); 
                         botonLlamada.last().after(`<span title="Visualizar actividad" id="clickAtencion" class="vista-admin px-2" data-id="${data.prestacion}"><i class="ri-search-eye-line"></span>`);
                     }
                     
@@ -161,6 +162,10 @@ $(function(){
                     .add(cerrarAtencion)
                     .remove();
                 botonLlamada.show();
+
+                fila.find('.badge-atencion[data-prestacion-id="' + idFila +'"]')
+                         .removeClass('custom-badge generalNegro px-2')
+                         .text('');
             }
 
         } else {
@@ -176,7 +181,9 @@ $(function(){
             fila.find('td').css('color', 'green');
             botonLlamada.show();
 
-            badgeSpan.removeClass('custom-badge generalNegro px-2').text('');
+            fila.find('.badge-atencion[data-prestacion-id="' + idFila +'"]')
+                         .removeClass('custom-badge generalNegro px-2')
+                         .text('');
 
             //usamos JS Puro para evitar problemas de compatibilidad con otros navegadores xD
             let modalAtender = document.getElementById('atenderEfector');

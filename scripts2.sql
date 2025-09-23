@@ -2293,3 +2293,12 @@ INSERT INTO rol_permisos (rol_id, permiso_id) VALUES (13, 89);
 
 
 INSERT INTO auditoriatablas (Id, Nombre) VALUES(9, 'LLAMADOR');
+INSERT INTO auditoriaacciones (Id, Nombre) VALUES (45, 'LLAMADO');
+INSERT INTO auditoriaacciones (Id, Nombre) VALUES (46, 'LIBERAR');
+INSERT INTO auditoriaacciones (Id, Nombre) VALUES (47, 'AGREGAR COMENTARIO');
+INSERT INTO auditoriaacciones (Id, Nombre) VALUES (50, 'DESASIGNAR EFECTOR');
+INSERT INTO auditoriaacciones (Id, Nombre) VALUES (51, 'DESASIGNAR INFORMADOR');
+INSERT INTO auditoriaacciones (Id, Nombre) VALUES (52, 'ESTADO ABIERTO');
+INSERT INTO auditoriaacciones (Id, Nombre) VALUES (53, 'ESTADO CERRADO');
+
+ALTER TABLE auditoria ADD COLUMN Observaciones TEXT NULL;

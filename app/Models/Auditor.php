@@ -19,7 +19,8 @@ class Auditor extends Model
         'IdAccion',
         'IdRegistro',
         'IdUsuario',
-        'Fecha'
+        'Fecha',
+        'Observaciones'
     ];
 
     public $timestamps = false;
@@ -39,7 +40,7 @@ class Auditor extends Model
         return $this->hasOne(User::class, 'name', 'IdUsuario');
     }
 
-    public static function setAuditoria(int $registro, int $tabla, int $accion, string $usuario)
+    public static function setAuditoria(int $registro, int $tabla, int $accion, string $usuario, ?string $observaciones = null)
     {
         return Auditor::create([
             'Id' => Auditor::max('Id') + 1,
@@ -47,7 +48,8 @@ class Auditor extends Model
             'IdAccion' => $accion,
             'IdRegistro' => $registro,
             'IdUsuario' => $usuario, 
-            'Fecha' => now()   
+            'Fecha' => now(),
+            'Observaciones' => $observaciones
         ]);
     }
 }

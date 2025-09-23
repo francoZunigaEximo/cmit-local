@@ -237,11 +237,6 @@
                                         <a href="{{ route('clientes.index') }}" class="nav-link enlace-blanco" data-key="t-cliente"> Clientes </a>
                                     </li>
                                     @endcan
-                                    @can('boton_usuarios')
-                                    <li class="nav-item">
-                                        <a href="{{ route('usuarios.index') }}" class="nav-link enlace-blanco" data-key="t-usuarios"> Usuarios </a>
-                                    </li>
-                                    @endcan
                                     @can('paquetes_show')
                                     <li class="nav-item">
                                         <a href="{{ route('paquetes.index') }}" class="nav-link enlace-blanco" data-key="t-usuarios"> Paquetes </a>
@@ -305,6 +300,27 @@
                             </a>
                         </li>
                         @endcan
+
+                        <li class="nav-item">
+                            <a class="nav-link menu-link collapsed" href="#sidebarAdmin" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarAdmin">
+                                <i data-feather="user" class="icon-dual"></i> <span data-key="t-admin">Admin</span>
+                            </a>
+                            <div class="menu-dropdown mega-dropdown-menu collapse" id="sidebarAdmin">
+                                <ul class="nav nav-sm flex-column">
+                                    @can('boton_usuarios')
+                                    <li class="nav-item">
+                                        <a href="{{ route('usuarios.index') }}" class="nav-link enlace-blanco" data-key="t-usuarios"> Usuarios </a>
+                                    </li>
+                                    @endcan
+                                    <li class="nav-item">
+                                        <a href="{{ route('llamador.admin') }}" class="nav-link enlace-blanco" data-key="t-llamador"> Llamador </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="#" class="nav-link enlace-blanco" data-key="t-factura"> Clientes </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
                         
                     </ul>
                 </div>

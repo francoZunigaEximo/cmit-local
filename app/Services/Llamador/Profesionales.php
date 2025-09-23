@@ -25,6 +25,21 @@ class Profesionales
                 ->get();
     }
 
+    public function listadoAdmin()
+    {
+        return User::join('user_rol', 'users.id', '=', 'user_rol.user_id')
+                ->join('roles', 'user_rol.rol_id', '=', 'roles.Id')
+                ->join('datos', 'users.datos_id', '=', 'datos.Id')
+                ->select(
+                    'users.profesional_id as Id',
+                    DB::raw("CONCAT(datos.Apellido,' ',datos.Nombre) as NombreCompleto"),
+                    'users.name as usuario',   
+                    )
+                ->whereIn('roles.nombre', ['Administrador', 'Admin SR', 'Recepcion SR'])
+                ->where('users.inactivo', 0)
+                ->get();
+    }
+
     public function listadoOnline()
     {
         return UserSession::whereNull('logout_at')->get();

@@ -209,8 +209,11 @@ $(function(){
                             botones.hide();
                             
                             if(tienePermiso) {
-                                botones.last().after(`<span id="clickCierreForzado" title="Liberar atencion" class="cerrar-atencion" data-profesional="${response.profesional_id}" data-prestacion="${data.prestacion}"><i class="ri-logout-box-line"></i></span>`);  
+                                
+                                botones.last().after(`<span id="clickCierreForzado" title="Liberar atencion" class="cerrar-atencion px-2" data-profesional="${response.profesional_id}" data-prestacion="${data.prestacion}"><i class="ri-logout-box-line"></i></span>`); 
+                                botones.last().after(`<span data-id="${data.prestacion}" data-profesional=${data.idProfesional}" data-especialidades="${data.especialidades}" class="icon iconoGeneral atenderPaciente" data-bs-toggle="modal" data-bs-target="#atenderEfector"><i class="ri-edit-line"></i></span>`); 
                             }
+
                             botones.last().after(`<span id="clickAtencion" title="Visualizar actividad" class="vista-admin px-2" data-id="${data.prestacion}"><i class="ri-search-eye-line"></span>`);
                             botones.last().after('<span class="mensaje-ocupado rojo text-center fs-bolder">Ocupado</span>');
                             fila.find('td').css('color', 'red')

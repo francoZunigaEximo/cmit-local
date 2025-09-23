@@ -38,7 +38,7 @@ $(function(){
         if(!idCheck) return;
 
         preloader('on')
-        $.post(asignacionProfesional, {Id: idCheck, Profesional: variables.profesional.val(), estado: chequeado, TOKEN: _token})
+        $.post(asignacionProfesional, {Id: idCheck, Profesional: variables.profesional.val(), estado: chequeado, _token: TOKEN})
             .done(function(response) {
                 preloader('off')
                 toastr.success(response.msg);
@@ -54,7 +54,7 @@ $(function(){
             });
     });
 
-    $(document).on('click', '.abrir, .cerrar', function(e){
+    $(document).on('click', '.abrir, .cerrar', async function(e){
         e.preventDefault();
         accion = $(this).hasClass('abrir') ? 'abrir' : 'cerrar';
 
@@ -67,22 +67,25 @@ $(function(){
             title: "¿Esta seguro que desea cambiar el estado?",
             icon: "warning",
             buttons: ["Cancelar", "Aceptar"]
-        }).then((confirmar) => {
+        }).then(async (confirmar) => {
             if(confirmar) {
                 preloader('on')
-                $.get(itemPrestacionEstado, {Id: id, accion: accion, tipo: principal.efector})
-                    .done(async function(response){
-                        preloader('off');
+                    try {
+                        let response = await $.get(itemPrestacionEstado, {Id: id, accion: accion, tipo: principal.efector});
+
                         toastr.success(response.msg);
-                        await estado(response.CAdj, response.IdItem, 'edicion');
+                        estado(response.CAdj, response.IdItem, checkPaciente);
                         principal.tabla.DataTable().draw(false);
-                    })
-                    .fail(function(jqXHR){
-                        preloader('off');
+                    
+                    }catch (jqXHR) {
+
                         let errorData = JSON.parse(jqXHR.responseText);            
                         checkError(jqXHR.status, errorData.msg);
                         return;
-                    });
+
+                    }finally {
+                        preloader('off');
+                    }
                 }
             });
         });
@@ -299,26 +302,6 @@ $(function(){
         
     });
 
-    async function estado(CAdj, itemId) {
-
-        let fila = $('.listadoAtencion[data-id="' + itemId + '"]'),
-            td = fila.find('td').eq(1),
-            html = '';
-
-        const [isAdmin, esUsuarioPermitido] = await checkPaciente;
-        let permiso = isAdmin || (esUsuarioPermitido && !isAdmin);
-
-        if ([0, 1, 2].includes(CAdj)) {
-            html = `<span class="rojo">Abierto ${permiso ? '' : '<i class="fs-6 ri-lock-unlock-line cerrar"></i>'}</span>`;
-        } else if ([3, 4, 5].includes(CAdj)) {
-            html = `<span class="verde">Cerrado ${permiso ? '' : '<i class="fs-6 ri-lock-2-line abrir"></i>'}</span>`;
-        } else {
-            html = '';
-        }
-
-        td.html(html);
-    }
-
     function actualizarEstadoAdj(adjunto, condicion, idItem) {
 
         let campoAdjunto = $('tr.listadoAtencion td').eq(2);
@@ -353,7 +336,7 @@ $(function(){
         }
     }
 
-    
+
         
 
 });
