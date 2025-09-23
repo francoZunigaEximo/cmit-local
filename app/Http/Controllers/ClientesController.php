@@ -294,7 +294,7 @@ class ClientesController extends Controller
             $cliente->SEMail = ($request->sinEnvio === 'true') ? 1 : 0;
             $cliente->save();
 
-             Auditor::setAuditoria($request->cliente, 3, 1, Auth::user()->name, "Se agrega una observacion.");
+             Auditor::setAuditoria($request->Id, 3, 1, Auth::user()->name, "Se realizan cambios en emails.");
         }
 
         return response()->json(['msg' => '¡Se han registrado los cambios correctamente!'], 200);
