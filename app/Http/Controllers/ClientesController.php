@@ -462,6 +462,39 @@ class ClientesController extends Controller
         }
     }
 
+    public function adminBloqueos()
+    {
+        return view('layouts.clientes.bloqueos');
+    }
+
+    public function listadoBloqueados(Request $request)
+    {
+        if($request->ajax()) {
+
+            $query = Cliente::select(
+                'RazonSocial as empresa',
+                'Identificacion as cuit',
+                'ParaEmpresa as paraEmpresa',
+                'NombreFantasia as alias',
+                'Bloqueado as bloqueado',
+                'Id as id'
+            )->where('Estado', 0)
+            ->whereNot('Id', 0);
+
+            return Datatables::of($query)->make(true);
+        }
+    }
+
+    public function restaurarEliminado(Request $request)
+    {
+        $query = Cliente::find($request->Id);
+
+        if($query) {
+            $query->update(['Estado' => 1]);
+            return response()->json(['msg' => 'Se ha restaudado al cliente correctamente', 'status' => 'success'], 200);
+        }
+    }
+
     private function formatearIdentificacion($identificacion)
     {
         if (strpos($identificacion, '-') !== false) {
