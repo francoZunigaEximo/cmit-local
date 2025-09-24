@@ -74,7 +74,7 @@ $(function(){
                     {
                         data: null,
                         render: function(data){
-                            return ['', null, undefined, 'A'].includes(data.FPago) ? 'CC' : (data.FPago == 'B')? 'Ctdo': 'Ctdo(CC Bloq)';
+                            return !data.FPago ? 'CC' : (data.FPago === 'B')? 'Ctdo': 'Ctdo(CC Bloq)';
                         }
                     },
                     {

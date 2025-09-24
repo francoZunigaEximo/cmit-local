@@ -83,7 +83,7 @@ $(function(){
         e.preventDefault();
         let fechaDesde = $('#fechaDesdeAu').val(), fechaHasta = $('#fechaHastaAu').val();
 
-        if([null, undefined, ''].includes(fechaDesde) || [null, undefined, ''].includes(fechaHasta)) {
+        if(!fechaDesde || !fechaHasta) {
             toastr.warning("Debe seleccionar un rango de fechas", "", {timeOut: 1000});
             return;
         }

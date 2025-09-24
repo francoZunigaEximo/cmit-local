@@ -165,103 +165,92 @@ $(function () {
         limpiezaInputsPagos();
     });
 
-    variables.TipoPrestacion.change(function(){
+
+    variables.TipoPrestacion.change(async function() {
 
         variables.PagoLaboral.attr('disabled', false);
         variables.tipoPrestacionHidden.val(variables.TipoPrestacion.val());
-        
-        variables.TipoPrestacion.filter(':checked').val() === 'MAS' 
-            ? variables.divtipoPrestacionPresOtros.show() 
-            : variables.divtipoPrestacionPresOtros.hide();
-        
-            checkExamenesCuenta(variables.selectClientes.val()); //ok
-    });
 
-    variables.TipoPrestacion.change(async function(){
+        if (!variables.PagoLaboralJS) {
+            variables.PagoLaboralJS = variables.PagoLaboral[0];
+        }
 
+        const selectedTipoPrestacion = variables.TipoPrestacion.filter(':checked').val();
+
+        if (selectedTipoPrestacion === 'MAS') {
+            variables.divtipoPrestacionPresOtros.show();
+        } else {
+            variables.divtipoPrestacionPresOtros.hide();
+        }
+
+        checkExamenesCuenta(variables.selectClientes.val());
         selectMedioPago(null);
 
-        variables.PagoLaboral.attr('disabled', false);
+        if (selectedTipoPrestacion === 'ART') {
 
-        if (variables.TipoPrestacion.filter(':checked').val() === 'ART') {
             variables.PagoLaboral.find('option[value="P"]').remove();
+            variables.divtipoPrestacionPresOtros.hide();
 
-            if(!variables.selectArt.val() || variables.selectArt.val() === '0') {
-                toastr.warning('¡Debe seleccionar una ART para el tipo de prestación ART!','',{timeOut: 1000});
-                    
-            }else if (variables.selectArt.val()) {
-                variables.PagoLaboral.attr('disabled', false);
+            if (!variables.selectArt.val() || variables.selectArt.val() === '0') {
+                toastr.warning('¡Debe seleccionar una ART para el tipo de prestación ART!', '', { timeOut: 1000 });
+            } else {
 
-                (async () =>{
-
-                    let response = await $.get(getFormaPagoCli, {Id: variables.selectArt.val()}),
-                        formaPago = !response.FPago ? 'A' : response.FPago,
-                        filtro = formaPago === 'C' ? 'B' : formaPago;
-                    
-                    variables.PagoLaboralJS.value = filtro;
-                    // variables.PagoLaboral.find('option').removeClass('verde rojo');
-                    variables.PagoLaboralJS.querySelectorAll('option').forEach(opt => {
-                        opt.classList.remove('verde', 'rojo');
-                    });
-                    // variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde'); // color solo a la opcion requerida
-                    // variables.PagoLaboral.find(`option:not([value="${formaPago}"])`).addClass('rojo');
-                    // variables.PagoLaboral.find(`option[value=""]`).addClass('negro');
-
-                    variables.PagoLaboralJS
-                        .querySelector(`option[value="${filtro}"]`)
-                        ?.classList.add('verde');
-
-                    variables.PagoLaboralJS
-                        .querySelectorAll(`option:not([value="${filtro}"])`)
-                        .forEach(opt => opt.classList.add('rojo'));
-
-                    variables.PagoLaboralJS
-                        .querySelector(`option[value=""]`)
-                        ?.classList.add('negro');
-
-                    // variables.PagoLaboral.find('option').each(function () {
-                    //     console.log($(this).val(), $(this).attr('class'));
-                    // });
-
-                    if(filtro === 'B') {
-                        selectMedioPago(filtro);
-                        variables.PagoLaboral.attr('disabled', true);
-                    } else {
-                        selectMedioPago(null);
-                    }
-
-                })();
-            } 
-
-        }else if(variables.TipoPrestacion.filter(':checked').val() !== 'ART') {
-            
-             (async () => {
-
-                let response = await $.get(getFormaPagoCli, { Id: variables.selectClientes.val() });
-
-                let formaPago = !response.FPago ? 'A' : response.FPago,
-                    filtro = formaPago === 'C' ? 'B' : formaPago;
+                let response = await $.get(getFormaPagoCli, { Id: variables.selectArt.val() });
+                let formaPago = !response.FPago ? 'A' : response.FPago;
+                let filtro = formaPago === 'C' ? 'B' : formaPago;
 
                 variables.PagoLaboralJS.value = filtro;
                 
-                 variables.PagoLaboralJS.querySelectorAll('option').forEach(opt => {
-                    opt.classList.remove('verde', 'rojo');
+   
+                variables.PagoLaboralJS.querySelectorAll('option').forEach(opt => {
+                    opt.classList.remove('verde', 'rojo', 'negro');
                 });
 
                 variables.PagoLaboralJS.querySelector(`option[value="${filtro}"]`)?.classList.add('verde');
                 variables.PagoLaboralJS
                     .querySelectorAll(`option:not([value="${filtro}"])`)
                     .forEach(opt => opt.classList.add('rojo'));
+
                 variables.PagoLaboralJS
                     .querySelector(`option[value=""]`)
                     ?.classList.add('negro');
 
-                let exaCuenta = await $.get(lstExDisponibles, { Id: variables.selectClientes.val() });
+                if (filtro === 'B') {
+                    selectMedioPago(filtro);
+                    variables.PagoLaboral.attr('disabled', true);
+                } else {
+                    selectMedioPago(null);
+                }
+            }
+        } else { 
 
-               exaCuenta.length === 0 && filtro === 'B' ? selectMedioPago(filtro) : selectMedioPago(null);
-               
-               filtro === 'A' && variables.PagoLaboralJS.querySelector(`option[value="B"]`)?.classList.add('negro');
-            })();
+            let response = await $.get(getFormaPagoCli, { Id: variables.selectClientes.val() });
+            let formaPago = !response.FPago ? 'A' : response.FPago;
+            let filtro = formaPago === 'C' ? 'B' : formaPago;
+
+            variables.PagoLaboralJS.value = filtro;
+
+            // Limpia y aplica clases
+            variables.PagoLaboralJS.querySelectorAll('option').forEach(opt => {
+                opt.classList.remove('verde', 'rojo', 'negro');
+            });
+
+            variables.PagoLaboralJS.querySelector(`option[value="${filtro}"]`)?.classList.add('verde');
+            variables.PagoLaboralJS
+                .querySelectorAll(`option:not([value="${filtro}"])`)
+                .forEach(opt => opt.classList.add('rojo'));
+            variables.PagoLaboralJS
+                .querySelector(`option[value=""]`)
+                ?.classList.add('negro');
+
+            let exaCuenta = await $.get(lstExDisponibles, { Id: variables.selectClientes.val() });
+
+            if (exaCuenta.length === 0 && filtro === 'B') {  
+                selectMedioPago(filtro);
+            } else {
+                selectMedioPago(null);
+            }
+            
         }
     });
 
@@ -354,7 +343,18 @@ $(function () {
                 }
             })(); 
         }
+    });
 
+    variables.PagoLaboral.on('change', async function(){
+
+        let exaCuenta = await $.get(lstExDisponibles, { Id: variables.selectClientes.val() }); 
+
+        if(variables.PagoLaboral.val() === 'B') {
+            selectMedioPago(variables.PagoLaboral.val());
+            exaCuenta ? variables.PagoLaboral.attr('disabled', true) : variables.PagoLaboral.attr('disabled', false);
+        }else{
+            selectMedioPago(null);
+        }
     });
 
     variables.Pago.val(variables.PagoLaboral.val());
@@ -855,7 +855,7 @@ $(function () {
             </div>
         `;
      
-        if (ID === '') return;
+        if (!ID) return;
         
         elementos.ObBloqueoArt
             .add(elementos.ObBloqueoEmpresa)

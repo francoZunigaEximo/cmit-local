@@ -120,7 +120,7 @@ $(document).ready(function(){
             fechaDesde = $('#fechaDesde').val(),
             fechaHasta = $('#fechaHasta').val();
         
-        if([null, undefined, ''].includes(tabla)){
+        if(!tabla){
             toastr.warning('Seleccione un Ver Tabla de factura. El campo es obligatorio','',{timeOut: 1000});
             return;
         }
