@@ -116,6 +116,9 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::get('cliente/check-paraempresa', [ClientesController::class, 'checkParaEmpresa'])->name('checkParaEmpresa');
     Route::get('cliente/bloquear', [ClientesController::class, 'getBloqueo'])->name('getBloqueo');
     Route::get('cliente/auditoria', [ClientesController::class, 'getAuditorias'])->name('clientes.buscarAuditoria');
+    Route::get('clientes/admin/bloqueados', [ClientesController::class, 'adminBloqueos'])->name('clientes.bloqueos');
+    Route::get('clientes/listado/bloqueados', [ClientesController::class, 'listadoBloqueados'])->name('clientes.listadoBloqueados');
+    Route::get('clientes/restaurar-eliminado', [ClientesController::class, 'restaurarEliminado'])->name('clientes.restaurarEliminado');
     Route::resource('clientes', ClientesController::class);
 
 

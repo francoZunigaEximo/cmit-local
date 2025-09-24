@@ -235,7 +235,7 @@ class PacientesController extends Controller
             return response()->json(['msg' => 'No tiene permisos'], 403);
         }
 
-        $paciente = Paciente::where('Documento', $request->documento)->first(['Id']);
+        $paciente = Paciente::where('Documento', $request->Documento)->first(['Id']);
         return response()->json($paciente);
     }
 
