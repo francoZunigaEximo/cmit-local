@@ -14,6 +14,7 @@ use Yajra\DataTables\DataTables;
 use App\Traits\CheckPermission;
 use Carbon\Carbon;
 use App\Services\ReportesExcel\ReporteExcel;
+use Exception;
 
 class PacientesController extends Controller
 {
@@ -270,18 +271,37 @@ class PacientesController extends Controller
 
     public function exportExcel(Request $request)
     {
-        $ids = (array) $request->Id;
+        try{
+            $ids = (array) $request->Id;
+            $pacientes = Paciente::join('telefonos', 'pacientes.Id', '=', 'telefonos.IdEntidad')->where('pacientes.Estado', 1)->whereIn('pacientes.Id', $ids)->get();
 
-        $request->All == 'true'
-            ? $pacientes = Paciente::join('telefonos', 'pacientes.Id', '=', 'telefonos.IdEntidad')->where('pacientes.Estado', 1)->get()
-            : $pacientes = Paciente::join('telefonos', 'pacientes.Id', '=', 'telefonos.IdEntidad')->where('pacientes.Estado', 1)->whereIn('pacientes.Id', $ids)->get();
+            if(empty($pacientes)) {
+                return response()->json(['msg' => 'No se ha podido generar el archivo'], 409);
+            }
 
-        if(empty($pacientes)) {
-            return response()->json(['msg' => 'No se ha podido generar el archivo'], 409);
+            $reporte = $this->reporteExcel->crear('pacientes');
+            return $reporte->generar($pacientes);
+        }catch(Exception $e){
+            dd($e->getMessage());
+            die();
+            return response()->json(['msg' => 'Error al generar el reporte. Intente nuevamente mas tarde.'], 500);
         }
+    }
 
-        $reporte = $this->reporteExcel->crear('pacientes');
-        return $reporte->generar($pacientes);
+    public function exportExcelAll(){
+        try{
+            $pacientes = Paciente::join('telefonos', 'pacientes.Id', '=', 'telefonos.IdEntidad')->where('pacientes.Estado', 1)->get();
+
+            if(empty($pacientes)) {
+                return response()->json(['msg' => 'No se ha podido generar el archivo'], 409);
+            }
+
+            $reporte = $this->reporteExcel->crear('pacientes');
+            return $reporte->generar($pacientes);
+            
+        }catch(Exception $e){
+            return response()->json(['msg' => 'Error al generar el reporte. Intente nuevamente mas tarde.'], 500);
+        }
     }
 
     //Obtenemos listado pacientes

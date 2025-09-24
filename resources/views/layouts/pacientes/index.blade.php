@@ -42,6 +42,9 @@
                                 <button type="button" id="excel" class="btn botonGeneral" title="Generar reporte en Excel">
                                     <i class="ri-file-excel-line"></i> Reporte
                                 </button>
+                                <button type="button" id="excelAll" class="btn botonGeneral" title="Generar reporte en Excel">
+                                    <i class="ri-file-excel-line"></i> Reporte Completo
+                                </button>
                                 @endcan
                             </div>
                         </div>
@@ -82,6 +85,7 @@
 
 //Rutas
 const exportExcel = "{{ route('excelPacientes') }}";
+const exportExcelAll = "{{ route('pacientes.excelAll') }}";
 const down = "{{ route('pacientes.down') }}";
 const getNombre = "{{ route('getNombre') }}";
 
