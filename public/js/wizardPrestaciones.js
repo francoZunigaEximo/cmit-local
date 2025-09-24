@@ -18,7 +18,7 @@ $(function() {
         $.get(verifyWizard, { Documento: dniPrestacion })
             .done(function(response){
                 preloader('off');
-                if(response){
+                if(Object.keys(response).length > 0){
                     window.location.href = lnkExistePaciente.replace('__paciente__', response.Id);
                 }else{
                     localStorage.setItem('insertDoc', dniPrestacion);
