@@ -74,7 +74,10 @@ class NotasCreditoController extends Controller
         $query = DB::table('prestaciones')
             ->join('clientes', 'prestaciones.IdEmpresa', '=', 'clientes.Id')
             ->join('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
-            ->leftJoin('notascredito_it', 'itemsprestaciones.Id', '=', 'notascredito_it.IdIP')
+            ->leftJoin('notascredito_it', function($join){
+                $join->on('itemsprestaciones.Id', '=', 'notascredito_it.IdIP');
+                $join->where('notascredito_it.Baja', '=', 0);
+            })
             ->where('prestaciones.Id', '<>', 0)
             ->where('prestaciones.Facturado', '=', 1)
             ->where('itemsprestaciones.Anulado', '=', 1)
