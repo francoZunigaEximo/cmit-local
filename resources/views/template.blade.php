@@ -316,7 +316,7 @@
                                         <a href="{{ route('llamador.admin') }}" class="nav-link enlace-blanco" data-key="t-llamador"> Llamador </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="#" class="nav-link enlace-blanco" data-key="t-factura"> Clientes </a>
+                                        <a href="{{ route('clientes.bloqueos') }}" class="nav-link enlace-blanco" data-key="t-factura"> Clientes </a>
                                     </li>
                                 </ul>
                             </div>

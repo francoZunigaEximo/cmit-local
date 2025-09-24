@@ -38,7 +38,7 @@
                                     <i class="ri-delete-bin-2-line"></i> Baja Multiple
                                 </button>
                                 @endcan
-                                @can("paciente_report")
+                                @can("pacientes_report")
                                 <button type="button" id="excel" class="btn botonGeneral" title="Generar reporte en Excel">
                                     <i class="ri-file-excel-line"></i> Reporte
                                 </button>
