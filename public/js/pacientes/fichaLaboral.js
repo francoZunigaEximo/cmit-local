@@ -928,7 +928,12 @@ $(function () {
                 }
             } 
         } catch (jqXHR) {
-            let errorData = JSON.parse(jqXHR.responseText);
+            let errorData = {};
+            try {
+                errorData = jqXHR.responseText ? JSON.parse(jqXHR.responseText) : {};
+            } catch (e) {
+                errorData.msg = jqXHR.statusText || "Error desconocido";
+            }
             checkError(jqXHR.status, errorData.msg);
             return;
         }
