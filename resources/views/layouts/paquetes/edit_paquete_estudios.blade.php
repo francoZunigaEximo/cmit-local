@@ -106,10 +106,10 @@
 <script>
     const TOKEN = "{{ csrf_token() }}";
     const paqueteId = "{{ route('paquetes.examenesPaqueteFacturacionId') }}";
-    const getExamenId = "{{ route('examenes.getById') }}";
+    const getExamenId = "{{ route('paquetes.getExamen') }}";
     const getPaquetes = "{{ route('getPaquetes') }}";
     const postPaquetesEstudios = "{{ route('paquetes.postPaqueteExamen')}}";
-    const getExamenes = "{{ route('examenes.getExamenes') }}";
+    const getExamenes = "{{ route('searchExamen') }}";
     const postPaquetesEstudiosEditar = "{{ route('paquetes.postEditPaqueteExamen') }}"
 </script>
 

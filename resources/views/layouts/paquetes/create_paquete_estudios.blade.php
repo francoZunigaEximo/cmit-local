@@ -108,8 +108,8 @@
 </div>
 <script>
     //const TOKEN = "{{ csrf_token() }}";
-    const getExamenes = "{{ route('examenes.getExamenes') }}";
-    const getExamenId = "{{ route('examenes.getById') }}"
+    const getExamenes = "{{ route('searchExamen') }}";
+    const getExamenId = "{{ route('paquetes.getExamen') }}";
     const getPaquetes = "{{ route('getPaqueteFact') }}";
     const postPaquetesEstudios = "{{ route('paquetes.postPaqueteExamen')}}";
     const paqueteId = "{{ route('paqueteFactId') }}";

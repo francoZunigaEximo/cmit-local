@@ -57,11 +57,19 @@ class PaquetesController extends Controller
             return response()->json(["msg" => "No tiene permisos"], 403);
         }
 
-
         if ($request->ajax()) {
             $query = $this->buildQuery($request);
             return DataTables::of($query)->make(true);
         }
+    }
+
+    public function getExamen(Request $request){
+        if(!$this->hasPermission("paquetes_show")) {
+            return response()->json(["msg" => "No tiene permisos"], 403);
+        }
+
+        $examen = Examen::where('id', '=', $request->Id)->first();
+        return response()->json($examen);
     }
 
     private function buildQuery(Request $request){

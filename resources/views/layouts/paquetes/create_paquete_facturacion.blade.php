@@ -136,11 +136,11 @@
 </div>
 <script>
     //const TOKEN = "{{ csrf_token() }}";
-    const getExamenes = "{{ route('examenes.getExamenes') }}";
+    const getExamenes = "{{ route('searchExamen') }}";
     const getExamenesByIdPaquete = "{{ route('paquetes.getEstudiosPaqueteFacturacion') }}";
 
 
-    const getExamenId = "{{ route('examenes.getById') }}"
+    const getExamenId = "{{ route('paquetes.getExamen') }}";
     const getPaquetes = "{{ route('getPaquetes') }}";
     const postPaquetesEstudios = "{{ route('paquetes.postPaqueteExamen')}}";
     const paqueteId = "{{ route('paquetes.examenesPaqueteId') }}";

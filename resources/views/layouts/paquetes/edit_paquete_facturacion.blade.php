@@ -136,8 +136,8 @@
     const getPaqueteFacturacionId = "{{ route('paquetes.getEstudiosPaqueteFacturacion') }}";
     const getPaquetes = "{{ route('getPaquetes') }}";
     const paqueteId = "{{ route('paquetes.examenesPaqueteId') }}";
-    const getExamenes = "{{ route('examenes.getExamenes') }}";
-    const getExamenId = "{{ route('examenes.getById') }}"
+   const getExamenes = "{{ route('searchExamen') }}";
+    const getExamenId = "{{ route('paquetes.getExamen') }}";
 
     const postEditPaqueteFactutacion = "{{ route('paquetes.postEditPaqueteFactutacion') }}"
 
