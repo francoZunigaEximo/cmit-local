@@ -201,7 +201,6 @@ $(function(){
         .listen(socket.liberarAtencion.canal, async function(response) {
 
             let idsAtencion = response.liberar;
-            console.log(idsAtencion);
 
             idsAtencion = [...new Set(idsAtencion)];
 
@@ -233,9 +232,8 @@ $(function(){
             if(fila.length === 0) return;
 
             let celda = fila.find('td').eq(4);
-            console.log("Contenido anterior de la celda:", celda.text());
             celda.empty().text(data.profesional);
-            console.log("Contenido actual de la celda:", celda.text());
+
         });
 
     socket.tablaExamenes

@@ -132,7 +132,6 @@ $('.agregarCliente').on('click', function (e) {
                 .fail(function (jqXHR) {
                     preloader('off');
                     let errorData = JSON.parse(jqXHR.responseText);
-                    console.log(errorData);
                     checkError(jqXHR.status, errorData.error || errorData.msg);
                     return;
                 });

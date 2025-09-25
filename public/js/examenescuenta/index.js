@@ -252,9 +252,9 @@ $(function(){
         listaHtml += '</ul></div>';
 
         let contenido = $(listaHtml);
-        console.log(textBoton);
+
         if(textBoton === 'Quitar pago masivo') {
-            console.log(1)
+    
             $('#fecha').val('');
             contenido.find('#fecha').hide();
             contenido.find('.fechaExamen').hide();
@@ -278,7 +278,6 @@ $(function(){
                             reporte = response.reporte;
 
                         if(reporte) {
-                            console.log(reporte.original.filePath)
                             createFile("excel", reporte.original.filePath, generarCodigoAleatorio() + '_reporte');
                         }
 

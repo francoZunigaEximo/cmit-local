@@ -202,7 +202,6 @@ $(function(){
     });
 
     function tablasExamenes(data) {
-        console.log(data)
         principal.grillaExamenes.empty();
         preloader('on');
 

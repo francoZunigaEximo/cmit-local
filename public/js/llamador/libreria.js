@@ -208,8 +208,6 @@ async function estado(data, usuarioVisita) {
     const [isAdmin, esUsuarioPermitido] = await check;
     let permiso = isAdmin || (esUsuarioPermitido === parseInt(usuarioVisita));
 
-    console.log(data);
-
     switch (true) {
         case [0, 1, 2].includes(data):
             return `<span class="rojo">Abierto ${permiso ? '<i class="fs-6 ri-lock-unlock-line cerrar"></i>' : ''}</span>`;
