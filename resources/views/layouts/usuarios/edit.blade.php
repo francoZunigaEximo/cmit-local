@@ -137,7 +137,7 @@
                 </div>
 
                 <div class="p-2 col-md-6">
-                    <label for="fechaNac" class="form-label font-weight-bold"><strong>Fecha de Naciemiento</strong></label>
+                    <label for="fechaNac" class="form-label font-weight-bold"><strong>Fecha Nacimiento</strong></label>
                     <input id="fechaNac" name="fechaNac" class="form-control" type="date" value="{{ $query->FechaNacimiento ?? '' }}">
                 </div>
                 
