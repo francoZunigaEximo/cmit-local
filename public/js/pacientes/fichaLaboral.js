@@ -226,7 +226,7 @@ $(function () {
 
             let response = await $.get(getFormaPagoCli, { Id: variables.selectClientes.val() });
             let formaPago = !response.FPago ? 'A' : response.FPago;
-            let filtro = formaPago === 'C' ? 'B' : formaPago;
+            let filtro = await formaPago === 'C' ? 'B' : formaPago;
 
             variables.PagoLaboralJS.value = filtro;
 
@@ -246,9 +246,9 @@ $(function () {
             let exaCuenta = await $.get(lstExDisponibles, { Id: variables.selectClientes.val() });
 
             if (exaCuenta.length === 0 && filtro === 'B') {  
-                selectMedioPago(filtro);
+                await selectMedioPago(filtro);
             } else {
-                selectMedioPago(null);
+                await selectMedioPago(null);
             }
             
         }
