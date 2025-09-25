@@ -478,6 +478,7 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
 
     Route::get('paquetes/detallesFacturacion', [PaquetesController::class, 'detallesFacturacion'])->name('paquetes.detallesFacturacion');
     Route::get('paquetes/searchDetalleFacturacion', [PaquetesController::class, 'searchDetalleFacturacion'])->name('paquetes.searchDetalleFacturacion');
+    Route::get('paquetes/exportExcelFacturacion', [PaquetesController::class, 'exportExcelFacturacion'])->name('paquetes.exportExcelFacturacion');
     Route::get('paquetes/exportDetalleFacturacionExcel', [PaquetesController::class, 'exportDetalleFacturacionExcel'])->name('paquetes.exportDetalleFacturacionExcel');
 
     //ruta paquete estudios id

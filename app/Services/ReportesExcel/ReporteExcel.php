@@ -22,6 +22,7 @@ use App\Services\ReportesExcel\modelos\GrupoClientesFull;
 use App\Services\ReportesExcel\modelos\NotaCreditoReporte;
 use App\Services\ReportesExcel\modelos\PaqueteEstudio;
 use App\Services\ReportesExcel\modelos\PaqueteEstudioDetalle;
+use App\Services\ReportesExcel\modelos\PaqueteFacturacion;
 use App\Services\ReportesExcel\modelos\PaqueteFacturacionDetalle;
 use App\Services\ReportesExcel\modelos\SaldosCta;
 use App\Services\ReportesExcel\modelos\PagoMasivo;
@@ -65,6 +66,8 @@ class ReporteExcel
                 return new GrupoClientesFull();
             case 'grupoClienteDestalleFull':
                 return new GrupoClientesDetalleFull();
+            case 'paqueteFacturacion':
+                return new PaqueteFacturacion();
             case 'paqueteFacturacionDetalle':
                 return new PaqueteFacturacionDetalle();
             case 'notaCredito':

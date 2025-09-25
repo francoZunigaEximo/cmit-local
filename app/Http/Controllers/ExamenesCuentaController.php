@@ -191,11 +191,12 @@ class ExamenesCuentaController extends Controller
             if(!empty($request->examen2)) {
                 $query->where('examenes.Nombre', 'like', '%' . $request->examen2 . '%');
             }
-
             $result = $query->havingRaw('contadorSaldos > 0')
                 ->whereNot('pagosacuenta_it.Obs', 'provisorio')
                 ->orderBy('clientes.RazonSocial')
-                ->orderBy('examenes.Nombre');
+                ->orderBy('examenes.Nombre')
+                ->orderBy('clientes.ParaEmpresa')
+                ->orderBy('pagosacuenta.Nro');
             return $result;
     }
 

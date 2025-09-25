@@ -147,7 +147,6 @@ class UsuariosController extends Controller
                 ->where('users.Anulado', 0)
                 ->groupBy('users.id', 'users.name', 'datos.Apellido', 'datos.Nombre', 'users.inactivo', 'session_status.is_online');
 
-
         
             $query->when(!empty($request->nombre), function ($query) use ($request) {
                 $query->where('datos.Id', $request->nombre);

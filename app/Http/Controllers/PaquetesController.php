@@ -487,6 +487,12 @@ class PaquetesController extends Controller
         return $consulta;
     }
 
+    public function exportExcelFacturacion(Request $request){
+        $query = $this->buildQueryPaqueteFacturacion($request);
+        $reporte = $this->reporteExcel->crear('paqueteFacturacion');
+        return $reporte->generar($query->get());
+    }
+
     public function exportDetalleFacturacionExcel(Request $request){
         $query = $this->buildQueryDetalleFacturacion($request);
         $reporte = $this->reporteExcel->crear('paqueteFacturacionDetalle');

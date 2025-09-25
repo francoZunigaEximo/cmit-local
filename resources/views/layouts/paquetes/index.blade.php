@@ -83,6 +83,9 @@
                                             <a href="{{route('paquetes.detallesFacturacion')}}" class="btn botonGeneral">
                                                 Detalles
                                             </a>
+                                            <button type="button" class="btn botonGeneral btnExcelFacturacion">
+                                                <i class="ri-file-excel-line"></i>&nbsp;Exportar Excel
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -172,6 +175,7 @@ const TOKEN = "{{ csrf_token() }}";
 const getClientes = "{{ route('getClientes') }}";
 const SEARCH_EXAMENES = "{{ route('paquetes.searchExamenes')}}";
 const exportarExcel = "{{ route('paquetes.exportExcel') }}";
+const exportarExcelFacturacion = "{{ route('paquetes.exportExcelFacturacion') }}";
 const eliminarPaqueteEstudioRoute = "{{ route('paquetes.eliminarPaqueteEstudio') }}";
 const eliminarPaqueteFacturacionRoute = "{{route('paquetes.eliminarPaqueteFacturacion')}}"
 
