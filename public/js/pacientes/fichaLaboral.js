@@ -868,75 +868,68 @@ $(function () {
             .prop('disabled', false)
             .removeAttr('title');
 
-        try {
-            const response = await $.get(checkObs, { Id: ID });
-            let obsArt = response.obsArt, obsEmpresa = response.obsEmpresa, obsPaciente = response.obsPaciente;
+        $.get(checkObs, { Id: ID })
+            .done(function(response) {
 
-            if([obsArt.Motivo, obsArt.Observaciones, obsEmpresa.Motivo, obsEmpresa.Observaciones, obsPaciente.Observaciones].every(value => value === '' || value === null)){
+                let obsArt = response.obsArt, obsEmpresa = response.obsEmpresa, obsPaciente = response.obsPaciente;
 
-                principal.fichaLaboralModal
-                    .add(principal.observacionesModal)
-                    .hide();
-                principal.nuevaPrestacion.show();
+                if([obsArt.Motivo, obsArt.Observaciones, obsEmpresa.Motivo, obsEmpresa.Observaciones, obsPaciente.Observaciones].every(value => value === '' || value === null)){
 
-                elementos.messagePrestacion.html(alerta);
-                setTimeout(()=>{
-                    elementos.messagePrestacion.fadeOut();
-                }, 10000);
-            
-            }else{
+                    principal.fichaLaboralModal
+                        .add(principal.observacionesModal)
+                        .hide();
+                    principal.nuevaPrestacion.show();
 
-                principal.fichaLaboralModal.hide();
-                principal.observacionesModal.show();
-
-                if(obsArt.Motivo) {
-                    elementos.ObBloqueoArt.show();
-                    elementos.ObBloqueoArt
-                        .find('p')
-                        .text(obsArt.Motivo);
-                    principal.seguirAl
-                        .prop('disabled', true)
-                        .attr('title', 'Boton bloqueado');
-                }
-
-                if(obsArt.Observaciones) {
-                    elementos.ObArt.show();
-                    elementos.ObArt
-                        .find('p')
-                        .text(obsArt.Observaciones);
-                }
+                    elementos.messagePrestacion.html(alerta);
+                    setTimeout(()=>{
+                        elementos.messagePrestacion.fadeOut();
+                    }, 10000);
                 
-                if(obsEmpresa.Observaciones) {
-                    elementos.ObEmpresa.show();
-                    elementos.ObEmpresa
-                        .find('p')
-                        .text(obsEmpresa.Observaciones);
-                }
+                }else{
 
-                if(obsEmpresa.Motivo) {
-                    elementos.ObBloqueoEmpresa.show();
-                    elementos.ObBloqueoEmpresa
-                        .find('p')
-                        .text(obsEmpresa.Motivo);
-                }
-                
-                if(obsPaciente.Observaciones) {
-                    elementos.ObPaciente.show();
-                    elementos.ObPaciente
-                        .find('p')
-                        .text(obsPaciente.Observaciones);
-                }
-            } 
-        } catch (jqXHR) {
-            let errorData = {};
-            try {
-                errorData = jqXHR.responseText ? JSON.parse(jqXHR.responseText) : {};
-            } catch (e) {
-                errorData.msg = jqXHR.statusText || "Error desconocido";
-            }
-            checkError(jqXHR.status, errorData.msg);
-            return;
-        }
+                    principal.fichaLaboralModal.hide();
+                    principal.observacionesModal.show();
+
+                    if(obsArt.Motivo) {
+                        elementos.ObBloqueoArt.show();
+                        elementos.ObBloqueoArt
+                            .find('p')
+                            .text(obsArt.Motivo);
+                        principal.seguirAl
+                            .prop('disabled', true)
+                            .attr('title', 'Boton bloqueado');
+                    }
+
+                    if(obsArt.Observaciones) {
+                        elementos.ObArt.show();
+                        elementos.ObArt
+                            .find('p')
+                            .text(obsArt.Observaciones);
+                    }
+                    
+                    if(obsEmpresa.Observaciones) {
+                        elementos.ObEmpresa.show();
+                        elementos.ObEmpresa
+                            .find('p')
+                            .text(obsEmpresa.Observaciones);
+                    }
+
+                    if(obsEmpresa.Motivo) {
+                        elementos.ObBloqueoEmpresa.show();
+                        elementos.ObBloqueoEmpresa
+                            .find('p')
+                            .text(obsEmpresa.Motivo);
+                    }
+                    
+                    if(obsPaciente.Observaciones) {
+                        elementos.ObPaciente.show();
+                        elementos.ObPaciente
+                            .find('p')
+                            .text(obsPaciente.Observaciones);
+                    }
+                } 
+
+            });
     };
 
     function examenesCta(id) {
