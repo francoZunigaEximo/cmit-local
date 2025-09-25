@@ -105,15 +105,14 @@ $(function() {
        $(document).on('click', '.buscarUsuario', function (e) {
             e.preventDefault();
 
-           /*if (condiciones.every(condicion => !condicion)) {
-               toastr.warning("Debe seleccionar algún filtro para buscar",'',{timeOut: 1000});
-               return;
-           }*/
+            /*if (condiciones.every(condicion => !condicion)) {
+                toastr.warning("Debe seleccionar algún filtro para buscar",'',{timeOut: 1000});
+                return;
+            }*/
             nombre = $('#nombre').val();
             usuario = $('#usua').val();
             rol = $('#rol').val();
 
-            console.log(nombre, usuario, rol);
             informacion.ajax.data.nombre = nombre;
             informacion.ajax.data.usuario = usuario;
             informacion.ajax.data.rol = rol;
