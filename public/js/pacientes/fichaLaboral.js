@@ -868,69 +868,67 @@ $(function () {
             .prop('disabled', false)
             .removeAttr('title');
 
-        $.get(await checkObs, { Id: ID })
-            .done(function(response) {
+        const response = await $.get(checkObs, { Id: ID });
+        let obsArt = response.obsArt, obsEmpresa = response.obsEmpresa, obsPaciente = response.obsPaciente;
 
-                let obsArt = response.obsArt, obsEmpresa = response.obsEmpresa, obsPaciente = response.obsPaciente;
+        if([obsArt.Motivo, obsArt.Observaciones, obsEmpresa.Motivo, obsEmpresa.Observaciones, obsPaciente.Observaciones].every(value => value === '' || value === null)){
 
-                if([obsArt.Motivo, obsArt.Observaciones, obsEmpresa.Motivo, obsEmpresa.Observaciones, obsPaciente.Observaciones].every(value => value === '' || value === null)){
+            principal.fichaLaboralModal
+                .add(principal.observacionesModal)
+                .hide();
+            principal.nuevaPrestacion.show();
 
-                    principal.fichaLaboralModal
-                        .add(principal.observacionesModal)
-                        .hide();
-                    principal.nuevaPrestacion.show();
+            elementos.messagePrestacion.html(alerta);
+            setTimeout(()=>{
+                elementos.messagePrestacion.fadeOut();
+            }, 10000);
+        
+        }else{
 
-                    elementos.messagePrestacion.html(alerta);
-                    setTimeout(()=>{
-                        elementos.messagePrestacion.fadeOut();
-                    }, 10000);
-                
-                }else{
+            principal.fichaLaboralModal.hide();
+            principal.observacionesModal.show();
 
-                    principal.fichaLaboralModal.hide();
-                    principal.observacionesModal.show();
+            if(obsArt.Motivo) {
+                elementos.ObBloqueoArt.show();
+                elementos.ObBloqueoArt
+                    .find('p')
+                    .text(obsArt.Motivo);
+                principal.seguirAl
+                    .prop('disabled', true)
+                    .attr('title', 'Boton bloqueado');
+            }
 
-                    if(obsArt.Motivo) {
-                        elementos.ObBloqueoArt.show();
-                        elementos.ObBloqueoArt
-                            .find('p')
-                            .text(obsArt.Motivo);
-                        principal.seguirAl
-                            .prop('disabled', true)
-                            .attr('title', 'Boton bloqueado');
-                    }
+            if(obsArt.Observaciones) {
+                elementos.ObArt.show();
+                elementos.ObArt
+                    .find('p')
+                    .text(obsArt.Observaciones);
+            }
+            
+            if(obsEmpresa.Observaciones) {
+                elementos.ObEmpresa.show();
+                elementos.ObEmpresa
+                    .find('p')
+                    .text(obsEmpresa.Observaciones);
+            }
 
-                    if(obsArt.Observaciones) {
-                        elementos.ObArt.show();
-                        elementos.ObArt
-                            .find('p')
-                            .text(obsArt.Observaciones);
-                    }
-                    
-                    if(obsEmpresa.Observaciones) {
-                        elementos.ObEmpresa.show();
-                        elementos.ObEmpresa
-                            .find('p')
-                            .text(obsEmpresa.Observaciones);
-                    }
+            if(obsEmpresa.Motivo) {
+                elementos.ObBloqueoEmpresa.show();
+                elementos.ObBloqueoEmpresa
+                    .find('p')
+                    .text(obsEmpresa.Motivo);
+            }
+            
+            if(obsPaciente.Observaciones) {
+                elementos.ObPaciente.show();
+                elementos.ObPaciente
+                    .find('p')
+                    .text(obsPaciente.Observaciones);
+            }
+        } 
 
-                    if(obsEmpresa.Motivo) {
-                        elementos.ObBloqueoEmpresa.show();
-                        elementos.ObBloqueoEmpresa
-                            .find('p')
-                            .text(obsEmpresa.Motivo);
-                    }
-                    
-                    if(obsPaciente.Observaciones) {
-                        elementos.ObPaciente.show();
-                        elementos.ObPaciente
-                            .find('p')
-                            .text(obsPaciente.Observaciones);
-                    }
-                } 
 
-            });
-    };
+    }
 
     function examenesCta(id) {
 
