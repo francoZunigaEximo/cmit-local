@@ -197,11 +197,10 @@ $(function () {
 
                 let response = await $.get(getFormaPagoCli, { Id: variables.selectArt.val() });
                 let formaPago = !response.FPago ? 'A' : response.FPago;
-                let filtro = formaPago === 'C' ? 'B' : formaPago;
+                let filtro = await formaPago === 'C' ? 'B' : formaPago;
 
                 variables.PagoLaboralJS.value = filtro;
                 
-   
                 variables.PagoLaboralJS.querySelectorAll('option').forEach(opt => {
                     opt.classList.remove('verde', 'rojo', 'negro');
                 });
@@ -216,10 +215,10 @@ $(function () {
                     ?.classList.add('negro');
 
                 if (filtro === 'B') {
-                    selectMedioPago(filtro);
+                    await selectMedioPago(filtro);
                     variables.PagoLaboral.attr('disabled', true);
                 } else {
-                    selectMedioPago(null);
+                    await selectMedioPago(null);
                 }
             }
         } else { 
