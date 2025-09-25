@@ -868,7 +868,7 @@ $(function () {
             .prop('disabled', false)
             .removeAttr('title');
 
-        $.get(checkObs, { Id: ID })
+        $.get(await checkObs, { Id: ID })
             .done(function(response) {
 
                 let obsArt = response.obsArt, obsEmpresa = response.obsEmpresa, obsPaciente = response.obsPaciente;
