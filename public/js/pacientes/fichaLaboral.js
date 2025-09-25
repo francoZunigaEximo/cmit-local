@@ -914,30 +914,22 @@ $(function () {
                             .text(obsEmpresa.Observaciones);
                     }
 
-                if(obsEmpresa.Motivo) {
-                    elementos.ObBloqueoEmpresa.show();
-                    elementos.ObBloqueoEmpresa
-                        .find('p')
-                        .text(obsEmpresa.Motivo);
-                }
-                
-                if(obsPaciente.Observaciones) {
-                    elementos.ObPaciente.show();
-                    elementos.ObPaciente
-                        .find('p')
-                        .text(obsPaciente.Observaciones);
-                }
-            } 
-        } catch (jqXHR) {
-            let errorData = {};
-            try {
-                errorData = jqXHR.responseText ? JSON.parse(jqXHR.responseText) : {};
-            } catch (e) {
-                errorData.msg = jqXHR.statusText || "Error desconocido";
-            }
-            checkError(jqXHR.status, errorData.msg);
-            return;
-        }
+                    if(obsEmpresa.Motivo) {
+                        elementos.ObBloqueoEmpresa.show();
+                        elementos.ObBloqueoEmpresa
+                            .find('p')
+                            .text(obsEmpresa.Motivo);
+                    }
+                    
+                    if(obsPaciente.Observaciones) {
+                        elementos.ObPaciente.show();
+                        elementos.ObPaciente
+                            .find('p')
+                            .text(obsPaciente.Observaciones);
+                    }
+                } 
+
+            });
     };
 
     async function examenesCta(id) {
