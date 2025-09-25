@@ -10,7 +10,7 @@ $(function(){
     
         if (externo === '1') {
             $('.Telefono, .Direccion, .Provincia, .IdLocalidad, .Obs').show();
-        } else if (['', '0'].includes(externo)) {
+        } else if (!externo || externo === '0') {
             $('.Telefono, .Direccion, .Provincia, .IdLocalidad, .Obs').hide();
         }
     });

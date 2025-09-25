@@ -14,7 +14,7 @@ $(function() {
             return;
         }
 
-        if([null, undefined, '', 0].includes(empresa)) {
+        if(!empresa) {
             toastr.warning("Debe seleccionar una empresa para listar las prestaciones", "", {timeOut: 1000});
             return;
         }
