@@ -4,8 +4,9 @@
 
 @section('content')
 
-<div class="page-title-box d-sm-flex align-items-center justify-content-start">
+<div class="page-title-box d-sm-flex align-items-center justify-content-between">
     <h4 class="mb-sm-0">Editar Nota Credito</h4>
+    <a class="btn btn-warning" type="button" href="{{ route('notasCredito.index') }}"><i class="ri-arrow-left-line"></i> Volver</a>
 </div>
 <div class="card">
     <div class="card-body">
@@ -32,9 +33,29 @@
                 <label for="descripcion">Descripcion</label>
                 <textarea class="form-control" id="descripcion" name="descripcion" rows="3">{{ $notaCredito->Obs }}</textarea>
             </div>
+            <div class="col-6">
+                <label for="cliente">Cliente</label>
+                <input type="text" class="form-control" id="cliente" value="{{ $cliente->RazonSocial }}" disabled>
+            </div>
+            <div class="col-6">
+                <label for="cuit">CUIT</label>
+                <input type="text" class="form-control" id="cuit" value="{{ $cliente->Identificacion }}" disabled>
+            </div>
         </div>
     </div>
 </div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-12 d-flex justify-content-end">
+                <button class="btn btn-primary" type="button" id="eliminarMasivo" onclick="eliminarMasivo()">Eliminar Items</button>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
 <div class="card">
     <div class="card-body">
         <table id="itemsNotaCredito" class="display table table-bordered" style="width:100%">
@@ -60,8 +81,8 @@
     <div class="card-body">
         <div class="row">
             <div class="col-12 d-flex justify-content-center">
-                <button class="btn btn-primary" type="button" onclick="()=>{history.back()}">Volver</button>
-                <button class="btn btn-primary" type="button" id="guardarCambios">Editar</button>
+                
+                <button class="btn btn-primary" type="button" id="guardarCambios">Guardar</button>
             </div>
         </div>
     </div>

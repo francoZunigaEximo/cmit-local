@@ -136,7 +136,7 @@ $(function() {
 
         let id = $('#Id').val();
 
-        if([null, undefined, ''].includes(id)) {
+        if(!id) {
             toastr.warning("No hay ningún modelo para actualizar", "", {timeOut: 1000});
             return;
         }

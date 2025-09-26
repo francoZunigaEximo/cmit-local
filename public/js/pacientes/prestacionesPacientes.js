@@ -1409,90 +1409,194 @@ $(function(){
         }
     }
 
+    $(document).on('click', '.bloquearExamenes, .bloquearExamen', function(e){
+
+        e.preventDefault();
+
+        let ids = [], id = $(this).data('bloquear');
+        var checkAll ='';
+
+        if ($(this).hasClass('bloquearExamenes')) {
+
+            $('input[name="Id_examenes"]:checked').each(function() {
+                ids.push($(this).val());
+        
+            });
+    
+            checkAll =$('#checkAllExa').prop('checked');
+        
+        }else if($(this).hasClass('bloquearExamen')){
+
+            ids.push(id);
+        }
+
+        if(ids.length === 0 && checkAll === false){
+            toastr.warning('No hay examenes seleccionados', 'Atención');
+            return;
+        }
+    
+        swal({
+            title: "Confirme el bloqueo de los examenes",
+            icon: "warning",
+            buttons: ["Cancelar", "Bloquear"],
+        }).then((confirmar) => {
+            if(confirmar){
+
+                preloader('on');
+                $.ajax({    
+                    url: bloquearItemExamen,
+                    type: 'POST',
+                    data: {
+                        Id: ids,
+                        _token: TOKEN
+                    },
+                    success: function(response){
+                        var estados = [];
+                        
+                        preloader('off')
+                        response.forEach(function(msg) {
+
+                            let tipoRespuesta = {
+                                success: 'success',
+                                fail: 'info'
+                            }
+                            
+                            toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 })
+                            
+                            estados.push(msg.estado)
+                            
+                        });
+                        
+                        if(estados.includes('success')) {
+                            $('#listaExamenes').empty();
+                            $('#exam').val([]).trigger('change.select2');
+                            $('#addPaquete').val([]).trigger('change.select2');
+                            cargarExamen(IdNueva);
+                        }
+                    }
+                });
+            }
+        });     
+    });
+    
+
     async function checkExamenesCuenta(id){
-        console.log("check examenes a cuenta");
-        $.get(await lstExDisponibles, {Id: id})
-            .done(function(response){
+
+        $.get(lstExDisponibles, {Id: id})
+            .done(await function(response){
+                let data = selectorPago(pagoInput);
 
                 if(response && response.length > 0) {
 
-                    principal.alertaExCta
-                        .add(principal.ultimasFacturadas)
-                        .add(principal.siguienteExCta)
-                        .show();
-                    
-                    principal.guardarPrestacion.hide();
-
-
+                    $('#alertaExCta, .examenesDisponibles, .ultimasFacturadas, #siguienteExCta').show();
+                    $('#PagoLaboral, #Pago ').val('P');
+                    $('#guardarPrestacion').hide();
                 } else {
-                    principal.ultimasFacturadas
-                        .add(principal.alertaExCta)
-                        .add(principal.siguienteExCta)
-                        .hide();
 
-                    variables.PagoLaboral.val(data);
-                    
-                    principal.guardarPrestacion.show();
+                    $('examenesDisponibles, .ultimasFacturadas, #siguienteExCta').hide();
+                    $('#PagoLaboral').val(data);
+                    $('#guardarPrestacion').show();
+                    $('#alertaExCta').hide();
                 }
             })
     }
 
-    async function comentariosPrivados() {
+    $(document).on('click', '.confirmarComentarioPriv', function(e){
+        e.preventDefault();
+        let comentario = $('#Comentario').val(),
+            profesional = PROFESIONAL[0].toUpperCase() + PROFESIONAL.slice(1).toLowerCase();
 
-        principal.privadoPrestaciones.empty();
+        if(!comentario){
+            toastr.warning('La observación no puede estar vacía');
+            return;
+        }
+
+        let idp =  $('#idPrestacion').val();
         preloader('on');
-
-        $.get(await privateComment, {Id: variables.idPrestacion.val(),  tipo: 'prestacion'})
-            .done(function(response){
+        $.post(savePrivComent, {_token: TOKEN, Comentario: comentario, IdEntidad: idp, obsfasesid: 2, Rol: profesional})
+            .done(function(){
                 preloader('off');
-                let data = response.result;
+                toastr.success('Se ha generado la observación correctamente');
 
-                for(let index = 0; index < data.length; index++){
-                    let d = data[index],
-                        contenido =  `
-                            <tr>
-                                <td style="width: 120px">${fechaCompleta(d.Fecha)}</td>
-                                <td style="width: 120px" class="text-capitalize">${d.IdUsuario}</td>
-                                <td style="width: 120px" class="text-uppercase">${d.nombre_perfil}</td>
-                                <td>${d.Comentario}</td>
-                                <td style="width: 60px">${USER === d.IdUsuario ? `
-                                    <button type="button" data-id="${d.Id}" data-comentario="${d.Comentario}" class="btn btn-sm iconGeneralNegro editarComentarioBtn"><i class="ri-edit-line"></i></button>
-                                    <button title="Eliminar" type="button" data-id="${d.Id}"  class="btn btn-sm iconGeneralNegro deleteComentario"><i class="ri-delete-bin-2-line"></i></button>` : ''}</td>
-                            </tr>
+                setTimeout(() => {
+                    $('#privadoPrestaciones').empty();
+                    $("#Comentario").val("");
+                    comentariosPrivados();
+                }, 3000);
+            })
+    });
+
+    function comentariosPrivados(){
+
+        $('#privadoPrestaciones').empty();
+        preloader('on');
+        let idp =  $('#idPrestacion').val();
+        $.get(privateComment, {Id: idp,  tipo: 'prestacion'})
+            .done(async function(response){
+                preloader('off');
+                let data = await response.result;
+
+                $.each(data, function(index, d){
+ 
+                    let contenido =  `
+                        <tr>
+                            <td>${fechaCompleta(d.Fecha)}</td>
+                            <td>${d.IdUsuario}</td>
+                            <td>${d.nombre_perfil}</td>
+                            <td>${d.Comentario}</td>
+                        </tr>
+                    `;
+                    $('#privadoPrestaciones').append(contenido);
+                });
+
+                principal.lstExamenesCtd.append(contenido);
+        });
+
+        principal.listadoExamenesCtd.fancyTable({
+            pagination: true,
+            perPage: 15,
+            searchable: false,
+            globalSearch: false,
+            sortable: false, 
+        });
+
+
+    }
+
+    async function cargarEstudiosImp(idPrestacion)
+    {
+        principal.estudios.empty();
+
+        if(!idPrestacion) return;
+
+        preloader('on');
+        $.get(await listadoEstudiosImp, {Id: variables.idPrestacion.val()})
+
+          .done(function(response){
+                preloader('off');
+                for(let index = 0; index < response.length; index++) {
+                    let data = response[index],
+                        forNombre = (data.NombreExamen).replace(" ", "-"),
+                        contenido = `
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="${data.IdReporte}" data-examen="${data.IdExamen}" data-nosend checked>
+                                <label class="form-check-label" for="${forNombre}">
+                                    ${data.NombreExamen}
+                                </label>
+                            </div>
                         `;
-                        principal.privadoPrestaciones.append(contenido);
+
+                    principal.estudios.append(contenido);
                 }
 
-                principal.lstPrivPrestaciones.fancyTable({
-                    pagination: true,
-                    perPage: 15,
-                    searchable: false,
-                    globalSearch: false,
-                    sortable: false, 
-                });
-            })   
-    }
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            });
 
-    function contadorExamenes(idPrestacion) {
-        $.get(contadorEx, {Id: idPrestacion}, function(response){
-            principal.countExamenes
-                .empty()
-                .text(response);
-        });
-    }
-
-    function verificarExamenCuenta()
-    {
-        if(variables.PagoLaboral.val() === 'P') {
-            principal.paqueteExamen.hide();
-            principal.paqueteExCta.show();
-            principal.tituloPrestacion.text('Alta Prestación con Ex. a Cuenta Nro: ' + nroPrestacion);
-
-        }else{
-            principal.paqueteExamen.show();
-            principal.paqueteExCta.hide();
-            principal.tituloPrestacion.text('Alta Prestación Nro: ' + nroPrestacion);
-        }
     }
 
     async function tablasExamenes(idCliente, checkVisible, etiquetaId, filtroId = null) {
@@ -1585,91 +1689,26 @@ $(function(){
         }
     }
 
-     principal.lstEx.on('click', 'input.form-check-input[id^="checkAll"]', function () {
-        let checkAll = $(this), 
-            isChecked = checkAll.is(':checked'), 
-            fila = checkAll.closest('tr');
-
-        if(fila.hasClass('fondo-gris')) {
-            
-            let rangoFactura = fila.nextUntil('tr.fondo-gris'),
-                checkboxesHijos = rangoFactura.find('input.form-check-input');
-            
-            checkboxesHijos.prop('checked', isChecked);
-        } 
-
-        else if(fila.hasClass('fondo-grisClaro')) {
-
-            let rangoSubgrupo = fila.nextUntil('tr.fondo-gris, tr.fondo-grisClaro'),
-                checkboxesHijos = rangoSubgrupo.find('input.item-checkbox');
-            
-            checkboxesHijos.prop('checked', isChecked);
-        }
-    });
-
-    function tablaExaCantidad(data)
+    function verificarExamenCuenta()
     {
-        principal.lstExamenesCtd.empty();
+        if(variables.PagoLaboral.val() === 'P') {
+            principal.paqueteExamen.hide();
+            principal.paqueteExCta.show();
+            principal.tituloPrestacion.text('Alta Prestación con Ex. a Cuenta Nro: ' + nroPrestacion);
 
-        const examenes = data.examen;
-
-        for(let index = 1; index < examenes.length; index++) {
-            let examen = examenes[index],
-                contenido = `
-                <tr>
-                    <td>${examen.text}</td>
-                    <td><input type="checkbox" name="itemCheckbox" value="${examen.id}"></td>
-                </tr>
-                `;
-
-                principal.lstExamenesCtd.append(contenido);
+        }else{
+            principal.paqueteExamen.show();
+            principal.paqueteExCta.hide();
+            principal.tituloPrestacion.text('Alta Prestación Nro: ' + nroPrestacion);
         }
-
-        principal.listadoExamenesCtd.fancyTable({
-            pagination: true,
-            perPage: 15,
-            searchable: false,
-            globalSearch: false,
-            sortable: false, 
-        });
-
-
     }
 
-    async function cargarEstudiosImp(idPrestacion)
-    {
-        principal.estudios.empty();
-
-        if(!idPrestacion) return;
-
-        preloader('on');
-        $.get(await listadoEstudiosImp, {Id: variables.idPrestacion.val()})
-
-          .done(function(response){
-                preloader('off');
-                for(let index = 0; index < response.length; index++) {
-                    let data = response[index],
-                        forNombre = (data.NombreExamen).replace(" ", "-"),
-                        contenido = `
-                            <div class="form-check mb-2">
-                                <input class="form-check-input" type="checkbox" id="${data.IdReporte}" data-examen="${data.IdExamen}" data-nosend checked>
-                                <label class="form-check-label" for="${forNombre}">
-                                    ${data.NombreExamen}
-                                </label>
-                            </div>
-                        `;
-
-                    principal.estudios.append(contenido);
-                }
-
-            })
-            .fail(function(jqXHR){
-                preloader('off');
-                let errorData = JSON.parse(jqXHR.responseText);            
-                checkError(jqXHR.status, errorData.msg);
-                return;
-            });
-
+    function contadorExamenes(idPrestacion) {
+        $.get(contadorEx, {Id: idPrestacion}, function(response){
+            principal.countExamenes
+                .empty()
+                .text(response);
+        });
     }
 
 });

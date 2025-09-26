@@ -140,9 +140,9 @@
 <script>
     //Rutas
     const SEARCH = "{{ route('mapas.index') }}"
-    const routeMapas = "{{ route('deleteMapa', ['mapa' => '']) }}";
+    const routeMapas = "{{ route('mapas.eliminar', ['mapa' => '']) }}";
     const fileExport = "{{ route('mapas.exportar') }}";
-    const deleteMapa = "{{ route('deleteMapa') }}";
+    const deleteMapa = "{{ route('mapas.eliminar') }}";
     const getClientes = "{{ route('getClientes') }}";
 </script>
 

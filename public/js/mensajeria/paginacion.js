@@ -105,21 +105,21 @@ $(function(){
                     data: null,
                     width: "100px",
                     render: function(data){
-                        return [null, undefined,''].includes(data.EMailFactura) ? `<div class="fondo-rojo">&nbsp;</div>` : `<span title="${data.EMailFactura}">${acortadorTexto(data.EMailFactura, 14)}</span>`;
+                        return !data.EMailFactura ? `<div class="fondo-rojo">&nbsp;</div>` : `<span title="${data.EMailFactura}">${acortadorTexto(data.EMailFactura, 14)}</span>`;
                     }
                 },
                 {
                     data: null,
                     width: "100px",
                     render: function(data){
-                        return [null, undefined,''].includes(data.EmailMasivo) ? `<div class="fondo-rojo">&nbsp;</div>` : `<span title="${data.EmailMasivo}">${acortadorTexto(data.EmailMasivo, 14)}</span>`;
+                        return !data.EmailMasivo ? `<div class="fondo-rojo">&nbsp;</div>` : `<span title="${data.EmailMasivo}">${acortadorTexto(data.EmailMasivo, 14)}</span>`;
                     }
                 },
                 {
                     data: null,
                     width: "100px",
                     render: function(data){
-                        return [null, undefined, ''].includes(data.EMailInformes) ? '<div class="fondo-rojo">&nbsp;</div>': `<span>${acortadorTexto(data.EMailInformes, 14)}</span>`;
+                        return !data.EMailInformes ? '<div class="fondo-rojo">&nbsp;</div>': `<span>${acortadorTexto(data.EMailInformes, 14)}</span>`;
                     }
                 },
                 {

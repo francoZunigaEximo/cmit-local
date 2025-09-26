@@ -538,7 +538,7 @@ $(function(){
         e.preventDefault();
 
         let id = $(this).data('id'), tipo = $(this).hasClass('exportar') ? 'excel' : 'pdf';
-        console.log(id, tipo);
+
         let extencion = tipo === 'excel' ? 'xlsx' : 'pdf';
         if(!id) {
             toastr.warning('No hay datos para exportar','', {timeOut: 1000});

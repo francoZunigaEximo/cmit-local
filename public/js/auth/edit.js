@@ -345,7 +345,8 @@ $(function(){
             Foto = $('#Foto')[0].files[0],
             wImage = $('#wImage').val(),
             hImage = $('#hImage').val(),
-            Id = $('#IdProfesional').val();
+            Id = $('#IdProfesional').val(),
+            tlp = $('#tlp').prop('checked') ? 1 : 0;
 
         let formData = new FormData();
             formData.append('_token', TOKEN);
@@ -356,6 +357,7 @@ $(function(){
             formData.append('wImage', wImage);
             formData.append('hImage', hImage);
             formData.append('Id', Id);
+            formData.append('TLP', tlp);
 
         swal({
             title: "¿Está seguro que desea actualizar los datos",

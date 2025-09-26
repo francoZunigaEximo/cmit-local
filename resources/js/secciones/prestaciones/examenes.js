@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const paqueteSelect = document.getElementById('paquetes');
             const paquete = paqueteSelect.value;
             
-            if ([null, undefined, ''].includes(paquete)) {
+            if (!paquete) {
                 toastr.warning("Debe seleccionar un paquete para poder añadirlo en su totalidad");
                 return;
             }

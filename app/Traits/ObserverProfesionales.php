@@ -9,7 +9,7 @@ trait ObserverProfesionales
     
     public function setTelefono(int $id, mixed $numero)
     {
-        if (empty($numero)) return '';
+        if (empty($numero)) return;
 
         Telefono::create([
             'Id' => Telefono::max('Id') + 1,

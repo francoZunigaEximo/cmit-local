@@ -5,6 +5,7 @@ $(function(){
         listaPac: $('#listaPac '),
         dataTables_processing: $(".dataTables_processing"),
         excel: $('#excel'),
+        excelAll: $('#excelAll'),
         downPaciente: $('.downPaciente')
     };
 
@@ -67,7 +68,7 @@ $(function(){
         
         let ids = [];
         
-        $('input[name="Id"]:checked').each(function(){
+        $('input[class="fila-checkbox"]:checked').each(function(){
             ids.push($(this).val());
         })
 
@@ -84,7 +85,35 @@ $(function(){
             if(confirmar){
                 preloader('on');
 
-                $.post(exportExcel, {Id: ids, All: false, _token: TOKEN})
+                $.post(exportExcel, {Id: ids, _token: TOKEN})
+                    .done(function(response){
+                        preloader('off');
+                        let tipoToastr = response.estado === 'success' ? 'success' : 'warning';
+                        createFile("excel", response.filePath, generarCodigoAleatorio() + "_reporte");
+                        toastr[tipoToastr](response.msg);
+                        return;
+                    })
+                    .fail(function(jqXHR){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
+                    });
+            }
+        });
+    });
+
+    principal.excelAll.on('click', function(e){
+        e.preventDefault();
+        swal({
+            title: "¿Estás seguro de que deseas generar el reporte completo de Excel con todos los pacientes?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"],
+        }).then((confirmar) => {
+            if(confirmar){
+                preloader('on');
+
+                $.post(exportExcelAll, { _token: TOKEN })
                     .done(function(response){
                         preloader('off');
                         let tipoToastr = response.estado === 'success' ? 'success' : 'warning';

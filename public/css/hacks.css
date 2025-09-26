@@ -768,6 +768,14 @@ table th {
     transform: scale(2);
 }
 
+#cargarArchivo {
+    z-index: 1060 !important;
+}
+
+#cargarArchivo {
+    z-index: 1060 !important;
+}
+
 .navbar-menu {
 	position:fixed !important;
 }

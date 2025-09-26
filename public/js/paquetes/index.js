@@ -161,8 +161,38 @@ $(function () {
             });
     });
 
+     $(".btnExcelFacturacion").on("click", function (e) {
+        preloader('on');
+        let codigo = $("#codigoPaquete").val();
+        let idPaquete = $("#paqueteFacturacionSelect2").val();
+        let idGrupo = $("#grupoSelect2").val();
+        let idEmpresa = $("#empresaSelect2").val();
+        
+        $.get(exportarExcelFacturacion,
+            {
+                IdPaquete: idPaquete,
+                Codigo: codigo,
+                IdGrupo: idGrupo,
+                IdEmpresa: idEmpresa
+            })
+            .done(function (response) {
+                preloader('off');
+                createFile("excel", response.filePath, generarCodigoAleatorio() + "_paquetes_estudios");
+                preloader('off');
+                toastr.success(response.msg);
+                return;
+            })
+            .fail(function (jqXHR) {
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            });
+    });
+
 })
 
+   
 function eliminarPaqueteEstudio(id) {
     swal({
         title: "¿Está seguro que desea eliminar el paquete de estudios?",

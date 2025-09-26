@@ -58,9 +58,16 @@
         </li>
 
         <li class="nav-item" role="presentation">
-            <a class="nav-link text-info" data-bs-toggle="tab" href="#examenCuenta" role="tab" title="Examenes a cuenta del cliente" aria-selected="false" tabindex="-1">
+            <a class="nav-link text-info" data-bs-toggle="tab" href="#examenCuenta" role="tab" title="Examenes a cuenta" aria-selected="false" tabindex="-1">
                 <i class="ri-list-unordered"></i>
                 Examenes a cuenta
+            </a>
+        </li>
+
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" data-bs-toggle="tab" href="#auditoria" role="tab" title="auditoria de cambios" aria-selected="false" tabindex="-1">
+                <i class="ri-list-unordered"></i>
+                Auditorias
             </a>
         </li>
     </ul>
@@ -80,7 +87,7 @@
             <form class="form-update" id="form-update" action="{{ route('clientes.update', ['cliente' => $cliente->Id]) }}"" method="POST" enctype="multipart/form-data" novalidate>
                 @csrf
                 @method('PUT')
-                <input type="hidden" name="Id" type="text" value="{{ $cliente->Id }}">
+                <input type="hidden" id="Id" name="Id" type="text" value="{{ $cliente->Id }}">
                 <div class="row">
                     <div class="col-3 p-2 mb-2" style="background-color: #eeeeee">
                         <label for="cliente" class="form-label"> Cliente <span class="required">(*)</span></label>
@@ -539,6 +546,56 @@
                 </div>
             </div>
         </div>
+
+        <div class="tab-pane" id="auditoria" role="tabpanel">
+            <div class="row card">
+                <div class="col-12 card-header">
+                    <h5>Listado de cambios realizados en el cliente</h5>
+
+                    <hr class="hr" />
+                
+                    <div class="mt-4 mb-4">
+                        <div class="row d-flex justify-content-center">
+                            <div class="col-sm-3">
+                                <span class="fw-bold">Usuario</span>
+                                <select class="form-select" id="usuario" name="usuario">
+                                </select>
+                            </div>
+
+                            <div class="col-sm-3">
+                                <span class="fw-bold">Fecha</span>
+                                <input type="date" name="fecha" id="fecha" class="form-control">
+                            </div>
+                            
+                            <div class="col-sm-1 mx-2 d-flex justify-content-center align-content-center">
+                                <button type="button" class="btn botonGeneral buscarAuditoria m-3"><i class="ri-zoom-in-line"></i> Buscar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 card-body">
+
+                    <div class="row mx-auto">
+                        <div class="table-responsive table-card mt-3 mb-1 mx-auto col-sm-8">
+                            <table id="lstAuditoriaCliente" class="display table table-bordered">
+                                <thead class="table-light">
+                                        <tr>
+                                            <th>Fecha</th>
+                                            <th>Usuario</th>
+                                            <th>Acciones</th>
+                                            <th>Observacion</th>
+                                        </tr>
+                                    </thead>
+                                <tbody class="list form-check-all" id="lstAuditoria">
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
         
     </div>
 </div>
@@ -597,18 +654,18 @@ const GOCREATE = "{{ route('clientes.create') }}";
 const RUTAEXAMEN = "{{ route('examenesCuenta.create') }}";
 
 //Rutas
-const deleteAutorizado = "{{ route('deleteAutorizado') }}";
-const altaAutorizado = "{{ route('clientes.altaAutorizado') }}";
-const getAutorizados = "{{ route('getAutorizados') }}";
+const deleteAutorizado = "{{ route('autorizados.eliminar') }}";
+const altaAutorizado = "{{ route('autorizados.crear') }}";
+const getAutorizados = "{{ route('autorizados.listar') }}";
 const checkOpciones = "{{ route('checkOpciones') }}";
 const checkEmail = "{{ route('checkEmail') }}";
 const getLocalidad = "{{ route('getLocalidades') }}";
 const getCodigoPostal = "{{ route('getCodigoPostal') }}";
 const checkProvController = "{{ route('checkProvincia') }}";
 const setObservaciones = "{{ route('clientes.setObservaciones') }}";
-const getTelefonos = "{{ route('getTelefonos') }}";
-const deleteTelefono = "{{ route('deleteTelefono') }}";
-const saveTelefono = "{{ route('saveTelefono') }}";
+const getTelefonos = "{{ route('telefonos.obtener') }}";
+const deleteTelefono = "{{ route('telefonos.eliminar') }}";
+const saveTelefono = "{{ route('telefonos.guardar') }}";
 const block = "{{ route('clientes.block') }}";
 const getBloqueo = "{{ route('getBloqueo') }}";
 const lstClientes = "{{ route('lstClientes') }}";
@@ -616,6 +673,8 @@ const listadoDni = "{{ route('listadoDni') }}";
 const listadoEx = "{{ route('listadoEx') }}";
 const checkEstadoTipo = "{{ route('clientes.checkEstado') }}";
 const getListaExCta = "{{ route('examenesCuenta.listado') }}";
+const SEARCHAUDITORIA = "{{ route('clientes.buscarAuditoria') }}";
+const loadUsuarios = "{{ route('usuarios.getListado') }}";
 
 </script>
 
@@ -624,10 +683,15 @@ const getListaExCta = "{{ route('examenesCuenta.listado') }}";
 @endpush
 
 @push('scripts')
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+
 <script src="{{ asset('js/jquery.validate.min.js') }}"></script>
 <script src="{{ asset('js/clientes/validaciones.js')}}?v={{ time() }}"></script>
 <script src="{{ asset('js/clientes/edit.js')}}?=v{{ time() }}"></script>
 <script src="{{ asset('js/clientes/utils.js')}}?=v{{ time() }}"></script>
+<script src="{{ asset('js/clientes/paginacionAuditoria.js')}}?=v{{ time() }}"></script>
 
 <script src="{{ asset('js/scripts.js') }}?v={{ time() }}"></script>
 <script src="{{ asset('libs/cleave.js/cleave.min.js') }}"></script>

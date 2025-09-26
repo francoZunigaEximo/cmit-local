@@ -137,7 +137,7 @@
                 </div>
 
                 <div class="p-2 col-md-6">
-                    <label for="fechaNac" class="form-label font-weight-bold"><strong>Fecha de Naciemiento</strong></label>
+                    <label for="fechaNac" class="form-label font-weight-bold"><strong>Fecha Nacimiento</strong></label>
                     <input id="fechaNac" name="fechaNac" class="form-control" type="date" value="{{ $query->FechaNacimiento ?? '' }}">
                 </div>
                 
@@ -242,6 +242,9 @@
                                
                             <input class="form-check-input" type="checkbox" id="InfAdj" {{ ($query->InfAdj === 1 ? 'checked' : '') ?? ''}}>
                             <label class="form-check-label" for="InfAdj"> Informe Adjunto </label>
+
+                            <input class="form-check-input" type="checkbox" id="tlp" {{ ($query->TLP === 1 ? 'checked' : '') ?? ''}}>
+                            <label class="form-check-label" for="InfAdj"> Multi Especialidad </label>
                     </div>
                 </div>
                 

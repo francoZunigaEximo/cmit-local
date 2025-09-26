@@ -100,6 +100,7 @@ class UsuariosController extends Controller
                 "profesionales.hImage as hImage",
                 "profesionales.InfAdj as InfAdj",
                 "profesionales.Pago as Pago",
+                "profesionales.TLP as TLP",
                 "profesionales.MN as MN",
                 "profesionales.SeguroMP as SeguroMP",
                 "profesionales.MP as MP",
@@ -145,7 +146,6 @@ class UsuariosController extends Controller
                 )
                 ->where('users.Anulado', 0)
                 ->groupBy('users.id', 'users.name', 'datos.Apellido', 'datos.Nombre', 'users.inactivo', 'session_status.is_online');
-
 
         
             $query->when(!empty($request->nombre), function ($query) use ($request) {
@@ -350,7 +350,6 @@ class UsuariosController extends Controller
 
     public function cambiarPassword(Request $request)
     {
-        
         $query = User::find($request->Id);
 
         if($query) 
@@ -364,35 +363,35 @@ class UsuariosController extends Controller
 
     public function updateProfesional(Request $request) 
     {
-
         $query = Profesional::find($request->Id);
 
-        if($query) {
-            $query->Pago = $request->Pago;
-            $query->InfAdj = $request->InfAdj;
-            $query->Firma = $request->Firma;
-            $query->wImage = $request->wImage;
-            $query->hImage = $request->hImage;
-
-            if ($request->hasFile('Foto')) {
-   
-                $fotoExistente = FileHelper::getFileUrl('lectura').'/'.SELF::folder.'/'. $request->Foto;
-                if (Storage::exists($fotoExistente)) {
-                    Storage::delete($fotoExistente);
-                }
-    
-                $fileName = 'PROF' . $request->Id . '.' . $request->Foto->extension();
-                FileHelper::uploadFile(FileHelper::getFileUrl('escritura').'/'.SELF::folder.'/', $request->Foto, $fileName);
-                $query->Foto = $fileName;
-            }
-
-            $query->save();
-
-            return response()->json(['msg' => 'Se han cargado los cambios correctamente.'], 200);
-
-        }else{
+        if(empty($query)) {
             return response()->json(['msg' => 'No se ha podido realizar la actualización.'], 500);
         }
+
+        $query->Pago = $request->Pago;
+        $query->InfAdj = $request->InfAdj;
+        $query->Firma = $request->Firma;
+        $query->wImage = $request->wImage;
+        $query->hImage = $request->hImage;
+        $query->TLP = $request->TLP;
+
+        if ($request->hasFile('Foto')) {
+
+            $fotoExistente = FileHelper::getFileUrl('lectura').'/'.SELF::folder.'/'. $request->Foto;
+            if (Storage::exists($fotoExistente)) {
+                Storage::delete($fotoExistente);
+            }
+
+            $fileName = 'PROF' . $request->Id . '.' . $request->Foto->extension();
+            FileHelper::uploadFile(FileHelper::getFileUrl('escritura').'/'.SELF::folder.'/', $request->Foto, $fileName);
+            $query->Foto = $fileName;
+        }
+        $query->save();
+
+        return response()->json(['msg' => 'Se han cargado los cambios correctamente.'], 200);
+
+        
     }
 
     public function checkRoles(Request $request)
@@ -402,6 +401,24 @@ class UsuariosController extends Controller
         return response()->json($query->role);
     }
 
+    public function getUserName()
+    {
+        return Auth::user()->name;
+    }
 
+    public function listadoUsuarios()
+    {
+        $query = User::join('datos', 'users.datos_id', '=', 'datos.Id')
+            ->select(
+                'users.Id as Id', 
+                'users.name as name',
+                DB::raw('CONCAT(datos.Nombre," ",datos.Apellido) as NombreCompleto')
+            )
+            ->orderBy('Id', 'DESC')
+            ->get();
+
+        return response()->json($query);
+    }
+    
 }
 

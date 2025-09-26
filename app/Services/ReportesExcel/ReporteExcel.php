@@ -10,8 +10,8 @@ use App\Services\ReportesExcel\modelos\DetalladaPrestacionFull;
 use App\Services\ReportesExcel\modelos\Mapa;
 use App\Services\ReportesExcel\modelos\Especialidad;
 use App\Services\ReportesExcel\modelos\Remito;
-use App\Services\ReportesExcel\modelos\EfectorExportar;
-use App\Services\ReportesExcel\modelos\EfectorDetallado;
+use App\Services\ReportesExcel\modelos\LlamadorExportar;
+use App\Services\ReportesExcel\modelos\LlamadorDetallado;
 use App\Services\ReportesExcel\modelos\ResumenTotal;
 use App\Services\ReportesExcel\modelos\SimplePrestacion;
 use App\Services\ReportesExcel\modelos\SimplePrestacionFull;
@@ -22,8 +22,10 @@ use App\Services\ReportesExcel\modelos\GrupoClientesFull;
 use App\Services\ReportesExcel\modelos\NotaCreditoReporte;
 use App\Services\ReportesExcel\modelos\PaqueteEstudio;
 use App\Services\ReportesExcel\modelos\PaqueteEstudioDetalle;
+use App\Services\ReportesExcel\modelos\PaqueteFacturacion;
 use App\Services\ReportesExcel\modelos\PaqueteFacturacionDetalle;
 use App\Services\ReportesExcel\modelos\SaldosCta;
+use App\Services\ReportesExcel\modelos\PagoMasivo;
 
 class ReporteExcel
 {
@@ -40,10 +42,10 @@ class ReporteExcel
                 return new Especialidad();
             case 'remitos':
                 return new Remito();
-            case 'efectorExportar':
-                return new EfectorExportar();
-            case 'efectorDetalle':
-                return new EfectorDetallado();
+            case 'llamadorExportar':
+                return new LlamadorExportar();
+            case 'llamadorDetalle':
+                return new LlamadorDetallado();
             case 'resumenTotal':
                 return new ResumenTotal();
             case 'simplePrestacion':
@@ -64,6 +66,8 @@ class ReporteExcel
                 return new GrupoClientesFull();
             case 'grupoClienteDestalleFull':
                 return new GrupoClientesDetalleFull();
+            case 'paqueteFacturacion':
+                return new PaqueteFacturacion();
             case 'paqueteFacturacionDetalle':
                 return new PaqueteFacturacionDetalle();
             case 'notaCredito':
@@ -74,6 +78,8 @@ class ReporteExcel
                 return new CuentaCte();
             case 'saldosCte':
                 return new SaldosCta();
+            case 'pagoMasivo':    
+                return new PagoMasivo();
             default:
                 return response()->json(['msg' => 'Tipo de reporte no válido'], 400);
         }

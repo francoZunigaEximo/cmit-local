@@ -17,11 +17,10 @@ $(function() {
         preloader('on');
         $.get(verifyWizard, { Documento: dniPrestacion })
             .done(function(response){
-                let paciente = response.paciente;
                 preloader('off');
-                if(response.existe){
 
-                    window.location.href = lnkExistePaciente.replace('__paciente__', paciente.Id);
+                if(Object.keys(response).length > 0){
+                    window.location.href = lnkExistePaciente.replace('__paciente__', response.Id);
                 }else{
                     localStorage.setItem('insertDoc', dniPrestacion);
                     window.location.href = lnkNuevoPaciente;

@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\LstProfesionalesEvent;
+use App\Events\LstProfInformadorEvent;
+use App\Events\LstProfCombinadoEvent;
 use App\Helpers\FileHelper;
 use App\Models\Profesional;
 use App\Models\ProfesionalProv;
@@ -20,6 +23,7 @@ use Illuminate\Support\Facades\Storage;
 
 use App\Traits\CheckPermission;
 use Illuminate\Support\Facades\Auth;
+use App\Services\Llamador\Profesionales;
 
 class ProfesionalesController extends Controller
 {
@@ -27,6 +31,14 @@ class ProfesionalesController extends Controller
 
     protected $folder = "Prof";
     private $profesionales = ['efector', 'informador', 'combinado', 'evaluador', 'evaluador art'];
+    protected $profesionalesLst;
+
+    private $profesionales_eventos = ['Efector', 'Informador', 'Combinado'];
+
+    public function __construct(Profesionales $profesionalesLst)
+    {
+        $this->profesionalesLst = $profesionalesLst;
+    }
 
     public function index()
     {
@@ -262,11 +274,8 @@ class ProfesionalesController extends Controller
         if($query){
             return response()->json(['data' => $query], 200);
         }else{
-            return response()->json(['msg' => "Sin perfiles. Ingrese uno"], 409);
+            return response()->json(['msg' => "Sin perfiles. Ingrese uno"], 404);
         }
-
-        
-
     }
 
     public function delPerfil(Request $request)
@@ -275,7 +284,7 @@ class ProfesionalesController extends Controller
 
         foreach ($perfiles as $perfil) {
             $perfil->delete();
-        }
+        }  
     }
 
     public function store(Request $request): string
@@ -358,36 +367,37 @@ class ProfesionalesController extends Controller
     {
         $prof = Profesional::find($request->Id);
 
-        if($prof)
-        {
-            $prof->Pago = $request->Pago == 'true' ? 1 : '';
-            $prof->InfAdj = $request->InfAdj == 'true' ? 1 : 0;
-            $prof->TMP = $request->TMP;
-            $prof->TLP = $request->TLP;
-
-            $prof->save();
-
-            return response()->json(['msg' => 'Se han guardado los cambios de manera correcta'], 200);
-        }else{
-            return response()->json(['msg' => 'No se ha encontrado el identificador para guardar'], 409);
+        if(empty($prof)) {
+            return response()->json(['msg' => 'Profesional no encontrado'], 404);
         }
+
+        $prof->update([
+            'Pago' => $request->Pago == 'true' ? 1 : '',
+            'InfAdj' => $request->InfAdj == 'true' ? 1 : 0,
+            'TMP' => $request->TMP,
+            'TLP' => $request->TLP
+        ]);
+
+        return response()->json(['msg' => 'Se han guardado los cambios de manera correcta'], 201);
+        
     }
 
     public function seguro(Request $request): mixed
     {
         $prof = Profesional::find($request->Id);
 
-        if($prof)
-        {
-            $prof->MN = $request->MN;
-            $prof->MP = $request->MP;
-            $prof->SeguroMP = $request->SeguroMP;
-            $prof->save();
-        
-            return response()->json(['msg' => 'Se han guardado los datos'], 200);
-        }else{
-            return response()->json(['msg' => 'No se encontro el identificador'], 409);
+        if(empty($prof)) {
+            return response()->json(['msg' => 'Profesional no encontrado'], 404);
         }
+
+        $prof->update([
+            'MN' => $request->MN,
+            'MP' => $request->MP,
+            'SeguroMP' =>$request->SeguroMP
+        ]);
+    
+        return response()->json(['msg' => 'Se han guardado los datos'], 201);
+
     }
 
     public function choisePerfil(Request $request)
@@ -412,6 +422,10 @@ class ProfesionalesController extends Controller
 
     public function choiseEspecialidad(Request $request)
     {
+        $efectores = $this->profesionalesLst->listado('Efector');
+        $informadores = $this->profesionalesLst->listado('Informador');
+        event(new LstProfesionalesEvent($efectores));
+        event(new LstProfInformadorEvent($informadores));
 
         $especialidad = ProfesionalProv::join('proveedores', 'profesionales_prov.IdProv', '=', 'proveedores.Id')
             ->where('profesionales_prov.IdProf', $request->Id)
@@ -429,11 +443,26 @@ class ProfesionalesController extends Controller
         }
 
         if(in_array($request->perfil, $this->profesionales)) {
+            $IdEspecialidad = Proveedor::where('Nombre', $request->especialidad)->first('Id'); 
+
             session()->put('Profesional',  strtoupper($request->perfil));
             session()->put('Especialidad', $request->especialidad);
+            session()->put('IdEspecialidad', $IdEspecialidad);
+
+            $efectores = $this->profesionalesLst->listado('Efector');
+            $informadores = $this->profesionalesLst->listado('Informador');
+            event(new LstProfesionalesEvent($efectores));
+            event(new LstProfInformadorEvent($informadores));
+            
+
         }else{
             session()->put('Profesional',  0);
             session()->put('Especialidad', 0);
+
+            $efectores = $this->profesionalesLst->listado('Efector');
+            $informadores = $this->profesionalesLst->listado('Informador');
+            event(new LstProfesionalesEvent($efectores));
+            event(new LstProfInformadorEvent($informadores));
         }
     }
 
@@ -467,6 +496,11 @@ class ProfesionalesController extends Controller
 
             
         return response()->json(['resultados' => $data]);
+    }
+
+    public function checkMultiEspecialidad()
+    {
+        return Auth::user()->profesional->TLP === 1;
     }
 
 }

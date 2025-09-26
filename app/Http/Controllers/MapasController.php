@@ -325,13 +325,15 @@ class MapasController extends Controller
         }
 
         $mapa = Mapa::find($request->Id);
-        if ($mapa) {
-            $mapa->Inactivo = 1;
-            $mapa->save();
 
-            return response()->json(['msg' => 'Mapa eliminado'], 200);
+        if(empty($mapa)) {
+            return response()->json(['msg' => 'Mapa no encontrado'], 404);
         }
-        return response()->json(['msg' => 'Mapa no encontrado'], 404);
+
+        $mapa->update(['Inactivo' => 1]);
+        return response()->json(['msg' => 'Mapa eliminado'], 200);
+
+        
     }
 
     public function prestaciones(Request $request)
@@ -553,7 +555,7 @@ class MapasController extends Controller
         return response()->json(['result' => $result]);
     }
 
-    public function serchInCerrar(Request $request): mixed
+    public function serchCerrados(Request $request): mixed
     {
         $NroPresCerrar = $request->prestacion;
         $EstadoCerrar = $request->estado;
@@ -650,7 +652,7 @@ class MapasController extends Controller
     }
 
 
-    public function searchInFinalizar(Request $request): mixed
+    public function searchFinalizados(Request $request): mixed
     {
         $NroRemito = $request->remito;
         $NroPrestacion = $request->prestacion;
@@ -697,32 +699,31 @@ class MapasController extends Controller
 
     public function saveFinalizar(Request $request): mixed
     {
-        $ids = $request->ids;
+        $ids = (array) $request->ids;
         $nuevoNroRemito = Constanciase::max('NroC') + 1;
         Constanciase::addRemito($nuevoNroRemito);
         $respuestas = [];
 
-        foreach ($ids as $id) {
-            $prestacion = Prestacion::where('Id', $id)->where('Cerrado', 1)->first();
+        $prestaciones = Prestacion::whereIn('Id', $ids)->where('Cerrado', 1)->get();
 
-            if ($prestacion) {
-                $prestacion->Finalizado = 1;
-                $prestacion->FechaFinalizado = now()->format('Y-m-d');
-                $prestacion->save();
+        foreach ($prestaciones as $prestacion) {
+            
+            $prestacion->Finalizado = 1;
+            $prestacion->FechaFinalizado = now()->format('Y-m-d');
+            $prestacion->save();
 
-                ConstanciaseIt::addConstPrestacion($id, Constanciase::max('Id'));
-                $this->actualizarRemitoPrestacion($id, $nuevoNroRemito);
+            ConstanciaseIt::addConstPrestacion($prestacion->Id, Constanciase::max('Id'));
+            $this->actualizarRemitoPrestacion($prestacion->Id, $nuevoNroRemito);
 
-                $respuesta = ['msg' => 'Se ha finalizado la prestación ' . $id . ' del mapa', 'estado' => 'success'];
-            } else {
-                $respuesta = ['msg' => 'No se ha podido finalizar la prestación ' . $id . ' del mapa', 'estado' => 'warning'];
-            }
-            $respuestas[] = $respuesta;
+            $respuesta = ['msg' => 'Se ha finalizado la prestación '.$prestacion->Id.' del mapa', 'estado' => 'success'];
+
+            $respuestas[] = $respuesta;      
         }
+
         return response()->json($respuestas);
     }
 
-    public function searchInEnviar(Request $request): mixed
+    public function searchEnviados(Request $request): mixed
     {
         $desde = $request->desde;
         $hasta = $request->hasta;
@@ -1308,7 +1309,7 @@ class MapasController extends Controller
         File::copy($this->adjAnexos($id), FileHelper::getFileUrl('escritura') . '/Enviar/eAnexos' . $id . '.pdf');
     }
 
-    private function rutasTempReportes(int $id): array
+    private function rutasTempReportes(int $id)
     {
         $prestacion = Prestacion::with('paciente')->find($id);
 

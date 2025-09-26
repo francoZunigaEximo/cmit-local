@@ -67,30 +67,46 @@
                     <div class="d-flex align-items-center">
 
                         <div class="ms-1 header-item d-none d-sm-flex">
+                            @can('prestaciones_add')
                             <button id="prestacionButton" type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle ms-2" title="Prestación rápida (ALT+ P)" data-bs-toggle="offcanvas" data-bs-target="#prestacionFast" aria-controls="offcanvas">
                                 <img src="{{ asset('images/iconos/pacientes.svg')}}" alt="Alta prestación rápida" width="40px" height="40px">
                             </button>
-                            <a class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle ms-2" title="Pacientes (ALT + A)" href="{{ route('prestaciones.index')}}">
+                            @endcan
+                            @can('prestaciones_show')
+                            <a class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle ms-2" title="Grilla prestaciones (ALT + A)" href="{{ route('prestaciones.index')}}">
                                 <img src="{{ asset('images/iconos/prestaciones.svg')}}" alt="Grilla prestaciones" width="40px" height="40px">
                             </a>
+                            @endcan
+                            @can('etapas_show')
                             <a class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle ms-2" title="Etapas (ALT + S)" href="{{ route('ordenesExamen.index')}}">
                                 <img src="{{ asset('images/iconos/etapas.svg')}}" alt="Etapas" width="40px" height="40px">
                             </a>
+                            @endcan
+                            @can('carnet_show')
                             <a class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle ms-2" title="Carnet" href="#">
                                 <img src="{{ asset('images/iconos/carnet.svg')}}" alt="Carnet" width="40px" height="40px">
                             </a>
+                            @endcan
+                            @can('efector_show')
                             <a class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle ms-2" title="Efector" href="{{ route('llamador.efector') }}">
                                 <img src="{{ asset('images/iconos/efector.svg')}}" alt="Efector" width="35px" height="35px">
                             </a>
+                            @endcan
+                            @can('informador_show')
                             <a class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle ms-2" title="Informador" href="{{ route('llamador.informador') }}">
                                 <img src="{{ asset('images/iconos/informador.svg')}}" alt="Informador" width="35px" height="35px">
                             </a>
-                            <a class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle ms-3" title="Combinado" href="#">
+                            @endcan
+                            @can('combinado_show')
+                            <a class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle ms-3" title="Combinado" href="{{ route('llamador.combinado')}}">
                                 <img src="{{ asset('images/iconos/combinado.svg')}}" alt="Combinado" width="52px" height="52px">
                             </a>
+                            @endcan
+                            @can('evaluador_show')
                             <a class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle ms-3" title="Evaluador" href="{{ route('llamador.evaluador') }}">
                                 <img src="{{ asset('images/iconos/evaluador.svg')}}" alt="Evaluador" width="40px" height="40px">
                             </a>
+                            @endcan
                         </div>
 
                         <div class="dropdown ms-sm-3 header-item topbar-user">
@@ -103,18 +119,21 @@
                                                 $rolesPermitidos = ['Efector', 'Informador', 'Combinado', 'Evaluador', 'Evaluador ART'];
                                                 $rolesUsuario = Auth::user()->role->pluck('nombre')->toArray();
                                                 $tieneRol = !empty(array_intersect($rolesPermitidos, $rolesUsuario));
+                                                $multiespecialidad = Auth::user()->profesional->TLP === 1;
                                             @endphp
-
                                             @if(!$tieneRol && empty(session('Profesional')) || session('Profesional') == '0')
                                                 @foreach(Auth::user()->role as $rol)
-                                                    {{ strtoupper($rol->nombre) }}<br>
+                                                    {{ strtoupper($rol->nombre) }}
+                                                    <br />
                                                 @endforeach
+                                            @elseif($multiespecialidad)
+                                                MULTIESPECIALIDAD
                                             @else
                                                 {{ session('Profesional') }} | {{ session('Especialidad') }}
                                             @endif
                                         </span></h6>
                                         
-                                        @if($tieneRol)
+                                        @if($tieneRol && !$multiespecialidad)
                                             <button type="button" data-bs-toggle="modal" data-bs-target="#choisePModal" class="btn btn-primary btn-label rounded-pill"><i class=" ri-anticlockwise-line label-icon align-middle rounded-pill fs-16 me-2"></i> Cambiar perfil</button>
                                         @endif
                                         </span>
@@ -218,17 +237,16 @@
                                         <a href="{{ route('clientes.index') }}" class="nav-link enlace-blanco" data-key="t-cliente"> Clientes </a>
                                     </li>
                                     @endcan
-                                    @can('boton_usuarios')
-                                    <li class="nav-item">
-                                        <a href="{{ route('usuarios.index') }}" class="nav-link enlace-blanco" data-key="t-usuarios"> Usuarios </a>
-                                    </li>
-                                    @endcan
+                                    @can('paquetes_show')
                                     <li class="nav-item">
                                         <a href="{{ route('paquetes.index') }}" class="nav-link enlace-blanco" data-key="t-usuarios"> Paquetes </a>
                                     </li>
+                                    @endcan
+                                    @can('grupos_show')
                                     <li class="nav-item">
                                         <a href="{{ route('grupos.index') }}" class="nav-link enlace-blanco" data-key="t-usuarios"> Grupos </a>
                                     </li>
+                                    @endcan
                                 </ul>
                             </div>
                         </li>
@@ -250,11 +268,11 @@
                                     </li>
                                     @endcan
                                     <!-- esto lo tengo que cambiar :) -->
+                                    
+                                    @can("notaCredito_show")
                                     <li class="nav-item">
                                         <a href="{{ route('notasCredito.index') }}" class="nav-link enlace-blanco" data-key="t-notaCredito"> Nota de crédito </a>
                                     </li>
-                                    @can("notaCredito_show")
-                                    
                                     @endcan
                                 </ul>
                             </div>
@@ -282,6 +300,27 @@
                             </a>
                         </li>
                         @endcan
+
+                        <li class="nav-item">
+                            <a class="nav-link menu-link collapsed" href="#sidebarAdmin" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarAdmin">
+                                <i data-feather="user" class="icon-dual"></i> <span data-key="t-admin">Admin</span>
+                            </a>
+                            <div class="menu-dropdown mega-dropdown-menu collapse" id="sidebarAdmin">
+                                <ul class="nav nav-sm flex-column">
+                                    @can('boton_usuarios')
+                                    <li class="nav-item">
+                                        <a href="{{ route('usuarios.index') }}" class="nav-link enlace-blanco" data-key="t-usuarios"> Usuarios </a>
+                                    </li>
+                                    @endcan
+                                    <li class="nav-item">
+                                        <a href="{{ route('llamador.admin') }}" class="nav-link enlace-blanco" data-key="t-llamador"> Llamador </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{{ route('clientes.bloqueos') }}" class="nav-link enlace-blanco" data-key="t-factura"> Clientes </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
                         
                     </ul>
                 </div>
@@ -404,6 +443,7 @@
 
         const PROFESIONAL = "{{ session('Profesional') }}";
         const ESPECIALIDAD = "{{ session('Especialidad') }}";
+        const IDESPECIALIDAD = "{{ session('IdEspecialidad') }}";
 
         const IDPROFESIONAL = "{{ Auth::user()->profesional_id }}";
 
@@ -422,21 +462,16 @@
 
         const lnkNuevoPaciente = "{{ route('pacientes.create') }}";
         const lnkExistePaciente = "{{ route('pacientes.edit', ['paciente' => '__paciente__']) }}";
-        const verifyWizard = "{{ route('verifyWizard') }}";
+        const verifyWizard = "{{ route('pacientes.verify') }}";
         const TOKEN = "{{ csrf_token() }}";
 
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': TOKEN
-            }
-        });
-
-        const IDLE_TIMEOUT = 300 * 60 * 1000; //5 horas
-        const CHECK_INTERVAL = 1000; //1 segundo
+        const IDLE_TIMEOUT = 300 * 60 * 1000;
+        const CHECK_INTERVAL = 3000; //3 segundo
         const finalizarSesion = "{{ route('usuario.cierreAutomatico') }}";
-        const sessionUser = "{{ auth()->user()?->id }}"; 
-
-        console.log("Total Horas: " + IDLE_TIMEOUT);
+        const sessionUser = "{{ auth()->user()?->id }}";
+        const sessionName = "{{ auth()->user()?->name }}"; 
+        const heartbeat = "{{ route('usuario.heartBeat') }}";
+        const multiEspecialidadCheck = "{{ route('profesionales.multiEspecialidad') }}";
 
         let sesionCerrada = false,
             idInterval = null
@@ -449,10 +484,11 @@
         }
 
         function iniciarIdMonitor() {
+            if (idInterval) clearInterval(idInterval);
+
             idInterval = setInterval(() => {
                 const tiempoInactividad = Date.now() - ultimaActividad;
-                // console.log("Tiempo inactividad: " + tiempoInactividad);
-                if (tiempoInactividad >= IDLE_TIMEOUT) {
+                if(tiempoInactividad >= IDLE_TIMEOUT) {
                     cerrarSesion();
                 }
             }, CHECK_INTERVAL);
@@ -471,17 +507,16 @@
             }
 
             $.get(finalizarSesion, { Id: parseInt(sessionUser) }, function(response) {
-                toastr.warning(response.msg);
+                toastr.warning(response.msg || "Tu sesión ha expirado por inactividad.");
                 setTimeout(()=>  {
                     window.location.href = "{{ route('login') }}";
-                }, 5000)
-                
+                }, 5000)      
             });
         }
 
 
         window.addEventListener("storage", function (event) {
-            if (event.key === "cerrar_sesion") {
+            if (event.key === "cerrar_sesion" && !sesionCerrada) {
                 cerrarSesion(); // ejecuta en esta pestaña también
             }
 
@@ -495,8 +530,18 @@
             $(document).on(event, resetUltimaActividad);
         });
 
-        iniciarIdMonitor();
-        resetUltimaActividad(); 
+        if (sessionUser) {
+            iniciarIdMonitor();
+        }
+
+        function sendHeartBeat() {
+            $.post(heartbeat, {_token: TOKEN})
+                .fail(function() {
+                    window.location.reload();
+                });
+        }
+
+        setInterval(sendHeartBeat, 20000); //envia actualizacion de estado cada 20 segundos
 
     </script>
 

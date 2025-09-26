@@ -16,8 +16,12 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
 
+use App\Traits\CheckPermission;
+
 class GrupoClientesController extends Controller
 {
+    use CheckPermission;
+
     protected $reporteService;
     protected $outputPath;
     protected $sendPath;
@@ -37,11 +41,19 @@ class GrupoClientesController extends Controller
 
     public function index()
     {
+        if(!$this->hasPermission("grupos_show")) {
+            return response()->json(["msg" => "No tiene permisos"], 403);
+        }
+
         return view('layouts.grupos.index');
     }
 
     public function searchGrupos(Request $request)
     {
+        if(!$this->hasPermission("grupos_delete")) {
+            return response()->json(["msg" => "No tiene permisos"], 403);
+        }
+
         if ($request->ajax()) {
             $query = $this->buildQuery($request);
             return DataTables::of($query)->make(true);

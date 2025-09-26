@@ -1267,8 +1267,8 @@ const verificarAlta = "{{ route('verificarAlta') }}";
 const savePrestacion = "{{ route('savePrestacion') }}";
 const blockPrestacion = "{{ route('blockPrestacion') }}";
 const downPrestaActiva = "{{ route('prestaciones.baja') }}";
-const getComentarioPres = "{{ route('getComentarioPres') }}";
-const setComentarioPres = "{{ route('setComentarioPres') }}";
+const getComentarioPres = "{{ route('comentarios.obtener') }}";
+const setComentarioPres = "{{ route('comentarios.guardar') }}";
 const searchPrestPacientes = "{{ route('searchPrestPacientes') }}";
 const lstExDisponibles = "{{ route('lstExDisponibles') }}";
 const lstFacturadas = "{{ route('lstFacturadas')}}";
@@ -1293,7 +1293,7 @@ const obsNuevaPrestacion = "{{ route('obsNuevaPrestacion') }}";
 const getFormaPagoCli = "{{ route('clientes.formaPago') }}";
 const listadoEstudiosImp = "{{ route('prestaciones.estudioReporte') }}";
 
-const getMapas = "{{ route('getMapas') }}";
+const getMapas = "{{ route('mapas.listado') }}";
 
 const deletePicture = "{{ route('deletePicture') }}";
 const GOINDEX = "{{ route('pacientes.index') }}";
@@ -1306,7 +1306,8 @@ const ID = "{{ $paciente->Id }}";
 let checkFichaLaboral = "{{ $fichaLaboral->Id ?? ''}}";
 const getTipoPrestacion = "{{ route('getTipoPrestacion') }}";
 
-const checkObs = "{{ route('checkObs') }}";
+const checkObs = "{{ route('fichalaboral.chequearObs') }}";
+const getExamenes = "{{ route('fichalaboral.chequearObs') }}";
 const excelPrestaciones = "{{ route('prestaciones.excel') }}";
 const USER = "{{ Auth::user()->name }}";
 const eliminarComentario = "{{ route('comentariosPriv.eliminar') }}";

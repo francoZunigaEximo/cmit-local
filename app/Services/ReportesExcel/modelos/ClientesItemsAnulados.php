@@ -26,10 +26,11 @@ class ClientesItemsAnulados implements ReporteInterface
     {
         $encabezados = [
             'A1' => 'Cliente',
-            'B1' => 'CUIT'
+            'B1' => 'CUIT',
+            'C1' => 'Total Items'
         ];
 
-        $columnas = ['A', 'B'];
+        $columnas = ['A', 'B', 'C'];
 
         foreach ($columnas as $columna) {
             $sheet->getColumnDimension($columna)->setAutoSize(true);
@@ -47,6 +48,7 @@ class ClientesItemsAnulados implements ReporteInterface
         foreach ($clientes as $cliente) {
             $sheet->setCellValue('A' . $fila, $cliente->Cliente);
             $sheet->setCellValue('B' . $fila, $cliente->CUIT);
+            $sheet->setCellValue('C' . $fila, $cliente->TotalItems);
             $fila++;
         }
     }

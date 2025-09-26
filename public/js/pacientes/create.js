@@ -25,9 +25,9 @@ $(function(){
         let documento = $(this).val();
 
         $.get(verify, {documento: documento, _token: TOKEN}, function(response){
-            if (response.existe) {
-                let paciente = response.paciente,
-                    url = editUrl.replace('__paciente__', paciente.Id);
+            if (response) {
+
+                url = editUrl.replace('__paciente__', response.Id);
                 principal.editLink.attr('href', url);
 
                 principal.myModal.modal('show');

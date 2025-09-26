@@ -258,8 +258,8 @@
 <script>
     //Rutas
     const getPacientes = "{{ route('getPacientes') }}";
-    const getComentarioPres = "{{ route('getComentarioPres') }}";
-    const setComentarioPres = "{{ route('setComentarioPres') }}";
+    const getComentarioPres = "{{ route('comentarios.obtener') }}";
+    const setComentarioPres = "{{ route('comentarios.guardar') }}";
     const searchPrestaciones = "{{ route('prestaciones.index') }}";
 
     const GOPACIENTES = "{{ route('pacientes.edit', ['paciente' => '__paciente__']) }}";

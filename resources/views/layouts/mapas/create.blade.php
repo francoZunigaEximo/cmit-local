@@ -107,7 +107,7 @@
 <script>
 //Rutas
 const getClientes = "{{ route('getClientes') }}";
-const checkMapa = "{{ route('checkMapa') }}";
+const checkMapa = "{{ route('mapas.chequearMapa') }}";
 </script>
 
 @push('styles')

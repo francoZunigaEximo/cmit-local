@@ -202,7 +202,6 @@ $(function(){
     });
 
     function tablasExamenes(data) {
-        console.log(data)
         principal.grillaExamenes.empty();
         preloader('on');
 
@@ -249,7 +248,7 @@ $(function(){
                             <td>${examen.NombreExamen}</td>
                             <td>${estado(examen.CAdj)}</td>
                             <td title="NoImprime: ${examen.NoImprime} | Adjunto: ${examen.Adjunto} | Archivo: ${examen.Archivo}">${checkAdjunto(examen.NoImprime, examen.Adjunto, examen.Archivo)}</td>
-                            <td>${[null, undefined, ''].includes(examen.ObsExamen) ? '' : examen.ObsExamen}</td>
+                            <td>${!examen.ObsExamen ? '' : examen.ObsExamen}</td>
                             <td>${verificarProfesional(examen, "efector")}</td>
                             <td>${verificarProfesional(examen, "informador")}</td>
                             <td>

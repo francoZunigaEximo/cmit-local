@@ -1,9 +1,9 @@
 $(function() {
-
     let nombre = $('#nombre').val(), 
         usuario = $('#usua').val(), 
-        rol = $('#rol').val(), 
-        condiciones = [nombre, usuario, rol],
+        rol = $('#rol').val();
+    
+    let condiciones = [nombre, usuario, rol],
         idSesion = $('#ID').val(),
         tabla = "#listaUsuarios";
 
@@ -104,18 +104,21 @@ $(function() {
 
        $(document).on('click', '.buscarUsuario', function (e) {
             e.preventDefault();
+
+            /*if (condiciones.every(condicion => !condicion)) {
+                toastr.warning("Debe seleccionar algún filtro para buscar",'',{timeOut: 1000});
+                return;
+            }*/
+            nombre = $('#nombre').val();
+            usuario = $('#usua').val();
+            rol = $('#rol').val();
+
+            informacion.ajax.data.nombre = nombre;
+            informacion.ajax.data.usuario = usuario;
+            informacion.ajax.data.rol = rol;
    
-           if (condiciones.every(condicion => !condicion)) {
-               toastr.warning("Debe seleccionar algún filtro para buscar",'',{timeOut: 1000});
-               return;
-           }
-   
-           informacion.ajax.data.nombre = nombre;
-           informacion.ajax.data.usuario = usuario;
-           informacion.ajax.data.rol = rol;
-   
-           dataTable.clear().destroy();
-           dataTable = new DataTable(tabla, informacion);
+            dataTable.clear().destroy();
+            dataTable = new DataTable(tabla, informacion);
        });
 
 });

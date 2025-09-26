@@ -158,7 +158,7 @@ $(function () {
             },
             processResults: function (data) {
                 return {
-                    results: data
+                    results: data.examen
                 };
             },
             cache: true

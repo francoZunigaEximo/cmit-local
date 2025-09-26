@@ -169,7 +169,7 @@
 
 <script>
 //Rutas
-const verify = "{{ route('verify') }}";
+const verify = "{{ route('pacientes.verify') }}";
 const getLocalidades = "{{ route('getLocalidades') }}";
 const getCodigoPostal = "{{ route('getCodigoPostal') }}";
 

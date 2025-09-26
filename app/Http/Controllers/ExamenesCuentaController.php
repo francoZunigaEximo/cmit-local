@@ -34,7 +34,7 @@ class ExamenesCuentaController extends Controller
     private $reporteService;
     private $itemSupport;
     private $itemCrud;
-        protected $reporteExcel;
+    protected $reporteExcel;
 
 
     public function __construct(
@@ -122,8 +122,7 @@ class ExamenesCuentaController extends Controller
             });
 
             $query->when(!empty($request->estado) && $request->estado === 'pago', function ($query) {
-                $query->where('pagosacuenta.Pagado', 1)
-                      ->whereNot('pagosacuenta.Pagado', 0);
+                $query->where('pagosacuenta.Pagado', 1);
             });
 
             $query->when(!empty($request->estado) && $request->estado === 'todos', function ($query) {
@@ -192,11 +191,12 @@ class ExamenesCuentaController extends Controller
             if(!empty($request->examen2)) {
                 $query->where('examenes.Nombre', 'like', '%' . $request->examen2 . '%');
             }
-
             $result = $query->havingRaw('contadorSaldos > 0')
                 ->whereNot('pagosacuenta_it.Obs', 'provisorio')
                 ->orderBy('clientes.RazonSocial')
-                ->orderBy('examenes.Nombre');
+                ->orderBy('examenes.Nombre')
+                ->orderBy('clientes.ParaEmpresa')
+                ->orderBy('pagosacuenta.Nro');
             return $result;
     }
 
@@ -206,28 +206,35 @@ class ExamenesCuentaController extends Controller
             abort(403);
         }
 
-        $estados = $request->Id;
+        $estados = (array) $request->Id;
         $resultado = [];
+        $excel = null;
 
-        if (!is_array($estados)) {
-            $estados = [$estados];
+        $items = ExamenCuenta::whereIn('Id', $estados)->get();
+
+        if(empty($items)) {
+            return response()->json(['msg' => 'No hay examenes para modificar el pago'], 404);
         }
 
-        foreach($estados as $estado) {
+        foreach($items as $item) {
 
-            $item = ExamenCuenta::find($estado);
+            $pagado = $item->Pagado === 0 ? 1 : 0;
+            $fechaPago = $item->FechaP === '0000-00-00' ? $request->fecha : '0000-00-00';
 
-            if ($item) {
-
-                $item->Pagado = $item->Pagado === 0 ? 1 : 0;
-                $item->FechaP = $item->FechaP === '0000-00-00' ? now()->format('Y-m-d') : '0000-00-00';
-                $item->save();
-                $resultado = ['message' => 'Se ha realizado la actualización correctamente', 'estado' => 'success'];
-                
-            }
+            $item->update(['Pagado' => $pagado, 'FechaP' => $fechaPago]);
+            $resultado = ['msg' => 'Se ha realizado la actualización correctamente'];  
         }
 
-        return response()->json($resultado);
+        if($request->tipo === 'pagoMasivo') {
+
+            $consulta = $this->queryBasico();
+            $subQuery = $consulta->whereIn('pagosacuenta.Id', $estados)->groupBy('pagosacuenta.Id', 'pagosacuenta.Tipo', 'pagosacuenta.Suc', 'pagosacuenta.Nro', 'pagosacuenta.Pagado')->get();
+
+            $reporte = $this->reporteExcel->crear('pagoMasivo'); 
+            $excel = $reporte->generar($subQuery);
+        }
+
+        return response()->json(['resultados' => $resultado, 'reporte' => empty($excel) ? null : $excel]);
     }
 
     public function create()
@@ -327,19 +334,13 @@ class ExamenesCuentaController extends Controller
         }
 
         $examen = ExamenCuenta::find($request->Id);
-        $resultado = [];
 
-        if ($examen) 
-        {
-            $examen->delete();
-            $resultado = ['message' => 'Se ha eliminado el examen a cuenta de manera correcta', 'estado' => 'success'];
-
-        } else {
-
-            $resultado = ['message' => 'Ha ocurrido un error en el ID de eliminación. Verifique por favor', 'estado' => 'fail'];
+        if(empty($examen)) {
+            return response()->json(['message' => 'Ha ocurrido un error en el ID de eliminación. Verifique por favor', 'estado' => 'fail']);
         }
 
-        return response()->json($resultado);
+        $examen->delete();
+        return response()->json(['message' => 'Se ha eliminado el examen a cuenta de manera correcta', 'estado' => 'success']);
     }
 
     public function deleteItem(Request $request)
@@ -348,16 +349,11 @@ class ExamenesCuentaController extends Controller
             return response()->json(['msg' => 'No tiene permisos'], 403);
         }
 
-        $examenes = $request->Id;
+        $examenes = (array) $request->Id;
+        $items = ExamenCuentaIt::whereIn('Id', $examenes)->get();
 
-        if (!is_array($examenes)) {
-            $examenes = [$examenes];
-        }
-
-        foreach($examenes as $examen) {
-
-            $item = ExamenCuentaIt::find($examen);
-            $item && $item->delete();
+        foreach($items as $item) {
+            $item->delete();
         }
     }
 
@@ -367,20 +363,11 @@ class ExamenesCuentaController extends Controller
             return response()->json(['msg' => 'No tiene permisos'], 403);
         }
 
-        $examenes = $request->Id;
+        $examenes = (array) $request->Id;
+        $items = ExamenCuentaIt::whereIn('Id', $examenes)->get();
 
-        if (!is_array($examenes)) {
-            $examenes = [$examenes];
-        }
-
-        foreach($examenes as $examen) {
-
-            $item = ExamenCuentaIt::find($examen);
-            if($item) 
-            {
-                $item->Precarga = 0;
-                $item->save();
-            }
+        foreach($items as $item) {
+            $item->update(['Precarga' => 0]);
         }
     }
 
@@ -390,20 +377,11 @@ class ExamenesCuentaController extends Controller
             return response()->json(['msg' => 'No tiene permisos'], 403);
         }
 
-        $examenes = $request->Id;
+        $examenes = (array) $request->Id;
+        $items = ExamenCuentaIt::whereIn('Id', $examenes)->get();
 
-        if (!is_array($examenes)) {
-            $examenes = [$examenes];
-        }
-
-        foreach($examenes as $examen) {
-
-            $item = ExamenCuentaIt::find($examen);
-            if($item) 
-            {
-                $item->Precarga = $request->Precarga;
-                $item->save();
-            }
+        foreach($items as $item) {
+            $item->update(['Precarga' => $request->Precarga]);
         }
     }
 
@@ -1095,12 +1073,8 @@ class ExamenesCuentaController extends Controller
 
     private function addItemPrestacion(int $idPrestacion, int $idExamen)
     {
-        $examenes = $idExamen;
-
-        if (!is_array($examenes)) {
-            $examenes = [$examenes];
-        }
-
+        $examenes = (array) $idExamen;
         $this->itemCrud->create($examenes, $idPrestacion, null);
     }
+
 }

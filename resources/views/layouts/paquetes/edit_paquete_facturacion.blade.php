@@ -6,7 +6,7 @@
 
 <div class="row mb-4">
     <div class="col-12 text-end">
-        <button onclick="window.history.back()" class="btn btn-warning"><i class="ri-arrow-left-line"></i>&nbsp;Volver</button>
+        <a href="{{ route('paquetes.index') }}" class="btn btn-warning"><i class="ri-arrow-left-line"></i>&nbsp;Volver</a>
     </div>
 </div>
 
@@ -136,8 +136,8 @@
     const getPaqueteFacturacionId = "{{ route('paquetes.getEstudiosPaqueteFacturacion') }}";
     const getPaquetes = "{{ route('getPaquetes') }}";
     const paqueteId = "{{ route('paquetes.examenesPaqueteId') }}";
-    const getExamenes = "{{ route('examenes.getExamenes') }}";
-    const getExamenId = "{{ route('examenes.getById') }}"
+   const getExamenes = "{{ route('searchExamen') }}";
+    const getExamenId = "{{ route('paquetes.getExamen') }}";
 
     const postEditPaqueteFactutacion = "{{ route('paquetes.postEditPaqueteFactutacion') }}"
 

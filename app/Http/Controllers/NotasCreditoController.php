@@ -45,16 +45,18 @@ class NotasCreditoController extends Controller
 
     public function getItemsAnulados($id)
     {
-        return view('layouts.notasCredito.itemsanulados', ['idEmpresa' => $id]);
+        $cliente = Cliente::find($id);
+        return view('layouts.notasCredito.itemsanulados', ['idEmpresa' => $id, 'cliente' => $cliente]);
     }
 
     public function editarNotasCredito($id)
     {
         $notaCredito = NotaCredito::find($id);
+        $cliente = Cliente::find($notaCredito->IdEmpresa);
         if (!$notaCredito) {
             return redirect()->route('notasCredito.index')->with('error', 'Nota de crédito no encontrada.');
         }
-        return view('layouts.notasCredito.editarnotacredito', ['notaCredito' => $notaCredito]);
+        return view('layouts.notasCredito.editarnotacredito', ['notaCredito' => $notaCredito, 'cliente' => $cliente]);
     }
 
     public function getClientes(Request $request)
@@ -68,23 +70,20 @@ class NotasCreditoController extends Controller
 
     public function buildQueryClientes(Request $request)
     {
-        //consulta de items que tienen nota de credito
-        $items_nota = DB::table('notascredito_it')
-            ->select('notascredito_it.IdIP')
-            ->where('notascredito_it.Baja', 0);
-
         //cuando tenga datos completo esta parte
         $query = DB::table('prestaciones')
-            ->select('prestaciones.IdEmpresa')
             ->join('clientes', 'prestaciones.IdEmpresa', '=', 'clientes.Id')
             ->join('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
+            ->leftJoin('notascredito_it', function($join){
+                $join->on('itemsprestaciones.Id', '=', 'notascredito_it.IdIP');
+                $join->where('notascredito_it.Baja', '=', 0);
+            })
             ->where('prestaciones.Id', '<>', 0)
             ->where('prestaciones.Facturado', '=', 1)
             ->where('itemsprestaciones.Anulado', '=', 1)
-            ->where('prestaciones.Cerrado', '=', 0)
-            ->whereNotIn('itemsprestaciones.Id', $items_nota)
+            ->whereNull('notascredito_it.Id')
             ->groupBy('clientes.Id', 'clientes.ParaEmpresa', 'clientes.Identificacion')
-            ->select('clientes.Id as Id', 'clientes.ParaEmpresa as Cliente', 'clientes.Identificacion as CUIT');
+            ->select('clientes.Id as Id', 'clientes.ParaEmpresa as Cliente', 'clientes.Identificacion as CUIT', DB::raw('COUNT(clientes.Id) as TotalItems'));
 
         if ($request->has('IdEmpresa') && $request->IdEmpresa != 0) {
             $query->where('prestaciones.IdEmpresa', '=', $request->IdEmpresa);
@@ -115,7 +114,7 @@ class NotasCreditoController extends Controller
     {
         $items_notas = DB::table('notascredito_it')
             ->select('notascredito_it.IdIP')
-            ->where('notascredito_it.Baja', 0);
+            ->where('notascredito_it.Baja', '=', 0);
 
         $items_facturas = DB::table('itemsprestaciones')
             ->join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
@@ -127,7 +126,7 @@ class NotasCreditoController extends Controller
             ->where('prestaciones.Facturado', '=', 1)
             //->where('itemsprestaciones.NumeroFacturaVta', '>', 0)
             ->where('itemsprestaciones.Anulado', '=', 1)
-            ->select('itemsprestaciones.Id as Id', 'facturasventa.NroFactura as NroFactura', 'facturasventa.Sucursal as Sucursal', 'facturasventa.Tipo as Tipo', 'facturasventa.Fecha as FechaAnulado', 'prestaciones.Id as Prestacion', 'examenes.Nombre as Examen', 'pacientes.Nombre as Paciente');
+            ->select('itemsprestaciones.Id as Id', 'prestaciones.Cerrado as cerrado','facturasventa.NroFactura as NroFactura', 'facturasventa.Sucursal as Sucursal', 'facturasventa.Tipo as Tipo', 'itemsprestaciones.FechaAnulado as FechaAnulado', 'prestaciones.Id as Prestacion', 'examenes.Nombre as Examen', 'pacientes.Nombre as Paciente');
 
         if ($request->has('fechaDesde') && $request->fechaDesde != '') {
             $items_facturas->where('itemsprestaciones.FechaAnulado', '>=', $request->fechaDesde);
@@ -152,11 +151,15 @@ class NotasCreditoController extends Controller
     {
         $id = $request->id;
         $item = ItemPrestacion::find($id);
-        if ($item) {
+        $prestacion = Prestacion::find($item->IdPrestacion);
+        
+        if ($item && $prestacion->Cerrado == 0) {
             $item->Anulado = 0;
             $item->save();
-             Auditor::setAuditoria($id, 8,4,Auth::user()->Id);
+            Auditor::setAuditoria($id, 8,4,Auth::user()->name);
             return response()->json(['success' => true, 'message' => 'Item reactivado correctamente.'], 200);
+        } else if($prestacion->Cerrado == 1) {
+            return response()->json(['success' => false, 'message' => 'La prestación está cerrada.'], 400);
         } else {
             return response()->json(['success' => false, 'message' => 'Item no encontrado.'], 404);
         }
@@ -182,7 +185,7 @@ class NotasCreditoController extends Controller
             'IdEmpresa' => $request->IdCliente, // ID del cliente
             'TipoCliente' => $cliente->TipoCliente, // Tipo de cliente
             'TipoNC' => 1, // Tipo de nota de crédito (1 para anulación)
-            'Obs' => $request->Observacion, // Observación de la nota de crédito
+            'Obs' => $request->Observacion != null? $request->Observacion : '', // Observación de la nota de crédito
         ]);
 
         foreach ($request->items as $item) {
@@ -196,7 +199,7 @@ class NotasCreditoController extends Controller
             $notaCreditoIt->save();
         }
 
-        Auditor::setAuditoria($notaCredito->Id, 7,1,Auth::user()->Id);
+        Auditor::setAuditoria($notaCredito->Id, 7,1,Auth::user()->name);
 
         return response()->json(['success' => true, 'message' => 'Nota de crédito creada correctamente.'], 200);
     }
@@ -215,19 +218,19 @@ class NotasCreditoController extends Controller
         $notas = DB::table('notascredito')
             ->join('clientes', 'notascredito.IdEmpresa', '=', 'clientes.Id')
             ->where('notascredito.Baja', 0)
-            ->select('notascredito.Id as Id', 'notascredito.Nro as NroNotaCredito', 'notascredito.Fecha as Fecha', 'clientes.ParaEmpresa as Empresa', 'clientes.Identificacion as CUIT', 'notascredito.Obs as Observacion')
+            ->select('notascredito.Id as Id', 'notascredito.Tipo as Tipo', 'notascredito.Sucursal as Sucursal', 'notascredito.Nro as NroNotaCredito', 'notascredito.Fecha as Fecha', 'clientes.ParaEmpresa as Empresa', 'clientes.Identificacion as CUIT', 'notascredito.Obs as Observacion')
             ->orderBy('notascredito.Fecha', 'desc');
 
         if ($request->has('IdEmpresa') && $request->IdEmpresa != 0) {
             $notas->where('notascredito.IdEmpresa', '=', $request->IdEmpresa);
         }
 
-        if ($request->has('nroDesde') && $request->nroDesde != '') {
-            $notas->where('notascredito.Id', '>=', $request->nroDesde);
+        if ($request->has('NroDesde') && $request->NroDesde != '') {
+            $notas->where('notascredito.Nro', '>=', $request->NroDesde);
         }
 
-        if ($request->has('nroHasta') && $request->nroHasta != '') {
-            $notas->where('notascredito.Id', '<=', $request->nroHasta);
+        if ($request->has('NroHasta') && $request->NroHasta != '') {
+            $notas->where('notascredito.Nro', '<=', $request->NroHasta);
         }
 
         if ($request->has('fechaDesde') && $request->fechaDesde != '') {
@@ -275,7 +278,7 @@ class NotasCreditoController extends Controller
             'Tipo' => $request->Tipo,
             'Sucursal' => $request->Sucursal,
             'Fecha' => $request->Fecha,
-            'Obs' => $request->Observacion,
+            'Obs' => $request->Observacion != null? $request->Observacion : '',
         ]);
 
         // Eliminar los items que se hayan marcado para eliminar
@@ -303,12 +306,12 @@ class NotasCreditoController extends Controller
 
             $control = $this->eliminarNota($id);
             if ($control == 0) {
-                Auditor::setAuditoria($id, 7,3,Auth::user()->Id);
+                Auditor::setAuditoria($id, 7,3,Auth::user()->name);
                 return response()->json(['success' => true, 'message' => 'Nota de crédito eliminada correctamente.'], 200);
             } else if ($control == 1) {
                 return response()->json(['success' => false, 'message' => 'No se puede eliminar la nota de crédito porque tiene items asociados.'], 400);
             } else {
-                return response()->json(['success' => false, 'message' => 'No se puede eliminar la nota de crédito porque tiene items asociados que no están anulados.'], 400);
+                return response()->json(['success' => false, 'message' => 'No se puede eliminar la nota de crédito porque tiene items asociados que están anulados.'], 400);
             }
         } catch (Exception $e) {
             return response()->json(['success' => false, 'message' => 'Error al eliminar la nota de crédito: ' . $e->getMessage()], 500);
@@ -327,7 +330,7 @@ class NotasCreditoController extends Controller
             // Marcar la nota de crédito como eliminada
             $notaCredito->Baja = 1;
             $notaCredito->save();
-            Auditor::setAuditoria($id, 7,3,Auth::user()->Id);
+            Auditor::setAuditoria($id, 7,3,Auth::user()->name);
             return 0;
         } else {
             return 2;
@@ -360,7 +363,7 @@ class NotasCreditoController extends Controller
                 $result["no_eliminadas"]++;
             }
             
-            Auditor::setAuditoria($id, 7,3,Auth::user()->Id);
+            Auditor::setAuditoria($id, 7,3,Auth::user()->name);
         }
         return response()->json(['success' => true, 'result' => $result], 200);
     }

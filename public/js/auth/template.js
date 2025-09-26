@@ -1,6 +1,9 @@
 $(function() {
 
     const profesionales =  ["Efector", "Informador", "Evaluador", "Combinado", "Evaluador ART"];
+    const select = $("#choisePerfil");
+    const especialidad = $('#choiseEspecialidad');
+    const choisePModal = $('#choisePModal');
 
     seleccionPerfil(PROFESIONAL, ESPECIALIDAD, IDPROFESIONAL);
     opcionesChoise(IDPROFESIONAL);
@@ -9,78 +12,65 @@ $(function() {
         especialidadChoise(IDPROFESIONAL);
     });
 
-
-
-    function opcionesChoise(id)
-    {
-        const select = $("#choisePerfil");
+    async function opcionesChoise(id) {
+        
         if(!id) return;
 
         select.empty().append('<option value="" selected>Elija una opción...</option>');
 
-        $.get(choisePerfil, {Id: id})
-            .done(function(response){
-
-                for(let index = 0; index < response.length; index++){
-                    let data = response[index];
-                    select.append(`<option value="${data.Nombre.toLowerCase()}">${data.Nombre}</option>`);
-                }
-            });
+        let response = await $.get(choisePerfil, {Id: id});
+ 
+        for(let index = 0; index < response.length; index++){
+            let data = response[index];
+            select.append(`<option value="${data.Nombre.toLowerCase()}">${data.Nombre}</option>`);
+        }          
     }
 
-    function seleccionPerfil(profesional, especialidad, id,){
-        $.get(choisePerfil, {Id: id}, function(response){
-            let resultado = response.some(item => profesionales.includes(item.Nombre));
+    async function seleccionPerfil(profesional, especialidad, id,){
+        let response = await $.get(choisePerfil, {Id: id}),
+            resultado = response.some(item => profesionales.includes(item.Nombre));
 
-            if(resultado && 
-                (
-                    ['',0,null, undefined, '0'].includes(profesional) || 
-                    ['',0,null, undefined, '0'].includes(especialidad) 
-                )
-            ){
-                $('#choisePModal').modal('show');
-            }
+        let multiCheck = await $.get(multiEspecialidadCheck); 
+
+        if(multiCheck) return;
+
+        if(resultado && (!profesional || !especialidad)) {
+            choisePModal.modal('show');
+        }
+    }
+
+    async function especialidadChoise(profesional){
+
+        if(!profesional || !select.val()) return;
+
+        especialidad.empty().append('<option value="" selected>Elija una opción...</option>');
+
+        let response = await  $.get(choiseEspecialidad, { Id: profesional, Tipo: select.val()});
+
+        $.each(response, function(index, data){
+            let contenido =  `<option value="${data.Nombre}">${data.Nombre}</option>`;
+            especialidad.append(contenido);
         });
-    }
-
-    function especialidadChoise(profesional){
-
-        let tipo = $('#choisePerfil').val();
-
-        if(!profesional || !tipo) return;
-
-        $('#choiseEspecialidad').empty().append('<option value="" selected>Elija una opción...</option>');
-
-        $.get(choiseEspecialidad, { Id: profesional, Tipo: tipo})
-            .done(function(response){
-                $.each(response, function(index, data){
-                    let contenido =  `<option value="${data.Nombre}">${data.Nombre}</option>`;
-                    $('#choiseEspecialidad').append(contenido);
-                });
-            });
     }
 
     $(document).on('click', '.cargarPrestador', function(){
 
-        let especialidad = $('#choiseEspecialidad').val(),
-            perfil = $('#choisePerfil').val(),
-            error = `
+        let error = `
             <div class="alert alert-warning alert-dismissible fade show" role="alert">
                 <strong> Atención </strong> Debe seleccionar un perfil y una especialidad
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
             `;
-        if(!especialidad || !perfil){
+
+        if(!especialidad.val() || !select.val()){
             $('.message-sesion').empty().append(error);
             return;
         }
 
-        $.post(savePrestador, {perfil: perfil, especialidad: especialidad, _token: TOKEN})
+        $.post(savePrestador, {perfil: select.val(), especialidad: especialidad.val(), _token: TOKEN})
             .done(function(){
-
-                $('#choisePModal').modal('hide');
+                choisePModal.modal('hide');
                 location.reload();
-
             })
             .fail(function(){
                 seleccionPerfil(PROFESIONAL, ESPECIALIDAD, IDSESSION);

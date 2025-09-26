@@ -7,9 +7,10 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 use Illuminate\Support\Str;
 use App\Helpers\ToolsReportes;
+use Carbon\Carbon;
 
-class EfectorExportar implements ReporteInterface
-{
+class PagoMasivo implements ReporteInterface {
+
     protected $spreadsheet;
     protected $sheet;
 
@@ -25,18 +26,12 @@ class EfectorExportar implements ReporteInterface
     public function columnasYEncabezados($sheet)
     {
         $encabezados = [
-            'A1' => 'Fecha',
-            'B1' => 'Prestación',
-            'C1' => 'Empresa',
-            'D1' => 'ParaEmpresa',
-            'E1' => 'ART',
-            'F1' => 'Paciente',
-            'G1' => 'DNI',
-            'H1' => 'Tipo',
-            'I1' => 'Telefono'
+            'A1' => 'Factura',
+            'B1' => 'Fecha facturación',
+            'C1' => 'Empresa'
         ];
 
-        $columnas = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
+        $columnas = ['A', 'B', 'C'];
 
         foreach ($columnas as $columna) {
             $sheet->getColumnDimension($columna)->setAutoSize(true);
@@ -51,16 +46,13 @@ class EfectorExportar implements ReporteInterface
     public function datos($sheet, $datos)
     {
         $fila = 2;
-        foreach($datos as $efector){
-            $sheet->setCellValue('A'.$fila, $efector->fecha);
-            $sheet->setCellValue('B'.$fila, $efector->prestacion ?? 0);
-            $sheet->setCellValue('C'.$fila, $efector->empresa ?? '');
-            $sheet->setCellValue('D'.$fila, $efector->paraEmpresa ?? '');
-            $sheet->setCellValue('E'.$fila, $efector->art ?? '');
-            $sheet->setCellValue('F'.$fila, $efector->paciente ?? '');
-            $sheet->setCellValue('G'.$fila, $efector->dni ?? '');
-            $sheet->setCellValue('H'.$fila, $efector->tipo ?? '');
-            $sheet->setCellValue('I'.$fila, $efector->telefono ?? '');
+
+        foreach($datos as $dato) {
+            $factura = $dato->Tipo . str_pad($dato->Sucursal, 4, "0") . str_pad($dato->Numero, 8, "0");
+
+            $sheet->setCellValue('A' . $fila, $factura);
+            $sheet->setCellValue('B' . $fila, !empty($dato->FechaPagado) ? Carbon::parse($dato->FechaPagado)->format('d/m/Y') : '');
+            $sheet->setCellValue('C' . $fila, $dato->Empresa);
             $fila++;
         }
     }
@@ -69,8 +61,9 @@ class EfectorExportar implements ReporteInterface
     {
         $this->columnasYEncabezados($this->sheet);
         $this->datos($this->sheet, $datos);
-        
-        $name = 'exportar_' . Str::random(6) . '.xlsx';
+
+        $name = 'pagoMasivo_' . Str::random(6) . '.xlsx';
         return $this->generarArchivo($this->spreadsheet, $name);
     }
+
 }

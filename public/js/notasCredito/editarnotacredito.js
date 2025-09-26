@@ -60,7 +60,7 @@ function cargarTabla() {
                 }
 
             },
-           
+
             {
                 data: null,
                 name: 'Cliente',
@@ -81,7 +81,7 @@ function cargarTabla() {
                 }
 
             },
-             {
+            {
                 data: null,
                 name: 'Prestacion',
                 orderable: true,
@@ -103,7 +103,12 @@ function cargarTabla() {
             }
         ],
         language: {
-            processing: "<div style='text-align: center; margin-top: 20px;'><img src='./images/spinner.gif' /><p>Cargando...</p></div>",
+            processing:
+            `<div class="text-center p-2">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>`,
             emptyTable: "No hay paquetes con los datos buscados",
             paginate: {
                 first: "Primera",
@@ -148,19 +153,27 @@ function cargarTabla() {
         },
     });
 
-    
+
     tabla.on('click', 'button.remove-item-btn', function () {
-        let id = $(this).data().id;
-        itemsEliminar.push(id);
-        row = $(this).closest('tr');
-        row.hide(); 
+        swal({
+            title: "¿Está seguro que desea eliminar el item de la nota de crédito?",
+            icon: "warning",
+            buttons: ["Cancelar", "Eliminar"],
+        }).then((aceptar) => {
+            if (aceptar) {
+                let id = $(this).data().id;
+                itemsEliminar.push(id);
+                row = $(this).closest('tr');
+                row.hide();
+            }
+        });
     });
 
-    $('#guardarCambios').on('click',  function () {
+    $('#guardarCambios').on('click', function () {
         editarNotaCredito();
     });
 
-    function editarNotaCredito(){
+    function editarNotaCredito() {
         let tipo = $('#tipo').val();
         let sucursal = $('#sucursal').val();
         let nroNotaCredito = $('#nroNotaCredito').val();
@@ -168,9 +181,9 @@ function cargarTabla() {
         let id = parseInt(idNota);
         let observaciones = $('#descripcion').val();
 
-       
-        if(validarCampos()){
-             preloader('on');
+
+        if (validarCampos()) {
+            preloader('on');
             $.ajax({
                 url: editarNotasCreditoPost,
                 type: 'POST',
@@ -187,18 +200,18 @@ function cargarTabla() {
                 dataType: "json",
                 success: function (response) {
                     if (response.success) {
-                        toastr.success(response.message, '', {timeOut: 1000});
+                        toastr.success(response.message, '', { timeOut: 1000 });
                         setTimeout(function () {
                             history.back();
                         }, 1000);
                     } else {
-                        toastr.error(response.message, '', {timeOut: 1000});
+                        toastr.error(response.message, '', { timeOut: 1000 });
                     }
-                     preloader('off');
+                    preloader('off');
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     console.error("Error: ", textStatus, errorThrown);
-                     preloader('off');
+                    preloader('off');
                 }
             });
         }
@@ -226,15 +239,37 @@ function cargarTabla() {
         if (!fecha) {
             mensaje += 'Debe ingresar una fecha.\n';
         }
-        if (!observaciones) {
-            mensaje += 'Debe ingresar una observación.\n';
-        }
 
-        if(mensaje) {
+        if (mensaje) {
             toastr.error(mensaje, '', { timeOut: 1000 });
             return false;
         }
 
         return true;
     }
+}
+
+$('#check-todos').on('change', function () {
+    const check = this.checked;
+    $('.fila-checkbox').prop('checked', check);
+});
+
+function eliminarMasivo() {
+    var obtenerIdsSeleccionados = $(".fila-checkbox:checked").map(function () {
+        return parseInt($(this).val());
+    }).get();
+    swal({
+        title: "¿Está seguro que desea eliminar los item de la nota de crédito?",
+        icon: "warning",
+        buttons: ["Cancelar", "Eliminar"],
+    }).then((aceptar) => {
+        if (aceptar) {
+           itemsEliminar = itemsEliminar.concat(obtenerIdsSeleccionados);
+            obtenerIdsSeleccionados.forEach(function (id) {
+                let row = $(`.fila-checkbox[value="${id}"]`).closest('tr');
+                row.hide();
+            });
+            toastr.success("Items eliminados correctamente", '', { timeOut: 1000 });
+        }
+    });
 }

@@ -12,6 +12,7 @@ $(function() {
     checkBloq();
     tablasExamenes(ID, false, '#lstFact')
     checkeoEstado(ID);
+    cargarUsuario();
 
     $(document).on('click', '.delete-icon', function(e) {
         e.preventDefault();
@@ -23,6 +24,7 @@ $(function() {
             type: 'Post',
             data: {
                 Id: Id,
+                IdRegistro: ID,
                 _token: TOKEN,
             },
             success: function(){
@@ -87,7 +89,7 @@ $(function() {
                     location.reload();
                 }, 3000);
                 
-               if(bloqueado === 1 && motivo !== ''){
+               if(bloqueado === 1 && motivo){
                     $.ajax({
                         url: block,
                         type: 'POST',
@@ -137,7 +139,7 @@ $(function() {
 
         let camposBasicos = [Nombre, Apellido, DNI, Derecho];
 
-        if (camposBasicos.every(contenido => contenido === '')) {
+        if (camposBasicos.every(contenido => !contenido)) {
             toastr.warning('Por favor, complete todos los campos obligatorios.', '', {timeOut: 1000});
             return;
         }
@@ -169,9 +171,9 @@ $(function() {
                Id: ID,
                Derecho: Derecho
             },
-            success: function(){
+            success: function(response){
                 preloader('off');
-                toastr.success('El autorizado se registró correctamente', '', {timeOut: 1000});
+                toastr.success(response.msg, '', {timeOut: 1000});
                 cargarAutorizados();
                 $('#Nombre, #Apellido, #DNI, #Derecho').val('');
             },
@@ -251,12 +253,6 @@ $(function() {
     //Guardar las Observaciones en la base de datos
     $('#btnObservaciones').off('click').on('click', function(e) {
         e.preventDefault();
-
-        let Observaciones = $('#Observaciones').val(),
-            ObsCE = $('#ObsCE').val(),
-            ObsCO = $('#ObsCO').val(),
-            ObsEval = $('#ObsEval').val();
-            Motivo = $('#Motivo').val();
         
         preloader('on');
         $.ajax({
@@ -264,11 +260,11 @@ $(function() {
             type: 'POST',
             data: {
                 _token: TOKEN,
-                Observaciones: Observaciones,
-                ObsCE: ObsCE,
-                ObsCO: ObsCO,
-                ObsEval: ObsEval,
-                Motivo: Motivo,
+                Observaciones: $('#Observaciones').val(),
+                ObsCE:$('#ObsCE').val(),
+                ObsCO: $('#ObsCO').val(),
+                ObsEval: $('#ObsEval').val(),
+                Motivo: $('#Motivo').val(),
                 Id: ID,
             },
             success: function(){
@@ -323,8 +319,66 @@ $(function() {
         });           
     });
 
+    $(document).on('click', '.ri-delete-bin-line', function(e) {
+        e.preventDefault();
+        let fila = $(this).closest('tr'), index = fila.index();
+        fila.remove();
+        $(`#hiddens .telefono-input:eq(${index})`).remove(); 
+        actualizarInputHidden();
+    });
+
+     //Click para eliminar el telefono
+     $(document).on('click', '.eliminarTelefono', function(e){
+        e.preventDefault();
+        let telefonoId = $(this).data("id");
+        quitarTelefono(telefonoId);
+
+    });
+
+    $(document).on('click', '.editarTelefono', function(e){
+        e.preventDefault();
+        let telefonoId = $(this).data('id');
+        verTelefono(telefonoId);
+    });
+
+    $(document).on('click', '.multiVolver', function(e) {
+        window.history.back();
+    });
+
+    $(document).on('click', '#saveCambiosEdit', function(e){
+        e.preventDefault();
+        let Id = $('#Id').val(), CodigoArea = $('#nuevoPrefijo').val(), NumeroTelefono = $('#nuevoNumero').val(), Observaciones = $('#nuevaObservacion').val();
+
+        if(!CodigoArea || !NumeroTelefono) {
+            toastr.warning("Faltan datos en el número de teléfono del cliente. No pueden haber campos vacíos.", '', {timeOut: 1000});
+            return;
+        }
+
+        if(!Observaciones){
+            toastr.warning("Debe escribir alguna referencia en la observación.", '', {timeOut: 1000});
+            return;
+        }
+
+        saveEdicion(Id, CodigoArea, NumeroTelefono, Observaciones);
+        telefonos();
+    });
+
+    $(document).on('click', '.nuevoExamen', function(e){
+        e.preventDefault();
+        localStorage.setItem('nuevaId', $(this).data('id'));
+        localStorage.setItem('nuevaRazonSocial', $(this).data('name'));
+        window.location.href = RUTAEXAMEN;
+    });
+
+    $('#Descuento').on('input', function () {
+        let valor = $(this).val().replace('%', '');
+        if (!isNaN(valor) && valor) {
+            $(this).val(valor + '%');
+        }
+    });
+
        //get de los Autorizados
-       function cargarAutorizados() {
+    function cargarAutorizados() {
         preloader('on');
         $.ajax({
             url: getAutorizados,
@@ -410,7 +464,7 @@ $(function() {
         e.preventDefault();
         let prefijo = $('#prefijoExtra').val(), numero = $('#numeroExtra').val(), observacion = $('#obsExtra').val();
         
-        if (prefijo !== '' && numero !== '' && observacion !== '') {
+        if (prefijo && numero && observacion) {
             $('#tablaTelefonos').append(`
                 <tr>
                     <td>${prefijo}</td>
@@ -435,63 +489,7 @@ $(function() {
         }
     });
 
-    $(document).on('click', '.ri-delete-bin-line', function(e) {
-        e.preventDefault();
-        let fila = $(this).closest('tr'), index = fila.index();
-        fila.remove();
-        $(`#hiddens .telefono-input:eq(${index})`).remove(); 
-        actualizarInputHidden();
-    });
-
-     //Click para eliminar el telefono
-     $(document).on('click', '.eliminarTelefono', function(e){
-        e.preventDefault();
-        let telefonoId = $(this).data("id");
-        quitarTelefono(telefonoId);
-
-    });
-
-    $(document).on('click', '.editarTelefono', function(e){
-        e.preventDefault();
-        let telefonoId = $(this).data('id');
-        verTelefono(telefonoId);
-    });
-
-    $(document).on('click', '.multiVolver', function(e) {
-        window.history.back();
-    });
-
-    $(document).on('click', '#saveCambiosEdit', function(e){
-        e.preventDefault();
-        let Id = $('#Id').val(), CodigoArea = $('#nuevoPrefijo').val(), NumeroTelefono = $('#nuevoNumero').val(), Observaciones = $('#nuevaObservacion').val();
-
-        if(CodigoArea == "" || NumeroTelefono == "") {
-            toastr.warning("Faltan datos en el número de teléfono del cliente. No pueden haber campos vacíos.", '', {timeOut: 1000});
-            return;
-        }
-
-        if(Observaciones == ""){
-            toastr.warning("Debe escribir alguna referencia en la observación.", '', {timeOut: 1000});
-            return;
-        }
-
-        saveEdicion(Id, CodigoArea, NumeroTelefono, Observaciones);
-        telefonos();
-    });
-
-    $(document).on('click', '.nuevoExamen', function(e){
-        e.preventDefault();
-        localStorage.setItem('nuevaId', $(this).data('id'));
-        localStorage.setItem('nuevaRazonSocial', $(this).data('name'));
-        window.location.href = RUTAEXAMEN;
-    });
-
-    $('#Descuento').on('input', function () {
-        let valor = $(this).val().replace('%', '');
-        if (!isNaN(valor) && valor) {
-            $(this).val(valor + '%');
-        }
-    });
+    
 
     function actualizarInputHidden() {
         $('#hiddens .telefono-input').each(function(index) {
@@ -772,10 +770,28 @@ $(function() {
     
     function checkeoEstado(idCliente) {
         
-        if([null, 0, '', undefined].includes(idCliente)) return;
+        if(!idCliente) return;
 
         $.get(checkEstadoTipo, {Id: idCliente}, function(response){
-            return response  === true ? $('#TipoCliente').attr('disabled', true) : $('#TipoCliente').attr('disabled', false);
+            return response ? $('#TipoCliente').attr('disabled', true) : $('#TipoCliente').attr('disabled', false);
+        });
+    }
+
+    async function cargarUsuario()
+    {
+
+        let usuariosSelect = $('#usuario');
+        const usuarios = await $.get(loadUsuarios);
+
+        usuariosSelect.empty();
+
+        if(!usuarios) {
+            usuariosSelect.append('<option selected value="">Sin usuarios</option>');
+        }
+
+        $.each(usuarios, function(index, data) {
+            let contenido = `<option value="${data.name}">${data.name} (${data.NombreCompleto})</option>`;
+            usuariosSelect.append(contenido);
         });
     }
 

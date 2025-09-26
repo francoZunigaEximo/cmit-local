@@ -61,6 +61,7 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::get('/usuario/check-password', [AuthController::class, 'checkPassword'])->name('usuario.checkPassword');
     Route::get('/usuario/forzar-cierre', [AuthController::class, 'forzarLogout'])->name('usuario.forzarCierre');
     Route::get('usuarios/cierre-automatico', [AuthController::class, 'logoutId'])->name('usuario.cierreAutomatico');
+    Route::post('usuarios/heartbeat', [AuthController::class, 'heartbeat'])->name('usuario.heartBeat');
     // Route::get('/passw', function (){
     //     return Hash::make('cmit1234');
     // });
@@ -90,8 +91,9 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     //Rutas de Pacientes
     Route::get('pacientes/buscar', [PacientesController::class, 'search'])->name('search');
     Route::post('pacientes/baja', [PacientesController::class, 'down'])->name('pacientes.down');
-    Route::get('pacientes/verficar-documento', [PacientesController::class, 'verifyDocument'])->name('verify');
+    Route::get('pacientes/verficar-documento', [PacientesController::class, 'verifyDocument'])->name('pacientes.verify');
     Route::post('pacientes/excel', [PacientesController::class, 'exportExcel'])->name('excelPacientes');
+    Route::post('pacientes/excel-total', [PacientesController::class, 'exportExcelAll'])->name('pacientes.excelAll');
     Route::get('pacientes/datos', [PacientesController::class, 'getPacientes'])->name('getPacientes');
     Route::get('pacientes/buscar-prestacion', [PacientesController::class, 'searchPrestPacientes'])->name('searchPrestPacientes');
     Route::get('pacientes/obtener-nombre', [PacientesController::class, 'getNombre'])->name('getNombre');
@@ -113,6 +115,10 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::get('cliente/exportar-excel', [ClientesController::class, 'excel'])->name('exportExcelClientes');
     Route::get('cliente/check-paraempresa', [ClientesController::class, 'checkParaEmpresa'])->name('checkParaEmpresa');
     Route::get('cliente/bloquear', [ClientesController::class, 'getBloqueo'])->name('getBloqueo');
+    Route::get('cliente/auditoria', [ClientesController::class, 'getAuditorias'])->name('clientes.buscarAuditoria');
+    Route::get('clientes/admin/bloqueados', [ClientesController::class, 'adminBloqueos'])->name('clientes.bloqueos');
+    Route::get('clientes/listado/bloqueados', [ClientesController::class, 'listadoBloqueados'])->name('clientes.listadoBloqueados');
+    Route::get('clientes/restaurar-eliminado', [ClientesController::class, 'restaurarEliminado'])->name('clientes.restaurarEliminado');
     Route::resource('clientes', ClientesController::class);
 
 
@@ -154,91 +160,87 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::resource('prestaciones', PrestacionesController::class);
 
     //Ruta Ficha Laboral
-    Route::post('saveFichaAlta', [FichaAltaController::class, 'save'])->name('saveFichaAlta');
-    Route::get('verificarAlta', [FichaAltaController::class, 'verificar'])->name('verificarAlta');
-    Route::get('getTipoPrestacion', [FichaAltaController::class, 'getTipoPrestacion'])->name('getTipoPrestacion');
-    Route::get('checkObs', [FichaAltaController::class, 'checkObs'])->name('checkObs');
-    Route::get('verFicha', [FichaAltaController::class, 'verFicha'])->name('verFicha');
+    Route::post('fichalaboral/guardar', [FichaAltaController::class, 'save'])->name('saveFichaAlta');
+    Route::get('fichalaboral/verificar', [FichaAltaController::class, 'verificar'])->name('verificarAlta');
+    Route::get('fichalaboral/tipo-prestacion', [FichaAltaController::class, 'getTipoPrestacion'])->name('getTipoPrestacion');
+    Route::get('fichalaboral/chequear-observacion', [FichaAltaController::class, 'checkObs'])->name('fichalaboral.chequearObs');
+    Route::get('fichalaboral/obtener', [FichaAltaController::class, 'verFicha'])->name('verFicha');
     Route::resource('fichalaboral', FichaAltaController::class);
 
-    //Ruta Examenes
-    Route::get('searchExamen', [ExamenesController::class, 'search'])->name('searchExamen');
-    Route::post('examenes/Id', [ExamenesController::class, 'getId'])->name('IdExamen');
-    Route::post('examenes/eliminar', [ExamenesController::class, 'deleteEx'])->name('deleteExamen');
-    Route::post('examenes/guardar',[ExamenesController::class, 'saveExamen'])->name('saveExamen');
-    Route::get('examenes/buscar', [ExamenesController::class, 'searchExamenes'])->name('searchExamenes');
-    Route::post('examenes/actualizar', [ExamenesController::class, 'updateExamen'])->name('updateExamen');
-    Route::get('examenes/exportar/excel', [ExamenesController::class, 'excel'])->name('examenes.excel');
-    Route::get('reporte/vistaprevia', [ExamenesController::class, 'getVistaPrevia'])->name('examenes.getVistaPrevia');
-    Route::get('examenes/getReportes', [ExamenesController::class, 'getReportes'])->name('examenes.getReportes');
+    //Ruta Examenes 
+    Route::get('examenes/buscar', [ExamenesController::class, 'search'])->name('searchExamen');
+    Route::post('IdExamen', [ExamenesController::class, 'getId'])->name('IdExamen');
+    Route::post('deleteExamen', [ExamenesController::class, 'deleteEx'])->name('deleteExamen');
+    Route::post('saveExamen',[ExamenesController::class, 'saveExamen'])->name('saveExamen');
     Route::get('porcentajeExamen', [ExamenesController::class, 'porcentajeExamen'])->name('porcentajeExamen');
-    Route::get('examenes/listar', [ExamenesController::class, 'getExamenes'])->name('examenes.getExamenes');
-    Route::get('examenes/listar/Id', [ExamenesController::class, 'getById'])->name('examenes.getById');
+    Route::get('searchExamenes', [ExamenesController::class, 'searchExamenes'])->name('searchExamenes');
+    Route::post('updateExamen', [ExamenesController::class, 'updateExamen'])->name('updateExamen');
+    Route::get('examenes/exportar/excel', [ExamenesController::class, 'excel'])->name('examenes.excel');
     Route::resource('examenes', ExamenesController::class);
-    
+
     //Ruta de Comentarios de Prestaciones
-    Route::post('comentarios/guardar', [ComentariosPrestacionesController::class, 'setComentarioPres'])->name('setComentarioPres');
-    Route::get('comentarios', [ComentariosPrestacionesController::class, 'getComentarioPres'])->name('getComentarioPres');
+    Route::post('comentarios/guardar', [ComentariosPrestacionesController::class, 'setComentarioPres'])->name('comentarios.guardar');
+    Route::get('comentarios', [ComentariosPrestacionesController::class, 'getComentarioPres'])->name('comentarios.obtener');
 
     //Rutas de Autorizados
-    Route::post('autorizados/eliminar', [AutorizadoController::class, 'delete'])->name('deleteAutorizado');
-    Route::get('autorizados/listado', [AutorizadoController::class, 'getAut'])->name('getAutorizados');
-    Route::post('autorizados/alta', [AutorizadoController::class, 'alta'])->name('clientes.altaAutorizado');
+    Route::post('autorizados/eliminar', [AutorizadoController::class, 'delete'])->name('autorizados.eliminar');
+    Route::get('autorizados/listado', [AutorizadoController::class, 'listado'])->name('autorizados.listar');
+    Route::post('autorizados/alta', [AutorizadoController::class, 'alta'])->name('autorizados.crear');
 
     //Rutas de Telefonos
-    Route::get('telefonos', [TelefonosController::class, 'getTelefonos'])->name('getTelefonos');
-    Route::post('telefonos/eliminar', [TelefonosController::class, 'deleteTelefono'])->name('deleteTelefono');
-    Route::post('telefonos/guardar', [TelefonosController::class, 'saveTelefono'])->name('saveTelefono');
+    Route::get('telefonos', [TelefonosController::class, 'getTelefonos'])->name('telefonos.obtener');
+    Route::post('telefonos/eliminar', [TelefonosController::class, 'deleteTelefono'])->name('telefonos.eliminar');
+    Route::post('telefonos/guardar', [TelefonosController::class, 'saveTelefono'])->name('telefonos.guardar');
 
     //Rutas de Localidades
-    Route::get('localidades/buscar', [LocalidadController::class, 'searchLocalidad'])->name('searchLocalidad');
+    Route::get('localidades/buscar', [LocalidadController::class, 'searchLocalidad'])->name('localidades.buscar');
 
     //Rutas de Mapas
     Route::get('mapas/excel', [MapasController::class, 'export'])->name('mapas.exportar');
-    Route::post('mapas/actualizar', [MapasController::class, 'updateMapa'])->name('updateMapa');
-    Route::post('mapas/eliminar', [MapasController::class, 'delete'])->name('deleteMapa');
-    Route::get('mapas/remitos', [MapasController::class, 'getRemito'])->name('getRemito');
-    Route::get('mapas/listado', [MapasController::class, 'getMapas'])->name('getMapas');
-    Route::get('mapas/pacientes', [MapasController::class, 'getPacienteMapa'])->name('getPacienteMapa');
+    Route::post('mapas/actualizar', [MapasController::class, 'updateMapa'])->name('mapas.actualizar');
+    Route::post('mapas/eliminar', [MapasController::class, 'delete'])->name('mapas.eliminar');
+    Route::get('mapas/remitos', [MapasController::class, 'getRemito'])->name('mapas.remito');
+    Route::get('mapas/listado', [MapasController::class, 'getMapas'])->name('mapas.listado');
+    Route::get('mapas/pacientes', [MapasController::class, 'getPacienteMapa'])->name('mapas.getPacientes');
     Route::get('mapas/prestaciones/examenes', [MapasController::class, 'examenes'])->name('mapas.getExamen');
-    Route::get('mapas/prestaciones', [MapasController::class, 'prestaciones'])->name('getPrestaciones');
-    Route::get('mapas/cerrar', [MapasController::class, 'getCerrar'])->name('getCerrar');
-    Route::get('mapas/Finalizados', [MapasController::class, 'getFinalizar'])->name('getFinalizar');
-    Route::get('mapas/Finalizados', [MapasController::class, 'getFinalizar'])->name('getFMapa');
-    Route::get('mapas/buscar', [MapasController::class, 'search'])->name('searchMapas');
-    Route::post('mapas/buscar/prestaciones', [MapasController::class, 'searchMapaPres'])->name('searchMapaPres');
-    Route::get('mapas/buscar/cerrados', [MapasController::class, 'serchInCerrar'])->name('serchInCerrar');
-    Route::get('mapas/buscar/finalizados', [MapasController::class, 'searchInFinalizar'])->name('searchInFinalizar');
-    Route::get('mapas/buscar/enviados', [MapasController::class, 'searchInEnviar'])->name('searchInEnviar');
-    Route::post('mapas/cerrar/guardar', [MapasController::class, 'saveCerrar'])->name('saveCerrar');
-    Route::post('mapas/finalizar/guardar', [MapasController::class, 'saveFinalizar'])->name('saveFinalizar');
-    Route::post('mapas/enviar/guardar', [MapasController::class, 'saveEnviar'])->name('saveEnviar');
-    Route::post('mapas/estados/guardar', [MapasController::class, 'saveEstado'])->name('saveEstado');
-    Route::post('mapas/remitos/guardar', [MapasController::class, 'saveRemitos'])->name('saveRemitos');
-    Route::get('mapas/check', [MapasController::class, 'checker'])->name('checkMapa');
-    Route::post('mapas/cambiar-estado', [MapasController::class, 'changeEstado'])->name('changeEstado');
-    Route::get('mapas/enviar', [MapasController::class, 'geteEnviar'])->name('enviarMapa');
-    Route::post('mapas/revertir-remito', [MapasController::class, 'reverseRemito'])->name('reverseRemito');
-    Route::get('mapas/mapa-prestacion-Id', [MapasController::class, 'getMapaPrestacion'])->name('prestaciones.mapaPrestacionId');
+    Route::get('mapas/prestaciones', [MapasController::class, 'prestaciones'])->name('mapas.getPrestaciones');
+    Route::get('mapas/cerrar', [MapasController::class, 'getCerrar'])->name('mapas.cerrar');
+    Route::get('mapas/Finalizados', [MapasController::class, 'getFinalizar'])->name('mapas.finalizar');
+    Route::get('mapas/buscar', [MapasController::class, 'search'])->name('mapas.buscar');
+    Route::post('mapas/buscar/prestaciones', [MapasController::class, 'searchMapaPres'])->name('mapas.buscarPrestaciones');
+    Route::get('mapas/buscar/cerrados', [MapasController::class, 'serchCerrados'])->name('mapas.buscarCerrados');
+    Route::get('mapas/buscar/finalizados', [MapasController::class, 'searchFinalizados'])->name('mapas.buscarFinalizados');
+    Route::get('mapas/buscar/enviados', [MapasController::class, 'searchEnviados'])->name('mapas.buscarEnviados');
+    Route::post('mapas/cerrar/guardar', [MapasController::class, 'saveCerrar'])->name('mapas.guardarCerrado');
+    Route::post('mapas/finalizar/guardar', [MapasController::class, 'saveFinalizar'])->name('mapas.guardarFinalizado');
+    Route::post('mapas/enviar/guardar', [MapasController::class, 'saveEnviar'])->name('mapas.guardarEnviado');
+    Route::post('mapas/estados/guardar', [MapasController::class, 'saveEstado'])->name('mapas.guardarEstado');
+    Route::post('mapas/remitos/guardar', [MapasController::class, 'saveRemitos'])->name('mapas.guardarRemito');
+    Route::get('mapas/check', [MapasController::class, 'checker'])->name('mapas.chequearMapa');
+    Route::post('mapas/cambiar-estado', [MapasController::class, 'changeEstado'])->name('mapas.cambiarEstado');
+    Route::get('mapas/enviar', [MapasController::class, 'geteEnviar'])->name('mapas.enviar');
+    Route::post('mapas/revertir-remito', [MapasController::class, 'reverseRemito'])->name('mapas.regresarRemito');
+    Route::get('mapas/mapa-prestacion-Id', [MapasController::class, 'getMapaPrestacion'])->name('mapas.prestacionId');
     Route::get('mapas/enviar/vista-previa', [MapasController::class, 'vistaPreviaReporte'])->name('mapas.vistaPrevia');
     Route::get('mapas/auditoria', [MapasController::class, 'listadoAuditorias'])->name('mapas.auditorias');
     Route::resource('mapas', MapasController::class);
     
     //Rutas de Profesionales
     //Route::resource('profesionales', ProfesionalesController::class);
-    Route::get('profesionales/evaluador', [ProfesionalesController::class, 'getEvaluador'])->name('getEvaluador');
+    Route::get('profesionales/obtener-evaluador', [ProfesionalesController::class, 'getEvaluador'])->name('getEvaluador');
     Route::get('profesionales/buscar', [ProfesionalesController::class, 'search'])->name('searchProfesionales');
-    Route::post('profesionales/estado', [ProfesionalesController::class, 'estado'])->name('estadoProfesional');
-    Route::post('profesionales/perfil/guardar', [ProfesionalesController::class, 'setPerfil'])->name('setPerfiles');
-    Route::get('profesionales/perfil', [ProfesionalesController::class, 'getPerfil'])->name('getPerfiles');
-    Route::post('profesionales/eliminar/perfil', [ProfesionalesController::class, 'delPerfil'])->name('delPerfil');
-    Route::post('profesionales/documento/chequear', [ProfesionalesController::class, 'checkDocumento'])->name('checkDocumento');
-    Route::post('profesionales/opcion/guardar', [ProfesionalesController::class, 'opciones'])->name('profesionales.opciones');
-    Route::post('profesionales/seguro/guardar', [ProfesionalesController::class, 'seguro'])->name('profesionales.seguro');
-    Route::get('profesionales/seleccion-perfil', [ProfesionalesController::class, 'choisePerfil'])->name('choisePerfil');
-    Route::get('profesionales/seleccion-especialidad', [ProfesionalesController::class, 'choiseEspecialidad'])->name('choiseEspecialidad');
-    Route::post('profesionales/prestador/guardar', [ProfesionalesController::class, 'savePrestador'])->name('savePrestador');
-    Route::get('profesionales/listado', [ProfesionalesController::class, 'listGeneral'])->name('listGeneral');
+    Route::post('profesional/estado', [ProfesionalesController::class, 'estado'])->name('estadoProfesional');
+    Route::post('setPerfiles', [ProfesionalesController::class, 'setPerfil'])->name('setPerfiles');
+    Route::get('getPerfiles', [ProfesionalesController::class, 'getPerfil'])->name('getPerfiles');
+    Route::post('delPerfil', [ProfesionalesController::class, 'delPerfil'])->name('delPerfil');
+    Route::post('checkDocumento', [ProfesionalesController::class, 'checkDocumento'])->name('checkDocumento');
+    Route::post('profesionales/opcion/save', [ProfesionalesController::class, 'opciones'])->name('profesionales.opciones');
+    Route::post('profesionales/seguro/save', [ProfesionalesController::class, 'seguro'])->name('profesionales.seguro');
+    Route::get('choisePerfil', [ProfesionalesController::class, 'choisePerfil'])->name('choisePerfil');
+    Route::get('choiseEspecialidad', [ProfesionalesController::class, 'choiseEspecialidad'])->name('choiseEspecialidad');
+    Route::post('savePrestador', [ProfesionalesController::class, 'savePrestador'])->name('savePrestador');
+    Route::get('listGeneral', [ProfesionalesController::class, 'listGeneral'])->name('listGeneral');
+    Route::get('checkMultiespecialidad', [ProfesionalesController::class, 'checkMultiEspecialidad'])->name('profesionales.multiEspecialidad');
 
     //Rutas de Proveedores
     Route::get('/especialidades/select', [ProveedoresController::class, 'getProveedores'])->name('getProveedores');
@@ -252,6 +254,7 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::resource('especialidades', ProveedoresController::class);
     
     //Rutas de ItemsPrestaciones
+    
     Route::get('itemsprestaciones/lista-examenes', [ItemPrestacionesController::class, 'getExamenes'])->name('itemsprestaciones.listadoexamenes');
     Route::get('itemsprestaciones/lista-examenes/estandar', [ItemPrestacionesController::class, 'getExamenesStd'])->name('itemsprestaciones.lstExamenesEstandar');
     Route::get('itemsprestaciones/check-adjuntos', [ItemPrestacionesController::class, 'checkAdjunto'])->name('itemsprestaciones.checkAdjuntos');
@@ -279,9 +282,10 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::post('liberarExamen', [ItemPrestacionesController::class, 'liberarExamen'])->name('liberarExamen');
     Route::post('marcarExamenAdjunto', [ItemPrestacionesController::class, 'marcarExamenAdjunto'])->name('marcarExamenAdjunto');
     Route::get('lstExamenes', [ItemPrestacionesController::class, 'lstExamenes'])->name('lstExamenes');
+    Route::get('preExamenes', [ItemPrestacionesController::class, 'preExamenes'])->name('preExamenes');
+    Route::get('itemprestaciones/paginacion-prestacion', [ItemPrestacionesController::class, 'paginacionByPrestacion'])->name('paginacionByPrestacion');
     Route::resource('itemsprestaciones', ItemPrestacionesController::class);
-    
-    
+
     //Rutas de FacturasdeVenta
     Route::get('getFactura', [FacturasVentaController::class, 'getFactura'])->name('getFactura');
     Route::get('/facturas/search', [FacturasVentaController::class, 'search'])->name('facturas.search');
@@ -373,6 +377,8 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::get('/usuario/checkear/telefono', [UsuariosController::class, 'checkTelefono'])->name('checkTelefono');
     Route::post('/usuarios/update/profesional', [UsuariosController::class, 'updateProfesional'])->name('usuarios.updateProfesional');
     Route::get('usuarios/roles/checkear', [UsuariosController::class, 'checkRoles'])->name('checkRoles');
+    Route::get('usuarios/obtener', [UsuariosController::class, 'getUserName'])->name('usuarios.getUserName');
+    Route::get('usuarios/listado', [UsuariosController::class, 'listadoUsuarios'])->name('usuarios.getListado');
     
     Route::resource('usuarios', UsuariosController::class);
     Route::get('buscarUsuario', [UsuariosController::class, 'buscar'])->name('buscarUsuario');
@@ -385,6 +391,7 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::get('/roles/listado/asignados', [RolesController::class, 'asignados'])->name('lstRolAsignados');
     Route::post('/roles/agregar', [RolesController::class, 'add'])->name('addRol');
     Route::get('/roles/eliminar', [RolesController::class, 'delete'])->name('deleteRol');
+    Route::get('/roles/obtener', [RolesController::class, 'getRoles'])->name('roles.getRoles');
 
     //Rutas de Personal
     Route::post('/perfil/actualizar', [DatosController::class, 'save'])->name('actualizarDatos');
@@ -397,15 +404,15 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::get('mensajes/modelos/delete', [MensajesController::class, 'deleteModelo'])->name('mensajes.modelos.delete');
     Route::post('mensajes/modelos/save', [MensajesController::class, 'saveModelo'])->name('mensajes.modelos.save');
     Route::post('mensajes/modelos/update', [MensajesController::class, 'actualizarModelo'])->name('mensajes.modelos.update');
-    Route::resource('mensajes', MensajesController::class);
-    Route::get('searchMensaje', [MensajesController::class, 'search'])->name('searchMensaje');
-    Route::post('updateEmail', [MensajesController::class, 'updateEmail'])->name('updateEmail');
-    Route::get('loadModelos', [MensajesController::class, 'loadModelos'])->name('loadModelos');
+    Route::get('mensajes/buscar-mensajes', [MensajesController::class, 'search'])->name('searchMensaje');
+    Route::post('mensajes/update-correo', [MensajesController::class, 'updateEmail'])->name('updateEmail');
+    Route::get('mensajes/cargar-modelos', [MensajesController::class, 'loadModelos'])->name('loadModelos');
     Route::get('loadMensaje', [MensajesController::class, 'loadMensaje'])->name('loadMensaje');
     Route::get('verAuditoria', [MensajesController::class, 'verAuditoria'])->name('verAuditoria');
     Route::get('mensajes/search', [MensajesController::class, 'search'])->name('mensajes.search');
-    Route::get('sendEmails', [MensajesController::class, 'sendEmails'])->name('sendEmails');
-    Route::get('testEmail', [MensajesController::class, 'testEmail'])->name('testEmail');
+    Route::get('mensajes/enviar-emails', [MensajesController::class, 'sendEmails'])->name('sendEmails');
+    Route::get('mensajes/test-email', [MensajesController::class, 'testEmail'])->name('testEmail');
+    Route::resource('mensajes', MensajesController::class);
 
     //Rutas de Notas de Crédito
     Route::get('nota-de-credito/check', [NotasCreditoController::class, 'checkNotaCredito'])->name('nota-de-credito.check');
@@ -419,19 +426,32 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     //Ruta de llamador
     Route::get('llamador/efector', [LlamadorController::class, 'efector'])->name('llamador.efector');
     Route::get('llamador/informador', [LlamadorController::class, 'informador'])->name('llamador.informador');
+    Route::get('llamador/combinado', [LlamadorController::class, 'combinado'])->name('llamador.combinado');
     Route::get('llamador/evaluador', [LlamadorController::class, 'evaluador'])->name('llamador.evaluador');
-    Route::get('llamador/efector/buscar', [LlamadorController::class, 'buscarEfector'])->name('llamador.buscarEfector');
-    Route::get('llamador/efector/exportar', [LlamadorController::class, 'imprimirExcel'])->name('llamador.excelEfector');
+    Route::get('llamador/buscar', [LlamadorController::class, 'buscar'])->name('llamador.buscar');
+    Route::get('llamador/efector/exportar', [LlamadorController::class, 'exportar'])->name('llamador.exportar');
     Route::get('llamador/ver-paciente', [LlamadorController::class, 'verPaciente'])->name('llamador.verPaciente');
     Route::get('llamador/efector/llamar-paciente',[LlamadorController::class, 'controlLlamado'])->name('llamador.llamar-paciente');
     Route::get('llamador/check-status', [LlamadorController::class, 'checkLlamado'])->name('llamador.check');
-    Route::get('llamador/asignar-profesional', [LlamadorController::class, 'asignarProfesional'])->name('llamador.asignarPaciente');
+    Route::post('llamador/asignar-profesional', [LlamadorController::class, 'asignarProfesional'])->name('llamador.asignarPaciente');
+    Route::get('llamador/informador/buscar', [LlamadorController::class, 'buscarInf'])->name('llamador.buscarInformador');
+    Route::get('llamador/buscar/especialidad', [LlamadorController::class, 'listadoEspecialidades'])->name('llamador.buscarEspecialidad');
+    Route::get('llamador/estado/efector', [LlamadorController::class, 'cambioEstado'])->name('llamador.cambioEstado');
+    Route::get('llamador/cerrarAtencion', [LlamadorController::class, 'cerrarAtencion'])->name('llamador.cerrarAtencion');
+    Route::get('llamador.getItemPrestacion', [LlamadorController::class, 'getItemprestacion'])->name('llamador.getItemPrestacion');
+    Route::post('llamador/cierreForzado', [LlamadorController::class, 'cierreForzado'])->name('llamador.cierreForzado');
+    Route::get('llamador/check-multiespecialidad', [LlamadorController::class, 'multiespecialidadChecker'])->name('llamador.multiespecialidad');
+    Route::get('llamador/check-atencion-prestacion', [LlamadorController::class, 'consultarAtencion'])->name('llamador.checkAtencion');
+    Route::get('llamador/admin', [LlamadorController::class, 'admin'])->name('llamador.admin');
+    Route::get('llamador/admin/buscar', [LlamadorController::class, 'buscarAdmin'])->name('llamador.buscarRegistros');
+    Route::get('llamador/admin/carga-admins', [LlamadorController::class, 'listadoAdministradores'])->name('llamador.loadAdministradores');
 
     //Ruta de Sesiones
     Route::get('sesiones/sesiones-usuarios', [UserSessionsController::class, 'getSessiones'])->name('sesiones.listaSesiones');
     
 
     Route::get('paquetes/searchExamenes', [PaquetesController::class, 'searchExamenes'])->name('paquetes.searchExamenes');
+    Route::get('paquetes/getExamen', [PaquetesController::class, 'getExamen'])->name('paquetes.getExamen');
     Route::get('paquetes/crearPaqueteExamen', [PaquetesController::class, 'crearPaqueteExamen'])->name('paquetes.crearPaqueteExamen');
     Route::get('paquetes/editPaqueteExamen/{id}', [PaquetesController::class, 'editPaqueteExamen'])->name('paquetes.editPaqueteExamen');
     Route::post('paquetes/postPaqueteEstudio', [PaquetesController::class, 'postPaqueteExamen'])->name('paquetes.postPaqueteExamen');
@@ -458,6 +478,7 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
 
     Route::get('paquetes/detallesFacturacion', [PaquetesController::class, 'detallesFacturacion'])->name('paquetes.detallesFacturacion');
     Route::get('paquetes/searchDetalleFacturacion', [PaquetesController::class, 'searchDetalleFacturacion'])->name('paquetes.searchDetalleFacturacion');
+    Route::get('paquetes/exportExcelFacturacion', [PaquetesController::class, 'exportExcelFacturacion'])->name('paquetes.exportExcelFacturacion');
     Route::get('paquetes/exportDetalleFacturacionExcel', [PaquetesController::class, 'exportDetalleFacturacionExcel'])->name('paquetes.exportDetalleFacturacionExcel');
 
     //ruta paquete estudios id

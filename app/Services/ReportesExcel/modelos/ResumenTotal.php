@@ -94,13 +94,7 @@ class ResumenTotal implements ReporteInterface
             ? '('.$telefono->CodigoArea ?? '000'.')'.$telefono->NumeroTelefono ?? '0000000'
             : '(000)000000';
 
-        $comentariosPrivados = PrestacionObsFase::join('prestaciones', 'prestaciones_obsfases.IdEntidad', '=', 'prestaciones.Id')
-                ->join('mapas', 'prestaciones.IdMapa', '=', 'mapas.Id')
-                ->join('users', 'prestaciones_obsfases.IdUsuario', '=', 'users.name')
-                ->select('prestaciones_obsfases.*', 'prestaciones_obsfases.Rol as nombre_perfil')
-                ->where('prestaciones.Id', $prestacion->Id)
-                ->orderBy('prestaciones_obsfases.Id', 'DESC')
-                ->get();
+        $comentariosPrivados = $this->comentariosPrivados($prestacion->Id);
 
         $fechaVencimiento = $this->formatearFecha($prestacion->FechaVto);
         $fechaCierre =  $this->formatearFecha($prestacion->FechaCierre);
@@ -236,5 +230,16 @@ class ResumenTotal implements ReporteInterface
     private function formatearFecha($fecha)
     {
         return $fecha === '0000-00-00' ? '' : Carbon::parse($fecha)->format('d/m/Y');
+    }
+
+    private function comentariosPrivados(int $id)
+    {
+        return PrestacionObsFase::join('prestaciones', 'prestaciones_obsfases.IdEntidad', '=', 'prestaciones.Id')
+                ->join('mapas', 'prestaciones.IdMapa', '=', 'mapas.Id')
+                ->join('users', 'prestaciones_obsfases.IdUsuario', '=', 'users.name')
+                ->select('prestaciones_obsfases.*', 'prestaciones_obsfases.Rol as nombre_perfil')
+                ->where('prestaciones.Id', $id)
+                ->orderBy('prestaciones_obsfases.Id', 'DESC')
+                ->get();
     }
 }

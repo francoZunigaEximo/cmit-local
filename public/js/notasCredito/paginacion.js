@@ -1,4 +1,8 @@
+const url = location.href.replace(/\/$/, '');
+    const urlOriginal = url.replace('/notasCredito', '');
+
 $(function () {
+
     //cargamos los combos de lientes
     $('#cliente').select2({
         language: {
@@ -136,8 +140,18 @@ function cargarTablaClientes() {
             },
             {
                 data: null,
-                name: 'Acciones',
+                name: 'TotalItems',
+                orderable: true,
                 targets: 2,
+                render: function (data) {
+                    return `<div class="text-start"><span>${data.TotalItems == null ? 0 : data.TotalItems}</span></div>`;
+                }
+
+            },
+            {
+                data: null,
+                name: 'Acciones',
+                targets: 3,
                 render: function (data) {
 
                     let editar = '<a title="Items Anulados" href="' + location.href + '/itemsanulados/' + data.Id + '">' + '<button type="button" class="btn btn-sm iconGeneral edit-item-btn"> <i class="ri-edit-line"></i> </button>' + '</a>';
@@ -146,7 +160,12 @@ function cargarTablaClientes() {
             }
         ],
         language: {
-            processing: "<div style='text-align: center; margin-top: 20px;'><img src='./images/spinner.gif' /><p>Cargando...</p></div>",
+            processing: 
+            `<div class="text-center p-2">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>`,
             emptyTable: "No hay paquetes con los datos buscados",
             paginate: {
                 first: "Primera",
@@ -248,7 +267,8 @@ function cargarTablaNotas() {
                 name: 'NC',
                 targets: 2,
                 render: function (data) {
-                    return `<div class="text-start"><span>${data.NroNotaCredito == null ? "" : data.NroNotaCredito}</span></div>`;
+                    var nroFactura = `${data.Tipo}-${String(data.Sucursal).padStart(4, '0')}-${String(data.NroNotaCredito).padStart(8, '0')}`;
+                    return `<div class="text-start"><span>${nroFactura == null ? "" : nroFactura}</span></div>`;
                 }
             },
             {
@@ -296,7 +316,12 @@ function cargarTablaNotas() {
             }
         ],
         language: {
-            processing: "<div style='text-align: center; margin-top: 20px;'><img src='./images/spinner.gif' /><p>Cargando...</p></div>",
+            processing: 
+            `<div class="text-center p-2">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>`,
             emptyTable: "No hay paquetes con los datos buscados",
             paginate: {
                 first: "Primera",
@@ -352,6 +377,7 @@ function eliminarNotaCredito(id) {
             buttons: ["Cancelar", "Eliminar"],
         }).then((aceptar) => {
             if (aceptar) {
+                preloader('on');
                 $.ajax({
                     url: eliminarNotaCreditoPost,
                     type: 'POST',
@@ -370,8 +396,10 @@ function eliminarNotaCredito(id) {
                         } else {
                             toastr.error(response.message, '', { timeOut: 1000 });
                         }
+                        preloader('off');
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
+                        preloader('off');
                         toastr.error(jqXHR.responseJSON.message, '', { timeOut: 1000 });
                         console.error("Error: ", textStatus, errorThrown);
                     }
@@ -469,6 +497,7 @@ function eliminarNotaCreditoMasivo(){
                     } else {
                         toastr.error(response.message, '', { timeOut: 1000 });
                     }
+                    preloader('off');
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     toastr.error(jqXHR.responseJSON.message, '', { timeOut: 1000 });
@@ -478,3 +507,4 @@ function eliminarNotaCreditoMasivo(){
         }
     });
 }
+

@@ -434,18 +434,6 @@ class PrestacionesController extends Controller
         } 
     }
 
-    public function verifyWizard(Request $request)
-    {
-        if (!$this->hasPermission("prestaciones_show") || !$this->hasPermission("prestaciones_edit")) {
-            return response()->json(['msg' => 'No tienes permisos'], 403);
-        }
-
-        $query = Paciente::where('Documento', $request->Documento)->first();
-        $existe = $query !== null;
-
-        return response()->json(['existe' => $existe, 'paciente' => $query]);
-    }
-
     public function exportExcel(Request $request)
     {
         /*if (!$this->hasPermission("prestaciones_report")) {
