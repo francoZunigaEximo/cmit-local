@@ -310,9 +310,6 @@ $(function(){
 
                     selectEstado.val(data.customFilters.estado).trigger('change');
 
-                    d.fechaDesde = inputFechaDesde.val();
-                    d.fechaHasta = inputFechaHasta.val();
-
                     return data;
                 }
             }
