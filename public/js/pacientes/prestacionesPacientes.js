@@ -192,6 +192,7 @@ $(function(){
             .done(function(response){
 
                 principal.listaExamenes.empty();
+                cargarEstudiosImp(variables.idPrestacion.val());
                 cargarExamen(variables.idPrestacion.val());
                 contadorExamenes(variables.idPrestacion.val());
                 tablasExamenes(variables.selectClientes.val(), true, '#lstEx');  
