@@ -5,7 +5,7 @@ $(function(){
     $('#fechaHasta, #FechaCreate').val(fechaNow(null, "-", 0));
     $('#estado').val("todos");
 
-    $('#empresa, #empresaSaldo, #empresaPago, #empresaCreate').each(function() {
+    $('#empresaSaldo, #empresaPago, #empresaCreate').each(function() {
         $(this).select2({
             language: {
                 noResults: function() {
@@ -42,7 +42,7 @@ $(function(){
         });
     });
 
-    $('#examen, #examenSaldo').each(function(){
+    $('#examenSaldo').each(function(){
         $(this).select2({
             language: {
                 noResults: function() {
@@ -78,42 +78,6 @@ $(function(){
         });
     });
 
-    $('#paciente').each(function(){
-        $(this).select2({
-            language: {
-                noResults: function() {
-    
-                return "No hay pacientes con esos datos";        
-                },
-                searching: function() {
-    
-                return "Buscando..";
-                },
-                inputTooShort: function () {
-                    return "Por favor, ingrese 2 o más caracteres";
-                }
-            },
-            placeholder: 'Apellido y/o nombre del paciente',
-            allowClear: true,
-            ajax: {
-                url: getPacientes, 
-                dataType: 'json',
-                data: function(params) {
-                    return {
-                        buscar: params.term,
-                    };
-                },
-                processResults: function(data) {
-                    return {
-                        results: data.pacientes 
-                    };
-                },
-                cache: true
-            },
-            minimumInputLength: 2 
-        });
-    });
-
     Inputmask.extendAliases({
         'rango': {
             mask: 'a-9999-99999999',
@@ -132,7 +96,7 @@ $(function(){
             }
         }
     });
-    
+
     $("#rangoDesde, #rangoHasta, #FacturaCreate").inputmask('rango');
     
     $(document).on('click', '.cambiarBoton', function(e) {
