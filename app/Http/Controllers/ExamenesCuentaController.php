@@ -396,8 +396,12 @@ class ExamenesCuentaController extends Controller
             )
             ->where('pagosacuenta_it.IdPago', $request->Id)
             ->whereNot('pagosacuenta_it.Obs', 'provisorio')
+            ->orderBy('prestaciones.Id', 'Desc')
             ->orderBy('pagosacuenta_it.Precarga', 'Desc')
+            ->orderBy('estudios.Nombre', 'Desc')
+            ->orderBy('examenes.Nombre', 'Desc')
             ->get();
+            
             return DataTables::of($query)->make(true);
         }
 
