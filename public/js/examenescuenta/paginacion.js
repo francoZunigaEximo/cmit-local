@@ -331,7 +331,6 @@ $(function(){
                 estado: selectEstado.val()
             };
             localStorage.setItem('DataTables_listadoExamenesCuentas_/examenesCuenta', JSON.stringify(data));
-            console.log(localStorage.getItem('DataTables_listadoExamenesCuentas_/examenesCuenta'));
         },
         ajax: {
             url: SEARCH,
