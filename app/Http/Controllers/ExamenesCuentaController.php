@@ -55,17 +55,6 @@ class ExamenesCuentaController extends Controller
             abort(403);
         }
 
-        if ($request->ajax())
-        {
-            $query = $this->queryBasico();
-
-            $result = $query->groupBy('pagosacuenta.Id', 'pagosacuenta.Tipo', 'pagosacuenta.Suc', 'pagosacuenta.Nro', 'pagosacuenta.Pagado')
-            ->where('pagosacuenta.Fecha', '=', Date::now()->format('Y-m-d'))
-            ->orderBy('pagosacuenta.Id', 'DESC');
-
-            return Datatables::of($result)->make(true);
-        }
-
         return view('layouts.examenesCuenta.index');
     }
 
