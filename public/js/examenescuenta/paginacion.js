@@ -264,6 +264,58 @@ $(function(){
                 selectEstado.val(data.customFilters.estado).trigger('change');
             }
         },
+        stateLoadCallback: function(settings) {
+            let storedData = localStorage.getItem('DataTables_listadoExamenesCuentas_/examenesCuenta');
+            if (storedData) {
+                let data = JSON.parse(storedData);
+
+                if (data.customFilters) {
+     
+                    inputFacturaDesdeIndividual.val(data.customFilters.facturaDesdeIndividual);
+                    inputFacturaHasta.val(data.customFilters.facturaHasta);
+                    if (data.customFilters.empresa && data.customFilters.empresa !== '') {
+                        const EmpresaIdGuardado = data.customFilters.empresa;
+                        const EmpresaTextGuardado = data.customFilters.nombreEmpresa;
+                        if (!selectEmpresa.find('option[value="' + EmpresaIdGuardado + '"]').length) {
+                            let newOption = new Option(EmpresaTextGuardado, EmpresaIdGuardado, true, true);
+                            selectEmpresa.append(newOption);
+                        }
+                        selectEmpresa.val(EmpresaIdGuardado).trigger('change');
+                    } else {
+                        selectEmpresa.val(null).trigger('change');
+                    }
+
+                    if (data.customFilters.examen && data.customFilters.examen !== '') {
+                        const ExamenIdGuardado = data.customFilters.examen;
+                        const ExamenTextGuardado = data.customFilters.nombreExamen;
+                        if (!selectExamen.find('option[value="' + ExamenIdGuardado + '"]').length) {
+                            let newOption = new Option(ExamenTextGuardado, ExamenIdGuardado, true, true);
+                            selectExamen.append(newOption);
+                        }
+                        selectExamen.val(ExamenIdGuardado).trigger('change');
+                    } else {
+                        selectExamen.val(null).trigger('change');
+                    }
+                    if (data.customFilters.pacienteDNI && data.customFilters.pacienteDNI !== '') {
+                        const PacienteIdGuardado = data.customFilters.pacienteDNI;
+                        const PacienteTextGuardado = data.customFilters.nombrePaciente;
+                        if (!selectPacienteDNI.find('option[value="' + PacienteIdGuardado + '"]').length) {
+                            let newOption = new Option(PacienteTextGuardado, PacienteIdGuardado, true, true);
+                            selectPacienteDNI.append(newOption);
+                        }
+                        selectPacienteDNI.val(PacienteIdGuardado).trigger('change');
+                    } else {
+                        selectPacienteDNI.val(null).trigger('change');
+                    }
+
+                    selectEstado.val(data.customFilters.estado).trigger('change');
+
+                    return data;
+                }
+            }
+
+            return null;
+        },
         stateSaveCallback: function (settings, data) {
             data.customFilters = {
                 fechaDesde: inputFechaDesde.val(),
@@ -279,6 +331,7 @@ $(function(){
                 estado: selectEstado.val()
             };
             localStorage.setItem('DataTables_listadoExamenesCuentas_/examenesCuenta', JSON.stringify(data));
+            console.log(localStorage.getItem('DataTables_listadoExamenesCuentas_/examenesCuenta'));
         },
         ajax: {
             url: SEARCH,
@@ -457,18 +510,19 @@ $(function(){
         }
     });
 
-    //Botón de busqueda de Mapas
-    $(document).on('click', '#buscar, .sieteDias, .tresMeses', function (e) {
+    $(document).on('click', '#buscar, .sieteDias, .tresMeses, .facturasHoy', function (e) {
         e.preventDefault();
 
         if ($(this).hasClass('sieteDias') || $(this).hasClass('tresMeses')) {
             let fechaHastaObj = new Date(); // Fecha actual
-            let fechaDesdeObj = new Date(fechaHastaObj); // Copia la fecha actual
+            let fechaDesdeObj = new Date(fechaHastaObj);
 
             if ($(this).hasClass('sieteDias')) {
                 fechaDesdeObj.setDate(fechaHastaObj.getDate() - 7);
             } else if ($(this).hasClass('tresMeses')) {
                 fechaDesdeObj.setDate(fechaHastaObj.getDate() - 90);
+            } else if ($(this).hasClass('facturasHoy')) {
+                fechaDesdeObj.setData(fechaHastaObj.getDate());
             }
 
             inputFechaDesde.val(obtenerFormato(fechaDesdeObj));
