@@ -386,9 +386,6 @@
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
-{{ var_dump($data['itemprestacion']->Anulado) }}
-
-
 <script>
     const IDITEMPRES = "{{ $data['itemprestacion']->Id }}";
     const updateItem = "{{ route('updateItem') }}";
