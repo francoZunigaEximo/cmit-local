@@ -1607,9 +1607,6 @@ $(function(){
 
     function adjuntosInformador(item, data) {
 
-        console.log(data.adjuntoInformador, typeof(data.adjuntoInformador))
-        console.log(item.profesionales2.InfAdj)
-
         switch(true) {
             case (item.profesionales2.InfAdj === 0):
                 return 'No lleva Adjuntos';

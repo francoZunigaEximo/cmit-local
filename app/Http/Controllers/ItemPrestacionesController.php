@@ -216,9 +216,9 @@ class ItemPrestacionesController extends Controller
         if(!$item) {
             return response()->json(['msg' => 'No se ha podido actualizar el '. $asignado], 500);
         }
-
-        $horaFin = $this->HoraAsegundos(date("H:i:s")) + ($item->proveedores->Min * 60);
-        $horaAsigFin = $this->SegundosAminutos($horaFin).':00';
+        
+        $horaFin = $this->itemsHelper->HoraAsegundos(date("H:i:s")) + ($item->proveedores->Min * 60);
+        $horaAsigFin = $this->itemsHelper->SegundosAminutos($horaFin).':00';
 
         if($request->Para === 'asignar'){
 
