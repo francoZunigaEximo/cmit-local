@@ -632,6 +632,17 @@ $(function() {
     $(document).on('click', '.eEnviarReporte', function(e){
         e.preventDefault();
 
+        let impresion = {
+            eEstudio: $('#eEstudio').prop('checked'),
+            eEnvio: $('#eEnvio').prop('checked'),
+            adjFisicosDigitales: $('#adjFisicosDigitales').prop('checked'),
+            infInternos: $('#infInternos').prop('checked'),
+            pedProveedores: $('#pedProveedores').prop('checked'),
+            conPaciente: $('#conPaciente').prop('checked'),
+        }
+
+        if (impresion.some)
+
         swal({
             title: "¿Desea enviar el reporte eEstudio, eAnexos y Adjuntos Generales de la prestación?",
             icon: "warning",
@@ -705,9 +716,9 @@ $(function() {
             consEstSimple = $('#consEstSimple').prop('checked'),
             EMailInformes = $('#EMailInformes').val();
         
-        let checkboxesNoSend = $('input[data-nosend]:checked').map(function() {
-            return $(this).prop('checked');
-        });
+        let estudios = $('input[data-nosend]:checked').map(function() {
+            return $(this).data('examen');
+        }).get();
 
         let verificar = [
             eEstudio,
@@ -717,32 +728,42 @@ $(function() {
             pedProveedores,
             conPaciente,
             caratula,
-            ...checkboxesNoSend
+            ...estudios
         ];
 
-        if (verificar.some(val => val)) {
-            toastr.warning('Alguno de los reportes seleccionados no es apto para enviar','',{timeOut: 1000});
-            return;
-        }
+       let conReportesInternos = verificar.some(val => val);
+
+        let soloEnvios = {evaluacion: evaluacion, eAnexo: eAnexo, adjDigitales: adjDigitales, adjFisicos: adjFisicos, adjPrestacion: adjPrestacion, resAdmin: resAdmin, consEstDetallado: consEstDetallado, consEstSimple: consEstSimple, EMailInformes: EMailInformes, Id: ID };
+
+        let conInternos = {evaluacion: evaluacion, eAnexo: eAnexo, adjDigitales: adjDigitales, adjFisicos: adjFisicos, adjPrestacion: adjPrestacion, resAdmin: resAdmin, consEstDetallado: consEstDetallado, consEstSimple: consEstSimple, EMailInformes: EMailInformes, Id: ID, eEstudio: eEstudio, eEnvio: eEnvio, adjFisicosDigitales: adjFisicosDigitales, infInternos: infInternos, pedProveedores: pedProveedores, conPaciente: conPaciente, caratula: caratula, estudios: estudios };
 
         if (!verificarCorreos(EMailInformes)) {
             toastr.warning('Alguno de los correos no es válido o el mismo se encuentra vacío', '', {timeOut: 1000});
             return;
         }
 
-        preloader('on');
-        $.get(enviarReporte, {evaluacion: evaluacion, eAnexo: eAnexo, adjDigitales: adjDigitales, adjFisicos: adjFisicos, adjPrestacion: adjPrestacion, resAdmin: resAdmin, consEstDetallado: consEstDetallado, consEstSimple: consEstSimple, EMailInformes: EMailInformes, Id: ID})
-            .done(function(response){
-                preloader('off');
-                toastr.success(response.msg, '', {timeOut: 1000});
-            })
-            .fail(function(jqXHR){
-                preloader('off');
-                let errorData = JSON.parse(jqXHR.responseText);            
-                checkError(jqXHR.status, errorData.msg);
-                return; 
-            });
+        swal({
+            'title': '¿Desea realizar en envio de los reportes?',
+            'icon': 'warning',
+            'buttons': ['Cancelar', 'Aceptar']
+        }).then((confirmar) => {
+            if(confirmar) {
+                if(conReportesInternos) {
 
+                    swal({
+                        'title': 'Esta por enviar reportes internos ¿Desea Continuar?',
+                        'icon': 'warning',
+                        'buttons':  ['Cancelar', 'Enviar']
+                    }).then((sendEnvio) => {
+                        if(sendEnvio) {
+                            ajaxEnviarReporte(conInternos);
+                        }
+                    });
+                }else{
+                    ajaxEnviarReporte(soloEnvios);
+                }
+            }
+        });
     });
 
     $(document).on('click', '.btnTodo', function(e){
@@ -1391,6 +1412,21 @@ $(function() {
     
     function borrarCache() {
         $.post(cacheDelete, {_token: TOKEN}, function(){});
+    }
+
+    function ajaxEnviarReporte(paquete) {
+        preloader('on');
+        $.get(enviarReporte, paquete)
+            .done(function(response){
+                preloader('off');
+                toastr.success(response.msg, '', {timeOut: 1000});
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return; 
+            });
     }
 
   
