@@ -7,7 +7,7 @@ $(function() {
           IDEXAMEN = $('#idExamen').val(),
           valCerrarI = 3;
 
-    let cadj = $('#CAdj').val(), 
+    const cadj = $('#CAdj').val(), 
         CInfo = $('#CInfo').val(), 
         efector = $('#efectores').val(), 
         informador = $('#informadores').val(), 
@@ -441,10 +441,10 @@ $(function() {
     async function asignar(e, tipo){
 
         if (tipo === 'efector') {
-            
-            let resultado = await ([0,null,''].includes(e));
 
-            if (resultado) {
+            let resultado = await parseInt(e);
+
+            if (!resultado) {
 
                 $('.asignar').show();
                 $('#informadores').prop('disabled', true);
@@ -453,9 +453,9 @@ $(function() {
         
         } else if (tipo === 'informador') {
 
-            let resultado = await ([0,null,''].includes(e)) && (efector !== '0');
-            
-            if (resultado) {
+            let resultado = await parseInt(e);
+
+            if (!resultado && efector) {
                 $('.asignarI, .abrir').show();
                 $('.liberarI').hide();
             }

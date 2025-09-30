@@ -386,6 +386,7 @@
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+{{ var_dump($data['itemprestacion']->Anulado) }}
 
 
 <script>
