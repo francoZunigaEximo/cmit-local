@@ -541,14 +541,14 @@ $(function() {
                                             <button type="button" class="btn btn-sm iconGeneral" title="Descargar"><i class="ri-download-2-line"></i></button>
                                         </a>
                                     </div>
-                                    ${(Estado === 'Cerrado') ? `
+                                    ${(d.Anulado === 1) ? `
                                     <div class="replace">
                                         <button data-id="${d.IdE}" data-tipo="efector" class="btn btn-sm iconGeneral replaceAdjunto" data-bs-toggle="modal" data-bs-target="#replaceAdjunto" title="Reemplazar archivo">
                                             <i class="ri-file-edit-line"></i>
                                         </button>
                                     </div>
                                     ` : ``}
-                                    ${(Estado === 'Cerrado') || (d.Anulado === 1) ? `
+                                    ${(d.Anulado === 1) ? `
                                     <div class="remove">
                                         <button data-id="${d.IdE}" data-tipo="efector" class="btn btn-sm iconGeneral deleteAdjunto" title="Eliminar">
                                             <i class="ri-delete-bin-2-line"></i>
