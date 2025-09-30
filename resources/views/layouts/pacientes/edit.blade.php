@@ -935,8 +935,13 @@
                             
                                     <table class="table table-bordered" id="listado" >
                                         <thead class="table-light">
-                                            <th><input type="checkbox" id="checkAllExa" name="Id_examenes"></th>
+                                            <th style="width: 50px"><input type="checkbox" id="checkAllExa" name="Id_examenes"></th>
                                             <th class="sort">Exámen</th>
+                                            <th style="width: 50px">Inc</th>
+                                            <th style="width: 50px">Aus</th>
+                                            <th style="width: 50px">For</th>
+                                            <th style="width: 50px">Esc</th>
+                                            <th style="width: 50px">Dev</th>
                                             <th>Acciones</th>
                                         </thead>
                                         <tbody id="listaExamenes" class="list form-check-all"></tbody>
@@ -1327,6 +1332,7 @@ const cargarExCta = "{{ route('examenesCuenta.cargar') }}";
 
 const nroPrestacion = "{{ $nroPrestacion ?? '' }}";
 const enviarReporte = "{{ route('prestaciones.enviar') }}";
+const itemExamen = "{{ route('itemExamen') }}";
 </script>
 
 @push('styles')
