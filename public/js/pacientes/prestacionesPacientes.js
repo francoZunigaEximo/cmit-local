@@ -69,7 +69,8 @@ $(function(){
         examenesCantidad: $('#examenesCantidad'),
         lstExamenesCtd: $('#lstExamenesCtd'),
         listadoExamenesCtd: $('#listadoExamenesCtd'),
-        estudios: $('#estudios')
+        estudios: $('#estudios'),
+        enviarReporte: $('.enviarReporte')
     };
 
     const variables = {
@@ -881,6 +882,77 @@ $(function(){
         variables.IdObservacion
             .empty()
             .val(data[0].Id);
+    });
+
+    principal.enviarReporte.on('click', function(e) {
+        e.preventDefault();
+
+        let infInternos = variables.infInternos.prop('checked'),
+            pedProveedores = variables.pedProveedores.prop('checked'),
+            conPaciente = variables.conPaciente.prop('checked'),
+            resAdmin = variables.resAdmin.prop('checked'),
+            caratula = variables.caratula.prop('checked'),
+            consEstDetallado = variables.consEstDetallado.prop('checked'),
+            consEstSimple = variables.consEstSimple.prop('checked'),
+            estudios = [];
+
+
+        let verificar = [
+            infInternos,
+            pedProveedores,
+            conPaciente,
+            resAdmin,
+            caratula,
+            consEstDetallado,
+            consEstSimple,
+            estudios
+        ];
+
+        if (verificar.every(val => !val || (Array.isArray(val) && val.length === 0) || (typeof val === 'object' && Object.keys(val).length === 0))) {
+            toastr.warning('Debe seleccionar alguna opción para poder enviar los reportes','',{timeOut: 1000});
+            return;
+        }
+
+
+        swal({
+            'title': "Esta por enviar reportes internos ¿Desea Continuar?",
+            'icon': 'warning',
+            'buttons': ['Cancelar', 'Enviar']
+        }).then((confirmar) => {
+
+            if(confirmar) {
+
+                $('input[data-nosend]:checked').each(function() {
+                    estudios.push($(this).attr('id'));
+                });
+
+                preloader('on');
+                $.get(enviarReporte, {
+                    Id: variables.idPrestacion.val(), 
+                    infInternos: infInternos, 
+                    pedProveedores: pedProveedores, 
+                    conPaciente: conPaciente, 
+                    resAdmin: resAdmin, 
+                    caratula: caratula, 
+                    consEstDetallado: consEstDetallado, 
+                    consEstSimple: consEstSimple,
+                    estudios: estudios
+                })
+                    .done(function(response){
+                        preloader('off');
+                        toastr.success(response.msg,'',{timeOut: 1000});
+                    })
+                    .fail(function(jqXHR){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return; 
+                    });
+
+            }
+
+        });
+        
     });
 
     principal.imprimirRepo.on('click', function(e){
