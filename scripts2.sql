@@ -2304,3 +2304,5 @@ INSERT INTO auditoriaacciones (Id, Nombre) VALUES (52, 'ESTADO ABIERTO');
 INSERT INTO auditoriaacciones (Id, Nombre) VALUES (53, 'ESTADO CERRADO');
 
 ALTER TABLE auditoria ADD COLUMN Observaciones TEXT NULL;
+
+* * * * * cd /var/www/html/cmit && php artisan schedule:run >> /dev/null 2>&1 --se ejecuta el comando cada 1 minuto
