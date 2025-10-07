@@ -69,7 +69,8 @@ $(function(){
         examenesCantidad: $('#examenesCantidad'),
         lstExamenesCtd: $('#lstExamenesCtd'),
         listadoExamenesCtd: $('#listadoExamenesCtd'),
-        estudios: $('#estudios')
+        estudios: $('#estudios'),
+        enviarReporte: $('.enviarReporte')
     };
 
     const variables = {
@@ -192,6 +193,7 @@ $(function(){
             .done(function(response){
 
                 principal.listaExamenes.empty();
+                cargarEstudiosImp(variables.idPrestacion.val());
                 cargarExamen(variables.idPrestacion.val());
                 contadorExamenes(variables.idPrestacion.val());
                 tablasExamenes(variables.selectClientes.val(), true, '#lstEx');  
@@ -882,6 +884,77 @@ $(function(){
             .val(data[0].Id);
     });
 
+    principal.enviarReporte.on('click', function(e) {
+        e.preventDefault();
+
+        let infInternos = variables.infInternos.prop('checked'),
+            pedProveedores = variables.pedProveedores.prop('checked'),
+            conPaciente = variables.conPaciente.prop('checked'),
+            resAdmin = variables.resAdmin.prop('checked'),
+            caratula = variables.caratula.prop('checked'),
+            consEstDetallado = variables.consEstDetallado.prop('checked'),
+            consEstSimple = variables.consEstSimple.prop('checked'),
+            estudios = [];
+
+
+        let verificar = [
+            infInternos,
+            pedProveedores,
+            conPaciente,
+            resAdmin,
+            caratula,
+            consEstDetallado,
+            consEstSimple,
+            estudios
+        ];
+
+        if (verificar.every(val => !val || (Array.isArray(val) && val.length === 0) || (typeof val === 'object' && Object.keys(val).length === 0))) {
+            toastr.warning('Debe seleccionar alguna opción para poder enviar los reportes','',{timeOut: 1000});
+            return;
+        }
+
+
+        swal({
+            'title': "Esta por enviar reportes internos ¿Desea Continuar?",
+            'icon': 'warning',
+            'buttons': ['Cancelar', 'Enviar']
+        }).then((confirmar) => {
+
+            if(confirmar) {
+
+                $('input[data-nosend]:checked').each(function() {
+                    estudios.push($(this).attr('id'));
+                });
+
+                preloader('on');
+                $.get(enviarReporte, {
+                    Id: variables.idPrestacion.val(), 
+                    infInternos: infInternos, 
+                    pedProveedores: pedProveedores, 
+                    conPaciente: conPaciente, 
+                    resAdmin: resAdmin, 
+                    caratula: caratula, 
+                    consEstDetallado: consEstDetallado, 
+                    consEstSimple: consEstSimple,
+                    estudios: estudios
+                })
+                    .done(function(response){
+                        preloader('off');
+                        toastr.success(response.msg,'',{timeOut: 1000});
+                    })
+                    .fail(function(jqXHR){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return; 
+                    });
+
+            }
+
+        });
+        
+    });
+
     principal.imprimirRepo.on('click', function(e){
         e.preventDefault();
 
@@ -1364,6 +1437,31 @@ $(function(){
                             <input type="checkbox" name="Id_examenes" value="${examen.IdItem}" checked ${examen.Anulado === 1 ? 'disabled' : ''}>
                         </td>
                         <td data-idexam="${examen.IdExamen}" id="${examen.IdItem}" style="text-align:left;">${examen.Nombre} ${examen.Anulado === 1 ? '<span class="custom-badge rojo">Bloqueado</span>' : ''}</td>
+                        <td>
+                            <span id="incompleto" class="badge badge-soft-dark">
+                                <i class="ri-flag-2-line incompleto"></i>
+                            </span>
+                        </td>
+                        <td>
+                            <span id="ausente" class="badge badge-soft-dark">
+                                <i class="ri-flag-2-line ausente"></i>
+                            </span>
+                        </td>
+                        <td>
+                            <span id="forma" class="badge badge-soft-dark">
+                                <i class="ri-flag-2-line forma"></i>
+                            </span>
+                        </td>
+                        <td>
+                            <span id="sinesc" class="badge badge-soft-dark">
+                                <i class="ri-flag-2-line sinesc"></i>
+                            </span>
+                        </td>
+                        <td>
+                            <span id="devol" class="badge badge-soft-dark">
+                                <i class="ri-flag-2-line devol"></i>
+                            </span>
+                        </td>
                         <td style="width: 100px">    
                             <div class="d-flex gap-2">
                                     <div class="bloquear">
@@ -1407,6 +1505,58 @@ $(function(){
         } finally {
             preloader('off');
         }
+    }
+
+    $(document).on('click', '.incompleto, .ausente, .forma, .sinesc, .devol', function() {
+        let classes = $(this).attr('class').split(' '),
+            //item = $(this).closest('tr').find('td:first').attr('id');
+            item = $(this).closest('tr').find('td:eq(1)').attr('id');
+
+            const opcionesClasses = {
+                'incompleto': 'Incompleto',
+                'ausente': 'Ausente',
+                'forma': 'Forma',
+                'sinesc': 'SinEsc',
+                'devol': 'Devol'
+              };
+
+            let buscarClasse = classes.find(clase => opcionesClasses.hasOwnProperty(clase));
+
+            if(buscarClasse){
+                opcionesExamenes(item, opcionesClasses[buscarClasse]);
+            }
+    
+    });
+
+    function opcionesExamenes(item, opcion){
+        preloader('on');
+        $.ajax({
+            url: itemExamen,
+            type: 'Post',
+            data: {
+                _token: TOKEN,
+                Id: item,
+                opcion: opcion
+            },
+            success: function(response){
+                preloader('off');
+                toastr.success(response.msg,'',{timeOut: 1000});
+
+                let fila = $('td#' + item).closest('tr'), 
+                    span= fila.find('span#' + opcion.toLowerCase()),
+                    clase = span.attr('class'),
+                    contenido = (clase === 'badge badge-soft-dark' ? 'custom-badge rojo' : 'badge badge-soft-dark');
+            
+                span.removeClass().addClass(contenido);
+                checkerIncompletos(ID);
+            },
+            error: function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;  
+            }
+        });
     }
 
     $(document).on('click', '.bloquearExamenes, .bloquearExamen', function(e){

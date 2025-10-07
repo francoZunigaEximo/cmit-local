@@ -636,7 +636,7 @@ $(function(){
                             <div class="d-flex gap-2">
                                 <div class="edit">
                                     <button data-id="${examen.IdItem}" type="button" class="btn btn-sm iconGeneral verExamen" title="Ver" data-bs-toggle="modal" data-bs-target="#modalExamen"><i class="ri-search-eye-line"></i></button>
-                                </div>anulado:${examen.Anulado} idNc: ${examen.IdNotaCredito} baja-examen: ${examen.Baja}
+                                </div>
                                 ${examen.Anulado === 0 ? `
                                     <div class="bloquear">
                                         <button data-bloquear="${examen.IdItem}" class="btn btn-sm iconGeneral bloquearExamen" title="Baja" type="button" ${estaCerrado}>
@@ -1606,9 +1606,6 @@ $(function(){
     }
 
     function adjuntosInformador(item, data) {
-
-        console.log(data.adjuntoInformador, typeof(data.adjuntoInformador))
-        console.log(item.profesionales2.InfAdj)
 
         switch(true) {
             case (item.profesionales2.InfAdj === 0):

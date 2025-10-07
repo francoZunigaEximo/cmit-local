@@ -386,8 +386,6 @@
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
-
-
 <script>
     const IDITEMPRES = "{{ $data['itemprestacion']->Id }}";
     const updateItem = "{{ route('updateItem') }}";

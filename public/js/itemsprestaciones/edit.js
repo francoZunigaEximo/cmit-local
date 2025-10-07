@@ -7,7 +7,7 @@ $(function() {
           IDEXAMEN = $('#idExamen').val(),
           valCerrarI = 3;
 
-    let cadj = $('#CAdj').val(), 
+    const cadj = $('#CAdj').val(), 
         CInfo = $('#CInfo').val(), 
         efector = $('#efectores').val(), 
         informador = $('#informadores').val(), 
@@ -441,10 +441,10 @@ $(function() {
     async function asignar(e, tipo){
 
         if (tipo === 'efector') {
-            
-            let resultado = await ([0,null,''].includes(e));
 
-            if (resultado) {
+            let resultado = await parseInt(e);
+
+            if (!resultado) {
 
                 $('.asignar').show();
                 $('#informadores').prop('disabled', true);
@@ -453,9 +453,9 @@ $(function() {
         
         } else if (tipo === 'informador') {
 
-            let resultado = await ([0,null,''].includes(e)) && (efector !== '0');
-            
-            if (resultado) {
+            let resultado = await parseInt(e);
+
+            if (!resultado && efector) {
                 $('.asignarI, .abrir').show();
                 $('.liberarI').hide();
             }
@@ -541,14 +541,14 @@ $(function() {
                                             <button type="button" class="btn btn-sm iconGeneral" title="Descargar"><i class="ri-download-2-line"></i></button>
                                         </a>
                                     </div>
-                                    ${(Estado === 'Cerrado') ? `
+                                    ${(d.Anulado === 1) ? `
                                     <div class="replace">
                                         <button data-id="${d.IdE}" data-tipo="efector" class="btn btn-sm iconGeneral replaceAdjunto" data-bs-toggle="modal" data-bs-target="#replaceAdjunto" title="Reemplazar archivo">
                                             <i class="ri-file-edit-line"></i>
                                         </button>
                                     </div>
                                     ` : ``}
-                                    ${(Estado === 'Cerrado') || (d.Anulado === 1) ? `
+                                    ${(d.Anulado === 1) ? `
                                     <div class="remove">
                                         <button data-id="${d.IdE}" data-tipo="efector" class="btn btn-sm iconGeneral deleteAdjunto" title="Eliminar">
                                             <i class="ri-delete-bin-2-line"></i>

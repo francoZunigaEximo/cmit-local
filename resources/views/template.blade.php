@@ -465,7 +465,7 @@
         const verifyWizard = "{{ route('pacientes.verify') }}";
         const TOKEN = "{{ csrf_token() }}";
 
-        const IDLE_TIMEOUT = 300 * 60 * 1000;
+        const IDLE_TIMEOUT = 5 * 60 * 60 * 1000;
         const CHECK_INTERVAL = 3000; //3 segundo
         const finalizarSesion = "{{ route('usuario.cierreAutomatico') }}";
         const sessionUser = "{{ auth()->user()?->id }}";
@@ -541,7 +541,7 @@
                 });
         }
 
-        setInterval(sendHeartBeat, 20000); //envia actualizacion de estado cada 20 segundos
+        setInterval(sendHeartBeat, 20000); //20 segundos
 
     </script>
 
