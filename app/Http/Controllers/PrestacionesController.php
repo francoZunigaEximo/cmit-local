@@ -627,6 +627,8 @@ class PrestacionesController extends Controller
 
     public function enviarReporte(Request $request)
     {
+        
+
         $listado = [];
         $evaluacion = [];
 
@@ -657,6 +659,42 @@ class PrestacionesController extends Controller
         if ($request->consEstSimple == 'true') {
             array_push($listado, $this->consEstSimple($request->Id));
             File::copy($this->consEstDetallado($request->Id), FileHelper::getFileUrl('escritura').'/EnviarOpciones/eConstanciaS'.$request->Id.'.pdf');
+        }
+        //Listado de informes internos de Edit Prestaciones
+        if ($request->eEstudio == 'true') {
+            array_push($listado, $this->eEstudio($request->Id, 'no'));
+        }
+
+        if ($request->eEnvio == 'true') {
+            array_push($listado, $this->eEstudio($request->Id, "no"));
+            array_push($listado, $this->adjDigitalFisico($request->Id, 2));
+        }
+
+        if ($request->adjFisicosDigitales == 'true') {
+            array_push($listado, $this->adjDigitalFisico($request->Id, 3));
+        }
+         
+        if ($request->infInternos == 'true') {
+            array_push($listado, $this->infInternos($request->Id));
+        }
+        
+        if ($request->pedProveedores == 'true') {
+            array_push($listado, $this->pedProveedores($request->Id));
+        }
+
+        if ($request->conPaciente == 'true') {
+            array_push($listado, $this->conpaciente($request->Id));
+        }
+
+        if ($request->caratula == 'true') {
+            array_push($listado, $this->caratula($request->Id));
+        }
+
+        if($request->estudios) {
+            foreach($request->estudios as $examen) {
+                $estudio = $this->addEstudioExamen($request->Id, $examen);
+                array_push($listado, $estudio);
+            }
         }
 
         $this->reporteService->fusionarPDFs($listado, $this->sendPath);

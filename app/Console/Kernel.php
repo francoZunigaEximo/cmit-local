@@ -5,6 +5,9 @@ namespace App\Console;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
+use App\Console\Commands\CerrarEfectoresLlamadores;
+use App\Console\Commands\CerrarInformadoresLlamadores;
+
 class Kernel extends ConsoleKernel
 {
     /**
@@ -15,6 +18,8 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')->hourly();
         $schedule->command("app:clean-zombie-sessions")->everyMinute();
         $schedule->command("app:eliminar-llamador")->everyTenMinutes();
+        $schedule->command(CerrarEfectoresLlamadores::class)->everyFifteenMinutes();
+        $schedule->command(CerrarInformadoresLlamadores::class)->everyFifteenMinutes();
     }
 
     /**

@@ -935,8 +935,13 @@
                             
                                     <table class="table table-bordered" id="listado" >
                                         <thead class="table-light">
-                                            <th><input type="checkbox" id="checkAllExa" name="Id_examenes"></th>
+                                            <th style="width: 50px"><input type="checkbox" id="checkAllExa" name="Id_examenes"></th>
                                             <th class="sort">Exámen</th>
+                                            <th style="width: 50px">Inc</th>
+                                            <th style="width: 50px">Aus</th>
+                                            <th style="width: 50px">For</th>
+                                            <th style="width: 50px">Esc</th>
+                                            <th style="width: 50px">Dev</th>
                                             <th>Acciones</th>
                                         </thead>
                                         <tbody id="listaExamenes" class="list form-check-all"></tbody>
@@ -1091,7 +1096,7 @@
                 </div>
 
                 <div class="row reportesPacientes">
-                    <h3 class="ff-secondary fw-bold mt-1 text-center">Imprimir Opciones</h3>
+                    <h3 class="ff-secondary fw-bold mt-1 text-center">Imprimir / Enviar Opciones</h3>
                     <div class="col-9 mx-auto box-information">
                         <div class="text-end">
                             <button class="btn btn-sm botonGeneral volverPrestacionLimpia">
@@ -1158,6 +1163,7 @@
             
                                 <div class="mb-3 text-center">
                                     <button type="button" data-id="" class="btn btn-sm botonGeneral imprimirRepo"><i class="bx bxs-file-pdf"></i>Imprimir</button>
+                                    <button type="button" class="btn btn-sm botonGeneral enviarReporte"><i class="ri-send-plane-line"></i>Enviar</button>
                                 </div>
                             </form>
                         </div>
@@ -1325,6 +1331,8 @@ const getListaExCta = "{{ route('examenesCuenta.listado') }}";
 const cargarExCta = "{{ route('examenesCuenta.cargar') }}";
 
 const nroPrestacion = "{{ $nroPrestacion ?? '' }}";
+const enviarReporte = "{{ route('prestaciones.enviar') }}";
+const itemExamen = "{{ route('itemExamen') }}";
 </script>
 
 @push('styles')

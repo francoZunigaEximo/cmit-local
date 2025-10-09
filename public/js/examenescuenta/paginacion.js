@@ -210,7 +210,7 @@ $(function(){
         fixedColumns: true,
         processing: true,
         lengthChange: false,
-        pageLength: 7,
+        pageLength: 200,
         deferRender: true,
         responsive: true,
         serverSide: true,
@@ -392,8 +392,7 @@ $(function(){
                 targets: 4,
                 render: function(data){
                     let EmpresaCompleto = data.Empresa + ' - ' + data.Cuit;
-                    let recorte = (EmpresaCompleto).substring(0,25) + "...";
-                    return recorte.length >= 25 ? `<span title="${EmpresaCompleto}">${recorte}</span>` : EmpresaCompleto;
+                    return `<span >${EmpresaCompleto}</span>`;
                 }
             },
             {
@@ -402,9 +401,7 @@ $(function(){
                 orderable: true,
                 targets: 5,
                 render: function(data){
-                    let ParaEmpresa = data.ParaEmpresa;
-                    let recorte = (ParaEmpresa).substring(0,25) + "...";
-                    return recorte.length >= 25 ? `<span title="${ParaEmpresa}">${recorte}</span>` : ParaEmpresa;
+                    return `<span >${data.ParaEmpresa}</span>`;
                 }
             },
             {
