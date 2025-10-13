@@ -69,8 +69,6 @@ trait DetallesReportes
     public function firmasPdf($ruta, $xf, $yf, $pdf)
     {
         //chmod($ruta, 666);
-        dd($ruta);
-        die();
         $imagensize = getimagesize($ruta);
         $ancho = $imagensize[0];
         $alto = $imagensize[1]; 
