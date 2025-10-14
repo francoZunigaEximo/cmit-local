@@ -575,21 +575,11 @@ $(function(){
             for (let i = 0; i < response.length; i++) {
                 const examen = response[i];
 
-                let titleEfector = (examen.RegHis === 1 
-                    ? examen.EfectorFullName || (examen.IdEfector && examen.DatosEfectorFullName)
-                    : examen.DatosEfectorFullName || (examen.IdEfector && examen.DatosEfectorFullName)) ?? '',
-                    
-                    fullNameEfector = (examen.RegHis === 1 
-                        ? examen.EfectorApellido || (examen.IdEfector && examen.DatosEfectorApellido)
-                        : examen.DatosEfectorApellido || (examen.IdEfector && examen.DatosEfectorApellido)) ?? '';
+                let titleEfector = examen.IdEfector === 0 ? '' : (examen.EfectorFullName || examen.DatosEfectorFullName || ''),
+                    fullNameEfector = examen.IdEfector === 0 ? '' : (examen.EfectorApellido || examen.DatosEfectorApellido || '');
 
-                let titleInformador = (examen.Informe === 1 && examen.RegHis === 1 
-                        ? examen.InformadorFullName || (examen.IdInformador && examen.DatosInformadorFullName)
-                        : examen.DatosInformadorFullName || (examen.IdInformador && examen.DatosInformadorFullName)) ?? '',
-
-                    fullNameInformador = (examen.Informe === 1 && examen.RegHis === 1
-                        ? examen.InformadorApellido || (examen.IdInformador && examen.DatosInformadorApellido)
-                        : examen.DatosInformadorApellido || (examen.IdInformador && examen.DatosInformadorApellido)) ?? '';
+                let titleInformador = examen.IdInformador === 0 ? '' : (examen.Informe === 1 ? examen.InformadorFullName || examen.DatosInformadorFullName : ''),
+                    fullNameInformador = examen.IdInformador === 0 ? '' : (examen.Informe === 1 ? examen.InformadorApellido || examen.DatosInformadorApellido : '');
                 
                 let estaCerrado = cerrado == '1' ? 'disabled': '';
                 filas += `
@@ -800,8 +790,8 @@ $(function(){
                 listadoIModal(itemprestaciones.Id);
 
                 
-
-                if (itemprestaciones.CInfo === 3 && adjuntosInformador(itemprestaciones, response) === 'Pendiente' && itemprestaciones.Anulado === 0) {
+                
+                if (itemprestaciones.CInfo === 2 && adjuntosInformador(itemprestaciones, response) === 'Pendiente' && itemprestaciones.Anulado === 0) {
                     borrarCache();
                     $('.ex-adjuntarInformador').show();
                 }
@@ -1266,9 +1256,9 @@ $(function(){
 
         if (tipo === 'efector') {
             
-            let resultado = await [0, null, '', undefined].includes(parseInt(e, 10));
+            let resultado = await parseInt(e);
             
-            if (resultado) {
+            if (!resultado) {
                 await borrarCache();
                 $('.ex-asignar').show();
                 $('#ex-informadores').prop('disabled', true);  
@@ -1276,9 +1266,9 @@ $(function(){
         
         } else if (tipo === 'informador') {
 
-            let resultado = await ([0, null, '', undefined].includes(parseInt(e, 10))) && (parseInt(efector, 10) !== 0);
+            let resultado = await parseInt(e, 10);
 
-            if (resultado) {
+            if (!resultado && parseInt(efector)) {
                 
                 await borrarCache();
                 $('.ex-asignarI').show();
@@ -1335,8 +1325,8 @@ $(function(){
         let efector = parseInt($('#ex-efectores').val(), 10),
             informador = parseInt($('#ex-informadores').val(),10),
             CInfo = parseInt($('#ex-CInfo').val(), 10),
-            Estado = $('#ex-EstadoEx').val(),
-            EstadoI = $('#ex-EstadoI').val(),
+            Estado = $('#ex-Estado').val(),
+            EstadoI = $('#ex-Estado').val(),
             AdjEfector = $('#ex-Estado').val(),
             AdjInformador = $('#ex-EstadoInf').val(),
             num = parseInt(e, 10);
@@ -1347,14 +1337,13 @@ $(function(){
             if(resultado){
                 await borrarCache();
                 $('.ex-liberar, .ex-cerrar').show();   
-            
-                checkAdjunto(idItemprestacion, 'efector').then(response => {
-                    if (response) {
-                        $('.ex-adjuntarEfector').show();
-                    } else {
-                        $('.ex-adjuntarEfector').hide();
-                    }
-                });
+
+                if(Estado !== 'No lleva adjuntos') {
+                    checkAdjunto(idItemprestacion, 'efector').then(response => {
+                        response ? $('.ex-adjuntarEfector').hide() : $('.ex-adjuntarEfector').show();
+                    });
+                }
+
             }
         } else if (tipo === 'informador') {
 
@@ -1368,11 +1357,12 @@ $(function(){
                 await borrarCache();
                 $('.ex-cerrarI').show();
                 $('.ex-abrir').hide();
-                $('.ex-adjuntarInformador').show();
 
-                checkAdjunto(idItemprestacion, 'informador').then(response => {
-                    response ? $('.ex-adjuntarInformador').show() : $('.ex-adjuntarInformador').hide();
-                });
+                if(EstadoI !== 'No lleva adjuntos') {
+                    checkAdjunto(idItemprestacion, 'informador').then(response => {
+                        response ? $('.ex-adjuntarInformador').hide() : $('.ex-adjuntarInformador').show();
+                    });
+                }
 
             }else if(errorEfector) {
                 await borrarCache();
@@ -1434,8 +1424,7 @@ $(function(){
                 preloader('off');
 
                 for(let index = 0; index < data.length; index++) {
-                    let d = data[index],
-                        Estado = $('#ex-EstadoEx').val();
+                    let d = data[index];
 
                     let contenido = `
                         <tr>
@@ -1455,14 +1444,13 @@ $(function(){
                                             <button type="button" class="btn btn-sm iconGeneral" title="Descargar"><i class="ri-download-2-line"></i></button>
                                         </a>
                                     </div>
-                                    ${(Estado === 'Cerrado') ? `
                                     <div class="replace">
                                         <button data-id="${d.IdE}" data-tipo="efector" class="btn btn-sm iconGeneral replaceAdjunto" data-bs-toggle="offcanvas" data-bs-target="#replaceAdjunto" title="Reemplazar archivo">
                                             <i class="ri-file-edit-line"></i>
                                         </button>
                                     </div>
-                                    ` : ``}
-                                    ${(Estado === 'Cerrado') || (d.Anulado === 1) ? `
+
+                                    ${(d.Anulado === 0) ? `
                                     <div class="remove">
                                         <button data-id="${d.IdE}" data-tipo="efector" class="btn btn-sm iconGeneral deleteAdjunto" title="Eliminar">
                                             <i class="ri-delete-bin-2-line"></i>
@@ -1508,14 +1496,12 @@ $(function(){
                                         <button type="button" class="btn btn-sm iconGeneral" title="Descargar"><i class="ri-download-2-line"></i></button>
                                     </a>
                                 </div>
-                                ${(EstadoI === 'Cerrado') ? `
                                 <div class="replace">
                                     <button data-id="${d.IdI}" data-tipo="informador" data-bs-toggle="offcanvas" data-bs-target="#replaceAdjunto" class="btn btn-sm iconGeneral replaceAdjunto" title="Reemplazar archivo">
                                         <i class="ri-file-edit-line"></i>
                                     </button> 
                                 </div>
-                                    `:``}
-                                ${(EstadoI === 'Cerrado' || d.Anulado === 1) ? `
+                                ${d.Anulado === 0 ? `
                                 <div class="remove">
                                     <button data-id="${d.IdI}" data-tipo="informador" class="btn btn-sm iconGeneral deleteAdjunto" title="Eliminar">
                                         <i class="ri-delete-bin-2-line"></i>
@@ -1589,6 +1575,9 @@ $(function(){
     }
 
     function adjuntosEfector(examenes, data) {
+
+        console.log(examenes.Adjunto);
+        console.log(typeof(examenes.Adjunto));
 
         switch(true) {
             case (examenes.Adjunto === 0):
