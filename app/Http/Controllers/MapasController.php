@@ -28,6 +28,7 @@ use App\Helpers\ToolsReportes;
 use App\Services\Reportes\Cuerpos\AdjuntosGenerales;
 use App\Services\Reportes\Cuerpos\AdjuntosAnexos;
 use App\Services\Reportes\Cuerpos\AdjuntosDigitales;
+use App\Services\Reportes\Cuerpos\Remito;
 
 use App\Jobs\ReporteMapasJob;
 use App\Helpers\FileHelper;
@@ -35,6 +36,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
 use App\Services\ReportesExcel\ReporteExcel;
+
 
 class MapasController extends Controller
 {
@@ -429,16 +431,9 @@ class MapasController extends Controller
                 return response()->json(['msg' => 'No se encontraron datos para generar el PDF. Hay un conflicto'], 409);
             }
 
-            return response()->json(['msg' => 'Desactivado por desarrollo'], 409);
-            // $pdf = PDF::loadView('layouts.mapas.pdf', ['data' => $items]);
-            // $path = storage_path('app/public/temp/');
-            // $fileName = time() . '.pdf';
-            // $pdf->save($path . $fileName);
+            $filePath = $this->remitoPdf($request->Id);
 
-            // $filePath = $path . $fileName;
-            // chmod($filePath, 0777);
-
-            // return response()->json(['filePath' => $filePath, 'msg' => 'Se ha generado correctamente el reporte ', 'estado' => 'success']);
+            return response()->json(['filePath' => $filePath, 'msg' => 'Se ha generado correctamente el reporte ', 'estado' => 'success']);
         }
     }
 
@@ -1288,7 +1283,23 @@ class MapasController extends Controller
         );
     }
 
-    private function remitoPdf() {}
+    private function remitoPdf(int $idRemito) {
+        return $this->reporteService->generarReporte(
+            Remito::class,
+            null,
+            null,
+            null,
+            'guardar',
+            null,
+            null,
+            ['id' => $idRemito],
+            [],
+            [],
+            [],
+            storage_path('app/public/temp/merge_remito_' . $idRemito . '.pdf')
+
+        );
+    }
 
     private function registrarEEnvio(int $id): void
     {
