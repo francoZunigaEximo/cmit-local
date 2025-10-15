@@ -414,6 +414,8 @@ class MapasController extends Controller
 
     public function export(Request $request)
     {
+        $listado = [];
+
         if ($request->archivo === 'xls') {
             $reporte = $this->reporteExcel->crear('mapas');
             $remito = $this->reporteExcel->crear('remitos');
@@ -431,9 +433,13 @@ class MapasController extends Controller
                 return response()->json(['msg' => 'No se encontraron datos para generar el PDF. Hay un conflicto'], 409);
             }
 
-            $filePath = $this->remitoPdf($request->Id);
+            array_push($listado, $this->remitoPdf($request->Id));
 
-            return response()->json(['filePath' => $filePath, 'msg' => 'Se ha generado correctamente el reporte ', 'estado' => 'success']);
+            return response()->json([
+                'filePath' => $this->outputPath,
+                'name' => $this->fileNameExport.'.pdf',
+                'msg' => 'Imprimiendo Remito',
+            ]); 
         }
     }
 
@@ -779,13 +785,13 @@ class MapasController extends Controller
                 : null)
         );
 
-        foreach ($ids as $id) {
-            $prestacion = Prestacion::with(['empresa', 'art', 'paciente'])->where('Id', $id)->first();
+        $prestaciones = Prestacion::with(['empresa', 'art', 'paciente'])->whereIn('Id', $ids)->get();
 
+        foreach ($prestaciones as $prestacion) {
+            
             if ($prestacion &&  $this->checkExCtaImpago($prestacion->Id) === 0) {
 
                 $nombreCompleto = $prestacion->paciente->Apellido . ' ' . $prestacion->paciente->Nombre;
-
                 $cuerpo = [
                     'paciente' => $nombreCompleto,
                     'Fecha' => Carbon::parse($prestacion->Fecha)->format("d/m/Y"),
@@ -922,7 +928,7 @@ class MapasController extends Controller
                         ReporteMapasJob::dispatch($email, $asunto, $cuerpo, $attachments)->onQueue('correos');
                         $this->copiasRegistroEEnvio($prestacion->Id); //Enviamos las copias de los archivos creados a las carpetas correspondientes del sistema
 
-                        Auditor::setAuditoria($id, self::TBLMAPA, $accion, Auth::user()->name);
+                        Auditor::setAuditoria($prestacion->Id, self::TBLMAPA, $accion, Auth::user()->name);
 
                         $respuestas[] = ['msg' => 'Se ha enviado el eEstudio al cliente ' . $prestacion->art->RazonSocial . ' correctamente. ' . $prestacion->Id, 'icon' => 'eEmpresa'];
                     }
@@ -1296,7 +1302,7 @@ class MapasController extends Controller
             [],
             [],
             [],
-            storage_path('app/public/temp/merge_remito_' . $idRemito . '.pdf')
+            null,
 
         );
     }
