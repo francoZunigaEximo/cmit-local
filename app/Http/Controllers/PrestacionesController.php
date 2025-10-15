@@ -627,8 +627,6 @@ class PrestacionesController extends Controller
 
     public function enviarReporte(Request $request)
     {
-        
-
         $listado = [];
         $evaluacion = [];
 
