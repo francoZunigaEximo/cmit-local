@@ -176,6 +176,7 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::get('searchExamenes', [ExamenesController::class, 'searchExamenes'])->name('searchExamenes');
     Route::post('updateExamen', [ExamenesController::class, 'updateExamen'])->name('updateExamen');
     Route::get('examenes/exportar/excel', [ExamenesController::class, 'excel'])->name('examenes.excel');
+    Route::get('examenes/reportes', [ExamenesController::class, 'getReportes'])->name('examenes.getReportes');
     Route::resource('examenes', ExamenesController::class);
 
     //Ruta de Comentarios de Prestaciones
