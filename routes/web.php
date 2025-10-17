@@ -138,8 +138,8 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::get('prestaciones/wizard', [PrestacionesController::class, 'verifyWizard'])->name('verifyWizard');
     Route::get('prestaciones/excel', [PrestacionesController::class, 'exportExcel'])->name('prestaciones.excel');
     Route::get('prestaciones/obtener-bloqueo', [PrestacionesController::class, 'getBloqueo'])->name('getBloqueoPrestacion');
-    Route::get('lstTipoPrestacion', [PrestacionesController::class, 'lstTipoPrestacion'])->name('lstTipoPrestacion');
-    Route::get('buscarEx', [PrestacionesController::class, 'buscarEx'])->name('buscarEx');
+    Route::get('prestaciones/tipo-prestacion/listado', [PrestacionesController::class, 'lstTipoPrestacion'])->name('lstTipoPrestacion');
+    Route::get('prestaciones/examen/buscar', [PrestacionesController::class, 'buscarEx'])->name('buscarEx');
     Route::get('prestaciones/check-incompleto', [PrestacionesController::class, 'checkIncompleto'])->name('prestaciones.checkIncompleto');
     Route::post('prestaciones/nueva-observacion', [PrestacionesController::class, 'obsNuevaPrestacion'])->name('obsNuevaPrestacion');
     Route::post('prestaciones/borrar-cache', [PrestacionesController::class, 'cacheDelete'])->name('prestaciones.cacheDelete');
