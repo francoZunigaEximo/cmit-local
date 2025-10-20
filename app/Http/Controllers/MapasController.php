@@ -1305,7 +1305,7 @@ class MapasController extends Controller
             [],
             [],
             [],
-            storage_path('app/public/temp/remito_' . $idRemito . '.pdf')
+            storage_path('app/public/temp/merge_remito_' . $idRemito . '.pdf')
 
         );
     }
