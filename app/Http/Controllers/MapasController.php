@@ -433,6 +433,8 @@ class MapasController extends Controller
                 return response()->json(['msg' => 'No se encontraron datos para generar el PDF. Hay un conflicto'], 409);
             }
 
+            dd($this->remitoPdf($request->Id));
+
             array_push($listado, $this->remitoPdf($request->Id));
 
             $this->reporteService->fusionarPDFs($listado, $this->outputPath);
