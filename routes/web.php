@@ -84,9 +84,9 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     })->name('home');
 
     //Rutas de Utility
-    Route::get('localidades', [UtilityController::class, 'getLocalidades'])->name('getLocalidades');
-    Route::get('codigo-postal', [UtilityController::class, 'getCodigoPostal'])->name('getCodigoPostal');
-    Route::get('provincia', [UtilityController::class, 'checkProvincia'])->name('checkProvincia');
+    Route::get('utilidades/localidades', [UtilityController::class, 'getLocalidades'])->name('getLocalidades');
+    Route::get('utilidades/codigo-postal', [UtilityController::class, 'getCodigoPostal'])->name('getCodigoPostal');
+    Route::get('utilidades/provincia', [UtilityController::class, 'checkProvincia'])->name('checkProvincia');
 
     //Rutas de Pacientes
     Route::get('pacientes/buscar', [PacientesController::class, 'search'])->name('search');
