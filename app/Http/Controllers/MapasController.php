@@ -435,6 +435,8 @@ class MapasController extends Controller
 
             array_push($listado, $this->remitoPdf($request->Id));
 
+            dd($listado);
+
             return response()->json([
                 'filePath' => $this->outputPath,
                 'name' => $this->fileNameExport.'.pdf',
