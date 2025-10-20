@@ -435,7 +435,7 @@ class MapasController extends Controller
 
             array_push($listado, $this->remitoPdf($request->Id));
 
-            dd($listado);
+            $this->reporteService->fusionarPDFs($listado, $this->outputPath);
 
             return response()->json([
                 'filePath' => $this->outputPath,
@@ -882,7 +882,7 @@ class MapasController extends Controller
 
                         $this->registrarEEnvio($prestacion->Id); //Confirmamos el eEnvio registrando fecha y campo eEnviar
 
-                        Auditor::setAuditoria($id, self::TBLMAPA, $accion, Auth::user()->name); //Generamos auditoria
+                        Auditor::setAuditoria($prestacion->Id, self::TBLMAPA, $accion, Auth::user()->name); //Generamos auditoria
                         $this->folderTempClean(); //Limpiamos la carpeta Temp
 
                         $respuestas[] = ['msg' => 'Se ha enviado el eEstudio al cliente ' . $prestacion->art->RazonSocial . ' correctamente. ' . $prestacion->Id, 'icon' => 'eArt'];
@@ -1291,7 +1291,8 @@ class MapasController extends Controller
         );
     }
 
-    public function remitoPdf(int $idRemito) {
+    public function remitoPdf(int $idRemito): mixed
+    {
         return $this->reporteService->generarReporte(
             Remito::class,
             null,
