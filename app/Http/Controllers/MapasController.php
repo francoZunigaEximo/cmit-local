@@ -424,16 +424,16 @@ class MapasController extends Controller
             return $request->modulo === 'remito'
                 ? $remito->generar($datos)
                 : $reporte->generar($request->Id);
+
         } elseif ($request->archivo === 'pdf') {
 
-            $examenes = Prestacion::where('NroCEE', $request->Id)->pluck('Id');
-            $items = ItemPrestacion::with(['prestaciones', 'examenes', 'prestaciones.paciente'])->whereIn('IdPrestacion', $examenes)->get();
+            $examenes = Prestacion::where('NroCEE', $request->Id)->get();
 
             if ($examenes->isEmpty()) {
                 return response()->json(['msg' => 'No se encontraron datos para generar el PDF. Hay un conflicto'], 409);
             }
 
-            array_push($listado, $this->adjDigitalFisico(315878, 1));
+            array_push($listado, $this->remitoPdf($request->Id));
 
             $this->reporteService->fusionarPDFs($listado, $this->outputPath);
 
