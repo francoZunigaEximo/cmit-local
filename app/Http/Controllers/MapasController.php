@@ -1291,7 +1291,7 @@ class MapasController extends Controller
         );
     }
 
-    public function remitoPdf(int $idRemito): mixed
+    private function remitoPdf(int $idRemito): mixed
     {
         return $this->reporteService->generarReporte(
             Remito::class,
