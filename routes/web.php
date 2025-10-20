@@ -84,9 +84,9 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     })->name('home');
 
     //Rutas de Utility
-    Route::get('localidades', [UtilityController::class, 'getLocalidades'])->name('getLocalidades');
-    Route::get('codigo-postal', [UtilityController::class, 'getCodigoPostal'])->name('getCodigoPostal');
-    Route::get('provincia', [UtilityController::class, 'checkProvincia'])->name('checkProvincia');
+    Route::get('utilidades/localidades', [UtilityController::class, 'getLocalidades'])->name('getLocalidades');
+    Route::get('utilidades/codigo-postal', [UtilityController::class, 'getCodigoPostal'])->name('getCodigoPostal');
+    Route::get('utilidades/provincia', [UtilityController::class, 'checkProvincia'])->name('checkProvincia');
 
     //Rutas de Pacientes
     Route::get('pacientes/buscar', [PacientesController::class, 'search'])->name('search');
@@ -138,8 +138,8 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::get('prestaciones/wizard', [PrestacionesController::class, 'verifyWizard'])->name('verifyWizard');
     Route::get('prestaciones/excel', [PrestacionesController::class, 'exportExcel'])->name('prestaciones.excel');
     Route::get('prestaciones/obtener-bloqueo', [PrestacionesController::class, 'getBloqueo'])->name('getBloqueoPrestacion');
-    Route::get('lstTipoPrestacion', [PrestacionesController::class, 'lstTipoPrestacion'])->name('lstTipoPrestacion');
-    Route::get('buscarEx', [PrestacionesController::class, 'buscarEx'])->name('buscarEx');
+    Route::get('prestaciones/tipo-prestacion/listado', [PrestacionesController::class, 'lstTipoPrestacion'])->name('lstTipoPrestacion');
+    Route::get('prestaciones/examen/buscar', [PrestacionesController::class, 'buscarEx'])->name('buscarEx');
     Route::get('prestaciones/check-incompleto', [PrestacionesController::class, 'checkIncompleto'])->name('prestaciones.checkIncompleto');
     Route::post('prestaciones/nueva-observacion', [PrestacionesController::class, 'obsNuevaPrestacion'])->name('obsNuevaPrestacion');
     Route::post('prestaciones/borrar-cache', [PrestacionesController::class, 'cacheDelete'])->name('prestaciones.cacheDelete');
@@ -169,12 +169,12 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
 
     //Ruta Examenes 
     Route::get('examenes/buscar', [ExamenesController::class, 'search'])->name('searchExamen');
-    Route::post('IdExamen', [ExamenesController::class, 'getId'])->name('IdExamen');
-    Route::post('deleteExamen', [ExamenesController::class, 'deleteEx'])->name('deleteExamen');
-    Route::post('saveExamen',[ExamenesController::class, 'saveExamen'])->name('saveExamen');
-    Route::get('porcentajeExamen', [ExamenesController::class, 'porcentajeExamen'])->name('porcentajeExamen');
-    Route::get('searchExamenes', [ExamenesController::class, 'searchExamenes'])->name('searchExamenes');
-    Route::post('updateExamen', [ExamenesController::class, 'updateExamen'])->name('updateExamen');
+    Route::post('examenes/obtener-id', [ExamenesController::class, 'getId'])->name('IdExamen');
+    Route::post('examen/eliminar', [ExamenesController::class, 'deleteEx'])->name('deleteExamen');
+    Route::post('examen/guardar',[ExamenesController::class, 'saveExamen'])->name('saveExamen');
+    Route::get('examen/porcentaje', [ExamenesController::class, 'porcentajeExamen'])->name('porcentajeExamen');
+    Route::get('examenes/buscar', [ExamenesController::class, 'searchExamenes'])->name('searchExamenes');
+    Route::post('examen/actualizar', [ExamenesController::class, 'updateExamen'])->name('updateExamen');
     Route::get('examenes/exportar/excel', [ExamenesController::class, 'excel'])->name('examenes.excel');
     Route::get('examenes/reportes', [ExamenesController::class, 'getReportes'])->name('examenes.getReportes');
     Route::resource('examenes', ExamenesController::class);
@@ -260,31 +260,31 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::get('itemsprestaciones/lista-examenes/estandar', [ItemPrestacionesController::class, 'getExamenesStd'])->name('itemsprestaciones.lstExamenesEstandar');
     Route::get('itemsprestaciones/check-adjuntos', [ItemPrestacionesController::class, 'checkAdjunto'])->name('itemsprestaciones.checkAdjuntos');
     Route::get('itemsprestaciones/checkid', [ItemPrestacionesController::class, 'checkPrimeraCarga'])->name('itemsprestaciones.checkId');
-    Route::get('itemsprestaciones/editModal', [ItemPrestacionesController::class, 'editModal'])->name('itemsprestaciones.editModal');
+    Route::get('itemsprestaciones/modal/editar', [ItemPrestacionesController::class, 'editModal'])->name('itemsprestaciones.editModal');
     Route::get('itemsprestaciones/contador', [ItemPrestacionesController::class, 'contadorExamenes'])->name('itemsprestaciones.contador');
     Route::get('itemsprestaciones/check-facturas', [ItemPrestacionesController::class, 'checkFacturaItemPrestacion'])->name('itemsprestaciones.checkFacturas');
-    Route::post('updateItem', [ItemPrestacionesController::class, 'updateItem'])->name('updateItem');
-    Route::post('updateAsignado', [ItemPrestacionesController::class, 'updateAsignado'])->name('updateAsignado');
-    Route::post('updateAdjunto', [ItemPrestacionesController::class, 'updateAdjunto'])->name('updateAdjunto');
-    Route::get('paginacionGeneral', [ItemPrestacionesController::class, 'paginacionGeneral'])->name('paginacionGeneral');
-    Route::post('updateItemExamen', [ItemPrestacionesController::class, 'updateExamen'])->name('updateItemExamen');
-    Route::post('uploadAdjunto', [ItemPrestacionesController::class, 'uploadAdjunto'])->name('uploadAdjunto');
-    Route::get('deleteIdAdjunto', [ItemPrestacionesController::class, 'deleteIdAdjunto'])->name('deleteIdAdjunto');
-    Route::post('replaceIdAdjunto', [ItemPrestacionesController::class, 'replaceIdAdjunto'])->name('replaceIdAdjunto');
-    Route::post('deleteItemExamen', [ItemPrestacionesController::class, 'deleteEx'])->name('deleteItemExamen');
+    Route::post('itemsprestaciones/actualizar', [ItemPrestacionesController::class, 'updateItem'])->name('updateItem');
+    Route::post('itemsprestaciones/actualizar/asignado', [ItemPrestacionesController::class, 'updateAsignado'])->name('updateAsignado');
+    Route::post('itemsprestaciones/actualizar/adjunto', [ItemPrestacionesController::class, 'updateAdjunto'])->name('updateAdjunto');
+    Route::get('itemsprestaciones/listado', [ItemPrestacionesController::class, 'paginacionGeneral'])->name('paginacionGeneral');
+    Route::post('itemsprestacions/examen/actualizar', [ItemPrestacionesController::class, 'updateExamen'])->name('updateItemExamen');
+    Route::post('itemsprestaciones/adjunto', [ItemPrestacionesController::class, 'uploadAdjunto'])->name('uploadAdjunto');
+    Route::get('itemsprestaciones/adjunto/eliminar', [ItemPrestacionesController::class, 'deleteIdAdjunto'])->name('deleteIdAdjunto');
+    Route::post('itemsprestaciones/adjunto/reemplazar', [ItemPrestacionesController::class, 'replaceIdAdjunto'])->name('replaceIdAdjunto');
+    Route::post('itemsprestaciones/examen/eliminar', [ItemPrestacionesController::class, 'deleteEx'])->name('deleteItemExamen');
     Route::post('itemsprestaciones/guardar', [ItemPrestacionesController::class, 'save'])->name('saveItemExamenes');
     Route::post('itemExamen', [ItemPrestacionesController::class, 'itemExamen'])->name('itemExamen');
-    Route::post('bloquearItemExamen', [ItemPrestacionesController::class, 'bloquearEx'])->name('bloquearItemExamen');
-    Route::post('asignarProfesional', [ItemPrestacionesController::class, 'asignarProfesional'])->name('asignarProfesional');
-    Route::get('getBloqueoItemPrestacion', [ItemPrestacionesController::class, 'getBloqueo'])->name('getBloqueoItemPrestacion');
+    Route::post('itemsprestaciones/bloquear', [ItemPrestacionesController::class, 'bloquearEx'])->name('bloquearItemExamen');
+    Route::post('itemsprestaciones/asignar-profesional', [ItemPrestacionesController::class, 'asignarProfesional'])->name('asignarProfesional');
+    Route::get('itesmprestaciones/bloqueo', [ItemPrestacionesController::class, 'getBloqueo'])->name('getBloqueoItemPrestacion');
     Route::post('archivosAutomatico', [ItemPrestacionesController::class, 'archivosAutomatico'])->name('archivosAutomatico');
     Route::post('archivosAutomaticoI', [ItemPrestacionesController::class, 'archivosAutomaticoI'])->name('archivosAutomaticoI');
-    Route::post('updateEstadoItem', [ItemPrestacionesController::class, 'updateEstadoItem'])->name('updateEstadoItem');
-    Route::post('liberarExamen', [ItemPrestacionesController::class, 'liberarExamen'])->name('liberarExamen');
-    Route::post('marcarExamenAdjunto', [ItemPrestacionesController::class, 'marcarExamenAdjunto'])->name('marcarExamenAdjunto');
-    Route::get('lstExamenes', [ItemPrestacionesController::class, 'lstExamenes'])->name('lstExamenes');
-    Route::get('preExamenes', [ItemPrestacionesController::class, 'preExamenes'])->name('preExamenes');
-    Route::get('itemprestaciones/paginacion-prestacion', [ItemPrestacionesController::class, 'paginacionByPrestacion'])->name('paginacionByPrestacion');
+    Route::post('itemsprestaciones/estado/actualizar', [ItemPrestacionesController::class, 'updateEstadoItem'])->name('updateEstadoItem');
+    Route::post('itemsprestaciones/examen/liberar', [ItemPrestacionesController::class, 'liberarExamen'])->name('liberarExamen');
+    Route::post('itemsprestaciones/adjunto/marcar', [ItemPrestacionesController::class, 'marcarExamenAdjunto'])->name('marcarExamenAdjunto');
+    Route::get('itemsprestaciones/listado', [ItemPrestacionesController::class, 'lstExamenes'])->name('lstExamenes');
+    Route::get('itemsprestaciones/precargas', [ItemPrestacionesController::class, 'preExamenes'])->name('preExamenes');
+    Route::get('itemprestaciones/listado/prestaciones', [ItemPrestacionesController::class, 'paginacionByPrestacion'])->name('paginacionByPrestacion');
     Route::resource('itemsprestaciones', ItemPrestacionesController::class);
 
     //Rutas de FacturasdeVenta
@@ -328,33 +328,33 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
 
     //Rutas de Examenes a Cuenta
     Route::get('/examen-cuenta/buscar', [ExamenesCuentaController::class, 'search'])->name('searchExCuenta');
-    Route::post('cambiarPago', [ExamenesCuentaController::class, 'cambiarPago'])->name('cambiarPago');
-    Route::get('detallesExamenes', [ExamenesCuentaController::class, 'detalles'])->name('detallesExamenes');
-    Route::post('eliminarExCuenta', [ExamenesCuentaController::class, 'delete'])->name('eliminarExCuenta');
-    Route::get('searchSaldo', [ExamenesCuentaController::class, 'saldo'])->name('searchSaldo');
-    Route::post('saveExamenCuenta', [ExamenesCuentaController::class, 'save'])->name('saveExamenCuenta');
-    Route::get('listadoExCta', [ExamenesCuentaController::class, 'listado'])->name('listadoExCta');
-    Route::post('updateExamenCuenta', [ExamenesCuentaController::class, 'update'])->name('updateExamenCuenta');
-    Route::get('deleteItemExCta', [ExamenesCuentaController::class, 'deleteItem'])->name('deleteItemExCta');
-    Route::get('liberarItemExCta', [ExamenesCuentaController::class, 'liberarItem'])->name('liberarItemExCta');
-    Route::post('savePrecarga', [ExamenesCuentaController::class, 'precarga'])->name('savePrecarga');
-    Route::post('savePaquete', [ExamenesCuentaController::class, 'saveEx'])->name('savePaquete');
-    Route::get('lstClientes', [ExamenesCuentaController::class, 'lstClientes'])->name('lstClientes');
-    Route::get('lstExClientes', [ExamenesCuentaController::class, 'lstExClientes'])->name('lstExClientes');
-    Route::get('listadoDni', [ExamenesCuentaController::class, 'listadoDni'])->name('listadoDni');
-    Route::get('listPrecarga', [ExamenesCuentaController::class, 'listadoPrecarga'])->name('listPrecarga');
-    Route::get('listadoEx', [ExamenesCuentaController::class, 'listadoEx'])->name('listadoEx');
-    Route::get('listExCta', [ExamenesCuentaController::class, 'listadoExCta'])->name('listExCta');
-    Route::get('exportExcel', [ExamenesCuentaController::class, 'excel'])->name('exportExcel');
-    Route::get('exportPDF', [ExamenesCuentaController::class, 'pdf'])->name('exportPDF');
-    Route::get('exportarDetalle', [ExamenesCuentaController::class, 'reporteDetalle'])->name('notasCredito.exportarDetalle');
-    Route::get('notasCredito/exportarExcel', [ExamenesCuentaController::class, 'reporteGeneral'])->name('notasCredito.exportarExcel');
+    Route::post('examenesCuenta/cambiar-pago', [ExamenesCuentaController::class, 'cambiarPago'])->name('cambiarPago');
+    Route::get('examenesCuenta/detalles', [ExamenesCuentaController::class, 'detalles'])->name('detallesExamenes');
+    Route::post('examenesCuenta/eliminar', [ExamenesCuentaController::class, 'delete'])->name('eliminarExCuenta');
+    Route::get('examenesCuenta/buscar-saldo', [ExamenesCuentaController::class, 'saldo'])->name('searchSaldo');
+    Route::post('examenesCuenta/guardar', [ExamenesCuentaController::class, 'save'])->name('saveExamenCuenta');
+    Route::get('examenesCuenta/listado', [ExamenesCuentaController::class, 'listado'])->name('listadoExCta');
+    Route::post('examenesCuenta/actualizar', [ExamenesCuentaController::class, 'update'])->name('updateExamenCuenta');
+    Route::get('examenesCuenta/eliminar/item', [ExamenesCuentaController::class, 'deleteItem'])->name('deleteItemExCta');
+    Route::get('examenesCuenta/liberar/item', [ExamenesCuentaController::class, 'liberarItem'])->name('liberarItemExCta');
+    Route::post('examenesCuenta/precarga/guardar', [ExamenesCuentaController::class, 'precarga'])->name('savePrecarga');
+    Route::post('examenesCuenta/paquete/guardar', [ExamenesCuentaController::class, 'saveEx'])->name('savePaquete');
+    Route::get('examenesCuenta/listado/clientes', [ExamenesCuentaController::class, 'lstClientes'])->name('lstClientes');
+    Route::get('examenesCuenta/listado/clientes', [ExamenesCuentaController::class, 'lstExClientes'])->name('lstExClientes');
+    Route::get('examenesCuenta/listado/dni', [ExamenesCuentaController::class, 'listadoDni'])->name('listadoDni');
+    Route::get('examenesCuenta/listado/precarga', [ExamenesCuentaController::class, 'listadoPrecarga'])->name('listPrecarga');
+    Route::get('examenesCuenta/listado', [ExamenesCuentaController::class, 'listadoEx'])->name('listadoEx');
+    Route::get('examenesCuenta/listado', [ExamenesCuentaController::class, 'listadoExCta'])->name('listExCta');
+    Route::get('examenesCuenta/exportar/excel', [ExamenesCuentaController::class, 'excel'])->name('exportExcel');
+    Route::get('examenesCuenta/exportar/pdf', [ExamenesCuentaController::class, 'pdf'])->name('exportPDF');
+    Route::get('examenesCuenta/exportar-detalle', [ExamenesCuentaController::class, 'reporteDetalle'])->name('notasCredito.exportarDetalle');
+    Route::get('notasCredito/exportar/excel', [ExamenesCuentaController::class, 'reporteGeneral'])->name('notasCredito.exportarExcel');
     Route::get('/examenesCuenta/disponibilidad', [ExamenesCuentaController::class, 'disponibilidad'])->name('lstExDisponibles');
-    Route::get('lstFacturadas', [ExamenesCuentaController::class, 'listadoUltimas'])->name('lstFacturadas');
-    Route::get('saldoNoDatatable', [ExamenesCuentaController::class, 'saldoNoDatatable'])->name('saldoNoDatatable');
-    Route::get('examenesCuenta/listado-examenes', [ExamenesCuentaController::class, 'listExCta'])->name('examenesCuenta.listado');
+    Route::get('examenesCuenta/facturas', [ExamenesCuentaController::class, 'listadoUltimas'])->name('lstFacturadas');
+    Route::get('examenesCuenta/saldos', [ExamenesCuentaController::class, 'saldoNoDatatable'])->name('saldoNoDatatable');
+    Route::get('examenesCuenta/listado', [ExamenesCuentaController::class, 'listExCta'])->name('examenesCuenta.listado');
     Route::post('examenesCuenta/actualizar-prestacion', [ExamenesCuentaController::class, 'cargarExCtaPrestacion'])->name('examenesCuenta.cargar');
-    Route::get('examenesCuenta/lista-examenes-cuenta', [ExamenesCuentaController::class, 'listaExCtaEmpresa'])->name('examenesCuenta.listaEmpresa');
+    Route::get('examenesCuenta/listado-empresa', [ExamenesCuentaController::class, 'listaExCtaEmpresa'])->name('examenesCuenta.listaEmpresa');
     Route::get('examenesCuenta/contador-pagos', [ExamenesCuentaController::class, 'contadorPagos'])->name('examenesCuenta.contadoPagos');
     Route::resource('examenesCuenta', ExamenesCuentaController::class);
 
