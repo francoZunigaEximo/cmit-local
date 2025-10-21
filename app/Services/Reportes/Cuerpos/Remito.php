@@ -15,6 +15,7 @@ class Remito extends Reporte
     {
         $prestacion = $this->prestacion($datos['id']);
         $query = $this->informacion($datos['id']);
+        $totalExamenes = $this->totalExamenes($datos['id']);
 
         $pdf->Image(public_path(ReporteConfig::$LOGO),10,6,20);
         $pdf->SetY(19);
@@ -62,7 +63,7 @@ class Remito extends Reporte
         $w_prestacion = 25;
         $w_examen = 57;
 
-        $pdf->SetXY(10,52); 
+        $pdf->SetXY(10,55); 
         $pdf->Cell($w_paciente, 6, utf8_decode("Paciente"), 1, 0, 'L', true);
         $pdf->Cell($w_dni, 6, utf8_decode("DNI"), 1, 0, 'C', true);
         $pdf->Cell($w_cuil, 6, utf8_decode("CUIL"), 1, 0, 'C', true);
@@ -83,6 +84,14 @@ class Remito extends Reporte
             $pdf->Cell($w_examen, 6, utf8_decode($registro->NombreExamen), 1, 0, 'L', true);
             $pdf->Ln(); // Nueva fila
         }
+
+        $pdf->Ln(5);
+        $pdf->SetX(10);
+        $pdf->SetFont('Arial','',8);
+        $pdf->Cell(0,3,utf8_decode("Cantidad: " . $totalExamenes),0,0,'L');
+
+
+
     }
 
     private function prestacion(int $id):mixed
@@ -105,5 +114,16 @@ class Remito extends Reporte
                             'examenes.Nombre as NombreExamen'
                         )->where('prestaciones.NroCEE', $id)
                         ->get();
+    }
+
+    private function totalExamenes(int $id): int
+    {
+         return Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+                        ->join('clientes as empresa', 'prestaciones.IdEmpresa', '=', 'empresa.Id')
+                        ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
+                        ->join('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
+                        ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
+                        ->where('prestaciones.NroCEE', $id)
+                        ->count();
     }
 }
