@@ -98,7 +98,7 @@ class Remito extends Reporte
                         ->join('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
                         ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
                         ->select(
-                            DB::raw("CONCAT(pacientes.Apellido, ,pacientes.Nombre) as nombreCompleto"),
+                            DB::raw("CONCAT(pacientes.Apellido,' ',pacientes.Nombre) as nombreCompleto"),
                             'pacientes.Documento as Documento',
                             'pacientes.Identificacion as Cuit',
                             'prestaciones.Id as IdPrestacion',
