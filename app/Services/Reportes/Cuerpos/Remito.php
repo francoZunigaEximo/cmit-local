@@ -62,7 +62,7 @@ class Remito extends Reporte
         $w_prestacion = 25;
         $w_examen = 57;
 
-        $pdf->SetX(10); 
+        $pdf->SetX(10,52); 
         $pdf->Cell($w_paciente, 6, utf8_decode("Paciente"), 1, 0, 'L', true);
         $pdf->Cell($w_dni, 6, utf8_decode("DNI"), 1, 0, 'C', true);
         $pdf->Cell($w_cuil, 6, utf8_decode("CUIL"), 1, 0, 'C', true);
@@ -80,7 +80,7 @@ class Remito extends Reporte
             $pdf->Cell($w_dni, 6, $registro->Documento, 1, 0, 'C', true);
             $pdf->Cell($w_cuil, 6, $registro->Cuit, 1, 0, 'C', true);
             $pdf->Cell($w_prestacion, 6, utf8_decode($registro->IdPrestacion), 1, 0, 'L', true);
-            $pdf->Cell($w_prestacion, 6, utf8_decode($registro->NombreExamen), 1, 0, 'L', true);
+            $pdf->Cell($w_examen, 6, utf8_decode($registro->NombreExamen), 1, 0, 'L', true);
             $pdf->Ln(); // Nueva fila
         }
     }
