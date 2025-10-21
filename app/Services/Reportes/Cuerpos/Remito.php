@@ -54,11 +54,11 @@ class Remito extends Reporte
         $pdf->SetTextColor(0, 0, 0);
         $pdf->SetDrawColor(0, 0, 0);
 
-        $w_paciente = 90;
+        $w_paciente = 56;
         $w_dni = 25;
         $w_cuil = 25;
         $w_prestacion = 25;
-        $w_examen = 25;
+        $w_examen = 57;
 
         $pdf->SetX(10); 
         $pdf->Cell($w_paciente, 6, utf8_decode("Paciente"), 1, 0, 'L', true);
