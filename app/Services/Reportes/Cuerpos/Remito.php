@@ -30,11 +30,11 @@ class Remito extends Reporte
         $anchoPagina = $pdf->GetPageWidth();
         $pdf->Code39(155,12,$datos['id'],1,5);
 
-        $pdf->SetLineWidth(0.5);
+        $pdf->SetLineWidth(0.2);
         $pdf->SetDrawColor(0, 0, 0);
-        $pdf->Line(10, 25, $anchoPagina - 10, 25);
+        $pdf->Line(10, 30, $anchoPagina - 10, 30);
 
-        $pdf->SetY(28);
+        $pdf->SetY(35);
 
     }
 }
