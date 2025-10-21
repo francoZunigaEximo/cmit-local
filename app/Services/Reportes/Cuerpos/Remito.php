@@ -25,6 +25,7 @@ class Remito extends Reporte
         $pdf->SetFont('Arial', 'B', 12);
         $pdf->SetXY(10, 7);
         $pdf->Cell(200, 15, "REMITO DE ENTREGA DE ESTUDIOS", 0, 0, 'C'); // Centrado
+        $pdf->Code39(130,22,$datos['id'],1,10);
 
         
 
