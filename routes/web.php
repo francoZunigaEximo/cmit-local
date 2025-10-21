@@ -282,7 +282,7 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::post('itemsprestaciones/estado/actualizar', [ItemPrestacionesController::class, 'updateEstadoItem'])->name('updateEstadoItem');
     Route::post('itemsprestaciones/examen/liberar', [ItemPrestacionesController::class, 'liberarExamen'])->name('liberarExamen');
     Route::post('itemsprestaciones/adjunto/marcar', [ItemPrestacionesController::class, 'marcarExamenAdjunto'])->name('marcarExamenAdjunto');
-    Route::get('itemsprestaciones/listado', [ItemPrestacionesController::class, 'lstExamenes'])->name('lstExamenes');
+    Route::get('itemsprestaciones/listado/examenes', [ItemPrestacionesController::class, 'lstExamenes'])->name('lstExamenes');
     Route::get('itemsprestaciones/precargas', [ItemPrestacionesController::class, 'preExamenes'])->name('preExamenes');
     Route::get('itemprestaciones/listado/prestaciones', [ItemPrestacionesController::class, 'paginacionByPrestacion'])->name('paginacionByPrestacion');
     Route::resource('itemsprestaciones', ItemPrestacionesController::class);
