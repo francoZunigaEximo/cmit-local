@@ -9,7 +9,7 @@ use App\Services\Reportes\ReporteConfig;
 class Remito extends Reporte 
 {
 
-    public function render(FPDF $pdf, $datos = ['id']):void
+    public function render(FPDF $pdf, $datos = []):void
     {
         $pdf->Image(public_path(ReporteConfig::$LOGO),10,6,20);
         $pdf->SetY(19);

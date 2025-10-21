@@ -433,7 +433,7 @@ class MapasController extends Controller
                 return response()->json(['msg' => 'No se encontraron datos para generar el PDF. Hay un conflicto'], 409);
             }
 
-            array_push($listado, $this->remitoPdf($request->Id));
+            array_push($listado, $this->remitoPdf());
 
             $this->reporteService->fusionarPDFs($listado, $this->outputPath);
 
@@ -1291,7 +1291,7 @@ class MapasController extends Controller
         );
     }
 
-    public function remitoPdf(int $idRemito): mixed
+    public function remitoPdf(): mixed
     {
         return $this->reporteService->generarReporte(
             Remito::class,
@@ -1301,11 +1301,11 @@ class MapasController extends Controller
             'guardar',
             null,
             null,
-            ['id' => $idRemito],
             [],
             [],
             [],
-            storage_path('app/public/temp/merge_remito_' . $idRemito . '.pdf')
+            [],
+            storage_path('app/public/temp/merge_remito_0000.pdf')
         );
     }
 
