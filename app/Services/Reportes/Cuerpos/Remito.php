@@ -78,7 +78,7 @@ class Remito extends Reporte
             $pdf->Cell($w_dni, 6, $registro->paciente->Documento, 1, 0, 'C', true);
             $pdf->Cell($w_cuil, 6, $registro->paciente->Identificacion, 1, 0, 'C', true);
             $pdf->Cell($w_prestacion, 6, utf8_decode($registro->Id), 1, 0, 'L', true);
-            $pdf->Cell($w_prestacion, 6, utf8_decode($registro->itemsPrestacion->examenes->Nombre), 1, 0, 'L', true);
+            $pdf->Cell($w_prestacion, 6, utf8_decode(), 1, 0, 'L', true);
             $pdf->Ln(); // Nueva fila
         }
     }
