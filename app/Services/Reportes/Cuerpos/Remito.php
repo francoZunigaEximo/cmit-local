@@ -49,6 +49,24 @@ class Remito extends Reporte
         $pdf->SetXY(10,49);
         $pdf->SetFont('Arial','',8);
         $pdf->Cell(0,3,utf8_decode("Por medio de la presente le entregamos los estudios que a continuación se detallan."),0,0,'L');
+
+        $pdf->SetFillColor(240, 240, 240);
+        $pdf->SetTextColor(0, 0, 0);
+        $pdf->SetDrawColor(0, 0, 0);
+
+        $w_paciente = 90;
+        $w_dni = 25;
+        $w_cuil = 25;
+        $w_prestacion = 25;
+        $w_examen = 25;
+
+        $pdf->SetX(10); 
+        $pdf->Cell($w_paciente, 6, utf8_decode("Paciente"), 1, 0, 'L', true);
+        $pdf->Cell($w_dni, 6, utf8_decode("DNI"), 1, 0, 'C', true);
+        $pdf->Cell($w_cuil, 6, utf8_decode("CUIL"), 1, 0, 'C', true);
+        $pdf->Cell($w_prestacion, 6, utf8_decode("Prestacion"), 1, 0, 'L', true);
+        $pdf->Cell($w_examen, 6, utf8_decode("Examen"), 1, 0, 'L', true);
+        $pdf->Ln(); // Salto de línea
     }
 
     private function prestacion(int $id):mixed
