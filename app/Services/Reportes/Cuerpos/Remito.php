@@ -13,7 +13,7 @@ class Remito extends Reporte
     public function render(FPDF $pdf, $datos = ['id']):void
     {
         $prestacion = $this->prestacion($datos['id']);
-        $datos = $this->datos($datos['id']);
+        $query = $this->informacion($datos['id']);
 
         $pdf->Image(public_path(ReporteConfig::$LOGO),10,6,20);
         $pdf->SetY(19);
@@ -72,7 +72,8 @@ class Remito extends Reporte
         $pdf->SetFillColor(255, 255, 255); 
         $pdf->SetTextColor(0, 0, 0);
 
-        foreach ($datos as $registro) {
+        foreach ($query as $registro) {
+            dd($registro);
             $pdf->SetX(10); // Reiniciar posición X para cada fila
             $pdf->Cell($w_paciente, 6, utf8_decode($registro->paciente->Apellido.' '.$registro->paciente->Nombre), 1, 0, 'L', true);
             $pdf->Cell($w_dni, 6, $registro->paciente->Documento, 1, 0, 'C', true);
@@ -88,7 +89,7 @@ class Remito extends Reporte
         return Prestacion::where('NroCEE' , $id)->first();
     }
 
-    private function datos(int $id):mixed
+    private function informacion(int $id):mixed
     {
          return Prestacion::with(['paciente', 'empresa', 'paciente', 'itemsPrestacion.examenes'])->where('NroCEE' , $id)->get();
     }
