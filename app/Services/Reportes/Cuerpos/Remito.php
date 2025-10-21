@@ -15,6 +15,8 @@ class Remito extends Reporte
         $prestacion = $this->prestacion($datos['id']);
         $datos = $this->datos($datos['id']);
 
+        dd($datos);
+
         $pdf->Image(public_path(ReporteConfig::$LOGO),10,6,20);
         $pdf->SetY(19);
         $pdf->SetFont('Arial','B',7);
