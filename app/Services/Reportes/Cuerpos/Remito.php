@@ -2,6 +2,7 @@
 
 namespace App\Services\Reportes\Cuerpos;
 
+use App\Models\Prestacion;
 use FPDF;
 use App\Services\Reportes\Reporte;
 use App\Services\Reportes\ReporteConfig;
@@ -11,6 +12,9 @@ class Remito extends Reporte
 
     public function render(FPDF $pdf, $datos = ['id']):void
     {
+
+        $prestacion = $this->prestacion($datos['id']);
+
         $pdf->Image(public_path(ReporteConfig::$LOGO),10,6,20);
         $pdf->SetY(19);
         $pdf->SetFont('Arial','B',7);
@@ -34,10 +38,15 @@ class Remito extends Reporte
         $pdf->SetDrawColor(0, 0, 0);
         $pdf->Line(10, 30, $anchoPagina - 10, 30);
 
-        $pdf->Rect(10,35,190,15);
+        $pdf->Rect(10,35,190,10);
         $pdf->SetFont('Arial','B',9);
-        $pdf->SetXY(10,37);$pdf->Cell(0,3,"ART: ",0,0,'L');$pdf->SetXY(150,37);$pdf->Cell(0,3,"REMITO: ",0,0,'L');
-        $pdf->SetXY(10,42);$pdf->Cell(0,3,"EMPRESA: ",0,0,'L');$pdf->SetXY(150,42);$pdf->Cell(0,3,"MAPA: ",0,0,'L');
+        $pdf->SetXY(10,37);$pdf->Cell(0,3,"ART: " . $prestacion->art->RazonSocial,0,0,'L');$pdf->SetXY(150,37);$pdf->Cell(0,3,"REMITO: " . $prestacion->NroCEE,0,0,'L');
+        $pdf->SetXY(10,42);$pdf->Cell(0,3,"EMPRESA: " . $prestacion->empresa->RazonSocial,0,0,'L');$pdf->SetXY(150,42);$pdf->Cell(0,3,"MAPA: " . $prestacion->IdMapa,0,0,'L');
 
+    }
+
+    private function prestacion(int $id):mixed
+    {
+        return Prestacion::with(['paciente', 'empresa'])->where('NroCEE' , $id)->first();
     }
 }
