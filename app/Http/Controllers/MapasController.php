@@ -1298,7 +1298,7 @@ class MapasController extends Controller
             null,
             null,
             null,
-            'imprmir',
+            'imprimir',
             null,
             null,
             [],
