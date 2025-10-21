@@ -1291,7 +1291,7 @@ class MapasController extends Controller
         );
     }
 
-    private function remitoPdf(int $idRemito): mixed
+    public function remitoPdf(int $idRemito): mixed
     {
         return $this->reporteService->generarReporte(
             Remito::class,
@@ -1306,7 +1306,6 @@ class MapasController extends Controller
             [],
             [],
             storage_path('app/public/temp/merge_remito_' . $idRemito . '.pdf')
-
         );
     }
 
