@@ -92,8 +92,6 @@ class Remito extends Reporte
 
     private function informacion(int $id):mixed
     {
-         return Prestacion::with(['paciente', 'empresa', 'paciente', 'itemsPrestacion.examenes'])->where('NroCEE' , $id)->get();
-
          return Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
                         ->join('clientes as empresa', 'prestaciones.IdEmpresa', '=', 'empresa.Id')
                         ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
