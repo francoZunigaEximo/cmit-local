@@ -430,7 +430,7 @@ class MapasController extends Controller
             $examenes = Prestacion::where('NroCEE', $request->Id)->get();
 
             if ($examenes->isEmpty()) {
-                return response()->json(['msg' => 'No se encontraron datos para generar el PDF. Hay un conflicto'], 409);
+                return response()->json(['msg' => 'No se encontraron datos para generar el PDF. Hay un conflicto'], 500);
             }
 
             array_push($listado, $this->remitoPdf());
