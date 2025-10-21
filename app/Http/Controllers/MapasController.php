@@ -1294,7 +1294,7 @@ class MapasController extends Controller
             null,
             null,
             null,
-            'imprimir',
+            'guardar',
             storage_path($this->tempFile . Tools::randomCode(15) . '-' . Auth::user()->name . '.pdf'),
             null,
             [],
