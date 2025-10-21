@@ -46,7 +46,8 @@ class Remito extends Reporte
         $pdf->Cell(0,3,"EMPRESA: " . utf8_decode($prestacion->empresa->RazonSocial),0,0,'L');
         $pdf->SetXY(150,42);$pdf->Cell(0,3,"MAPA: " . $prestacion->IdMapa,0,0,'L');
 
-        $pdf->SetXY(10,45);
+        $pdf->SetXY(10,49);
+        $pdf->SetFont('Arial','',8);
         $pdf->Cell(0,3,utf8_decode("Por medio de la presente le entregamos los estudios que a continuación se detallan."),0,0,'L');
     }
 
