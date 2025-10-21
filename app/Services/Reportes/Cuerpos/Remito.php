@@ -6,6 +6,7 @@ use App\Models\Prestacion;
 use FPDF;
 use App\Services\Reportes\Reporte;
 use App\Services\Reportes\ReporteConfig;
+use Illuminate\Support\Facades\DB;
 
 class Remito extends Reporte 
 {
@@ -75,11 +76,11 @@ class Remito extends Reporte
         foreach ($query as $registro) {
 
             $pdf->SetX(10); // Reiniciar posición X para cada fila
-            $pdf->Cell($w_paciente, 6, utf8_decode($registro->paciente->Apellido.' '.$registro->paciente->Nombre), 1, 0, 'L', true);
-            $pdf->Cell($w_dni, 6, $registro->paciente->Documento, 1, 0, 'C', true);
-            $pdf->Cell($w_cuil, 6, $registro->paciente->Identificacion, 1, 0, 'C', true);
-            $pdf->Cell($w_prestacion, 6, utf8_decode($registro->Id), 1, 0, 'L', true);
-            $pdf->Cell($w_prestacion, 6, utf8_decode($registro->itemsPrestacion->examenes->Nombre), 1, 0, 'L', true);
+            $pdf->Cell($w_paciente, 6, utf8_decode($registro->nombreCompleto), 1, 0, 'L', true);
+            $pdf->Cell($w_dni, 6, $registro->Documento, 1, 0, 'C', true);
+            $pdf->Cell($w_cuil, 6, $registro->Cuit, 1, 0, 'C', true);
+            $pdf->Cell($w_prestacion, 6, utf8_decode($registro->IdPrestacion), 1, 0, 'L', true);
+            $pdf->Cell($w_prestacion, 6, utf8_decode($registro->NombreExamen), 1, 0, 'L', true);
             $pdf->Ln(); // Nueva fila
         }
     }
@@ -91,6 +92,20 @@ class Remito extends Reporte
 
     private function informacion(int $id):mixed
     {
-         return Prestacion::with(['paciente', 'empresa', 'paciente', 'itemsPrestacion'])->where('NroCEE' , $id)->get();
+         return Prestacion::with(['paciente', 'empresa', 'paciente', 'itemsPrestacion.examenes'])->where('NroCEE' , $id)->get();
+
+         return Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+                        ->join('clientes as empresa', 'prestaciones.IdEmpresa', '=', 'empresa.Id')
+                        ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
+                        ->join('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
+                        ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
+                        ->select(
+                            DB::raw("CONCAT(pacientes.Apellido, ,pacientes.Nombre) as nombreCompleto"),
+                            'pacientes.Documento as Documento',
+                            'pacientes.Identificacion as Cuit',
+                            'prestaciones.Id as IdPrestacion',
+                            'examenes.Nombre as NombreExamen'
+                        )->where('prestaciones.NroCEE', $id)
+                        ->get();
     }
 }
