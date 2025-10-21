@@ -434,7 +434,7 @@ class MapasController extends Controller
             }
 
             return response()->json([
-                'filePath' => $this->remitoPdf(),
+                'filePath' => $this->remitoPdf($request->Id),
                 'name' => $this->fileNameExport.'.pdf',
                 'msg' => 'Imprimiendo Remito',
             ]); 
@@ -1287,7 +1287,7 @@ class MapasController extends Controller
         );
     }
 
-    private function remitoPdf(): mixed
+    private function remitoPdf(int $idRemito): mixed
     {
         return $this->reporteService->generarReporte(
             Remito::class,
@@ -1297,7 +1297,7 @@ class MapasController extends Controller
             'guardar',
             storage_path($this->tempFile . Tools::randomCode(15) . '-' . Auth::user()->name . '.pdf'),
             null,
-            [],
+            ['id' => $idRemito],
             [],
             [],
             [],

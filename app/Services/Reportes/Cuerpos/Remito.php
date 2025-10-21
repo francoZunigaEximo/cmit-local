@@ -9,7 +9,7 @@ use App\Services\Reportes\ReporteConfig;
 class Remito extends Reporte 
 {
 
-    public function render(FPDF $pdf, $datos = []):void
+    public function render(FPDF $pdf, $datos = ['id']):void
     {
         $pdf->Image(public_path(ReporteConfig::$LOGO),10,6,20);
         $pdf->SetY(19);
@@ -22,7 +22,7 @@ class Remito extends Reporte
         $pdf->Cell(0,3, ReporteConfig::$DIRECCION,0,0,'L');
         $pdf->Ln();
 
-        $pdf->SetFont('Arial', 'B', 14);
+        $pdf->SetFont('Arial', 'B', 12);
         $pdf->SetXY(10, 9); // Posiciona en Y=9, justo debajo del logo
         $pdf->Cell(200, 15, "REMITO DE ENTREGA DE ESTUDIOS", 0, 0, 'C'); // Centrado
 
