@@ -62,7 +62,7 @@ class Remito extends Reporte
         $w_prestacion = 25;
         $w_examen = 57;
 
-        $pdf->SetX(10,52); 
+        $pdf->SetXY(10,52); 
         $pdf->Cell($w_paciente, 6, utf8_decode("Paciente"), 1, 0, 'L', true);
         $pdf->Cell($w_dni, 6, utf8_decode("DNI"), 1, 0, 'C', true);
         $pdf->Cell($w_cuil, 6, utf8_decode("CUIL"), 1, 0, 'C', true);
