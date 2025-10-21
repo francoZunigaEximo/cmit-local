@@ -67,8 +67,8 @@ class Remito extends Reporte
         $pdf->Cell($w_paciente, 6, utf8_decode("Paciente"), 1, 0, 'L', true);
         $pdf->Cell($w_dni, 6, utf8_decode("DNI"), 1, 0, 'C', true);
         $pdf->Cell($w_cuil, 6, utf8_decode("CUIL"), 1, 0, 'C', true);
-        $pdf->Cell($w_prestacion, 6, utf8_decode("Prestacion"), 1, 0, 'L', true);
-        $pdf->Cell($w_examen, 6, utf8_decode("Examen"), 1, 0, 'L', true);
+        $pdf->Cell($w_prestacion, 6, utf8_decode("Prestación"), 1, 0, 'L', true);
+        $pdf->Cell($w_examen, 6, utf8_decode("Exámen"), 1, 0, 'L', true);
         $pdf->Ln();
 
         $pdf->SetFillColor(255, 255, 255); 
@@ -88,9 +88,12 @@ class Remito extends Reporte
         $pdf->Ln(5);
         $pdf->SetX(10);
         $pdf->SetFont('Arial','',8);
-        $pdf->Cell(0,3,utf8_decode("Cantidad: " . $totalExamenes),0,0,'L');
-        $pdf->Cell(0,3,utf8_decode("Recibí Conforme"),0,0,'C');
-        $pdf->Cell(0,3,utf8_decode("Entrega a Domicilio"),0,0,'R');
+
+        $anchoColumna = 190 / 3;
+
+        $pdf->Cell($anchoColumna,3,utf8_decode("Cantidad: " . $totalExamenes),0,0,'L');
+        $pdf->Cell($anchoColumna,3,utf8_decode("Recibí Conforme"),0,0,'C');
+        $pdf->Cell($anchoColumna,3,utf8_decode("Entrega a Domicilio"),0,0,'R');
 
 
     }
