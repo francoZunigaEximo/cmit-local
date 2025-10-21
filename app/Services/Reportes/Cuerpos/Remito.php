@@ -36,7 +36,7 @@ class Remito extends Reporte
 
         $pdf->SetY(35);
 
-        $pdf->Rect(10,38,180,15);
+        $pdf->Rect(10,38,185,15);
         $pdf->SetFont('Arial','B',9);
         $pdf->SetXY(10,40);$pdf->Cell(0,3,"ART: ",0,0,'L');$pdf->SetXY(150,40);$pdf->Cell(0,3,"REMITO: ",0,0,'L');
         $pdf->SetXY(10,45);$pdf->Cell(0,3,"EMPRESA: ",0,0,'L');$pdf->SetXY(150,45);$pdf->Cell(0,3,"MAPA: ",0,0,'L');
