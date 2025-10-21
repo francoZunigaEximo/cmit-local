@@ -13,6 +13,7 @@ class Remito extends Reporte
     public function render(FPDF $pdf, $datos = ['id']):void
     {
         $prestacion = $this->prestacion($datos['id']);
+        $datos = $this->datos($datos['id']);
 
         $pdf->Image(public_path(ReporteConfig::$LOGO),10,6,20);
         $pdf->SetY(19);
@@ -54,7 +55,7 @@ class Remito extends Reporte
         $pdf->SetTextColor(0, 0, 0);
         $pdf->SetDrawColor(0, 0, 0);
 
-        $w_paciente = 56;
+        $w_paciente = 57;
         $w_dni = 25;
         $w_cuil = 25;
         $w_prestacion = 25;
@@ -66,11 +67,29 @@ class Remito extends Reporte
         $pdf->Cell($w_cuil, 6, utf8_decode("CUIL"), 1, 0, 'C', true);
         $pdf->Cell($w_prestacion, 6, utf8_decode("Prestacion"), 1, 0, 'L', true);
         $pdf->Cell($w_examen, 6, utf8_decode("Examen"), 1, 0, 'L', true);
-        $pdf->Ln(); // Salto de línea
+        $pdf->Ln();
+
+        $pdf->SetFillColor(255, 255, 255); 
+        $pdf->SetTextColor(0, 0, 0);
+
+        foreach ($datos as $registro) {
+            $pdf->SetX(10); // Reiniciar posición X para cada fila
+            $pdf->Cell($w_paciente, 6, utf8_decode($registro->paciente->Apellido.' '.$registro->paciente->Nombre), 1, 0, 'L', true);
+            $pdf->Cell($w_dni, 6, $registro->paciente->Documento, 1, 0, 'C', true);
+            $pdf->Cell($w_cuil, 6, $registro->paciente->Identificacion, 1, 0, 'C', true);
+            $pdf->Cell($w_prestacion, 6, utf8_decode($registro->Id), 1, 0, 'L', true);
+            $pdf->Cell($w_prestacion, 6, utf8_decode($registro->itemsPrestacion->examenes->Nombre), 1, 0, 'L', true);
+            $pdf->Ln(); // Nueva fila
+        }
     }
 
     private function prestacion(int $id):mixed
     {
-        return Prestacion::with(['paciente', 'empresa'])->where('NroCEE' , $id)->first();
+        return Prestacion::where('NroCEE' , $id)->first();
+    }
+
+    private function datos(int $id):mixed
+    {
+         return Prestacion::with(['paciente', 'empresa', 'paciente', 'itemsPrestacion:examenes'])->where('NroCEE' , $id)->get();
     }
 }
