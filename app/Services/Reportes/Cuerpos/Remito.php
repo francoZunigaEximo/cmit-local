@@ -37,11 +37,17 @@ class Remito extends Reporte
         $pdf->SetDrawColor(0, 0, 0);
         $pdf->Line(10, 30, $anchoPagina - 10, 30);
 
-        $pdf->Rect(10,35,190,10);
+        $pdf->Rect(10,35,190,12);
         $pdf->SetFont('Arial','B',9);
-        $pdf->SetXY(10,37);$pdf->Cell(0,3,"ART: " . utf8_decode($prestacion->art->RazonSocial),0,0,'L');$pdf->SetXY(150,37);$pdf->Cell(0,3,"REMITO: " . $prestacion->NroCEE,0,0,'L');
-        $pdf->SetXY(10,42);$pdf->Cell(0,3,"EMPRESA: " . utf8_decode($prestacion->empresa->RazonSocial),0,0,'L');$pdf->SetXY(150,42);$pdf->Cell(0,3,"MAPA: " . $prestacion->IdMapa,0,0,'L');
+        $pdf->SetXY(10,37);
+        $pdf->Cell(0,3,"ART: " . utf8_decode($prestacion->art->RazonSocial),0,0,'L');
+        $pdf->SetXY(150,37);$pdf->Cell(0,3,"REMITO: " . $prestacion->NroCEE,0,0,'L');
+        $pdf->SetXY(10,42);
+        $pdf->Cell(0,3,"EMPRESA: " . utf8_decode($prestacion->empresa->RazonSocial),0,0,'L');
+        $pdf->SetXY(150,42);$pdf->Cell(0,3,"MAPA: " . $prestacion->IdMapa,0,0,'L');
 
+        $pdf->SetXY(10,45);
+        $pdf->Cell(0,3,utf8_decode("Por medio de la presente le entregamos los estudios que a continuación se detallan."),0,0,'L');
     }
 
     private function prestacion(int $id):mixed
