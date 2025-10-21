@@ -92,6 +92,6 @@ class Remito extends Reporte
 
     private function datos(int $id):mixed
     {
-         return Prestacion::with(['paciente', 'empresa', 'paciente', 'itemsPrestacion'])->where('NroCEE' , $id)->get();
+         return Prestacion::with(['paciente', 'empresa', 'paciente', 'itemsPrestacion.examenes'])->where('NroCEE' , $id)->get();
     }
 }
