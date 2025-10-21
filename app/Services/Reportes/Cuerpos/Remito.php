@@ -12,7 +12,6 @@ class Remito extends Reporte
 
     public function render(FPDF $pdf, $datos = ['id']):void
     {
-
         $prestacion = $this->prestacion($datos['id']);
 
         $pdf->Image(public_path(ReporteConfig::$LOGO),10,6,20);
@@ -40,8 +39,8 @@ class Remito extends Reporte
 
         $pdf->Rect(10,35,190,10);
         $pdf->SetFont('Arial','B',9);
-        $pdf->SetXY(10,37);$pdf->Cell(0,3,"ART: " . $prestacion->art->RazonSocial,0,0,'L');$pdf->SetXY(150,37);$pdf->Cell(0,3,"REMITO: " . $prestacion->NroCEE,0,0,'L');
-        $pdf->SetXY(10,42);$pdf->Cell(0,3,"EMPRESA: " . $prestacion->empresa->RazonSocial,0,0,'L');$pdf->SetXY(150,42);$pdf->Cell(0,3,"MAPA: " . $prestacion->IdMapa,0,0,'L');
+        $pdf->SetXY(10,37);$pdf->Cell(0,3,"ART: " . utf8_decode($prestacion->art->RazonSocial),0,0,'L');$pdf->SetXY(150,37);$pdf->Cell(0,3,"REMITO: " . $prestacion->NroCEE,0,0,'L');
+        $pdf->SetXY(10,42);$pdf->Cell(0,3,"EMPRESA: " . utf8_decode($prestacion->empresa->RazonSocial),0,0,'L');$pdf->SetXY(150,42);$pdf->Cell(0,3,"MAPA: " . $prestacion->IdMapa,0,0,'L');
 
     }
 
