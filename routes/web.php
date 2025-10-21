@@ -168,7 +168,7 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::resource('fichalaboral', FichaAltaController::class);
 
     //Ruta Examenes 
-    Route::get('examenes/buscar', [ExamenesController::class, 'search'])->name('searchExamen');
+    Route::get('examenes/search', [ExamenesController::class, 'search'])->name('searchExamen');
     Route::post('examenes/obtener-id', [ExamenesController::class, 'getId'])->name('IdExamen');
     Route::post('examen/eliminar', [ExamenesController::class, 'deleteEx'])->name('deleteExamen');
     Route::post('examen/guardar',[ExamenesController::class, 'saveExamen'])->name('saveExamen');
