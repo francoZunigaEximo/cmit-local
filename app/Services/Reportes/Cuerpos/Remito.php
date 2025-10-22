@@ -95,7 +95,7 @@ class Remito extends Reporte
         $pdf->Cell($anchoColumna,3,utf8_decode("Recibí Conforme"),0,0,'C');
         $pdf->Cell($anchoColumna,3,utf8_decode("Entrega a Domicilio"),0,0,'R');
 
-        $pdf->Ln(15);
+        $pdf->Ln(25);
         $pdf->SetX(10);
         $pdf->SetFont('Arial','',8);
 
