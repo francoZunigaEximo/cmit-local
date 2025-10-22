@@ -386,6 +386,7 @@ class PacientesController extends Controller
             ->orWhere('Nombre', 'LIKE', '%'.$buscar.'%')
             ->orWhere('Apellido', 'LIKE', '%'.$buscar.'%')
             ->orWhere('Documento', 'LIKE', '%'.$buscar.'%')
+            ->where('Estado', 1)
             ->get();
     }
 }
