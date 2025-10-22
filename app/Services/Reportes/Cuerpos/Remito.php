@@ -95,7 +95,15 @@ class Remito extends Reporte
         $pdf->Cell($anchoColumna,3,utf8_decode("Recibí Conforme"),0,0,'C');
         $pdf->Cell($anchoColumna,3,utf8_decode("Entrega a Domicilio"),0,0,'R');
 
+        $pdf->Ln(15);
+        $pdf->SetX(10);
+        $pdf->SetFont('Arial','',8);
 
+        $anchoColumna2 = 190 / 2;
+        $pdf->Cell($anchoColumna2,3,utf8_decode("Aclaración___________________________________"),0,0,'L');
+        $pdf->Cell($anchoColumna2,3,utf8_decode("Personal Autorizado:"),0,0,'L');
+        $pdf->Ln(10);
+        $pdf->Cell(0,3,utf8_decode("DNI________________   Fecha____/____/____   Firma_________________"),0,0,'L');
     }
 
     private function prestacion(int $id):mixed
