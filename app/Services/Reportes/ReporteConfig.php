@@ -11,6 +11,8 @@ class ReporteConfig
     public static $RUTAFACTURAS = "/app/public/facturas/";
     public static $RUTAREXACUENTA = "/app/public/examenescuenta/";
 
+    public static $MARCAAGUA = "/archivos/reportes/marca_agua.png";
+
     public static $AUDIOMETRIA = '/archivos/reportes/E1.jpg';
     public static $AUDIOMETRIALIBERTY = '/archivos/reportes/E2.jpg';
     public static $AUDIOMETRIAPREMEDICA0 = '/archivos/reportes/E3.jpg';
