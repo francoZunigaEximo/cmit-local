@@ -74,11 +74,6 @@ class Remito extends Reporte
 
         $pdf->SetFillColor(255, 255, 255); 
         $pdf->SetTextColor(0, 0, 0);
-
-        $pdf->SetFont('Arial', 'B', 60);
-        $pdf->SetTextColor(230, 230, 230);
-        $this->addWatermark(105, 220, "CMIT", 45, $pdf);
-
         foreach ($query as $registro) {
 
             $pdf->SetX(10); // Reiniciar posición X para cada fila
@@ -89,6 +84,10 @@ class Remito extends Reporte
             $pdf->Cell($w_examen, 6, utf8_decode($registro->NombreExamen), 1, 0, 'L', true);
             $pdf->Ln(); // Nueva fila
         }
+
+        $pdf->SetFont('Arial', 'B', 70);
+        $pdf->SetTextColor(230, 230, 230);
+        $this->addWatermark(105, 220, 'CMIT', 45, $pdf);
 
         $pdf->Ln(5);
         $pdf->SetX(10);
