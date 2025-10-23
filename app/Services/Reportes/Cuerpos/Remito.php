@@ -90,7 +90,7 @@ class Remito extends Reporte
         // $this->addWatermark(105, 220, 'CMIT', 45, $pdf);
 
         $pdf->Image(public_path(ReporteConfig::$MARCAAGUA),30,30,150);
-        $pdf->Image(public_path(ReporteConfig::$MARCAAGUA),30,130,150);
+        $pdf->Image(public_path(ReporteConfig::$MARCAAGUA),30,160,150);
 
         $pdf->Ln(5);
         $pdf->SetX(10);
