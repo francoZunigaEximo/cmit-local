@@ -85,7 +85,7 @@ class Remito extends Reporte
             $pdf->Ln(); // Nueva fila
         }
 
-        $pdf->SetFont('Arial', 'B', 70);
+        $pdf->SetFont('Arial', 'B', 700);
         $pdf->SetTextColor(230, 230, 230);
         $this->addWatermark(105, 220, 'CMIT', 45, $pdf);
 
