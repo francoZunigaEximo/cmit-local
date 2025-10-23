@@ -339,12 +339,12 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::get('examenesCuenta/liberar/item', [ExamenesCuentaController::class, 'liberarItem'])->name('liberarItemExCta');
     Route::post('examenesCuenta/precarga/guardar', [ExamenesCuentaController::class, 'precarga'])->name('savePrecarga');
     Route::post('examenesCuenta/paquete/guardar', [ExamenesCuentaController::class, 'saveEx'])->name('savePaquete');
-    Route::get('examenesCuenta/listado/clientes', [ExamenesCuentaController::class, 'lstClientes'])->name('lstClientes');
+    Route::get('examenesCuenta/listado/clients', [ExamenesCuentaController::class, 'lstClientes'])->name('lstClientes');
     Route::get('examenesCuenta/listado/clientes', [ExamenesCuentaController::class, 'lstExClientes'])->name('lstExClientes');
     Route::get('examenesCuenta/listado/dni', [ExamenesCuentaController::class, 'listadoDni'])->name('listadoDni');
     Route::get('examenesCuenta/listado/precarga', [ExamenesCuentaController::class, 'listadoPrecarga'])->name('listPrecarga');
-    Route::get('examenesCuenta/listado', [ExamenesCuentaController::class, 'listadoEx'])->name('listadoEx');
-    Route::get('examenesCuenta/listado', [ExamenesCuentaController::class, 'listadoExCta'])->name('listExCta');
+    Route::get('examenesCuenta/listados', [ExamenesCuentaController::class, 'listadoEx'])->name('listadoEx');
+    Route::get('examenesCuenta/list', [ExamenesCuentaController::class, 'listadoExCta'])->name('listExCta');
     Route::get('examenesCuenta/exportar/excel', [ExamenesCuentaController::class, 'excel'])->name('exportExcel');
     Route::get('examenesCuenta/exportar/pdf', [ExamenesCuentaController::class, 'pdf'])->name('exportPDF');
     Route::get('examenesCuenta/exportar-detalle', [ExamenesCuentaController::class, 'reporteDetalle'])->name('notasCredito.exportarDetalle');
