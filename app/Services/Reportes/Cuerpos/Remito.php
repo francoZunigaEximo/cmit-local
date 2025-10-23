@@ -13,6 +13,12 @@ class Remito extends Reporte
 
     public function render(FPDF $pdf, $datos = ['id']):void
     {
+
+        $pdf->SetFont('Arial', 'B', 50);
+        $pdf->SetTextColor(230, 230, 230);
+        $this->RotatedText($pdf, 35, 190, 'CMIT', 45);
+        $pdf->SetTextColor(0, 0, 0); 
+
         $prestacion = $this->prestacion($datos['id']);
         $query = $this->informacion($datos['id']);
         $totalExamenes = $this->totalExamenes($datos['id']);
@@ -137,5 +143,14 @@ class Remito extends Reporte
                         ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
                         ->where('prestaciones.NroCEE', $id)
                         ->count();
+    }
+
+    private function RotatedText(FPDF $pdf, $x, $y, $txt, $angle)
+    {
+        // FPDF requiere esta secuencia para rotar
+        $pdf->StartTransform();
+        $pdf->Rotate($angle, $x, $y);
+        $pdf->Text($x, $y, $txt);
+        $pdf->StopTransform();
     }
 }
