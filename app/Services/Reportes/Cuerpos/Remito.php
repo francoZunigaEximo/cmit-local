@@ -147,10 +147,27 @@ class Remito extends Reporte
 
     private function RotatedText(FPDF $pdf, $x, $y, $txt, $angle)
     {
-        // FPDF requiere esta secuencia para rotar
-        $pdf->StartTransform();
-        $pdf->Rotate($angle, $x, $y);
+        $rad = $angle * M_PI / 180;
+        $c = cos($rad);
+        $s = sin($rad);
+        $cx = $x * $pdf->k;
+        $cy = ($pdf->h - $y) * $pdf->k;
+
+
+        $pdf->_out(sprintf(
+            'q %.5F %.5F %.5F %.5F %.2F %.2F cm 1 0 0 1 %.2F %.2F cm',
+            $c,
+            $s,
+            -$s,
+            $c,
+            $cx,
+            $cy,
+            -$cx,
+            -$cy
+        ));
+        
         $pdf->Text($x, $y, $txt);
-        $pdf->StopTransform();
+        
+        $pdf->_out('Q');
     }
 }
