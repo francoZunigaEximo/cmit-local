@@ -89,7 +89,7 @@ class Remito extends Reporte
         // $pdf->SetTextColor(230, 230, 230);
         // $this->addWatermark(105, 220, 'CMIT', 45, $pdf);
 
-        $pdf->Image(public_path(ReporteConfig::$MARCAAGUA),10,6,150);
+        $pdf->Image(public_path(ReporteConfig::$MARCAAGUA),10,30,150);
 
         $pdf->Ln(5);
         $pdf->SetX(10);
