@@ -14,11 +14,6 @@ class Remito extends Reporte
     public function render(FPDF $pdf, $datos = ['id']):void
     {
 
-        $pdf->SetFont('Arial', 'B', 50);
-        $pdf->SetTextColor(230, 230, 230);
-        $this->RotatedText($pdf, 35, 190, 'CMIT', 45);
-        $pdf->SetTextColor(0, 0, 0); 
-
         $prestacion = $this->prestacion($datos['id']);
         $query = $this->informacion($datos['id']);
         $totalExamenes = $this->totalExamenes($datos['id']);
@@ -79,6 +74,9 @@ class Remito extends Reporte
 
         $pdf->SetFillColor(255, 255, 255); 
         $pdf->SetTextColor(0, 0, 0);
+
+        $watermarkText = 'CMIT';
+        $this->addWatermark(105, 220, $watermarkText, 45, $pdf);
 
         foreach ($query as $registro) {
 
@@ -145,29 +143,15 @@ class Remito extends Reporte
                         ->count();
     }
 
-    private function RotatedText(FPDF $pdf, $x, $y, $txt, $angle)
+    private function addWatermark($x, $y, $watermarkText, $angle, $pdf)
     {
-        $rad = $angle * M_PI / 180;
-        $c = cos($rad);
-        $s = sin($rad);
-        $cx = $x * $pdf->k;
-        $cy = ($pdf->h - $y) * $pdf->k;
-
-
-        $pdf->_out(sprintf(
-            'q %.5F %.5F %.5F %.5F %.2F %.2F cm 1 0 0 1 %.2F %.2F cm',
-            $c,
-            $s,
-            -$s,
-            $c,
-            $cx,
-            $cy,
-            -$cx,
-            -$cy
-        ));
-        
-        $pdf->Text($x, $y, $txt);
-        
+        $angle = $angle * M_PI / 180;
+        $c = cos($angle);
+        $s = sin($angle);
+        $cx = $x * 1;
+        $cy = (300 - $y) * 1;
+        $pdf->_out(sprintf('q %.5F %.5F %.5F %.5F %.2F %.2F cm 1 0 0 1 %.2F %.2F cm', $c, $s, - $s, $c, $cx, $cy, - $cx, - $cy));
+        $pdf->Text($x, $y, $watermarkText);
         $pdf->_out('Q');
     }
 }
