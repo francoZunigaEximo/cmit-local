@@ -75,8 +75,9 @@ class Remito extends Reporte
         $pdf->SetFillColor(255, 255, 255); 
         $pdf->SetTextColor(0, 0, 0);
 
-        $watermarkText = 'CMIT';
-        $this->addWatermark(105, 220, $watermarkText, 45, $pdf);
+        $pdf->SetFont('Arial', 'B', 60);
+        $pdf->SetTextColor(230, 230, 230);
+        $this->addWatermark(105, 220, "CMIT", 45, $pdf);
 
         foreach ($query as $registro) {
 
