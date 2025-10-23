@@ -33,4 +33,25 @@ class ReporteConfig
     public static $INGRESOPETREVEN2 = "/archivos/reportes/E6_2.jpg";
     public static $INGRESOPETREVEN3 = "/archivos/reportes/E6_3.jpg";
     public static $INGRESOPETREVEN4 = "/archivos/reportes/E9_4.jpg";
+
+    public static function marcaAguaImg($pdf):void
+    {
+        $pdf->Image(public_path(ReporteConfig::$MARCAAGUA),30,30,150);
+        $pdf->Image(public_path(ReporteConfig::$MARCAAGUA),30,160,150);
+    }
+
+    // $this->marcaAguaTxt(105, 220, 'CMIT', 45, $pdf);
+    public static function marcaAguaTxt($x, $y, $watermarkText, $angle, $pdf)
+    {
+        $angle = $angle * M_PI / 180;
+        $c = cos($angle);
+        $s = sin($angle);
+        $cx = $x * 1;
+        $cy = (300 - $y) * 1;
+        $pdf->_out(sprintf('q %.5F %.5F %.5F %.5F %.2F %.2F cm 1 0 0 1 %.2F %.2F cm', $c, $s, - $s, $c, $cx, $cy, - $cx, - $cy));
+        $pdf->SetFont('Arial', 'B', 200);
+        $pdf->SetTextColor(230, 230, 230);
+        $pdf->Text($x, $y, $watermarkText);
+        $pdf->_out('Q');
+    }
 }
