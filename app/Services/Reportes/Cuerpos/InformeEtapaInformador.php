@@ -9,6 +9,7 @@ use App\Models\Prestacion;
 use FPDF;
 use App\Services\Reportes\Reporte;
 use App\Services\Reportes\DetallesReportes;
+use App\Services\Reportes\ReporteConfig;
 use Carbon\Carbon;
 
 class InformeEtapaInformador extends Reporte
@@ -36,6 +37,9 @@ class InformeEtapaInformador extends Reporte
             $pdf->SetXY(36,37);$pdf->Cell(0,3,$prestacion->empresa->ParaEmpresa,0,0,'L');$pdf->SetXY(170,37);$pdf->Cell(0,3,$prestacion->Id,0,0,'L');
             $pdf->SetXY(36,42);$pdf->Cell(0,3,$prestacion->paciente->Documento,0,0,'L');$pdf->SetXY(170,42);$pdf->Cell(0,3,Carbon::parse($prestacion->paciente->FechaNacimiento)->age,0,0,'L');
             //titulo
+
+            ReporteConfig::marcaAguaImg($pdf);
+
             if($itemPrestacionInfo->C2 === 0){//multiexamen lleva titulo en el cuerpo
                 $pdf->SetFont('Arial','BU',9);
                 $pdf->SetXY(20,55);$pdf->Cell(0,3,'INFORME DE ESTUDIO: '.$itemPrestacionInfo->itemsprestacion->examenes->Nombre,0,0,'L');
