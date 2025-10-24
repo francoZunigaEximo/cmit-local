@@ -51,14 +51,14 @@ $(function(){
                         return `<strong>${(data.Apellido).toUpperCase()} ${(data.Nombre).toUpperCase()}</strong>`;
                     }
                 },
-                {
+                {   
                     data: 'Documento',
                     name: 'Documento',
                 },
                 {
                     data: null,
                     render: function(data){
-                        return (data.Cp === '') ? data.Telefono : '(' + data.Cp + ') ' + data.Telefono;
+                        return !data.Cp && !data.Telefono ? '' : (!data.Cp ? data.Telefono : '(' + data.Cp + ') ' + data.Telefono);
                     },
                 },
                 {
