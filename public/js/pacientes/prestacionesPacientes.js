@@ -70,7 +70,8 @@ $(function(){
         lstExamenesCtd: $('#lstExamenesCtd'),
         listadoExamenesCtd: $('#listadoExamenesCtd'),
         estudios: $('#estudios'),
-        enviarReporte: $('.enviarReporte')
+        enviarReporte: $('.enviarReporte'),
+        tbody : $('#lstEx')
     };
 
     const variables = {
@@ -226,7 +227,6 @@ $(function(){
 
         preloader('on');
         const alta = await $.get(verificarAlta, {Id: ID})
-        console.log(alta);
 
         if (alta && Object.keys(alta).length > 0) {
 
@@ -1675,6 +1675,62 @@ $(function(){
                 }, 3000);
             })
     });
+
+    
+
+    principal.tbody.on('click', 'tr.fondo-gris .form-check-input', function() {
+        
+        let factura = $(this).attr('id').split('checkAll-')[1],
+            isChecked = $(this).is(':checked');
+
+        principal.tbody.find('.item-checkbox[data-factura="' + factura + '"]').prop('checked', isChecked);
+        principal.tbody.find('tr.fondo-grisClaro .form-check-input[id*="' + factura + '"]').prop('checked', isChecked);
+    });
+
+    principal.tbody.on('click', 'tr.fondo-grisClaro .form-check-input', function() {
+        
+        let subgrupo = $(this).attr('id').split('checkAll-')[1],
+            isChecked = $(this).is(':checked');
+
+        principal.tbody.find('.item-checkbox[data-subgrupo="' + subgrupo + '"]').prop('checked', isChecked);
+        
+        actualizarPadreFactura(subgrupo);
+    });
+
+
+    principal.tbody.on('click', '.item-checkbox', function() {
+        
+        let subgrupo = $(this).data('subgrupo');
+
+        actualizarPadreSubgrupo(subgrupo);
+        actualizarPadreFactura(subgrupo);
+    });
+
+
+    function actualizarPadreSubgrupo(subgrupo) {
+        let padre = $('#checkAll-' + subgrupo),
+            hijos = principal.tbody.find('.item-checkbox[data-subgrupo="' + subgrupo + '"]');
+
+
+        let todosMarcados = hijos.length > 0 && hijos.length === hijos.filter(':checked').length;
+        padre.prop('checked', todosMarcados);
+    }
+    
+    function actualizarPadreFactura(subgrupo) {
+        let primerHijo = principal.tbody.find('.item-checkbox[data-subgrupo="' + subgrupo + '"]').first();
+        
+        if(primerHijo.length === 0) return;
+
+        let factura = primerHijo.data('factura');
+        
+        if(!factura) return; 
+
+        let abuelo = $('#checkAll-' + factura),
+            primos = $tbody.find('.item-checkbox[data-factura="' + factura + '"]'),
+            todosMarcados = primos.length > 0 && primos.length === primos.filter(':checked').length;
+        
+        abuelo.prop('checked', todosMarcados);
+    }
 
     function comentariosPrivados(){
 
