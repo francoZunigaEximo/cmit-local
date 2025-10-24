@@ -307,22 +307,18 @@ class PacientesController extends Controller
     //Obtenemos listado pacientes
     public function getPacientes(Request $request)
     {
-        $buscar = $request->buscar;
 
-        $resultados = Cache::remember('pacientes_'.$buscar, 5, function () use ($buscar) {
+        $resultados = [];
 
-            $pacientes = $this->getBuscar($buscar);
+        $pacientes = $this->getBuscar($request->buscar);
 
-            $resultados = [];
-
-            foreach ($pacientes as $paciente) {
-                $resultados[] = [
-                    'id' => $paciente->Id,
-                    'text' => $paciente->Apellido.' '.$paciente->Nombre.' | '.$paciente->Documento,
-                ];
-            }
-            return $resultados;
-        });
+        foreach ($pacientes as $paciente) {
+            $resultados[] = [
+                'id' => $paciente->Id,
+                'text' => $paciente->Apellido.' '.$paciente->Nombre.' | '.$paciente->Documento,
+            ];
+        }
+       
         return response()->json(['pacientes' => $resultados]);
     }
 
