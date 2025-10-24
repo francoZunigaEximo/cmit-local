@@ -35,7 +35,7 @@ class PacientesController extends Controller
 
         if ($request->ajax()) {
 
-            $query = Paciente::join('telefonos', 'pacientes.Id', '=', 'telefonos.IdEntidad')
+            $query = Paciente::leftJoin('telefonos', 'pacientes.Id', '=', 'telefonos.IdEntidad')
             ->select(
                 'pacientes.Id as Id',
                 'pacientes.Nombre as Nombre',
@@ -46,8 +46,7 @@ class PacientesController extends Controller
             )
             ->where(function ($query) use ($buscar) {
                 $query->where(function ($query) use ($buscar) {
-                        $query->where('pacientes.Apellido', 'LIKE', '%'.$buscar.'%')
-                            ->orWhere('pacientes.Nombre', 'LIKE', '%'.$buscar.'%');
+                        $query->where('pacientes.Apellido', 'LIKE', '%'.$buscar.'%');
                     })
                     ->orWhere(function ($query) use ($buscar) {
                         $query->whereRaw("CONCAT(pacientes.Apellido, ' ', pacientes.Nombre) LIKE ?", ['%'.$buscar.'%']);
