@@ -35,7 +35,7 @@ class PacientesController extends Controller
 
         if ($request->ajax()) {
 
-            $query = Paciente::join('telefonos', 'pacientes.Id', '=', 'telefonos.IdEntidad')
+            $query = Paciente::leftJoin('telefonos', 'pacientes.Id', '=', 'telefonos.IdEntidad')
             ->select(
                 'pacientes.Id as Id',
                 'pacientes.Nombre as Nombre',
@@ -46,8 +46,7 @@ class PacientesController extends Controller
             )
             ->where(function ($query) use ($buscar) {
                 $query->where(function ($query) use ($buscar) {
-                        $query->where('pacientes.Apellido', 'LIKE', '%'.$buscar.'%')
-                            ->orWhere('pacientes.Nombre', 'LIKE', '%'.$buscar.'%');
+                        $query->where('pacientes.Apellido', 'LIKE', '%'.$buscar.'%');
                     })
                     ->orWhere(function ($query) use ($buscar) {
                         $query->whereRaw("CONCAT(pacientes.Apellido, ' ', pacientes.Nombre) LIKE ?", ['%'.$buscar.'%']);
@@ -307,22 +306,18 @@ class PacientesController extends Controller
     //Obtenemos listado pacientes
     public function getPacientes(Request $request)
     {
-        $buscar = $request->buscar;
 
-        $resultados = Cache::remember('pacientes_'.$buscar, 5, function () use ($buscar) {
+        $resultados = [];
 
-            $pacientes = $this->getBuscar($buscar);
+        $pacientes = $this->getBuscar($request->buscar);
 
-            $resultados = [];
-
-            foreach ($pacientes as $paciente) {
-                $resultados[] = [
-                    'id' => $paciente->Id,
-                    'text' => $paciente->Apellido.' '.$paciente->Nombre.' | '.$paciente->Documento,
-                ];
-            }
-            return $resultados;
-        });
+        foreach ($pacientes as $paciente) {
+            $resultados[] = [
+                'id' => $paciente->Id,
+                'text' => $paciente->Apellido.' '.$paciente->Nombre.' | '.$paciente->Documento,
+            ];
+        }
+       
         return response()->json(['pacientes' => $resultados]);
     }
 
@@ -386,6 +381,7 @@ class PacientesController extends Controller
             ->orWhere('Nombre', 'LIKE', '%'.$buscar.'%')
             ->orWhere('Apellido', 'LIKE', '%'.$buscar.'%')
             ->orWhere('Documento', 'LIKE', '%'.$buscar.'%')
+            ->where('Estado', 1)
             ->get();
     }
 }

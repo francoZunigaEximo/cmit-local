@@ -91,7 +91,9 @@ $(function() {
                     url: fileExport,
                     type: "GET",
                     data: arr[tipo].datos,
-                    success: function(response, ) {
+                    success: function(response) {
+                        console.log(response)
+
                         createFile(arr[tipo].archivo, response.filePath, generarCodigoAleatorio() + "_reporte");
                         preloader('off');
                         toastr.success(response.msg, '', {timeOut: 1000});

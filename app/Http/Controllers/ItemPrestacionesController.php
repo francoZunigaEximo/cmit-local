@@ -813,8 +813,8 @@ class ItemPrestacionesController extends Controller
                 || in_array($item->CAdj, [3, 5])
                 || $item->IdProfesional !== 0
                 || $item->IdProfesional2 !== 0
-                || $this->adjuntoEfector($item->Id) === 1
-                || $this->adjuntoInformador($item->Id) === 1;
+                || $this->adjunto($item->Id, "Efector")=== true
+                || $this->adjunto($item->Id, "Informador") === true;
         });
 
         foreach ($itemsConReglas as $item) {

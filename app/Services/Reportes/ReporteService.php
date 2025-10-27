@@ -86,6 +86,7 @@ class ReporteService
                 $tplIdx = $pdf->importPage($pageNo);
                 $pdf->addPage();
                 $pdf->useTemplate($tplIdx);
+                ReporteConfig::marcaAguaImg($pdf);
             }
         }
 
