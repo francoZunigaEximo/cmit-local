@@ -274,6 +274,9 @@
                                         <a href="{{ route('notasCredito.index') }}" class="nav-link enlace-blanco" data-key="t-notaCredito"> Nota de crédito </a>
                                     </li>
                                     @endcan
+                                    <li class="nav-item">
+                                        <a href="{{ route('facturaCompra.index') }}" class="nav-link enlace-blanco" data-key="t-mapas"> Factura Compra </a>
+                                    </li>
                                 </ul>
                             </div>
                         </li>
