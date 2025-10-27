@@ -15,7 +15,7 @@ use setasign\Fpdi\Fpdi;
 class ReporteService
 {
     public function generarReporte(
-        string $tituloClass,        // Siempre debe ser una clase
+        ?string $tituloClass,        // Siempre debe ser una clase
         ?string $subtituloClass,    // Puede ser null
         ?string $cuerpoClass,   // Siempre debe ser una clase
         ?string $subcuerpoClass,     //Anexo armados grandes como eEstudio
@@ -34,9 +34,11 @@ class ReporteService
         $pdf->AddPage();
         $pdf->SetFont('Arial','',8);
     
-        $titulo = new $tituloClass();
-        $titulo->render($pdf, $paramsTitulo, $vistaPrevia);
-    
+        if($tituloClass !== null){
+            $titulo = new $tituloClass();
+            $titulo->render($pdf, $paramsTitulo, $vistaPrevia);
+        }
+        
         if ($subtituloClass !== null) {
             $subtitulo = new $subtituloClass();
             $subtitulo->render($pdf, $paramsSubtitulo, $vistaPrevia);
