@@ -41,7 +41,8 @@ class Profesional extends Model
         'hImage',
         'InfAdj',
         'RegHis',
-        'T5'
+        'T5',
+        
     ];
 
     public $timestamps = false;

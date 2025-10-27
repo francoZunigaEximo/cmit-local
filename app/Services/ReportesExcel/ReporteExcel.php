@@ -17,6 +17,8 @@ use App\Services\ReportesExcel\modelos\SimplePrestacion;
 use App\Services\ReportesExcel\modelos\SimplePrestacionFull;
 use App\Services\ReportesExcel\modelos\CompletoPrestacionFull;
 use App\Services\ReportesExcel\modelos\CuentaCte;
+use App\Services\ReportesExcel\modelos\FacturaCompra;
+use App\Services\ReportesExcel\modelos\FacturaCompraIndivisual;
 use App\Services\ReportesExcel\modelos\GrupoClientesDetalleFull;
 use App\Services\ReportesExcel\modelos\GrupoClientesFull;
 use App\Services\ReportesExcel\modelos\NotaCreditoReporte;
@@ -80,6 +82,10 @@ class ReporteExcel
                 return new SaldosCta();
             case 'pagoMasivo':    
                 return new PagoMasivo();
+            case 'facturaCompra':
+                return new FacturaCompra();
+            case 'FacturaCompraIndivisual':
+                return new FacturaCompraIndivisual();
             default:
                 return response()->json(['msg' => 'Tipo de reporte no válido'], 400);
         }
