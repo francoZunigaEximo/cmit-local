@@ -15,7 +15,7 @@ $(function(){
         provincia: $('#provincia'),
         localidad: $('#localidad'),
         codigoPostal: $('#codigoPostal'),
-        pais: $('#pais'),
+        pais: $('#Nacionalidad'),
         provincia2: $('#provincia2'),
         ciudad: $('#ciudad')
     };
