@@ -28,8 +28,8 @@ trait ObserverPacientes
         $ficha = Fichalaboral::where('IdPaciente', $id)->orderBy('Id', 'desc')->first() ?? '';
 
         $tipos = [
-            'art' => $ficha->IdART,
-            'empresa' => $ficha->IdEmpresa
+            'art' => $ficha->IdART ?? 0,
+            'empresa' => $ficha->IdEmpresa ?? 0
         ];
 
         if(!$ficha) {

@@ -40,6 +40,8 @@ class Paciente extends Model
         'IdLocalidad',
         'ObsEMail',
         'Id',
+        'ciudad',
+        'provincia2'
     ];
 
     public $timestamps = false;

@@ -79,6 +79,16 @@
                     </div>
 
                     <div class="input-group input-group-sm mb-3">
+                        <span class="input-group-text">País&nbsp;<span class="required">(*)</span></span>
+                        <select class="form-select" name="Nacionalidad" id="Nacionalidad">
+                            <option value="" selected>Elija el país...</option>
+                            @foreach($paises as $pais)
+                            <option value="{{ $pais->nombre }}">{{ $pais->nombre }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="input-group input-group-sm mb-3 provincia">
                         <span class="input-group-text">Provincia&nbsp;<span class="required">(*)</span></span>
                         <select id="provincia" class="form-select" name="Provincia">
                             <option selected value="">Elija una opción...</option>
@@ -88,13 +98,23 @@
                         </select>
                     </div>
 
-                    <div class="input-group input-group-sm">
+                    <div class="input-group input-group-sm localidad">
                         <span class="input-group-text">Localidad&nbsp;<span class="required">(*)</span></span>
                         <select id="localidad" class="form-select" name="IdLocalidad">
                             <option selected value="">Elija una opción...</option>
                             <option>...</option>
                         </select>
                         <input type="text" class="form-control" id="codigoPostal" name="CP">
+                    </div>
+
+                    <div class="input-group input-group-sm mb-3 ciudad">
+                        <span class="input-group-text">Ciudad&nbsp;<span class="required">(*)</span></span>
+                        <input type="text" class="form-control" id="ciudad" name="ciudad">
+                    </div>
+
+                    <div class="input-group input-group-sm mb-3 provincia2">
+                        <span class="input-group-text">Estado/provincia&nbsp;<span class="required">(*)</span></span>
+                        <input type="text" class="form-control" id="provincia2" name="provincia2">
                     </div>
 
                 </div>
