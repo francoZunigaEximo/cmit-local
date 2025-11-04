@@ -140,7 +140,8 @@ class PacientesController extends Controller
             'IdLocalidad' => $request->IdLocalidad ?? 0,
             'CP' => $request->CP ?? 0,
             'ciudad' => $request->ciudad ?? '',
-            'provincia2' => $request->provincia2 ?? 'verify',
+            'provincia2' => $request->provincia2 ?? '',
+            'Nacionalidad' => $request->Nacionalidad ?? '',
             'Estado' => 1,
             'Foto' => $foto,
             'Antecedentes' => $request->Antecedentes,
@@ -173,6 +174,7 @@ class PacientesController extends Controller
         return view('layouts.pacientes.edit', with([
                 'paciente' => $paciente,
                 'provincias' => Provincia::all(),
+                'paises' => Pais::all(),
                 'telefono' => $this->getTelefono($paciente->Id) ,
                 'suEdad' => Carbon::parse($paciente->FechaNacimiento)->age,
                 'tipoPrestacion' => PrestacionesTipo::all(),

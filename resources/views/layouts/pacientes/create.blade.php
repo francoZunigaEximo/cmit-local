@@ -80,10 +80,10 @@
 
                     <div class="input-group input-group-sm mb-3">
                         <span class="input-group-text">País&nbsp;<span class="required">(*)</span></span>
-                        <select class="form-select" name="pais" id="pais">
+                        <select class="form-select" name="Nacionalidad" id="Nacionalidad">
                             <option value="" selected>Elija el país...</option>
                             @foreach($paises as $pais)
-                            <option value="{{ $pais->Id }}">{{ $pais->nombre }}</option>
+                            <option value="{{ $pais->nombre }}">{{ $pais->nombre }}</option>
                             @endforeach
                         </select>
                     </div>

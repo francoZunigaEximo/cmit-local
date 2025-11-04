@@ -7,21 +7,35 @@ $(function(){
         exportDetallado: $('.exportDetallado'),
         verPrestacion: $('.verPrestacion'),
         exportExcel: $('.exportExcel'),
-        listaPacientes: $('#listaPacientes')
+        listaPacientes: $('#listaPacientes'),
+        provincia2: $('.provincia2'),
+        ciudad: $('.ciudad'),
+        localidad: $('.localidad'),
+        provincia: $('.provincia')
     };
 
     const variables = {
         localidad: $('#localidad'),
-        codigoPostal: $('#codigoPostal')
+        codigoPostal: $('#codigoPostal'),
+        provincia2: $('#provincia2'),
+        ciudad: $('#ciudad'),
+        pais: $('#Nacionalidad'),
     };
 
     quitarDuplicados("#tipoDocumento");
     quitarDuplicados("#provincia");
     quitarDuplicados("#tipoIdentificacion");
     quitarDuplicados("#Sexo");
+    quitarDuplicados("#Nacionalidad");
     checkProvincia();
     lstResultadosPrest(ID);
-    
+    paisSelect(variables.pais.val());
+
+    variables.pais.on('change', function() {
+        let pais = $(this).find('option:selected').text();
+        paisSelect(pais);
+    });
+
     principal.provincia.change(function() {
         let provincia = $(this).val();
 
@@ -207,6 +221,28 @@ $(function(){
                 });
             });
 
+    }
+
+    function paisSelect(pais) {
+        $("#pais option:contains('" + pais + "')").prop('selected', true);
+
+        if(['Argentina', 'ARGENTINA'].includes(pais)) {
+            principal.provincia
+                .add(principal.localidad)
+                .show();
+
+            principal.provincia2
+                .add(principal.ciudad)
+                .hide();
+        }else{
+            principal.provincia
+                .add(principal.localidad)
+                .hide();
+
+            principal.provincia2
+                .add(principal.ciudad)
+                .show();
+        }
     }
 
 });
