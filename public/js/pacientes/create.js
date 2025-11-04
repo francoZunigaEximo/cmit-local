@@ -3,15 +3,30 @@ $(function(){
     const principal = {
         editLink: $('#editLink'),
         myModal: $('#myModal'),
-        btnRegistrar: $('#btnRegistrar')
+        btnRegistrar: $('#btnRegistrar'),
+        provincia: $('.provincia'),
+        localidad: $('.localidad'),
+        provincia2: $('.provincia2'),
+        ciudad: $('.ciudad')
     };
 
     const variables = {
         documento: $('#documento'),
         provincia: $('#provincia'),
         localidad: $('#localidad'),
-        codigoPostal: $('#codigoPostal')
+        codigoPostal: $('#codigoPostal'),
+        pais: $('#pais'),
+        provincia2: $('#provincia2'),
+        ciudad: $('#ciudad')
     };
+
+    paisSelect("Argentina");
+
+    variables.pais.on('change', function() {
+        let pais = $(this).find('option:selected').text();
+        paisSelect(pais);
+    });
+   
 
     let doc = localStorage.getItem('insertDoc');
     
@@ -24,8 +39,9 @@ $(function(){
     variables.documento.on('change blur', function () {
         let documento = $(this).val();
 
-        $.get(verify, {documento: documento, _token: TOKEN}, function(response){
-            if (response) {
+        $.get(verify, {Documento: documento}, function(response){
+
+            if (Object.keys(response).length >= 1) {
 
                 url = editUrl.replace('__paciente__', response.Id);
                 principal.editLink.attr('href', url);
@@ -62,5 +78,28 @@ $(function(){
             variables.codigoPostal.val(response.codigoPostal);
         })
     });
+
+
+    function paisSelect(pais) {
+        $("#pais option:contains('" + pais + "')").prop('selected', true);
+
+        if(pais === 'Argentina') {
+            principal.provincia
+                .add(principal.localidad)
+                .show();
+
+            principal.provincia2
+                .add(principal.ciudad)
+                .hide();
+        }else{
+            principal.provincia
+                .add(principal.localidad)
+                .hide();
+
+            principal.provincia2
+                .add(principal.ciudad)
+                .show();
+        }
+    }
 
 });

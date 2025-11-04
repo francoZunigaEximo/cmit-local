@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Paciente;
+use App\Models\Pais;
 use App\Models\Prestacion;
 use App\Models\PrestacionesTipo;
 use App\Models\Provincia;
@@ -107,9 +108,7 @@ class PacientesController extends Controller
     {
         if(!$this->hasPermission("pacientes_add")){abort(403);}
 
-        $idPrestacion = Prestacion::max('Id') + 1;
-
-        return view('layouts.pacientes.create', with(['provincias' =>  Provincia::all()]));
+        return view('layouts.pacientes.create', with(['provincias' =>  Provincia::all(), 'paises' => Pais::all()]));
     }
 
     public function store(Request $request): mixed
@@ -137,9 +136,11 @@ class PacientesController extends Controller
             'FechaNacimiento' => $request->FechaNacimiento,
             'EMail' => $request->EMail,
             'Direccion' => $request->Direccion,
-            'Provincia' => $request->Provincia,
-            'IdLocalidad' => $request->IdLocalidad,
-            'CP' => $request->CP,
+            'Provincia' => $request->Provincia ?? 0,
+            'IdLocalidad' => $request->IdLocalidad ?? 0,
+            'CP' => $request->CP ?? 0,
+            'ciudad' => $request->ciudad ?? '',
+            'provincia2' => $request->provincia2 ?? 'verify',
             'Estado' => 1,
             'Foto' => $foto,
             'Antecedentes' => $request->Antecedentes,
