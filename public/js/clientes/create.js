@@ -13,6 +13,12 @@ $(function(){
         editLink: $('#editLink')
     };
 
+    paisSelect($('#Nacionalidad').val());
+
+    $(document).on('change', '#Nacionalidad', function() {
+        paisSelect($(this).val());
+    });
+
     //Verifica si ya existe ese ParaEmpresa con ese Cuit
     $('#Identificacion, #ParaEmpresa').blur(function () {
 
@@ -183,6 +189,19 @@ $(function(){
         $('#hiddens .telefono-input').each(function(index) {
             $(this).attr('name', `telefonos[]`);
         });
+    }
+
+    function paisSelect(pais) {
+        $("#pais option:contains('" + pais + "')").prop('selected', true);
+
+        if(['Argentina', 'ARGENTINA'].includes(pais)) {
+            $('.provincia, .localidad, .codigoPostal').show();
+            $('.provincia2, .ciudad').hide();
+
+        }else{
+            $('.provincia, .localidad, .codigoPostal').hide();
+            $('.provincia2, .ciudad').show();
+        }
     }
               
 });
