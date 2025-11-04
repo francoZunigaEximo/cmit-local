@@ -14,6 +14,7 @@ use App\Traits\CheckPermission;
 use App\Services\ReportesExcel\ReporteExcel;
 use PhpOffice\PhpSpreadsheet\Calculation\Logical\Boolean;
 use App\Models\Auditor;
+use App\Models\Pais;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -86,13 +87,15 @@ class ClientesController extends Controller
             )->where('Estado', 1); 
 
             $query->when(!empty($filtro) && is_array($filtro), function ($query) use ($filtro) {
-                if (in_array('bloqueados', $filtro)) {
-                    $query->where('Bloqueado', 1);
-                }
 
-                if (in_array('sinMailFact', $filtro)) {
-                    $query->where('EmailFactura', '');
-                }
+                $query->when(in_array('bloqueados', $filtro), function ($q) {
+                    $q->where('Bloqueado', 1);
+                });
+
+                $query->when(in_array('sinMailFact', $filtro), function ($q) {
+                    $q->where('EMailFactura', '');
+                });
+
 
                 if (in_array('entregaDomicilio', $filtro)) {
                     $opciones = [5, 4, 3, 2, 1];
@@ -103,25 +106,26 @@ class ClientesController extends Controller
                     }
                 }
 
-                if (in_array('sinMailInfor', $filtro)) {
-                    $query->where('EMailInformes', 1);
-                }
+                $query->when(in_array('sinMailInfor', $filtro), function ($q) {
+                    $q->where('EMailInformes', 1);
+                });
 
-                if (in_array('sinMailResultados', $filtro)) {
-                    $query->where('EMailResultados', 1);
-                }
+                $query->when(in_array('sinMailResultados', $filtro), function ($q) {
+                    $q->where('EMailResultados', 1);
+                });
 
-                if (in_array('retiraFisico', $filtro)) {
-                    $query->where('RF', 1);
-                }
+                $query->when(in_array('retiraFisico', $filtro), function ($q) {
+                    $q->where('RF', 1);
+                });
 
-                if (in_array('factSinPaquetes', $filtro)) {
-                    $query->where('SinPF', 1);
-                }
+                $query->when(in_array('factSinPaquetes', $filtro), function ($q) {
+                    $q->where('SinPF', 1);
+                });
 
-                if (in_array('sinEval', $filtro)) {
-                    $query->where('SinEval', 1);
-                }
+                $query->when(in_array('sinEval', $filtro), function ($q) {
+                    $q->where('SinEval', 1);
+                });
+
             });
 
             $query->when(!empty($fpago) && $fpago !== 'A', function ($query) use ($fpago) {
@@ -152,8 +156,18 @@ class ClientesController extends Controller
 
     public function create()
     {
+        $quitarDeProvincias = ['CIUDAD DE BUENOS AIRES', '', 'BARILOCHE', 'COLOMBIA', 'GENERAL ALVEAL', 'GENERAL ALVEAR', 'LAS OVEJAS', 'VENEZUELA'];
+
         if (!$this->hasPermission("clientes_add")) {abort(403);}
-        return view('layouts.clientes.create', ['helper' => $this->helper])->with('provincias', Provincia::all());
+        
+        return view('layouts.clientes.create', 
+            ['helper' => $this->helper]
+            )->with(
+                [
+                    'provincias' => Provincia::whereNotIn('Nombre', $quitarDeProvincias)->get(),
+                    'paises' => Pais::all()
+            ]
+        );
     }
 
 
@@ -175,11 +189,14 @@ class ClientesController extends Controller
     {
         if (!$this->hasPermission("clientes_edit")) {abort(403);}
         
-        $provincias = Provincia::all();            
+        $quitarDeProvincias = ['BARILOCHE', 'COLOMBIA', 'GENERAL ALVEAL', 'GENERAL ALVEAR', 'LAS OVEJAS', 'VENEZUELA'];
+
+        $provincias = Provincia::whereNotIn('Nombre', $quitarDeProvincias)->get();            
         $detailsLocalidad = Localidad::where('Id', $cliente->IdLocalidad)->first(['Nombre', 'CP', 'Id']);
         $paraEmpresas = Cliente::where('Identificacion', $cliente->Identificacion)->get();
+        $paises = Pais::all();
 
-        return view('layouts.clientes.edit', compact(['cliente', 'provincias', 'detailsLocalidad', 'paraEmpresas']), ['helper' => $this->helper]);
+        return view('layouts.clientes.edit', compact(['cliente', 'provincias', 'detailsLocalidad', 'paraEmpresas', 'paises']), ['helper' => $this->helper]);
     }
 
     public function update(Request $request, Cliente $cliente)

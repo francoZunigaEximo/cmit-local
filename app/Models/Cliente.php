@@ -58,7 +58,9 @@ class Cliente extends Model
         'Estado',
         'Anexo',
         'EMailAnexo',
-        'Descuento'
+        'Descuento',
+        'provincia2',
+        'ciudad'
     ];
 
     public $timestamps = false;
