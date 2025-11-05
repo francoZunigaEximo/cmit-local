@@ -116,6 +116,16 @@
                     </div>
 
                     <div class="col-3 mb-3">
+                        <label for="Provincia" class="form-label">Nacionalidad <span class="required">(*)</span></label>
+                        <select class="form-select" name="Nacionalidad" id="Nacionalidad">
+                            <option selected value="">Elija una opción...</option>
+                            @foreach ($paises as $pais)
+                                <option value="{{ $pais->nombre }}">{{ $pais->nombre }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="col-3 mb-3 provincia">
                         <label for="Provincia" class="form-label">Provincia <span class="required">(*)</span></label>
                         <select class="form-select" name="Provincia" id="Provincia">
                             <option selected value="">Elija una opción...</option>
@@ -125,16 +135,26 @@
                         </select>
                     </div>
                     
-                    <div class="col-2 mb-3">
+                    <div class="col-2 mb-3 localidad">
                         <label for="IdLocalidad" class="form-label">Localidad <span class="required">(*)</span></label>
                         <select class="form-select" id="IdLocalidad" name="IdLocalidad">
                             <option selected value="">Elija una opción...</option>
                         </select>
                     </div>   
                     
-                    <div class="col-2 mb-3">
+                    <div class="col-2 mb-3 codigoPostal">
                         <label for="CP" class="form-label">CP</label>
                         <input type="text" class="form-control" placeholder="3300" id="CP" name="CP">
+                    </div>
+
+                    <div class="col-2 mb-3 provincia2">
+                        <label for="CP" class="form-label">Provincia2/Estado</label>
+                        <input type="text" class="form-control" id="provincia2" name="provincia2">
+                    </div>
+
+                    <div class="col-2 mb-3 ciudad">
+                        <label for="CP" class="form-label">Ciudad</label>
+                        <input type="text" class="form-control" id="ciudad" name="ciudad">
                     </div>
 
                     <div class="col-12 mb-3" style="border: 1px solid #eeeeee; padding: 1em">

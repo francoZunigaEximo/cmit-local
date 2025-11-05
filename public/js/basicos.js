@@ -292,3 +292,6 @@ function limpiarAcentosEspacios(data) {
             .normalize("NFD")
             .replace(/[\u0300-\u036f]/g, ""); //eliminar marcas diacriticas
 }
+
+
+

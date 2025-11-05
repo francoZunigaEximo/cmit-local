@@ -169,11 +169,12 @@ class PacientesController extends Controller
     {
         if(!$this->hasPermission("pacientes_edit")){abort(403);}
 
+        $quitarDeProvincias = ['CIUDAD DE BUENOS AIRES', '', 'BARILOCHE', 'COLOMBIA', 'GENERAL ALVEAL', 'GENERAL ALVEAR', 'LAS OVEJAS', 'VENEZUELA'];
         $tiposPrestacionPrincipales = ['ART', 'INGRESO', 'PERIODICO', 'OCUPACIONAL', 'EGRESO'];
-        $idPrestacion = Prestacion::max('Id') + 1;
+
         return view('layouts.pacientes.edit', with([
                 'paciente' => $paciente,
-                'provincias' => Provincia::all(),
+                'provincias' => Provincia::whereNotIn('Nombre', $quitarDeProvincias)->get(),
                 'paises' => Pais::all(),
                 'telefono' => $this->getTelefono($paciente->Id) ,
                 'suEdad' => Carbon::parse($paciente->FechaNacimiento)->age,
@@ -182,7 +183,7 @@ class PacientesController extends Controller
                 'fichaLaboral' => $this->getFichaLaboral($paciente->Id, null) ?? null,
                 'pacientePrestacion' => $this->getPrestacion($paciente->Id),
                 'tiposPrestacionOtros' => PrestacionesTipo::whereNotIn('Nombre', $tiposPrestacionPrincipales)->get(),
-                'nroPrestacion' => $idPrestacion
+                'nroPrestacion' => Prestacion::max('Id') + 1
             ])
         );
     }

@@ -9,10 +9,17 @@ $(function() {
     quitarDuplicados("#Provincia");
     quitarDuplicados("#CondicionIva");
     quitarDuplicados("#FPago");
+    quitarDuplicados("#Nacionalidad");
     checkBloq();
     tablasExamenes(ID, false, '#lstFact')
     checkeoEstado(ID);
     cargarUsuario();
+    paisSelect($('#Nacionalidad').val());
+    checkProvincia();
+
+    $(document).on('change', '#Nacionalidad', function() {
+        paisSelect($(this).val());
+    });
 
     $(document).on('click', '.delete-icon', function(e) {
         e.preventDefault();
@@ -793,6 +800,28 @@ $(function() {
             let contenido = `<option value="${data.name}">${data.name} (${data.NombreCompleto})</option>`;
             usuariosSelect.append(contenido);
         });
+    }
+
+    function paisSelect(pais) {
+        $("#pais option:contains('" + pais + "')").prop('selected', true);
+
+        if(['Argentina', 'ARGENTINA'].includes(pais)) {
+            $('.provincia, .localidad, .codigoPostal').show();
+            $('.provincia2, .ciudad').hide();
+
+        }else{
+            $('.provincia, .localidad, .codigoPostal').hide();
+            $('.provincia2, .ciudad').show();
+        }
+    }
+
+    function checkProvincia() {
+        let provincia = $('#Provincia').val();
+
+        if(provincia) {
+            $('#Nacionalidad').val('Argentina');
+        }
+
     }
 
 });
