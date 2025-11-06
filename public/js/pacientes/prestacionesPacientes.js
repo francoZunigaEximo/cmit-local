@@ -1654,33 +1654,7 @@ $(function(){
             })
     }
 
-    // $(document).on('click', '.confirmarComentarioPriv', function(e){
-    //     e.preventDefault();
-    //     let comentario = $('#Comentario').val(),
-    //         profesional = PROFESIONAL[0].toUpperCase() + PROFESIONAL.slice(1).toLowerCase();
-
-    //     if(!comentario){
-    //         toastr.warning('La observación no puede estar vacía');
-    //         return;
-    //     }
-
-    //     let idp =  $('#idPrestacion').val();
-    //     preloader('on');
-    //     $.post(savePrivComent, {_token: TOKEN, Comentario: comentario, IdEntidad: idp, obsfasesid: 2, Rol: profesional ?? 'Usuario'})
-    //         .done(function(){
-    //             preloader('off');
-    //             toastr.success('Se ha generado la observación correctamente');
-
-    //             setTimeout(() => {
-    //                 $('#privadoPrestaciones').empty();
-    //                 $("#Comentario").val("");
-    //                 comentariosPrivados();
-    //             }, 3000);
-    //         })
-    // });
-
     
-
     principal.tbody.on('click', 'tr.fondo-gris .form-check-input', function() {
         
         let factura = $(this).attr('id').split('checkAll-')[1],
