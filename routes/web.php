@@ -336,7 +336,7 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::post('examenesCuenta/eliminar', [ExamenesCuentaController::class, 'delete'])->name('eliminarExCuenta');
     Route::get('examenesCuenta/buscar-saldo', [ExamenesCuentaController::class, 'saldo'])->name('searchSaldo');
     Route::post('examenesCuenta/guardar', [ExamenesCuentaController::class, 'save'])->name('saveExamenCuenta');
-    Route::get('examenesCuenta/listado', [ExamenesCuentaController::class, 'listado'])->name('listadoExCta');
+    Route::get('examenesCuenta/listadoExamenes', [ExamenesCuentaController::class, 'listado'])->name('examenesCuenta.listadoExamenes');
     Route::post('examenesCuenta/actualizar', [ExamenesCuentaController::class, 'update'])->name('updateExamenCuenta');
     Route::get('examenesCuenta/eliminar/item', [ExamenesCuentaController::class, 'deleteItem'])->name('deleteItemExCta');
     Route::get('examenesCuenta/liberar/item', [ExamenesCuentaController::class, 'liberarItem'])->name('liberarItemExCta');
@@ -359,6 +359,9 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::post('examenesCuenta/actualizar-prestacion', [ExamenesCuentaController::class, 'cargarExCtaPrestacion'])->name('examenesCuenta.cargar');
     Route::get('examenesCuenta/listado-empresa', [ExamenesCuentaController::class, 'listaExCtaEmpresa'])->name('examenesCuenta.listaEmpresa');
     Route::get('examenesCuenta/contador-pagos', [ExamenesCuentaController::class, 'contadorPagos'])->name('examenesCuenta.contadoPagos');
+    Route::get('examenesCuenta/excelSimple', [ExamenesCuentaController::class, 'excelSimple'])->name('examenesCuenta.excelSimple');
+    Route::get('examenesCuenta/excelCompleto', [ExamenesCuentaController::class, 'excelCompleto'])->name('examenesCuenta.excelCompleto');
+
     Route::resource('examenesCuenta', ExamenesCuentaController::class);
 
     //Rutas de Paquete de Estudio

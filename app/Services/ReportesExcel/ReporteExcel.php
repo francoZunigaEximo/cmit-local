@@ -17,6 +17,8 @@ use App\Services\ReportesExcel\modelos\SimplePrestacion;
 use App\Services\ReportesExcel\modelos\SimplePrestacionFull;
 use App\Services\ReportesExcel\modelos\CompletoPrestacionFull;
 use App\Services\ReportesExcel\modelos\CuentaCte;
+use App\Services\ReportesExcel\modelos\ExamenesCtaCompleto;
+use App\Services\ReportesExcel\modelos\ExamenesCtaSimple;
 use App\Services\ReportesExcel\modelos\FacturaCompra;
 use App\Services\ReportesExcel\modelos\FacturaCompraIndivisual;
 use App\Services\ReportesExcel\modelos\GrupoClientesDetalleFull;
@@ -86,6 +88,10 @@ class ReporteExcel
                 return new FacturaCompra();
             case 'FacturaCompraIndivisual':
                 return new FacturaCompraIndivisual();
+            case 'examenesCtaSimple':
+                return new ExamenesCtaSimple();
+            case 'examenesCtaCompleto':
+                return new ExamenesCtaCompleto(); // Uncomment and implement when available
             default:
                 return response()->json(['msg' => 'Tipo de reporte no válido'], 400);
         }
