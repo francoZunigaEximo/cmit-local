@@ -601,8 +601,7 @@ class PrestacionesController extends Controller
                 array_push($listado, $estudio);
             }
         }
-        dd($listado);
-        die();
+        
         $this->reporteService->fusionarPDFs($listado, $this->outputPath);
 
         $nombreArchivoEEstudio = $paciente->Apellido.'_'.$paciente->Documento.'_eEstudio_'.$prestacion->Id.'.pdf';
