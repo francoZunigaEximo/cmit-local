@@ -226,7 +226,7 @@ $(function(){
     function paisSelect(pais) {
         $("#pais option:contains('" + pais + "')").prop('selected', true);
 
-        if(['Argentina', 'ARGENTINA'].includes(pais)) {
+        if(['Argentina', 'ARGENTINA', 'ARGENTINO'].includes(pais)) {
             principal.provincia
                 .add(principal.localidad)
                 .show();
