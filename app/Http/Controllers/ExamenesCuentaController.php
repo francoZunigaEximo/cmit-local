@@ -26,6 +26,7 @@ use App\Services\Reportes\Titulos\Empresa;
 use App\Services\Reportes\Cuerpos\ExamenCuenta as ExCuenta;
 use App\Services\ReportesExcel\ReporteExcel;
 use Illuminate\Support\Facades\Date;
+use Svg\Tag\Rect;
 
 class ExamenesCuentaController extends Controller
 {
@@ -108,10 +109,12 @@ class ExamenesCuentaController extends Controller
 
             $query->when(empty($request->estado), function ($query) {
                 $query->where('pagosacuenta.Pagado', 0);
+                $query->where('pagosacuenta.FechaP', '=', '0000-00-00');
             });
 
             $query->when(!empty($request->estado) && $request->estado === 'pago', function ($query) {
                 $query->where('pagosacuenta.Pagado', 1);
+                $query->where('pagosacuenta.FechaP', '<>', '0000-00-00');
             });
 
             $query->when(!empty($request->estado) && $request->estado === 'todos', function ($query) {
@@ -377,11 +380,11 @@ class ExamenesCuentaController extends Controller
     public function listado(Request $request)
     {
         if ($request->ajax()) {
-        if(!$this->hasPermission("examenCta_show")) {
-            return response()->json(['msg' => 'No tiene permisos'], 403);
-        }
+            if(!$this->hasPermission("examenCta_show")) {
+                return response()->json(['msg' => 'No tiene permisos'], 403);
+            }
 
-        $query = ExamenCuentaIt::join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
+            $query = ExamenCuentaIt::join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
             ->join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
             ->join('estudios', 'estudios.Id', '=', 'examenes.IdEstudio')
             ->join('prestaciones', 'pagosacuenta_it.IdPrestacion', '=', 'prestaciones.Id')
@@ -400,9 +403,8 @@ class ExamenesCuentaController extends Controller
             ->orderBy('prestaciones.Id', 'Desc')
             ->orderBy('pagosacuenta_it.Precarga', 'Desc')
             ->orderBy('estudios.Nombre', 'Desc')
-            ->orderBy('examenes.Nombre', 'Desc')
-            ->get();
-            
+            ->orderBy('examenes.Nombre', 'Desc');
+
             return DataTables::of($query)->make(true);
         }
 
@@ -640,7 +642,7 @@ class ExamenesCuentaController extends Controller
         $examenes = $this->examenesReporte($examen->Id);
 
         $sheet->setCellValue('A8', 'Prestación');
-        $sheet->setCellValue('B8', 'Especialidad');
+        $sheet->setCellValue('B8', 'Especialidad Efector');
         $sheet->setCellValue('C8', 'Examen');
         $sheet->setCellValue('D8', 'Paciente');
 
@@ -1046,6 +1048,7 @@ class ExamenesCuentaController extends Controller
         ->join('pagosacuenta_it', 'pagosacuenta.Id', '=', 'pagosacuenta_it.IdPago')
         ->join('prestaciones', 'pagosacuenta_it.IdPrestacion', '=', 'prestaciones.Id')
         ->join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
+        ->join('estudios', 'examenes.IdEstudio', '=', 'estudios.Id')
         ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
         ->select(
             'pagosacuenta.Id as IdEx',
@@ -1070,4 +1073,155 @@ class ExamenesCuentaController extends Controller
         $this->itemCrud->create($examenes, $idPrestacion, null);
     }
 
+    public function excelSimple(Request $request){
+        $query = $this->buildQuerySimple($request);
+        $reporte = $this->reporteExcel->crear('examenesCtaSimple');
+        return $reporte->generar($query->get());
+    }
+
+     public function buildQuerySimple(Request $request){
+            $query = $this->queryBasico();
+            
+            $FactDesde = explode('-', $request->rangoDesde);
+            $FactHasta = empty($request->rangoHasta) ? $FactDesde : explode('-', $request->rangoHasta);
+
+            $query->when(!empty($request->rangoDesde) || !empty($request->rangoHasta), function ($query) use ($FactDesde, $FactHasta) {
+
+                $query->whereBetween('pagosacuenta.Tipo', [$FactDesde[0], $FactHasta[0]])
+                    ->whereBetween('pagosacuenta.Suc', [intval($FactDesde[1], 10), intval($FactHasta[1], 10)])
+                    ->whereBetween('pagosacuenta.Nro', [intval($FactDesde[2], 10), intval($FactHasta[2], 10)])
+                    ->orderBy('pagosacuenta.Tipo', 'ASC')
+                    ->orderBy('pagosacuenta.Suc', 'ASC')
+                    ->orderBy('pagosacuenta.Nro', 'ASC');
+            });
+
+            $query->when(!empty($request->fechaDesde) && !empty($request->fechaHasta), function ($query) use ($request) {
+                $query->whereBetween('pagosacuenta.Fecha', [$request->fechaDesde, $request->fechaHasta]);
+            });
+
+            $query->when(!empty($request->empresa), function ($query) use ($request) {
+                $query->where('clientes.Id', $request->empresa);
+            });
+
+            $query->when(!empty($request->examen), function ($query) use ($request) {
+                $query->where('examenes.Id', $request->examen);
+            });
+
+            $query->when(!empty($request->paciente), function ($query) use ($request) {
+                $query->where('pacientes.Id', $request->paciente);
+            });
+
+            $query->when(empty($request->estado), function ($query) {
+                $query->where('pagosacuenta.Pagado', 0);
+                $query->where('pagosacuenta.FechaP', '=', '0000-00-00');
+            });
+
+            $query->when(!empty($request->estado) && $request->estado === 'pago', function ($query) {
+                $query->where('pagosacuenta.Pagado', 1);
+                $query->where('pagosacuenta.FechaP', '<>', '0000-00-00');
+            });
+
+            $query->when(!empty($request->estado) && $request->estado === 'todos', function ($query) {
+                $query->whereIn('pagosacuenta.Pagado', [0,1]);
+            });
+
+            if($request->all == "false"){
+                $query->whereIn('pagosacuenta.Id', $request->ids);
+            }
+
+            $query->select(
+                'pagosacuenta.Id as IdEx',
+                'pagosacuenta.Tipo as Tipo',
+                'pagosacuenta.Suc as Sucursal',
+                'pagosacuenta.Nro as Numero',
+                'clientes.Identificacion as Cuit',
+                'clientes.ParaEmpresa as ParaEmpresa',
+                'pagosacuenta.Fecha as Fecha',
+                'pacientes.Nombre as NomPaciente',
+                'pacientes.Apellido as ApePaciente',
+                'pagosacuenta.FechaP as Pagado',
+                'clientes.RazonSocial as Cliente',
+            );
+
+            $result = $query->groupBy('pagosacuenta.Id', 'pagosacuenta.Tipo', 'pagosacuenta.Suc', 'pagosacuenta.Nro', 'pagosacuenta.Pagado');
+            return $result;
+    }
+
+    public function excelCompleto(Request $request){
+        $query = $this->buildQueryCompleto($request);
+        $reporte = $this->reporteExcel->crear('examenesCtaCompleto');
+        return $reporte->generar($query->get());
+    }
+
+
+    public function buildQueryCompleto(Request $request){
+            $query = $this->queryBasico();
+            
+            $FactDesde = explode('-', $request->rangoDesde);
+            $FactHasta = empty($request->rangoHasta) ? $FactDesde : explode('-', $request->rangoHasta);
+
+            $query->when(!empty($request->rangoDesde) || !empty($request->rangoHasta), function ($query) use ($FactDesde, $FactHasta) {
+
+                $query->whereBetween('pagosacuenta.Tipo', [$FactDesde[0], $FactHasta[0]])
+                    ->whereBetween('pagosacuenta.Suc', [intval($FactDesde[1], 10), intval($FactHasta[1], 10)])
+                    ->whereBetween('pagosacuenta.Nro', [intval($FactDesde[2], 10), intval($FactHasta[2], 10)])
+                    ->orderBy('pagosacuenta.Tipo', 'ASC')
+                    ->orderBy('pagosacuenta.Suc', 'ASC')
+                    ->orderBy('pagosacuenta.Nro', 'ASC');
+            });
+
+            $query->when(!empty($request->fechaDesde) && !empty($request->fechaHasta), function ($query) use ($request) {
+                $query->whereBetween('pagosacuenta.Fecha', [$request->fechaDesde, $request->fechaHasta]);
+            });
+
+            $query->when(!empty($request->empresa), function ($query) use ($request) {
+                $query->where('clientes.Id', $request->empresa);
+            });
+
+            $query->when(!empty($request->examen), function ($query) use ($request) {
+                $query->where('examenes.Id', $request->examen);
+            });
+
+            $query->when(!empty($request->paciente), function ($query) use ($request) {
+                $query->where('pacientes.Id', $request->paciente);
+            });
+
+            $query->when(empty($request->estado), function ($query) {
+                $query->where('pagosacuenta.Pagado', 0);
+                $query->where('pagosacuenta.FechaP', '=', '0000-00-00');
+            });
+
+            $query->when(!empty($request->estado) && $request->estado === 'pago', function ($query) {
+                $query->where('pagosacuenta.Pagado', 1);
+                $query->where('pagosacuenta.FechaP', '<>', '0000-00-00');
+            });
+
+            $query->when(!empty($request->estado) && $request->estado === 'todos', function ($query) {
+                $query->whereIn('pagosacuenta.Pagado', [0,1]);
+            });
+            if($request->all == "false"){
+                $query->whereIn('pagosacuenta.Id', $request->ids);
+            }
+            
+            $query->select(
+                'pagosacuenta.Id as IdEx',
+                'pagosacuenta.Tipo as Tipo',
+                'pagosacuenta.Suc as Sucursal',
+                'pagosacuenta.Nro as Numero',
+                'clientes.Identificacion as Cuit',
+                'clientes.ParaEmpresa as ParaEmpresa',
+                'clientes.RazonSocial as Cliente',
+                'pagosacuenta.Fecha as Fecha',
+                'pacientes.Nombre as NomPaciente',
+                'pacientes.Apellido as ApePaciente',
+                'pagosacuenta.FechaP as Pagado',
+                'prestaciones.Id as IdPrestacion',
+                'examenes.Nombre as NombreExamen',
+                'estudios.Nombre as NombreEstudio'
+            );
+
+            $result = $query;
+            //->groupBy('pagosacuenta.Id', 'pagosacuenta.Tipo', 'pagosacuenta.Suc', 'pagosacuenta.Nro', 'pagosacuenta.Pagado');
+            return $result;
+    }
 }

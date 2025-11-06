@@ -3,11 +3,13 @@ function mostrarBotonesPago(valor) {
     if(valor === 'pago') {
         $('.quitarPago').show();
         $('.botonPagar').hide();
-    
+        habilitarMasivo(1);
     }else if(valor === '') {
         $('.quitarPago').hide();
         $('.botonPagar').show();
+        habilitarMasivo(0);
     }else{
+        habilitarMasivo(2);
         $('.botonPagar, .quitarPago').hide();
     }
 }
@@ -75,7 +77,6 @@ function format(rowData) {
 
     });
 }
-
 
 $(function(){
 
@@ -188,8 +189,10 @@ $(function(){
         });
     });
 
-    $('.botonPagar, .quitarPago').prop('disabled', true);
+    //$('.botonPagar, .quitarPago').prop('disabled', true);
     mostrarBotonesPago($('#estado').val());
+
+
 
     const tabla = $('#listadoExamenesCuentas');
 
@@ -354,8 +357,7 @@ $(function(){
                 orderable: false,
                 targets: 0,
                 render: function(data){
-               
-                    return `<div class="text-center"><input type="checkbox" name="Id" value="${data.IdEx}" disabled></div>`;
+                    return `<div class="text-center"><input type="checkbox" class="fila-checkbox" name="Id" value="${data.IdEx}" ></div>`;
                 }
             },
             {
@@ -466,7 +468,7 @@ $(function(){
                 
             });
 
-            $('.botonPagar').prop('disabled', true);
+            //$('.botonPagar').prop('disabled', true);
 
             $('#listadoExamenesCuentas tbody').off('click', 'td.details-control').on('click', 'td.details-control', function(){
                 let tr = $(this).closest('tr'), row = dataTable.row(tr);

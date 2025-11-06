@@ -177,11 +177,7 @@ $(function(){
             }
         });    
     });
-
-    $('#checkAll').on('click', function() {
-        $('input[type="checkbox"][name="Id"]:not(#checkAll)').prop('checked', this.checked);
-    });
-
+    
     $(document).on('click', '.botonPagar, .quitarPago', function(e){
         e.preventDefault();
 
@@ -266,5 +262,77 @@ $(function(){
         location.reload();
     });
 
+    $(".btnExcelSimple").on("click", function (e) {
+        preloader('on');
+        var idsSeleccionados = obtenerIdsSeleccionados();
+        var allSelected = $("#checkAll").is(":checked");
+        $.get(exportSimple,
+            {
+                fechaDesde : $('#fechaDesde').val(),
+                fechaHasta : $('#fechaHasta').val(),
+                rangoDesde : $('#rangoDesde').val(),
+                rangoHasta : $('#rangoHasta').val(),
+                empresa : $('#empresa').val(),
+                paciente : $('#paciente').val(),
+                examen : $('#examen').val(),
+                estado : $('#estado').val(),
+                ids: idsSeleccionados,
+                all: allSelected
+            })
+            .done(function (response) {
+                preloader('off');
+                createFile("excel", response.filePath, generarCodigoAleatorio() + "_examenes_cuenta_simple");
+                preloader('off');
+                toastr.success(response.msg);
+                return;
+            })
+            .fail(function (jqXHR) {
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            });
+    });
+
+    $(".btnExcelCompleto").on("click", function (e) {
+        preloader('on');
+        var idsSeleccionados = obtenerIdsSeleccionados();
+        var allSelected = $("#checkAll").is(":checked");
+
+        $.get(exportCompleto,
+            {
+                fechaDesde : $('#fechaDesde').val(),
+                fechaHasta : $('#fechaHasta').val(),
+                rangoDesde : $('#rangoDesde').val(),
+                rangoHasta : $('#rangoHasta').val(),
+                empresa : $('#empresa').val(),
+                paciente : $('#paciente').val(),
+                examen : $('#examen').val(),
+                estado : $('#estado').val(),
+                ids: idsSeleccionados,
+                all: allSelected
+            })
+            .done(function (response) {
+                preloader('off');
+                createFile("excel", response.filePath, generarCodigoAleatorio() + "_examenes_cuenta_completo");
+                preloader('off');
+                toastr.success(response.msg);
+                return;
+            })
+            .fail(function (jqXHR) {
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            });
+    });
+
 
 });
+
+function obtenerIdsSeleccionados(){
+        itemsSeleccionados = $(".fila-checkbox:checked").map(function () {
+            return this.value;
+        }).get();
+        return itemsSeleccionados;
+    }

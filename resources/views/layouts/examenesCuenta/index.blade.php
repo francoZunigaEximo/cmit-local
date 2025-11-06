@@ -23,7 +23,7 @@
                 <i class="ri-window-line"></i>
                 Saldos
             </a>
-        </li>        
+        </li>
     </ul>
 </div>
 
@@ -43,27 +43,27 @@
                         <div class="card-body">
                             <div class="listjs-table" id="customerList">
                                 <div class="row g-4 mb-3">
-            
+
                                     <form id="form-index">
                                         <div class="col-12 p-4 border border-1 border-color" style="border-color: #666666;">
 
                                             <div class="row">
-            
+
                                                 <div class="col-sm-2 mb-3">
                                                     <label for="fechaDesde" class="form-label fw-bolder">Fecha desde: <span class="required">(*)</span></label>
                                                     <input type="date" class="form-control" id="fechaDesde" name="fechaDesde">
                                                 </div>
-            
+
                                                 <div class="col-sm-2 mb-3">
                                                     <label for="fechaDesde" class="form-label fw-bolder">Fecha hasta: <span class="required">(*)</span></label>
                                                     <input type="date" class="form-control" id="fechaHasta" name="fechaHasta">
                                                 </div>
-            
+
                                                 <div class="col-sm-2 mb-3">
                                                     <label for="rangoDesde" class="form-label fw-bolder">Factura Desde o Individual: </label>
                                                     <input type="text" class="form-control" id="rangoDesde" name="rangoDesde">
                                                 </div>
-            
+
                                                 <div class="col-sm-2 mb-3">
                                                     <label for="rangoDesde" class="form-label fw-bolder">Factura Hasta: </label>
                                                     <input type="text" class="form-control" id="rangoHasta" name="rangoHasta">
@@ -80,9 +80,9 @@
                                                 </div>
 
                                             </div>
-            
+
                                             <div class="row">
-                                                
+
                                                 <div class="col-sm-2 mb-3">
                                                     <label for="paciente" class="form-label fw-bolder">Paciente / DNI:</label>
                                                     <select class="form-control" name="paciente" id="paciente"></select>
@@ -97,16 +97,20 @@
                                                         <option value="todos">Todos</option>
                                                     </select>
                                                 </div>
-            
-                                                
+
+
                                                 <div class="col-sm-8 d-flex align-items-center justify-content-end">
                                                     <button type="button" id="buscar" class="btn botonGeneral"><i class="ri-zoom-in-line"></i>&nbsp;Buscar</button>&nbsp;
                                                     <a id="agregar" class="btn botonGeneral" href="{{ route('examenesCuenta.create') }}"><i class="ri-add-fill"></i>&nbsp;Agregar</a>
                                                 </div>
-                                                
-            
+                                                <div class="col-sm-12 d-flex align-items-center justify-content-end">
+                                                    <button type="button" id="excelSimple" class="btn botonGeneral btnExcelSimple"><i class="ri-file-excel-2-line"></i>&nbsp;Exportar a Excel</button>&nbsp;
+                                                    <button type="button" id="excelCompleto" class="btn botonGeneral btnExcelCompleto"><i class="ri-file-excel-2-line"></i>&nbsp;Exportar a Excel Completo</button>&nbsp;
+
+                                                </div>
+
                                             </div>
-                                        
+
                                         </div>
                                 </div>
 
@@ -117,12 +121,12 @@
                                         <button type="button" class="btn btn-sm botonGeneral sieteDias"><i class="ri-calendar-2-line"></i>&nbsp;Ultimos 7 días</button>
                                         <button type="button" class="btn btn-sm botonGeneral tresMeses"><i class="ri-calendar-2-line"></i>&nbsp;Ultimos 3 meses</button>
                                     </div>
-                                    
+
                                     <div class="col-4 text-end">
                                         <button type="button" class="btn btn-sm botonGeneral botonPagar"><i class=" ri-money-dollar-circle-line"></i>&nbsp;Pagar masivo</button>
                                         <button type="button" class="btn btn-sm botonGeneral quitarPago"><i class=" ri-money-dollar-circle-line"></i>&nbsp;Quitar pago masivo</button>
                                     </div>
-                                    
+
                                 </div>
 
                                 <div class="table-responsive table-card mt-3 mb-1 mx-auto">
@@ -141,16 +145,16 @@
                                             </tr>
                                         </thead>
                                         <tbody class="list form-check-all">
-            
+
                                         </tbody>
                                     </table>
-                                </form>
-                                </div>           
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            
+
             </div>
         </div>
 
@@ -159,7 +163,7 @@
             <div class="row justify-content-md-center">
                 <form id="form-index">
                     <div class="col p-2 border border-1 border-color" style="border-color: #666666;">
-                        
+
                         <div class="row justify-content-center">
                             <div class="col-sm-3 mb-3">
                                 <label for="empresaSaldo" class="form-label font-weight-bold"><strong>Empresa: </strong></label>
@@ -185,12 +189,12 @@
                     </div>
                     <div class="row p-3">
                         <div class="col-2 p-1">
-                            <button type="button" class="btn btn-sm botonGeneral excelDetalleSaldos" >Detalle</button>
-                            <button type="button" class="btn btn-sm botonGeneral excelExcel" >Excel</button>
+                            <button type="button" class="btn btn-sm botonGeneral excelDetalleSaldos">Detalle</button>
+                            <button type="button" class="btn btn-sm botonGeneral excelExcel">Excel</button>
                         </div>
                     </div>
-                </form>  
-            </div> 
+                </form>
+            </div>
 
             <div class="row auto-mx">
 
@@ -229,6 +233,9 @@
     const eliminarExCuenta = "{{ route('eliminarExCuenta') }}";
     const exportarDetalle = "{{ route('notasCredito.exportarDetalle') }}";
     const exportGeneral = "{{ route('notasCredito.exportarExcel') }}";
+
+    const exportSimple = "{{ route('examenesCuenta.excelSimple') }}";
+    const exportCompleto = "{{ route('examenesCuenta.excelCompleto') }}";
 </script>
 
 @push('styles')
