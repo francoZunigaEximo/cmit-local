@@ -147,7 +147,7 @@ $(function() {
                     d.examen = $('#examenPres').val();
                     d.pendiente = conPendiente;
                     d.vencido = $('#vencidoPres').prop('checked') ? 1 : null;
-                    d.ausente = ausente;
+                    d.ausente = ausente || $('#selectAusente').val() || null;
                     d.adjuntoEfector = adjuntoEfector;
                 },
 

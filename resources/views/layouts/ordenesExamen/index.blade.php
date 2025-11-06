@@ -145,6 +145,16 @@
                                                 </div>
 
                                                 <div class="col-sm-2 mb-3">
+                                                    <label for="selectAusentes" class="form-label font-weight-bold"><strong>Ausentes: </strong></label>
+                                                    <select name="selectAusentes" id="selectAusentes" class="form-control">
+                                                        <option value="" selected>Elija una opción...</option>
+                                                        <option value="ausente">Con Ausentes</option>
+                                                        <option value="noAusente">Sin Ausentes</option>
+                                                        <option value="todos">Todos</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="col-sm-2 mb-3">
                                                     <label for="adjuntoPres" class="form-label font-weight-bold"><strong>Adjunto: </strong></label>
                                                     <select name="adjuntoPres" id="adjuntoPres" class="form-control">
                                                         <option value="" selected>Elija una opción...</option>
@@ -157,17 +167,17 @@
                                                     <label for="examenPres" class="form-label font-weight-bold"><strong>Examen:</strong></label>
                                                     <select class="form-control" name="examenPres" id="examenPres"></select>
                                                 </div>
+                                            </div>
 
-                                                <div class="col-sm-2 mb-3 d-flex align-items-center justify-content-center">
+                                            <div class="row">
+                                                <div class="col-12 text-end mt-2 mb-2">
                                                     <input type="checkbox" class="form-check-input" name="pendientePres" name="pendientePres" id="pendientePres">&nbsp;
-                                                    <label for="pendientePres" class="form-check-label font-weight-bold"><strong>Con pendiente</strong></label>
-                                                </div>
-
-                                                <div class="col-sm-2 mb-3 d-flex align-items-center justify-content-center">
+                                                    <label for="pendientePres" class="form-check-label font-weight-bold"><strong>Con pendiente</strong></label>&nbsp;
                                                     <input type="checkbox" class="form-check-input" name="vencidoPres" id="vencidoPres">&nbsp;
                                                     <label for="vencidoPres" class="form-check-label font-weight-bold"><strong>Exámen vencido</strong></label>
                                                 </div>
                                             </div>
+
                                             <div class="row mt-2 mb-2 fondo-base">
                                                 <div class="col-sm-3 p-2 text-start">
                                                     <button type="button" class="btn btn-sm botonGeneral Exportar"><i class="ri-file-excel-line"></i>&nbsp;Exportar</button>
