@@ -601,7 +601,8 @@ class PrestacionesController extends Controller
                 array_push($listado, $estudio);
             }
         }
-
+        dd($listado);
+        die();
         $this->reporteService->fusionarPDFs($listado, $this->outputPath);
 
         $nombreArchivoEEstudio = $paciente->Apellido.'_'.$paciente->Documento.'_eEstudio_'.$prestacion->Id.'.pdf';
@@ -1157,13 +1158,14 @@ class PrestacionesController extends Controller
         $prestacion = Prestacion::find($idPrestacion);
         $paciente = $prestacion->paciente;
         $nombreArchivo = $paciente->Apellido.'_'.$paciente->Documento.'_adjPresta_'.$idPrestacion.'.pdf';
+
         return $this->reporteService->generarReporte(
             AdjuntosGenerales::class,
             null,
             null,
             null,
             'guardar',
-            null,
+            storage_path($nombreArchivo),
             null,
             ['id' => $idPrestacion],
             [],
@@ -1185,7 +1187,7 @@ class PrestacionesController extends Controller
             null,
             null,
             'guardar',
-            null,
+            storage_path($nombreArchivo),
             null,
             ['id' => $idPrestacion],
             [],
@@ -1333,7 +1335,7 @@ class PrestacionesController extends Controller
             null,
             null,
             'guardar',
-            storage_path($this->tempFile.$nombreArchivo),
+            storage_path($nombreArchivo),
             null,
             ['id' => $idPrestacion],
             ['id' => $idPrestacion, 'firmaeval' => 0, 'opciones' => $opciones, 'eEstudio' => 'si'],
