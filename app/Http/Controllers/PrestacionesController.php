@@ -1325,7 +1325,6 @@ class PrestacionesController extends Controller
     {
         $prestacion = Prestacion::find($idPrestacion);
         $paciente = $prestacion->paciente;
-        
         $nombreArchivo = $paciente->Apellido.'_'.$paciente->Documento.'_eEstudio_'.$idPrestacion.'.pdf';
         
         return $this->reporteService->generarReporte(
