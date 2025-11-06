@@ -1150,6 +1150,9 @@ class PrestacionesController extends Controller
 
     private function adjGenerales(int $idPrestacion): mixed
     {
+        $prestacion = Prestacion::find($idPrestacion);
+        $paciente = $prestacion->paciente;
+        $nombreArchivo = $paciente->Apellido.'_'.$paciente->Documento.'_adjPresta_'.$idPrestacion.'.pdf';
         return $this->reporteService->generarReporte(
             AdjuntosGenerales::class,
             null,
@@ -1162,13 +1165,16 @@ class PrestacionesController extends Controller
             [],
             [],
             [],
-            storage_path('app/public/temp/merge_adjGenerales_'.$idPrestacion.'.pdf')
+            storage_path('app/public/temp/'.$nombreArchivo)
         );
 
     }
 
     private function adjAnexos(int $idPrestacion): mixed
     {
+        $prestacion = Prestacion::find($idPrestacion);
+        $paciente = $prestacion->paciente;
+        $nombreArchivo = $paciente->Apellido.'_'.$paciente->Documento.'_adjAnexos_'.$idPrestacion.'.pdf';
         return $this->reporteService->generarReporte(
             AdjuntosAnexos::class,
             null,
@@ -1181,7 +1187,7 @@ class PrestacionesController extends Controller
             [],
             [],
             [],
-            storage_path('app/public/temp/merge_adjAnexos_'.$idPrestacion.'.pdf')
+            storage_path('app/public/temp/'.$nombreArchivo)
         );
     }
 
@@ -1313,13 +1319,17 @@ class PrestacionesController extends Controller
 
     private function eEstudio(int $idPrestacion, string $opciones): mixed // No - Lleva resumen aptitud
     {
+        $prestacion = Prestacion::find($idPrestacion);
+        $paciente = $prestacion->paciente;
+        $nombreArchivo = $paciente->Apellido.'_'.$paciente->Documento.'_eEstudio_'.$idPrestacion.'.pdf';
+        
         return $this->reporteService->generarReporte(
             EEstudio::class,
             EvaluacionResumen::class,
             null,
             null,
             'guardar',
-            storage_path($this->tempFile.Tools::randomCode(15).'-'.Auth::user()->name.'.pdf'),
+            storage_path($this->tempFile.$nombreArchivo),
             null,
             ['id' => $idPrestacion],
             ['id' => $idPrestacion, 'firmaeval' => 0, 'opciones' => $opciones, 'eEstudio' => 'si'],
