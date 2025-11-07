@@ -74,6 +74,9 @@ $(function() {
                 maxlength: "Este campo admite hasta 50 caracteres.",
                 minlength: "El campo admite un mínimo de 4 caracteres."
             },
+            FPago: {
+                required: "La forma de pago es obligatoria"
+            },
             ParaEmpresa: {
                 required: "El para empresa es obligatorio.",
                 maxlength: "Este campo admite hasta 50 caracteres.",
