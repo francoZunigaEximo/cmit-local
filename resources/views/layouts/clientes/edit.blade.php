@@ -173,8 +173,8 @@
                     <div class="col-3 mb-3">
                         <label for="FPago" class="form-label">Forma de pago </label>
                         <select name="FPago" id="FPago" class="form-select">
-                            <option value="{{ $selectValor }}" selected>{{ $selectTexto }}</option>
-                            <option value="A">CC.</option>
+                            <option value="{{ $cliente->FPago }}" selected>{{ $selectTexto }}</option>
+                            <option value="A">CC</option>
                             <option value="B">Ctdo.</option>
                             <option value="C">Ctdo(CC Bloq)</option>
                         </select>
