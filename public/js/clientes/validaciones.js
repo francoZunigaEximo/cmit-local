@@ -16,6 +16,9 @@ $(function() {
                 maxlength: 50,
                 minlength: 4
             },
+            FPago: {
+                required: true
+            },
             ParaEmpresa: {
                 required: true,
                 maxlength: 50,
