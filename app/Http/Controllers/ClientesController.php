@@ -538,7 +538,7 @@ class ClientesController extends Controller
                 });
             });
             
-            $result = $query->orderBy('Id', 'DESC');
+            $result = $query->whereNot('Id', 0)->orderBy('Id', 'DESC');
 
             return $result;
     }
