@@ -26,13 +26,18 @@
                         <button type="button" id="excel" class="btn botonGeneral" title="Generar reporte en Excel">
                             <i class="ri-file-excel-line"></i> Excel
                         </button>
+
+                        <button type="button" id="excelTodo" class="btn botonGeneral" title="Generar reporte de todos los registros">
+                            <i class="ri-file-excel-line"></i> Excel (TODO)
+                        </button>
+
                         @endcan
                     </div>
                 </div>
                 <div class="col-2">
                     <div class="mb-2">
                         <select id="TipoCliente" name="TipoCliente" class="form-select">
-                            <option value="" >Empresa y ART</option>
+                            <option value="" >Empresa o ART</option>
                             <option value="E">Empresa</option>
                             <option value="A">ART</option>
                         </select>
@@ -103,6 +108,7 @@
 <script>
 //Rutas
 const exportExcelClientes = "{{ route('exportExcelClientes') }}";
+const excelTodo = "{{ route('exportExcelClientes') }}";
 const multipleDown = "{{ route('clientes.baja') }}";
 const SEARCH = "{{ route('searchClientes') }}";
 
