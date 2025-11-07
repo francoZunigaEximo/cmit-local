@@ -42,23 +42,6 @@ class ClientesController extends Controller
     {
         if (!$this->hasPermission("clientes_show")) {abort(403);}
 
-        if ($request->ajax()) {
-
-            $query = Cliente::select(
-                'Identificacion',
-                'RazonSocial',
-                'ParaEmpresa',
-                'TipoCliente',
-                'Bloqueado',
-                'Id',
-                'FPago')
-                ->orderBy('Id', 'DESC')
-                ->where('Estado', '1');
-
-            return Datatables::of($query)->make(true);
-
-        }
-
         return view('layouts.clientes.index');
     }
 
@@ -70,89 +53,14 @@ class ClientesController extends Controller
         }
 
         if ($request->ajax()) {
-            $filtro = $request->filtro;
-            $buscar = trim($request->buscar);
-            $fpago = $request->formaPago;
-
-            // Filtrar solo registros con Estado = 0
-            $query = Cliente::select(
-                'Identificacion',
-                'RazonSocial',
-                'ParaEmpresa',
-                'TipoCliente',
-                'Bloqueado',
-                'Id',
-                'FPago',
-                'Estado'
-            )->where('Estado', 1); 
-
-            $query->when(!empty($filtro) && is_array($filtro), function ($query) use ($filtro) {
-
-                $query->when(in_array('bloqueados', $filtro), function ($q) {
-                    $q->where('Bloqueado', 1);
-                });
-
-                $query->when(in_array('sinMailFact', $filtro), function ($q) {
-                    $q->where('EMailFactura', '');
-                });
-
-
-                if (in_array('entregaDomicilio', $filtro)) {
-                    $opciones = [5, 4, 3, 2, 1];
-                    $intersectedOptions = array_intersect($opciones, $filtro);
-
-                    if (!empty($intersectedOptions)) {
-                        $query->whereIn('Entrega', $intersectedOptions);
-                    }
-                }
-
-                $query->when(in_array('sinMailInfor', $filtro), function ($q) {
-                    $q->where('EMailInformes', 1);
-                });
-
-                $query->when(in_array('sinMailResultados', $filtro), function ($q) {
-                    $q->where('EMailResultados', 1);
-                });
-
-                $query->when(in_array('retiraFisico', $filtro), function ($q) {
-                    $q->where('RF', 1);
-                });
-
-                $query->when(in_array('factSinPaquetes', $filtro), function ($q) {
-                    $q->where('SinPF', 1);
-                });
-
-                $query->when(in_array('sinEval', $filtro), function ($q) {
-                    $q->where('SinEval', 1);
-                });
-
-            });
-
-            $query->when(!empty($fpago) && $fpago !== 'A', function ($query) use ($fpago) {
-                $query->where('FPago', $fpago);
-            });
-
-            $query->when(!empty($fpago) && $fpago === 'A', function ($query) {
-                $query->whereIn('FPago', [null, '', 'A']);
-            });
-
-            $query->when(!empty($buscar) && strlen($buscar) >= 3, function ($query) use ($buscar) {
-                $formatearIdent = $this->formatearIdentificacion($buscar);
-
-                $query->where(function ($query) use ($buscar, $formatearIdent) {
-                    $query->where('ParaEmpresa', 'LIKE', '%' . $buscar . '%')
-                        ->orWhere('Identificacion', 'LIKE', '%' . $formatearIdent . '%')
-                        ->orWhere('RazonSocial', 'LIKE', '%' . $buscar . '%');
-                });
-            });
-
-            $result = $query->orderBy('Id', 'DESC');
+        
+            $result = $this->buildSearch($request);
 
             return Datatables::of($result)->make(true);
         }
-
-        return view('layouts.clientes.index');
     }
+
+
 
     public function create()
     {
@@ -349,11 +257,25 @@ class ClientesController extends Controller
             return response()->json(['msg' => 'No tiene permisos'], 403);
         }
 
+        $clientes = null;
         $ids = (array) $request->input('Id');
-        $clientes = Cliente::with(['localidad'])->with(['actividad'])->whereIn('Id', $ids)->get();
+        
+        if($request->base === 'excel') {
+            $clientes = Cliente::with(['localidad'])->with(['actividad'])->whereIn('Id', $ids)->get();
+        
+        }else{
+        
+            $ids = $this->buildSearch($request)->pluck('Id')->toArray();
+            
+            if(empty($ids)) {
+                return response()->json(['msg' => 'No se puede generar ningun reporte'], 500);
+            }
+
+            $clientes = Cliente::with(['localidad'])->with(['actividad'])->whereIn('Id', $ids)->get();
+        }
 
         if(empty($clientes)) {
-            return response()->json(['msg' => 'Error al generar el reporte'], 409);
+            return response()->json(['msg' => 'No se puede generar ningun reporte'], 500);
         }
 
         $reporte = $this->reporteExcel->crear('clientes');
@@ -528,5 +450,96 @@ class ClientesController extends Controller
     private function checkPrestaciones(int $idCliente)
     {
         return Prestacion::where('IdEmpresa', $idCliente)->orWhere('IdART', $idCliente)->exists();
+    }
+
+        private function buildSearch($request)
+    {
+        $filtro = $request->filtro;
+        $buscar = trim($request->buscar);
+        $fpago = $request->formaPago;
+        $tipoCliente = $request->tipo;
+
+         $query = Cliente::select(
+                'Identificacion',
+                'RazonSocial',
+                'ParaEmpresa',
+                'TipoCliente',
+                'Bloqueado',
+                'Id',
+                'FPago',
+                'Estado'
+            )->where('Estado', 1);
+
+        $query->when(!empty($tipoCliente), function ($query) use ($tipoCliente) {
+            $query->where('TipoCliente', $tipoCliente);
+        });
+
+        $query->when(!empty($filtro) && is_array($filtro), function ($query) use ($filtro) {
+
+                $query->when(in_array('bloqueados', $filtro), function ($q) {
+                    $q->where('Bloqueado', 1);
+                });
+
+                $query->when(in_array('sinMailFact', $filtro), function ($q) {
+                    $q->where('EMailFactura', '');
+                });
+
+
+                if (in_array('entregaDomicilio', $filtro)) {
+                    $opciones = [5, 4, 3, 2, 1];
+                    $intersectedOptions = array_intersect($opciones, $filtro);
+
+                    if (!empty($intersectedOptions)) {
+                        $query->whereIn('Entrega', $intersectedOptions);
+                    }
+                }
+
+                $query->when(in_array('sinMailInfor', $filtro), function ($q) {
+                    $q->where('EMailInformes', 1);
+                });
+
+                $query->when(in_array('sinMailResultados', $filtro), function ($q) {
+                    $q->where('EMailResultados', 1);
+                });
+
+                $query->when(in_array('retiraFisico', $filtro), function ($q) {
+                    $q->where('RF', 1);
+                });
+
+                $query->when(in_array('sinEnvioMail', $filtro), function ($q) {
+                    $q->where('SEmail', 1);
+                });
+
+                $query->when(in_array('factSinPaquetes', $filtro), function ($q) {
+                    $q->where('SinPF', 1);
+                });
+
+                $query->when(in_array('sinEval', $filtro), function ($q) {
+                    $q->where('SinEval', 1);
+                });
+
+            });
+
+            $query->when(!empty($fpago) && $fpago !== 'A', function ($query) use ($fpago) {
+                $query->where('FPago', $fpago);
+            });
+
+            $query->when(!empty($fpago) && $fpago === 'A', function ($query) {
+                $query->whereIn('FPago', [null, '', 'A']);
+            });
+
+            $query->when(!empty($buscar) && strlen($buscar) >= 3, function ($query) use ($buscar) {
+                $formatearIdent = $this->formatearIdentificacion($buscar);
+
+                $query->where(function ($query) use ($buscar, $formatearIdent) {
+                    $query->where('ParaEmpresa', 'LIKE', '%' . $buscar . '%')
+                        ->orWhere('Identificacion', 'LIKE', '%' . $formatearIdent . '%')
+                        ->orWhere('RazonSocial', 'LIKE', '%' . $buscar . '%');
+                });
+            });
+            
+            $result = $query->orderBy('Id', 'DESC');
+
+            return $result;
     }
 }

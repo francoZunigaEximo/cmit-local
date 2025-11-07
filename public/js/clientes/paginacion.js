@@ -30,7 +30,6 @@ $(function(){
                     url: SEARCH,
                     data: function(d){
                         d.tipo = tipoCliente;
-                        //d.filtro = $('#filtro').select2('data').map(option => option.id);
                         d.filtro = filtro;
                         d.formaPago = formaPago;
                         d.buscar = buscar;

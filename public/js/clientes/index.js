@@ -57,22 +57,46 @@ $(function(){
     });
 
 
+
+    $(document).on('click', '#excelTodo', function(e) {
+        e.preventDefault();
+
+        let tipo = $('#tipoCliente').val(),
+            filtro = $('#filtro').val(),
+            formaPago = $('#Fpago').val(),
+            buscar = $('#buscar').val();
+
+        preloader('on')
+        $.get(excelTodo, {tipo: tipo, filtro: filtro, formaPago: formaPago, buscar: buscar, base: 'excelTodo'})
+            .done(function(response) {
+                preloader('off');
+                let tipoToastr = response.estado === 'success' ? 'success' : 'warning';
+                createFile("excel", response.filePath, generarCodigoAleatorio() + '_reporte');
+                toastr[tipoToastr](response.msg);
+                return;
+            })
+            .fail(function(jqXHR){
+                preloader('off');            
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            })
+        
+
+    });
+
     //Exportar Excel a clientes
     $(document).on('click', '#excel', function(e){
         e.preventDefault();
 
-        let ids = [], table = $('#listaClientes').DataTable();
+        let ids = [];
 
-        table.rows().every(function() {
-            let row = this.node(); 
-            let checkbox = $(row).find('input[name="Id"]');
+         $('input[name="Id"]:checked').each(function() {
+               ids.push($(this).val());
+            });
 
-            if (checkbox.is(':checked')) {
-                ids.push(checkbox.val());
-            }
-        });
 
-        if(!ids) {
+        if(ids.length === 0) {
             toastr.warning('Debes seleccionar al menos un cliente para exportar.', '', { timeOut: 1000 });
             return;
         }
@@ -88,7 +112,8 @@ $(function(){
                     url: exportExcelClientes,
                     type: "GET",
                     data: {
-                        Id: ids
+                        Id: id,
+                        base: 'excel'
                     },
                     success: function(response) {
                         preloader('off');
