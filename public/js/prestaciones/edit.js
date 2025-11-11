@@ -467,7 +467,7 @@ $(function() {
             return;
         }
         preloader('on');
-        $.post(savePrivComent, {_token: TOKEN, Comentario: comentario, IdEntidad: ID, obsfasesid: 2})
+        $.post(savePrivComent, {_token: TOKEN, Comentario: comentario, IdEntidad: ID, obsfasesid: 2, Rol: PROFESIONAL || '-'})
             .done(function(){
                 preloader('off');
                 toastr.success('Perfecto', 'Se ha generado la observación correctamente', {timeOut: 1000});

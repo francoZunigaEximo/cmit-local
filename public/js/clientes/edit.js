@@ -16,6 +16,7 @@ $(function() {
     cargarUsuario();
     paisSelect($('#Nacionalidad').val());
     checkProvincia();
+    listadoParametro(ID);
 
     $(document).on('change', '#Nacionalidad', function() {
         paisSelect($(this).val());
@@ -822,6 +823,37 @@ $(function() {
             $('#Nacionalidad').val('Argentina');
         }
 
+    }
+
+    function listadoParametro(id) {
+
+        if(!id) return;
+
+        $.get(listadoParametros, {IdEntidad: id,  modulo: "clientes"})
+            .done(function(response) {
+                preloader('on');
+
+                for(let index = 1; index < response.length; index++) {
+                    let data = responde[index],
+                        contenido = `
+                            <tr>
+                                <td>${data.titulo}</td>
+                                <td>${data.descripcion}</td>
+                                <td>
+                                    <button data-id="${data.id}" title="Editar" type="button" class="btn btn-sm botonGeneral editarParametro small p-1"><i class="ri-edit-line p-1"></i></button>
+                                    <button data-id="${data.id}" title="Eliminar" type="button" class="btn btn-sm botonGeneral bajaParametro small p-1"><i class="ri-delete-bin-2-line p-1"></i></button>
+                            </tr>
+                        `;
+
+                        $('#lstParametros').append(contenido);
+                }
+            })
+            .fail(function(jqXHR) {
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;  
+            });
     }
 
 });

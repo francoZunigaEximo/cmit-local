@@ -29,6 +29,7 @@ use App\Http\Controllers\NotasCreditoController;
 use App\Http\Controllers\PaqueteEstudioController;
 use App\Http\Controllers\PaqueteFacturacionController;
 use App\Http\Controllers\PaquetesController;
+use App\Http\Controllers\ParamDescripcionesController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\UserSessionsController;
 use App\Http\Controllers\UsuariosController;
@@ -556,5 +557,7 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::get("facturaCompra/exportarExcelFactura", [FacturaCompraController::class, 'exportarExcelIndividual'])->name('facturaCompra.exportarExcelIndividual');
 
     Route::resource('facturaCompra', FacturaCompraController::class);
+
+    Route::get('parametros/listado', [ParamDescripcionesController::class, 'listado'])->name('parametros.getListados');
 
 });
