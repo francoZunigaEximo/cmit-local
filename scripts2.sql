@@ -13816,3 +13816,21 @@ ALTER TABLE pacientes ADD COLUMN provincia2 VARCHAR(200) NULL;
 
 ALTER TABLE clientes ADD COLUMN ciudad VARCHAR(200) NULL;
 ALTER TABLE clientes ADD COLUMN provincia2 VARCHAR(200) NULL;
+
+
+CREATE TABLE modulo_parametros(
+	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	nombre VARCHAR(100) NOT NULL
+)ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE descripcion_parametro (
+	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	titulo VARCHAR(100) NOT NULL,
+	descripcion TEXT NOT NULL,
+	modulo_id INT NOT NULL,
+	IdEntidad INT NOT NULL,
+	CONSTRAINT fk_descripcion_categoria FOREIGN KEY(modulo_id) REFERENCES modulo_parametros(id),
+	CONSTRAINT fk_descripcion_cliente FOREIGN KEY(IdEntidad) REFERENCES clientes(Id)
+)ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+INSERT INTO modulo_parametros(nombre) VALUES('clientes'),('pacientes');

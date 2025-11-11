@@ -70,6 +70,13 @@
                 Auditorias
             </a>
         </li>
+
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" data-bs-toggle="tab" href="#parametros" role="tab" title="parametros para reportes" aria-selected="false" tabindex="-1">
+                <i class="ri-list-unordered"></i>
+                Parametros
+            </a>
+        </li>
     </ul>
     <div class="row">
         <div class="col-sm-12 text-end">
@@ -617,6 +624,57 @@
                 </div>
             </div>
         </div>
+
+        <div class="tab-pane" id="parametros" role="tabpanel">
+
+            <div class="row card">
+                <div class="col-12 card-header">
+                    <h5>Parametros</h5>
+
+                    <hr class="hr" />
+                
+                    <div class="mt-4 mb-4">
+                        <div class="row d-flex justify-content-center">
+                            <div class="col-sm-9">
+                                <div class="mb-2">
+                                    <span class="fw-bold">Título</span>
+                                    <input type="text" class="form-control" id="tituloParametro">
+                                </div>
+                                
+                                <div class="mb-2">
+                                    <span class="fw-bold">Descripción</span>
+                                    <textarea class="form-control" name="descripcionParametro" id="descripcionParametro" cols="30" rows="10"></textarea>
+                                </div>
+                                
+                                <button type="button" class="btn botonGeneral registrarParametro m-3"> Guardar</button>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 card-body">
+
+                    <div class="row mx-auto">
+                        <div class="table-responsive table-card mt-3 mb-1 mx-auto col-sm-8">
+                            <table id="lstParametrosCliente" class="display table table-bordered">
+                                <thead class="table-light">
+                                        <tr>
+                                            <th style="widht: 200px">Titulo</th>
+                                            <th>Descripción</th>
+                                            <th style="width: 100px">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                <tbody class="list form-check-all" id="lstParametros">
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
         
     </div>
 </div>
@@ -696,6 +754,7 @@ const checkEstadoTipo = "{{ route('clientes.checkEstado') }}";
 const getListaExCta = "{{ route('examenesCuenta.listado') }}";
 const SEARCHAUDITORIA = "{{ route('clientes.buscarAuditoria') }}";
 const loadUsuarios = "{{ route('usuarios.getListado') }}";
+const listadoParametros = "{{ route('parametros.getListados') }}";
 
 </script>
 
