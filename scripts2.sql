@@ -13830,7 +13830,6 @@ CREATE TABLE descripcion_parametro (
 	modulo_id INT NOT NULL,
 	IdEntidad INT NOT NULL,
 	CONSTRAINT fk_descripcion_categoria FOREIGN KEY(modulo_id) REFERENCES modulo_parametros(id),
-	CONSTRAINT fk_descripcion_cliente FOREIGN KEY(IdEntidad) REFERENCES clientes(Id)
 )ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 INSERT INTO modulo_parametros(nombre) VALUES('clientes'),('pacientes');
