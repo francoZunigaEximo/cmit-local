@@ -722,6 +722,35 @@
     </div>
 </div>
 
+<div id="editParametroModal" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel">Editar Parametro</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>
+            </div>
+            <div class="modal-body text-center p-5">
+            
+                <div class="col-12">
+                    <div>
+                        <span class="fw-bolder">Título</span>
+                        <input class="form-control" id="editTituloParametro" name="editTituloParametro">
+                    </div class="mt-3">
+                        <span class="fw-bolder">Descripción</span>
+                        <textarea class="form-control" id="editDescripcionParametro" name="editDescripcionParametro"></textarea>
+                        <input type="hidden" id="editIdParametro">
+                    <div>
+                </div>
+            
+            </div>
+            <div class="modal-footer mt-2">
+                <button type="button" class="btn botonGeneral" data-bs-dismiss="modal">Cancelar edición</button>
+                <button type="button" class="btn botonGeneral" id="saveParametrosEdit">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Default Modals -->
 
 <script>
@@ -755,6 +784,10 @@ const getListaExCta = "{{ route('examenesCuenta.listado') }}";
 const SEARCHAUDITORIA = "{{ route('clientes.buscarAuditoria') }}";
 const loadUsuarios = "{{ route('usuarios.getListado') }}";
 const listadoParametros = "{{ route('parametros.getListados') }}";
+const guardarParametros = "{{ route('parametros.guardar') }}";
+const eliminarParametros = "{{ route('parametros.eliminar') }}";
+const getParametrosId = "{{ route('parametros.obtenerId') }}";
+const modificarParametros = "{{ route('parametros.modificar') }}";
 
 </script>
 
