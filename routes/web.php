@@ -559,5 +559,9 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::resource('facturaCompra', FacturaCompraController::class);
 
     Route::get('parametros/listado', [ParamDescripcionesController::class, 'listado'])->name('parametros.getListados');
+    Route::post('parametros/eliminar', [ParamDescripcionesController::class, 'eliminar'])->name('parametros.eliminar');
+    Route::post('parametros/modificar', [ParamDescripcionesController::class, 'actualizar'])->name('parametros.modificar');
+    Route::post('parametros/guardar', [ParamDescripcionesController::class, 'guardar'])->name('parametros.guardar');
+    Route::get('parametros/obtener-id', [ParamDescripcionesController::class, 'getParametroId'])->name('parametros.obtenerId');
 
 });

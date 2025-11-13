@@ -497,7 +497,121 @@ $(function() {
         }
     });
 
-    
+    $(document).on('click', '.registrarParametro', function(e) {
+        e.preventDefault();
+
+        let titulo = $('#tituloParametro').val(),
+            descripcion = $('#descripcionParametro').val();
+
+        if(!titulo || !descripcion) {
+            toastr.warning("Debe escribir un titulo y una descripción.", '', {timeOut: 1000});
+            return;
+        }
+
+        $.post(guardarParametros, {_token: TOKEN, titulo: titulo, descripcion: descripcion, modulo: 'clientes', IdEntidad: ID})
+            .done(function(response){
+                toastr.success(response.message, '',{timeOut: 1000});
+                listadoParametro(ID);
+                $('#tituloParametro, #descripcionParametro').val('');
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;  
+            });
+    });
+
+    $(document).on('click', '.bajaParametro', function(e){
+        e.preventDefault();
+
+        let id = $(this).data('id');
+
+        if(!id) {
+            toastr.warning('Ha ocurrido un error. No existe el parametro a eliminar.','',{timeOut: 1000});
+            return;
+        }
+
+        swal({
+            'title': '¿Esta seguro que desea eliminar el parametro?',
+            'icon': 'warning',
+            'buttons': ['Cancelar', 'Aceptar']
+        }).then((confirmar) => {
+
+            if(confirmar){
+                
+                $.post(eliminarParametros, {_token: TOKEN, id: id})
+                    .done(function(response){
+
+                        toastr.success(response.message, '',{timeOut: 1000});
+                        preloader('on');
+                        listadoParametro(ID);
+                        preloader('off');
+                    })
+                    .fail(function(jqXHR){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
+                    });
+            }
+
+        });
+    });
+
+
+    $(document).on('click', '.editarParametro', async function(e){
+        e.preventDefault();
+
+        $('#editTituloParametro, #editDescripcionParametro').val('');
+
+        let id = $(this).data('id');
+
+        $('#editParametroModal').modal('show');
+
+        const response = await $.get(getParametrosId, {id: id});
+
+        if(response) {
+            
+            $('#editTituloParametro').val(response.titulo);
+            $('#editDescripcionParametro').val(response.descripcion);
+            $('#editIdParametro').val(response.id);
+        }
+            
+    });
+
+    $(document).on('click', '#saveParametrosEdit', function(e){
+        e.preventDefault();
+
+        let titulo = $('#editTituloParametro').val(),
+            descripcion = $('#editDescripcionParametro').val(),
+            id = $('#editIdParametro').val();
+
+        if(!titulo || !descripcion) {
+            toastr.warning('La descripción y el título son obligatorios','',{timeOut: 1000});
+            return;
+        }
+
+        if(!id) {
+            toastr.warning('No se ha identificado el parametro. Consulte con el administrador','',{timeOut: 1000});
+            return;
+        }
+        preloader('on');
+        $.post(modificarParametros, {id: id, _token: TOKEN, titulo: titulo, descripcion: descripcion})
+            .done(function(response) {
+                preloader('off');
+                toastr.success(response.message,'',{timeOut: 1000});
+                listadoParametro(ID);
+                $('#editParametroModal').modal('hide');
+            })
+            .fail(function(jqXHR){
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);            
+                checkError(jqXHR.status, errorData.msg);
+                return;
+            });
+
+    });
 
     function actualizarInputHidden() {
         $('#hiddens .telefono-input').each(function(index) {
@@ -828,13 +942,15 @@ $(function() {
     function listadoParametro(id) {
 
         if(!id) return;
-
+        $('#lstParametros').empty();
+        preloader('on');
+        
         $.get(listadoParametros, {IdEntidad: id,  modulo: "clientes"})
             .done(function(response) {
-                preloader('on');
+                preloader('off');
 
-                for(let index = 1; index < response.length; index++) {
-                    let data = responde[index],
+                for(let index = 0; index < response.length; index++) {
+                    let data = response[index],
                         contenido = `
                             <tr>
                                 <td>${data.titulo}</td>
