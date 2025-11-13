@@ -14,8 +14,8 @@ use Illuminate\Support\Facades\DB;
     ]): void
     {
         //titulos columnas
-        $pdf->Cell(31,5,'ESPECIALIDAD',0,0,'L');
-        $pdf->Cell(75,5,'EXAMEN',0,0,'L');
+        $pdf->Cell(41,5,'ESPECIALIDAD EFECTOR',0,0,'L');
+        $pdf->Cell(65,5,'EXAMEN',0,0,'L');
         $pdf->Cell(20,5,'PRESTACION',0,0,'R');
         $pdf->Cell(60,5,'PACIENTE',0,0,'L');
         $pdf->Ln();
@@ -25,8 +25,8 @@ use Illuminate\Support\Facades\DB;
         $examenes = $this->grillaExamenCuenta($datos['id']);
 
         foreach($examenes as $reporte) {
-            $pdf->Cell(31,3,substr($reporte->NombreEstudio,0,10),0,0,'L');
-            $pdf->Cell(75,3,substr($reporte->NombreExamen,0,40),0,0,'L');
+            $pdf->Cell(41,3,substr($reporte->NombreEstudio,0,10),0,0,'L');
+            $pdf->Cell(65,3,substr($reporte->NombreExamen,0,40),0,0,'L');
             $pdf->Cell(20,3,$reporte->IdPrestacion === 0 ? '-' : $reporte->IdPrestacion,0,0,'R');
             $pdf->Cell(60,3,substr($reporte->Apellido . " " . $reporte->Nombre,0,30),0,0,'L');$pdf->Ln();
         }

@@ -276,7 +276,7 @@ class PacientesController extends Controller
     {
         try{
             $ids = (array) $request->Id;
-            $pacientes = Paciente::join('telefonos', 'pacientes.Id', '=', 'telefonos.IdEntidad')->where('pacientes.Estado', 1)->whereIn('pacientes.Id', $ids)->get();
+            $pacientes = Paciente::join('telefonos', 'pacientes.Id', '=', 'telefonos.IdEntidad')->where('pacientes.Estado', 1)->whereIn('pacientes.Id', $ids);
 
             if(empty($pacientes)) {
                 return response()->json(['msg' => 'No se ha podido generar el archivo'], 409);
@@ -293,7 +293,7 @@ class PacientesController extends Controller
 
     public function exportExcelAll(){
         try{
-            $pacientes = Paciente::join('telefonos', 'pacientes.Id', '=', 'telefonos.IdEntidad')->where('pacientes.Estado', 1)->get();
+            $pacientes = Paciente::join('telefonos', 'pacientes.Id', '=', 'telefonos.IdEntidad')->where('pacientes.Estado', 1);
 
             if(empty($pacientes)) {
                 return response()->json(['msg' => 'No se ha podido generar el archivo'], 409);

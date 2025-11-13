@@ -20,6 +20,9 @@
         <button type="button" class="btn botonGeneral" data-bs-toggle="modal" data-bs-target="#resultadosPaciente">
             <i class="ri-add-line align-bottom me-1"></i> Resultados
         </button>
+        <button type="button" class="btn botonGeneral" data-bs-toggle="modal" data-bs-target="#parametrosPaciente">
+            <i class="ri-add-line align-bottom me-1"></i> Parametros Reportes
+        </button>
     </div>
 </div>
 
@@ -1280,6 +1283,91 @@
     </div>
 </div>
 
+<div id="parametrosPaciente" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidde="true" style="display: none">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel"> Parametros Reportes</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>
+            </div>
+            <div class="modal-body" class="text-center p-3">
+
+                <div class="mt-4 mb-4">
+                    <div class="row d-flex justify-content-center">
+                        <div class="col-sm-9">
+                            <div class="mb-2">
+                                <span class="fw-bold">Título</span>
+                                <input type="text" class="form-control" id="tituloParametro">
+                            </div>
+                            
+                            <div class="mb-2">
+                                <span class="fw-bold">Descripción</span>
+                                <textarea class="form-control" name="descripcionParametro" id="descripcionParametro" cols="30" rows="10"></textarea>
+                            </div>
+                            
+                            <button type="button" class="btn botonGeneral registrarParametro m-3"> Guardar</button>
+                        </div>
+                        
+                    </div>
+                </div>
+
+                <div class="col-12 card-body">
+
+                    <div class="row mx-auto">
+                        <div class="table-responsive table-card mt-3 mb-1 mx-auto col-sm-8">
+                            <table id="lstParametrosCliente" class="display table table-bordered">
+                                <thead class="table-light">
+                                        <tr>
+                                            <th style="widht: 200px">Titulo</th>
+                                            <th>Descripción</th>
+                                            <th style="width: 100px">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                <tbody class="list form-check-all" id="lstParametros">
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+
+
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<div id="editParametroModal" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel">Editar Parametro</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>
+            </div>
+            <div class="modal-body text-center p-5">
+            
+                <div class="col-12">
+                    <div>
+                        <span class="fw-bolder">Título</span>
+                        <input class="form-control" id="editTituloParametro" name="editTituloParametro">
+                    </div class="mt-3">
+                        <span class="fw-bolder">Descripción</span>
+                        <textarea class="form-control" id="editDescripcionParametro" name="editDescripcionParametro"></textarea>
+                        <input type="hidden" id="editIdParametro">
+                    <div>
+                </div>
+            
+            </div>
+            <div class="modal-footer mt-2">
+                <button type="button" class="btn botonGeneral" data-bs-dismiss="modal">Cancelar edición</button>
+                <button type="button" class="btn botonGeneral" id="saveParametrosEdit">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 //Rutas
 const checkP = "{{ route('checkProvincia') }}";
@@ -1353,6 +1441,12 @@ const cargarExCta = "{{ route('examenesCuenta.cargar') }}";
 const nroPrestacion = "{{ $nroPrestacion ?? '' }}";
 const enviarReporte = "{{ route('prestaciones.enviar') }}";
 const itemExamen = "{{ route('itemExamen') }}";
+
+const listadoParametros = "{{ route('parametros.getListados') }}";
+const guardarParametros = "{{ route('parametros.guardar') }}";
+const eliminarParametros = "{{ route('parametros.eliminar') }}";
+const getParametrosId = "{{ route('parametros.obtenerId') }}";
+const modificarParametros = "{{ route('parametros.modificar') }}";
 </script>
 
 @push('styles')

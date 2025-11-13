@@ -206,7 +206,190 @@ $(function(){
         
     });
 
-    function listado() {
+    $(document).on('click', '.editarDNI, .editarMasivo', function(e){
+        e.preventDefault();
+
+        let id, ids = [];
+        $(".saveCambiosEdit").show();
+        $("#dniNuevo").attr("disabled", false);
+
+        if($(this).hasClass('editarDNI') === true) {
+
+            id = $(this).data('id');
+            $('#cargarId').val(id);
+        
+        }else if($(this).hasClass('editarMasivo') === true) {
+
+            $('input[name="Id"]:checked').each(function() {
+                ids.push($(this).val());
+            });
+    
+            let checkAll =$('#checkAll').prop('checked');
+    
+            if(ids.length === 0 && checkAll === false){
+                $(".saveCambiosEdit").hide();
+                $("#dniNuevo").attr("disabled", true);
+                toastr.warning('No hay items seleccionados','', {timeOut: 1000});
+                return;
+            }
+
+            var carga = ids.join(',');
+            $('#cargarId').val(carga);
+        }
+    });
+
+    $(document).on('click', '.saveCambiosEdit', function(e){
+        e.preventDefault();
+        let id = $('#cargarId').val(), dniNuevo = $('#dniNuevo').val();
+        
+        if(dniNuevo.length > 8 || dniNuevo.length === 0) {
+            toastr.warning("El dni debe llevar un máximo de 8 digitos",'',{timeOut: 1000});
+            return;
+        }
+
+        preloader('on');
+        $.post(savePrecarga, {_token: TOKEN, Id: id.includes(',') ? id = id.split(",") : id, Precarga: dniNuevo})
+            .done(function(){
+                preloader('off');
+                toastr.success('Se ha cambiado el dni de la precarga','', {timeOut: 1000});
+                setTimeout(()=>{
+                    $('#editarDNI').modal('hide');
+                    listado();
+                    $('#dniNuevo').val("");
+                },2000);
+            })
+    });
+
+    $(document).on('click', '.liberarItemMasivo', function(e){
+        e.preventDefault();
+
+        let id = [], checkAll = $('#checkAll').prop('checked');
+
+        $('input[name="Id"]:checked').each(function() {
+            id.push($(this).val());
+        });
+
+        if(id.length === 0 && checkAll === false){
+            toastr.warning('No hay items seleccionados', 'Atención', {timeOut: 1000});
+            return;
+        }
+
+        swal({
+            title: "¿Esta seguro que desea liberar esos items del examen a cuenta?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar) {
+
+                preloader('on');
+                $.get(liberarItemExCta, {Id: id})
+                    .done(function(){
+                        preloader('off');
+                        toastr.success("Se ha realizado la liberación de los items correctamente",'',{timeOut: 1000});
+                        setTimeout(()=>{
+                            listado()
+                        },2000);
+                    });
+            }
+        });
+    });
+
+    $(document).on('click', '.deleteItem, .deleteItemMasivo', function(e){
+        e.preventDefault();
+         
+        let id;
+
+        if ($(this).hasClass('deleteItem')){
+
+            id = $(this).data('id');
+            if(!id) return;
+        
+        } else {
+
+            id = [];
+
+            $('input[name="Id"]:checked').each(function() {
+                id.push($(this).val());
+            });
+
+            let checkAll =$('#checkAll').prop('checked');
+
+            if(id.length === 0 && !checkAll){
+                toastr.warning('No hay items seleccionados', 'Atención','', {timeOut: 1000});
+                return;
+            }
+        }
+
+        swal({
+            title: "¿Esta seguro que desea eliminar el item del exámen?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar)=>{
+            if(confirmar){
+                preloader('on');
+                $.get(deleteItemExCta, {Id: id})
+                    .done(function(){
+                        preloader('off');
+                        toastr.success("Se ha realizado la eliminación",'',{timeOut: 1000});
+                        setTimeout(()=>{
+                            listado()
+                        },2000);
+                    });
+            }
+        });
+    });
+
+    //Exportar Excel a clientes
+    $(document).on('click', '.exportar, .imprimir', function(e) {
+        e.preventDefault();
+
+        let id = $(this).data('id'), tipo = $(this).hasClass('exportar') ? 'excel' : 'pdf';
+
+        let extencion = tipo === 'excel' ? 'xlsx' : 'pdf';
+        if(!id) {
+            toastr.warning('No hay datos para exportar','', {timeOut: 1000});
+            return;
+        }
+
+        swal({
+            title: "¿Estás seguro de que deseas generar el reporte de " + tipo.charAt(0).toUpperCase() + tipo.slice(1) + "?",
+            icon: "warning",
+            buttons: ['Cancelar', 'Aceptar'],
+        }).then((confirmar)=>{
+            if(confirmar){
+                preloader('on')
+                $.ajax({
+                    url: tipo === 'excel' ? exportExcel : exportPDF,
+                    type: "GET",
+                    data: {
+                        Id: id
+                    },
+                    success: function(response) {
+                        preloader('off');
+
+                        if(tipo == 'excel') {
+                            createFile(tipo, response.filePath, generarCodigoAleatorio() + "_examen_cta");
+                        }else{
+                            createFile(tipo, response, generarCodigoAleatorio() + "_examen_cta");
+                        }
+                    },
+                    error: function(jqXHR) {
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return;  
+                    }
+                });
+    
+            }
+        });
+            
+    });
+
+
+});
+
+function listado() {
     
         $('#listadoSaldos').DataTable().clear().destroy();
 
@@ -398,187 +581,3 @@ $(function(){
                 });
             })*/
     }
-    
-
-    $(document).on('click', '.editarDNI, .editarMasivo', function(e){
-        e.preventDefault();
-
-        let id, ids = [];
-        $(".saveCambiosEdit").show();
-        $("#dniNuevo").attr("disabled", false);
-
-        if($(this).hasClass('editarDNI') === true) {
-
-            id = $(this).data('id');
-            $('#cargarId').val(id);
-        
-        }else if($(this).hasClass('editarMasivo') === true) {
-
-            $('input[name="Id"]:checked').each(function() {
-                ids.push($(this).val());
-            });
-    
-            let checkAll =$('#checkAll').prop('checked');
-    
-            if(ids.length === 0 && checkAll === false){
-                $(".saveCambiosEdit").hide();
-                $("#dniNuevo").attr("disabled", true);
-                toastr.warning('No hay items seleccionados','', {timeOut: 1000});
-                return;
-            }
-
-            var carga = ids.join(',');
-            $('#cargarId').val(carga);
-        }
-    });
-
-    $(document).on('click', '.saveCambiosEdit', function(e){
-        e.preventDefault();
-        let id = $('#cargarId').val(), dniNuevo = $('#dniNuevo').val();
-        
-        if(dniNuevo.length > 8 || dniNuevo.length === 0) {
-            toastr.warning("El dni debe llevar un máximo de 8 digitos",'',{timeOut: 1000});
-            return;
-        }
-
-        preloader('on');
-        $.post(savePrecarga, {_token: TOKEN, Id: id.includes(',') ? id = id.split(",") : id, Precarga: dniNuevo})
-            .done(function(){
-                preloader('off');
-                toastr.success('Se ha cambiado el dni de la precarga','', {timeOut: 1000});
-                setTimeout(()=>{
-                    $('#editarDNI').modal('hide');
-                    listado();
-                    $('#dniNuevo').val("");
-                },2000);
-            })
-    });
-
-    $(document).on('click', '.liberarItemMasivo', function(e){
-        e.preventDefault();
-
-        let id = [], checkAll = $('#checkAll').prop('checked');
-
-        $('input[name="Id"]:checked').each(function() {
-            id.push($(this).val());
-        });
-
-        if(id.length === 0 && checkAll === false){
-            toastr.warning('No hay items seleccionados', 'Atención', {timeOut: 1000});
-            return;
-        }
-
-        swal({
-            title: "¿Esta seguro que desea liberar esos items del examen a cuenta?",
-            icon: "warning",
-            buttons: ["Cancelar", "Aceptar"]
-        }).then((confirmar) => {
-            if(confirmar) {
-
-                preloader('on');
-                $.get(liberarItemExCta, {Id: id})
-                    .done(function(){
-                        preloader('off');
-                        toastr.success("Se ha realizado la liberación de los items correctamente",'',{timeOut: 1000});
-                        setTimeout(()=>{
-                            listado()
-                        },2000);
-                    });
-            }
-        });
-    });
-
-    $(document).on('click', '.deleteItem, .deleteItemMasivo', function(e){
-        e.preventDefault();
-         
-        let id;
-
-        if ($(this).hasClass('deleteItem')){
-
-            id = $(this).data('id');
-            if(!id) return;
-        
-        } else {
-
-            id = [];
-
-            $('input[name="Id"]:checked').each(function() {
-                id.push($(this).val());
-            });
-
-            let checkAll =$('#checkAll').prop('checked');
-
-            if(id.length === 0 && !checkAll){
-                toastr.warning('No hay items seleccionados', 'Atención','', {timeOut: 1000});
-                return;
-            }
-        }
-
-        swal({
-            title: "¿Esta seguro que desea eliminar el item del exámen?",
-            icon: "warning",
-            buttons: ["Cancelar", "Aceptar"]
-        }).then((confirmar)=>{
-            if(confirmar){
-                preloader('on');
-                $.get(deleteItemExCta, {Id: id})
-                    .done(function(){
-                        preloader('off');
-                        toastr.success("Se ha realizado la eliminación",'',{timeOut: 1000});
-                        setTimeout(()=>{
-                            listado()
-                        },2000);
-                    });
-            }
-        });
-    });
-
-    //Exportar Excel a clientes
-    $(document).on('click', '.exportar, .imprimir', function(e) {
-        e.preventDefault();
-
-        let id = $(this).data('id'), tipo = $(this).hasClass('exportar') ? 'excel' : 'pdf';
-
-        let extencion = tipo === 'excel' ? 'xlsx' : 'pdf';
-        if(!id) {
-            toastr.warning('No hay datos para exportar','', {timeOut: 1000});
-            return;
-        }
-
-        swal({
-            title: "¿Estás seguro de que deseas generar el reporte de " + tipo.charAt(0).toUpperCase() + tipo.slice(1) + "?",
-            icon: "warning",
-            buttons: ['Cancelar', 'Aceptar'],
-        }).then((confirmar)=>{
-            if(confirmar){
-                preloader('on')
-                $.ajax({
-                    url: tipo === 'excel' ? exportExcel : exportPDF,
-                    type: "GET",
-                    data: {
-                        Id: id
-                    },
-                    success: function(response) {
-                        preloader('off');
-
-                        if(tipo == 'excel') {
-                            createFile(tipo, response.filePath, generarCodigoAleatorio() + "_examen_cta");
-                        }else{
-                            createFile(tipo, response, generarCodigoAleatorio() + "_examen_cta");
-                        }
-                    },
-                    error: function(jqXHR) {
-                        preloader('off');
-                        let errorData = JSON.parse(jqXHR.responseText);            
-                        checkError(jqXHR.status, errorData.msg);
-                        return;  
-                    }
-                });
-    
-            }
-        });
-            
-    });
-
-
-});

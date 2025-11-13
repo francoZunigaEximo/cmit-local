@@ -118,7 +118,7 @@
                 <tr>
                     <th class="text-center"><input type="checkbox" id="checkAll" name="Id"></th>
                     <th class="sort">Precarga</th>
-                    <th class="sort">Especialidad</th>
+                    <th class="sort">Especialidad Efector</th>
                     <th class="sort">Examen</th>
                     <th class="sort">Prestación</th>
                     <th class="sort">Paciente</th>
@@ -161,7 +161,7 @@
     const getPaquetes = "{{ route('getPaquetes') }}";
     const getPaqueteFact = "{{ route('getPaqueteFact') }}";
     const ID = "{{ $examenesCuentum->Id }}";
-    const listadoExCta = "{{ route('listadoExCta') }}";
+    const listadoExCta = "{{ route('examenesCuenta.listadoExamenes') }}";
     const updateExamenCuenta = "{{ route('updateExamenCuenta') }}";
     const deleteItemExCta = "{{ route('deleteItemExCta') }}";
     const liberarItemExCta = "{{ route('liberarItemExCta') }}";

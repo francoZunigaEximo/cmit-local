@@ -1,0 +1,137 @@
+<?php
+
+namespace App\Services\Reportes\Cuerpos;
+
+use App\Services\Reportes\Reporte;
+use App\Models\ExamenCuentaIt;
+use App\Models\Profesional;
+use FPDF;
+use Illuminate\Support\Facades\DB;
+
+class FacturaCompraCuerpo extends Reporte
+{
+    public function render(FPDF $pdf, $datos = [
+        'id'
+    ]): void
+    {
+        $profesional = $this->getProfesional($datos['id']);
+
+        // Renderizar la factura de compra utilizando los datos y el profesional
+        $nombre = $profesional->Nombre . ' ' . $profesional->Apellido;
+        $localidad = $profesional->Localidad;
+        $direccion = $profesional->Direccion;
+        $cuit = $profesional->Identificacion;
+        $localidadString = $profesional->Localidad ? $profesional->Localidad : '';
+        $localidadString .= $profesional->Provincia ? ' - ' . $profesional->Provincia : '';
+        $CP = $profesional->CP;
+
+        //encabezado
+       // Coordenadas y tamaño del recuadro
+        $x = 10;
+        $y = 10;
+        $w = 190;
+        $h = 30;
+
+        // Dibuja el recuadro
+        $pdf->Rect($x, $y, $w, $h);
+
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->SetXY(10, 10);
+        $pdf->Cell(100, 4, "Profesional:", 0, 0, 'L');
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->SetXY(50, 10);
+        $pdf->Cell(100, 4, $nombre, 0, 0, 'L');
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->SetXY(10, 20);
+        $pdf->Cell(100, 4, "Datos:", 0, 0, 'L');
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->SetXY(50, 20);
+        $pdf->Cell(200, 4, "DOMICILIO: " . $direccion, 0, 0, 'L');
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->SetXY(50, 25);
+        $pdf->Cell(200, 4, "LOCALIDAD: " . $localidadString, 0, 0, 'L');
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->SetXY(150, 20);
+        $pdf->Cell(200, 4, "CUIT: " . $cuit, 0, 0, 'L');
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->SetXY(150, 25);
+        $pdf->Cell(200, 4, "CP: " . $CP, 0, 0, 'L');
+
+        //
+        $x = 10;
+        $y = 40;
+        $w = 40;
+
+        //colocamos el encabezado de la tabla
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->SetXY($x, $y);
+        $pdf->Cell($w, 4, "PRESTACION", 0, 0, 'L');
+
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->SetXY($x+($w*1), $y);
+        $pdf->Cell($w, 4, "EXAMEN", 0, 0, 'L');
+
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->SetXY($x+($w*2), $y);
+        $pdf->Cell($w, 4, "EMPRESA", 0, 0, 'L');
+
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->SetXY($x+($w*3), $y);
+        $pdf->Cell($w, 4, "PACIENTE", 0, 0, 'L');
+
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->SetXY($x+($w*4), $y);
+        $pdf->Cell($w, 4, "TIPO", 0, 0, 'L');
+        
+        $pdf->Ln(5);	
+        
+        $examenesEfector = $this->getExamenesEfector($datos["id"]);
+        $w = 35;
+        foreach ($examenesEfector as $examen) {
+            
+            $pdf->SetFont('Arial', '', 8);
+            $pdf->SetX($x);
+            $pdf->Cell($w, 3, $examen->idPrestacion, 0, 0, 'L');
+            
+            $pdf->SetFont('Arial', '', 7);
+            $pdf->SetX($x+($w*1));
+            $pdf->MultiCell($w, 3, $examen->Examen, 0, 'L', 0, 3);
+
+            $pdf->SetFont('Arial', '', 7);
+            $pdf->SetX($x+($w*2));
+            $pdf->MultiCell($w, 3, $examen->Empresa, 0, 'L', 0, 3);
+
+            $pdf->SetFont('Arial', '', 7);
+            $pdf->SetX($x+($w*3));
+            $pdf->MultiCell($w, 3, $examen->Paciente, 0, 'L', 0, 3);
+
+            $pdf->SetFont('Arial', '', 7);
+            $pdf->SetX($x+($w*4));
+            $pdf->MultiCell($w, 3, "Efector", 0, 'L', 0, 3);
+
+            $pdf->Ln(1);
+            //$pdf->SetFont('Arial','',7);$pdf->SetX(93);$pdf->Cell(0,3,substr($row1['ObsExamen'],0,80),0,0,'L');$pdf->Ln(4);
+        }
+        $pdf->Ln(4);
+    }
+
+    private function getProfesional($idFactura): mixed
+    {
+        return DB::table('profesionales')
+            ->select('profesionales.*', 'localidades.Nombre as Localidad')
+            ->join('facturascompra', 'facturascompra.IdProfesional', '=', 'profesionales.Id')
+            ->join('localidades', 'profesionales.IdLocalidad', '=', 'localidades.Id')
+            ->where('facturascompra.Id', $idFactura)
+            ->first();
+    }
+
+    public function getExamenesEfector($idFactura)
+    {
+        return DB::Select("CALL getExamenesFacturaCompraEfector(?)", [$idFactura]);
+    }
+
+    public function getExamenesInformador($idFactura)
+    {
+        return DB::Select("CALL getExamenesFacturaCompraInformador(?)", [$idFactura]);
+    }
+}

@@ -56,25 +56,27 @@ class Paciente implements ReporteInterface
     public function datos($sheet, $pacientes)
     {
         $fila = 2;
-        foreach ($pacientes as $paciente) {
-            $nroTelefono = ( $paciente->CodigoArea != "" ? "(".$paciente->CodigoArea.") " : "" ). $paciente->NumeroTelefono;
-            
-            $sheet->setCellValue('A' . $fila, $paciente->Id);
-            $sheet->setCellValue('B' . $fila, $paciente->Apellido);
-            $sheet->setCellValue('C' . $fila, $paciente->Nombre);
-            $sheet->setCellValue('D' . $fila, $paciente->Identificacion);
-            $sheet->setCellValue('E' . $fila, $paciente->Documento);
-            $sheet->setCellValue('F' . $fila, $paciente->Nacionalidad);
-            $sheet->setCellValue('G' . $fila, $paciente->FechaNacimiento);
-            $sheet->setCellValue('H' . $fila, $paciente->Direccion);
-            $sheet->setCellValue('I' . $fila, $paciente->localidad->Nombre);
-            $sheet->setCellValue('J' . $fila, $paciente->Provincia);
-            $sheet->setCellValue('K' . $fila, $paciente->EMail);
-            $sheet->setCellValue('L' . $fila, $nroTelefono);   
-            $sheet->setCellValue('M' . $fila, $paciente->Antecedentes);
-            $sheet->setCellValue('N' . $fila, $paciente->Observaciones);
-            $fila++;
-        }
+        $pacientes->chunk(1000, function($pacientes) use ($sheet, &$fila) {
+            foreach ($pacientes as $paciente) {
+                $nroTelefono = ( $paciente->CodigoArea != "" ? "(".$paciente->CodigoArea.") " : "" ). $paciente->NumeroTelefono;
+                
+                $sheet->setCellValue('A' . $fila, $paciente->Id);
+                $sheet->setCellValue('B' . $fila, $paciente->Apellido);
+                $sheet->setCellValue('C' . $fila, $paciente->Nombre);
+                $sheet->setCellValue('D' . $fila, $paciente->Identificacion);
+                $sheet->setCellValue('E' . $fila, $paciente->Documento);
+                $sheet->setCellValue('F' . $fila, $paciente->Nacionalidad);
+                $sheet->setCellValue('G' . $fila, $paciente->FechaNacimiento);
+                $sheet->setCellValue('H' . $fila, $paciente->Direccion);
+                $sheet->setCellValue('I' . $fila, $paciente->localidad->Nombre);
+                $sheet->setCellValue('J' . $fila, $paciente->Provincia);
+                $sheet->setCellValue('K' . $fila, $paciente->EMail);
+                $sheet->setCellValue('L' . $fila, $nroTelefono);   
+                $sheet->setCellValue('M' . $fila, $paciente->Antecedentes);
+                $sheet->setCellValue('N' . $fila, $paciente->Observaciones);
+                $fila++;
+            }
+        });
     }
 
     public function generar($pacientes)

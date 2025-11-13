@@ -533,7 +533,7 @@ class PrestacionesController extends Controller
         $listado = [];
 
         $prestacion = Prestacion::with(['empresa', 'paciente'])->find($request->Id);
-
+        $paciente = $prestacion->paciente;
         $verificar = ItemPrestacion::where('IdPrestacion', $request->Id)->count();
 
         if($verificar === 0) {
@@ -601,13 +601,17 @@ class PrestacionesController extends Controller
                 array_push($listado, $estudio);
             }
         }
-
+        
         $this->reporteService->fusionarPDFs($listado, $this->outputPath);
 
+        $nombreArchivoEEstudio = $paciente->Apellido.'_'.$paciente->Documento.'_eEstudio_'.$prestacion->Id.'.pdf';
+        $nombreAnexo = $paciente->Apellido.'_'.$paciente->Documento.'_'.$prestacion->Id.'.pdf';
+        $nombreAdjunto = $paciente->Apellido.'_'.$paciente->Documento.'_adjPrestacion_'.$prestacion->Id.'.pdf';
+
         $name = ($request->buttonEE == 'true' 
-            ? 'eEstudio'.$prestacion->Id.'.pdf' && File::copy($this->adjDigitalFisico($request->Id, 3), FileHelper::getFileUrl('escritura').'/EnviarOpciones/eEstudio'.$prestacion->Id)
+            ? $nombreArchivoEEstudio && File::copy($this->adjDigitalFisico($request->Id, 3), FileHelper::getFileUrl('escritura').'/EnviarOpciones/eEstudio'.$prestacion->Id)
             : ($request->buttonEA == 'true' 
-                ? 'eAdjuntos_'.$prestacion->paciente->Apellido.'_'.$prestacion->paciente->Nombre.'_'.$prestacion->paciente->Documento.'_'.Carbon::parse($prestacion->Fecha)->format('d-m-Y').'.pdf'
+                ? $nombreAdjunto
                 : $this->fileNameExport.'.pdf'));
 
         if(!empty($listado)) {
@@ -1150,38 +1154,45 @@ class PrestacionesController extends Controller
 
     private function adjGenerales(int $idPrestacion): mixed
     {
+        $prestacion = Prestacion::find($idPrestacion);
+        $paciente = $prestacion->paciente;
+        $nombreArchivo = $paciente->Apellido.'_'.$paciente->Documento.'_adjPresta_'.$idPrestacion.'.pdf';
+
         return $this->reporteService->generarReporte(
             AdjuntosGenerales::class,
             null,
             null,
             null,
             'guardar',
-            null,
+            storage_path($nombreArchivo),
             null,
             ['id' => $idPrestacion],
             [],
             [],
             [],
-            storage_path('app/public/temp/merge_adjGenerales_'.$idPrestacion.'.pdf')
+            storage_path('app/public/temp/'.$nombreArchivo)
         );
 
     }
 
     private function adjAnexos(int $idPrestacion): mixed
     {
+        $prestacion = Prestacion::find($idPrestacion);
+        $paciente = $prestacion->paciente;
+        $nombreArchivo = $paciente->Apellido.'_'.$paciente->Documento.'_adjAnexos_'.$idPrestacion.'.pdf';
         return $this->reporteService->generarReporte(
             AdjuntosAnexos::class,
             null,
             null,
             null,
             'guardar',
-            null,
+            storage_path($nombreArchivo),
             null,
             ['id' => $idPrestacion],
             [],
             [],
             [],
-            storage_path('app/public/temp/merge_adjAnexos_'.$idPrestacion.'.pdf')
+            storage_path('app/public/temp/'.$nombreArchivo)
         );
     }
 
@@ -1311,15 +1322,19 @@ class PrestacionesController extends Controller
         );
     }
 
-    private function eEstudio(int $idPrestacion, string $opciones): mixed // No - Lleva resumen aptitud
+    private function eEstudio(int $idPrestacion, string $opciones = 'si'): mixed // No - Lleva resumen aptitud
     {
+        $prestacion = Prestacion::find($idPrestacion);
+        $paciente = $prestacion->paciente;
+        $nombreArchivo = $paciente->Apellido.'_'.$paciente->Documento.'_eEstudio_'.$idPrestacion.'.pdf';
+        
         return $this->reporteService->generarReporte(
             EEstudio::class,
             EvaluacionResumen::class,
             null,
             null,
             'guardar',
-            storage_path($this->tempFile.Tools::randomCode(15).'-'.Auth::user()->name.'.pdf'),
+            storage_path($nombreArchivo),
             null,
             ['id' => $idPrestacion],
             ['id' => $idPrestacion, 'firmaeval' => 0, 'opciones' => $opciones, 'eEstudio' => 'si'],

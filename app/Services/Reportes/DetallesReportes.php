@@ -68,6 +68,7 @@ trait DetallesReportes
 
     public function firmasPdf($ruta, $xf, $yf, $pdf)
     {
+        try{
         //chmod($ruta, 666);
         $imagensize = getimagesize($ruta);
         $ancho = $imagensize[0];
@@ -77,6 +78,11 @@ trait DetallesReportes
 
 		$x = $xf+(24-$proporcion);
 		return $pdf->Image($ruta,$x,$yf-33,0,28);//ancho sin especificar, alto 20
+        } catch (\Exception $e) {
+            dd($e->getMessage());
+            die();
+            return null;
+        }
     }
 
     public function getFirmas(int $id): mixed

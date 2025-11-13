@@ -57,33 +57,32 @@ class ProfesionalesController extends Controller
             "pago1" => ["Pago", 1],
             "inactivo0" => ["Inactivo", 0],
             "inactivo1" => ["Inactivo", 1],
-            "inactivo2" => ["Inactivo", 2]     
+            "inactivo2" => ["Inactivo", 2]
         ];
-        
-        if($request->ajax())
-        {
+
+        if ($request->ajax()) {
 
             $query = Profesional::join('proveedores', 'profesionales.IdProveedor', '=', 'proveedores.Id')
-            ->join('users', 'profesionales.Id', '=' , 'users.profesional_id')
-            ->join('datos', 'users.datos_id', '=', 'datos.Id')
-            ->select(
-                'profesionales.Id as IdProfesional',
-                'profesionales.Apellido as Apellido',
-                'profesionales.Nombre as Nombre',
-                'profesionales.Documento as Documento',
-                DB::raw('(SELECT Nombre FROM proveedores WHERE Id = profesionales.IdProveedor) AS Proveedor'),
-                'profesionales.TMP as TMP',
-                'profesionales.T1 as Efector',
-                'profesionales.T2 as Informador',
-                'profesionales.T3 as Evaluador',
-                'profesionales.T4 as Combinado',
-                'profesionales.T5 as Evaluador ART',
-                'profesionales.TLP as Login',
-                'profesionales.Pago as Pago',
-                'profesionales.Inactivo as Estado',
-                'users.name as NombreUsuario',
-                'profesionales.RegHis as RegHis',
-            );
+                ->join('users', 'profesionales.Id', '=', 'users.profesional_id')
+                ->join('datos', 'users.datos_id', '=', 'datos.Id')
+                ->select(
+                    'profesionales.Id as IdProfesional',
+                    'profesionales.Apellido as Apellido',
+                    'profesionales.Nombre as Nombre',
+                    'profesionales.Documento as Documento',
+                    DB::raw('(SELECT Nombre FROM proveedores WHERE Id = profesionales.IdProveedor) AS Proveedor'),
+                    'profesionales.TMP as TMP',
+                    'profesionales.T1 as Efector',
+                    'profesionales.T2 as Informador',
+                    'profesionales.T3 as Evaluador',
+                    'profesionales.T4 as Combinado',
+                    'profesionales.T5 as Evaluador ART',
+                    'profesionales.TLP as Login',
+                    'profesionales.Pago as Pago',
+                    'profesionales.Inactivo as Estado',
+                    'users.name as NombreUsuario',
+                    'profesionales.RegHis as RegHis',
+                );
 
             $query->when(is_array($tipo), function ($query) use ($tipo) {
                 foreach ($tipo as $valor) {
@@ -98,13 +97,13 @@ class ProfesionalesController extends Controller
             $query->when($buscar, function ($query) use ($buscar) {
                 $query->where('profesionales.Id', '<>', 0)
                     ->where('profesionales.Inactivo', 0);
-                    $query->where('profesionales.Apellido', 'LIKE', '%'.$buscar.'%')
-                        ->orWhere('profesionales.Nombre', 'LIKE', '%'.$buscar.'%')
-                        ->orWhereRaw("CONCAT(profesionales.Apellido, ' ', profesionales.Nombre) LIKE ?", ['%'.$buscar.'%'])
-                        ->orWhere(function ($query) use ($buscar) {
-                            $query->where('profesionales.Documento', '=', $buscar)
-                                ->orWhere('profesionales.Documento', 'LIKE', '%'.$buscar.'%');
-                        });
+                $query->where('profesionales.Apellido', 'LIKE', '%' . $buscar . '%')
+                    ->orWhere('profesionales.Nombre', 'LIKE', '%' . $buscar . '%')
+                    ->orWhereRaw("CONCAT(profesionales.Apellido, ' ', profesionales.Nombre) LIKE ?", ['%' . $buscar . '%'])
+                    ->orWhere(function ($query) use ($buscar) {
+                        $query->where('profesionales.Documento', '=', $buscar)
+                            ->orWhere('profesionales.Documento', 'LIKE', '%' . $buscar . '%');
+                    });
             });
 
             $query->when($especialidad, function ($query) use ($especialidad) {
@@ -112,19 +111,16 @@ class ProfesionalesController extends Controller
                     ->where('profesionales.Inactivo', 0);
             });
 
-            $query->when(is_array($opciones), function ($query) use ($opciones, $arrOpciones) { 
-                foreach ($opciones as $valor){
+            $query->when(is_array($opciones), function ($query) use ($opciones, $arrOpciones) {
+                foreach ($opciones as $valor) {
                     $data = $arrOpciones[$valor];
                     if ($arrOpciones[$valor] !== 'inactivo1' && $arrOpciones[$valor] !== 'inactivo2') {
 
-                        $query->where('profesionales.'.$data[0], $data[1]);
-                    
-                    }elseif($arrOpciones[$valor] === 'inactivo1'){
+                        $query->where('profesionales.' . $data[0], $data[1]);
+                    } elseif ($arrOpciones[$valor] === 'inactivo1') {
                         $query->where('profesionales.Inactivo', 1);
-                    
-                    }elseif($arrOpciones[$valor] === 'inactivo2'){
+                    } elseif ($arrOpciones[$valor] === 'inactivo2') {
                         $query->where('profesionales.Inactivo', 2);
-                    
                     }
                 }
             });
@@ -135,6 +131,26 @@ class ProfesionalesController extends Controller
             return Datatables::of($result)->make(true);
         }
         return view('layouts.profesionales.index');
+    }
+
+    public function searchComun(Request $request): mixed
+    {
+        $buscar = $request->buscar;
+
+        $profesionales = Profesional::where('Nombre', 'LIKE', '%' . $buscar . '%')
+            ->orWhere('Apellido', 'LIKE', '%' . $buscar . '%')
+            ->get();
+
+        $resultados = [];
+
+        foreach ($profesionales as $profesional) {
+            $resultados[] = [
+                'id' => $profesional->Id,
+                'text' => $profesional->Nombre . ', ' . $profesional->Apellido,
+            ];
+        }
+
+        return response()->json(['profesionales' => $resultados]);
     }
 
     public function create()
@@ -150,11 +166,11 @@ class ProfesionalesController extends Controller
     {
         $buscar = $request->buscar;
 
-        $resultados = Cache::remember('Profesionales_'.$buscar, 5, function () use ($buscar) {
+        $resultados = Cache::remember('Profesionales_' . $buscar, 5, function () use ($buscar) {
 
             $profesionales = Profesional::where(function ($query) use ($buscar) {
-                $query->where('Apellido', 'LIKE', '%'.$buscar.'%')
-                    ->orWhere('Nombre', 'LIKE', '%'.$buscar.'%');
+                $query->where('Apellido', 'LIKE', '%' . $buscar . '%')
+                    ->orWhere('Nombre', 'LIKE', '%' . $buscar . '%');
             })
                 ->where('T3', 1)
                 ->get();
@@ -164,12 +180,11 @@ class ProfesionalesController extends Controller
             foreach ($profesionales as $evaluador) {
                 $resultados[] = [
                     'id' => $evaluador->Id,
-                    'text' => $evaluador->Apellido.' - '.$evaluador->Nombre,
+                    'text' => $evaluador->Apellido . ' - ' . $evaluador->Nombre,
                 ];
             }
 
             return $resultados;
-
         });
 
         return response()->json(['evaluadores' => $resultados]);
@@ -180,43 +195,41 @@ class ProfesionalesController extends Controller
 
         $Id = $request->Id;
 
-        if(is_array($Id)){
+        if (is_array($Id)) {
 
             switch ($request->tipo) {
-                
+
                 case 'multipleBProf':
-                    
+
                     Profesional::whereIn('Id', $Id)->update(['Inactivo' => 1]);
                     break;
-                
+
                 case 'multipleDProf':
 
                     Profesional::whereIn('Id', $Id)->update(['Inactivo' => 2]);
                     break;
             }
-        }else{
+        } else {
 
-                $profesional = Profesional::find($Id);
+            $profesional = Profesional::find($Id);
 
-                if($request->tipo === 'bloquear'){
+            if ($request->tipo === 'bloquear') {
 
-                    $profesional->Inactivo = 1;
-                
-                }elseif($request->tipo === 'eliminar'){
+                $profesional->Inactivo = 1;
+            } elseif ($request->tipo === 'eliminar') {
 
-                    $profesional->Inactivo = 2;
-                
-                }
+                $profesional->Inactivo = 2;
+            }
 
-                $profesional->save();
+            $profesional->save();
         }
     }
-        
+
     public function edit(Profesional $profesionale): mixed
     {
         return view('layouts.profesionales.edit', with([
-            'profesionale' => $profesionale, 
-            'telefono' => $this->getTelefono($profesionale->Id), 
+            'profesionale' => $profesionale,
+            'telefono' => $this->getTelefono($profesionale->Id),
             'provincias' => Provincia::OrderBy('Nombre', 'ASC')->get(),
             'lstProveedor' => Proveedor::where('Inactivo', 0)->whereNot('Id', 0)->OrderBy('Nombre', 'ASC')->get(['Id', 'Nombre']),
             'listEspecialistas' => Proveedor::where('Inactivo', 0)->whereNot('Id', 0)->OrderBy('Nombre', 'ASC')->get(['Id', 'Nombre']),
@@ -229,13 +242,13 @@ class ProfesionalesController extends Controller
     {
 
         $query = Profesional::find($request->Id);
-        if(in_array($query->IdProveedor,[null,0])){
+        if (in_array($query->IdProveedor, [null, 0])) {
 
             $query->IdProveedor = $request->especialidad;
             $query->save();
         }
         $rol = Rol::find($request->perfil);
-   
+
         $consulta = ProfesionalProv::where('IdProf', $request->Id)
             ->where('IdProv', $request->especialidad)
             ->where('IdRol', $rol->nombre)
@@ -251,7 +264,7 @@ class ProfesionalesController extends Controller
             ]);
 
             return response()->json(['msg' => 'Se ha añadido el perfil de manera correcta'], 201);
-        }else{
+        } else {
 
             return response()->json(['msg' => 'Ya existe un perfil con esa especialidad'], 500);
         }
@@ -271,9 +284,9 @@ class ProfesionalesController extends Controller
             ->where('IdProf', $request->Id)
             ->get();
 
-        if($query){
+        if ($query) {
             return response()->json(['data' => $query], 200);
-        }else{
+        } else {
             return response()->json(['msg' => "Sin perfiles. Ingrese uno"], 404);
         }
     }
@@ -284,7 +297,7 @@ class ProfesionalesController extends Controller
 
         foreach ($perfiles as $perfil) {
             $perfil->delete();
-        }  
+        }
     }
 
     public function store(Request $request): string
@@ -304,16 +317,15 @@ class ProfesionalesController extends Controller
             'CP' => $request->CP ?? '0',
             'Inactivo' => $request->estado,
         ]);
-        if($request->Telefono) {
+        if ($request->Telefono) {
             $this->setTelefono($nuevoId, $request->Telefono);
         }
-        
-        return redirect()->route('profesionales.edit', ['profesionale' => $nuevoId]);
 
+        return redirect()->route('profesionales.edit', ['profesionale' => $nuevoId]);
     }
 
     public function update(Request $request, $profesionale)
-    {   
+    {
         $update = Profesional::find($profesionale);
         $update->Documento = $request->Documento;
         $update->Apellido = $request->Apellido;
@@ -329,7 +341,7 @@ class ProfesionalesController extends Controller
         $update->Inactivo = $request->estado;
 
         if ($request->hasFile('Foto')) {
-   
+
             $fotoExistente = 'public/profesionales/' . $request->Foto;
             if (Storage::exists($fotoExistente)) {
                 Storage::delete($fotoExistente);
@@ -337,16 +349,15 @@ class ProfesionalesController extends Controller
 
             $fileName = 'PROF' . $profesionale . '.' . $request->Foto->extension();
             //$request->Foto->storeAs('public/profesionales', $fileName);
-            FileHelper::uploadFile(FileHelper::getFileUrl('escritura').'/'.$this->folder.'/', $request->Foto, $fileName);
+            FileHelper::uploadFile(FileHelper::getFileUrl('escritura') . '/' . $this->folder . '/', $request->Foto, $fileName);
 
             $update->Foto = $fileName;
         }
 
-        if($this->checkTelefono($profesionale) === 0) {
+        if ($this->checkTelefono($profesionale) === 0) {
 
             $this->updateTelefono($profesionale, $request->Telefono);
-        
-        }else{
+        } else {
 
             $this->setTelefono($profesionale, $request->Telefono);
         }
@@ -354,7 +365,6 @@ class ProfesionalesController extends Controller
         $update->push();
 
         return back();
-        
     }
 
     public function checkDocumento(Request $request): mixed
@@ -363,11 +373,11 @@ class ProfesionalesController extends Controller
         return response()->json(['check' => $check]);
     }
 
-    public function opciones(Request $request):mixed
+    public function opciones(Request $request): mixed
     {
         $prof = Profesional::find($request->Id);
 
-        if(empty($prof)) {
+        if (empty($prof)) {
             return response()->json(['msg' => 'Profesional no encontrado'], 404);
         }
 
@@ -379,30 +389,28 @@ class ProfesionalesController extends Controller
         ]);
 
         return response()->json(['msg' => 'Se han guardado los cambios de manera correcta'], 201);
-        
     }
 
     public function seguro(Request $request): mixed
     {
         $prof = Profesional::find($request->Id);
 
-        if(empty($prof)) {
+        if (empty($prof)) {
             return response()->json(['msg' => 'Profesional no encontrado'], 404);
         }
 
         $prof->update([
             'MN' => $request->MN,
             'MP' => $request->MP,
-            'SeguroMP' =>$request->SeguroMP
+            'SeguroMP' => $request->SeguroMP
         ]);
-    
-        return response()->json(['msg' => 'Se han guardado los datos'], 201);
 
+        return response()->json(['msg' => 'Se han guardado los datos'], 201);
     }
 
     public function choisePerfil(Request $request)
     {
-        
+
         //$profesionales = Profesional::find($request->Id);
         //return response()->json($profesionales);
 
@@ -417,7 +425,7 @@ class ProfesionalesController extends Controller
             ->where('users.profesional_id', $request->Id)
             ->whereIn('roles.nombre', ["Administrador", "Efector", "Informador", "Evaluador", "Combinado", "Evaluador ART"])
             ->groupBy('roles.nombre')
-            ->get(); 
+            ->get();
     }
 
     public function choiseEspecialidad(Request $request)
@@ -431,19 +439,19 @@ class ProfesionalesController extends Controller
             ->where('profesionales_prov.IdProf', $request->Id)
             ->where('profesionales_prov.IdRol', $request->Tipo)
             ->select('proveedores.Nombre')
-        ->get();
+            ->get();
 
         return response()->json($especialidad);
     }
 
     public function savePrestador(Request $request)
     {
-        if(empty($request->especialidad) || empty($request->perfil)) {
+        if (empty($request->especialidad) || empty($request->perfil)) {
             return response()->json(['msg' => 'Debe seleccionar su perfil y especialidad'], 409);
         }
 
-        if(in_array($request->perfil, $this->profesionales)) {
-            $IdEspecialidad = Proveedor::where('Nombre', $request->especialidad)->first('Id'); 
+        if (in_array($request->perfil, $this->profesionales)) {
+            $IdEspecialidad = Proveedor::where('Nombre', $request->especialidad)->first('Id');
 
             session()->put('Profesional',  strtoupper($request->perfil));
             session()->put('Especialidad', $request->especialidad);
@@ -453,9 +461,7 @@ class ProfesionalesController extends Controller
             $informadores = $this->profesionalesLst->listado('Informador');
             event(new LstProfesionalesEvent($efectores));
             event(new LstProfInformadorEvent($informadores));
-            
-
-        }else{
+        } else {
             session()->put('Profesional',  0);
             session()->put('Especialidad', 0);
 
@@ -468,8 +474,8 @@ class ProfesionalesController extends Controller
 
     public function listGeneral(Request $request): mixed
     {
-        
-        $data = Profesional::join('profesionales_prov', 'profesionales.Id', '=', 'profesionales_prov.IdProf') 
+
+        $data = Profesional::join('profesionales_prov', 'profesionales.Id', '=', 'profesionales_prov.IdProf')
             ->join('proveedores', 'profesionales_prov.IdProv', '=', 'proveedores.Id')
             ->join('users', 'profesionales.Id', '=', 'users.profesional_id')
             ->join('datos', 'users.datos_id', '=', 'datos.Id')
@@ -482,7 +488,7 @@ class ProfesionalesController extends Controller
                 DB::raw("CONCAT(profesionales.Apellido, ' ', profesionales.Nombre) AS NombreCompletoHis"),
                 'users.profesional_id as IdProf',
             )
-            ->where(function($query) use ($request) {
+            ->where(function ($query) use ($request) {
                 if ($request->tipo === 'efector') {
                     $query->where('profesionales_prov.IdRol', 'Efector');
                 } elseif ($request->tipo === 'informador') {
@@ -494,7 +500,7 @@ class ProfesionalesController extends Controller
             ->groupBy('profesionales.Id')
             ->get();
 
-            
+
         return response()->json(['resultados' => $data]);
     }
 
@@ -502,5 +508,4 @@ class ProfesionalesController extends Controller
     {
         return Auth::user()->profesional->TLP === 1;
     }
-
 }

@@ -33,6 +33,8 @@ use App\Http\Controllers\ParamDescripcionesController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\UserSessionsController;
 use App\Http\Controllers\UsuariosController;
+use App\Http\Controllers\FacturaCompraController;
+use App\Models\FacturaCompra;
 use App\Models\FacturaDeVenta;
 use App\Models\GrupoClientes;
 use App\Models\ItemPrestacion;
@@ -231,6 +233,7 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     //Route::resource('profesionales', ProfesionalesController::class);
     Route::get('profesionales/obtener-evaluador', [ProfesionalesController::class, 'getEvaluador'])->name('getEvaluador');
     Route::get('profesionales/buscar', [ProfesionalesController::class, 'search'])->name('searchProfesionales');
+    Route::get('profesionales/buscarComun', [ProfesionalesController::class, 'searchComun'])->name('searchProfesionalesComun');
     Route::post('profesional/estado', [ProfesionalesController::class, 'estado'])->name('estadoProfesional');
     Route::post('setPerfiles', [ProfesionalesController::class, 'setPerfil'])->name('setPerfiles');
     Route::get('getPerfiles', [ProfesionalesController::class, 'getPerfil'])->name('getPerfiles');
@@ -334,7 +337,7 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::post('examenesCuenta/eliminar', [ExamenesCuentaController::class, 'delete'])->name('eliminarExCuenta');
     Route::get('examenesCuenta/buscar-saldo', [ExamenesCuentaController::class, 'saldo'])->name('searchSaldo');
     Route::post('examenesCuenta/guardar', [ExamenesCuentaController::class, 'save'])->name('saveExamenCuenta');
-    Route::get('examenesCuenta/listado', [ExamenesCuentaController::class, 'listado'])->name('listadoExCta');
+    Route::get('examenesCuenta/listadoExamenes', [ExamenesCuentaController::class, 'listado'])->name('examenesCuenta.listadoExamenes');
     Route::post('examenesCuenta/actualizar', [ExamenesCuentaController::class, 'update'])->name('updateExamenCuenta');
     Route::get('examenesCuenta/eliminar/item', [ExamenesCuentaController::class, 'deleteItem'])->name('deleteItemExCta');
     Route::get('examenesCuenta/liberar/item', [ExamenesCuentaController::class, 'liberarItem'])->name('liberarItemExCta');
@@ -357,6 +360,9 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::post('examenesCuenta/actualizar-prestacion', [ExamenesCuentaController::class, 'cargarExCtaPrestacion'])->name('examenesCuenta.cargar');
     Route::get('examenesCuenta/listado-empresa', [ExamenesCuentaController::class, 'listaExCtaEmpresa'])->name('examenesCuenta.listaEmpresa');
     Route::get('examenesCuenta/contador-pagos', [ExamenesCuentaController::class, 'contadorPagos'])->name('examenesCuenta.contadoPagos');
+    Route::get('examenesCuenta/excelSimple', [ExamenesCuentaController::class, 'excelSimple'])->name('examenesCuenta.excelSimple');
+    Route::get('examenesCuenta/excelCompleto', [ExamenesCuentaController::class, 'excelCompleto'])->name('examenesCuenta.excelCompleto');
+
     Route::resource('examenesCuenta', ExamenesCuentaController::class);
 
     //Rutas de Paquete de Estudio
@@ -525,5 +531,37 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
 
     Route::resource('notasCredito', NotasCreditoController::class);
 
+    //Route::get('facturaCompra/', [FacturaCompraController::class, 'index'])->name('facturaCompra.index');
+    Route::get('facturaCompra/buscarEfectores', [FacturaCompraController::class, 'buscarEfectores'])->name('facturaCompra.buscarEfectores');
+    Route::get('facturaCompra/crearFacturaCompra/{id}', [FacturaCompraController::class, 'crearFacturaCompra'])->name('facturaCompra.crearFacturaCompra');
+    Route::get('facturaCompra/getExamenesEfectorFactura', [FacturaCompraController::class, 'listarExamenesEfector'])->name('facturaCompra.listarExamenesEfector');
+    Route::get('facturaCompra/rutaListarExamenesInformador', [FacturaCompraController::class, 'listarExamenesInformador'])->name('facturaCompra.listarExamenesInformador');
+    Route::get('facturaCompra/getCantidadExamenesEfector', [FacturaCompraController::class, 'cantidadExamenesEfector'])->name('facturaCompra.cantidadExamenesEfector');
+    Route::get('facturaCompra/getCantidadExamenesInformador', [FacturaCompraController::class, 'cantidadExamenesInformador'])->name('facturaCompra.cantidadExamenesInformador');
+    Route::post('facturaCompra/facturar', [FacturaCompraController::class, 'facturar'])->name('facturaCompra.facturar');
+    Route::get('facturaCompra/buscarFacturas', [FacturaCompraController::class, 'buscarFacturasCompras'])->name('facturaCompra.buscarFacturasCompras');
+    Route::get('facturaCompra/editarFactura/{id}', [FacturaCompraController::class, 'editarFacturaCompra'])->name('facturaCompra.editarFactura');
+    Route::get('facturaCompra/getExamenesFacturaCompraEfector', [FacturaCompraController::class, 'listarExamenesFacturaEfector'])->name('facturaCompra.listarExamenesFacturaEfector');
+    Route::get('facturaCompra/getExamenesFacturaCompraInformador', [FacturaCompraController::class, 'listarExamenesFacturaInformador'])->name('facturaCompra.listarExamenesFacturaInformador');
+    Route::post('facturaCompra/editarFacturaCompra', [FacturaCompraController::class, 'editarFactura'])->name('facturaCompra.editarFacturaPost');
+    Route::post('facturaCompra/eliminarItemFacturaCompraEfector', [FacturaCompraController::class, 'eliminarItemFacturaCompraEfector'])->name('facturaCompra.eliminarItemFacturaCompraEfector');
+    Route::post('facturaCompra/eliminarItemFacturaCompraInformador', [FacturaCompraController::class, 'eliminarItemFacturaCompraInformador'])->name('facturaCompra.eliminarItemFacturaCompraInformador');
+
+    Route::post('facturaCompra/eliminarItemsFacturaCompraEfectorMasivo', [FacturaCompraController::class, 'eliminarItemsFacturaCompraEfectorMasivo'])->name('facturaCompra.eliminarItemsFacturaCompraEfectorMasivo');
+    Route::post('facturaCompra/eliminarItemsFacturaCompraInformadorMasivo', [FacturaCompraController::class, 'eliminarItemsFacturaCompraInformadorMasivo'])->name('facturaCompra.eliminarItemsFacturaCompraInformadorMasivo');
+
+    Route::post('facturaCompra/eliminarFacturaCompra', [FacturaCompraController::class, 'eliminarFacturaCompra'])->name('facturaCompra.eliminarFacturaCompra');
+
+    Route::get("facturaCompra/imprimirReporte", [FacturaCompraController::class, 'imprimirReporte'])->name('facturaCompra.imprimirReporte');
+    Route::get("facturaCompra/exportarExcel", [FacturaCompraController::class, 'exportarExcel'])->name('facturaCompra.exportarExcel');
+    Route::get("facturaCompra/exportarExcelFactura", [FacturaCompraController::class, 'exportarExcelIndividual'])->name('facturaCompra.exportarExcelIndividual');
+
+    Route::resource('facturaCompra', FacturaCompraController::class);
+
     Route::get('parametros/listado', [ParamDescripcionesController::class, 'listado'])->name('parametros.getListados');
+    Route::post('parametros/eliminar', [ParamDescripcionesController::class, 'eliminar'])->name('parametros.eliminar');
+    Route::post('parametros/modificar', [ParamDescripcionesController::class, 'actualizar'])->name('parametros.modificar');
+    Route::post('parametros/guardar', [ParamDescripcionesController::class, 'guardar'])->name('parametros.guardar');
+    Route::get('parametros/obtener-id', [ParamDescripcionesController::class, 'getParametroId'])->name('parametros.obtenerId');
+
 });
