@@ -526,4 +526,6 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::resource('notasCredito', NotasCreditoController::class);
 
     Route::get('parametros/listado', [ParamDescripcionesController::class, 'listado'])->name('parametros.getListados');
+    Route::post('parametros/eliminar', [ParamDescripcionesController::class, 'eliminar'])->name('parametros.eliminar');
+    Route::post('parametros/modificar', [ParamDescripcionesController::class, 'modificar'])->name('parametros.modificar');
 });
