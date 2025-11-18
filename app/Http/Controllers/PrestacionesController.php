@@ -605,10 +605,15 @@ class PrestacionesController extends Controller
         $this->reporteService->fusionarPDFs($listado, $this->outputPath);
 
         $nombreRetorno =  $this->fileNameExport.'.pdf';
-        if($request->buttonEE == 'true' ){
+        
+        if($request->eEstudio || $request->buttonEE == 'true' ){
             $nombreRetorno = $paciente->Apellido.'_'.$paciente->Documento.'_eEstudio_'.$prestacion->Id.'.pdf';
             if($nombreRetorno) File::copy($this->adjDigitalFisico($request->Id, 3), FileHelper::getFileUrl('escritura').'/EnviarOpciones/eEstudio'.$prestacion->Id);
-        }else if($request->buttonEA == 'true' ){
+        }else if($request->adjAnexos == 'true'){
+            $nombreRetorno = $paciente->Apellido.'_'.$paciente->Documento.'_adjAnexos_'.$prestacion->Id.'.pdf';
+        }else if($request->adjGenerales == 'true'){
+            $nombreRetorno = $paciente->Apellido.'_'.$paciente->Documento.'_adjPresta_'.$prestacion->Id.'.pdf';
+        }else if( $request->buttonEA == 'true' ){
             $nombreRetorno = $paciente->Apellido.'_'.$paciente->Documento.'_adjPrestacion_'.$prestacion->Id.'.pdf';
         }
 
