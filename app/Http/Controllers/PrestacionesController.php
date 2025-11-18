@@ -604,15 +604,15 @@ class PrestacionesController extends Controller
         
         $this->reporteService->fusionarPDFs($listado, $this->outputPath);
 
-        $nombreEEstudio = $paciente->Apellido.'_'.$paciente->Documento.'_eEstudio_'.$prestacion->Id.'.pdf';
-        $nombreAnexo = $paciente->Apellido.'_'.$paciente->Documento.'_'.$prestacion->Id.'.pdf';
-        $nombreAdjunto = $paciente->Apellido.'_'.$paciente->Documento.'_adjPrestacion_'.$prestacion->Id.'.pdf';
+        $nombreRetorno =  $this->fileNameExport.'.pdf';
+        if($request->buttonEE == 'true' ){
+            $nombreRetorno = $paciente->Apellido.'_'.$paciente->Documento.'_eEstudio_'.$prestacion->Id.'.pdf';
+            if($nombreRetorno) File::copy($this->adjDigitalFisico($request->Id, 3), FileHelper::getFileUrl('escritura').'/EnviarOpciones/eEstudio'.$prestacion->Id);
+        }else if($request->buttonEA == 'true' ){
+            $nombreRetorno = $paciente->Apellido.'_'.$paciente->Documento.'_adjPrestacion_'.$prestacion->Id.'.pdf';
+        }
 
-        $name = ($request->buttonEE == 'true' 
-            ? $nombreEEstudio && File::copy($this->adjDigitalFisico($request->Id, 3), FileHelper::getFileUrl('escritura').'/EnviarOpciones/eEstudio'.$prestacion->Id)
-            : ($request->buttonEA == 'true' 
-                ? $nombreAdjunto
-                : $this->fileNameExport.'.pdf'));
+        $name = $nombreRetorno;
 
         if(!empty($listado)) {
 
