@@ -619,13 +619,13 @@ class PrestacionesController extends Controller
             $nombreRetorno = $paciente->Apellido.'_'.$paciente->Documento.'_adjPrestacion_'.$prestacion->Id.'.pdf';
         }
 
-        $name = $nombreRetorno;
-
+        dd($nombreRetorno);
+        die();
         if(!empty($listado)) {
 
             return response()->json([
                 'filePath' => $this->outputPath,
-                'name' => $name,
+                'name' => $nombreRetorno,
                 'msg' => 'Reporte generado correctamente',
                 'icon' => 'success' 
             ]);
