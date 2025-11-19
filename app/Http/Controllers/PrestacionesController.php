@@ -619,8 +619,6 @@ class PrestacionesController extends Controller
             $nombreRetorno = $paciente->Apellido.'_'.$paciente->Documento.'_adjPrestacion_'.$prestacion->Id.'.pdf';
         }
 
-        dd($nombreRetorno);
-        die();
         if(!empty($listado)) {
 
             return response()->json([
