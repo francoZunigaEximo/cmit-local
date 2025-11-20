@@ -539,7 +539,6 @@ class PrestacionesController extends Controller
         if($verificar === 0) {
             return response()->json(['msg' => 'No se puede generar el reporte porque la prestación no posee exámenes'], 409);
         }
-
         // Lista de las condiciones y sus respectivas funciones
         $acciones = [
             'adjAnexos' => 'adjAnexos',
@@ -571,6 +570,7 @@ class PrestacionesController extends Controller
             array_push($eEstudio, $this->adjDigitalFisico($request->Id, 3));
 
             $this->reporteService->fusionarPDFs($eEstudio, FileHelper::getFileUrl('escritura').'/EnviarOpciones/eEstudio'.$request->Id.'.pdf');
+
         }
 
         // Recorrer las acciones y agregarlas a $listado si la condición es true
@@ -604,21 +604,26 @@ class PrestacionesController extends Controller
         
         $this->reporteService->fusionarPDFs($listado, $this->outputPath);
 
-        $nombreArchivoEEstudio = $paciente->Apellido.'_'.$paciente->Documento.'_eEstudio_'.$prestacion->Id.'.pdf';
-        $nombreAnexo = $paciente->Apellido.'_'.$paciente->Documento.'_'.$prestacion->Id.'.pdf';
-        $nombreAdjunto = $paciente->Apellido.'_'.$paciente->Documento.'_adjPrestacion_'.$prestacion->Id.'.pdf';
-
-        $name = ($request->buttonEE == 'true' 
-            ? $nombreArchivoEEstudio && File::copy($this->adjDigitalFisico($request->Id, 3), FileHelper::getFileUrl('escritura').'/EnviarOpciones/eEstudio'.$prestacion->Id)
-            : ($request->buttonEA == 'true' 
-                ? $nombreAdjunto
-                : $this->fileNameExport.'.pdf'));
+        $nombreRetorno =  $this->fileNameExport.'.pdf';
+        
+        if($request->buttonEE == 'true' ){
+            $nombreRetorno = $paciente->Apellido.'_'.$paciente->Documento.'_eEstudio_'.$prestacion->Id.'.pdf';
+            if($nombreRetorno) File::copy($this->adjDigitalFisico($request->Id, 3), FileHelper::getFileUrl('escritura').'/EnviarOpciones/eEstudio'.$prestacion->Id);
+        }else if($request->eEstudio == "true" ){
+            $nombreRetorno = $paciente->Apellido.'_'.$paciente->Documento.'_eEstudio_'.$prestacion->Id.'.pdf';
+        }else if($request->adjAnexos == "true"){
+            $nombreRetorno = $paciente->Apellido.'_'.$paciente->Documento.'_adjAnexos_'.$prestacion->Id.'.pdf';
+        }else if($request->adjGenerales == "true"){
+            $nombreRetorno = $paciente->Apellido.'_'.$paciente->Documento.'_adjPresta_'.$prestacion->Id.'.pdf';
+        }else if( $request->buttonEA == "true" ){
+            $nombreRetorno = $paciente->Apellido.'_'.$paciente->Documento.'_adjPrestacion_'.$prestacion->Id.'.pdf';
+        }
 
         if(!empty($listado)) {
 
             return response()->json([
                 'filePath' => $this->outputPath,
-                'name' => $name,
+                'name' => $nombreRetorno,
                 'msg' => 'Reporte generado correctamente',
                 'icon' => 'success' 
             ]);
