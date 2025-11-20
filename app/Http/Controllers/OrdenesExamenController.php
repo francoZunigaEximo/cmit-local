@@ -478,8 +478,8 @@ public function searchPrestacion(Request $request)
 
     public function searchResumenes(Request $request)
     {
-        // if($request->ajax())
-        // {
+        if($request->ajax())
+        {
             $query = DB::select("CALL getOrdenesResumenes(?,?,?,?,?,?)",[
                 $request->fechaDesde,
                 $request->fechaHasta,
@@ -490,48 +490,11 @@ public function searchPrestacion(Request $request)
             ]);
         
             return Datatables::of($query)->make(true);
-        // }
-        // return view('layouts.ordenesExamen.index');
+        }
+        return view('layouts.ordenesExamen.index');
     }
 
-    private function eEstudio(int $idPrestacion, string $opciones): mixed
-    {
-        return $this->reporteService->generarReporte(
-            EEstudio::class,
-            EvaluacionResumen::class,
-            null,
-            null,
-            'guardar',
-            storage_path($this->tempFile.Tools::randomCode(15).'-'.Auth::user()->name.'.pdf'),
-            null,
-            ['id' => $idPrestacion],
-            ['id' => $idPrestacion, 'firmaeval' => 0, 'opciones' => $opciones, 'eEstudio' => 'si'],
-            [],
-            [],
-            null
-        );
-    }
-
-    private function addEstudioExamen(int $idPrestacion, int $idExamen): mixed
-    {
-
-        return $this->reporteService->generarReporte(
-            ListadoReportes::getReporte($idExamen),
-            null,
-            null,
-            null,
-            'guardar',
-            storage_path($this->tempFile.Tools::randomCode(15).'-'.Auth::user()->name.'.pdf'),
-            null,
-            ['id' => $idPrestacion, 'idExamen' => $idExamen],
-            [],
-            [],
-            [],
-            null
-        );
-    }
-
-    public function exportar(Request $request)
+        public function exportar(Request $request)
     {
         $examenes = $request->Id;
 
@@ -648,6 +611,43 @@ public function searchPrestacion(Request $request)
         // Devolver la ruta del archivo generado
         return response()->json(['filePath' => $filePath]);  
 
+    }
+
+    private function eEstudio(int $idPrestacion, string $opciones): mixed
+    {
+        return $this->reporteService->generarReporte(
+            EEstudio::class,
+            EvaluacionResumen::class,
+            null,
+            null,
+            'guardar',
+            storage_path($this->tempFile.Tools::randomCode(15).'-'.Auth::user()->name.'.pdf'),
+            null,
+            ['id' => $idPrestacion],
+            ['id' => $idPrestacion, 'firmaeval' => 0, 'opciones' => $opciones, 'eEstudio' => 'si'],
+            [],
+            [],
+            null
+        );
+    }
+
+    private function addEstudioExamen(int $idPrestacion, int $idExamen): mixed
+    {
+
+        return $this->reporteService->generarReporte(
+            ListadoReportes::getReporte($idExamen),
+            null,
+            null,
+            null,
+            'guardar',
+            storage_path($this->tempFile.Tools::randomCode(15).'-'.Auth::user()->name.'.pdf'),
+            null,
+            ['id' => $idPrestacion, 'idExamen' => $idExamen],
+            [],
+            [],
+            [],
+            null
+        );
     }
 
     private function adjGenerales(int $idPrestacion): mixed
