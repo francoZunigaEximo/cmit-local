@@ -635,17 +635,6 @@ $(function() {
     $(document).on('click', '.eEnviarReporte', function(e){
         e.preventDefault();
 
-        let impresion = {
-            eEstudio: $('#eEstudio').prop('checked'),
-            eEnvio: $('#eEnvio').prop('checked'),
-            adjFisicosDigitales: $('#adjFisicosDigitales').prop('checked'),
-            infInternos: $('#infInternos').prop('checked'),
-            pedProveedores: $('#pedProveedores').prop('checked'),
-            conPaciente: $('#conPaciente').prop('checked'),
-        }
-
-        if (impresion.some)
-
         swal({
             title: "¿Desea enviar el reporte eEstudio, eAnexos y Adjuntos Generales de la prestación?",
             icon: "warning",
