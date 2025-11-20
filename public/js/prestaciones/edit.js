@@ -466,8 +466,11 @@ $(function() {
             toastr.warning('La observación no puede estar vacía', 'Atención', {timeOut: 1000});
             return;
         }
+
+        let profesional = PROFESIONAL ? PROFESIONAL[0].toUpperCase() + PROFESIONAL.slice(1).toLowerCase() : '-';
+
         preloader('on');
-        $.post(savePrivComent, {_token: TOKEN, Comentario: comentario, IdEntidad: ID, obsfasesid: 2, Rol: PROFESIONAL || '-'})
+        $.post(savePrivComent, {_token: TOKEN, Comentario: comentario, IdEntidad: ID, obsfasesid: 2, Rol: profesional})
             .done(function(){
                 preloader('off');
                 toastr.success('Perfecto', 'Se ha generado la observación correctamente', {timeOut: 1000});

@@ -1,59 +1,37 @@
 $(function() {
 
-    $('#fechaHasta, #fechaHastaAsignados, #fechaHastaAdjunto, #fechaHastaInf, #fechaHastaAsignadosInf, #fechaHastaAdjuntoInf, #fechaHastaPres, #fechaHastaEEnviar').val(fechaNow(null, "-", 0)), $('#efectorPres').val('pendientes'),$('#tipoPres').val('todos');
+    $('#fechaHasta, #fechaHastaAsignados, #fechaHastaAdjunto, #fechaHastaInf, #fechaHastaAsignadosInf, #fechaHastaAdjuntoInf, #fechaHastaPres, #fechaHastaEEnviar, #fechaHastaResumenes').val(fechaNow(null, "-", 0)), $('#efectorPres').val('pendientes'),$('#tipoPres').val('todos');
 
-    let checks = {
-        '#checkAllAsignar': 'Id_asignar',
-        '#checkAllAsignado': 'Id_asignado',
-        '#checkAllAdj': 'Id_adjunto',
-        '#checkAllAsigInf': 'Id_asigInf',
-        '#checkAllAsignadoInf': 'Id_asignadoInf',
-        '#checkAllAdjInf': 'Id_adjuntoInf',
-        '#checkAllEEnviar': 'Id_EEnviar'
-    };
-    
-    let especialidadVal = $('#especialidad').val(),
-        especialidadAsigVal = $('#especialidadAsignados').val(),
-        especialidadAdjVal = $('#especialidadAdjunto').val(),
-        especialidadInf = $('#especialidadInf').val(),
-        especialidadAsigVaInf = $('#especialidadAsignadosInf').val(),
-        especialidadAdjValInf = $('#especialidadAdjuntoInf').val(),
-        especialidadPres = $('#especialidadPres').val(),
-        lstEspecialidades = $('#especialidad, #especialidadAsignados, #especialidadAdjunto, #especialidadInf, #especialidadAsignadosInf, #especialidadAdjuntoInf, #especialidadPres');
+    let opcionesSelectProf = [
+        {valor: $('.especialidad'), id: 'efector', tipo: 'efector'},
+        {valor: $('.especialidadAsignados'), id:'efectorAsignado', tipo: 'efector'},
+        {valor: $('.especialidadAdjunto'), id: 'efectorAdjunto', tipo: 'efector'},
+        {valor: $('.especialidadInf'), id: 'informador', tipo: 'informador'},
+        {valor: $('.especialidadAsignadosInf'), id: 'informadorAsignadoInf', tipo: 'informador'},
+        {valor: $('.especialidadAdjuntoInf'), id: 'informadorAdjuntoInf', tipo: 'informador'},
+        {valor: $('.especialidadPres'), id: 'efectorPres', tipo: 'efector'},
+        {valor: $('.especialidadResumenes'), id: 'efectorResumen', tipo: 'efector'},
+        {valor: $('.especialidadPres'), id: 'informadorPres', tipo: 'informador'}
+    ],
+        checks = {
+            '#checkAllAsignar': 'Id_asignar',
+            '#checkAllAsignado': 'Id_asignado',
+            '#checkAllAdj': 'Id_adjunto',
+            '#checkAllAsigInf': 'Id_asigInf',
+            '#checkAllAsignadoInf': 'Id_asignadoInf',
+            '#checkAllAdjInf': 'Id_adjuntoInf',
+            '#checkAllEEnviar': 'Id_EEnviar'
+        },
+        lstEspecialidades = $('#especialidad, #especialidadAsignados, #especialidadAdjunto, #especialidadInf, #especialidadAsignadosInf, #especialidadAdjuntoInf, #especialidadPres, #especialidadResumenes');
 
     $('#Liberar, #Cerrar, #Abrir, #qrExamen, #LiberarInf').hide();
 
     listaProveedores();
-    optionsGeneral(especialidadVal, "efector", "efector");
-    optionsGeneral(especialidadAsigVal, "efectorAsignado", "efector");
-    optionsGeneral(especialidadAdjVal, "efectorAdjunto", "efector");
-    optionsGeneral(especialidadPres, "efectorPres", "efector");
-    optionsGeneral(especialidadInf, "informador", "informador");
-    optionsGeneral(especialidadAsigVaInf, "informadorAsignadoInf", "informador");
-    optionsGeneral(especialidadAdjValInf, "informadorAdjuntoInf", "informador");
-    optionsGeneral(especialidadPres, "informadorPres", "informador");
 
-    $(document).on('change', '.especialidad, .especialidadAsignados, .especialidadAdjunto, .especialidadInf, .especialidadAsignadosInf, .especialidadAdjuntoInf, .especialidadPres', function() {
-
-        let newEspecialidadVal = $('.especialidad').val(),
-            newEspecialidadAsigVal = $('.especialidadAsignados').val(),
-            newEspecialidadAdjVal = $('.especialidadAdjunto').val(),
-            newEspecialidadInf = $('.especialidadInf').val(),
-            newEspecialidadAsigValInf = $('.especialidadAsignadosInf').val(),
-            newEspecialidadAdjValInf = $('.especialidadAdjuntoInf').val(),
-            newEspecialidadEfePres = $('.especialidadPres').val(),
-            newEspecialidadInfPres = $('.especialidadPres').val();
-
-        optionsGeneral(newEspecialidadVal, "efector", "efector");
-        optionsGeneral(newEspecialidadAsigVal, "efectorAsignado", "efector");
-        optionsGeneral(newEspecialidadAdjVal, "efectorAdjunto", "efector");
-        optionsGeneral(newEspecialidadInf, "informador", "informador");
-        optionsGeneral(newEspecialidadAsigValInf, "informadorAsignadoInf", "informador");
-        optionsGeneral(newEspecialidadAdjValInf, "informadorAdjuntoInf", "informador");
-        optionsGeneral(newEspecialidadEfePres, "efectorPres", "efector");
-        optionsGeneral(newEspecialidadInfPres, "informadorPres", "informador");
+    $(document).on('change', '.especialidad, .especialidadAsignados, .especialidadAdjunto, .especialidadInf, .especialidadAsignadosInf, .especialidadAdjuntoInf, .especialidadPres, .especialidadResumenes', function() {
+        onListadoProfesionales(opcionesSelectProf);   
     });
-    
+
     $('#empresa, #empresaInf, #empresaAsignados, #empresaAdjunto, #empresaAsignadosInf, #empresaAdjuntoInf, #empresaEEnviar').each(function() {
         $(this).select2({
             language: {
@@ -805,7 +783,8 @@ $(function() {
             informador: '#informadores',
             informadorAsignadoInf: '#informadorAsignadoInf',
             informadorAdjuntoInf: '#informadorAdjuntoInf',
-            informadorPres: '#profInfPres'
+            informadorPres: '#profInfPres',
+            efectorResumen: '#profEfectorResumenes'
         }
    
         let etiqueta;
@@ -813,6 +792,8 @@ $(function() {
         if (ident in obj) {
             etiqueta = $(obj[ident]);
         }
+
+        if(!etiqueta) return; 
 
         etiqueta.empty().append('<option value="" selected>Elija una opción...</option>')
         preloader('on');
@@ -825,6 +806,15 @@ $(function() {
                     etiqueta.append(contenido);
                 });
             });
+    }
+
+    function onListadoProfesionales(listado) {
+        listado.forEach(call => {
+            let valorActual = $(call.valor).val();
+            console.log(valorActual);
+            optionsGeneral(valorActual, call.id, call.tipo);
+
+        });
     }
 
 });

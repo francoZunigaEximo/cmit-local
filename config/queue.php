@@ -75,7 +75,7 @@ return [
         'correos' => [
             'driver' => 'redis',
             'connection' => 'default',
-            'queue' => 'correos',
+            'queue' => 'default',
             'retry_after' => 90,
             'block_for' => null,
             'after_commit' => false,
@@ -83,7 +83,7 @@ return [
         'websockets' => [ //para envio de reportes
             'driver' => 'redis',
             'connection' => 'default',
-            'queue' => 'websockets',
+            'queue' => 'default',
             'retry_after' => 90,
             'block_for' => null,
             'after_commit' => false,
@@ -91,7 +91,7 @@ return [
         'mensajerias' => [ //mensajes de emails masivos desde Mensajeria
             'driver' => 'redis',
             'connection' => 'default',
-            'queue' => 'mensajerias',
+            'queue' => 'default',
             'retry_after' => 90,
             'block_for' => null,
             'after_commit' => false,
