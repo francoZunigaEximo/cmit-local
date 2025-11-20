@@ -328,6 +328,7 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::get('/etapas/envio-avisos', [OrdenesExamenController::class, 'envioAviso'])->name('ordenesExamen.aviso');
     Route::get('/etapas/obtener-pagado', [OrdenesExamenController::class, 'getPagado'])->name('ordenesExamen.obtenerPagado');
     Route::get('/etapas/enviar-estudio', [OrdenesExamenController::class, 'enviarEstudio'])->name('ordenesExamen.enviarEstudio');
+    Route::get('etapas/ordenes/resumen', [OrdenesExamenController::class, 'searchResumenes'])->name('searchOrdExaResumen');
     Route::resource('ordenesExamen', OrdenesExamenController::class);
 
     //Rutas de Examenes a Cuenta

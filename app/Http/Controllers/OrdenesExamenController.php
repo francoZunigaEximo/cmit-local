@@ -476,6 +476,24 @@ public function searchPrestacion(Request $request)
         return response()->json($resultados);
     }
 
+    public function searchResumenes(Request $request)
+    {
+        // if($request->ajax())
+        // {
+            $query = DB::select("CALL getOrdenesResumenes(?,?,?,?,?,?)",[
+                $request->fechaDesde,
+                $request->fechaHasta,
+                $request->especialidades,
+                $request->estado,
+                $request->efector,
+                $request->profesional
+            ]);
+        
+            return Datatables::of($query)->make(true);
+        // }
+        // return view('layouts.ordenesExamen.index');
+    }
+
     private function eEstudio(int $idPrestacion, string $opciones): mixed
     {
         return $this->reporteService->generarReporte(
