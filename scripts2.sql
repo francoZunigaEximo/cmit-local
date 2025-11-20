@@ -13833,3 +13833,40 @@ CREATE TABLE descripcion_parametro (
 )ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 INSERT INTO modulo_parametros(nombre) VALUES('clientes'),('pacientes');
+
+CREATE PROCEDURE db_cmit.getOrdenesResumenes(IN fechaDesde DATE, IN fechaHasta DATE, IN especialidades INT, IN estado VARCHAR(50), IN efector VARCHAR(50), IN profesional INT)
+BEGIN
+	SELECT 
+		pro.Nombre as especialidad,
+		p.Fecha as fecha,
+		p.Id as prestacion,
+		emp.RazonSocial as empresa,
+		CONCAT(pa.Apellido,' ',pa.Nombre) as NombreCompleto,
+		pa.Documento as dni,
+		CONCAT(da.Apellido,' ',da.Nombre) as efector,
+		(CASE WHEN p.Cerrado = 1 THEN "Abierto" ELSE "Cerrado" END) as estado,
+		pro.InfAdj as adjunto,
+		(SELECT COUNT(*) FROM archivosefector WHERE IdEntidad = i.Id) AS archivos,
+		(SELECT ROUND((SUM(CASE WHEN i.CAdj = 5 THEN 1 ELSE 0 END) / COUNT(*)) * 100 , 0) FROM itemsprestaciones WHERE i.IdPrestacion = p.Id) AS avance
+	FROM prestaciones p
+	INNER JOIN itemsprestaciones i ON p.Id = i.IdPrestacion
+	INNER JOIN proveedores pro ON i.IdProveedor = pro.Id
+	INNER JOIN clientes emp ON p.IdEmpresa = emp.Id
+	INNER JOIN pacientes pa ON p.IdPaciente = pa.Id
+	INNER JOIN profesionales prof ON i.IdProfesional = prof.Id
+	INNER JOIN users u ON prof.Id = u.profesional_id
+	INNER JOIN datos da ON u.datos_id = da.Id
+	LEFT JOIN archivosefector ae ON i.Id = ae.IdEntidad
+	WHERE i.Fecha BETWEEN fechaDesde AND fechaHasta
+	AND (especialidades IS NULL OR (prof.Id = especialidades))
+	AND (
+        estado IS NULL
+        OR (estado = 'abierto' AND p.Finalizado = 0 AND p.Cerrado = 0 AND p.Entregado = 0)
+        OR (estado = 'cerrado' AND p.Cerrado = 1 AND p.Finalizado = 0)
+        OR (estado = 'finalizado' AND p.Cerrado = 1 AND p.Finalizado = 1 AND p.Entregado = 0)
+        OR (estado = 'entregado' AND p.Cerrado = 1 AND p.Finalizado = 1 AND p.Entregado = 1)
+        OR (estado = 'eenviado' AND p.eEnviado = 1)
+    )
+	AND (efector IS NULL OR (efector = 'pendientes' AND i.CAdj IN (1,2,3)) OR (efector = 'cerrados' AND i.CAdj IN (3,4,5)))
+	AND (profesional IS NULL OR (prof.Id = profesional));
+END
