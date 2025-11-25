@@ -502,6 +502,8 @@ public function searchPrestacion(Request $request)
 
         $examenes = $this->queryPrestacion($ids);
 
+        dd($examenes);
+
         $reporte = $this->reporteExcel->crear('ordenExamenPrestacion');
         return $reporte->generar($examenes);
     }
@@ -515,6 +517,8 @@ public function searchPrestacion(Request $request)
         }
 
         $prestaciones = Prestacion::whereIn('Id', $ids)->get();
+
+        dd($prestaciones);
 
         $reporte = $this->reporteExcel->crear('ordenExamenResumen');
         return $reporte->generar($prestaciones);

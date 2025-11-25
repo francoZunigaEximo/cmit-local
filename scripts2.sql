@@ -13834,7 +13834,9 @@ CREATE TABLE descripcion_parametro (
 
 INSERT INTO modulo_parametros(nombre) VALUES('clientes'),('pacientes');
 
-CREATE DEFINER=`db_cmit`@`%` PROCEDURE `db_cmit`.`getOrdenesResumenes`(IN fechaDesde DATE, IN fechaHasta DATE, IN especialidades INT, IN estado VARCHAR(50), IN efector VARCHAR(50), IN profesional INT)
+DELIMITER //
+
+CREATE PROCEDURE getOrdenesResumenes(IN fechaDesde DATE, IN fechaHasta DATE, IN especialidades INT, IN estado VARCHAR(50), IN efector VARCHAR(50), IN profesional INT)
 BEGIN
 	SELECT 
 		pro.Nombre as especialidad,
@@ -13843,19 +13845,11 @@ BEGIN
 		emp.RazonSocial as empresa,
 		CONCAT(pa.Apellido,' ',pa.Nombre) as nombreCompleto,
 		pa.Documento as dni,
-		CONCAT(da.Apellido,' ',da.Nombre) as efector,
+		(CASE WHEN prof.Id = 0 THEN '' ELSE (CASE WHEN prof.RegHis = 1 THEN CONCAT(prof.Apellido,' ', prof.Nombre) ELSE CONCAT(da.Apellido,' ',da.Nombre) END) END) as efector,
 		(CASE WHEN p.Cerrado = 1 THEN "Abierto" ELSE "Cerrado" END) as estado,
 		pro.InfAdj as adjunto,
 		(CASE WHEN exa.Adjunto = 1 AND EXISTS (SELECT COUNT(*) FROM archivosefector WHERE IdEntidad = i.Id) > 0 THEN  'Adjunto' ELSE 'Sin adjunto' END) as archivos,
-		(SELECT ROUND(
-		    (SUM(CASE WHEN ip.CAdj = 5  THEN 1 ELSE 0 END) * 100.0) / COUNT(*), 0
-				 )
-				 FROM itemsprestaciones ip
-				 INNER JOIN proveedores prove ON ip.IdProveedor = prove.Id
-				 WHERE ip.IdPrestacion = p.Id 
-				 AND ip.IdProveedor = prove.Id 
-				) AS avance,
-		CONCAT(da.Apellido,' ', da.Nombre) as efector
+		av.avance_porcentaje AS avance
 	FROM prestaciones p
 	INNER JOIN itemsprestaciones i ON p.Id = i.IdPrestacion
 	INNER JOIN proveedores pro ON i.IdProveedor = pro.Id
@@ -13866,6 +13860,17 @@ BEGIN
 	LEFT JOIN users u ON prof.Id = u.profesional_id
 	LEFT JOIN datos da ON u.datos_id = da.Id
 	LEFT JOIN archivosefector ae ON i.Id = ae.IdEntidad
+	INNER JOIN (
+        SELECT
+            IdPrestacion,
+            IdProveedor,
+            ROUND((SUM(CASE WHEN CAdj = 5 OR CAdj = 4 THEN 1 ELSE 0 END) * 100.0) / COUNT(*), 0) AS avance_porcentaje
+        FROM
+            itemsprestaciones
+        GROUP BY
+            IdPrestacion,
+            IdProveedor
+    ) av ON i.IdPrestacion = av.IdPrestacion AND i.IdProveedor = av.IdProveedor
 	WHERE i.Fecha BETWEEN fechaDesde AND fechaHasta
 	AND (especialidades IS NULL OR (prof.Id = especialidades))
 	AND (
@@ -13879,5 +13884,7 @@ BEGIN
 	AND (efector IS NULL OR (efector = 'pendientes' AND i.CAdj IN (1,2,3)) OR (efector = 'cerrados' AND i.CAdj IN (3,4,5)))
 	AND (profesional IS NULL OR (prof.Id = profesional))
 	GROUP BY pro.Id
-	ORDER BY p.Id DESC;
-END
+	
+	ORDER BY p.Id DESC, pro.Nombre, da.Apellido;
+END //
+DELIMITER;
