@@ -500,8 +500,10 @@ public function searchPrestacion(Request $request)
             return response()->json(['message' => 'No hay prestaciones para generar el reporte'], 404);
         }
 
+        $examenes = $this->queryPrestacion($ids);
+
         $reporte = $this->reporteExcel->crear('ordenExamenPrestacion');
-        return $reporte->generar($ids);
+        return $reporte->generar($examenes);
     }
 
     public function exportarResumen(Request $request)
@@ -657,6 +659,43 @@ public function searchPrestacion(Request $request)
     //     and i.Anulado=0  
     //     $wbuscar $wfecha"
 
-
+    private function queryPrestacion(?array $ids): mixed
+    {
+        return ItemPrestacion::join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
+        ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
+        ->join('proveedores', 'examenes.IdProveedor2', '=', 'proveedores.Id')
+        ->join('clientes', 'prestaciones.IdEmpresa', '=', 'clientes.Id')
+        ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
+        ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+        ->join('profesionales as prof1', 'itemsprestaciones.IdProfesional', '=', 'prof1.Id')
+        ->join('profesionales as prof2', 'itemsprestaciones.IdProfesional2', '=', 'prof2.Id')
+        ->select(
+            'itemsprestaciones.Id as IdItem',
+            'itemsprestaciones.Fecha as Fecha',
+            'itemsprestaciones.CAdj as Efector',
+            'itemsprestaciones.CInfo as Informador',
+            'itemsprestaciones.IdProfesional as IdProfesional',
+            'proveedores.Nombre as Especialidad',
+            'proveedores.Id as IdEspecialidad',
+            'prestaciones.Id as IdPrestacion',
+            'prestaciones.Cerrado as PresCerrado',
+            'prestaciones.Finalizado as PresFinalizado',
+            'prestaciones.Entregado as PresEntregado',
+            'prestaciones.eEnviado as PresEnviado',
+            'clientes.RazonSocial as Empresa',
+            'pacientes.Nombre as NombrePaciente',
+            'pacientes.Apellido as ApellidoPaciente',
+            'prof1.Nombre as NombreProfesional',
+            'prof1.Apellido as ApellidoProfesional',
+            'prof2.Nombre as NombreProfesional2',
+            'prof2.Apellido as ApellidoProfesional2',
+            'examenes.Nombre as Examen',
+            'examenes.Id as IdExamen',
+            'examenes.DiasVencimiento as DiasVencimiento',
+            'examenes.NoImprime as NoImprime'
+        )->whereNot('itemsprestaciones.Id', 0)
+        ->whereIn('itemsprestaciones.Id', $ids)
+        ->get();
+    }
 
 }
