@@ -604,17 +604,16 @@ $(function() {
 
         $(document).on('click', '.ExportarResumenes', function(e) {
         e.preventDefault();
-    
-        var ids = [];
-        $('#listaOrdenesResumenes #listado').each(function() {
-            var id = $(this).data('id');
-            if (id) {
-                ids.push(id);
-            }
-        });
 
-        if(ids.length === 0) {
-            toastr.warning('No hay prestaciones para exportar', 'Atención', {timeOut: 1000});
+        let fechaDesde = $('#fechaDesdeResumenes').val(),
+            fechaHasta = $('#fechaHastaResumenes').val(),
+            especialidades = $('#especialidadResumenes').val(),
+            estado = $('#estadoResumenes').val(),
+            efector = $('#efectorResumenes').val(),
+            profesional = $('#profEfectorResumenes').val();
+
+        if(!fechaDesde || !fechaHasta) {
+            toastr.warning('No hay una fecha valida para exportar', "", {timeOut: 1000});
             return;
         }
 
@@ -625,7 +624,7 @@ $(function() {
         }).then((confirmar) => {
             if(confirmar){
                 preloader('on');
-                $.get(exportarOrdExaResumen, {Id: ids})
+                $.get(exportarOrdExaResumen, {fechaDesde: fechaDesde, fechaHasta:fechaHasta, especialidades: especialidades, estado: estado, efector: efector, profesional: profesional})
                     .done(function(response){
                         preloader('off');
                         createFile("excel", response.filePath, generarCodigoAleatorio() + '_reporte');

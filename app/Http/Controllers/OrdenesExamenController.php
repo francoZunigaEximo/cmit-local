@@ -508,16 +508,19 @@ public function searchPrestacion(Request $request)
 
     public function exportarResumen(Request $request)
     {
-        $ids = (array) $request->Id;
-
         if(empty($ids)) {
             return response()->json(['message' => 'No hay prestaciones para generar el reporte'], 404);
         }
 
-        $prestaciones = Prestacion::whereIn('Id', $ids)->get();
-
-        dd($prestaciones);
-
+        $prestaciones =  DB::select("CALL getOrdenesResumenes(?,?,?,?,?,?)",[
+                $request->fechaDesde,
+                $request->fechaHasta,
+                $request->especialidades,
+                $request->estado,
+                $request->efector,
+                $request->profesional
+            ]);
+            
         $reporte = $this->reporteExcel->crear('ordenExamenResumen');
         return $reporte->generar($prestaciones);
     }
