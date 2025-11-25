@@ -62,8 +62,6 @@ trait ToolsReportes
         $writer->save($filePath);
         chmod($filePath, 0777);
 
-        //modificacion para que la ruta pase de /app/
-
         return response()->json(['filePath' => $filePath, 'msg' => 'Se ha generado correctamente el reporte ', 'estado' => 'success']);
     }
 

@@ -1149,6 +1149,12 @@
                                                     <button type="button" id="buscarResumenes" class="btn botonGeneral"><i class="ri-zoom-in-line"></i>&nbsp;Buscar</button>
                                                 </div>
                                             </div>
+
+                                            <div class="row">
+                                                <div class="col-sm-12" style="text-align: left">
+                                                    <button type="button" class="btn botonGeneral ExportarResumenes"><i class="ri-file-excel-line"></i>&nbsp;Exportar</button>
+                                                </div>
+                                            </div>
                                         
                                         </div>
                                     </form>
@@ -1218,6 +1224,7 @@
     const getPagado = "{{ route('ordenesExamen.obtenerPagado') }}";
     const enviarEE = "{{ route('ordenesExamen.enviarEstudio') }}";
     const SEARCHRESUMEN = "{{ route('searchOrdExaResumen') }}";
+    const exportarOrdExaResumen = "{{ route('ordenesExamen.exportarResumenes') }}";
 </script>
 
 @push('styles')

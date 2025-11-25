@@ -36,6 +36,8 @@ use App\Jobs\ExamenesResultadosJob;
 use App\Helpers\ToolsEmails;
 use App\Models\Auditor;
 
+use App\Services\ReportesExcel\ReporteExcel;
+
 class OrdenesExamenController extends Controller
 {
     use ObserverItemsPrestaciones, CheckPermission, ToolsReportes, ToolsEmails;
@@ -45,16 +47,18 @@ class OrdenesExamenController extends Controller
     protected $sendPath;
     protected $fileNameExport;
     private $tempFile;
+    protected $reporteExcel;
 
     const TABLA = 6;
 
-    public function __construct(ReporteService $reporteService)
+    public function __construct(ReporteService $reporteService, ReporteExcel $reporteExcel)
     {
         $this->reporteService = $reporteService;
         $this->outputPath = storage_path('app/public/temp/fusionar'.Tools::randomCode(15).'.pdf');
         $this->sendPath = storage_path('app/public/temp/cmit-'.Tools::randomCode(15).'-informe.pdf');
         $this->fileNameExport = 'reporte-'.Tools::randomCode(15);
         $this->tempFile = 'app/public/temp/file-';
+        $this->reporteExcel = $reporteExcel;
     }
 
     public function index()
@@ -74,12 +78,6 @@ class OrdenesExamenController extends Controller
 
         if($request->ajax())
         {
-            // $query = DB::select('CALL getPrestaciones(?,?,?,?,?,?,?,?,?,?,?,?,?)', [
-            //     $request->fechaDesde ?? null,
-            //     $request->fechaHasta ?? null,
-            //     $request->empresa ?? null,
-            // ]);
-
             $query = DB::table('itemsprestaciones')
             ->select(
                 'itemsprestaciones.Id as IdItem',
@@ -611,6 +609,20 @@ public function searchPrestacion(Request $request)
         // Devolver la ruta del archivo generado
         return response()->json(['filePath' => $filePath]);  
 
+    }
+
+    public function exportarResumen(Request $request)
+    {
+        $ids = (array) $request->Id;
+
+        if(empty($ids)) {
+            return response()->json(['message' => 'No hay prestaciones para generar el reporte'], 404);
+        }
+
+        $prestaciones = Prestacion::whereIn('Id', $ids)->get();
+
+        $reporte = $this->reporteExcel->crear('ordenExamenResumen');
+        return $reporte->generar($prestaciones);
     }
 
     private function eEstudio(int $idPrestacion, string $opciones): mixed

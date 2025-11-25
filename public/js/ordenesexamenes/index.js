@@ -592,7 +592,7 @@ $(function() {
         }).then((confirmar) => {
             if(confirmar){
                 preloader('on');
-                $.get(exportarOrdExa, {Id: ids})
+                $.get(exportarOrdExaResumen, {Id: ids})
                     .done(function(response){
                         preloader('off');
                         createFile("excel", response.filePath, generarCodigoAleatorio() + '_reporte');
@@ -601,6 +601,41 @@ $(function() {
             }
         });
     });
+
+        $(document).on('click', '.ExportarResumenes', function(e) {
+        e.preventDefault();
+    
+        var ids = [];
+        $('#listaOrdenesResumenes #listado').each(function() {
+            var id = $(this).data('id');
+            if (id) {
+                ids.push(id);
+            }
+        });
+
+        if(ids.length === 0) {
+            toastr.warning('No hay prestaciones para exportar', 'Atención', {timeOut: 1000});
+            return;
+        }
+
+        swal({
+            title: "¿Estas seguro que deseas generar el reporte de  examenes/prestaciones?",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if(confirmar){
+                preloader('on');
+                $.get(exportarOrdExaResumen, {Id: ids})
+                    .done(function(response){
+                        preloader('off');
+                        createFile("excel", response.filePath, generarCodigoAleatorio() + '_reporte');
+                        toastr.success("Se esta generando el reporte",'',{timeOut: 1000});
+                    })
+            }
+        });
+    });
+
+    
 
     $(document).on('click', '.vistaPreviaEnvios', function(e){
         e.preventDefault();

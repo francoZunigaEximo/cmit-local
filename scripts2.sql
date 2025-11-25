@@ -13834,28 +13834,37 @@ CREATE TABLE descripcion_parametro (
 
 INSERT INTO modulo_parametros(nombre) VALUES('clientes'),('pacientes');
 
-CREATE PROCEDURE db_cmit.getOrdenesResumenes(IN fechaDesde DATE, IN fechaHasta DATE, IN especialidades INT, IN estado VARCHAR(50), IN efector VARCHAR(50), IN profesional INT)
+CREATE DEFINER=`db_cmit`@`%` PROCEDURE `db_cmit`.`getOrdenesResumenes`(IN fechaDesde DATE, IN fechaHasta DATE, IN especialidades INT, IN estado VARCHAR(50), IN efector VARCHAR(50), IN profesional INT)
 BEGIN
 	SELECT 
 		pro.Nombre as especialidad,
-		p.Fecha as fecha,
+		DATE_FORMAT(p.Fecha, '%d/%m/%Y') as fecha,
 		p.Id as prestacion,
 		emp.RazonSocial as empresa,
-		CONCAT(pa.Apellido,' ',pa.Nombre) as NombreCompleto,
+		CONCAT(pa.Apellido,' ',pa.Nombre) as nombreCompleto,
 		pa.Documento as dni,
 		CONCAT(da.Apellido,' ',da.Nombre) as efector,
 		(CASE WHEN p.Cerrado = 1 THEN "Abierto" ELSE "Cerrado" END) as estado,
 		pro.InfAdj as adjunto,
-		(SELECT COUNT(*) FROM archivosefector WHERE IdEntidad = i.Id) AS archivos,
-		(SELECT ROUND((SUM(CASE WHEN i.CAdj = 5 THEN 1 ELSE 0 END) / COUNT(*)) * 100 , 0) FROM itemsprestaciones WHERE i.IdPrestacion = p.Id) AS avance
+		(CASE WHEN exa.Adjunto = 1 AND EXISTS (SELECT COUNT(*) FROM archivosefector WHERE IdEntidad = i.Id) > 0 THEN  'Adjunto' ELSE 'Sin adjunto' END) as archivos,
+		(SELECT ROUND(
+		    (SUM(CASE WHEN ip.CAdj = 5  THEN 1 ELSE 0 END) * 100.0) / COUNT(*), 0
+				 )
+				 FROM itemsprestaciones ip
+				 INNER JOIN proveedores prove ON ip.IdProveedor = prove.Id
+				 WHERE ip.IdPrestacion = p.Id 
+				 AND ip.IdProveedor = prove.Id 
+				) AS avance,
+		CONCAT(da.Apellido,' ', da.Nombre) as efector
 	FROM prestaciones p
 	INNER JOIN itemsprestaciones i ON p.Id = i.IdPrestacion
 	INNER JOIN proveedores pro ON i.IdProveedor = pro.Id
 	INNER JOIN clientes emp ON p.IdEmpresa = emp.Id
 	INNER JOIN pacientes pa ON p.IdPaciente = pa.Id
-	INNER JOIN profesionales prof ON i.IdProfesional = prof.Id
-	INNER JOIN users u ON prof.Id = u.profesional_id
-	INNER JOIN datos da ON u.datos_id = da.Id
+	INNER JOIN examenes exa ON i.IdExamen = exa.Id
+	LEFT JOIN profesionales prof ON i.IdProfesional = prof.Id
+	LEFT JOIN users u ON prof.Id = u.profesional_id
+	LEFT JOIN datos da ON u.datos_id = da.Id
 	LEFT JOIN archivosefector ae ON i.Id = ae.IdEntidad
 	WHERE i.Fecha BETWEEN fechaDesde AND fechaHasta
 	AND (especialidades IS NULL OR (prof.Id = especialidades))
@@ -13868,5 +13877,7 @@ BEGIN
         OR (estado = 'eenviado' AND p.eEnviado = 1)
     )
 	AND (efector IS NULL OR (efector = 'pendientes' AND i.CAdj IN (1,2,3)) OR (efector = 'cerrados' AND i.CAdj IN (3,4,5)))
-	AND (profesional IS NULL OR (prof.Id = profesional));
+	AND (profesional IS NULL OR (prof.Id = profesional))
+	GROUP BY pro.Id
+	ORDER BY p.Id DESC;
 END

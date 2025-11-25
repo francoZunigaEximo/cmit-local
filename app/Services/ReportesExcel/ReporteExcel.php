@@ -30,6 +30,7 @@ use App\Services\ReportesExcel\modelos\PaqueteFacturacion;
 use App\Services\ReportesExcel\modelos\PaqueteFacturacionDetalle;
 use App\Services\ReportesExcel\modelos\SaldosCta;
 use App\Services\ReportesExcel\modelos\PagoMasivo;
+use App\Services\ReportesExcel\modelos\OrdenExamenResumen;
 
 class ReporteExcel
 {
@@ -92,6 +93,8 @@ class ReporteExcel
                 return new ExamenesCtaSimple();
             case 'examenesCtaCompleto':
                 return new ExamenesCtaCompleto(); // Uncomment and implement when available
+            case 'ordenExamenResumen':
+                return new OrdenExamenResumen();
             default:
                 return response()->json(['msg' => 'Tipo de reporte no válido'], 400);
         }

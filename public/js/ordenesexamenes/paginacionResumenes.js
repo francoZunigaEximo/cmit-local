@@ -7,7 +7,7 @@ $(function(){
              especialidad = $('#especialidadResumenes').val(),
              estado = $('#estadoResumenes').val(),
              efector = $('#efectorResumenes').val(),
-             profesional = $('#profEfectorResumenes');
+             profesional = $('#profEfectorResumenes').val();
 
         if (!fechaDesde || !fechaHasta) {
             toastr.warning("Las fechas son obligatorias",'',{timeOut: 1000});
@@ -25,6 +25,7 @@ $(function(){
             pageLength: 50,
             deferRender: true,
             responsive: false,
+            scrollCollapse: true,
             serverSide: true,
             ajax: {
                 url: SEARCHRESUMEN,
@@ -35,14 +36,16 @@ $(function(){
                     d.estado = estado;
                     d.efector = efector;
                     d.profesional = profesional;
-                },
+                }
             },
             dataType: 'json',
             type: 'POST',
             columns: [
                 {//1
-                    data: 'avance',
-                    name: 'avance'
+                    data: null,
+                    render: function(data) {
+                        return `<div id="listado" data-id="${data.prestacion}">${data.avance}%</div>`;
+                    }
                 },
                 {//2
                     data: 'especialidad',
@@ -84,13 +87,13 @@ $(function(){
                 {//11
                     data: null,
                     render: function(data){
-                        return '';
+                        return `<div class="text-center"><a href="${linkPrestaciones}/${data.prestacion}/edit" target="_blank"><i class="ri-edit-line"></i></a></div>`;
                     }
                 }
 
             ],
             language: {
-                emptyTable: "No hay examenes con los datos buscados",
+                emptyTable: "No hay prestaciones con los datos buscados",
                 paginate: {
                     first: "Primera",
                     previous: "Anterior",
@@ -105,7 +108,7 @@ $(function(){
                         last: "Última"
                     }
                 },
-                info: "Mostrando _START_ a _END_ de _TOTAL_ de examenes",
+                info: "Mostrando _START_ a _END_ de _TOTAL_ de prestaciones",
             }
         });
 
