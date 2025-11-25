@@ -500,8 +500,6 @@ public function searchPrestacion(Request $request)
             return response()->json(['message' => 'No hay prestaciones para generar el reporte'], 404);
         }
 
-        dd($ids);
-
         $examenes = $this->queryPrestacion($ids);
 
         $reporte = $this->reporteExcel->crear('ordenExamenPrestacion');

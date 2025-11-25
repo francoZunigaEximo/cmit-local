@@ -592,7 +592,7 @@ $(function() {
         }).then((confirmar) => {
             if(confirmar){
                 preloader('on');
-                $.get(exportarOrdExaResumen, {Id: ids})
+                $.get(exportarOrdExa, {Id: ids})
                     .done(function(response){
                         preloader('off');
                         createFile("excel", response.filePath, generarCodigoAleatorio() + '_reporte');
