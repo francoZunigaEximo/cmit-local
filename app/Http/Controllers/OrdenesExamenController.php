@@ -494,121 +494,14 @@ public function searchPrestacion(Request $request)
 
         public function exportar(Request $request)
     {
-        $examenes = $request->Id;
+        $ids = (array) $request->Id;
 
-        if (!is_array($examenes)) {
-            $examenes = [$examenes];
+        if(empty($ids)) {
+            return response()->json(['message' => 'No hay prestaciones para generar el reporte'], 404);
         }
 
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-        $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
-
-        $columnas = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M'];
-
-        foreach ($columnas as $columna) {
-            $sheet->getColumnDimension($columna)->setAutoSize(true);
-        }
-
-        $sheet->getStyle('A1:M1')->getFill()
-        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-        ->getStartColor()->setARGB('CCCCCCCC'); 
-
-        // Agregar bordes gruesos a la celda
-        $styleArray = [
-            'borders' => [
-                'allBorders' => [
-                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK,
-                    'color' => ['argb' => '00000000'],
-                ],
-            ],
-        ];
-
-        $sheet->getStyle('A1:M1')->applyFromArray($styleArray);
-        $sheet->getStyle('A1:M1')->getFont()->setBold(true)->setSize(11);
-
-        $sheet->setCellValue('A1', 'Especialidad');
-        $sheet->setCellValue('B1', 'Fecha');
-        $sheet->setCellValue('C1', 'Prestacion');
-        $sheet->setCellValue('D1', 'Empresa');
-        $sheet->setCellValue('E1', 'Paciente');
-        $sheet->setCellValue('F1', 'Estado');
-        $sheet->setCellValue('G1', 'Examen');
-        $sheet->setCellValue('H1', 'Efector');
-        $sheet->setCellValue('I1', 'Estado Efector');
-        $sheet->setCellValue('J1', 'Tipo Adjunto');
-        $sheet->setCellValue('K1', 'Informador');
-        $sheet->setCellValue('L1', 'Estado Informador');
-        $sheet->setCellValue('M1', 'Fecha Vencimiento');
-
-        $fila = 2;
-        foreach($examenes as $examen){
-
-            $item = $this->queryPrestacion($examen);
-
-            $estado = $item->PresCerrado === 0 && $item->PresFinalizado === 0
-                        ? 'Abierto'
-                        : ($item->PresCerrado === 1 && $item->PresFinalizado === 0
-                            ? 'Cerrado'
-                            : ($item->PresCerrado === 1 && $item->PresFinalizado === 1
-                                ? 'Finalizado'
-                                : ($item->PresEntregado === 1
-                                    ? 'Entregado'
-                                    : ($item->PresCerrado === 1 && $item->PresEnviado === 1
-                                        ? 'eEnviado'
-                                        : '-'))));
-
-            $estadoEfector = in_array($item->Efector, [1,2,4]) 
-                                ? "Pendiente"
-                                : (in_array($item->Efector, [3,5])
-                                    ? 'Cerrado'
-                                    : '-');
-
-            $arr = [0 => '', 1 => 'Abierto/Pdte', 2 => 'Abierto/Adjunto', 3 => '', 4 => 'Cerrado/Pdte', 5 => 'Cerrado/Adjunto'];
-
-            $adjunto = $arr[$item->Efector];
-            
-            $estadoInformador = ($item->Informador === 1) 
-                                    ? "Pendiente"
-                                    : ($item->Informador === 2
-                                        ? 'Borrador'
-                                        : ($item->Informador === 3
-                                            ? 'Cerrado'
-                                            : '-'));
-
-            $itemFecha = new DateTime($item->Fecha);
-            $vencimiento = $itemFecha->add(new DateInterval('P' . intval($item->DiasVencimiento) . 'D'));
-                                            
-
-            $sheet->setCellValue('A'.$fila, $item->Especialidad);
-            $sheet->setCellValue('B'.$fila, Carbon::parse($item->Fecha)->format('d/m/Y'));
-            $sheet->setCellValue('C'.$fila, $item->IdPrestacion);
-            $sheet->setCellValue('D'.$fila, $item->Empresa);
-            $sheet->setCellValue('E'.$fila, $item->NombrePaciente ." ". $item->ApellidoPaciente);
-            $sheet->setCellValue('F'.$fila, $estado);
-            $sheet->setCellValue('G'.$fila, $item->Examen);
-            $sheet->setCellValue('H'.$fila, $item->NombreProfesional . " " . $item->ApellidoProfesional);
-            $sheet->setCellValue('I'.$fila, $estadoEfector);
-            $sheet->setCellValue('J'.$fila, $adjunto);
-            $sheet->setCellValue('K'.$fila, $item->NombreProfesional2 . " " . $item->ApellidoProfesional2);
-            $sheet->setCellValue('L'.$fila, $estadoInformador);
-            $sheet->setCellValue('M'.$fila, Carbon::parse($vencimiento)->format('d/m/Y'));
-            $fila++;
-        }
-
-        // Generar un nombre aleatorio para el archivo
-        $name = Str::random(10).'.xlsx';
-
-        // Guardar el archivo en la carpeta de almacenamiento
-        $filePath = storage_path('app/public/'.$name);
-
-        $writer = new Xlsx($spreadsheet);
-        $writer->save($filePath);
-        chmod($filePath, 0777);
-
-        // Devolver la ruta del archivo generado
-        return response()->json(['filePath' => $filePath]);  
-
+        $reporte = $this->reporteExcel->crear('ordenExamenPrestacion');
+        return $reporte->generar($ids);
     }
 
     public function exportarResumen(Request $request)
@@ -764,44 +657,6 @@ public function searchPrestacion(Request $request)
     //     and i.Anulado=0  
     //     $wbuscar $wfecha"
 
-    private function queryPrestacion(?int $id): mixed
-    {
 
-        return ItemPrestacion::join('prestaciones', 'itemsprestaciones.IdPrestacion', '=', 'prestaciones.Id')
-        ->join('examenes', 'itemsprestaciones.IdExamen', '=', 'examenes.Id')
-        ->join('proveedores', 'examenes.IdProveedor2', '=', 'proveedores.Id')
-        ->join('clientes', 'prestaciones.IdEmpresa', '=', 'clientes.Id')
-        ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
-        ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-        ->join('profesionales as prof1', 'itemsprestaciones.IdProfesional', '=', 'prof1.Id')
-        ->join('profesionales as prof2', 'itemsprestaciones.IdProfesional2', '=', 'prof2.Id')
-        ->select(
-            'itemsprestaciones.Id as IdItem',
-            'itemsprestaciones.Fecha as Fecha',
-            'itemsprestaciones.CAdj as Efector',
-            'itemsprestaciones.CInfo as Informador',
-            'itemsprestaciones.IdProfesional as IdProfesional',
-            'proveedores.Nombre as Especialidad',
-            'proveedores.Id as IdEspecialidad',
-            'prestaciones.Id as IdPrestacion',
-            'prestaciones.Cerrado as PresCerrado',
-            'prestaciones.Finalizado as PresFinalizado',
-            'prestaciones.Entregado as PresEntregado',
-            'prestaciones.eEnviado as PresEnviado',
-            'clientes.RazonSocial as Empresa',
-            'pacientes.Nombre as NombrePaciente',
-            'pacientes.Apellido as ApellidoPaciente',
-            'prof1.Nombre as NombreProfesional',
-            'prof1.Apellido as ApellidoProfesional',
-            'prof2.Nombre as NombreProfesional2',
-            'prof2.Apellido as ApellidoProfesional2',
-            'examenes.Nombre as Examen',
-            'examenes.Id as IdExamen',
-            'examenes.DiasVencimiento as DiasVencimiento',
-            'examenes.NoImprime as NoImprime'
-        )->whereNot('itemsprestaciones.Id', 0)
-        ->where('itemsprestaciones.Id', $id)
-        ->first();
-    }
 
 }

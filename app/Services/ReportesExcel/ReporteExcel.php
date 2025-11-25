@@ -24,6 +24,7 @@ use App\Services\ReportesExcel\modelos\FacturaCompraIndivisual;
 use App\Services\ReportesExcel\modelos\GrupoClientesDetalleFull;
 use App\Services\ReportesExcel\modelos\GrupoClientesFull;
 use App\Services\ReportesExcel\modelos\NotaCreditoReporte;
+use App\Services\ReportesExcel\modelos\OrdenExamenPrestacion;
 use App\Services\ReportesExcel\modelos\PaqueteEstudio;
 use App\Services\ReportesExcel\modelos\PaqueteEstudioDetalle;
 use App\Services\ReportesExcel\modelos\PaqueteFacturacion;
@@ -95,6 +96,8 @@ class ReporteExcel
                 return new ExamenesCtaCompleto(); // Uncomment and implement when available
             case 'ordenExamenResumen':
                 return new OrdenExamenResumen();
+            case 'ordenExamenPrestacion':
+                return new OrdenExamenPrestacion();
             default:
                 return response()->json(['msg' => 'Tipo de reporte no válido'], 400);
         }
