@@ -154,8 +154,8 @@ class PrestacionesController extends Controller
         $auditorias = Auditor::with('auditarAccion')->where('IdTabla', 1)->where('IdRegistro', $prestacione->Id)->orderBy('Id', 'Asc')->get();
         $fichalaboral = Fichalaboral::where('IdPaciente', $prestacione->IdPaciente)->orderBy('Id', 'Desc')->first();
         $tiposPrestacionOtros = PrestacionesTipo::whereNotIn('Nombre', $tiposPrestacionPrincipales)->get();
-
-        return view('layouts.prestaciones.edit', compact(['tipoPrestacion', 'prestacione', 'financiador', 'auditorias', 'fichalaboral', 'tiposPrestacionOtros']), ['helper'=> $this->helperEdit]);
+        $paciente = Paciente::find($prestacione->IdPaciente, ['Nombre', 'Apellido', 'Documento', 'TipoDocumento']);
+        return view('layouts.prestaciones.edit', compact(['tipoPrestacion', 'prestacione', 'financiador', 'auditorias', 'fichalaboral', 'tiposPrestacionOtros', 'paciente']), ['helper'=> $this->helperEdit]);
     }
 
     public function estados(Request $request)
@@ -805,7 +805,7 @@ class PrestacionesController extends Controller
         $adjGenerales = $this->adjGenerales($request->Id);
 
         $attachments = [$eEstudio, $adjAnexos, $adjGenerales];
-
+        
         if (empty($attachments)) {
             return response()->json(['msg' => 'No se han encontrado reportes para empaquetar y enviar. Consulte al administrador'], 409);
         }

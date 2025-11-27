@@ -1414,6 +1414,16 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>
             </div>
             <div class="modal-body" class="text-center p-3">
+                <div class="row">
+                    <div class="col-6 mb-2">
+                        <label for="pacienteNombre" class="form-label">Paciente</label>
+                        <input type="text" class="form-control form-control-sm" value="{{ $paciente->Apellido.', '.$paciente->Nombre ?? ''}}" disabled>
+                    </div>
+                    <div class="col-6 mb-2">
+                        <label for="pacienteNombre" class="form-label">Dni</label>
+                        <input type="text" class="form-control form-control-sm" value="{{ $paciente->Documento ?? ''}}" disabled>
+                    </div>
+                </div>
                 <button class="btn btn-sm botonGeneral exportSimple" data-id="{{ $prestacione->IdPaciente ?? '' }}"><i class="ri-file-excel-line"></i> Exportar Simple</button>
                 <button class="btn btn-sm botonGeneral exportDetallado" data-id="{{ $prestacione->IdPaciente ?? '' }}"><i class="ri-file-excel-line"></i> Exportar Detallado</button>
                 <div class="row auto-mx mb-3">
