@@ -598,6 +598,11 @@ $(function() {
                         createFile("excel", response.filePath, generarCodigoAleatorio() + '_reporte');
                         toastr.success("Se esta generando el reporte",'',{timeOut: 1000});
                     })
+                    .fail(function(jqXHR){
+                        let errorData = JSON.parse(jqXHR.responseText);
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
+                    });
             }
         });
     });
@@ -630,6 +635,11 @@ $(function() {
                         createFile("excel", response.filePath, generarCodigoAleatorio() + '_reporte');
                         toastr.success("Se esta generando el reporte",'',{timeOut: 1000});
                     })
+                    .fail(function(jqXHR){
+                        let errorData = JSON.parse(jqXHR.responseText);
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
+                    });
             }
         });
     });

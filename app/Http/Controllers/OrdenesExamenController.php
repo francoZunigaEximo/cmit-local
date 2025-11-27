@@ -508,9 +508,6 @@ public function searchPrestacion(Request $request)
 
     public function exportarResumen(Request $request)
     {
-        if(empty($ids)) {
-            return response()->json(['message' => 'No hay prestaciones para generar el reporte'], 404);
-        }
 
         $prestaciones =  DB::select("CALL getOrdenesResumenes(?,?,?,?,?,?)",[
                 $request->fechaDesde,
@@ -520,7 +517,7 @@ public function searchPrestacion(Request $request)
                 $request->efector,
                 $request->profesional
             ]);
-            
+
         $reporte = $this->reporteExcel->crear('ordenExamenResumen');
         return $reporte->generar($prestaciones);
     }
