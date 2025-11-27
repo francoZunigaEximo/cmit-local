@@ -805,9 +805,7 @@ class PrestacionesController extends Controller
         $adjGenerales = $this->adjGenerales($request->Id);
 
         $attachments = [$eEstudio, $adjAnexos, $adjGenerales];
-        dd($attachments);
-        die();
-
+        
         if (empty($attachments)) {
             return response()->json(['msg' => 'No se han encontrado reportes para empaquetar y enviar. Consulte al administrador'], 409);
         }
@@ -830,7 +828,7 @@ class PrestacionesController extends Controller
             return response()->json(['msg' => 'El cliente no posee un correo registrado'], 409);
         }
 
-        //EnvioReporteEspecialJob::dispatch($prestacion->empresa->EMailInformes, $asunto, $cuerpo, $attachments)->onQueue('correos');
+        EnvioReporteEspecialJob::dispatch($prestacion->empresa->EMailInformes, $asunto, $cuerpo, $attachments)->onQueue('correos');
 
         return response()->json(['msg' => 'Se ha enviado el reporte con exito'], 200);
 
