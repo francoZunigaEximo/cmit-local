@@ -1,6 +1,14 @@
 $(function(){
 
-    $(document).on('click', '#buscarResumenes', function() {
+    $(document).on('click', '#buscarResumenes, #treintaDiasResumenes, #noventaDiasResumenes, #sesentaDiasResumenes', function() {
+
+        let fecha = new Date();
+
+        const diasBuscar = {
+            'sesentaDiasResumenes': 60,
+            'noventaDiasResumenes': 90,
+            'treintaDiasResumenes': 30
+        };
 
          let fechaDesde = $('#fechaDesdeResumenes').val(),
              fechaHasta = $('#fechaHastaResumenes').val(),
@@ -9,7 +17,12 @@ $(function(){
              efector = $('#efectorResumenes').val(),
              profesional = $('#profEfectorResumenes').val();
 
-        if (!fechaDesde || !fechaHasta) {
+        let restar = this.id,
+            dias = diasBuscar[restar];
+
+        console.log(dias);return;
+
+        if (!fechaDesde || !dias) {
             toastr.warning("Las fechas son obligatorias",'',{timeOut: 1000});
             return;
         }
@@ -30,7 +43,7 @@ $(function(){
             ajax: {
                 url: SEARCHRESUMEN,
                 data: function(d){
-                    d.fechaDesde = fechaDesde;
+                    d.fechaDesde = dias;
                     d.fechaHasta = fechaHasta;
                     d.especialidad = especialidad;
                     d.estado = estado;

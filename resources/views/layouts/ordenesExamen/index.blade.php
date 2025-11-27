@@ -1147,12 +1147,16 @@
                                                 <div class="col-sm-12" style="text-align: right;">
                                                     <button type="button" id="resetResumenes" class="btn botonGeneral"><i class="ri-refresh-line"></i>&nbsp;Reiniciar</button>
                                                     <button type="button" id="buscarResumenes" class="btn botonGeneral"><i class="ri-zoom-in-line"></i>&nbsp;Buscar</button>
+                                                    <button type="button" id="treintaDiasResumenes" class="btn btn-sm botonGeneral"><i class="ri-calendar-2-fill"></i>&nbsp;Buscar 30 días</button>
+                                                    <button type="button" id="sesentaDiasResumenes" class="btn btn-sm botonGeneral"><i class="ri-calendar-2-fill"></i>&nbsp;Buscar 60 días</button>
+                                                    <button type="button" id="noventaDiasResumenes" class="btn btn-sm botonGeneral"><i class="ri-calendar-2-fill"></i>&nbsp;Buscar 90 días</button>
                                                 </div>
                                             </div>
 
                                             <div class="row">
                                                 <div class="col-sm-12" style="text-align: left">
                                                     <button type="button" class="btn botonGeneral ExportarResumenes"><i class="ri-file-excel-line"></i>&nbsp;Exportar</button>
+                                                    
                                                 </div>
                                             </div>
                                         
