@@ -13872,7 +13872,7 @@ BEGIN
             IdProveedor
     ) av ON i.IdPrestacion = av.IdPrestacion AND i.IdProveedor = av.IdProveedor
 	WHERE i.Fecha BETWEEN fechaDesde AND fechaHasta
-	AND (especialidades IS NULL OR (prof.Id = especialidades))
+	AND (especialidades IS NULL OR (pro.Id = especialidades))
 	AND (
         estado IS NULL
         OR (estado = 'abierto' AND p.Finalizado = 0 AND p.Cerrado = 0 AND p.Entregado = 0)
@@ -13884,7 +13884,6 @@ BEGIN
 	AND (efector IS NULL OR (efector = 'pendientes' AND i.CAdj IN (1,2,3)) OR (efector = 'cerrados' AND i.CAdj IN (3,4,5)))
 	AND (profesional IS NULL OR (prof.Id = profesional))
 	GROUP BY pro.Id
-	
-	ORDER BY p.Id DESC, pro.Nombre, da.Apellido;
+	ORDER BY p.Id DESC
 END //
 DELIMITER;
