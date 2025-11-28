@@ -2,27 +2,32 @@ $(function(){
 
     $(document).on('click', '#buscarResumenes, #treintaDiasResumenes, #noventaDiasResumenes, #sesentaDiasResumenes', function() {
 
-        let fecha = new Date();
-
         const diasBuscar = {
             'sesentaDiasResumenes': 60,
             'noventaDiasResumenes': 90,
             'treintaDiasResumenes': 30
         };
 
-         let fechaDesde = $('#fechaDesdeResumenes').val(),
-             fechaHasta = $('#fechaHastaResumenes').val(),
-             especialidad = $('#especialidadResumenes').val(),
-             estado = $('#estadoResumenes').val(),
-             efector = $('#efectorResumenes').val(),
-             profesional = $('#profEfectorResumenes').val();
+         let fecha = new Date(),
+            fechaDesde = null,
+            fechaHasta = $('#fechaHastaResumenes').val(),
+            especialidad = $('#especialidadResumenes').val(),
+            estado = $('#estadoResumenes').val(),
+            efector = $('#efectorResumenes').val(),
+            profesional = $('#profEfectorResumenes').val(),
+            restar = this.id;
 
-        let restar = this.id,
-            dias = diasBuscar[restar];
 
-        console.log(dias);return;
+        if(Object.hasOwn(diasBuscar, restar)) {
 
-        if (!fechaDesde || !dias) {
+            fecha.setDate(fecha.getDate() - diasBuscar[restar]);
+            fechaDesde = `${fecha.getFullYear()}-${fecha.getMonth() + 1}-${fecha.getDate()}`;
+
+        }else{
+            fechaDesde = $('#fechaDesdeResumenes').val();
+        }
+
+        if (!fechaDesde || !fechaHasta) {
             toastr.warning("Las fechas son obligatorias",'',{timeOut: 1000});
             return;
         }
