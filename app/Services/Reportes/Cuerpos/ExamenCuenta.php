@@ -52,9 +52,8 @@ use Illuminate\Support\Facades\DB;
         $pdf->SetFont('Arial','B',8);	
         $pdf->Cell(0,5,'Examenes: '.$totalExamenes.', Disponibles: '.$totalDisponibles,0,0,'L');
         $pdf->Ln();				
-        $pdf->SetY(0);
 
-        $pdf->Ln(6);$pdf->SetFont('Arial','BU',10);	
+        $pdf->Ln(6);$pdf->SetFont('Arial','B',10);	
         $pdf->Cell(0,5,'LISTADO DISPONIBLES:',0,0,'L');
         $pdf->Ln();
         $pdf->SetFont('Arial','',7);
