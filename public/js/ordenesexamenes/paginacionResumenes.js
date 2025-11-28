@@ -48,7 +48,7 @@ $(function(){
             ajax: {
                 url: SEARCHRESUMEN,
                 data: function(d){
-                    d.fechaDesde = dias;
+                    d.fechaDesde = fechaDesde;
                     d.fechaHasta = fechaHasta;
                     d.especialidad = especialidad;
                     d.estado = estado;
