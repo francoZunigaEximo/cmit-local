@@ -34,7 +34,9 @@ $(function() {
 
         if(multiCheck) return;
 
-        if(resultado && (!profesional || !especialidad) && !response.some(item => profesionales.includes("Administrador"))) {
+        console.log(profesionales.includes("Administrador"));
+
+        if(resultado && (!profesional || !especialidad) && !profesionales.includes("Administrador")) {
             choisePModal.modal('show');
         }
     }
