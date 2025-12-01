@@ -121,15 +121,12 @@
                                                 $tieneRol = !empty(array_intersect($rolesPermitidos, $rolesUsuario));
                                                 $multiespecialidad = Auth::user()->profesional->TLP === 1;
                                             @endphp
-                                            @if(!$tieneRol && empty(session('Profesional')) || session('Profesional') == '0')
-                                                @foreach(Auth::user()->role as $rol)
-                                                    {{ strtoupper($rol->nombre) }}
-                                                    <br />
-                                                @endforeach
-                                            @elseif($multiespecialidad)
+                                            @if($multiespecialidad === 1 && !array_search("Administrador", $rolesUsuario))
                                                 MULTIESPECIALIDAD
+                                            @elseif(array_search("Administrador", $rolesUsuario))
+                                                ADMNISTRADOR
                                             @else
-                                                {{ session('Profesional') }} | {{ session('Especialidad') }}
+                                                 {{ session('Profesional') }} | {{ session('Especialidad') }}
                                             @endif
                                         </span></h6>
                                         

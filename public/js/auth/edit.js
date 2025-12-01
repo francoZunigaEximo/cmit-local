@@ -567,8 +567,8 @@ $(function(){
 
         $.get(choisePerfil, {Id: id})
             .done(function(response){
-
-                $.each(response, function(index, data){
+                let listado = response.filter(r => r.Nombre !== "Administrador");
+                $.each(listado, function(index, data){
                     $('#perfiles').append(`<option value="${data.Id}">${data.Nombre}</option>`);
                 });              
             });
