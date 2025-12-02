@@ -35,6 +35,7 @@ $(function() {
         if(multiCheck) return;
 
         console.log(profesional, especialidad, multiCheck, resultado)
+        console.log(response)
         if(resultado && (!profesional || !especialidad)) {
             choisePModal.modal('show');
         }
