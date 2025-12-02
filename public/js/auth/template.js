@@ -38,7 +38,7 @@ $(function() {
         console.log(response)
         console.log(response.includes("Administrador"));
 
-        if(resultado && (!profesional || !especialidad) && !) {
+        if(resultado && (!profesional || !especialidad)) {
             choisePModal.modal('show');
         }
     }
