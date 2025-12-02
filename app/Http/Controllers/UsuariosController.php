@@ -420,7 +420,7 @@ class UsuariosController extends Controller
                 "profesionales.SeguroMP as SeguroMP",
                 "profesionales.MP as MP",
                 DB::raw("GROUP_CONCAT(roles.nombre SEPARATOR ',') as NombreRol")
-            )->where('id', $id)
+            )->where('users.id', $id)
              ->first();
     }
     
