@@ -66,44 +66,9 @@ class UsuariosController extends Controller
 
         $lstProveedor = Proveedor::where('Inactivo', 0)->whereNot('Id', 0)->OrderBy('Nombre', 'ASC')->get(['Id', 'Nombre']);
 
-        $query = User::join('datos', 'users.datos_id', '=', 'datos.Id')
-            ->join('localidades', 'datos.IdLocalidad', '=', 'localidades.Id')
-            ->join('profesionales', 'users.profesional_id', '=', 'profesionales.Id')
-            ->leftJoin('user_rol', 'users.id', '=', 'user_rol.user_id')
-            ->leftJoin('roles', 'user_rol.rol_id', '=', 'roles.Id')
-            ->select(
-                "users.id as UserId",
-                "users.name as Name",
-                "users.email as EMail",
-                "users.inactivo as Inactivo",
-                "datos.Id as IdDatos",
-                "datos.Telefono as Telefono",
-                "datos.TipoIdentificacion as TipoIdentificacion",
-                "datos.Identificacion as Identificacion",
-                "datos.TipoDocumento as TipoDocumento",
-                "datos.Documento as Documento",
-                "datos.Nombre as Nombre",
-                "datos.Apellido as Apellido",
-                "datos.FechaNacimiento as FechaNacimiento",
-                "datos.Direccion as Direccion",
-                "datos.IdLocalidad as ILocalidad",
-                "datos.Provincia as Provincia",
-                "datos.CP as CP",
-                "datos.Id as Id",
-                "localidades.Nombre as NombreLocalidad",
-                "profesionales.Id as IdProfesional",
-                "profesionales.Firma as Firma",
-                "profesionales.Foto as Foto",
-                "profesionales.wImage as wImage",
-                "profesionales.hImage as hImage",
-                "profesionales.InfAdj as InfAdj",
-                "profesionales.Pago as Pago",
-                "profesionales.TLP as TLP",
-                "profesionales.MN as MN",
-                "profesionales.SeguroMP as SeguroMP",
-                "profesionales.MP as MP",
-                DB::raw("GROUP_CONCAT(roles.nombre SEPARATOR ',') as NombreRol")
-            )->find($usuario->id);
+        $query = $this->getUsuarioNuevo($usuario->id);
+
+        dd($query);return;
 
         $listado = explode(',', $query->NombreRol);
         $contador = count(array_intersect($lstRoles, $listado));
@@ -416,6 +381,48 @@ class UsuariosController extends Controller
             ->get();
 
         return response()->json($query);
+    }
+
+    private function getUsuarioNuevo(int $id)
+    {
+        return User::join('datos', 'users.datos_id', '=', 'datos.Id')
+            ->join('localidades', 'datos.IdLocalidad', '=', 'localidades.Id')
+            ->join('profesionales', 'users.profesional_id', '=', 'profesionales.Id')
+            ->leftJoin('user_rol', 'users.id', '=', 'user_rol.user_id')
+            ->leftJoin('roles', 'user_rol.rol_id', '=', 'roles.Id')
+            ->select(
+                "users.id as UserId",
+                "users.name as Name",
+                "users.email as EMail",
+                "users.inactivo as Inactivo",
+                "datos.Id as IdDatos",
+                "datos.Telefono as Telefono",
+                "datos.TipoIdentificacion as TipoIdentificacion",
+                "datos.Identificacion as Identificacion",
+                "datos.TipoDocumento as TipoDocumento",
+                "datos.Documento as Documento",
+                "datos.Nombre as Nombre",
+                "datos.Apellido as Apellido",
+                "datos.FechaNacimiento as FechaNacimiento",
+                "datos.Direccion as Direccion",
+                "datos.IdLocalidad as ILocalidad",
+                "datos.Provincia as Provincia",
+                "datos.CP as CP",
+                "datos.Id as Id",
+                "localidades.Nombre as NombreLocalidad",
+                "profesionales.Id as IdProfesional",
+                "profesionales.Firma as Firma",
+                "profesionales.Foto as Foto",
+                "profesionales.wImage as wImage",
+                "profesionales.hImage as hImage",
+                "profesionales.InfAdj as InfAdj",
+                "profesionales.Pago as Pago",
+                "profesionales.TLP as TLP",
+                "profesionales.MN as MN",
+                "profesionales.SeguroMP as SeguroMP",
+                "profesionales.MP as MP",
+                DB::raw("GROUP_CONCAT(roles.nombre SEPARATOR ',') as NombreRol")
+            )->find($id);
     }
     
 }
