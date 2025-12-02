@@ -385,7 +385,7 @@ class UsuariosController extends Controller
     {
         return User::join('datos', 'users.datos_id', '=', 'datos.Id')
             ->join('localidades', 'datos.IdLocalidad', '=', 'localidades.Id')
-            ->join('profesionales', 'users.profesional_id', '=', 'profesionales.Id')
+            ->leftJoin('profesionales', 'users.profesional_id', '=', 'profesionales.Id')
             ->leftJoin('user_rol', 'users.id', '=', 'user_rol.user_id')
             ->leftJoin('roles', 'user_rol.rol_id', '=', 'roles.Id')
             ->select(
