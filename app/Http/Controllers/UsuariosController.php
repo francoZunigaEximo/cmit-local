@@ -68,7 +68,7 @@ class UsuariosController extends Controller
 
         $query = $this->getUsuarioNuevo($usuario->id);
 
-        dd($query);return;
+        dd($usuario->id);return;
 
         $listado = explode(',', $query->NombreRol);
         $contador = count(array_intersect($lstRoles, $listado));
