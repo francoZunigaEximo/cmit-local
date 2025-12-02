@@ -68,8 +68,6 @@ class UsuariosController extends Controller
 
         $query = $this->getUsuarioNuevo($usuario->id);
 
-        dd($usuario->id);return;
-
         $listado = explode(',', $query->NombreRol);
         $contador = count(array_intersect($lstRoles, $listado));
 
@@ -383,7 +381,7 @@ class UsuariosController extends Controller
         return response()->json($query);
     }
 
-    private function getUsuarioNuevo(int $id)
+    public function getUsuarioNuevo(int $id)
     {
         return User::join('datos', 'users.datos_id', '=', 'datos.Id')
             ->join('localidades', 'datos.IdLocalidad', '=', 'localidades.Id')
@@ -422,7 +420,8 @@ class UsuariosController extends Controller
                 "profesionales.SeguroMP as SeguroMP",
                 "profesionales.MP as MP",
                 DB::raw("GROUP_CONCAT(roles.nombre SEPARATOR ',') as NombreRol")
-            )->find($id);
+            )->where('id', $id)
+             ->first();
     }
     
 }
