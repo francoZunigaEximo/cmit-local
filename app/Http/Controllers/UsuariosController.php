@@ -15,6 +15,7 @@ use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use App\Traits\CheckPermission;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
 
 class UsuariosController extends Controller
@@ -139,11 +140,7 @@ class UsuariosController extends Controller
 
         $resultados = Cache::remember('Nombre_usuario_'.$buscar, 5, function () use ($buscar) {
 
-            $nombreApellidos = User::join('datos', 'users.datos_id', '=', 'datos.Id')
-                ->whereRaw("CONCAT(datos.Apellido, ' ', datos.Nombre) LIKE ?", ['%'.$buscar.'%'])
-                ->orWhere('datos.Apellido', 'LIKE', '%'.$buscar.'%')
-                ->orWhere('datos.Nombre', 'LIKE', '%'.$buscar.'%')
-                ->get();
+            $nombreApellidos = $this->buscarNombreApellido($buscar);
 
             $resultados = [];
 
@@ -155,11 +152,11 @@ class UsuariosController extends Controller
             }
 
             return $resultados;
-
         });
 
         return response()->json(['result' => $resultados]);
     }
+
 
     public function Usuario(Request $request): mixed
     {
@@ -197,21 +194,23 @@ class UsuariosController extends Controller
         return response()->json(['exists' => $query]);
     }
 
-    public function checkCorreo(Request $request)
+    public function checkCorreo(Request $request): JsonResponse
     {
         $verificar = User::where('email', $request->email)->first();
 
-        if ($verificar && $verificar->name !== $request->name) {
-            $response = ['msg' => 'El correo ya está en uso por otro usuario.', 'estado' => 'false'];
-        
-        }elseif($verificar && $verificar->name === $request->name) {
-
-            $response = ['msg' => 'El correo es el que usa actualmente. Se procede actualizar.', 'estado' => 'true'];
-        }else{
-
-            $response = ['msg' => 'Correo habilitado para actualizar', 'estado' => 'true'];
+        if(empty($verificar)) {
+            return response()->json(['msg' => 'No hay corros para verificar', 'estado' => 'false'], 404);
         }
-        return response()->json($response);         
+
+        if ($verificar->name !== $request->name) {
+            return response()->json(['msg' => 'El correo ya está en uso por otro usuario.', 'estado' => 'false'], 409);
+        }
+        
+        if($verificar->name === $request->name) {
+            return response()->json(['msg' => 'El correo es el que usa actualmente. Se procede actualizar.', 'estado' => 'true'], 409);
+        }
+
+        return response()->json(['msg' => 'Correo habilitado para actualizar', 'estado' => 'true']);         
     }
 
     public function checkTelefono(Request $request): mixed
@@ -226,7 +225,7 @@ class UsuariosController extends Controller
         return response()->json($query);  
     }
 
-    public function checkEmailUpdate(Request $request)
+    public function checkEmailUpdate(Request $request): JsonResponse
     {
         if(!$this->hasPermission("usuarios_edit") || !$this->hasPermission("profesionales_edit")) {
             return response()->json(["msg" => "No tiene permisos"], 403);
@@ -234,53 +233,54 @@ class UsuariosController extends Controller
 
         $verificar = User::where('email', $request->email)->first();
 
-        if ($verificar && $verificar->name !== $request->name) {
-            $response = ['msg' => 'El correo ya está en uso por otro usuario.', 'estado' => 'false'];
-        
-        }elseif($verificar && $verificar->name === $request->name) {
-
-            $response = ['msg' => 'El correo es el que usa actualmente.', 'estado' => 'false'];
-        }else{
-
-            $q = User::where('name', $request->name)->first();
-            $q->email = $request->email;
-            $q->save();
-
-            $response = ['msg' => 'Se ha actualizado el email correctamente.', 'estado' => 'true'];
+        if(empty($verificar)) {
+            return response()->json(['msg' => 'No hay correo para verificar', 'estado' => 'false'], 409); 
         }
-        return response()->json($response);
+
+        if ($verificar->name !== $request->name) {
+            return response()->json(['msg' => 'El correo ya está en uso por otro usuario.', 'estado' => 'false'], 409);
+        }
+        
+        if($verificar->name === $request->name) {
+            return response()->json(['msg' => 'El correo es el que usa actualmente.', 'estado' => 'false'], 409);
+        }
+
+        $q = User::where('name', $request->name)->first();
+        $q->email = $request->email;
+        $q->save();
+
+        return response()->json(['msg' => 'Se ha actualizado el email correctamente.', 'estado' => 'true'], 200);
     }
 
-    public function baja(Request $request)
+    public function baja(Request $request): JsonResponse
     {
-        
+
         if(!$this->hasPermission("usuarios_delete")) {
             return response()->json(["msg" => "No tiene permisos"], 403);
         }
 
         $query = User::with('role')->find($request->Id);
 
-        if($query) 
-        {
-            if($query->role->contains('nombre', 'Administrador')) {
-                return response()->json(['msg' => 'No se puede eliminar un rol Administrador'], 409);
-            }
-
-            if(Auth::user()->name === $query->name) {
-                return response()->json(['msg' => 'No puedes hacer una autoeliminación'], 409);
-            }
-
-            $query->Anulado = $query->Anulado === 1 ? 0 : 1;
-            $query->inactivo = 0;
-            $query->save();
-
-            return response()->json(['msg' => 'Se ha dado de baja al usuario correctamente', 'estado' => 'success'], 200);
-        }else{
+        if(empty($query)) {
             return response()->json(['msg' => 'No se ha podido dar de baja el usuario'], 500);
         }
+            
+        if($query->role->contains('nombre', 'Administrador')) {
+            return response()->json(['msg' => 'No se puede eliminar un rol Administrador'], 409);
+        }
+    
+        if(Auth::user()->name === $query->name) {
+            return response()->json(['msg' => 'No puedes hacer una autoeliminación'], 409);
+        }
+
+        $query->Anulado = $query->Anulado === 1 ? 0 : 1;
+        $query->inactivo = 0;
+        $query->save();
+
+        return response()->json(['msg' => 'Se ha dado de baja al usuario correctamente', 'estado' => 'success'], 200);      
     }
 
-    public function bloquear(Request $request)
+    public function bloquear(Request $request): JsonResponse
     {
         if(!$this->hasPermission("usuarios_delete")) {
             return response()->json(["msg" => "No tiene permisos"], 403);
@@ -288,19 +288,21 @@ class UsuariosController extends Controller
 
         $query = User::with('role')->find($request->Id);
 
-        if($query) 
+        if(empty($query)) 
         {
-            if($query->role->contains('nombre', 'Administrador')) {
-                return response()->json(['msg' => 'No se puede bloquear un rol Administrador'], 409);
-            }
-
-            if(Auth::user()->name === $query->name) {
-                return response()->json(['msg' => 'No puedes hacer un bloqueo de la cuenta que usas'], 409);
-            }
-
-            $query->inactivo = $query->inactivo === 1 ? 0 : 1;
-            $query->save();
+            return response()->json(['msg' => 'No hay datos para procesar'], 404);
         }
+
+        if($query->role->contains('nombre', 'Administrador')) {
+            return response()->json(['msg' => 'No se puede bloquear un rol Administrador'], 409);
+        }
+
+        if(Auth::user()->name === $query->name) {
+            return response()->json(['msg' => 'No puedes hacer un bloqueo de la cuenta que usas'], 409);
+        }
+
+        $query->inactivo = $query->inactivo === 1 ? 0 : 1;
+        $query->save();
 
         $nQuery = User::find($request->Id, ['inactivo']);
         $result = $nQuery->inactivo === 1 ? ['msg' => 'Se ha desactivado correctamente al usuario'] : ['msg' => 'Se ha activado al usuario'];
@@ -313,8 +315,7 @@ class UsuariosController extends Controller
     {
         $query = User::find($request->Id);
 
-        if($query) 
-        {
+        if($query) {
             $query->password = Hash::make(SELF::password);
             $query->save();
 
@@ -350,9 +351,7 @@ class UsuariosController extends Controller
         }
         $query->save();
 
-        return response()->json(['msg' => 'Se han cargado los cambios correctamente.'], 200);
-
-        
+        return response()->json(['msg' => 'Se han cargado los cambios correctamente.'], 200);        
     }
 
     public function checkRoles(Request $request)
@@ -381,7 +380,7 @@ class UsuariosController extends Controller
         return response()->json($query);
     }
 
-    public function getUsuarioNuevo(int $id)
+    private function getUsuarioNuevo(int $id)
     {
         return User::join('datos', 'users.datos_id', '=', 'datos.Id')
             ->join('localidades', 'datos.IdLocalidad', '=', 'localidades.Id')
@@ -422,6 +421,15 @@ class UsuariosController extends Controller
                 DB::raw("GROUP_CONCAT(roles.nombre SEPARATOR ',') as NombreRol")
             )->where('users.id', $id)
              ->first();
+    }
+
+    private function buscarNombreApellido(string $buscar)
+    {
+        return User::join('datos', 'users.datos_id', '=', 'datos.Id')
+                ->whereRaw("CONCAT(datos.Apellido, ' ', datos.Nombre) LIKE ?", ['%'.$buscar.'%'])
+                ->orWhere('datos.Apellido', 'LIKE', '%'.$buscar.'%')
+                ->orWhere('datos.Nombre', 'LIKE', '%'.$buscar.'%')
+                ->get();
     }
     
 }
