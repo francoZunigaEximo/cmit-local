@@ -42,7 +42,9 @@ class Profesional extends Model
         'InfAdj',
         'RegHis',
         'T5',
-        
+        'SeguroMP',
+        'MN',
+        'MP',
     ];
 
     public $timestamps = false;

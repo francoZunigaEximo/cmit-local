@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Storage;
 class UsuariosController extends Controller
 {
     const folder = "Prof";
-    
+
     use CheckPermission;
 
     public $helper = '
@@ -231,25 +231,25 @@ class UsuariosController extends Controller
             return response()->json(["msg" => "No tiene permisos"], 403);
         }
 
-        $verificar = User::where('email', $request->email)->first();
+        $verificar = User::where('name', $request->name)->first();
 
         if(empty($verificar)) {
-            return response()->json(['msg' => 'No hay correo para verificar', 'estado' => 'false'], 409); 
+            return response()->json(['msg' => 'Error en el dato de usuario'], 409); 
         }
 
-        if ($verificar->name !== $request->name) {
-            return response()->json(['msg' => 'El correo ya está en uso por otro usuario.', 'estado' => 'false'], 409);
-        }
-        
-        if($verificar->name === $request->name) {
-            return response()->json(['msg' => 'El correo es el que usa actualmente.', 'estado' => 'false'], 409);
+        if($verificar->email === $request->email) {
+            return response()->json(['msg' => 'El correo es el que usa actualmente.'], 409);
         }
 
-        $q = User::where('name', $request->name)->first();
-        $q->email = $request->email;
-        $q->save();
+        if($this->compararEmails($request->email) > 0) {
+            return response()->json(['msg' => 'El correo ya está en uso por otro usuario.'], 409);
+        }
 
-        return response()->json(['msg' => 'Se ha actualizado el email correctamente.', 'estado' => 'true'], 200);
+        $verificar->update([
+            'email' => $request->email
+        ]);
+
+        return response()->json(['msg' => 'Se ha actualizado el email correctamente.'], 200);
     }
 
     public function baja(Request $request): JsonResponse
@@ -354,7 +354,7 @@ class UsuariosController extends Controller
         return response()->json(['msg' => 'Se han cargado los cambios correctamente.'], 200);        
     }
 
-    public function checkRoles(Request $request)
+    public function checkRoles(Request $request): JsonResponse
     {
         $query = User::with('role')->where('profesional_id', $request->Id)->first();
 
@@ -364,6 +364,12 @@ class UsuariosController extends Controller
     public function getUserName()
     {
         return Auth::user()->name;
+    }
+
+    public function getProfesional(Request $request): JsonResponse
+    {
+        $query = User::find($request->Id);
+        return response()->json($query->profesional_id ?? 0);
     }
 
     public function listadoUsuarios()
@@ -430,6 +436,11 @@ class UsuariosController extends Controller
                 ->orWhere('datos.Apellido', 'LIKE', '%'.$buscar.'%')
                 ->orWhere('datos.Nombre', 'LIKE', '%'.$buscar.'%')
                 ->get();
+    }
+
+    private function compararEmails(string $email): int
+    {
+        return User::where('email', $email)->count();
     }
     
 }
