@@ -20,8 +20,8 @@ use Illuminate\Support\Facades\Storage;
 
 class UsuariosController extends Controller
 {
-    const password = "cmit1234";
     const folder = "Prof";
+    
     use CheckPermission;
 
     public $helper = '
@@ -316,7 +316,7 @@ class UsuariosController extends Controller
         $query = User::find($request->Id);
 
         if($query) {
-            $query->password = Hash::make(SELF::password);
+            $query->password = Hash::make(config('auth.default_password'));
             $query->save();
 
             return response()->json(['msg' => 'Se ha cambiado la contraseña correctamente'], 200);
