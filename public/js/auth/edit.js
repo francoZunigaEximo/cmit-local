@@ -591,7 +591,7 @@ $(async function () {
     function checkRol(id) {
         $.get(checkRoles, { Id: id }, function (response) {
 
-            let arr = ['Efector', 'Informador', 'Evaluador', 'Combinado', 'Evaluador ART'],
+            let arr = ['Efector', 'Informador', 'Evaluador', 'Combinado', 'Evaluador ART', 'Administrador'],
                 buscados = response.map(item => item.nombre),
                 resultados = buscados.some(e => arr.includes(e));
 
