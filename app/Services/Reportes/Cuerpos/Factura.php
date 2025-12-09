@@ -27,15 +27,15 @@ class Factura extends Reporte
 
                 $pdf->Cell(10,3,Carbon::parse($fila->Fecha)->format('d/m/Y'),0,0,'L');
                 $pdf->Cell(20,3,str_pad($fila->Id, 8, "0", STR_PAD_LEFT),0,0,'R');
-				$pdf->Cell(35,3,substr($fila->paciente->Apellido." ".$fila->paciente->Nombre,0,20),0,0,'L');
-				$pdf->Cell(17,3,substr($fila->CCosto,0,10),0,0,'L');
+				$pdf->Cell(35,3,utf8_decode(substr($fila->paciente->Apellido." ".$fila->paciente->Nombre,0,20)),0,0,'L');
+				$pdf->Cell(17,3,utf8_decode(substr($fila->CCosto,0,10)),0,0,'L');
                 $pdf->Cell(14,3,str_pad($fila->NroCEE, 8, "0", STR_PAD_LEFT),0,0,'L');
-                $pdf->Cell(20,3,$fila->TSN,0,0,'L');
+                $pdf->Cell(20,3,utf8_decode($fila->TSN),0,0,'L');
 
                 $detalles = $this->getDetalles($datos, $fila->Id);
 
                 foreach ($detalles as $detalle) {
-                    $pdf->MultiCell(70,3,$detalle->Detalle,0,'L',0,5);
+                    $pdf->MultiCell(70,3,utf8_decode($detalle->Detalle),0,'L',0,5);
                     $pdf->Ln();
                 }
             }
@@ -51,8 +51,8 @@ class Factura extends Reporte
             $resumenes = $this->getResumenFactura($datos);
 
             foreach ($resumenes as $resumen) {
-                $pdf->Cell(20,3,$resumen->Total,0,0,'R');
-                $pdf->Cell(0,3,$resumen->Detalle,0,0,'L');
+                $pdf->Cell(20,3,utf8_decode($resumen->Total),0,0,'R');
+                $pdf->Cell(0,3,utf8_decode($resumen->Detalle),0,0,'L');
                 $pdf->Ln();
 				
                 $sumaresumen = $sumaresumen + $resumen->Total;

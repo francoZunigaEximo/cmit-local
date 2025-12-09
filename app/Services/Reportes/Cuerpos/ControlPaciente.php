@@ -29,9 +29,9 @@ class ControlPaciente extends Reporte
         }else{$pdf->AddPage();$y=0;}
 
         $pdf->Rect(10,$y+15,90,17); $pdf->SetFont('Arial','B',8);
-        $pdf->SetXY(11,$y+18);$pdf->Cell(0,3,'Paciente: '.$prestaciones->paciente->Apellido." ".$prestaciones->paciente->Nombre,0,0,'L');
+        $pdf->SetXY(11,$y+18);$pdf->Cell(0,3,'Paciente: '.utf8_decode($prestaciones->paciente->Apellido." ".$prestaciones->paciente->Nombre),0,0,'L');
         $pdf->SetXY(11,$y+23);$pdf->Cell(0,3,'Fecha: '.$prestaciones->Fecha.' '.$prestaciones->paciente->TipoDocumento.': '.$prestaciones->paciente->Documento,0,0,'L');
-        $pdf->SetXY(11,$y+28);$pdf->Cell(0,3,'Empresa: '.$prestaciones->empresa->ParaEmpresa,0,0,'L');
+        $pdf->SetXY(11,$y+28);$pdf->Cell(0,3,'Empresa: '.utf8_decode($prestaciones->empresa->ParaEmpresa),0,0,'L');
         $pdf->SetFont('Arial','B',12);
         $pdf->SetXY(120,$y+15);$pdf->Cell(0,4,'RESUMEN PARA EL PACIENTE',0,0,'L');
         $pdf->Code39(130,$y+22,$prestaciones->Id,1,10);
@@ -44,9 +44,9 @@ class ControlPaciente extends Reporte
             if ($prov === 0 || $prov !== $item->IdProveedor) {		
                 if($prov !== 0){$pdf->Ln(7);}
                 $prov = $item->IdProveedor;
-                $pdf->SetX(9);$pdf->Cell(0,3,substr($item->NombreProveedor,0,50),0,0,'L');$pdf->Ln(4);
+                $pdf->SetX(9);$pdf->Cell(0,3,utf8_decode(substr($item->NombreProveedor,0,50)),0,0,'L');$pdf->Ln(4);
             }
-            $pdf->SetX(10);$pdf->Cell(3,3,'',1,0,'L');$pdf->SetX(15);$pdf->Cell(0,3,substr($item->NombreExamen,0,60),0,0,'L');$pdf->Ln(4);
+            $pdf->SetX(10);$pdf->Cell(3,3,'',1,0,'L');$pdf->SetX(15);$pdf->Cell(0,3,utf8_decode(substr($item->NombreExamen,0,60)),0,0,'L');$pdf->Ln(4);
             
         }
         //aclaracion

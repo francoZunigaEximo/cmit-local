@@ -25,10 +25,10 @@ use Illuminate\Support\Facades\DB;
         $examenes = $this->grillaExamenCuenta($datos['id']);
 
         foreach($examenes as $reporte) {
-            $pdf->Cell(41,3,substr($reporte->NombreEstudio,0,10),0,0,'L');
-            $pdf->Cell(65,3,substr($reporte->NombreExamen,0,40),0,0,'L');
+            $pdf->Cell(41,3,utf8_decode(substr($reporte->NombreEstudio,0,10)),0,0,'L');
+            $pdf->Cell(65,3,utf8_decode(substr($reporte->NombreExamen,0,40)),0,0,'L');
             $pdf->Cell(20,3,$reporte->IdPrestacion === 0 ? '-' : $reporte->IdPrestacion,0,0,'R');
-            $pdf->Cell(60,3,substr($reporte->Apellido . " " . $reporte->Nombre,0,30),0,0,'L');$pdf->Ln();
+            $pdf->Cell(60,3,utf8_decode(substr($reporte->Apellido . " " . $reporte->Nombre,0,30)),0,0,'L');$pdf->Ln();
         }
 
         $listado = $this->detalladoExamenesCuenta($datos['id']);
@@ -40,7 +40,7 @@ use Illuminate\Support\Facades\DB;
 
         foreach($listado as $item) {
             $pdf->Cell(20,3,$item->Cantidad,0,0,'R');
-            $pdf->Cell(0,3,$item->NombreExamen,0,0,'L');
+            $pdf->Cell(0,3,utf8_decode($item->NombreExamen),0,0,'L');
             $pdf->Ln();
         }
         
@@ -59,7 +59,7 @@ use Illuminate\Support\Facades\DB;
         $pdf->SetFont('Arial','',7);
         
         foreach($listDisponibles as $item) {
-            $pdf->Cell(0,3,$item->NombreExamen,0,0,'L');
+            $pdf->Cell(0,3,utf8_decode($item->NombreExamen),0,0,'L');
             $pdf->Ln();
         }
     }

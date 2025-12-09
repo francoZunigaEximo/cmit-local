@@ -82,7 +82,7 @@ class Remito extends Reporte
             $pdf->Cell($w_cuil, 6, $registro->Cuit, 1, 0, 'C', true);
             $pdf->Cell($w_prestacion, 6, utf8_decode($registro->IdPrestacion), 1, 0, 'L', true);
             $pdf->Cell($w_examen, 6, utf8_decode($registro->NombreExamen), 1, 0, 'L', true);
-            $pdf->Ln(); // Nueva fila
+            $pdf->Ln(); 
         }
 
         ReporteConfig::marcaAguaImg($pdf);

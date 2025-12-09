@@ -31,10 +31,10 @@ class EvaluacionResumen extends Reporte
         $datos['eEstudio'] === 'si' ? $pdf->AddPage() : '';
 
         $pdf->SetFont('Arial','',8);$pdf->SetXY(182,4);$pdf->Cell(0,3,$datos['id'],0,0,'L');
-        $pdf->SetFont('Arial','B',10);$pdf->SetXY(10,32);$pdf->Cell(200,4,$tipoPrestacion['titulo'],0,0,'C');
+        $pdf->SetFont('Arial','B',10);$pdf->SetXY(10,32);$pdf->Cell(200,4, utf8_decode($tipoPrestacion['titulo']),0,0,'C');
 		$pdf->SetFont('Arial','',10);$pdf->SetXY(190,36);$pdf->Cell(0,3,'Neuquen '.Carbon::parse($query->Fecha)->format("d/m/Y"),0,0,'R');
-		$pdf->SetFont('Arial','B',10);$pdf->SetXY(10,41);$pdf->Cell(0,3,'Sres.: '.$query->empresa->ParaEmpresa,0,0,'L');
-		$pdf->SetFont('Arial','',10);$pdf->SetXY(10,46);$pdf->MultiCell(190,4,$texto,0,'J',0,5);
+		$pdf->SetFont('Arial','B',10);$pdf->SetXY(10,41);$pdf->Cell(0,3,'Sres.: '.utf8_decode($query->empresa->ParaEmpresa),0,0,'L');
+		$pdf->SetFont('Arial','',10);$pdf->SetXY(10,46);$pdf->MultiCell(190,4,utf8_decode($texto),0,'J',0,5);
 		//examenes 
 		$pdf->SetFont('Arial','B',10);$pdf->SetXY(10,63);$pdf->Cell(0,3,'DETALLE DE ESTUDIOS',0,0,'L');$pdf->Ln(4);
 		$pdf->SetFont('Arial','',7);
@@ -56,7 +56,7 @@ class EvaluacionResumen extends Reporte
                 $yFinExCol1 = $pdf->GetY();
                 $pdf->SetY($yInicioEx);
             }
-			$pdf->SetX($x1);$pdf->Cell(0,3,' - '.substr($examen->Nombre,0,45),0,0,'L');
+			$pdf->SetX($x1);$pdf->Cell(0,3,' - '.utf8_decode(substr($examen->Nombre,0,45)),0,0,'L');
 			//$pdf->SetX(88);$pdf->Cell(0,3,substr($row1['ObsExamen'],0,75),0,0,'L');
 			$pdf->Ln(4);
         }

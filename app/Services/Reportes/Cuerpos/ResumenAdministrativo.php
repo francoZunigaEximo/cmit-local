@@ -28,21 +28,21 @@ class ResumenAdministrativo extends Reporte
 
         //pdf
         $pdf->Rect(10,$y+15,90,22); $pdf->SetFont('Arial','B',8);
-        $pdf->SetXY(11,$y+18);$pdf->Cell(0,3,'Paciente: '.$prestacion->paciente->Apellido." ".$prestacion->paciente->Nombre,0,0,'L');
+        $pdf->SetXY(11,$y+18);$pdf->Cell(0,3,'Paciente: '.utf8_decode($prestacion->paciente->Apellido)." ".utf8_decode($prestacion->paciente->Nombre),0,0,'L');
         $pdf->SetXY(11,$y+23);$pdf->Cell(0,3,'Fecha: '.$prestacion->Fecha.' '.$prestacion->paciente->TipoDocumento.': '.$prestacion->paciente->Documento,0,0,'L');
-        $pdf->SetXY(11,$y+28);$pdf->Cell(0,3,'Cliente: '.$prestacion->empresa->RazonSocial,0,0,'L');
-        $pdf->SetXY(11,$y+33);$pdf->Cell(0,3,'Empresa: '.$prestacion->empresa->ParaEmpresa,0,0,'L');
+        $pdf->SetXY(11,$y+28);$pdf->Cell(0,3,'Cliente: '.utf8_decode($prestacion->empresa->RazonSocial),0,0,'L');
+        $pdf->SetXY(11,$y+33);$pdf->Cell(0,3,'Empresa: '.utf8_decode($prestacion->empresa->ParaEmpresa),0,0,'L');
         $pdf->SetFont('Arial','B',12);
         $pdf->SetXY(120,$y+15);$pdf->Cell(0,4,'RESUMEN ADMINISTRATIVO',0,0,'L');
-        $pdf->SetXY(120,$y+22);$pdf->Cell(0,2,$prestacion->TipoPrestacion);
+        $pdf->SetXY(120,$y+22);$pdf->Cell(0,2,utf8_decode($prestacion->TipoPrestacion));
         $pdf->SetXY(120,$y+28);$pdf->Cell(0,2, $idp);
         $pdf->SetXY(10,$y+45);$pdf->SetFont('Arial','',8);
         
         //examenes
         foreach($itemsprestaciones as $item) { 
-            $pdf->SetX(10);$pdf->Cell(0,3,'- '.substr($item->Nombre,0,40),0,0,'L');
+            $pdf->SetX(10);$pdf->Cell(0,3,'- '.utf8_decode(substr($item->Nombre,0,40)),0,0,'L');
             $pdf->SetX(93);$pdf->Cell(0,3,Carbon::parse($item->Fecha)->format('d/m/Y'),0,0,'L');
-            $pdf->SetX(110);$pdf->Cell(0,3,substr($item->ObsExamen,0,60),0,0,'L');$pdf->Ln(5);
+            $pdf->SetX(110);$pdf->Cell(0,3,utf8_decode(substr($item->ObsExamen,0,60)),0,0,'L');$pdf->Ln(5);
         }
 
     }

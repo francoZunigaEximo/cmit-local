@@ -33,8 +33,8 @@ class InformeEtapaInformador extends Reporte
             $pdf->SetXY(20,37);$pdf->Cell(0,3,"Empresa: ",0,0,'L');$pdf->SetXY(150,37);$pdf->Cell(0,3,"Prestacion: ",0,0,'L');
             $pdf->SetXY(20,42);$pdf->Cell(0,3,"DNI: ",0,0,'L');$pdf->SetXY(150,42);$pdf->Cell(0,3,"Edad: ",0,0,'L');	
             $pdf->SetFont('Arial','',9);
-            $pdf->SetXY(36,32);$pdf->Cell(0,3,$prestacion->paciente->Apellido." ".$prestacion->paciente->Nombre,0,0,'L');$pdf->SetXY(170,32);$pdf->Cell(0,3,Carbon::parse($prestacion->Fecha)->format("d/m/Y"),0,0,'L');
-            $pdf->SetXY(36,37);$pdf->Cell(0,3,$prestacion->empresa->ParaEmpresa,0,0,'L');$pdf->SetXY(170,37);$pdf->Cell(0,3,$prestacion->Id,0,0,'L');
+            $pdf->SetXY(36,32);$pdf->Cell(0,3,utf8_decode( $prestacion->paciente->Apellido." ".$prestacion->paciente->Nombre),0,0,'L');$pdf->SetXY(170,32);$pdf->Cell(0,3,Carbon::parse($prestacion->Fecha)->format("d/m/Y"),0,0,'L');
+            $pdf->SetXY(36,37);$pdf->Cell(0,3,utf8_decode($prestacion->empresa->ParaEmpresa),0,0,'L');$pdf->SetXY(170,37);$pdf->Cell(0,3,$prestacion->Id,0,0,'L');
             $pdf->SetXY(36,42);$pdf->Cell(0,3,$prestacion->paciente->Documento,0,0,'L');$pdf->SetXY(170,42);$pdf->Cell(0,3,Carbon::parse($prestacion->paciente->FechaNacimiento)->age,0,0,'L');
             //titulo
 
@@ -42,13 +42,13 @@ class InformeEtapaInformador extends Reporte
 
             if($itemPrestacionInfo->C2 === 0){//multiexamen lleva titulo en el cuerpo
                 $pdf->SetFont('Arial','BU',9);
-                $pdf->SetXY(20,55);$pdf->Cell(0,3,'INFORME DE ESTUDIO: '.$itemPrestacionInfo->itemsprestacion->examenes->Nombre,0,0,'L');
+                $pdf->SetXY(20,55);$pdf->Cell(0,3,'INFORME DE ESTUDIO: '.utf8_decode($itemPrestacionInfo->itemsprestacion->examenes->Nombre),0,0,'L');
                 $y=65;
             }else{$y=55;}
             //informe
             $pdf->SetFont('Arial','',9);
             $pdf->SetLeftMargin(20);
-            $pdf->SetXY(20,$y);$pdf->WriteHTML($itemPrestacionInfo->Obs);$pdf->Ln();
+            $pdf->SetXY(20,$y);$pdf->WriteHTML(utf8_decode($itemPrestacionInfo->Obs));$pdf->Ln();
             //firma
             if(!empty($itemPrestacionInfo->itemsprestacion->Foto) or !empty($itemPrestacionInfo->itemsprestacion->Firma)){
                 $y=$pdf->GetY();$y=$y+70;
