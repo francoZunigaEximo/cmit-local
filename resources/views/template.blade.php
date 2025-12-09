@@ -120,7 +120,7 @@
                                                 $rolesUsuario = Auth::user()->role->pluck('nombre')->toArray();
                                                 $tieneRol = !empty(array_intersect($rolesPermitidos, $rolesUsuario));
                                                 $multiespecialidad = Auth::user()->profesional->TLP === 1;
-                                                echo $rolesUsuario;
+                                                print_r($rolesUsuario);
                                             @endphp
 
                                             @if($multiespecialidad === 1 && !array_search("Administrador", $rolesUsuario))
