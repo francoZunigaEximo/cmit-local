@@ -120,13 +120,11 @@
                                                 $rolesUsuario = Auth::user()->role->pluck('nombre')->toArray();
                                                 $tieneRol = !empty(array_intersect($rolesPermitidos, $rolesUsuario));
                                                 $multiespecialidad = Auth::user()->profesional->TLP === 1;
-                                                $test = array_search("Administrador", $rolesUsuario);
-                                                print_r("Rol: ".json_encode($rolesUsuario) . " Test: " . $test);
                                             @endphp
 
                                             @if($multiespecialidad === 1 && !array_search("Administrador", $rolesUsuario))
                                                 MULTIESPECIALIDAD
-                                            @elseif(array_search("Administrador", $rolesUsuario))
+                                            @elseif(in_array("Administrador", $rolesUsuario))
                                                 ADMNISTRADOR
                                             @else
                                                  {{ session('Profesional') }} | {{ session('Especialidad') }}
