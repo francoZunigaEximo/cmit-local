@@ -13887,3 +13887,63 @@ BEGIN
 	ORDER BY p.Id DESC
 END //
 DELIMITER;
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `db_prepro`.`getOrdenesResumenes`(
+    IN fechaDesde DATE, 
+    IN fechaHasta DATE, 
+    IN especialidades INT, 
+    IN estado VARCHAR(50), 
+    IN efector VARCHAR(50), 
+    IN profesional INT
+)
+BEGIN
+    SELECT 
+        pro.Nombre as especialidad,
+        DATE_FORMAT(p.Fecha, '%d/%m/%Y') as fecha,
+        p.Id as prestacion,
+        emp.RazonSocial as empresa,
+        CONCAT(pa.Apellido,' ',pa.Nombre) as nombreCompleto,
+        pa.Documento as dni,
+        (CASE 
+            WHEN prof.Id IS NOT NULL AND prof.RegHis = 1 THEN CONCAT(prof.Apellido,' ', prof.Nombre) 
+            WHEN da.Id IS NOT NULL THEN CONCAT(da.Apellido,' ',da.Nombre) 
+            ELSE '' 
+        END) as efector,
+        (CASE WHEN p.Cerrado = 1 THEN 'Abierto' ELSE 'Cerrado' END) as estado,
+        pro.InfAdj as adjunto,
+        (CASE 
+            WHEN exa.Adjunto = 1 AND EXISTS (SELECT 1 FROM archivosefector ar WHERE ar.IdEntidad = i.Id LIMIT 1) THEN 'Adjunto' 
+            ELSE 'Sin adjunto' 
+        END) as archivos,
+        (SELECT 
+            ROUND((SUM(CASE WHEN sub_i.CAdj IN (4,5) THEN 1 ELSE 0 END) * 100.0) / COUNT(*), 0)
+         FROM itemsprestaciones sub_i
+         WHERE sub_i.IdPrestacion = i.IdPrestacion AND sub_i.IdProveedor = i.IdProveedor
+        ) AS avance
+    FROM itemsprestaciones i
+    INNER JOIN prestaciones p ON i.IdPrestacion = p.Id
+    INNER JOIN proveedores pro ON i.IdProveedor = pro.Id
+    INNER JOIN clientes emp ON p.IdEmpresa = emp.Id
+    INNER JOIN pacientes pa ON p.IdPaciente = pa.Id
+    INNER JOIN examenes exa ON i.IdExamen = exa.Id
+    LEFT JOIN profesionales prof ON i.IdProfesional = prof.Id
+    LEFT JOIN users u ON prof.Id = u.profesional_id
+    LEFT JOIN datos da ON u.datos_id = da.Id
+    WHERE i.Fecha BETWEEN fechaDesde AND fechaHasta
+    AND (especialidades IS NULL OR pro.Id = especialidades)
+    AND (profesional IS NULL OR prof.Id = profesional)
+    AND (
+        estado IS NULL
+        OR (estado = 'abierto' AND p.Finalizado = 0 AND p.Cerrado = 0 AND p.Entregado = 0)
+        OR (estado = 'cerrado' AND p.Cerrado = 1 AND p.Finalizado = 0)
+        OR (estado = 'finalizado' AND p.Cerrado = 1 AND p.Finalizado = 1 AND p.Entregado = 0)
+        OR (estado = 'entregado' AND p.Cerrado = 1 AND p.Finalizado = 1 AND p.Entregado = 1)
+        OR (estado = 'eenviado' AND p.eEnviado = 1)
+    )
+    AND (
+        efector IS NULL 
+        OR (efector = 'pendientes' AND i.CAdj IN (1,2,3)) 
+        OR (efector = 'cerrados' AND i.CAdj IN (3,4,5))
+    )
+    ORDER BY p.Id DESC;
+END
