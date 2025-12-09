@@ -122,7 +122,7 @@
                                                 $multiespecialidad = Auth::user()->profesional->TLP === 1;
                                             @endphp
 
-                                            @if($multiespecialidad === 1 && !array_search("Administrador", $rolesUsuario))
+                                            @if($multiespecialidad === 1 && !in_array("Administrador", $rolesUsuario))
                                                 MULTIESPECIALIDAD
                                             @elseif(in_array("Administrador", $rolesUsuario))
                                                 ADMNISTRADOR
@@ -131,7 +131,7 @@
                                             @endif
                                         </span></h6>
                                         
-                                        @if($tieneRol && $multiespecialidad === 1 && !array_search("Administrador", $rolesUsuario))
+                                        @if($tieneRol && $multiespecialidad === 1 && !in_array("Administrador", $rolesUsuario))
                                             <button type="button" data-bs-toggle="modal" data-bs-target="#choisePModal" class="btn btn-primary btn-label rounded-pill"><i class=" ri-anticlockwise-line label-icon align-middle rounded-pill fs-16 me-2"></i> Cambiar perfil</button>
                                         @endif
                                         </span>
