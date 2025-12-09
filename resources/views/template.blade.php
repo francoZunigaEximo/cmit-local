@@ -121,8 +121,7 @@
                                                 $tieneRol = !empty(array_intersect($rolesPermitidos, $rolesUsuario));
                                                 $multiespecialidad = Auth::user()->profesional->TLP === 1;
                                                 $test = array_search("Administrador", $rolesUsuario);
-                                                print_r("Rol: ".$rolesUsuario . " Test: " . $test);
-                                                
+                                                print_r("Rol: ".json_encode($rolesUsuario) . " Test: " . $test);
                                             @endphp
 
                                             @if($multiespecialidad === 1 && !array_search("Administrador", $rolesUsuario))
