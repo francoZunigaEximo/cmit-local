@@ -13947,3 +13947,5 @@ BEGIN
     )
     ORDER BY p.Id DESC;
 END
+
+ALTER TABLE profesionales_prov DROP INDEX IdProf_2; -- error de produccion en asignacion
