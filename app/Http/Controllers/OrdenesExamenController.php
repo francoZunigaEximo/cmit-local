@@ -476,8 +476,6 @@ public function searchPrestacion(Request $request)
 
     public function searchResumenes(Request $request)
     {
-        return $request->all();
-
         if($request->ajax())
         {
             $query = DB::select("CALL getOrdenesResumenes(?,?,?,?,?,?)",[
