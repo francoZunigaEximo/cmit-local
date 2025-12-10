@@ -15,7 +15,13 @@
 <div class="card-header d-flex justify-content-between">
     <ul class="nav nav-tabs-custom rounded card-header-tabs border-bottom-0" role="tablist">
         <li class="nav-item" role="presentation">
-            <a class="nav-link active" data-bs-toggle="tab" href="#prestacion" role="tab" aria-selected="true">
+            <a class="nav-link active" data-bs-toggle="tab" href="#resumenes" role="tab" aria-selected="false" tabindex="-1">
+                <i class=" ri-window-line"></i>
+                Resumenes
+            </a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" data-bs-toggle="tab" href="#prestacion" role="tab" aria-selected="true">
                 <i class="ri-window-line"></i>
                 Prestaciones
             </a>
@@ -44,12 +50,7 @@
             </a>
         </li>
         @endcan
-        <li class="nav-item" role="presentation">
-            <a class="nav-link" data-bs-toggle="tab" href="#resumenes" role="tab" aria-selected="false" tabindex="-1">
-                <i class=" ri-window-line"></i>
-                Resumenes
-            </a>
-        </li>
+        
         
     </ul>
 </div>
@@ -58,7 +59,120 @@
     <div class="tab-content">
         <div id="messageClientes"></div>
 
-        <div class="tab-pane active" id="prestacion" role="tabpanel">
+        <div class="tab-pane active" id="resumenes" role="tabpanel">
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="listjs-table" id="customerList">
+                                <div class="row g-4 mb-3">
+            
+                                    <form id="form-index">
+                                        <div class="col-12 p-4 border border-1 border-color" style="border-color: #666666;">
+                                            
+                                            <div class="row">
+
+                                                <div class="col-sm-2 mb-3">
+                                                    <label for="fechaDesdeResumenes" class="form-label font-weight-bold"><strong>Fecha desde: <span class="required">(*)</span></strong></label>
+                                                    <input type="date" class="form-control" id="fechaDesdeResumenes" name="fechaDesdeResumenes" max="9999-12-31">
+                                                </div>
+            
+                                                <div class="col-sm-2 mb-3">
+                                                    <label for="fechaHastaResumenes" class="form-label font-weight-bold"><strong>Fecha hasta: <span class="required">(*)</span></strong></label>
+                                                    <input type="date" class="form-control" id="fechaHastaResumenes" name="fechaHastaResumenes" max="9999-12-31">
+                                                </div>
+
+                                                <div class="col-sm-2 mb-3">
+                                                    <label for="especialidadResumenes" class="form-label font-weight-bold"><strong>Especialidad: <span class="required"></span></strong></label>
+                                                    <select class="form-control especialidadResumenes" name="especialidadResumenes" id="especialidadResumenes"></select>
+                                                </div>
+
+                                                <div class="col-sm-2 mb-3">
+                                                    <label for="estadoResumenes" class="form-label font-weight-bold"><strong>Estado prestación: </strong></label>
+                                                    <select name="estadoResumenes" id="estadoResumenes" class="form-control">
+                                                        <option value="" selected>Elija una opción...</option>
+                                                        <option value="abierto">Abierto</option>
+                                                        <option value="cerrado">Cerrado</option>
+                                                        <option value="finalizado">Finalizado</option>
+                                                        <option value="entregado">Entregado</option>
+                                                        <option value="eenviado">eEnviado</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="col-sm-2 mb-3">
+                                                    <label for="efectorResumenes" class="form-label font-weight-bold"><strong>Efector: </strong></label>
+                                                    <select name="efectorResumenes" id="efectorResumenes" class="form-control">
+                                                        <option value="" selected>Elija una opción...</option>
+                                                        <option value="pendientes">Pendientes</option>
+                                                        <option value="cerrados">Cerrados</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="col-sm-2 mb-3">
+                                                    <label for="profEfectorResumenes" class="form-label font-weight-bold"><strong>Prof. Efector: </strong></label>
+                                                    <select name="profEfectorResumenes" id="profEfectorResumenes" class="form-control">
+                                                        <option value="" selected>Elija una opción...</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-sm-12" style="text-align: right;">
+                                                    <button type="button" id="resetResumenes" class="btn botonGeneral"><i class="ri-refresh-line"></i>&nbsp;Reiniciar</button>
+                                                    <button type="button" id="buscarResumenes" class="btn botonGeneral"><i class="ri-zoom-in-line"></i>&nbsp;Buscar</button>
+                                                    
+                                                </div>
+                                            </div>
+
+                                            
+                                        
+                                        </div>
+                                    </form>
+            
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-sm-12" style="text-align: right">
+                                        <button type="button" class="btn botonGeneral ExportarResumenes"><i class="ri-file-excel-line"></i>&nbsp;Exportar</button>
+                                        <button type="button" id="treintaDiasResumenes" class="btn btn-sm botonGeneral"><i class="ri-calendar-2-fill"></i>&nbsp;Buscar 30 días</button>
+                                        <button type="button" id="sesentaDiasResumenes" class="btn btn-sm botonGeneral"><i class="ri-calendar-2-fill"></i>&nbsp;Buscar 60 días</button>
+                                        <button type="button" id="noventaDiasResumenes" class="btn btn-sm botonGeneral"><i class="ri-calendar-2-fill"></i>&nbsp;Buscar 90 días</button>
+                                    </div>
+                                </div>
+            
+                                <div class="table-responsive mt-3 mb-1 mx-auto" style="overflow-x: auto;">
+                                    <table id="listaOrdenesResumenes" class="table table-striped">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Avance</th>
+                                                <th>Especialidad</th>
+                                                <th>Fecha</th>
+                                                <th>Prestación</th>
+                                                <th>Empresa</th>
+                                                <th>Paciente</th>
+                                                <th>DNI</th>
+                                                <th>Efector</th>
+                                                <th>E_EFE</th>
+                                                <th>ADJ</th>
+                                                <th>Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="list form-check-all">
+            
+                                        </tbody>
+                                    </table>
+                                </div>           
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+            </div>
+
+        </div>
+
+        <div class="tab-pane" id="prestacion" role="tabpanel">
 
             <div class="row">
                 <div class="col-sm-12">
@@ -1084,117 +1198,6 @@
 
         </div>
         @endcan
-
-        <div class="tab-pane" id="resumenes" role="tabpanel">
-
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="listjs-table" id="customerList">
-                                <div class="row g-4 mb-3">
-            
-                                    <form id="form-index">
-                                        <div class="col-12 p-4 border border-1 border-color" style="border-color: #666666;">
-                                            
-                                            <div class="row">
-
-                                                <div class="col-sm-2 mb-3">
-                                                    <label for="fechaDesdeResumenes" class="form-label font-weight-bold"><strong>Fecha desde: <span class="required">(*)</span></strong></label>
-                                                    <input type="date" class="form-control" id="fechaDesdeResumenes" name="fechaDesdeResumenes" max="9999-12-31">
-                                                </div>
-            
-                                                <div class="col-sm-2 mb-3">
-                                                    <label for="fechaHastaResumenes" class="form-label font-weight-bold"><strong>Fecha hasta: <span class="required">(*)</span></strong></label>
-                                                    <input type="date" class="form-control" id="fechaHastaResumenes" name="fechaHastaResumenes" max="9999-12-31">
-                                                </div>
-
-                                                <div class="col-sm-2 mb-3">
-                                                    <label for="especialidadResumenes" class="form-label font-weight-bold"><strong>Especialidad: <span class="required"></span></strong></label>
-                                                    <select class="form-control especialidadResumenes" name="especialidadResumenes" id="especialidadResumenes"></select>
-                                                </div>
-
-                                                <div class="col-sm-2 mb-3">
-                                                    <label for="estadoResumenes" class="form-label font-weight-bold"><strong>Estado prestación: </strong></label>
-                                                    <select name="estadoResumenes" id="estadoResumenes" class="form-control">
-                                                        <option value="" selected>Elija una opción...</option>
-                                                        <option value="abierto">Abierto</option>
-                                                        <option value="cerrado">Cerrado</option>
-                                                        <option value="finalizado">Finalizado</option>
-                                                        <option value="entregado">Entregado</option>
-                                                        <option value="eenviado">eEnviado</option>
-                                                    </select>
-                                                </div>
-
-                                                <div class="col-sm-2 mb-3">
-                                                    <label for="efectorResumenes" class="form-label font-weight-bold"><strong>Efector: </strong></label>
-                                                    <select name="efectorResumenes" id="efectorResumenes" class="form-control">
-                                                        <option value="" selected>Elija una opción...</option>
-                                                        <option value="pendientes">Pendientes</option>
-                                                        <option value="cerrados">Cerrados</option>
-                                                    </select>
-                                                </div>
-
-                                                <div class="col-sm-2 mb-3">
-                                                    <label for="profEfectorResumenes" class="form-label font-weight-bold"><strong>Prof. Efector: </strong></label>
-                                                    <select name="profEfectorResumenes" id="profEfectorResumenes" class="form-control">
-                                                        <option value="" selected>Elija una opción...</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-
-                                            <div class="row">
-                                                <div class="col-sm-12" style="text-align: right;">
-                                                    <button type="button" id="resetResumenes" class="btn botonGeneral"><i class="ri-refresh-line"></i>&nbsp;Reiniciar</button>
-                                                    <button type="button" id="buscarResumenes" class="btn botonGeneral"><i class="ri-zoom-in-line"></i>&nbsp;Buscar</button>
-                                                    <button type="button" id="treintaDiasResumenes" class="btn btn-sm botonGeneral"><i class="ri-calendar-2-fill"></i>&nbsp;Buscar 30 días</button>
-                                                    <button type="button" id="sesentaDiasResumenes" class="btn btn-sm botonGeneral"><i class="ri-calendar-2-fill"></i>&nbsp;Buscar 60 días</button>
-                                                    <button type="button" id="noventaDiasResumenes" class="btn btn-sm botonGeneral"><i class="ri-calendar-2-fill"></i>&nbsp;Buscar 90 días</button>
-                                                </div>
-                                            </div>
-
-                                            <div class="row">
-                                                <div class="col-sm-12" style="text-align: left">
-                                                    <button type="button" class="btn botonGeneral ExportarResumenes"><i class="ri-file-excel-line"></i>&nbsp;Exportar</button>
-                                                    
-                                                </div>
-                                            </div>
-                                        
-                                        </div>
-                                    </form>
-            
-                                </div>
-            
-                                <div class="table-responsive mt-3 mb-1 mx-auto" style="overflow-x: auto;">
-                                    <table id="listaOrdenesResumenes" class="table table-striped">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th>Avance</th>
-                                                <th>Especialidad</th>
-                                                <th>Fecha</th>
-                                                <th>Prestación</th>
-                                                <th>Empresa</th>
-                                                <th>Paciente</th>
-                                                <th>DNI</th>
-                                                <th>Efector</th>
-                                                <th>E_EFE</th>
-                                                <th>ADJ</th>
-                                                <th>Acciones</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="list form-check-all">
-            
-                                        </tbody>
-                                    </table>
-                                </div>           
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            
-            </div>
-
-        </div>
     </div>
 </div>
 
