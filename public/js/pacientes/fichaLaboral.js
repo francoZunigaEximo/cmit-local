@@ -82,7 +82,7 @@ $(function () {
         Horario: $('#Horario'),
         TipoJornada: $('#TipoJornada'),
         TareaRealizar: $('#TareaRealizar'),
-        
+
     };
 
     const listOpciones = {
@@ -91,7 +91,7 @@ $(function () {
         '.UltimoPuesto': ['OCUPACIONAL', 'OTRO', 'INGRESO', 'ART'],
         '.SectorActual': ['PERIODICO', 'OCUPACIONAL', 'EGRESO', 'OTRO', 'ART'],
         '.AntiguedadPuesto': ['PERIODICO', 'OCUPACIONAL', 'EGRESO', 'OTRO', 'ART'],
-        '.AntiguedadEmpresa': ['EGRESO', 'OCUPACIONAL', 'OTRO', 'PERIODICO', 'ART', ],
+        '.AntiguedadEmpresa': ['EGRESO', 'OCUPACIONAL', 'OTRO', 'PERIODICO', 'ART',],
         '.FechaIngreso': ['EGRESO', 'OCUPACIONAL', 'PERIODICO', 'ART', 'INGRESO'],
         '.FechaEgreso': ['EGRESO', 'OCUPACIONAL', 'ART'],
         '.CCosto': ['INGRESO', 'ART', 'EGRESO', 'OCUPACIONAL', 'PERIODICO']
@@ -110,9 +110,9 @@ $(function () {
     }
 
     let changeTipo = $('input[name="TipoPrestacion"]:checked').val(), e;
-    
+
     $('.nuevaPrestacionModal, .observacionesModal, .nuevaPrestacion, .ObBloqueoEmpresa, .ObBloqueoArt, .ObEmpresa, .ObsPaciente, .ObsPres, .Factura, .TareaRealizar, .UltimoPuesto, .PuestoActual, .SectorActual, .AntiguedadPuesto, .AntiguedadEmpresa, .FechaIngreso, .FechaEgreso, .selectMapaPres, .Autoriza, .listadoExCta, #examenesDisponibles, #ultimasFacturadas, #alertaExCta, .NroFactProv, #divtipoPrestacionPresOtros, .verListadoExCta').hide();
-    
+
     removerCeroSelect2(variables.selectArt);
     quitarDuplicados('#Horario');
     quitarDuplicados('#Tipo');
@@ -132,7 +132,7 @@ $(function () {
         .find('option[value="NO ART"]')
         .remove();
 
-    variables.selectClientes.add(variables.selectArt).on('change', function(){
+    variables.selectClientes.add(variables.selectArt).on('change', function () {
         getMap(variables.selectClientes.val(), variables.selectArt.val());
     });
 
@@ -140,25 +140,25 @@ $(function () {
         masOpcion();
     });
 
-    principal.eventDelete.on('click', function() {
+    principal.eventDelete.on('click', function () {
         location.reload();
     });
 
-    principal.seguirAl.on('click', function(e){
+    principal.seguirAl.on('click', function (e) {
         e.preventDefault();
         principal.nuevaPrestacion.show();
         principal.observacionesModal.hide();
     });
 
-    variables.tipoPrestacionPres.on('change', function(){
+    variables.tipoPrestacionPres.on('change', function () {
         activarMapas(variables.tipoPrestacionPres.val());
     });
-    
+
     //Hack para forzar la recarga
     $(document).ready(function () {
         opcionesFicha(variables.TipoPrestacion.filter(':checked').val());
     });
-   
+
     // Tipo de prestaciones muestra opciones
     variables.TipoPrestacion.change(function () {
         opcionesFicha(variables.TipoPrestacion.filter(':checked').val());
@@ -166,7 +166,7 @@ $(function () {
     });
 
 
-    variables.TipoPrestacion.change(async function() {
+    variables.TipoPrestacion.change(async function () {
 
         variables.PagoLaboral.attr('disabled', false);
         variables.tipoPrestacionHidden.val(variables.TipoPrestacion.val());
@@ -200,7 +200,7 @@ $(function () {
                 let filtro = await formaPago === 'C' ? 'B' : formaPago;
 
                 variables.PagoLaboralJS.value = filtro;
-                
+
                 variables.PagoLaboralJS.querySelectorAll('option').forEach(opt => {
                     opt.classList.remove('verde', 'rojo', 'negro');
                 });
@@ -221,7 +221,7 @@ $(function () {
                     await selectMedioPago(null);
                 }
             }
-        } else { 
+        } else {
 
             let response = await $.get(getFormaPagoCli, { Id: variables.selectClientes.val() });
             let formaPago = !response.FPago ? 'A' : response.FPago;
@@ -244,114 +244,113 @@ $(function () {
 
             let exaCuenta = await $.get(lstExDisponibles, { Id: variables.selectClientes.val() });
 
-            if (exaCuenta.length === 0 && filtro === 'B') {  
+            if (exaCuenta.length === 0 && filtro === 'B') {
                 await selectMedioPago(filtro);
             } else {
                 await selectMedioPago(null);
             }
-            
+
         }
     });
 
-    variables.selectClientes.on('change', function(){
+    variables.selectClientes.on('change', function () {
 
         selectMedioPago(null);
         variables.PagoLaboral.attr('disabled', false);
 
-        if(!variables.selectClientes.val() || variables.selectClientes.val() === '0') {
+        if (!variables.selectClientes.val() || variables.selectClientes.val() === '0') {
             variables.PagoLaboral.empty().append(`<option selected="" value="">Elija una opción...</option>
                 <option value="B">Contado</option>
                 <option value="A">Cuenta Corriente</option>`);
             variables.PagoLaboral.css('color', 'black');
             variables.TipoPrestacion.prop('checked', false); //Quitamos todos los checks y dejamos de cero
-            
+
             checkExamenesCuenta(variables.selectClientes.val());
         }
 
-         if(
-            variables.TipoPrestacion.filter(':checked').val() !== 'ART' &&  
+        if (
+            variables.TipoPrestacion.filter(':checked').val() !== 'ART' &&
             variables.TipoPrestacion.filter(':checked').val()
-        ) 
-            {   
-                (async () => {
+        ) {
+            (async () => {
 
-                    let response = await $.get(getFormaPagoCli, {Id: variables.selectClientes.val()}),
-                        formaPago = !response.FPago ? 'A' : response.FPago,
-                        filtro = formaPago === 'C' ? 'B' : formaPago;
-                    
-                    variables.PagoLaboralJS.value = filtro;
-                    variables.PagoLaboralJS.querySelectorAll('option').forEach(opt => {
-                        opt.classList.remove('verde', 'rojo');
-                    });
+                let response = await $.get(getFormaPagoCli, { Id: variables.selectClientes.val() }),
+                    formaPago = !response.FPago ? 'A' : response.FPago,
+                    filtro = formaPago === 'C' ? 'B' : formaPago;
 
-                    
-                    // variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde');
-                    variables.PagoLaboralJS.querySelector(`option[value="${filtro}"]`)?.classList.add('verde');
-                    
-                    // variables.PagoLaboral.find(`option:not([value="${formaPago}"])`).addClass('rojo');
-                    variables.PagoLaboralJS
-                        .querySelectorAll(`option:not([value="${filtro}"])`)
-                        .forEach(opt => opt.classList.add('rojo'));
-                    
-                    variables.PagoLaboral.find(`option[value=""]`).addClass('negro');
-                    if(filtro === 'A') variables.PagoLaboralJS.querySelector(`option[value="B"]`)?.classList.add('negro');
-                
-                    let exaCuenta = await $.get(lstExDisponibles, { Id: variables.selectClientes.val() }); 
+                variables.PagoLaboralJS.value = filtro;
+                variables.PagoLaboralJS.querySelectorAll('option').forEach(opt => {
+                    opt.classList.remove('verde', 'rojo');
+                });
 
-                    if(filtro === 'B' && exaCuenta.length === 0) {
-                        selectMedioPago(filtro);
-                        variables.PagoLaboral.attr('disabled', true);
-                    }else{
-                        selectMedioPago(null);
-                    }
-                })();
-         }
+
+                // variables.PagoLaboral.find(`option[value="${formaPago}"]`).addClass('verde');
+                variables.PagoLaboralJS.querySelector(`option[value="${filtro}"]`)?.classList.add('verde');
+
+                // variables.PagoLaboral.find(`option:not([value="${formaPago}"])`).addClass('rojo');
+                variables.PagoLaboralJS
+                    .querySelectorAll(`option:not([value="${filtro}"])`)
+                    .forEach(opt => opt.classList.add('rojo'));
+
+                variables.PagoLaboral.find(`option[value=""]`).addClass('negro');
+                if (filtro === 'A') variables.PagoLaboralJS.querySelector(`option[value="B"]`)?.classList.add('negro');
+
+                let exaCuenta = await $.get(lstExDisponibles, { Id: variables.selectClientes.val() });
+
+                if (filtro === 'B' && exaCuenta.length === 0) {
+                    selectMedioPago(filtro);
+                    variables.PagoLaboral.attr('disabled', true);
+                } else {
+                    selectMedioPago(null);
+                }
+            })();
+        }
     });
 
-    variables.selectArt.on('change', function(){
+    variables.selectArt.on('change', function () {
 
         selectMedioPago(null);
         variables.PagoLaboral.attr('disabled', false);
 
-        if((!variables.selectArt.val() || variables.selectArt.val() === '0') && (!variables.selectClientes.val() || variables.selectClientes.val() === '0')) {
+        if ((!variables.selectArt.val() || variables.selectArt.val() === '0') && (!variables.selectClientes.val() || variables.selectClientes.val() === '0')) {
             variables.PagoLaboral.empty().append(`<option selected="" value="">Elija una opción...</option>
                 <option value="B">Contado</option>
                 <option value="A">Cuenta Corriente</option>`);
             variables.PagoLaboral.css('color', 'black');
             variables.TipoPrestacion.prop('checked', false); //Quitamos todos los checks y dejamos de cero
             return;
-        
-        }else {
+
+        } else {
 
             (async () => {
 
-                let response = await $.get(getFormaPagoCli, {Id: variables.selectArt.val()}),
+                let response = await $.get(getFormaPagoCli, { Id: variables.selectArt.val() }),
                     formaPago = !response.FPago ? 'A' : response.FPago,
                     filtro = formaPago === 'C' ? 'B' : formaPago;
-                
+
                 variables.PagoLaboralJS.value = filtro;
                 variables.PagoLaboralJS.querySelector(`option[value="${filtro}"]`)?.classList.add('verde');
 
-                if(filtro === 'A') variables.PagoLaboralJS.querySelector(`option[value="B"]`)?.classList.add('negro');
+                if (filtro === 'A') variables.PagoLaboralJS.querySelector(`option[value="B"]`)?.classList.add('negro');
 
-                if(filtro === 'B') {
+                if (filtro === 'B') {
                     selectMedioPago(filtro);
                     variables.PagoLaboral.attr('disabled', true);
-                }else{
+                } else {
                     selectMedioPago(null);
                 }
-            })(); 
+            })();
         }
     });
 
-    variables.PagoLaboral.on('change', async function(){
+    variables.PagoLaboral.on('change', async function () {
 
-        let exaCuenta = await $.get(lstExDisponibles, { Id: variables.selectClientes.val() }); 
+        let exaCuenta = await $.get(lstExDisponibles, { Id: variables.selectClientes.val() });
 
-        if(variables.PagoLaboral.val() === 'B') {
+        if (variables.PagoLaboral.val() === 'B') {
             selectMedioPago(variables.PagoLaboral.val());
             exaCuenta ? variables.PagoLaboral.attr('disabled', true) : variables.PagoLaboral.attr('disabled', false);
-        }else{
+        } else {
             selectMedioPago(null);
         }
     });
@@ -368,10 +367,10 @@ $(function () {
         multiple: false,
         allowClear: true,
         language: {
-            noResults: function() {
-                return "No hay clientes con esos datos";        
+            noResults: function () {
+                return "No hay clientes con esos datos";
             },
-            searching: function() {
+            searching: function () {
                 return "Buscando..";
             },
             inputTooShort: function () {
@@ -379,21 +378,21 @@ $(function () {
             }
         },
         ajax: {
-           url: getClientes,
-           dataType: 'json',
-           delay: 250,
-           data: function(params) {
+            url: getClientes,
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
                 return {
                     buscar: params.term,
                     tipo: 'E'
                 };
-           },
-           processResults: function(data) {
+            },
+            processResults: function (data) {
                 return {
                     results: data.clientes
                 };
-           },
-           cache: true,
+            },
+            cache: true,
         },
         minimumInputLength: 2
     });
@@ -409,10 +408,10 @@ $(function () {
         allowClear: true,
         closeOnSelect: true,
         language: {
-            noResults: function() {
-                return "No hay clientes con esos datos";        
+            noResults: function () {
+                return "No hay clientes con esos datos";
             },
-            searching: function() {
+            searching: function () {
                 return "Buscando..";
             },
             inputTooShort: function () {
@@ -420,33 +419,33 @@ $(function () {
             }
         },
         ajax: {
-           url: getClientes,
-           dataType: 'json',
-           delay: 250,
-           data: function(params) {
+            url: getClientes,
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
                 return {
                     buscar: params.term,
                     tipo: 'A'
                 };
-           },
-           processResults: function(data) {
+            },
+            processResults: function (data) {
                 return {
                     results: data.clientes
                 };
-           },
-           cache: true,
+            },
+            cache: true,
         },
         minimumInputLength: 2
     });
 
-     variables.selectArt.on('select2:select', function (e) {
+    variables.selectArt.on('select2:select', function (e) {
         $(this).select2('close');
     });
 
-    variables.SPago.on('change', function(){
+    variables.SPago.on('change', function () {
         let pago = $(this).val();
-        return pago === 'G' 
-            ? principal.Autoriza.show() 
+        return pago === 'G'
+            ? principal.Autoriza.show()
             : principal.Autoriza.hide();
     });
 
@@ -463,26 +462,26 @@ $(function () {
             },
             success: function (response) {
                 let data = response.cliente;
-                data.Bloqueado === 0 
-                    ? deshabilitarBloqueo() 
+                data.Bloqueado === 0
+                    ? deshabilitarBloqueo()
                     : cargarBloqueo(data);
             }
         });
     });
 
     //Habilitamos el botón de guardar
-    variables.selectClientes.on('change', function(){
-        if($(this).select2('data').map(option => option.id).length === 0){
+    variables.selectClientes.on('change', function () {
+        if ($(this).select2('data').map(option => option.id).length === 0) {
             principal.guardarFicha
                 .removeAttr('disabled')
         }
     });
 
-    variables.selectClientes.on('change', function(){
+    variables.selectClientes.on('change', function () {
         variables.PagoLaboral.attr('disabled', false);
         let value = $(this).val();
 
-        if(!value || value === '0') {
+        if (!value || value === '0') {
             variables.TipoPrestacion.prop('checked', false);
             variables.PagoLaboral.val('');
             principal.SPago
@@ -492,7 +491,7 @@ $(function () {
                 .add(principal.NroFactProv)
                 .add(principal.Autoriza)
                 .hide();
-            
+
             variables.SPago
                 .add(variables.Tipo)
                 .add(variables.Sucursal)
@@ -503,13 +502,13 @@ $(function () {
 
         let check = checkExamenesCuenta(variables.selectClientes.val());
 
-        if(value === 'B' && !check) {
+        if (value === 'B' && !check) {
             selectMedioPago(value);
         }
     });
 
     //Guardar FichaLaboral
-    principal.guardarFicha.on('click', function(e){
+    principal.guardarFicha.on('click', function (e) {
         e.preventDefault();
 
         let data = {
@@ -541,58 +540,58 @@ $(function () {
             NumeroProvF: variables.NroFactProv.val(),
             Autoriza: variables.Autorizado.val()
         };
-    
+
         //Validamos la factura
-        if (data.Spago === 'G' && !data.Autoriza){
-            toastr.warning('Si el medio de pago es gratuito, debe seleccionar quien autoriza.', '', {timeOut: 1000});
+        if (data.Spago === 'G' && !data.Autoriza) {
+            toastr.warning('Si el medio de pago es gratuito, debe seleccionar quien autoriza.', '', { timeOut: 1000 });
             return;
         }
 
         if (data.pago === 'B' && !data.Spago) {
-            toastr.warning('Debe seleccionar un "medio de pago" cuando la "forma de pago" es "contado"', '', {timeOut: 1000});
+            toastr.warning('Debe seleccionar un "medio de pago" cuando la "forma de pago" es "contado"', '', { timeOut: 1000 });
             return;
         }
 
         if (!data.pago) {
-            toastr.warning('Debe seleccionar una "forma de pago"','',{timeOut: 1000});
+            toastr.warning('Debe seleccionar una "forma de pago"', '', { timeOut: 1000 });
             return;
         }
 
-        if (data.pago === 'B' && (!data.TipoF || !data.SucursalF || !data.NumeroF)){
-            toastr.warning('El pago es contado, asi que debe agregar el número de factura para continuar.','',{timeOut: 1000});
+        if (data.pago === 'B' && (!data.TipoF || !data.SucursalF || !data.NumeroF)) {
+            toastr.warning('El pago es contado, asi que debe agregar el número de factura para continuar.', '', { timeOut: 1000 });
             return;
         }
 
-        if(data.tipoPrestacion === 'MAS' && !variables.tipoPrestacionPresOtros.val()) {
-            toastr.warning('¡El campo tipo de prestación MAS necesita una opción de tipo!','',{timeOut: 1000});
+        if (data.tipoPrestacion === 'MAS' && !variables.tipoPrestacionPresOtros.val()) {
+            toastr.warning('¡El campo tipo de prestación MAS necesita una opción de tipo!', '', { timeOut: 1000 });
             return;
         }
 
-        if(!data.tipoPrestacion){
-            toastr.warning('¡El campo tipo de prestación es obligatorio!','',{timeOut: 1000});
+        if (!data.tipoPrestacion) {
+            toastr.warning('¡El campo tipo de prestación es obligatorio!', '', { timeOut: 1000 });
             return;
         }
 
-        if((!data.cliente || data.cliente === '0') && (!data.art || data.art === '0')){
-            toastr.warning('¡Debe seleccionar una empresa o una art!','',{timeOut: 1000});
+        if ((!data.cliente || data.cliente === '0') && (!data.art || data.art === '0')) {
+            toastr.warning('¡Debe seleccionar una empresa o una art!', '', { timeOut: 1000 });
             return;
         }
-        
-        if(data.tipoPrestacion === 'ART' && (!data.art || data.art === '0')){
-            toastr.warning('¡Debe seleccionar una ART para el tipo de prestación ART!','',{timeOut: 1000});
+
+        if (data.tipoPrestacion === 'ART' && (!data.art || data.art === '0')) {
+            toastr.warning('¡Debe seleccionar una ART para el tipo de prestación ART!', '', { timeOut: 1000 });
             return;
         }
-        
-        if(data.tipoPrestacion !== 'ART' && (!data.cliente || data.cliente === '0')){
-            toastr.warning('¡Debe seleccionar una empresa para el tipo de prestación seleccionado!','',{timeOut: 1000});
+
+        if (data.tipoPrestacion !== 'ART' && (!data.cliente || data.cliente === '0')) {
+            toastr.warning('¡Debe seleccionar una empresa para el tipo de prestación seleccionado!', '', { timeOut: 1000 });
             return;
         }
 
         //ejecutamos la verificación de disponibilidad
-        if(data.tipoPrestacion !== 'ART'){
+        if (data.tipoPrestacion !== 'ART') {
             verificarDisponibilidad(data.cliente, data.pago, data, e);
             variables.Pago.find('option[value="' + data.pago + '"]').prop('selected', true);
-        }else{
+        } else {
             saveFichaLaboral(data);
             variables.Pago.find('option[value="' + data.pago + '"]').prop('selected', true);
         }
@@ -605,15 +604,15 @@ $(function () {
     });
 
     //Actualizamos
-    principal.mensajeFichaLaboral.change(function() {
+    principal.mensajeFichaLaboral.change(function () {
         actualizarMensaje();
     });
 
     $(document).on("select2:open", () => {
         document.querySelector(".select2-container--open .select2-search__field").focus()
     });
-    
-    $(document).on('click', '.verListadoExCta', function(e){
+
+    $(document).on('click', '.verListadoExCta', function (e) {
         e.preventDefault();
         principal.listadoExCta.show();
         principal.fichaLaboralModal.hide();
@@ -621,7 +620,7 @@ $(function () {
         examenesCta(variables.selectClientes.val());
     });
 
-    principal.cerrarlstExCta.on('click', function(e){
+    principal.cerrarlstExCta.on('click', function (e) {
         e.preventDefault();
         principal.listadoExCta.hide();
         principal.fichaLaboralModal.show();
@@ -632,10 +631,18 @@ $(function () {
         principal.fichaLaboralModal.show();
         checkExamenesCuenta(variables.selectClientes.val());
         getMap(variables.selectClientes.val(), variables.selectArt.val());
-      });
+    });
+
+    $('#PagoLaboral').on('change', function () {
+        let seleccion = $(this).find('option:selected');
+
+        if (seleccion.hasClass('rojo')) {
+            swal('ATENCIÓN; Ud. ha seleccionado una condición de pago distinta a la permitida, solo continúe si cuenta con Autorización para ello.', '', 'warning');
+        }
+    });
 
     //Bloqueo de cliente si existe
-    function cargarBloqueo(response){
+    function cargarBloqueo(response) {
         let razonSocial = response.RazonSocial, motivo = response.Motivo, identificacion = response.Identificacion;
 
         principal.razonSocialModal.text(razonSocial);
@@ -647,7 +654,7 @@ $(function () {
         swal(`¡Cliente Bloqueado!", "El cliente ${razonSocial} | cuit: ${identificacion} se encuentra bloqueado por el siguiente motivo: ${motivo}. No podrá avanzar con el alta. Se ha bloqueado el botón de registro.","info`);
     };
 
-    function deshabilitarBloqueo(){
+    function deshabilitarBloqueo() {
         principal.guardarFicha
             .removeAttr('disabled')
             .removeAttr('title', 'Botón habilitado')
@@ -655,17 +662,17 @@ $(function () {
             .removeAttr('data-placement', 'top');
     };
 
-    function mostrarFinanciador(){
+    function mostrarFinanciador() {
         preloader('on');
         $.ajax({
             url: verificarAlta,
             type: 'GET',
             data: { Id: ID },
-            success: function(response){
+            success: function (response) {
                 preloader('off');
                 let verificar = response.fichaLaboral, cliente = response.cliente, clienteArt = response.clienteArt;
 
-                if(verificar !== undefined && verificar.Id ) {
+                if (verificar !== undefined && verificar.Id) {
 
                     variables.selectClientesPres
                         .add(variables.selectArtPres)
@@ -683,49 +690,49 @@ $(function () {
                     filtrarTipoPrestacion(variables.TipoPrestacion.filter(':checked').val());
                 }
             }
-        });   
+        });
     };
 
-    function filtrarTipoPrestacion(estado){
+    function filtrarTipoPrestacion(estado) {
         preloader('on');
         $.ajax({
             url: getTipoPrestacion,
             type: "GET",
 
-            success: function(response) {
+            success: function (response) {
                 preloader('off');
                 let tiposPrestacion = response.tiposPrestacion;
-                
-                if(tiposPrestacion) {
+
+                if (tiposPrestacion) {
                     variables.tipoPrestacionPres
                         .add(variables.tipoPrestacionPresN)
                         .empty()
                         .append('<option value="" selected>Elija una opción...</option>');
 
-                    if(estado === 'ART') {
+                    if (estado === 'ART') {
 
                         variables.tipoPrestacionPres
                             .add(variables.tipoPrestacionPresN)
                             .empty()
                             .append('<option value="ART" selected>ART</option>');
 
-                    }else {
+                    } else {
 
-                        tiposPrestacion.forEach(function(tipoPrestacion) {
+                        tiposPrestacion.forEach(function (tipoPrestacion) {
                             variables.tipoPrestacionPres
                                 .append('<option value="' + tipoPrestacion.nombre + '">' + tipoPrestacion.nombre + '</option>');
-    
+
                             variables.tipoPrestacionPresN
                                 .append('<option value="' + tipoPrestacion.nombre + '">' + tipoPrestacion.nombre + '</option>');
                         });
 
                         variables.tipoPrestacionPres.add(variables.tipoPrestacionPresN).find('option[value="ART"]').remove();
-                    }                    
-                    
-                    if(estado) { 
-                        
+                    }
+
+                    if (estado) {
+
                         let result = estado === 'MAS' ? variables.tipoPrestacionPresOtros.val() : estado;
-                        
+
                         variables.tipoPrestacionPres
                             .add(variables.tipoPrestacionPresN)
                             .val(result);
@@ -745,20 +752,20 @@ $(function () {
         });
     }
 
-    function activarMapas(estado){
-        return estado === 'ART' 
-            ? principal.selectMapaPres.show() 
-            :  principal.selectMapaPres.hide();
+    function activarMapas(estado) {
+        return estado === 'ART'
+            ? principal.selectMapaPres.show()
+            : principal.selectMapaPres.hide();
     };
 
-    function calcularAntiguedad(){
-    
-        let ingreso = variables.FechaIngreso.val(), 
+    function calcularAntiguedad() {
+
+        let ingreso = variables.FechaIngreso.val(),
             egreso = variables.FechaEgreso.val(),
-            dateIngreso = new Date(ingreso), 
+            dateIngreso = new Date(ingreso),
             dateEgreso = egreso ? new Date(egreso) : new Date();
 
-        let diff =  dateEgreso.getFullYear() - dateIngreso.getFullYear();
+        let diff = dateEgreso.getFullYear() - dateIngreso.getFullYear();
 
         if (dateEgreso.getMonth() < dateIngreso.getMonth() || (dateEgreso.getMonth() === dateIngreso.getMonth() && dateEgreso.getDate() < dateIngreso.getDate())) {
             diff--;
@@ -767,27 +774,27 @@ $(function () {
         variables.AntiguedadEmpresa.val(diff);
     };
 
-    function opcionesFicha(option){
+    function opcionesFicha(option) {
         Object.entries(listOpciones).forEach(([campo, opciones]) => {
-            opciones.includes(option) 
-                ? $(campo).show() 
+            opciones.includes(option)
+                ? $(campo).show()
                 : $(campo).hide();
         });
     };
 
-    async function selectMedioPago(opcion){
+    async function selectMedioPago(opcion) {
 
         let exaCuenta = await $.get(lstExDisponibles, { Id: variables.selectClientes.val() });
 
         variables.Tipo
-                .add(variables.Sucursal)
-                .add(variables.NroFactura)
-                .add(variables.NroFactProv)
-                .val('');
+            .add(variables.Sucursal)
+            .add(variables.NroFactura)
+            .add(variables.NroFactProv)
+            .val('');
 
         switch (opcion) {
             case 'B':
-                 const contenido = `
+                const contenido = `
                     <option value="" selected>Elija una opción...</option>
                     <option value="A">Efectivo</option>
                     <option value="B">Débito</option>
@@ -803,27 +810,27 @@ $(function () {
                     .add(principal.NroFactProv)
                     .add(principal.ObsPres)
                     .show();
-                    
+
                 variables.SPago
                     .empty()
                     .append(contenido);
 
-                if(variables.PagoLaboral.val() === 'B' && exaCuenta.length === 0) {
+                if (variables.PagoLaboral.val() === 'B' && exaCuenta.length === 0) {
                     variables.PagoLaboral.attr('disabled', true)
-                }else{
+                } else {
                     variables.PagoLaboral.attr('disabled', false)
                 }
                 break;
-            
+
             case 'A':
                 principal.ObsPres
-                .add(principal.NroFactProv)
-                .add(principal.Factura)
-                .add(principal.SPago)
-                .hide();
-            
+                    .add(principal.NroFactProv)
+                    .add(principal.Factura)
+                    .add(principal.SPago)
+                    .hide();
+
                 break;
-        
+
             default:
                 principal.SPago
                     .add(principal.Autoriza)
@@ -853,9 +860,9 @@ $(function () {
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         `;
-     
+
         if (!ID) return;
-        
+
         elementos.ObBloqueoArt
             .add(elementos.ObBloqueoEmpresa)
             .add(elementos.ObArt)
@@ -870,7 +877,7 @@ $(function () {
         const response = await $.get(checkObs, { Id: ID });
         let obsArt = response.obsArt, obsEmpresa = response.obsEmpresa, obsPaciente = response.obsPaciente;
 
-        if([obsArt.Motivo, obsArt.Observaciones, obsEmpresa.Motivo, obsEmpresa.Observaciones, obsPaciente.Observaciones].every(value => value === '' || value === null)){
+        if ([obsArt.Motivo, obsArt.Observaciones, obsEmpresa.Motivo, obsEmpresa.Observaciones, obsPaciente.Observaciones].every(value => value === '' || value === null)) {
 
             principal.fichaLaboralModal
                 .add(principal.observacionesModal)
@@ -878,16 +885,16 @@ $(function () {
             principal.nuevaPrestacion.show();
 
             elementos.messagePrestacion.html(alerta);
-            setTimeout(()=>{
+            setTimeout(() => {
                 elementos.messagePrestacion.fadeOut();
             }, 10000);
-        
-        }else{
+
+        } else {
 
             principal.fichaLaboralModal.hide();
             principal.observacionesModal.show();
 
-            if(obsArt.Motivo) {
+            if (obsArt.Motivo) {
                 elementos.ObBloqueoArt.show();
                 elementos.ObBloqueoArt
                     .find('p')
@@ -897,34 +904,34 @@ $(function () {
                     .attr('title', 'Boton bloqueado');
             }
 
-            if(obsArt.Observaciones) {
+            if (obsArt.Observaciones) {
                 elementos.ObArt.show();
                 elementos.ObArt
                     .find('p')
                     .text(obsArt.Observaciones);
             }
-            
-            if(obsEmpresa.Observaciones) {
+
+            if (obsEmpresa.Observaciones) {
                 elementos.ObEmpresa.show();
                 elementos.ObEmpresa
                     .find('p')
                     .text(obsEmpresa.Observaciones);
             }
 
-            if(obsEmpresa.Motivo) {
+            if (obsEmpresa.Motivo) {
                 elementos.ObBloqueoEmpresa.show();
                 elementos.ObBloqueoEmpresa
                     .find('p')
                     .text(obsEmpresa.Motivo);
             }
-            
-            if(obsPaciente.Observaciones) {
+
+            if (obsPaciente.Observaciones) {
                 elementos.ObPaciente.show();
                 elementos.ObPaciente
                     .find('p')
                     .text(obsPaciente.Observaciones);
             }
-        } 
+        }
 
 
     }
@@ -934,13 +941,13 @@ $(function () {
         principal.lstSaldos.empty();
         preloader('on');
 
-        let response =  await $.get(lstExDisponibles, {Id: id}),
+        let response = await $.get(lstExDisponibles, { Id: id }),
             contenido = '';
 
         preloader('off');
-        if(response && response.length > 0){
+        if (response && response.length > 0) {
 
-            for(let index = 0; index < response.length; index++) {
+            for (let index = 0; index < response.length; index++) {
                 let r = response[index];
 
                 contenido += `
@@ -950,7 +957,7 @@ $(function () {
                 </tr>
                 `;
             }
-        }else{
+        } else {
             contenido = `
                 <tr>
                     <td>No hay registros de examenes a cuenta</td>
@@ -959,8 +966,8 @@ $(function () {
                 </tr>
                 `;
         }
-        principal.lstSaldos.append(contenido); 
-              
+        principal.lstSaldos.append(contenido);
+
     };
 
     async function selectorPago(pago) {
@@ -974,18 +981,18 @@ $(function () {
                 .val('');
         }
 
-        if(['B','A', ''].includes(pago)) {
-            
+        if (['B', 'A', ''].includes(pago)) {
+
             principal.ultimasFacturadas
                 .add(principal.examenesDiponibles)
                 .add(principal.siguienteExCta)
                 .hide();
 
-            if(variables.TipoPrestacion.filter(':checked').val() !== 'ART') principal.ultimasPrestacionesFacturadas.show();
-            
+            if (variables.TipoPrestacion.filter(':checked').val() !== 'ART') principal.ultimasPrestacionesFacturadas.show();
+
             principal.guardarPrestacion.show();
-        
-        }else if(pago === 'P') {
+
+        } else if (pago === 'P') {
 
             principal.guardarPrestacion
                 .add(principal.SPago)
@@ -994,27 +1001,27 @@ $(function () {
                 .hide();
 
             preloader('on');
-            let response = await $.get(lstExDisponibles, {Id: variables.selectClientes.val()});
+            let response = await $.get(lstExDisponibles, { Id: variables.selectClientes.val() });
             preloader('off');
 
-            if(response.length > 0) {
+            if (response.length > 0) {
                 principal.ultimasFacturadas
                     .add(principal.examenesDiponibles)
                     .add(principal.siguienteExCta)
                     .show();
 
                 // checkExamenesCuenta(variables.selectClientes.val())
-            }  
+            }
         }
     };
 
     async function checkExamenesCuenta(id) {
 
-        if(!id) {
+        if (!id) {
             principal.alertaExCta
-                    .add(principal.verListadoExCta)
-                    .hide();
-                return;
+                .add(principal.verListadoExCta)
+                .hide();
+            return;
         }
         preloader('on');
         try {
@@ -1034,10 +1041,10 @@ $(function () {
                 limpiezaInputsPagos();
                 variables.PagoLaboral.attr('disabled', false);
                 principal.SPago
-                        .add(principal.SPago)
-                        .add(principal.Factura)
-                        .add(principal.NroFactProv)
-                        .hide();
+                    .add(principal.SPago)
+                    .add(principal.Factura)
+                    .add(principal.NroFactProv)
+                    .hide();
                 return true;
 
             } else {
@@ -1046,7 +1053,7 @@ $(function () {
                     .hide();
 
                 variables.PagoLaboral.find('option[value="P"]').remove();
-                               
+
                 return;
             }
 
@@ -1054,13 +1061,13 @@ $(function () {
             let errorData = JSON.parse(jqXHR.responseText);
             checkError(jqXHR.status, errorData.msg);
             return;
-        
-        }finally {
+
+        } finally {
             preloader('off');
         }
     };
 
-    function saveFichaLaboral(data){
+    function saveFichaLaboral(data) {
         preloader('on');
 
         $.post(saveFichaAlta, {
@@ -1090,26 +1097,26 @@ $(function () {
             Sucursal: !data.SucursalF ? '' : data.SucursalF,
             NroFactura: data.NumeroF === '' ? '' : data.NumeroF,
             NroFactProv: data.NumeroProvF === '' ? '' : data.NumeroProvF,
-            Autorizado: !data.Autoriza ? '' :data.Autoriza,   
+            Autorizado: !data.Autoriza ? '' : data.Autoriza,
             _token: TOKEN,
-            }) 
-            .done(function(response) {
+        })
+            .done(function (response) {
                 preloader('off');
-                toastr.success(response.msg,'',{timeOut: 1000});
+                toastr.success(response.msg, '', { timeOut: 1000 });
 
                 variables.facturacion_id.val(response.datos_facturacion_id || 0);
 
                 mostrarFinanciador();
                 selectMedioPago(variables.PagoLaboral.val());
 
-                variables.PagoLaboral.val() === 'A' 
-                    ? variables.ElPago.val("C") 
+                variables.PagoLaboral.val() === 'A'
+                    ? variables.ElPago.val("C")
                     : variables.ElPago.val(variables.PagoLaboral.val());
 
                 variables.PagoLaboral.val() === 'A'
                     ? principal.NroFactPrestacion.show()
                     : principal.NroFactPrestacion.hide()
-                
+
                 variables.ElSPago.val(data.Spago);
                 variables.ElTipo.val(data.TipoF);
                 variables.ElSucursal.val(data.SucursalF);
@@ -1125,42 +1132,41 @@ $(function () {
                 }, 2000);
 
             })
-            .fail(function(jqXHR) {
+            .fail(function (jqXHR) {
                 preloader('off');
                 let errorData = JSON.parse(jqXHR.responseText);
                 checkError(jqXHR.status, errorData.msg);
                 return;
-                
+
             });
     };
 
     async function checkExCuentaDisponible(id) {
-        $data = await $.get(lstExDisponibles, {Id: id});
+        $data = await $.get(lstExDisponibles, { Id: id });
         return $data.length > 0 ? true : false;
     }
 
     function marcarPago(pago) {
-        return ['A','B','P'].includes(pago)
+        return ['A', 'B', 'P'].includes(pago)
             ? variables.PagoLaboral.val(pago)
-            : variables.PagoLaboral.val('');     
+            : variables.PagoLaboral.val('');
     }
 
-    function getMap(idEmpresa, idArt){
+    function getMap(idEmpresa, idArt) {
 
         const mapas = [principal.mapas, principal.mapasN];
- 
-        $.get(getMapas, {empresa: idEmpresa, art: idArt})
-            .done(async function(response){
+
+        $.get(getMapas, { empresa: idEmpresa, art: idArt })
+            .done(async function (response) {
 
                 let dataMap = await response.mapas;
-            
+
                 mapas.forEach(mapa => {
                     mapa.empty();
                 });
 
-                if(dataMap.length === 0)
-                {
-                    
+                if (dataMap.length === 0) {
+
                     mapas.forEach(mapa => {
                         mapa.empty().append(`
                             <option title="Sin mapas disponibles para esta ART y Empresa." value="0" selected>
@@ -1169,16 +1175,16 @@ $(function () {
                         `);
                     });
 
-                }else{
-                    for(let index = 0; index < dataMap.length; index++) {
+                } else {
+                    for (let index = 0; index < dataMap.length; index++) {
                         let d = dataMap[index],
                             contenido = `<option value="${d.Id}">${d.Nro} | Empresa: ${d.RSE} - ART: ${d.RSArt}</option>`;
-    
+
                         mapas.forEach(mapa => {
                             mapa.append(contenido);
                         });
                     }
-                } 
+                }
             })
     }
 
@@ -1191,12 +1197,12 @@ $(function () {
         if (allData) {
             preloader('off');
             if (confirm('Tienes examenes a cuenta disponibles. ¿Estás seguro que deseas continuar?')) {
-                
+
                 saveFichaLaboral(data);
-            }else{
+            } else {
                 e.stopPropagation();
             }
-        }else{
+        } else {
             preloader('off');
             saveFichaLaboral(data);
         }
@@ -1219,11 +1225,11 @@ $(function () {
 
     function masOpcion() {
         let seleccion = variables.tipoPrestacionPresOtros.val();
-    
+
         for (let campo in masOpciones) {
 
             if (masOpciones[campo].includes(seleccion)) {
-                $(campo).show(); 
+                $(campo).show();
             } else {
                 $(campo).hide();
             }
