@@ -110,7 +110,7 @@ class ExamenesCuentaController extends Controller
 
             $query->when(empty($request->estado), function ($query) {
                 $query->where('pagosacuenta.Pagado', 0);
-                $query->where('pagosacuenta.FechaP', '=', '0000-00-00');
+                $query->where('pagosacuenta.FechaP', '0000-00-00');
             });
 
             $query->when(!empty($request->estado) && $request->estado === 'pago', function ($query) {
