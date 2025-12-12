@@ -1,4 +1,4 @@
-$(function(){
+$(async function () {
 
     $('.Firma').richText({
 
@@ -6,138 +6,138 @@ $(function(){
         bold: true,
         italic: true,
         underline: true,
-      
+
         // text alignment
         leftAlign: true,
         centerAlign: true,
         rightAlign: true,
         justify: true,
-      
+
         // lists
         ol: false,
         ul: false,
-      
+
         // title
         heading: false,
-      
+
         // fonts
         fonts: false,
         fontList: ["Arial",
-          "Arial Black",
-          "Comic Sans MS",
-          "Courier New",
-          "Geneva",
-          "Georgia",
-          "Helvetica",
-          "Impact",
-          "Lucida Console",
-          "Tahoma",
-          "Times New Roman",
-          "Verdana"
+            "Arial Black",
+            "Comic Sans MS",
+            "Courier New",
+            "Geneva",
+            "Georgia",
+            "Helvetica",
+            "Impact",
+            "Lucida Console",
+            "Tahoma",
+            "Times New Roman",
+            "Verdana"
         ],
         fontColor: true,
         backgroundColor: false,
         fontSize: true,
-      
+
         // uploads
         imageUpload: false,
         fileUpload: false,
-      
+
         // link
         urls: false,
-      
+
         // tables
         table: false,
-      
+
         // code
         videoEmbed: false,
         removeStyles: true,
         code: false,
-      
+
         // colors
         colors: [],
-      
+
         // dropdowns
         fileHTML: '',
         imageHTML: '',
-      
+
         // translations
         translations: {
-          'title': 'Title',
-          'white': 'White',
-          'black': 'Black',
-          'brown': 'Brown',
-          'beige': 'Beige',
-          'darkBlue': 'Dark Blue',
-          'blue': 'Blue',
-          'lightBlue': 'Light Blue',
-          'darkRed': 'Dark Red',
-          'red': 'Red',
-          'darkGreen': 'Dark Green',
-          'green': 'Green',
-          'purple': 'Purple',
-          'darkTurquois': 'Dark Turquois',
-          'turquois': 'Turquois',
-          'darkOrange': 'Dark Orange',
-          'orange': 'Orange',
-          'yellow': 'Yellow',
-          'imageURL': 'Image URL',
-          'fileURL': 'File URL',
-          'linkText': 'Link text',
-          'url': 'URL',
-          'size': 'Size',
-          'responsive': '<a href="https://www.jqueryscript.net/tags.php?/Responsive/">Responsive</a>',
-          'text': 'Text',
-          'openIn': 'Open in',
-          'sameTab': 'Same tab',
-          'newTab': 'New tab',
-          'align': 'Align',
-          'left': 'Left',
-          'justify': 'Justificado',
-          'center': 'Center',
-          'right': 'Right',
-          'rows': 'Rows',
-          'columns': 'Columns',
-          'add': 'Add',
-          'pleaseEnterURL': 'Please enter an URL',
-          'videoURLnotSupported': 'Video URL not supported',
-          'pleaseSelectImage': 'Please select an image',
-          'pleaseSelectFile': 'Please select a file',
-          'bold': 'Negrita',
-          'italic': 'Cursiva',
-          'underline': 'Subrayado',
-          'alignLeft': 'Alineción izquierda',
-          'alignCenter': 'Alineación central',
-          'alignRight': 'Alineación derecha',
-          'addOrderedList': 'Ordered list',
-          'addUnorderedList': 'Unordered list',
-          'addHeading': 'Heading/title',
-          'addFont': 'Font',
-          'addFontColor': 'Font color',
-          'addBackgroundColor': 'Background color',
-          'addFontSize': 'Font size',
-          'addImage': 'Add image',
-          'addVideo': 'Add video',
-          'addFile': 'Add file',
-          'addURL': 'Add URL',
-          'addTable': 'Add table',
-          'removeStyles': 'Quitar estilos del texto',
-          'code': 'Show HTML code',
-          'undo': 'Undo',
-          'redo': 'Redo',
-          'save': 'Save',
-          'close': 'Close'
+            'title': 'Title',
+            'white': 'White',
+            'black': 'Black',
+            'brown': 'Brown',
+            'beige': 'Beige',
+            'darkBlue': 'Dark Blue',
+            'blue': 'Blue',
+            'lightBlue': 'Light Blue',
+            'darkRed': 'Dark Red',
+            'red': 'Red',
+            'darkGreen': 'Dark Green',
+            'green': 'Green',
+            'purple': 'Purple',
+            'darkTurquois': 'Dark Turquois',
+            'turquois': 'Turquois',
+            'darkOrange': 'Dark Orange',
+            'orange': 'Orange',
+            'yellow': 'Yellow',
+            'imageURL': 'Image URL',
+            'fileURL': 'File URL',
+            'linkText': 'Link text',
+            'url': 'URL',
+            'size': 'Size',
+            'responsive': '<a href="https://www.jqueryscript.net/tags.php?/Responsive/">Responsive</a>',
+            'text': 'Text',
+            'openIn': 'Open in',
+            'sameTab': 'Same tab',
+            'newTab': 'New tab',
+            'align': 'Align',
+            'left': 'Left',
+            'justify': 'Justificado',
+            'center': 'Center',
+            'right': 'Right',
+            'rows': 'Rows',
+            'columns': 'Columns',
+            'add': 'Add',
+            'pleaseEnterURL': 'Please enter an URL',
+            'videoURLnotSupported': 'Video URL not supported',
+            'pleaseSelectImage': 'Please select an image',
+            'pleaseSelectFile': 'Please select a file',
+            'bold': 'Negrita',
+            'italic': 'Cursiva',
+            'underline': 'Subrayado',
+            'alignLeft': 'Alineción izquierda',
+            'alignCenter': 'Alineación central',
+            'alignRight': 'Alineación derecha',
+            'addOrderedList': 'Ordered list',
+            'addUnorderedList': 'Unordered list',
+            'addHeading': 'Heading/title',
+            'addFont': 'Font',
+            'addFontColor': 'Font color',
+            'addBackgroundColor': 'Background color',
+            'addFontSize': 'Font size',
+            'addImage': 'Add image',
+            'addVideo': 'Add video',
+            'addFile': 'Add file',
+            'addURL': 'Add URL',
+            'addTable': 'Add table',
+            'removeStyles': 'Quitar estilos del texto',
+            'code': 'Show HTML code',
+            'undo': 'Undo',
+            'redo': 'Redo',
+            'save': 'Save',
+            'close': 'Close'
         },
-      
+
         // privacy
         youtubeCookies: false,
-      
+
         // preview
         preview: false,
-      
+
         // placeholder
         placeholder: '',
-      
+
         // dev settings
         useSingleQuotes: false,
         height: 0,
@@ -155,177 +155,215 @@ $(function(){
         saveOnBlur: 0,
         undoRedo: true,
         debug: false
-      });
+    });
 
-    let IdProfesional = $('#IdProfesional').val(),
+    let variables = {
+        idUsuario: $('#UserId').val(),
+        nombre: $('#nombre').val(),
+        apellido: $('#apellido').val(),
+        tipoDocumento: $('#tipoDoc').val(),
+        documento: $('#numeroDoc').val(),
+        tipoIdentificacion: $('#cuil').val(),
+        identificacion: $('#numeroCUIL').val(),
+        telefono: $('#numTelefono').val(),
+        fechaNacimiento: $('#fechaNac').val(),
+        provincia: $('#provincia').val(),
+        localidad: $('#localidad').val(),
+        direccion: $('#direccion').val(),
+        cp: $('#codPostal').val(),
+        Id: $('#Id').val(),
+        email: $('#email').val(),
+        usuario: $('#usuario').val(),
+        listaRoles: $('#listaRoles').val(),
+        Pago: $('#Pago').prop('checked'),
+        InfAdj: $('#InfAdj').prop('checked'),
+        Firma: $('#Firma').val(),
+        Foto: $('#Foto')[0].files[0],
+        wImage: $('#wImage').val(),
+        hImage: $('#hImage').val(),
+        tlp: $('#tlp').prop('checked'),
+        mn: $('#MN').val(),
+        mp: $('#MP').val(),
+        seguroMP: $('#SeguroMP').val(),
+    };
+
+    let base = {
+        tabla: $('#listaUsuarios'),
+        verOpciones: $('.verOpciones'),
+        verAlerta: $('.verAlerta')
+    };
+
+    let quitar = ["#provincia", "#cuil", "#tipoDoc"];
+
+    let IdProfesional = await $.get(getProfesional, { Id: variables.idUsuario }),
+        timer = null,
         resizing = false, startWidth, startHeight, startX, startY; //variables de ancho de imagen
-    let tabla = $('#listaUsuarios');
 
-    $('.verOpciones').hide();
-    $('.verAlerta').show();
+    base.verOpciones.hide();
+    base.verAlerta.show();
 
-    quitarDuplicados("#provincia");
-    quitarDuplicados("#cuil");
-    quitarDuplicados("#tipoDoc");
+    for (let i = 0; i < quitar.length; i++) {
+        quitarDuplicados(quitar[i]);
+    }
+
     listadoRoles();
     cargarPerfiles();
     perfiles(IdProfesional);
     checkRol(IdProfesional);
 
-    $(document).on('click', '.updateDatos', function(e){
+    $(document).on('click', '.updateDatos', function (e) {
         e.preventDefault();
 
-        let nombre = $('#nombre').val(),
-            apellido = $('#apellido').val(),
-            tipoDocumento = $('#tipoDoc').val(),
-            documento = $('#numeroDoc').val(),
-            tipoIdentificacion = $('#cuil').val(),
-            identificacion = $('#numeroCUIL').val(),
-            telefono = $('#numTelefono').val(),
-            fechaNacimiento = $('#fechaNac').val(),
-            provincia = $('#provincia').val(),
-            localidad = $('#localidad').val(),
-            direccion = $('#direccion').val(),
-            cp = $('#codPostal').val(),
-            Id = $('#Id').val(),
-            email = $('#email').val(),
-            userId = $('#UserId').val();
-
-        if($('#form-update').valid()){ 
+        if ($('#form-update').valid()) {
             swal({
                 title: "¿Esta seguro que desea confirmar la operación?",
                 icon: "warning",
                 buttons: ["Cancelar", "Aceptar"]
             }).then((confirmar) => {
-                if(confirmar) {
+                if (confirmar) {
+                    let actualizarData = {
+                        _token: TOKEN,
+                        Nombre: $('#nombre').val(),
+                        Apellido: $('#apellido').val(),
+                        TipoDocumento: $('#tipoDoc').val(),
+                        Documento: $('#numeroDoc').val(),
+                        TipoIdentificacion: $('#cuil').val(),
+                        Identificacion: $('#numeroCUIL').val(),
+                        Telefono: $('#numTelefono').val(),
+                        FechaNacimiento: $('#fechaNac').val(),
+                        Provincia: $('#provincia').val(),
+                        IdLocalidad: $('#localidad').val(),
+                        CP: $('#codPostal').val(),
+                        Id: $('#Id').val(),
+                        email: $('#email').val(),
+                        Direccion: $('#direccion').val(),
+                        UserId: $('#UserId').val()
+                    };
+
                     preloader('on');
-                    $.post(actualizarDatos, {_token: TOKEN, Nombre: nombre, Apellido: apellido, TipoDocumento: tipoDocumento, Documento: documento, TipoIdentificacion: tipoIdentificacion, Identificacion: identificacion, Telefono: telefono, FechaNacimiento: fechaNacimiento, Provincia: provincia, IdLocalidad: localidad, CP: cp, Id: Id, email: email, Direccion: direccion, UserId: userId})
-                        .done(function(response){
+                    $.post(actualizarDatos, actualizarData)
+                        .done(function (response) {
                             preloader('off');
-                            toastr.success(response.msg, '', {timeOut: 1000});
-                            setTimeout(()=>{
-                                location.reload();
-                            },2000);
+                            toastr.success(response.msg, '', { timeOut: 1000 });
+                            // setTimeout(() => {
+                            //     location.reload();
+                            // }, 2000);
                         })
-                        .fail(function(jqXHR){
+                        .fail(function (jqXHR) {
                             preloader('off');
-                            let errorData = JSON.parse(jqXHR.responseText);            
+                            let errorData = JSON.parse(jqXHR.responseText);
                             checkError(jqXHR.status, errorData.msg);
                             return;
                         });
                 }
-            }) 
-            
+            })
+
         }
 
     });
 
-    $('#provincia').change(function() {
-        let provincia = $(this).val();
-        loadProvincia(provincia);
-    });
-
-     $('#localidad').change(function() {
-        let localidadId = $(this).val();
-        // Realizar la solicitud Ajax
-        loadLocalidad(localidadId);
-    });
-
-    $(document).on('click', '#volver', function(e){
+    $(document).on('click', '#volver', function (e) {
         e.preventDefault();
         window.location.href = INDEX;
     });
 
-    let timer = null;
+    $(document).on('click', '.cambiarEmail', function () {
 
-    $(document).on('click', '.cambiarEmail', function(){
+        let emailActualizar = $('#email').val();
 
-        let email = $('#email').val(), name = $('#usuario').val();
-        
-        if(!email) {
-            toastr.warning("El email no puede estar vacío",'',{timeOut: 1000});
+        if (!emailActualizar) {
+            toastr.warning("El email no puede estar vacío", '', { timeOut: 1000 });
             return;
         }
 
-        if(!correoValido(email)) {
-            toastr.warning("El email no es válido",'',{timeOut: 1000});
+        if (!correoValido(emailActualizar)) {
+            toastr.warning("El email no es válido", '', { timeOut: 1000 });
             return;
         }
 
         preloader('on');
-        $.get(checkEmailUpdate, {email: email, name: name})
-            .done(function(response){
+        $.get(checkEmailUpdate, { email: emailActualizar, name: variables.usuario })
+            .done(function (response) {
                 preloader('off');
-                $tipo = response.estado === 'true' ? 'success' : 'warning';
-                toastr[$tipo](response.msg,'',{timeOut: 1000});
+                toastr.success(response.msg, '', { timeOut: 1000 });
+            })
+            .fail(function (jqXHR) {
+                preloader('off');
+                let errorData = JSON.parse(jqXHR.responseText);
+                checkError(jqXHR.status, errorData.msg);
+                return;
             });
 
     });
 
-    $(document).on('click', '.agregarRol', function(e){
-        let rol = $('#listaRoles').val(), usuario = $(this).data('id');
-        
-        if(!rol || !usuario) return;
+    $(document).on('click', '.agregarRol', function (e) {
+        let usuario = $(this).data('id'), listaRoles = $('#listaRoles').val();
+
+        if (!listaRoles || !usuario) return;
 
         swal({
             title: "¿Estas seguro que deseas agregar el rol?",
             icon: "warning",
             buttons: ["Cancelar", "Agregar"],
         }).then((result) => {
-            if(result){
+            if (result) {
 
                 preloader('on');
-                $.post(addRol, {_token: TOKEN, user: usuario, role: rol})
-                    .done(function(response){
+                $.post(addRol, { _token: TOKEN, user: usuario, role: listaRoles })
+                    .done(async function (response) {
                         preloader('off');
-                        if(!response.estado){
-                            toastr.warning(response.msg, '', {timeOut: 1000});
-                        }else if(response.estado){
-                            toastr.success(response.msg, '', {timeOut: 1000});
-                            checkRol(IdProfesional);
-                            perfiles(IdProfesional);
-                            setTimeout(() => {
-                                listadoRoles();
-                            }, 2000);
-                        }
+                        toastr.success(response.msg, '', { timeOut: 1000 });
+
+                        let nuevoId = await $.get(getProfesional, { Id: variables.idUsuario });
+
+                        checkRol(nuevoId);
+                        perfiles(nuevoId);
+                        cargarPerfiles();
+                        setTimeout(() => {
+                            listadoRoles();
+                        }, 2000);
+
                     })
-                    .fail(function(jqXHR) {
+                    .fail(function (jqXHR) {
                         preloader('off');
-                        let errorData = JSON.parse(jqXHR.responseText);            
+                        let errorData = JSON.parse(jqXHR.responseText);
                         checkError(jqXHR.status, errorData.msg);
                         return;
                     });
             }
         });
-   
+
     });
 
-    $(document).on('click', '.eliminar', function(e){
+    $(document).on('click', '.eliminar', function (e) {
 
         let usuario = $(this).data('user'), rol = $(this).data('rol');
-        if(!rol || !usuario) return;
+        if (!rol || !usuario) return;
 
         swal({
             title: "¿Estas seguro que deseas eliminar el rol?",
             icon: "warning",
             buttons: ["Cancelar", "Eliminar"],
         }).then((result) => {
-            if(result){
+            if (result) {
 
                 preloader('on');
-                $.get(deleteRol, {user: usuario, role: rol})
-                    .done(function(response){
+                $.get(deleteRol, { user: usuario, role: rol })
+                    .done(async function (response) {
                         preloader('off');
-                        toastr.success(response.msg, '', {timeOut: 1000});
-                        checkRol(IdProfesional);
-                        perfiles(IdProfesional);
+                        toastr.success(response.msg, '', { timeOut: 1000 });
+
+                        let nuevoId = await $.get(getProfesional, { Id: variables.idUsuario });
+
+                        checkRol(nuevoId);
+                        perfiles(nuevoId);
                         cargarPerfiles();
                         setTimeout(() => {
                             listadoRoles();
                         }, 2000);
                     })
             }
-        });  
+        });
     });
 
     $('#imagenModal').mousedown(function (e) {
@@ -336,36 +374,40 @@ $(function(){
         startY = e.clientY;
     });
 
-    $(document).on('click', '.saveOpciones', function(e){
+    $(document).on('click', '.saveOpciones', async function (e) {
         e.preventDefault();
-        
-        let Pago = $('#Pago').prop('checked') ? 1 : 0,
-            InfAdj = $('#InfAdj').prop('checked') ? 1 : 0,
-            Firma = $('#Firma').val(),
-            Foto = $('#Foto')[0].files[0],
-            wImage = $('#wImage').val(),
-            hImage = $('#hImage').val(),
-            Id = $('#IdProfesional').val(),
-            tlp = $('#tlp').prop('checked') ? 1 : 0;
+
+        let idProfesional = await $.get(getProfesional, { Id: variables.idUsuario });
+
+        let actDatos = {
+            Id: idProfesional,
+            Pago: $('#Pago').is(':checked') ? 1 : 0,
+            InfAdj: $('#InfAdj').is(':checked') ? 1 : 0,
+            Firma: $('#Firma').val(),
+            wImage: $('#wImage').val(),
+            hImage: $('#hImage').val(),
+            TLP: $('#TLP').is(':checked') ? 1 : 0,
+            Foto: $('#Foto')[0].files[0],
+        }
 
         let formData = new FormData();
-            formData.append('_token', TOKEN);
-            formData.append('Pago', Pago);
-            formData.append('InfAdj', InfAdj);
-            formData.append('Firma', Firma);
-            if (Foto) formData.append('Foto', Foto);
-            formData.append('wImage', wImage);
-            formData.append('hImage', hImage);
-            formData.append('Id', Id);
-            formData.append('TLP', tlp);
+        formData.append('_token', TOKEN);
+        formData.append('Pago', actDatos.Pago ? 1 : 0);
+        formData.append('InfAdj', actDatos.InfAdj ? 1 : 0);
+        formData.append('Firma', actDatos.Firma);
+        if (actDatos.Foto) formData.append('Foto', actDatos.Foto);
+        formData.append('wImage', actDatos.wImage);
+        formData.append('hImage', actDatos.hImage);
+        formData.append('Id', idProfesional);
+        formData.append('TLP', actDatos.TLP ? 1 : 0);
 
         swal({
             title: "¿Está seguro que desea actualizar los datos",
             icon: "warning",
             buttons: ["Cancelar", "Aceptar"]
         }).then((confirmar) => {
-            if(confirmar){
-                
+            if (confirmar) {
+
                 preloader('on');
                 $.ajax({
                     url: datosProf,
@@ -373,43 +415,49 @@ $(function(){
                     data: formData,
                     processData: false,
                     contentType: false,
-                    success: function(response) {
+                    success: function (response) {
                         preloader('off');
-                        toastr.success(response.msg, '', {timeOut: 1000});
+                        toastr.success(response.msg, '', { timeOut: 1000 });
                     },
-                    error: function(jqXHR) {
+                    error: function (jqXHR) {
                         preloader('off');
-                        let errorData = JSON.parse(jqXHR.responseText);            
+                        let errorData = JSON.parse(jqXHR.responseText);
                         checkError(jqXHR.status, errorData.msg);
-                        return;  
+                        return;
                     }
                 });
             }
         });
     });
 
-    $(document).on('click', '.saveSeguro', function(e){
+    $(document).on('click', '.saveSeguro', async function (e) {
         e.preventDefault();
 
-        let mn = $('#MN').val(),
-            mp = $('#MP').val(),
-            seguroMP = $('#SeguroMP').val(),
-            Id = $('#IdProfesional').val();
+        let idProfesional = await $.get(getProfesional, { Id: variables.idUsuario });
 
-        if(mn < 0) {
-            toastr.warning("Matricula no acepta números negativos", '', {timeOut: 1000});
+        if ($('#MN').val() < 0) {
+            toastr.warning("Matricula no acepta números negativos", '', { timeOut: 1000 });
             return;
         }
+
+        let datosAct = {
+            _token: TOKEN,
+            MN: $('#MN').val(),
+            MP: $('#MP').val(),
+            SeguroMP: $('#SeguroMP').val(),
+            Id: idProfesional
+        }
+
         preloader('on');
-        $.post(seguroProf, {_token: TOKEN, MN: mn, MP: mp, SeguroMP: seguroMP, Id: Id})
-            
-            .done(function(response){
+        $.post(seguroProf, datosAct)
+
+            .done(function (response) {
                 preloader('off');
-                toastr.success(response.msg, '', {timeOut: 1000});
+                toastr.success(response.msg, '', { timeOut: 1000 });
             })
-            .fail(function(jqXHR){
+            .fail(function (jqXHR) {
                 preloader('off');
-                let errorData = JSON.parse(jqXHR.responseText);            
+                let errorData = JSON.parse(jqXHR.responseText);
                 checkError(jqXHR.status, errorData.msg);
                 return;
             })
@@ -433,32 +481,32 @@ $(function(){
         resizing = false;
     });
 
-    $(document).on('click', '.addPerfilProf', function(e){
+    $(document).on('click', '.addPerfilProf', function (e) {
         e.preventDefault();
 
         let perfil = $('#perfiles').val(), especialidad = $('#listaEspecialidad').val();
 
-        if(!perfil|| !especialidad) {
-            toastr.warning("Debe seleccionar una especialidad y un perfil para poder añadirlo a la lista", '', {timeOut: 1000});
+        if (!perfil || !especialidad) {
+            toastr.warning("Debe seleccionar una especialidad y un perfil para poder añadirlo a la lista", '', { timeOut: 1000 });
             return;
         }
         preloader('on');
-        $.post(setPerfiles, {_token: TOKEN, perfil: perfil, especialidad: especialidad, Id: IDPROF})
-            
-            .done(function(response){
+        $.post(setPerfiles, { _token: TOKEN, perfil: perfil, especialidad: especialidad, Id: IDPROF })
+
+            .done(function (response) {
                 preloader('off');
-                toastr.success(response.msg, '', {timeOut: 1000});
-                cargarPerfiles(); 
+                toastr.success(response.msg, '', { timeOut: 1000 });
+                cargarPerfiles();
             })
-            .fail(function(jqXHR){
+            .fail(function (jqXHR) {
                 preloader('off');
-                let errorData = JSON.parse(jqXHR.responseText);            
+                let errorData = JSON.parse(jqXHR.responseText);
                 checkError(jqXHR.status, errorData.msg);
-                return; 
+                return;
             });
     });
 
-    $(document).on('click', '.eliminarPerfil',  function(e){
+    $(document).on('click', '.eliminarPerfil', function (e) {
         e.preventDefault();
         let IdProf = $(this).data('prof'),
             IdProv = $(this).data('prov');
@@ -468,36 +516,36 @@ $(function(){
             icon: "warning",
             buttons: ["Cancelar", "Aceptar"]
         }).then((confirmar) => {
-            if(confirmar) {
+            if (confirmar) {
                 preloader('on');
-                $.post(delPerfil, {_token: TOKEN, IdProf: IdProf, IdProv: IdProv})
-                .done(function(){
-                    preloader('off')
-                    toastr.success(`Se ha añadido el perfil de manera correcta`, '', {timeOut: 1000});
-                    cargarPerfiles();
-                })
-                .fail(function(jqXHR){
-                    preloader('off');
-                    let errorData = JSON.parse(jqXHR.responseText);            
-                    checkError(jqXHR.status, errorData.msg);
-                    return; 
-                });
+                $.post(delPerfil, { _token: TOKEN, IdProf: IdProf, IdProv: IdProv })
+                    .done(function () {
+                        preloader('off')
+                        toastr.success(`Se ha añadido el perfil de manera correcta`, '', { timeOut: 1000 });
+                        cargarPerfiles();
+                    })
+                    .fail(function (jqXHR) {
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
+                    });
             }
-        });           
+        });
     });
 
-    function listadoRoles() {
+    async function listadoRoles() {
         preloader('on');
 
-        $.get(lstRolAsignados, {Id: ID})
-            .done(function(response){
+        $.get(await lstRolAsignados, { Id: ID })
+            .done(function (response) {
                 preloader('off');
                 $('#lstRolesAsignados').empty();
 
-                $.each(response, function(index, r){
+                $.each(response, function (index, r) {
                     let descripcion = r.Descripcion || '',
                         arr = descripcion ? descripcion.split(', ') : [];
-    
+
                     let badges = '';
                     // Crea un badge para cada descripción
                     if (arr.lenght < 1) {
@@ -527,79 +575,45 @@ $(function(){
             });
     }
 
-    function loadProvincia(valor) {
-        $.ajax({
-            url: getLocalidad,
-            type: "GET",
-            data: {
-                provincia: valor,
-            },
-            success: function(response) {
-                let localidades = response.localidades;
-                $('#localidad').empty().append('<option selected>Elija una opción...</option>');
-                localidades.forEach(function(localidad) {
-                    $('#localidad').append('<option value="' + localidad.id + '">' + localidad.nombre + '</option>');
-                });
-            }
-        });
-    }
-
-    function loadLocalidad(valor){
-        
-        $.ajax({
-            url: getCodigoPostal,
-            type: "GET",
-            data: {
-                localidadId: valor,
-            },
-            success: function(response) {
-                // Actualizar el valor del input de Código Postal
-                $('#codPostal').val(response.codigoPostal);
-            }
-        });
-    }
-
-    function perfiles(id)
-    {
-        if(!id) return;
-
+    async function perfiles(id) {
+        if (!id) return;
         $("#perfiles").empty().append('<option value="" selected>Elija una opción...</option>');
 
-        $.get(choisePerfil, {Id: id})
-            .done(function(response){
-
-                $.each(response, function(index, data){
+        $.get(await choisePerfil, { Id: id })
+            .done(function (response) {
+                let listado = response.filter(r => r.Nombre !== "Administrador");
+                $.each(listado, function (index, data) {
                     $('#perfiles').append(`<option value="${data.Id}">${data.Nombre}</option>`);
-                });              
+                });
             });
     }
 
     function checkRol(id) {
-        $.get(checkRoles, { Id: id }, function(response) {
- 
-            let arr = ['Efector', 'Informador', 'Evaluador', 'Combinado', 'Evaluador ART'],
+        $.get(checkRoles, { Id: id }, function (response) {
+
+            let arr = ['Efector', 'Informador', 'Evaluador', 'Combinado', 'Evaluador ART', 'Administrador'],
                 buscados = response.map(item => item.nombre),
                 resultados = buscados.some(e => arr.includes(e));
 
             if (resultados) {
-                $('.verOpciones').css('display', ''); 
+                $('.verOpciones').css('display', '');
                 $('.verAlerta').hide();
                 $('.addPerfilProf, .saveOpciones, .saveSeguro').show();
             } else {
                 //$('.verOpciones').css('display', 'none');
-                $('.verOpciones').css('display', ''); 
+                $('.verOpciones').css('display', '');
                 $('.verAlerta').show();
                 $('.addPerfilProf, .saveOpciones, .saveSeguro').hide();
             }
         });
     }
 
-    function cargarPerfiles(){
+    function cargarPerfiles() {
         preloader('on');
         $('#listaProfesionales').empty();
 
-        $.get(getPerfiles, {Id: IDPROF})
-            .done(function(response){
+        $.get(getPerfiles, { Id: IDPROF })
+            .done(function (response) {
 
                 preloader('off')
                 let data = response.data;
@@ -617,21 +631,21 @@ $(function(){
                             </td>
                         </tr>
                     `;
-                
+
                     $('#listaProfesionales').append(contenido);
                     $('#perfiles, #listaEspecialidad').val('');
                 });
             })
-            .fail(function(jqXHR){
+            .fail(function (jqXHR) {
                 preloader('off');
-                let errorData = JSON.parse(jqXHR.responseText);            
+                let errorData = JSON.parse(jqXHR.responseText);
                 checkError(jqXHR.status, errorData.msg);
-                return; 
+                return;
             });
     }
 
 
 
-    
+
 
 });

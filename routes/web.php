@@ -389,6 +389,7 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::get('usuarios/roles/checkear', [UsuariosController::class, 'checkRoles'])->name('checkRoles');
     Route::get('usuarios/obtener', [UsuariosController::class, 'getUserName'])->name('usuarios.getUserName');
     Route::get('usuarios/listado', [UsuariosController::class, 'listadoUsuarios'])->name('usuarios.getListado');
+    Route::get('usuarios/getProfesional', [UsuariosController::class, 'getProfesional'])->name('usuarios.getProfesional');
     
     Route::resource('usuarios', UsuariosController::class);
     Route::get('buscarUsuario', [UsuariosController::class, 'buscar'])->name('buscarUsuario');

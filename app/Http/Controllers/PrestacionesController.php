@@ -842,13 +842,12 @@ class PrestacionesController extends Controller
 
         $prestacion = Prestacion::find($request->Id);
 
-        if($prestacion) {
-            $reporte = $this->reporteExcel->crear('resumenTotal');
-            return $reporte->generar($prestacion);
-            
-        }else{
-            return response()->json(['msg' => 'No se ha podido generar el archivo'], 409);
+        if(empty($prestacion)) {
+            return response()->json(['msg' => 'No se ha podido generar el reporte porque la prestación no existe'], 404);
         }
+
+        $reporte = $this->reporteExcel->crear('resumenTotal');
+        return $reporte->generar($prestacion);
     }
 
     public function getEstudiosReporte(Request $request): mixed
@@ -1005,7 +1004,6 @@ class PrestacionesController extends Controller
     {
         $query = ArchivoPrestacion::where('Id', $request->Id)->first();
         
- 
         if ($query) {
             $ruta = FileHelper::getFileUrl('escritura').'/AdjuntosPrestacion/'.$query->Ruta;
             

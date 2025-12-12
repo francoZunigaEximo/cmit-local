@@ -90,8 +90,6 @@
                 <div class="p-2 col-md-6">
                     <label for="nombre" class="form-label font-weight-bold"><strong>Nombre <i class="text-danger">*</i></strong></label>
                     <input id="nombre" name="nombre" class="form-control" type="text" value="{{ $query->Nombre ?? '' }}">
-                    <input type="hidden" id="Id" value="{{ $query->Id ?? 0 }}">
-                    <input type="hidden" id="IdProfesional" value="{{ $query->IdProfesional ?? 0 }}">
                     <input type="hidden" id="UserId" value="{{ $query->UserId ?? 0 }}">
                 </div>
                 <div class="p-2 col-md-6">
@@ -161,7 +159,7 @@
 
                 <div class="p-2 col-md-4">
                     <label for="codPostal" class="form-label font-weight-bold">Codigo Postal</label>
-                    <input class="form-control" id="codPostal" type="text" value="{{ $query->CP }}" @readonly(true)>
+                    <input class="form-control" id="codPostal" name="codPostal" type="text" value="{{ $query->CP }}">
                 </div>
 
                 <div class="p-2 col-md-6">
@@ -396,7 +394,7 @@
 
 <script>
     const ROUTE = "{{ route('listadoRoles') }}";
-    const getLocalidad = "{{ route('getLocalidades') }}";
+    const getLocalidades = "{{ route('getLocalidades') }}";
     const getCodigoPostal = "{{ route('getCodigoPostal') }}";
     const actualizarDatos = "{{ route('actualizarDatos') }}";
     const ID = "{{ $query->UserId }}";
@@ -414,6 +412,7 @@
     const checkRoles = "{{ route('checkRoles') }}";
     const seguroProf = "{{ route('profesionales.seguro') }}";
     const cargarSessiones = "{{ route('sesiones.listaSesiones') }}";
+    const getProfesional = "{{ route('usuarios.getProfesional') }}";
 </script>
 
 @push('styles')
@@ -436,6 +435,7 @@
 <script src="{{ asset('js/richText/jquery.richtext.js') }}?v={{ time() }}"></script>
 <script src="{{ asset('js/profesionales/utils.js') }}?v={{ time() }}"></script>
 <script src="{{ asset('js/auth/sesiones.js') }}?v={{ time() }}"></script>
+<script src="{{ asset('js/basicos.js') }}?v={{ time() }}"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/i18n/es.js"></script>

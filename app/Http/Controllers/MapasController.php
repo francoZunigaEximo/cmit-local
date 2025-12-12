@@ -32,6 +32,7 @@ use App\Services\Reportes\Cuerpos\Remito;
 
 use App\Jobs\ReporteMapasJob;
 use App\Helpers\FileHelper;
+use App\Models\AuditorAcciones;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
@@ -50,6 +51,8 @@ class MapasController extends Controller
     const TBLMAPA = 5; // cod de Mapas en la tabla auditariatablas
     const FOLDERTEMP = 'temp/MAPA';
     const BASETEMP = 'app/public/temp/';
+    const EMPRESA_SEND = 'ENVIO E-ESTUDIO EMPRESA';
+    const ART_SEND = 'ENVIO E-ESTUDIO ART';
 
     public $helper = '
         <div class="d-flex flex-column gap-1">
@@ -102,8 +105,18 @@ class MapasController extends Controller
 
             $query = Mapa::leftJoin('prestaciones', 'mapas.Id', '=', 'prestaciones.IdMapa')
                 ->leftJoin('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-                ->join('clientes', 'mapas.IdART', '=', 'clientes.Id')
-                ->join('clientes AS clientes2', 'mapas.IdEmpresa', '=', 'clientes2.Id')
+                ->join('clientes', function($join) use ($Art){
+                    $join->on('mapas.IdART', '=', 'clientes.Id');
+                    $join->when(!empty($Art), function ($join) use ($Art) {
+                        $join->where('clientes.Id', $Art);
+                    }); 
+                })
+                ->join('clientes AS clientes2', function($join) use ($Empresa){
+                    $join->on('mapas.IdEmpresa', '=', 'clientes2.Id');
+                    $join->when(!empty($Empresa), function ($join) use ($Empresa) {
+                        $join->where('clientes2.Id', $Empresa);
+                    }); 
+                })
                 ->select(
                     'mapas.Id AS Id',
                     'mapas.Nro AS Nro',
@@ -133,14 +146,6 @@ class MapasController extends Controller
 
             $query->when(!empty($Nro), function ($query) use ($Nro) {
                 $query->where('mapas.Nro', $Nro);
-            });
-
-            $query->when(!empty($Art), function ($query) use ($Art) {
-                $query->where('clientes.Id', $Art);
-            });
-
-            $query->when(!empty($Empresa), function ($query) use ($Empresa) {
-                $query->where('clientes2.Id', $Empresa);
             });
 
             //Terminado
@@ -289,6 +294,11 @@ class MapasController extends Controller
         }
 
         $mapa = Mapa::where('Id', $request->Id)->first();
+
+        if(empty($mapa)) {
+            return response()->json(['msg' => 'Mapa no encontrado'], 404);
+        }
+
         $totalPrestacion = Prestacion::where('IdMapa', $request->Id)->count();
 
         if ($request->Cpacientes < $totalPrestacion && $mapa->Cmapeados !== $mapa->Cpacientes) {
@@ -301,23 +311,20 @@ class MapasController extends Controller
             return response()->json(['msg' => 'Ya hay prestaciones en el mapa y la cantidad de pacientes no puede puede ser menor a los mapeados'], 409);
         }
 
-        if ($mapa) {
-            $mapa->Nro = $request->Nro;
-            $mapa->IdART = $request->IdART;
-            $mapa->IdEmpresa = $request->IdEmpresa;
-            $mapa->Fecha = $request->FechaEdicion;
-            $mapa->FechaE = $request->FechaEEdicion;
-            $mapa->Inactivo = $request->Estado;
-            $mapa->Obs = $request->Obs;
-            $mapa->Cmapeados = $data['totalMapeados'] ?? $request->Cmapeados;
-            $mapa->Cpacientes = $data['pacientes'] ?? $request->Cpacientes;
-            $mapa->FechaAsignacion = $request->FechaAsignacion;
-            $mapa->save();
+        $mapa->Nro = $request->Nro;
+        $mapa->IdART = $request->IdART;
+        $mapa->IdEmpresa = $request->IdEmpresa;
+        $mapa->Fecha = $request->FechaEdicion;
+        $mapa->FechaE = $request->FechaEEdicion;
+        $mapa->Inactivo = $request->Estado;
+        $mapa->Obs = $request->Obs;
+        $mapa->Cmapeados = $data['totalMapeados'] ?? $request->Cmapeados;
+        $mapa->Cpacientes = $data['pacientes'] ?? $request->Cpacientes;
+        $mapa->FechaAsignacion = $request->FechaAsignacion;
+        $mapa->save();
 
-            return response()->json(['msg' => 'Mapa actualizado'], 200);
-        } else {
-            return response()->json(['msg' => 'Mapa no encontrado'], 404);
-        }
+        return response()->json(['msg' => 'Mapa actualizado'], 200);
+
     }
 
     public function delete(Request $request)
@@ -334,8 +341,6 @@ class MapasController extends Controller
 
         $mapa->update(['Inactivo' => 1]);
         return response()->json(['msg' => 'Mapa eliminado'], 200);
-
-        
     }
 
     public function prestaciones(Request $request)
@@ -414,8 +419,6 @@ class MapasController extends Controller
 
     public function export(Request $request)
     {
-        $listado = [];
-
         if ($request->archivo === 'xls') {
             $reporte = $this->reporteExcel->crear('mapas');
             $remito = $this->reporteExcel->crear('remitos');
@@ -425,12 +428,13 @@ class MapasController extends Controller
                 ? $remito->generar($datos)
                 : $reporte->generar($request->Id);
 
-        } elseif ($request->archivo === 'pdf') {
-
+        }
+        
+        if ($request->archivo === 'pdf') {
             $examenes = Prestacion::where('NroCEE', $request->Id)->get();
 
-            if ($examenes->isEmpty()) {
-                return response()->json(['msg' => 'No se encontraron datos para generar el PDF. Hay un conflicto'], 500);
+            if (empty($examenes)) {
+                return response()->json(['msg' => 'No se encontraron datos para generar el PDF. Hay un conflicto'], 404);
             }
 
             return response()->json([
@@ -474,25 +478,33 @@ class MapasController extends Controller
     {
         $remitos = Prestacion::where('NroCEE', $request->Id)->get();
 
-        if ($remitos) {
-            foreach ($remitos as $remito) {
-                $remito->Entregado = 1;
-                $remito->FechaEntrega = $request->FechaE;
-                $remito->save();
-            }
-            constanciase::obsRemito($request->Id, $request->Obs);
-            return response()->json(['msg' => 'Se han registrado las fechas de entrega en los remitos correspondientes'], 200);
-        } else {
+        if(empty($remitos)) {
             return response()->json(['msg' => 'Ha ocurrido un error y no se ha registrado la fecha'], 500);
         }
+
+        foreach ($remitos as $remito) {
+            $remito->Entregado = 1;
+            $remito->FechaEntrega = $request->FechaE;
+            $remito->save();
+        }
+
+        constanciase::obsRemito($request->Id, $request->Obs);
+        return response()->json(['msg' => 'Se han registrado las fechas de entrega en los remitos correspondientes'], 200);
+        
     }
 
     public function getPacienteMapa(Request $request)
     {
-        $prestacion = Prestacion::where('Id', $request->prestacion)->first('IdPaciente');
-        $paciente = Paciente::where('Id', $prestacion->IdPaciente)->first(['Nombre', 'Apellido', 'TipoDocumento', 'Documento']);
+        $prestacion = Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+            ->where('prestaciones.Id', $request->prestacion)
+            ->select(
+                'pacientes.Nombre',
+                'pacientes.Apellido',
+                'pacientes.TipoDocumento',
+                'pacientes.Documento'
+            )->first();
 
-        return response()->json($paciente);
+        return response()->json($prestacion);
     }
 
     public function examenes(Request $request)
@@ -585,10 +597,14 @@ class MapasController extends Controller
 
     public function saveCerrar(Request $request)
     {
-        $ids = $request->ids;
+        $ids = (array) $request->ids;
+        $prestaciones = Prestacion::whereIn('Id', $ids)->get();
 
-        foreach ($ids as $id) {
-            $prestacion = Prestacion::where('Id', $id)->first();
+        if (empty($prestaciones)) {
+            return response()->json(['msg' => 'Prestacion no encontrada'], 404);
+        }
+
+        foreach ($prestaciones as $prestacion) {
 
             if ($prestacion) {
                 $prestacion->Cerrado = 1;
@@ -609,25 +625,24 @@ class MapasController extends Controller
             $estado = $request->estado;
             $fecha = $estados[$estado];
 
-            $ids = $request->ids;
-
+            $ids = (array) $request->ids;
             $respuestas = [];
 
-            foreach ($ids as $id) {
-                $prestacion = Prestacion::where('Id', $id)->first();
+            $prestaciones = Prestacion::whereIn('Id', $ids)->get();
 
-                if ($prestacion) {
-                    $prestacion->$estado = 1;
-                    $prestacion->$fecha = now()->format('Y-m-d');
-                    $prestacion->save();
+            if(empty($prestaciones)){
+                return response()->json(['msg' => 'No hay prestaciones para cerrar'], 404);
+            }
 
-                    $respuesta = ['msg' => 'Se ha cerrado la prestación ' . $id . ' del mapa', 'estado' => 'success'];
-                } else {
-                    $respuesta = ['msg' => 'No se ha podido cerrar la prestación ' . $id . ' del mapa', 'estado' => 'warning'];
-                }
+            foreach ($prestaciones as $prestacion) {
+                $prestacion->$estado = 1;
+                $prestacion->$fecha = now()->format('Y-m-d');
+                $prestacion->save();
 
+                $respuesta = ['msg' => 'Se ha cerrado la prestación ' . $prestacion->Id . ' del mapa', 'estado' => 'success'];
                 $respuestas[] = $respuesta;
             }
+
             return response()->json($respuestas);
         }
     }
@@ -777,9 +792,9 @@ class MapasController extends Controller
         $respuestas = [];
 
         $accion = ($request->eTipo === 'eArt'
-            ? 41
+            ? $this->getAuditoriaId(SELF::ART_SEND)
             : ($request->eTipo === 'eEmpresa'
-                ? 42
+                ? $this->getAuditoriaId(SELF::EMPRESA_SEND)
                 : null)
         );
 
@@ -805,20 +820,19 @@ class MapasController extends Controller
 
                 if (($request->eTipo === 'eArt' || $request->eTipo === 'eEmpresa') && $request->exportarInforme == 'true') {
 
-                    $listado = [];
+                    $listado = [
+                        $this->eEstudio($prestacion->Id, "si"),
+                        $this->adjDigitalFisico($prestacion->Id, 2),
+                        $this->adjAnexos($prestacion->Id),
+                        $this->adjGenerales($prestacion->Id),
+                    ];
 
                     $estudios = $this->AnexosFormulariosPrint($prestacion->Id); //obtiene los ids en un array
-
-                    //Para reportes
-                    array_push($listado, $this->eEstudio($prestacion->Id, "si"));
-                    array_push($listado, $this->adjDigitalFisico($prestacion->Id, 2));
-                    array_push($listado, $this->adjAnexos($prestacion->Id));
-                    array_push($listado, $this->adjGenerales($prestacion->Id));
 
                     if ($estudios) {
                         foreach ($estudios as $examen) {
                             $estudio = $this->addEstudioExamen($prestacion->Id, $examen);
-                            array_push($listado, $estudio);
+                            $listado[] = $estudio;
                         }
                     }
 
@@ -833,29 +847,28 @@ class MapasController extends Controller
                         'msg' => 'Se imprime todo el reporte art.',
                         'icon' => $request->eTipo === 'eArt' ? 'art-impresion' : 'empresa-impresion'
                     ];
-                } elseif ($request->eTipo === 'eArt' && $request->enviarMail == 'true') {
+                }
+                
+                if ($request->eTipo === 'eArt' && $request->enviarMail == 'true') {
 
                     $emails = $this->getEmailsReporte($prestacion->art->EMailInformes);
+                    $estudios = $this->AnexosFormulariosPrint($prestacion->Id); //obtiene los ids en un array
 
                     foreach ($emails as $email) {
 
-                        $estudios = $this->AnexosFormulariosPrint($prestacion->Id); //obtiene los ids en un array
+                        $file1 = [
+                            $this->eEstudio($prestacion->Id, "no"),
+                            $this->adjDigitalFisico($prestacion->Id, 2),
+                        ];
+                        
+                        $file3 = [$this->adjAnexos($prestacion->Id)];
+                        $file4 = [$this->adjGenerales($prestacion->Id)];
 
-                        $file1 = [];
                         $file2 = [];
-                        $file3 = [];
-                        $file4 = [];
-
-                        //Para envios
-                        array_push($file1, $this->eEstudio($prestacion->Id, "no"));
-                        array_push($file1, $this->adjDigitalFisico($prestacion->Id, 2));
-                        array_push($file3, $this->adjAnexos($prestacion->Id));
-                        array_push($file4, $this->adjGenerales($prestacion->Id));
-
                         if ($estudios) {
                             foreach ($estudios as $examen) {
                                 $estudio = $this->addEstudioExamen($prestacion->Id, $examen);
-                                array_push($file2, $estudio);
+                                $file2[] = $estudio;
                             }
                         }
 
@@ -883,30 +896,32 @@ class MapasController extends Controller
 
                         $respuestas[] = ['msg' => 'Se ha enviado el eEstudio al cliente ' . $prestacion->art->RazonSocial . ' correctamente. ' . $prestacion->Id, 'icon' => 'eArt'];
                     }
-                } elseif ($request->eTipo === 'eEmpresa' && $request->enviarMail == 'true') {
+                } 
+                
+                if ($request->eTipo === 'eEmpresa' && $request->enviarMail == 'true') {
 
                     $emails = $this->getEmailsReporte($prestacion->empresa->EMailInformes);
+                    $estudios = $this->AnexosFormulariosPrint($prestacion->Id); //obtiene los ids en un array
 
                     foreach ($emails as $email) {
 
-                        $estudios = $this->AnexosFormulariosPrint($prestacion->Id); //obtiene los ids en un array
+                        $file1 = [
+                            $this->eEstudio($prestacion->Id, "no"),
+                            $this->adjDigitalFisico($prestacion->Id, 2),
+                        ];
+                        
+                        $file3 = [
+                            $this->adjAnexos($prestacion->Id),
+                        ];
+                        $file4 = [
+                            $this->adjGenerales($prestacion->Id),
+                        ];
 
-                        $file1 = [];
                         $file2 = [];
-                        $file3 = [];
-                        $file4 = [];
-
-                        //Para envios
-                        array_push($file1, $this->eEstudio($prestacion->Id, "no"));
-                        array_push($file1, $this->adjDigitalFisico($prestacion->Id, 2));
-
-                        array_push($file3, $this->adjAnexos($prestacion->Id));
-                        array_push($file4, $this->adjGenerales($prestacion->Id));
-
                         if ($estudios) {
                             foreach ($estudios as $examen) {
                                 $estudio = $this->addEstudioExamen($prestacion->Id, $examen);
-                                array_push($file2, $estudio);
+                                $file2[] = $estudio;
                             }
                         }
 
@@ -943,19 +958,19 @@ class MapasController extends Controller
 
     public function vistaPreviaReporte(Request $request)
     {
-        $listado = [];
+        $listado = [
+            'eEstudio' => $this->eEstudio($request->Id, "si"),
+            'adjDigitalFisico' => $this->adjDigitalFisico($request->Id, 2),
+            'adjAnexos' => $this->adjAnexos($request->Id),
+            'adjGenerales' => $this->adjGenerales($request->Id),
+        ];
 
         $estudios = $this->AnexosFormulariosPrint($request->Id); //obtiene los ids en un array
-
-        array_push($listado, $this->eEstudio($request->Id, "si"));
-        array_push($listado, $this->adjDigitalFisico($request->Id, 2));
-        array_push($listado, $this->adjAnexos($request->Id));
-        array_push($listado, $this->adjGenerales($request->Id));
 
         if (!empty($estudios)) {
             foreach ($estudios as $examen) {
                 $estudio = $this->addEstudioExamen($request->Id, $examen);
-                array_push($listado, $estudio);
+                $listado[] = $estudio;
             }
         }
 
@@ -1066,7 +1081,10 @@ class MapasController extends Controller
 
     private function queryPrestaciones($idmapa)
     {
-        return Prestacion::join('mapas', 'prestaciones.IdMapa', '=', 'mapas.Id')
+        return Prestacion::join('mapas', function($join) use ($idmapa){
+            $join->on('prestaciones.IdMapa', '=', 'mapas.Id')
+                ->where('mapas.Nro', $idmapa);
+        })
             ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
             ->leftJoin('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
             ->select(
@@ -1096,14 +1114,16 @@ class MapasController extends Controller
                 FROM itemsprestaciones AS items 
                 WHERE items.IdPrestacion = prestaciones.Id
             ) AS Etapa')
-            )
-            ->where('mapas.Nro', '=', $idmapa);
+            );
     }
 
     private function queryCerrar($idmapa)
     {
         return Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-            ->join('mapas', 'prestaciones.IdMapa', '=', 'mapas.Id')
+            ->join('mapas', function($join) use ($idmapa){
+                $join->on('prestaciones.IdMapa', '=', 'mapas.Id')
+                    ->where('mapas.Nro', $idmapa);
+            })
             ->select(
                 'prestaciones.Id as IdPrestacion',
                 'prestaciones.Fecha as Fecha',
@@ -1115,14 +1135,16 @@ class MapasController extends Controller
                 'prestaciones.Anulado AS Anulado',
                 'pacientes.Nombre as NombrePaciente',
                 'pacientes.Apellido as ApellidoPaciente',
-            )
-            ->where('mapas.Nro', '=', $idmapa);
+            );
     }
 
     private function queryFinalizar(string $idmapa): mixed
     {
         return Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-            ->join('mapas', 'prestaciones.IdMapa', '=', 'mapas.Id')
+            ->join('mapas', function($join) use ($idmapa){
+                $join->on('prestaciones.IdMapa', '=', 'mapas.Id')
+                    ->where('mapas.Nro', $idmapa);
+            })
             ->select(
                 'prestaciones.Id as IdPrestacion',
                 'prestaciones.Fecha as Fecha',
@@ -1139,8 +1161,7 @@ class MapasController extends Controller
             ->where('prestaciones.Forma', 0)
             ->where('prestaciones.Devol', 0)
             ->where('prestaciones.RxPreliminar', 0)
-            ->where('prestaciones.SinEsc', 0)
-            ->where('mapas.Nro', $idmapa);
+            ->where('prestaciones.SinEsc', 0);
     }
 
     private function queryEnviar($idmapa)
@@ -1149,7 +1170,10 @@ class MapasController extends Controller
             ->leftJoin('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
             ->join('clientes as empresa', 'prestaciones.IdART', '=', 'empresa.Id')
             ->join('clientes as art', 'prestaciones.IdEmpresa', '=', 'art.Id')
-            ->join('mapas', 'prestaciones.IdMapa', '=', 'mapas.Id')
+            ->join('mapas', function($join) use ($idmapa){
+                $join->on('prestaciones.IdMapa', '=', 'mapas.Id')
+                    ->where('mapas.Nro', $idmapa);
+            })
             ->select(
                 'prestaciones.Id AS IdPrestacion',
                 'prestaciones.Fecha AS Fecha',
@@ -1164,8 +1188,7 @@ class MapasController extends Controller
                 'empresa.SEMail AS EmpresaSinEnvio',
                 'art.SEMail AS ArtSinEnvio',
                 DB::raw('(SELECT CASE WHEN COUNT(*) = SUM(CASE WHEN items.Incompleto = 0 THEN 1 ELSE 0 END) THEN "Completo" ELSE "Incompleto" END FROM itemsprestaciones AS items WHERE items.IdPrestacion = prestaciones.Id) AS Etapa')
-            )
-            ->where('mapas.Nro', $idmapa);
+            );
     }
 
 
@@ -1337,5 +1360,10 @@ class MapasController extends Controller
                 'estudiosCheck' => storage_path('app/public/temp/estudios' . $prestacion->Id . '.pdf')
             ];
         }
+    }
+
+    private function getAuditoriaId(string $accion): int
+    {
+        return AuditorAcciones::where('Id', $accion)->first(['Id']);
     }
 }

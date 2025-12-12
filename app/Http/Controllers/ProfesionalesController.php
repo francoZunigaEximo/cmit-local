@@ -240,13 +240,14 @@ class ProfesionalesController extends Controller
 
     public function setPerfil(Request $request)
     {
-
         $query = Profesional::find($request->Id);
-        if (in_array($query->IdProveedor, [null, 0])) {
+        
+        if ($query->IdProveedor === 0 || empty($query->IdProveedor)) {
 
             $query->IdProveedor = $request->especialidad;
             $query->save();
         }
+        
         $rol = Rol::find($request->perfil);
 
         $consulta = ProfesionalProv::where('IdProf', $request->Id)
@@ -254,7 +255,7 @@ class ProfesionalesController extends Controller
             ->where('IdRol', $rol->nombre)
             ->first();
 
-        if (!$consulta) {
+        if (empty($consulta)) {
 
             ProfesionalProv::create([
                 'Id' => ProfesionalProv::max('Id') + 1,

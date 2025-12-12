@@ -481,10 +481,10 @@ public function searchPrestacion(Request $request)
             $query = DB::select("CALL getOrdenesResumenes(?,?,?,?,?,?)",[
                 $request->fechaDesde,
                 $request->fechaHasta,
-                $request->especialidades,
-                $request->estado,
-                $request->efector,
-                $request->profesional
+                $request->especialidades ?? null,
+                $request->estado ?? null,
+                $request->efector ?? null,
+                $request->profesional ?? null
             ]);
         
             return Datatables::of($query)->make(true);

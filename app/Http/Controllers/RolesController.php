@@ -92,7 +92,7 @@ class RolesController extends Controller
 
         if(!in_array($user->role->contains($request->role), [null, false]))
         {
-            return response()->json(['msg' => 'El usuario ya tiene ese rol asignado', 'estado' => 'false']);
+            return response()->json(['msg' => 'El usuario ya tiene ese rol asignado'], 409);
             
         }else{
 
@@ -100,7 +100,7 @@ class RolesController extends Controller
             $this->addRolProfesionales($role, $user);
 
 
-            return response()->json(['msg' => 'Se ha asignado el rol al usuario correctamente', 'estado' => 'true']);
+            return response()->json(['msg' => 'Se ha asignado el rol al usuario correctamente'], 200);
 
         }   
     }

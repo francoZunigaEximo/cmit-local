@@ -96,15 +96,11 @@ trait DetallesReportes
         $idp = str_pad($idPrestacion, 8, "0", STR_PAD_LEFT);
         
         foreach ($files as $file) {
-            // Si el archivo es una URL, descárgalo primero a una ubicación temporal
             if (filter_var($file, FILTER_VALIDATE_URL)) {
-                // Definir la ruta temporal
                 $tempFile = storage_path('app/public/temp/' . basename($file));
                
-                // Descargar el archivo a la ruta temporal
                 file_put_contents($tempFile, file_get_contents($file));
 
-                // Usar la ruta temporal en lugar de la URL
                 $file = $tempFile;
             }
 
@@ -114,12 +110,10 @@ trait DetallesReportes
                 $template = $fpdi->importPage($i);
                 $fpdi->getTemplateSize($template);
 
-                // Añadir página con las dimensiones correctas
                 $fpdi->AddPage();
                 $fpdi->useTemplate($template);
 
 
-                // Reemplazar página en el PDF
                 $fpdi->useTemplate($template);
                 $fpdi->SetFont('Arial', '', 8);
 
@@ -128,7 +122,6 @@ trait DetallesReportes
             }
         }
 
-        // Guardar el archivo fusionado
         $outputPath = storage_path('app/public/temp/merge_'.$nombre.'_'.$idPrestacion.'.pdf');
         $fpdi->Output('F', $outputPath);
     }

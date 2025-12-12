@@ -17,12 +17,12 @@ class FacturaCompraCuerpo extends Reporte
         $profesional = $this->getProfesional($datos['id']);
 
         // Renderizar la factura de compra utilizando los datos y el profesional
-        $nombre = $profesional->Nombre . ' ' . $profesional->Apellido;
-        $localidad = $profesional->Localidad;
-        $direccion = $profesional->Direccion;
-        $cuit = $profesional->Identificacion;
-        $localidadString = $profesional->Localidad ? $profesional->Localidad : '';
-        $localidadString .= $profesional->Provincia ? ' - ' . $profesional->Provincia : '';
+        $nombre = utf8_decode($profesional->Nombre . ' ' . $profesional->Apellido);
+        $localidad = utf8_decode($profesional->Localidad);
+        $direccion = utf8_decode($profesional->Direccion);
+        $cuit = utf8_decode($profesional->Identificacion);
+        $localidadString = utf8_decode($profesional->Localidad ? $profesional->Localidad : '');
+        $localidadString .= utf8_decode($profesional->Provincia ? ' - ' . $profesional->Provincia : '');
         $CP = $profesional->CP;
 
         //encabezado

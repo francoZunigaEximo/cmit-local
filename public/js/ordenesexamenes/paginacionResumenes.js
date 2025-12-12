@@ -1,16 +1,35 @@
-$(function(){
+$(function () {
 
-    $(document).on('click', '#buscarResumenes', function() {
+    $(document).on('click', '#buscarResumenes, #treintaDiasResumenes, #noventaDiasResumenes, #sesentaDiasResumenes', function () {
 
-         let fechaDesde = $('#fechaDesdeResumenes').val(),
-             fechaHasta = $('#fechaHastaResumenes').val(),
-             especialidad = $('#especialidadResumenes').val(),
-             estado = $('#estadoResumenes').val(),
-             efector = $('#efectorResumenes').val(),
-             profesional = $('#profEfectorResumenes').val();
+        const diasBuscar = {
+            'sesentaDiasResumenes': 60,
+            'noventaDiasResumenes': 90,
+            'treintaDiasResumenes': 30
+        };
+
+        let fecha = new Date(),
+            fechaDesde = null,
+            fechaHasta = $('#fechaHastaResumenes').val(),
+            especialidad = $('#especialidadResumenes').val(),
+            estado = $('#estadoResumenes').val(),
+            efector = $('#efectorResumenes').val(),
+            profesional = $('#profEfectorResumenes').val(),
+            restar = this.id;
+
+        console.log(especialidad);
+
+        if (Object.hasOwn(diasBuscar, restar)) {
+
+            fecha.setDate(fecha.getDate() - diasBuscar[restar]);
+            fechaDesde = `${fecha.getFullYear()}-${fecha.getMonth() + 1}-${fecha.getDate()}`;
+
+        } else {
+            fechaDesde = $('#fechaDesdeResumenes').val();
+        }
 
         if (!fechaDesde || !fechaHasta) {
-            toastr.warning("Las fechas son obligatorias",'',{timeOut: 1000});
+            toastr.warning("Las fechas son obligatorias", '', { timeOut: 1000 });
             return;
         }
 
@@ -29,10 +48,10 @@ $(function(){
             serverSide: true,
             ajax: {
                 url: SEARCHRESUMEN,
-                data: function(d){
+                data: function (d) {
                     d.fechaDesde = fechaDesde;
                     d.fechaHasta = fechaHasta;
-                    d.especialidad = especialidad;
+                    d.especialidades = especialidad;
                     d.estado = estado;
                     d.efector = efector;
                     d.profesional = profesional;
@@ -43,7 +62,7 @@ $(function(){
             columns: [
                 {//1
                     data: null,
-                    render: function(data) {
+                    render: function (data) {
                         return `<div id="listado" data-id="${data.prestacion}">${data.avance}%</div>`;
                     }
                 },
@@ -86,7 +105,7 @@ $(function(){
                 },
                 {//11
                     data: null,
-                    render: function(data){
+                    render: function (data) {
                         return `<div class="text-center"><a href="${linkPrestaciones}/${data.prestacion}/edit" target="_blank"><i class="ri-edit-line"></i></a></div>`;
                     }
                 }
@@ -114,6 +133,6 @@ $(function(){
 
     });
 
-   
+
 
 });

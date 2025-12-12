@@ -1,8 +1,8 @@
-$(function() {
+$(function () {
     toastr.options = {
-        closeButton: true,   
-        progressBar: true,    
-        timeOut: 3000,        
+        closeButton: true,
+        progressBar: true,
+        timeOut: 3000,
     };
 });
 
@@ -15,8 +15,8 @@ function preloader(opcion) {
 
 function verificarCorreos(emails) {
 
-    if(emails.length === 0) return false;
-        
+    if (emails.length === 0) return false;
+
     let emailRegex = /^[\w.-]+(\.[\w.-]+)*@[\w.-]+\.[A-Za-z]{2,}$/;
     let correosInvalidos = [];
     let emailsArray = emails.split(',');
@@ -31,14 +31,14 @@ function verificarCorreos(emails) {
 
     if (correosInvalidos.length > 0) {
         swal("Atención", "Estos correos tienen formato inválido. Verifique por favor: " + correosInvalidos.join(", "), "warning");
-        return false; 
+        return false;
     }
 
-    return true; 
+    return true;
 }
 
 function acortadorTexto(cadena, nroCaracteres = 10) {
-    return cadena.length <= nroCaracteres ? cadena : cadena.substring(0,nroCaracteres);
+    return cadena.length <= nroCaracteres ? cadena : cadena.substring(0, nroCaracteres);
 }
 
 function saltoLinea(cadena, caracteres = 110) {
@@ -58,7 +58,7 @@ function ajustarFecha(fecha) {
 }
 
 function fechaNow(fechaAformatear, divider, format) {
-    let dia, mes, anio; 
+    let dia, mes, anio;
 
     if (fechaAformatear === null) {
         let fechaHoy = new Date();
@@ -67,9 +67,9 @@ function fechaNow(fechaAformatear, divider, format) {
         mes = (fechaHoy.getMonth() + 1).toString().padStart(2, '0');
         anio = fechaHoy.getFullYear();
     } else {
-        let nuevaFecha = fechaAformatear.split("-"); 
-        dia = nuevaFecha[0]; 
-        mes = nuevaFecha[1]; 
+        let nuevaFecha = fechaAformatear.split("-");
+        dia = nuevaFecha[0];
+        mes = nuevaFecha[1];
         anio = nuevaFecha[2];
     }
 
@@ -85,7 +85,7 @@ function quitarDuplicados(selector) {
     }
 }
 
-function createFile(tipo, array, name){
+function createFile(tipo, array, name) {
     let filePath = array,
         pattern = /storage(.*)/,
         match = filePath.match(pattern),
@@ -103,7 +103,7 @@ function createFile(tipo, array, name){
 
     document.body.appendChild(link);
     link.click();
-    setTimeout(function() {
+    setTimeout(function () {
         document.body.removeChild(link);
     }, 100);
 }
@@ -112,7 +112,7 @@ function convertToUrl(filePath, path) {
     // Remueve el prefijo absoluto del sistema
     const regex = new RegExp(`${path}/file-[^/]+\\.pdf`);
     const match = filePath.match(regex);
-    
+
     let url = new URL(location.href);
     let checkPublic = url.href.includes("public") ? '/cmit/public/storage' : '/storage';
     // Construye la URL completa
@@ -123,14 +123,14 @@ function convertToUrl(filePath, path) {
 function generarCodigoAleatorio() {
 
     let codigo = Math.floor(Math.random() * 9000000) + 1000000;
-    return codigo.toString(); 
+    return codigo.toString();
 }
 
 function tipoPagoPrestacion(tipo) {
     switch (tipo) {
         case "C":
             return "Cuenta Corriente";
-        
+
         case "P":
             return "Examen a Cuenta";
 
@@ -190,11 +190,11 @@ function fechaCompleta(fecha) {
     return formatoCompleto;
 }
 
-function getDias(fecha){
+function getDias(fecha) {
 
     let fechaActual = new Date(), fechaLimiteAdmision = new Date(fecha), diff = fechaLimiteAdmision.getTime() - fechaActual.getTime();
-   
-    return (Math.round(diff/(1000*60*60*24)));
+
+    return (Math.round(diff / (1000 * 60 * 60 * 24)));
 }
 
 function stripTags(html) {
@@ -204,22 +204,22 @@ function stripTags(html) {
     return html.replace(/<\/?[^>]+(>|$)/g, "");
 }
 
-function verificarArchivo(archivo){
+function verificarArchivo(archivo) {
 
     if (!archivo || archivo.size === 0) {
-        toastr.warning("Debe seleccionar un archivo", "Atención", {timeOut: 1000});
+        toastr.warning("Debe seleccionar un archivo", "Atención", { timeOut: 1000 });
         return false;
     }
 
     if (!archivo.name.includes('.')) {
-        toastr.warning("El archivo no tiene extensión o la misma es invalida", "Atención", {timeOut: 1000});
+        toastr.warning("El archivo no tiene extensión o la misma es invalida", "Atención", { timeOut: 1000 });
         return false;
     }
 
     let tipoArchivo = archivo.type.toLowerCase();
 
-    if(tipoArchivo !== 'application/pdf') {
-        toastr.warning("Solo se admite archivos PDF", "Atención", {timeOut: 1000});
+    if (tipoArchivo !== 'application/pdf') {
+        toastr.warning("Solo se admite archivos PDF", "Atención", { timeOut: 1000 });
         return false;
     }
 
@@ -229,7 +229,7 @@ function verificarArchivo(archivo){
 function calculoAvance(data) {
 
     let cerradoAdjunto = data.CerradoAdjunto || 0, total = data.Total || 1;
-    return data.Anulado === 0 ? ((cerradoAdjunto/total)*100).toFixed(0) : '0';
+    return data.Anulado === 0 ? ((cerradoAdjunto / total) * 100).toFixed(0) : '0';
 
 }
 
@@ -262,8 +262,8 @@ function limpiarUserAgent(data) {
         sistema = 'Desconocido';
 
     const sistemaMatch = data.match(/\((.*?)\)/);
-    
-    if(sistemaMatch && sistemaMatch[1]) {
+
+    if (sistemaMatch && sistemaMatch[1]) {
         sistema = sistemaMatch[1]; // Ej: "X11; Linux x86_64"
     }
 
@@ -288,10 +288,31 @@ function limpiarUserAgent(data) {
 
 function limpiarAcentosEspacios(data) {
     return data.trim()
-            .replace(/\s+/g, '_')
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, ""); //eliminar marcas diacriticas
+        .replace(/\s+/g, '_')
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, ""); //eliminar marcas diacriticas
 }
 
+$('#provincia').change(async function () {
+    let provincia = $(this).val();
+
+    let response = await $.get(getLocalidades, { provincia: provincia }),
+        localidades = response.localidades;
+
+    $('#localidad')
+        .empty()
+        .append('<option selected>Elija una opción...</option>');
+
+    for (let i = 0; i < localidades.length; i++) {
+        $('#localidad').append('<option value="' + localidades[i].id + '">' + localidades[i].nombre + '</option>');
+    }
+});
+
+$('#localidad').change(async function () {
+    let localidadId = $(this).val(),
+        response = await $.get(getCodigoPostal, { localidadId: localidadId });
+
+    $('#codPostal').val(response.codigoPostal);
+});
 
 

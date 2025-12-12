@@ -11,6 +11,7 @@ use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use App\Services\ReportesExcel\ReporteExcel;
 use App\Traits\CheckPermission;
+use Illuminate\Http\JsonResponse;
 
 class ProveedoresController extends Controller
 {
@@ -33,15 +34,15 @@ class ProveedoresController extends Controller
         if ($request->ajax()) {
 
             $query = Proveedor::select(
-            'Id as IdEspecialidad',
-            'Nombre',
-            'Telefono',
-            'Direccion',
-            DB::raw('(SELECT Nombre FROM localidades WHERE IdLocalidad = localidades.Id) AS NombreLocalidad'),
-            'Multi as Adjunto',
-            'MultiE as Examen',
-            'InfAdj as Informe',
-            'Externo as Ubicacion'
+                'Id as IdEspecialidad',
+                'Nombre',
+                'Telefono',
+                'Direccion',
+                DB::raw('(SELECT Nombre FROM localidades WHERE IdLocalidad = localidades.Id) AS NombreLocalidad'),
+                'Multi as Adjunto',
+                'MultiE as Examen',
+                'InfAdj as Informe',
+                'Externo as Ubicacion'
             );
 
             $query->when(!empty($request->especialidad), function($query) use ($request){
@@ -107,10 +108,7 @@ class ProveedoresController extends Controller
 
         $resultados = Cache::remember('proveedores' . $buscar, 5, function() use ($buscar){
 
-            $proveedores = Proveedor::where('Nombre', 'LIKE', '%'. $buscar . '%')
-            ->where('Inactivo', 0)
-            ->where('Id', '<>', 0)
-            ->get();
+            $proveedores = $this->buscar($buscar);
 
             $resultados = [];
 
@@ -126,7 +124,6 @@ class ProveedoresController extends Controller
         return response()->json(['proveedores' => $resultados]);
     }
 
-
     public function baja(Request $request): mixed
     {
         if(!$this->hasPermission('especialidades_delete')) {
@@ -139,7 +136,7 @@ class ProveedoresController extends Controller
 
         $ids = (array) $request->input('ids');
         Proveedor::whereIn('Id', $ids)->update(['Inactivo' => 1]);
-
+        
         return response()->json(['msg' => 'Se ha dado de baja correctamente'], 200);
         
     }
@@ -167,11 +164,11 @@ class ProveedoresController extends Controller
 
         $query = Proveedor::create($data);
 
-        if($query) {
-            return response()->json(['msg' => 'Se ha registrado la nueva especialidad de manera correcta', 'especialidad' => $Id], 200);
-        }else{
+        if(empty($query)) {
             return response()->json(['msg' => 'No se ha podido registrar'], 500);
         }
+
+        return response()->json(['msg' => 'Se ha registrado la nueva especialidad de manera correcta', 'especialidad' => $Id], 200);
     }
 
     public function updateProveedor(Request $request)
@@ -182,26 +179,26 @@ class ProveedoresController extends Controller
 
         $especialidad = Proveedor::find($request->Id);
         
-        if($especialidad)
+        if(empty($especialidad))
         {
-            $especialidad->Nombre = $request->Nombre;
-            $especialidad->Telefono = $request->Telefono ?? '';
-            $especialidad->Direccion = $request->Direccion ?? '';
-            $especialidad->IdLocalidad = $request->IdLocalidad ?? '';
-            $especialidad->Inactivo = $request->Inactivo ?? '';
-            $especialidad->Min = $request->Min ?? '';
-            $especialidad->Multi = $request->Multi === 'true' ? 1 : 0;
-            $especialidad->MultiE = $request->MultiE === 'true' ? 1 : 0;
-            $especialidad->Externo = $request->Externo ?? '';
-            $especialidad->InfAdj = $request->InfAdj ?? '';
-            $especialidad->PR = $request->PR ?? '';
-            $especialidad->Obs = $request->Obs ?? '';
-            $especialidad->save();
-
-            return response()->json(['msg' => 'Se han cargado los datos de manera correcta'], 200);
-        }else{
-            return response()->json(['msg' => 'No se ha podido actualizar'], 500);
+            return response()->json(['msg' => 'No se ha podido actualizar'], 404);
         }
+
+        $especialidad->Nombre = $request->Nombre;
+        $especialidad->Telefono = $request->Telefono ?? '';
+        $especialidad->Direccion = $request->Direccion ?? '';
+        $especialidad->IdLocalidad = $request->IdLocalidad ?? '';
+        $especialidad->Inactivo = $request->Inactivo ?? '';
+        $especialidad->Min = $request->Min ?? '';
+        $especialidad->Multi = $request->Multi === 'true' ? 1 : 0;
+        $especialidad->MultiE = $request->MultiE === 'true' ? 1 : 0;
+        $especialidad->Externo = $request->Externo ?? '';
+        $especialidad->InfAdj = $request->InfAdj ?? '';
+        $especialidad->PR = $request->PR ?? '';
+        $especialidad->Obs = $request->Obs ?? '';
+        $especialidad->save();
+
+        return response()->json(['msg' => 'Se han cargado los datos de manera correcta'], 200);
     }
 
     public function excel(Request $request)
@@ -212,24 +209,14 @@ class ProveedoresController extends Controller
 
         $ids = (array) $request->input('Id');
 
-        $especialidades = Proveedor::select(
-                'Id as IdEspecialidad',
-                'Nombre',
-                'Telefono',
-                'Multi as Adjunto',
-                'MultiE as Examen',
-                'InfAdj as Informe',
-                'Externo as Ubicacion')
-            ->where('Inactivo', 0)
-            ->whereIn('Id', $ids)
-            ->get();
+        $especialidades = $this->getListadoProveedores($ids);
 
-        if($especialidades) {
-            $reporte = $this->reporteExcel->crear('especialidades');
-            return $reporte->generar($especialidades);
-        }else{
-            return response()->json(['msg' => 'No se ha podido generar el archivo'], 409);
+        if(empty($especialidades)) {
+             return response()->json(['msg' => 'No se ha podido generar el archivo'], 404);
         }
+
+        $reporte = $this->reporteExcel->crear('especialidades');
+        return $reporte->generar($especialidades);
 
     }
 
@@ -242,6 +229,28 @@ class ProveedoresController extends Controller
         return response()->json($listado);
     }
 
+    private function getListadoProveedores(array $ids)
+    {
+        return Proveedor::select(
+                'Id as IdEspecialidad',
+                'Nombre',
+                'Telefono',
+                'Multi as Adjunto',
+                'MultiE as Examen',
+                'InfAdj as Informe',
+                'Externo as Ubicacion')
+            ->where('Inactivo', 0)
+            ->whereIn('Id', $ids)
+            ->get();
+    }
 
+    
+    private function buscar(string $buscar)
+    {
+        return Proveedor::where('Nombre', 'LIKE', '%'. $buscar . '%')
+                ->where('Inactivo', 0)
+                ->where('Id', '<>', 0)
+                ->get();
+    }
     
 }

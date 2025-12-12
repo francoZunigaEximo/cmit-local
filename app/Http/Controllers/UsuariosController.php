@@ -8,7 +8,6 @@ use App\Models\Proveedor;
 use App\Models\Provincia;
 use App\Models\Rol;
 use App\Models\User;
-use App\Models\UserSession;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -16,13 +15,13 @@ use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use App\Traits\CheckPermission;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
 
 class UsuariosController extends Controller
 {
-    const password = "cmit1234";
     const folder = "Prof";
+
     use CheckPermission;
 
     public $helper = '
@@ -68,44 +67,7 @@ class UsuariosController extends Controller
 
         $lstProveedor = Proveedor::where('Inactivo', 0)->whereNot('Id', 0)->OrderBy('Nombre', 'ASC')->get(['Id', 'Nombre']);
 
-        $query = User::join('datos', 'users.datos_id', '=', 'datos.Id')
-            ->join('localidades', 'datos.IdLocalidad', '=', 'localidades.Id')
-            ->join('profesionales', 'users.profesional_id', '=', 'profesionales.Id')
-            ->leftJoin('user_rol', 'users.id', '=', 'user_rol.user_id')
-            ->leftJoin('roles', 'user_rol.rol_id', '=', 'roles.Id')
-            ->select(
-                "users.id as UserId",
-                "users.name as Name",
-                "users.email as EMail",
-                "users.inactivo as Inactivo",
-                "datos.Id as IdDatos",
-                "datos.Telefono as Telefono",
-                "datos.TipoIdentificacion as TipoIdentificacion",
-                "datos.Identificacion as Identificacion",
-                "datos.TipoDocumento as TipoDocumento",
-                "datos.Documento as Documento",
-                "datos.Nombre as Nombre",
-                "datos.Apellido as Apellido",
-                "datos.FechaNacimiento as FechaNacimiento",
-                "datos.Direccion as Direccion",
-                "datos.IdLocalidad as ILocalidad",
-                "datos.Provincia as Provincia",
-                "datos.CP as CP",
-                "datos.Id as Id",
-                "localidades.Nombre as NombreLocalidad",
-                "profesionales.Id as IdProfesional",
-                "profesionales.Firma as Firma",
-                "profesionales.Foto as Foto",
-                "profesionales.wImage as wImage",
-                "profesionales.hImage as hImage",
-                "profesionales.InfAdj as InfAdj",
-                "profesionales.Pago as Pago",
-                "profesionales.TLP as TLP",
-                "profesionales.MN as MN",
-                "profesionales.SeguroMP as SeguroMP",
-                "profesionales.MP as MP",
-                DB::raw("GROUP_CONCAT(roles.nombre SEPARATOR ',') as NombreRol")
-            )->find($usuario->id);
+        $query = $this->getUsuarioNuevo($usuario->id);
 
         $listado = explode(',', $query->NombreRol);
         $contador = count(array_intersect($lstRoles, $listado));
@@ -178,11 +140,7 @@ class UsuariosController extends Controller
 
         $resultados = Cache::remember('Nombre_usuario_'.$buscar, 5, function () use ($buscar) {
 
-            $nombreApellidos = User::join('datos', 'users.datos_id', '=', 'datos.Id')
-                ->whereRaw("CONCAT(datos.Apellido, ' ', datos.Nombre) LIKE ?", ['%'.$buscar.'%'])
-                ->orWhere('datos.Apellido', 'LIKE', '%'.$buscar.'%')
-                ->orWhere('datos.Nombre', 'LIKE', '%'.$buscar.'%')
-                ->get();
+            $nombreApellidos = $this->buscarNombreApellido($buscar);
 
             $resultados = [];
 
@@ -194,11 +152,11 @@ class UsuariosController extends Controller
             }
 
             return $resultados;
-
         });
 
         return response()->json(['result' => $resultados]);
     }
+
 
     public function Usuario(Request $request): mixed
     {
@@ -236,21 +194,23 @@ class UsuariosController extends Controller
         return response()->json(['exists' => $query]);
     }
 
-    public function checkCorreo(Request $request)
+    public function checkCorreo(Request $request): JsonResponse
     {
         $verificar = User::where('email', $request->email)->first();
 
-        if ($verificar && $verificar->name !== $request->name) {
-            $response = ['msg' => 'El correo ya está en uso por otro usuario.', 'estado' => 'false'];
-        
-        }elseif($verificar && $verificar->name === $request->name) {
-
-            $response = ['msg' => 'El correo es el que usa actualmente. Se procede actualizar.', 'estado' => 'true'];
-        }else{
-
-            $response = ['msg' => 'Correo habilitado para actualizar', 'estado' => 'true'];
+        if(empty($verificar)) {
+            return response()->json(['msg' => 'No hay corros para verificar', 'estado' => 'false'], 404);
         }
-        return response()->json($response);         
+
+        if ($verificar->name !== $request->name) {
+            return response()->json(['msg' => 'El correo ya está en uso por otro usuario.', 'estado' => 'false'], 409);
+        }
+        
+        if($verificar->name === $request->name) {
+            return response()->json(['msg' => 'El correo es el que usa actualmente. Se procede actualizar.', 'estado' => 'true'], 409);
+        }
+
+        return response()->json(['msg' => 'Correo habilitado para actualizar', 'estado' => 'true']);         
     }
 
     public function checkTelefono(Request $request): mixed
@@ -265,61 +225,62 @@ class UsuariosController extends Controller
         return response()->json($query);  
     }
 
-    public function checkEmailUpdate(Request $request)
+    public function checkEmailUpdate(Request $request): JsonResponse
     {
         if(!$this->hasPermission("usuarios_edit") || !$this->hasPermission("profesionales_edit")) {
             return response()->json(["msg" => "No tiene permisos"], 403);
         }
 
-        $verificar = User::where('email', $request->email)->first();
+        $verificar = User::where('name', $request->name)->first();
 
-        if ($verificar && $verificar->name !== $request->name) {
-            $response = ['msg' => 'El correo ya está en uso por otro usuario.', 'estado' => 'false'];
-        
-        }elseif($verificar && $verificar->name === $request->name) {
-
-            $response = ['msg' => 'El correo es el que usa actualmente.', 'estado' => 'false'];
-        }else{
-
-            $q = User::where('name', $request->name)->first();
-            $q->email = $request->email;
-            $q->save();
-
-            $response = ['msg' => 'Se ha actualizado el email correctamente.', 'estado' => 'true'];
+        if(empty($verificar)) {
+            return response()->json(['msg' => 'Error en el dato de usuario'], 409); 
         }
-        return response()->json($response);
+
+        if($verificar->email === $request->email) {
+            return response()->json(['msg' => 'El correo es el que usa actualmente.'], 409);
+        }
+
+        if($this->compararEmails($request->email) > 0) {
+            return response()->json(['msg' => 'El correo ya está en uso por otro usuario.'], 409);
+        }
+
+        $verificar->update([
+            'email' => $request->email
+        ]);
+
+        return response()->json(['msg' => 'Se ha actualizado el email correctamente.'], 200);
     }
 
-    public function baja(Request $request)
+    public function baja(Request $request): JsonResponse
     {
-        
+
         if(!$this->hasPermission("usuarios_delete")) {
             return response()->json(["msg" => "No tiene permisos"], 403);
         }
 
         $query = User::with('role')->find($request->Id);
 
-        if($query) 
-        {
-            if($query->role->contains('nombre', 'Administrador')) {
-                return response()->json(['msg' => 'No se puede eliminar un rol Administrador'], 409);
-            }
-
-            if(Auth::user()->name === $query->name) {
-                return response()->json(['msg' => 'No puedes hacer una autoeliminación'], 409);
-            }
-
-            $query->Anulado = $query->Anulado === 1 ? 0 : 1;
-            $query->inactivo = 0;
-            $query->save();
-
-            return response()->json(['msg' => 'Se ha dado de baja al usuario correctamente', 'estado' => 'success'], 200);
-        }else{
+        if(empty($query)) {
             return response()->json(['msg' => 'No se ha podido dar de baja el usuario'], 500);
         }
+            
+        if($query->role->contains('nombre', 'Administrador')) {
+            return response()->json(['msg' => 'No se puede eliminar un rol Administrador'], 409);
+        }
+    
+        if(Auth::user()->name === $query->name) {
+            return response()->json(['msg' => 'No puedes hacer una autoeliminación'], 409);
+        }
+
+        $query->Anulado = $query->Anulado === 1 ? 0 : 1;
+        $query->inactivo = 0;
+        $query->save();
+
+        return response()->json(['msg' => 'Se ha dado de baja al usuario correctamente', 'estado' => 'success'], 200);      
     }
 
-    public function bloquear(Request $request)
+    public function bloquear(Request $request): JsonResponse
     {
         if(!$this->hasPermission("usuarios_delete")) {
             return response()->json(["msg" => "No tiene permisos"], 403);
@@ -327,19 +288,21 @@ class UsuariosController extends Controller
 
         $query = User::with('role')->find($request->Id);
 
-        if($query) 
+        if(empty($query)) 
         {
-            if($query->role->contains('nombre', 'Administrador')) {
-                return response()->json(['msg' => 'No se puede bloquear un rol Administrador'], 409);
-            }
-
-            if(Auth::user()->name === $query->name) {
-                return response()->json(['msg' => 'No puedes hacer un bloqueo de la cuenta que usas'], 409);
-            }
-
-            $query->inactivo = $query->inactivo === 1 ? 0 : 1;
-            $query->save();
+            return response()->json(['msg' => 'No hay datos para procesar'], 404);
         }
+
+        if($query->role->contains('nombre', 'Administrador')) {
+            return response()->json(['msg' => 'No se puede bloquear un rol Administrador'], 409);
+        }
+
+        if(Auth::user()->name === $query->name) {
+            return response()->json(['msg' => 'No puedes hacer un bloqueo de la cuenta que usas'], 409);
+        }
+
+        $query->inactivo = $query->inactivo === 1 ? 0 : 1;
+        $query->save();
 
         $nQuery = User::find($request->Id, ['inactivo']);
         $result = $nQuery->inactivo === 1 ? ['msg' => 'Se ha desactivado correctamente al usuario'] : ['msg' => 'Se ha activado al usuario'];
@@ -352,9 +315,8 @@ class UsuariosController extends Controller
     {
         $query = User::find($request->Id);
 
-        if($query) 
-        {
-            $query->password = Hash::make(SELF::password);
+        if($query) {
+            $query->password = Hash::make(config('auth.default_password'));
             $query->save();
 
             return response()->json(['msg' => 'Se ha cambiado la contraseña correctamente'], 200);
@@ -389,12 +351,10 @@ class UsuariosController extends Controller
         }
         $query->save();
 
-        return response()->json(['msg' => 'Se han cargado los cambios correctamente.'], 200);
-
-        
+        return response()->json(['msg' => 'Se han cargado los cambios correctamente.'], 200);        
     }
 
-    public function checkRoles(Request $request)
+    public function checkRoles(Request $request): JsonResponse
     {
         $query = User::with('role')->where('profesional_id', $request->Id)->first();
 
@@ -404,6 +364,12 @@ class UsuariosController extends Controller
     public function getUserName()
     {
         return Auth::user()->name;
+    }
+
+    public function getProfesional(Request $request): JsonResponse
+    {
+        $query = User::find($request->Id);
+        return response()->json($query->profesional_id ?? 0);
     }
 
     public function listadoUsuarios()
@@ -418,6 +384,63 @@ class UsuariosController extends Controller
             ->get();
 
         return response()->json($query);
+    }
+
+    private function getUsuarioNuevo(int $id)
+    {
+        return User::join('datos', 'users.datos_id', '=', 'datos.Id')
+            ->join('localidades', 'datos.IdLocalidad', '=', 'localidades.Id')
+            ->leftJoin('profesionales', 'users.profesional_id', '=', 'profesionales.Id')
+            ->leftJoin('user_rol', 'users.id', '=', 'user_rol.user_id')
+            ->leftJoin('roles', 'user_rol.rol_id', '=', 'roles.Id')
+            ->select(
+                "users.id as UserId",
+                "users.name as Name",
+                "users.email as EMail",
+                "users.inactivo as Inactivo",
+                "datos.Id as IdDatos",
+                "datos.Telefono as Telefono",
+                "datos.TipoIdentificacion as TipoIdentificacion",
+                "datos.Identificacion as Identificacion",
+                "datos.TipoDocumento as TipoDocumento",
+                "datos.Documento as Documento",
+                "datos.Nombre as Nombre",
+                "datos.Apellido as Apellido",
+                "datos.FechaNacimiento as FechaNacimiento",
+                "datos.Direccion as Direccion",
+                "datos.IdLocalidad as ILocalidad",
+                "datos.Provincia as Provincia",
+                "datos.CP as CP",
+                "datos.Id as Id",
+                "localidades.Nombre as NombreLocalidad",
+                "profesionales.Id as IdProfesional",
+                "profesionales.Firma as Firma",
+                "profesionales.Foto as Foto",
+                "profesionales.wImage as wImage",
+                "profesionales.hImage as hImage",
+                "profesionales.InfAdj as InfAdj",
+                "profesionales.Pago as Pago",
+                "profesionales.TLP as TLP",
+                "profesionales.MN as MN",
+                "profesionales.SeguroMP as SeguroMP",
+                "profesionales.MP as MP",
+                DB::raw("GROUP_CONCAT(roles.nombre SEPARATOR ',') as NombreRol")
+            )->where('users.id', $id)
+             ->first();
+    }
+
+    private function buscarNombreApellido(string $buscar)
+    {
+        return User::join('datos', 'users.datos_id', '=', 'datos.Id')
+                ->whereRaw("CONCAT(datos.Apellido, ' ', datos.Nombre) LIKE ?", ['%'.$buscar.'%'])
+                ->orWhere('datos.Apellido', 'LIKE', '%'.$buscar.'%')
+                ->orWhere('datos.Nombre', 'LIKE', '%'.$buscar.'%')
+                ->get();
+    }
+
+    private function compararEmails(string $email): int
+    {
+        return User::where('email', $email)->count();
     }
     
 }
