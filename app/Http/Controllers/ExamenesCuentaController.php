@@ -830,7 +830,10 @@ class ExamenesCuentaController extends Controller
         }
 
         $query = ExamenCuenta::join('pagosacuenta_it', 'pagosacuenta.Id', '=', 'pagosacuenta_it.IdPago')
-        ->join('clientes', 'pagosacuenta.IdEmpresa', '=', 'clientes.Id')
+        ->join('clientes', function($join) use ($request) {
+            $join->on('pagosacuenta.IdEmpresa', '=', 'clientes.Id')
+                ->where('clientes.Id', $request->Id);
+        })
         ->join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
         ->join('prestaciones', 'pagosacuenta_it.IdPrestacion', '=', 'prestaciones.Id')
         ->select(
@@ -839,7 +842,6 @@ class ExamenesCuentaController extends Controller
             'pagosacuenta.IdEmpresa as IdEmpresa'
         )
         ->selectRaw('COUNT(CASE WHEN pagosacuenta_it.IdPrestacion = 0 THEN 1 END) AS contadorSaldos')
-        ->where('clientes.Id', $request->Id)
         ->groupBy(['clientes.Id', 'clientes.RazonSocial','clientes.ParaEmpresa','clientes.Identificacion','examenes.Nombre'])
         ->havingRaw('contadorSaldos > 0')
         ->whereNot('pagosacuenta_it.Obs', 'provisorio')
@@ -893,17 +895,23 @@ class ExamenesCuentaController extends Controller
     {
          $subquery = DB::table('pagosacuenta_it')
             ->join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
-            ->join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
+            ->join('pagosacuenta', function($join) use ($request) {
+                $join->on('pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
+                    ->where('pagosacuenta.IdEmpresa', $request->Id);
+            })
             ->select(
                 'examenes.Id',
                 DB::raw('COUNT(*) as total_examenes')
             )
             ->where('pagosacuenta_it.IdPrestacion', 0)
             ->where('pagosacuenta_it.Obs', '!=', 'provisorio')
-            ->where('pagosacuenta.IdEmpresa', $request->Id)
             ->groupBy('examenes.Id');
 
-        $query = ExamenCuenta::join('pagosacuenta_it', 'pagosacuenta.Id', '=', 'pagosacuenta_it.IdPago')
+        $query = ExamenCuenta::join('pagosacuenta_it', function($join) use ($request) {
+            $join->on('pagosacuenta.Id', '=', 'pagosacuenta_it.IdPago')
+                ->where('pagosacuenta_it.IdPrestacion', 0)
+                ->whereNot('pagosacuenta_it.Obs', 'provisorio');
+            })
             ->join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
             ->joinSub($subquery, 'conteo', function ($join) {
                 $join->on('examenes.Id', '=', 'conteo.Id');
@@ -914,9 +922,6 @@ class ExamenesCuentaController extends Controller
                 'pagosacuenta_it.Id as IdPagoCuenta',
                 'conteo.total_examenes as total'
             )
-            ->where('pagosacuenta.IdEmpresa', $request->Id)
-            ->where('pagosacuenta_it.IdPrestacion', 0)
-            ->whereNot('pagosacuenta_it.Obs', 'provisorio')
             ->groupBy('examenes.Nombre')
             ->orderBy('examenes.Nombre', 'desc')
             ->get();
