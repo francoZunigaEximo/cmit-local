@@ -388,19 +388,13 @@ class ExamenesCuentaController extends Controller
             $query = ExamenCuentaIt::join('pagosacuenta', 'pagosacuenta_it.IdPago', '=', 'pagosacuenta.Id')
             ->join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
             ->join('prestaciones', 'pagosacuenta_it.IdPrestacion', '=', 'prestaciones.Id')
-            ->join('itemsprestaciones', function (JoinClause $join) {
-                $join->on('pagosacuenta_it.IdPrestacion', '=', 'itemsprestaciones.IdPrestacion')
-                ->on('pagosacuenta_it.IdExamen', '=', 'itemsprestaciones.IdExamen');
-            })
-            ->join('profesionales as efector', 'efector.Id', '=', 'itemsprestaciones.IdProfesional')
-            ->join('proveedores', 'efector.IdProveedor', '=', 'proveedores.Id')
-            ->join('estudios', 'estudios.Id', '=', 'examenes.IdEstudio')
+            ->join('proveedores', 'examenes.IdProveedor', '=', 'proveedores.Id')
             ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
             ->select(
                 'pagosacuenta_it.Precarga as Precarga',
                 'examenes.Nombre as Examen',
                 'proveedores.Nombre as Estudio',
-                'prestaciones.Id as Prestacion',
+                'pagosacuenta_it.Id as Prestacion',
                 'pacientes.Nombre as NombrePaciente',
                 'pacientes.Apellido as ApellidoPaciente',
                 'pagosacuenta_it.Id as IdEx'
@@ -409,7 +403,7 @@ class ExamenesCuentaController extends Controller
             ->whereNot('pagosacuenta_it.Obs', 'provisorio')
             ->orderBy('prestaciones.Id')
             ->orderBy('pagosacuenta_it.Precarga')
-            ->orderBy('estudios.Nombre')
+            ->orderBy('proveedores.Nombre')
             ->orderBy('examenes.Nombre');
             
             return DataTables::of($query)->make(true);
@@ -969,13 +963,8 @@ class ExamenesCuentaController extends Controller
         return ExamenCuentaIt::join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
             ->join('prestaciones', 'pagosacuenta_it.IdPrestacion', '=', 'prestaciones.Id')
             ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-            ->join('itemsprestaciones', function (JoinClause $join) {
-                $join->on('pagosacuenta_it.IdPrestacion', '=', 'itemsprestaciones.IdPrestacion')
-                ->on('pagosacuenta_it.IdExamen', '=', 'itemsprestaciones.IdExamen');
-            })
-            ->join('profesionales as efector', 'efector.Id', '=', 'itemsprestaciones.IdProfesional')
-            ->join('proveedores', 'efector.IdProveedor', '=', 'proveedores.Id')
             ->join('estudios', 'examenes.IdEstudio', '=', 'estudios.Id')
+            ->join('proveedores', 'examenes.IdProveedor', '=', 'proveedores.Id')
             ->select(
                 'prestaciones.Id as IdPrestacion',
                 'proveedores.Nombre as NombreEstudio',
@@ -984,8 +973,9 @@ class ExamenesCuentaController extends Controller
                 'pacientes.Apellido as Apellido'  
             )
             ->where('pagosacuenta_it.IdPago', $id)
+            ->whereNot('pagosacuenta_it.Obs', 'provisorio')
             ->orderBy('examenes.Nombre')
-            ->orderBy('estudios.Nombre')
+            ->orderBy('proveedores.Nombre')
             ->get();
     }
 
