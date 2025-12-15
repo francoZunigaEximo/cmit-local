@@ -1,6 +1,6 @@
-$(function(){
- 
-    $(document).on('click', '.buscar', function(e){
+$(function () {
+
+    $(document).on('click', '.buscar', function (e) {
 
         e.preventDefault();
         let nroDesde = $('#nroDesde').val(),
@@ -12,15 +12,15 @@ $(function(){
             fechaHasta = $('#fechaHasta').val(),
             bloqueado = $('#bloqueado').val();
 
-        if(!fechaHasta) {
-            toastr.warning("La fecha hasta es obligatoria. Tampoco puede faltar si la fecha desde esta incluida", "", {timeOut: 1000});
+        if (!fechaHasta) {
+            toastr.warning("La fecha hasta es obligatoria. Tampoco puede faltar si la fecha desde esta incluida", "", { timeOut: 1000 });
             return;
         }
 
         $('#listaMensaje').DataTable().clear().destroy();
 
         new DataTable("#listaMensaje", {
-        
+
             searching: false,
             ordering: false,
             processing: true,
@@ -31,7 +31,7 @@ $(function(){
             deferRender: true,
             ajax: {
                 url: SEARCH,
-                data: function(d){
+                data: function (d) {
                     d.NroDesde = nroDesde;
                     d.NroHasta = nroHasta;
                     d.Tipo = tipo;
@@ -48,7 +48,7 @@ $(function(){
                 {
                     data: null,
                     width: "30px",
-                    render: function(data){
+                    render: function (data) {
                         return (data.Id).toString().padStart(6, '0');
                     },
                     style: {
@@ -58,15 +58,15 @@ $(function(){
                 {
                     data: null,
                     width: "80px",
-                    render: function(data){
+                    render: function (data) {
                         let nombre = data.RazonSocial;
-                        return `<span class="text-uppercase" title="${nombre}">${acortadorTexto(nombre, 15)}</span>`;
+                        return `<span class="text-uppercase" title="${nombre} ${data.Bloqueado}">${acortadorTexto(nombre, 15)}</span>`;
                     }
                 },
                 {
                     data: null,
                     width: "80px",
-                    render: function(data){
+                    render: function (data) {
                         let nombre = data.ParaEmpresa;
                         return `<span class="text-uppercase" title="${nombre}">${acortadorTexto(nombre, 15)}</span>`;
                     }
@@ -79,54 +79,54 @@ $(function(){
                 {
                     data: null,
                     width: "100px",
-                    render: function(data){
+                    render: function (data) {
                         let tipo = {
                             A: "ART",
                             E: "Empresa"
                         };
                         let valor = data.TipoCliente;
-                    return `<div class="text-center"><span>${tipo[valor]}</span></div>`;
+                        return `<div class="text-center"><span>${tipo[valor]}</span></div>`;
                     }
                 },
                 {
                     data: null,
                     width: "120px",
-                    render: function(data){
+                    render: function (data) {
                         let tipo = {
                             A: "CC",
                             B: "Ctdo",
                             C: "Ctdo(CC Bloq)",
                         };
                         let valor = data.FPago;
-                    return `<div class="text-center"><span>${[undefined, null, ''].includes(valor) ? 'CC' : tipo[valor]}</span></div>`;
+                        return `<div class="text-center"><span>${[undefined, null, ''].includes(valor) ? 'CC' : tipo[valor]}</span></div>`;
                     }
                 },
                 {
                     data: null,
                     width: "100px",
-                    render: function(data){
+                    render: function (data) {
                         return !data.EMailFactura ? `<div class="fondo-rojo">&nbsp;</div>` : `<span title="${data.EMailFactura}">${acortadorTexto(data.EMailFactura, 14)}</span>`;
                     }
                 },
                 {
                     data: null,
                     width: "100px",
-                    render: function(data){
+                    render: function (data) {
                         return !data.EmailMasivo ? `<div class="fondo-rojo">&nbsp;</div>` : `<span title="${data.EmailMasivo}">${acortadorTexto(data.EmailMasivo, 14)}</span>`;
                     }
                 },
                 {
                     data: null,
                     width: "100px",
-                    render: function(data){
-                        return !data.EMailInformes ? '<div class="fondo-rojo">&nbsp;</div>': `<span>${acortadorTexto(data.EMailInformes, 14)}</span>`;
+                    render: function (data) {
+                        return !data.EMailInformes ? '<div class="fondo-rojo">&nbsp;</div>' : `<span>${acortadorTexto(data.EMailInformes, 14)}</span>`;
                     }
                 },
                 {
                     data: null,
                     width: "50px",
-                    render: function(data){            
-                        
+                    render: function (data) {
+
                         return `<button data-id="${data.Id}" class="btn btn-sm iconoGeneral editar" title="Editar"><i class="ri-edit-line p-1"></i></button>
                         <button data-id="${data.Id}" class="btn btn-sm iconoGeneral envioIndivivual" title="Enviar al cliente mensaje" data-bs-toggle="modal" data-bs-target="#envioIndividual"><i class="ri-mail-send-line p-1"></i></button>
                         `;
@@ -135,8 +135,8 @@ $(function(){
                 {
                     data: null,
                     width: "50px",
-                    render: function(data){            
-                        
+                    render: function (data) {
+
                         return `<input type="checkbox" name="Id_masivo" value="${data.Id}">`;
                     }
                 }
@@ -160,7 +160,7 @@ $(function(){
                 },
                 info: "Mostrando _START_ a _END_ de _TOTAL_ de clientes",
             },
-            createdRow: function(row, data, dataIndex){
+            createdRow: function (row, data, dataIndex) {
                 data.Bloqueado == '1' ? $(row).addClass('rojo') : '';
             }
         });

@@ -34,7 +34,20 @@ class MensajesController extends Controller
         }
 
         if($request->ajax()){
-            $query = Cliente::leftJoin('prestaciones', 'clientes.Id', '=', 'prestaciones.IdEmpresa')
+            $query = Cliente::join('prestaciones', function($join) use ($request) {
+                $join->where(function($q) {
+                        $q->on('clientes.Id', '=', 'prestaciones.IdEmpresa')
+                          ->orOn('clientes.Id', '=', 'prestaciones.IdART');
+                    })
+                    ->where('prestaciones.Cerrado', 0)
+                    ->when(!empty($request->FechaDesde) && !empty($request->FechaHasta), function($join) use ($request) {
+                        $join->whereBetween('prestaciones.Fecha', [$request->FechaDesde, $request->FechaHasta]);
+                    })
+                    ->when(empty($request->FechaDesde) && !empty($request->FechaHasta), function($join) use ($request) {
+                        $nuevaFecha = Carbon::parse($request->FechaHasta)->subDays(30)->format('Y-m-d');
+                        $join->whereBetween('prestaciones.Fecha', [$nuevaFecha, $request->FechaHasta]);
+                    });
+            })
             ->select(
                 'clientes.Id as Id',
                 'clientes.RazonSocial as RazonSocial',
@@ -46,7 +59,8 @@ class MensajesController extends Controller
                 'clientes.EMailResultados as EmailMasivo',
                 'clientes.EMailInformes as EMailInformes',
                 'clientes.Bloqueado as Bloqueado'
-            );
+            )
+            ->distinct();
 
             $query->when(!empty($request->NroDesde) && !empty($request->NroHasta), function($query) use ($request) {
                 $query->whereBetween('clientes.Id', [$request->NroDesde, $request->NroHasta]);
@@ -90,19 +104,7 @@ class MensajesController extends Controller
                 $query->whereIn('clientes.Bloqueado', [0,1]);
             });
 
-            $query->when(!empty($request->FechaDesde) && !empty($request->FechaHasta), function($query) use ($request) {
-                $query->whereBetween('prestaciones.Fecha', [$request->FechaDesde, $request->FechaHasta]);
-            });
-
-            $query->when(empty($request->FechaDesde) && !empty($request->FechaHasta), function($query) use ($request) {
-
-                $nuevaFecha = Carbon::parse($request->NroDesde)->subDays(30)->format('Y-m-d');
-                $query->whereBetween('prestaciones.Fecha', [$nuevaFecha, $request->FechaHasta]);
-            });
-
-
-            $result = $query->where('clientes.Id', '<>', 0)
-                            ->groupBy('clientes.Id')
+            $result = $query->whereNot('clientes.Id', 0)
                             ->orderBy('clientes.Id', 'DESC')
                             ->get();
 
