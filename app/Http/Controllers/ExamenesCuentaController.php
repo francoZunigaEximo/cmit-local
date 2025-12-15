@@ -394,7 +394,7 @@ class ExamenesCuentaController extends Controller
                 'pagosacuenta_it.Precarga as Precarga',
                 'examenes.Nombre as Examen',
                 'proveedores.Nombre as Estudio',
-                'pagosacuenta_it.Id as Prestacion',
+                'pagosacuenta_it.IdPrestacion as Prestacion',
                 'pacientes.Nombre as NombrePaciente',
                 'pacientes.Apellido as ApellidoPaciente',
                 'pagosacuenta_it.Id as IdEx'
