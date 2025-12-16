@@ -105,7 +105,13 @@ function cargarTablaEfectores() {
                     name: 'Pago',
                     targets: 2,
                     render: function (data) {
-                        return `<div class="text-start"><span>${data.Pago == null ? "" : data.Pago}</span></div>`;
+                        if(data.Pago == 0){
+                            var pago = "No Hora";   
+                        }else{
+                            var pago = "Hora";
+                        }
+
+                        return `<div class="text-start"><span>${pago == null ? "" : pago}</span></div>`;
                     }
                 },
                 {
@@ -230,8 +236,7 @@ function cargarTablaFacturas() {
                     orderable: true,
                     targets: 1,
                     render: function (data) {
-                        var nroFactura = data.Tipo + '-' + data.Sucursal.toString().padStart(5, '0') + '-' + data.NroFactura.toString().padStart(8, '0');
-                        return `<div class="text-start"><span>${nroFactura == null ? "" : nroFactura}</span></div>`;
+                        return `<div class="text-start"><span>${data.Id == null ? "" : data.Id}</span></div>`;
                     }
 
                 },
@@ -252,22 +257,17 @@ function cargarTablaFacturas() {
                     orderable: true,
                     targets: 3,
                     render: function (data) {
-                        return `<div class="text-start"><span>${data.NroFactura == null ? "" : data.NroFactura}</span></div>`;
+                        var nroFactura = data.Tipo + '-' + data.Sucursal.toString().padStart(5, '0') + '-' + data.NroFactura.toString().padStart(8, '0');
+                        return `<div class="text-start"><span>${nroFactura == null ? "" : nroFactura}</span></div>`;
+                        
                     }
 
                 },
-                {
-                    data: null,
-                    name: 'Especialidad',
-                    targets: 4,
-                    render: function (data) {
-                        return `<div class="text-start"><span>${data.Especialidad == null ? "" : data.Especialidad}</span></div>`;
-                    }
-                },
+             
                 {
                     data: null,
                     name: 'Profesional',
-                    targets: 5,
+                    targets: 4,
                     render: function (data) {
                         return `<div class="text-start"><span>${data.Profesional == null ? "" : data.Profesional}</span></div>`;
                     }
@@ -275,7 +275,7 @@ function cargarTablaFacturas() {
                 {
                     data: null,
                     name: 'Acciones',
-                    targets: 6,
+                    targets: 5,
                     render: function (data) {
                         let ruta = rutaEditarFacturaCompra.replace('ID_FACTURA', data.Id);
                         let eliminar = `<button type="button" class="btn btn-sm iconGeneral delete-item-btn" onclick="eliminarFacturaCompraConfirmacion(${data.Id})"> <i class="ri-delete-bin-2-line"></i> </button>`;
