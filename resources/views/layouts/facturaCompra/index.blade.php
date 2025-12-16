@@ -43,49 +43,48 @@
                         <div class="card-body">
                             <div class="listjs-table" id="customerList">
                                 <form id="form-index">
-                                    <div class="row g-4 mb-3">
+                                    <div class="row g-4 ">
                                         <div class="col-12 p-4 border border-1 border-color" style="border-color: #666666;">
 
                                             <div class="row">
 
-                                                <div class="col-sm-2 mb-3">
+                                                <div class="col-sm-2 me-3">
                                                     <label for="fechaDesde" class="form-label fw-bolder">Fecha desde: <span class="required">(*)</span></label>
                                                     <input type="date" class="form-control" id="fechaDesde" name="fechaDesde">
                                                 </div>
 
-                                                <div class="col-sm-2 mb-3">
+                                                <div class="col-sm-2 me-3">
                                                     <label for="fechaDesde" class="form-label fw-bolder">Fecha hasta: <span class="required">(*)</span></label>
                                                     <input type="date" class="form-control" id="fechaHasta" name="fechaHasta">
                                                 </div>
 
-                                                <div class="col-sm-2 mb-3">
+                                                <div class="col-sm-2 me-3">
                                                     <label for="profesional" class="form-label fw-bolder">Profesional: </label>
                                                     <select class="form-control" name="Profesional" id="Profesional"></select>
                                                 </div>
 
-                                                <div class="col-sm-2 mb-3">
+                                                <div class="col-sm-2 me-3">
                                                     <label for="nroDesde" class="form-label fw-bolder">Nro Desde: </label>
                                                     <input type="number" class="form-control" id="nroDesde" name="nroDesde">
                                                 </div>
 
-                                                <div class="col-sm-2 mb-3">
+                                                <div class="col-sm-2 me-3">
                                                     <label for="examen" class="form-label fw-bolder">Nro Hasta:</label>
                                                     <input type="number" class="form-control" id="nroHasta" name="nroHasta">
                                                 </div>
 
                                             </div>
 
-                                            <div class="row">
-                                                <div class="col-sm-12 d-flex align-items-center justify-content-end">
-                                                    <button type="button" id="buscarFacturas" class="btn botonGeneral"><i class="ri-zoom-in-line"></i>&nbsp;Buscar</button>&nbsp;
-                                                    <a id="agregar" class="btn botonGeneral" href="{{ route('examenesCuenta.create') }}"><i class="ri-add-fill"></i>&nbsp;Agregar</a>
-                                                    <button type="button" id="btnreporte" class="btn botonGeneral"><i class="ri-file-excel-2-fill"></i>&nbsp;Exportar</button>
-                                                </div>
-                                            </div>
-
                                         </div>
                                     </div>
 
+                                    <div class="row mt-2">
+                                        <div class="col-sm-12 d-flex align-items-center justify-content-end">
+                                            <button type="button" id="buscarFacturas" class="btn botonGeneral"><i class="ri-zoom-in-line"></i>&nbsp;Buscar</button>&nbsp;
+                                            <a id="agregar" class="btn botonGeneral m-1" href="{{ route('examenesCuenta.create') }}"><i class="ri-add-fill"></i>&nbsp;Agregar</a>
+                                            <button type="button" id="btnreporte" class="btn botonGeneral"><i class="ri-file-excel-2-fill"></i>&nbsp;Exportar</button>
+                                        </div>
+                                    </div>
 
                                     <div class="table-responsive table-card mt-3 mb-1 mx-auto">
                                         <table id="listadoFacturas" class="display table table-bordered">
@@ -95,7 +94,6 @@
                                                     <th class="sort">Número</th>
                                                     <th class="sort">Fecha</th>
                                                     <th class="sort">Factura</th>
-                                                    <th class="sort">Especialidad</th>
                                                     <th class="sort">Profesional</th>
                                                     <th class="sort">Acciones</th>
                                                 </tr>
@@ -125,22 +123,22 @@
                         <div class="card-body">
                             <div class="listjs-table" id="customerList">
                                 <form id="form-index">
-                                    <div class="row g-4 mb-3">
+                                    <div class="row g-4 ">
                                         <div class="col-12 p-4 border border-1 border-color" style="border-color: #666666;">
 
                                             <div class="row">
 
-                                                <div class="col-sm-2 mb-3">
+                                                <div class="col-sm-2 me-3">
                                                     <label for="fechaDesdeEfector" class="form-label fw-bolder">Fecha desde: <span class="required">(*)</span></label>
                                                     <input type="date" class="form-control" id="fechaDesdeEfector" name="fechaDesde">
                                                 </div>
 
-                                                <div class="col-sm-2 mb-3">
+                                                <div class="col-sm-2 me-3">
                                                     <label for="fechaHastaEfector" class="form-label fw-bolder">Fecha hasta: <span class="required">(*)</span></label>
                                                     <input type="date" class="form-control" id="fechaHastaEfector" name="fechaHasta">
                                                 </div>
 
-                                                <div class="col-sm-2 mb-3">
+                                                <div class="col-sm-2 me-3">
                                                     <label for="profesional" class="form-label fw-bolder">Tipo: </label>
                                                     <select class="form-control" name="tipo" id="tipo">
                                                         <option value="">Seleccione</option>
@@ -149,17 +147,15 @@
                                                     </select>
                                                 </div>
                                             </div>
-
-                                            <div class="row">
-                                                <div class="col-sm-12 d-flex align-items-center justify-content-end">
-                                                    <button type="button" id="buscarEfectores" class="btn botonGeneral"><i class="ri-zoom-in-line"></i>&nbsp;Buscar</button>&nbsp;
-                                                    <a id="agregar" class="btn botonGeneral" href="{{ route('examenesCuenta.create') }}"><i class="ri-add-fill"></i>&nbsp;Agregar</a>
-                                                </div>
-                                            </div>
-
                                         </div>
                                     </div>
 
+                                    <div class="row mt-2">
+                                        <div class="col-sm-12 d-flex align-items-center justify-content-end">
+                                            <button type="button" id="buscarEfectores" class="btn botonGeneral"><i class="ri-zoom-in-line"></i>&nbsp;Buscar</button>&nbsp;
+                                            <a id="agregar" class="btn botonGeneral m-1" href="{{ route('examenesCuenta.create') }}"><i class="ri-add-fill"></i>&nbsp;Agregar</a>
+                                        </div>
+                                    </div>
 
                                     <div class="table-responsive table-card mt-3 mb-1 mx-auto">
                                         <table id="listadoEfectores" class="display table table-bordered">
@@ -189,10 +185,10 @@
 </div>
 
 <script>
-    const buscarEfectoresUrl = "{{ route('facturaCompra.buscarEfectores') }}";  
+    const buscarEfectoresUrl = "{{ route('facturaCompra.buscarEfectores') }}";
     const buscarFacturas = "{{ route('facturaCompra.buscarFacturasCompras') }}";
-    const rutaCrearFacturaCompra = "{{ route('facturaCompra.crearFacturaCompra', ['id' => 'ID_PROFESIONAL']) }}"; 
-    const rutaEditarFacturaCompra = "{{ route('facturaCompra.editarFactura', ['id' => 'ID_FACTURA']) }}";  
+    const rutaCrearFacturaCompra = "{{ route('facturaCompra.crearFacturaCompra', ['id' => 'ID_PROFESIONAL']) }}";
+    const rutaEditarFacturaCompra = "{{ route('facturaCompra.editarFactura', ['id' => 'ID_FACTURA']) }}";
 
     const rutaEliminarFacturaCompra = "{{ route('facturaCompra.eliminarFacturaCompra') }}";
 
