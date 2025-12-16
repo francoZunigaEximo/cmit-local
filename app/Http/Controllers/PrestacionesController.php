@@ -151,11 +151,13 @@ class PrestacionesController extends Controller
 
         $tipoPrestacion = PrestacionesTipo::all();
         $financiador = Cliente::find($prestacione->Financiador, ['RazonSocial', 'Id', 'Identificacion']);
+        $cliente = Cliente::find($prestacione->IdEmpresa);
         $auditorias = Auditor::with('auditarAccion')->where('IdTabla', 1)->where('IdRegistro', $prestacione->Id)->orderBy('Id', 'Asc')->get();
         $fichalaboral = Fichalaboral::where('IdPaciente', $prestacione->IdPaciente)->orderBy('Id', 'Desc')->first();
         $tiposPrestacionOtros = PrestacionesTipo::whereNotIn('Nombre', $tiposPrestacionPrincipales)->get();
         $paciente = Paciente::find($prestacione->IdPaciente, ['Nombre', 'Apellido', 'Documento', 'TipoDocumento']);
-        return view('layouts.prestaciones.edit', compact(['tipoPrestacion', 'prestacione', 'financiador', 'auditorias', 'fichalaboral', 'tiposPrestacionOtros', 'paciente']), ['helper'=> $this->helperEdit]);
+        
+        return view('layouts.prestaciones.edit', compact(['tipoPrestacion', 'prestacione', 'financiador', 'auditorias', 'fichalaboral', 'tiposPrestacionOtros', 'paciente', 'cliente']), ['helper'=> $this->helperEdit]);
     }
 
     public function estados(Request $request)
