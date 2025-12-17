@@ -121,7 +121,7 @@ $(function() {
                     data: null,
                     targets: 8,
                     render: function(data) {
-                        return `<input type="checkbox" name="Id_EEnviar" value="${data.IdPrestacion}" checked>`       
+                        return `<input type="checkbox" name="Id_EEnviar" data-emails="${data.Correo}" value="${data.IdPrestacion}" checked>`       
                     }
                 },
             ],

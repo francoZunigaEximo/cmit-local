@@ -104,7 +104,7 @@ $(function() {
                     render: function(data) {
                         
                         return  especialidad == 0 || especialidad == ''
-                            ? `<input type ="checkbox" disabled>`
+                            ? `<input type="checkbox" disabled>`
                             : data.IdEspecialidad == especialidad
                                 ? `<input type="checkbox" name="Id_asignar" value="${data.IdItem}" checked>`
                                 : `<input type ="checkbox" disabled>`;      
