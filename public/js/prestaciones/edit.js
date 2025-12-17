@@ -586,6 +586,7 @@ $(function() {
         swal({
             title: "¿Desea generar el anexo?",
             icon: "warning",
+            //text: `Destinatarios: ${emailsInforme}`,
             buttons: ["Cancelar", "Aceptar"]
         }).then((confirmar) => {
             if(confirmar){
@@ -612,6 +613,7 @@ $(function() {
         swal({
             title: "¿Desea enviar el aviso de reporte?",
             icon: "warning",
+            text: `Destinatarios: ${emailsInforme}`,
             buttons: ["Cancelar", "Aceptar"]
         }).then((confirmar) => {
             if(confirmar){
@@ -638,6 +640,7 @@ $(function() {
         swal({
             title: "¿Desea enviar el reporte eEstudio, eAnexos y Adjuntos Generales de la prestación?",
             icon: "warning",
+            text: `Destinatarios: ${emailsInforme}`,
             buttons: ["Cancelar", "Aceptar"]
         }).then((confirmar) => {
             if(confirmar){
@@ -666,6 +669,7 @@ $(function() {
         swal({
             title: "¿Desea enviar el estudio?",
             icon: "warning",
+            //text: `Destinatarios: ${emailsInforme}`,
             buttons: ["Cancelar", "Aceptar"]
         }).then((confirmar) => {
             if(confirmar) {
@@ -735,9 +739,10 @@ $(function() {
         }
 
         swal({
-            'title': '¿Desea realizar en envio de los reportes?',
-            'icon': 'warning',
-            'buttons': ['Cancelar', 'Aceptar']
+            title: '¿Desea realizar en envio de los reportes?',
+            icon: 'warning',
+            text: `Destinatarios: ${emailsInforme}`,
+            buttons: ['Cancelar', 'Aceptar']
         }).then((confirmar) => {
             if(confirmar) {
                 if(conReportesInternos) {

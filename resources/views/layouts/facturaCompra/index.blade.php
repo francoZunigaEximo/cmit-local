@@ -195,6 +195,7 @@
     const imprimirReporte = "{{ route('facturaCompra.exportarExcel') }}";
 
     const buscarProfesional = "{{ route('searchProfesionalesComun') }}";
+    
 </script>
 
 @push('styles')
