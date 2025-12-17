@@ -586,7 +586,7 @@ $(function() {
         swal({
             title: "¿Desea generar el anexo?",
             icon: "warning",
-            text: `Destinatarios: ${emailsInforme}`,
+            //text: `Destinatarios: ${emailsInforme}`,
             buttons: ["Cancelar", "Aceptar"]
         }).then((confirmar) => {
             if(confirmar){
@@ -669,7 +669,7 @@ $(function() {
         swal({
             title: "¿Desea enviar el estudio?",
             icon: "warning",
-            text: `Destinatarios: ${emailsInforme}`,
+            //text: `Destinatarios: ${emailsInforme}`,
             buttons: ["Cancelar", "Aceptar"]
         }).then((confirmar) => {
             if(confirmar) {
