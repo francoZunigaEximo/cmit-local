@@ -68,13 +68,16 @@
                 <div>
                     <div class="row">
                         <div class="col-sm-12 d-flex align-items-center justify-content-end">
-                            <button type="button" id="editarFactura" class="btn botonGeneral">Editar</button>
-                            <button type="button" class="btn botonGeneral" id="btnExportarPdf">Imprimir</button>
+                            <button type="button" class="btn botonGeneral" id="btnExportarPdf">Imprimir</button>&nbsp;
                             <button type="button" class="btn botonGeneral" id="btnreporteexcel">Excel</button>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+        
+        <div class="d-flex justify-content-center mb-3">
+            <button type="button" id="editarFactura" class="btn botonGeneral">Editar</button>
         </div>
         
         <h4>Examenes Efector</h4>
@@ -92,6 +95,7 @@
                             <th class="sort">Prestacion</th>
                             <th class="sort">Fecha</th>
                             <th class="sort">Examen</th>
+                            <th class="sort">Empresa</th>
                             <th class="sort">Cerrado</th>
                             <th class="sort">Paciente</th>
                             <th class="sort">Acciones</th>
@@ -119,6 +123,7 @@
                             <th class="sort">Prestacion</th>
                             <th class="sort">Fecha</th>
                             <th class="sort">Examen</th>
+                            <th class="sort">Empresa</th>
                             <th class="sort">Cerrado</th>
                             <th class="sort">Paciente</th>
                             <th class="sort">Acciones</th>
