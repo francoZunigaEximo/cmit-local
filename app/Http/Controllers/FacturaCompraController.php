@@ -457,7 +457,7 @@ class FacturaCompraController extends Controller
                 $paramsSubtitulo = [];
                 $paramsCuerpo = ['id' =>$request->idFactura];
 
-                return $this->reporteService->generarReporte(
+                $patch = $this->reporteService->generarReporte(
                     null,
                     null,
                     FacturaCompraCuerpo::class,
@@ -471,6 +471,8 @@ class FacturaCompraController extends Controller
                     null,
                     false
                 );
+
+                return response()->json(['filePath' => $patch, 'msg' => 'Se ha generado correctamente el reporte ', 'estado' => 'success'], 200);
             }else{
                 return response()->json(['success' => false, 'message' => 'tiene que proporcionar id factura.'], 400);
             }

@@ -134,7 +134,7 @@
                 <div class="row">
                     <div class="row">
                         <div class="col-sm-12 d-flex align-items-center justify-content-end">
-                            <button type="button" class="btn botonGeneral" id="subtotal"><i class="ri-money-dollar-circle-line"></i>&nbsp;Subtotal</button>
+                            <button type="button" class="btn botonGeneral" id="subtotal"><i class="ri-money-dollar-circle-line"></i>&nbsp;Subtotal</button>&nbsp;
                             <button type="button" class="btn botonGeneral" id="modalFacturarBtn">Facturar</button>
                         </div>
                     </div>
@@ -152,6 +152,7 @@
                         <th class="sort">Prestacion</th>
                         <th class="sort">Fecha</th>
                         <th class="sort">Examen</th>
+                        <th class="sort">Empresa</th>
                         <th class="sort">Cerrado</th>
                         <th class="sort">Paciente</th>
                         <th class="sort">Estados</th>
@@ -174,6 +175,7 @@
                         <th class="sort">Prestacion</th>
                         <th class="sort">Fecha</th>
                         <th class="sort">Examen</th>
+                        <th class="sort">Empresa</th>
                         <th class="sort">Cerrado</th>
                         <th class="sort">Paciente</th>
                         <th class="sort">Estados</th>

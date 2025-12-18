@@ -113,10 +113,18 @@ function cargarTablaExamenesEfector() {
                     return `<div class="text-start"><span>${data.Examen == null ? "" : data.Examen}</span></div>`;
                 }
             },
+             {
+                data: null,
+                name: 'Empresa',
+                targets: 4,
+                render: function (data) {
+                    return `<div class="text-start"><span>${data.Empresa == null ? "" : data.Empresa}</span></div>`;
+                }
+            },
             {
                 data: null,
                 name: 'Cerrado',
-                targets: 4,
+                targets: 5,
                 render: function (data) {
                     if(data.Cerrado == 0){
                         var badge = `<i title="Abierto" class="ri-lock-2-line p-1 rojo"></i>`;
@@ -129,14 +137,14 @@ function cargarTablaExamenesEfector() {
             {
                 data: null,
                 name: 'Paciente',
-                targets: 5,
+                targets: 6,
                 render: function (data) {
                     return `<div class="text-start"><span>${data.ApPac == null ? "" : data.ApPac}, ${data.NomPac == null ? "" : data.NomPac}</span></div>`;
                 }
             },{
                 data: null,
                 name: 'Estados',
-                targets: 6,
+                targets: 7,
                 render: function (data) {
                     var adjuntado = "";
                     if(data.Adjunto == 1){
@@ -265,8 +273,16 @@ function cargarTablaExamenesInformador() {
             },
             {
                 data: null,
-                name: 'Cerrado',
+                name: 'Empresa',
                 targets: 4,
+                render: function (data) {
+                    return `<div class="text-start"><span>${data.Empresa == null ? "" : data.Empresa}</span></div>`;
+                }
+            },
+            {
+                data: null,
+                name: 'Cerrado',
+                targets: 5,
                 render: function (data) {
                     if(data.Cerrado == 0){
                         var badge = `<i title="Abierto" class="ri-lock-2-line p-1 rojo"></i>`;
@@ -279,14 +295,14 @@ function cargarTablaExamenesInformador() {
             {
                 data: null,
                 name: 'Paciente',
-                targets: 5,
+                targets: 6,
                 render: function (data) {
                     return `<div class="text-start"><span>${data.ApPac == null ? "" : data.ApPac}, ${data.NomPac == null ? "" : data.NomPac}</span></div>`;
                 }
             },{
                 data: null,
                 name: 'Estados',
-                targets: 6,
+                targets: 7,
                 render: function (data) {
                     var adjuntado = "";
                     if(data.Adjunto == 1){
