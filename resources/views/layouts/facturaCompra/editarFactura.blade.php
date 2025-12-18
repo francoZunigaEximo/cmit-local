@@ -92,6 +92,7 @@
                             <th class="sort">Prestacion</th>
                             <th class="sort">Fecha</th>
                             <th class="sort">Examen</th>
+                            <th class="sort">Cerrado</th>
                             <th class="sort">Paciente</th>
                             <th class="sort">Acciones</th>
                         </tr>
@@ -118,6 +119,7 @@
                             <th class="sort">Prestacion</th>
                             <th class="sort">Fecha</th>
                             <th class="sort">Examen</th>
+                            <th class="sort">Cerrado</th>
                             <th class="sort">Paciente</th>
                             <th class="sort">Acciones</th>
                         </tr>

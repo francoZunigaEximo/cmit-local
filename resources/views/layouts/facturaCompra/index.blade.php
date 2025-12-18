@@ -81,7 +81,6 @@
                                     <div class="row mt-2">
                                         <div class="col-sm-12 d-flex align-items-center justify-content-end">
                                             <button type="button" id="buscarFacturas" class="btn botonGeneral"><i class="ri-zoom-in-line"></i>&nbsp;Buscar</button>&nbsp;
-                                            <a id="agregar" class="btn botonGeneral m-1" href="{{ route('examenesCuenta.create') }}"><i class="ri-add-fill"></i>&nbsp;Agregar</a>
                                             <button type="button" id="btnreporte" class="btn botonGeneral"><i class="ri-file-excel-2-fill"></i>&nbsp;Exportar</button>
                                         </div>
                                     </div>
@@ -153,7 +152,6 @@
                                     <div class="row mt-2">
                                         <div class="col-sm-12 d-flex align-items-center justify-content-end">
                                             <button type="button" id="buscarEfectores" class="btn botonGeneral"><i class="ri-zoom-in-line"></i>&nbsp;Buscar</button>&nbsp;
-                                            <a id="agregar" class="btn botonGeneral m-1" href="{{ route('examenesCuenta.create') }}"><i class="ri-add-fill"></i>&nbsp;Agregar</a>
                                         </div>
                                     </div>
 
