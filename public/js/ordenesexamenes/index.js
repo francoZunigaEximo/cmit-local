@@ -743,9 +743,10 @@ $(function () {
         e.preventDefault();
 
         let ids = [];
-
+        let emails = {};
         $('input[name="Id_EEnviar"]:checked').each(function () {
             ids.push($(this).val());
+            emails[$(this).val()] = $(this).data('emails');
         });
 
         if (ids.length === 0) {
@@ -753,9 +754,17 @@ $(function () {
             return;
         }
 
+        let contenido = "<div style=\"max-height: 120px;overflow-y: scroll;overflow-x: clip;\"><h5>Destinatarios</h5><ul>";
+        for(let key in emails){
+            contenido += `<li class="text-start"><strong>Prestación ${key}:</strong> ${emails[key]}</li>`;
+        }
+        contenido += "</ul></div>";
+        contenido = $(contenido);
+        
         swal({
             title: "¿Esta seguro que desea enviar el eEstudio de las prestaciones seleccionadas?",
             icon: "warning",
+            content: contenido[0],
             buttons: ["Cancelar", "Aceptar"]
         }).then((confirmar) => {
             if (confirmar) {

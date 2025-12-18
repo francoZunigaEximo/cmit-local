@@ -777,7 +777,8 @@ class MapasController extends Controller
         $query = $this->queryEnviar($request->mapa);
 
         $query->where(function ($query) {
-            $query->where('prestaciones.eEnviado', 0)
+            $query
+                ->where('prestaciones.eEnviado', 0)
                 ->where('prestaciones.Cerrado', 1)
                 ->where('prestaciones.Finalizado', 1);
         });
@@ -1187,6 +1188,7 @@ class MapasController extends Controller
                 'pacientes.Documento AS Documento',
                 'empresa.SEMail AS EmpresaSinEnvio',
                 'art.SEMail AS ArtSinEnvio',
+                'art.EMailInformes AS EmailArt',
                 DB::raw('(SELECT CASE WHEN COUNT(*) = SUM(CASE WHEN items.Incompleto = 0 THEN 1 ELSE 0 END) THEN "Completo" ELSE "Incompleto" END FROM itemsprestaciones AS items WHERE items.IdPrestacion = prestaciones.Id) AS Etapa')
             );
     }

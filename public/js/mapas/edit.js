@@ -79,7 +79,7 @@ $(function() {
             toastr.warning('Debes seleccionar al menos un mapa para exportar.', '', {timeOut: 1000});
             return;
         }
-            
+
         swal({
             title: '¿Estás seguro de que deseas generar el reporte?',
             icon: 'warning',
@@ -718,10 +718,12 @@ $(function() {
 
     $(document).on('click', '.saveEnviar', function(e){
         e.preventDefault();
-
+        let emails = {};
         let ids = [];
+        
         $('input[name="Id_enviar"]:checked').each(function() {
             ids.push($(this).val());
+            emails[$(this).val()] = $(this).data('emails');
         });
 
         let checkAll =$('#checkAllEnviar').prop('checked');
@@ -747,41 +749,58 @@ $(function() {
             return;
         }
 
-        preloader('on');
-        $.post(saveEnviar, { ids: ids, _token: TOKEN, eTipo: eTipo, exportarInforme: exportarInforme,  enviarMail: enviarMail})
-            .done(function(response){
-                preloader('off');
-               
-                $.each(response, function(index, r){
-                    if(r.icon === 'art-impresion' || r.icon === 'empresa-impresion') {
-                        toastr.success(r.msg, '', {timeOut: 1000});
-                        createFile("pdf", r.filePath, r.name);
+        //contenido para el modal de confirmacion
+        let contenido = "<div style=\"max-height: 120px;overflow-y: scroll;overflow-x: clip;\"><h5>Destinatarios</h5><ul>";
+        for(let key in emails){
+            contenido += `<li class="text-start"><strong>Prestación ${key}:</strong> ${emails[key]}</li>`;
+        }
+        contenido += "</ul></div>";
+        contenido = $(contenido);
+
+        swal({
+            title: "¿Estas seguro que desea eEnviar las prestaciones seleccionadas?",
+            icon: "warning",
+            content: contenido[0],
+            buttons: ["Cancelar", "Aceptar"]
+        }).then((confirmar) => {
+            if (confirmar) {
+                preloader('on');
+                $.post(saveEnviar, { ids: ids, _token: TOKEN, eTipo: eTipo, exportarInforme: exportarInforme,  enviarMail: enviarMail})
+                    .done(function(response){
+                        preloader('off');
                     
-                    }else if(r.icon === 'art-email') {
-                        toastr.success(r.msg, '', {timeOut: 1000});
+                        $.each(response, function(index, r){
+                            if(r.icon === 'art-impresion' || r.icon === 'empresa-impresion') {
+                                toastr.success(r.msg, '', {timeOut: 1000});
+                                createFile("pdf", r.filePath, r.name);
+                            
+                            }else if(r.icon === 'art-email') {
+                                toastr.success(r.msg, '', {timeOut: 1000});
+                            
+                            }else if(r.icon === 'empresa-email') {
+                                toastr.success(r.msg, '', {timeOut: 1000});
+                            }
+                        });
                     
-                    }else if(r.icon === 'empresa-email') {
-                        toastr.success(r.msg, '', {timeOut: 1000});
-                    }
-                });
-               
-                setTimeout(()=>{
-                    $('#eenviarMapa').empty();
-                    $('#eEnviarModal').modal('hide');
-                    getEnMapa();
-                    getFinalMapa();
-                    getCerrarMapas();
-                    lstAuditorias();
-                    $('.saveEnviar').prop('disabled', false);
-                }, 3000);
-                
-            })
-            .fail(function(jqXHR){
-                preloader('off');
-                let errorData = JSON.parse(jqXHR.responseText);            
-                checkError(jqXHR.status, errorData.msg);
-                return;
-            });
+                        setTimeout(()=>{
+                            $('#eenviarMapa').empty();
+                            $('#eEnviarModal').modal('hide');
+                            getEnMapa();
+                            getFinalMapa();
+                            getCerrarMapas();
+                            lstAuditorias();
+                            $('.saveEnviar').prop('disabled', false);
+                        }, 3000);
+                        
+                    })
+                    .fail(function(jqXHR){
+                        preloader('off');
+                        let errorData = JSON.parse(jqXHR.responseText);            
+                        checkError(jqXHR.status, errorData.msg);
+                        return;
+                    });
+            }
+        });
     });
 
     $(document).on('click', '.verItemPrestacion', function(){
@@ -1287,8 +1306,9 @@ $(function() {
                 let data = response.result;
 
                 for(let index = 0; index < data.length; index++) {
-                    let en = data[index],
-                        contenido = `
+                    let en = data[index];
+                    console.log(en);
+                    let contenido = `
                     <tr>
                         <td> ${en.NroRemito}</td>
                         <td>${fecha(en.Fecha)}</td>
@@ -1306,7 +1326,7 @@ $(function() {
                             </button>
                         </td>
                         <td>
-                            ${en.eEnviado === 1 ? '' : en.eEnviado === 0 && en.Finalizado === 1 && en.Cerrado === 1 && en.Etapa === 'Completo' ? `<input type="checkbox" name="Id_enviar" value="${en.IdPrestacion}" checked>` : `<span class="custom-badge pequeno">Bloqueado</span>`}
+                            ${en.eEnviado === 1 ? '' : en.eEnviado === 0 && en.Finalizado === 1 && en.Cerrado === 1 && en.Etapa === 'Completo' ? `<input type="checkbox" name="Id_enviar" data-emails="${en.EmailArt}" value="${en.IdPrestacion}" checked>` : `<span class="custom-badge pequeno">Bloqueado</span>`}
                         </td> 
                     </tr>
                 `;
