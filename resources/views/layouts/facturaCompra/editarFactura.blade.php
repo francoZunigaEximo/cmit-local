@@ -77,7 +77,7 @@
         </div>
         
         <div class="d-flex justify-content-center mb-3">
-            <button type="button" id="editarFactura" class="btn botonGeneral">Editar</button>
+            <button type="button" id="editarFactura" class="btn botonGeneral">Actualizar</button>
         </div>
         
         <h4>Examenes Efector</h4>
