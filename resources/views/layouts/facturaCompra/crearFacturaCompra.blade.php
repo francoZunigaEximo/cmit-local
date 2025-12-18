@@ -12,7 +12,7 @@
 
 <!--modales-->
 <div class="modal fade" id="modalSubtotal" tabindex="-1" aria-labelledby="modalSubtotalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title fs-5" id="modalSubtotalLabel">Facturar Compra</h5>
@@ -152,6 +152,7 @@
                         <th class="sort">Prestacion</th>
                         <th class="sort">Fecha</th>
                         <th class="sort">Examen</th>
+                        <th class="sort">Cerrado</th>
                         <th class="sort">Paciente</th>
                         <th class="sort">Estados</th>
                     </tr>
@@ -173,6 +174,7 @@
                         <th class="sort">Prestacion</th>
                         <th class="sort">Fecha</th>
                         <th class="sort">Examen</th>
+                        <th class="sort">Cerrado</th>
                         <th class="sort">Paciente</th>
                         <th class="sort">Estados</th>
                     </tr>

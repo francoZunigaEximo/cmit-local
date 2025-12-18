@@ -112,17 +112,31 @@ function cargarTablaExamenesEfector() {
                 render: function (data) {
                     return `<div class="text-start"><span>${data.Examen == null ? "" : data.Examen}</span></div>`;
                 }
-            },{
+            },
+            {
+                data: null,
+                name: 'Cerrado',
+                targets: 4,
+                render: function (data) {
+                    if(data.Cerrado == 0){
+                        var badge = `<i title="Abierto" class="ri-lock-2-line p-1 rojo"></i>`;
+                    }else{
+                        var badge = `<i title="Cerrado" class="ri-lock-2-line p-1 verde"></i>`;
+                    }
+                    return `<div class="text-start"><span>${badge}</span></div>`;
+                }
+            },
+            {
                 data: null,
                 name: 'Paciente',
-                targets: 4,
+                targets: 5,
                 render: function (data) {
                     return `<div class="text-start"><span>${data.ApPac == null ? "" : data.ApPac}, ${data.NomPac == null ? "" : data.NomPac}</span></div>`;
                 }
             },{
                 data: null,
                 name: 'Estados',
-                targets: 5,
+                targets: 6,
                 render: function (data) {
                     var adjuntado = "";
                     if(data.Adjunto == 1){
@@ -248,17 +262,31 @@ function cargarTablaExamenesInformador() {
                 render: function (data) {
                     return `<div class="text-start"><span>${data.Examen == null ? "" : data.Examen}</span></div>`;
                 }
-            },{
+            },
+            {
+                data: null,
+                name: 'Cerrado',
+                targets: 4,
+                render: function (data) {
+                    if(data.Cerrado == 0){
+                        var badge = `<i title="Abierto" class="ri-lock-2-line p-1 rojo"></i>`;
+                    }else{
+                        var badge = `<i title="Cerrado" class="ri-lock-2-line p-1 verde"></i>`;
+                    }
+                    return `<div class="text-start"><span>${badge}</span></div>`;
+                }
+            },
+            {
                 data: null,
                 name: 'Paciente',
-                targets: 4,
+                targets: 5,
                 render: function (data) {
                     return `<div class="text-start"><span>${data.ApPac == null ? "" : data.ApPac}, ${data.NomPac == null ? "" : data.NomPac}</span></div>`;
                 }
             },{
                 data: null,
                 name: 'Estados',
-                targets: 5,
+                targets: 6,
                 render: function (data) {
                     var adjuntado = "";
                     if(data.Adjunto == 1){

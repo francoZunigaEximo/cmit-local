@@ -92,10 +92,24 @@ function cargarTablaExamenesEfector() {
                 render: function (data) {
                     return `<div class="text-start"><span>${data.Examen == null ? "" : data.Examen}</span></div>`;
                 }
-            }, {
+            }, 
+            {
+                data: null,
+                name: 'Cerrado',
+                targets: 4,
+                render: function (data) {
+                    if(data.Cerrado == 0){
+                        var badge = `<i title="Abierto" class="ri-lock-2-line p-1 rojo"></i>`;
+                    }else{
+                        var badge = `<i title="Cerrado" class="ri-lock-2-line p-1 verde"></i>`;
+                    }
+                    return `<div class="text-start"><span>${badge}</span></div>`;
+                }
+            },
+            {
                 data: null,
                 name: 'Paciente',
-                targets: 4,
+                targets: 5,
                 render: function (data) {
                     return `<div class="text-start"><span>${data.Paciente == null ? "" : data.Paciente}</span></div>`;
                 }
@@ -103,7 +117,7 @@ function cargarTablaExamenesEfector() {
             {
                 data: null,
                 name: 'Acciones',
-                targets: 5,
+                targets: 6,
                 render: function (data) {
                     var adjuntado = "";
                     if(data.Adjunto == 1){
@@ -111,7 +125,7 @@ function cargarTablaExamenesEfector() {
                     }
                     var bloquear = data.Anulado == 1 ? "<i title='Bloqueado' class='ri-forbid-2-line rojo'></i>" : "";
 
-                    return `<button type="button" class="btn btn-sm iconGeneral remove-item-btn" onclick="eliminarItemEfector(${data.Id})"><i class="ri-delete-bin-2-fill" style="font-size: 2em;"></i></button>${adjuntado} ${bloquear}`;
+                    return `<button type="button" class="btn btn-sm iconGeneral remove-item-btn" onclick="eliminarItemEfector(${data.Id})"><i class="ri-delete-bin-2-fill"></i></button>${adjuntado} ${bloquear}`;
                 }
             }
         ],
@@ -227,7 +241,21 @@ function cargarTablaExamenesInformador() {
                 render: function (data) {
                     return `<div class="text-start"><span>${data.Examen == null ? "" : data.Examen}</span></div>`;
                 }
-            }, {
+            }, 
+            {
+                data: null,
+                name: 'Cerrado',
+                targets: 4,
+                render: function (data) {
+                    if(data.Cerrado == 0){
+                        var badge = `<i title="Abierto" class="ri-lock-2-line p-1 rojo"></i>`;
+                    }else{
+                        var badge = `<i title="Cerrado" class="ri-lock-2-line p-1 verde"></i>`;
+                    }
+                    return `<div class="text-start"><span>${badge}</span></div>`;
+                }
+            },
+            {
                 data: null,
                 name: 'Paciente',
                 targets: 4,
@@ -246,7 +274,7 @@ function cargarTablaExamenesInformador() {
                     }
                     var bloquear = data.Anulado == 1 ? "<i title='Bloqueado' class='ri-forbid-2-line rojo'></i>" : "";
 
-                    let editar = `<button type="button" class="btn btn-sm iconGeneral edit-item-btn" onclick="eliminarItemInformador(${data.Id})"> <i class="ri-delete-bin-5-line"></i> </button>${adjuntado} ${bloquear}`;
+                    let editar = `<button type="button" class="btn btn-sm iconGeneral edit-item-btn" onclick="eliminarItemInformador(${data.Id})"> <i class="ri-delete-bin-2-fill"></i> </button>${adjuntado} ${bloquear}`;
                     return editar;
                 }
             }
