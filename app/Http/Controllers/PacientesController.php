@@ -285,8 +285,6 @@ class PacientesController extends Controller
             $reporte = $this->reporteExcel->crear('pacientes');
             return $reporte->generar($pacientes);
         }catch(Exception $e){
-            dd($e->getMessage());
-            die();
             return response()->json(['msg' => 'Error al generar el reporte. Intente nuevamente mas tarde.'], 500);
         }
     }
