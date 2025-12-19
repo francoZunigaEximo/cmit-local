@@ -164,7 +164,10 @@ class UsuariosController extends Controller
 
         $resultados = Cache::remember('Usuario_'.$buscar, 5, function () use ($buscar) {
 
-            $usuarios = User::where('name', 'LIKE', '%'.$buscar.'%')->get();
+            $usuarios = User::where('name', 'LIKE', '%'.$buscar.'%')
+                ->where('Anulado', 0)
+                ->where('Inactivo', 0)
+                ->get();
 
             $resultados = [];
 
