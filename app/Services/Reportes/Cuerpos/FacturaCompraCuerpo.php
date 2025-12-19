@@ -57,10 +57,13 @@ class FacturaCompraCuerpo extends Reporte
         $pdf->SetXY(150, 25);
         $pdf->Cell(200, 4, "CP: " . $CP, 0, 0, 'L');
 
+        $pdf->Ln(20);
+        $pdf->Cell($w, 4, "Examenes Efector", 0, 1, 'L'); //salto de linea
+        $pdf->Ln(4);
         //
-        $x = 10;
-        $y = 40;
-        $w = 40;
+        $x = $pdf->GetX();
+        $y = $pdf->GetY();
+        $w = 35;
 
         //colocamos el encabezado de la tabla
         $pdf->SetFont('Arial', 'B', 10);
@@ -82,34 +85,106 @@ class FacturaCompraCuerpo extends Reporte
         $pdf->SetFont('Arial', 'B', 10);
         $pdf->SetXY($x+($w*4), $y);
         $pdf->Cell($w, 4, "TIPO", 0, 0, 'L');
-        
+
         $pdf->Ln(5);	
         
         $examenesEfector = $this->getExamenesEfector($datos["id"]);
         $w = 35;
+        $i = 1;
+       
         foreach ($examenesEfector as $examen) {
-            
+            $y = $pdf->GetY();
+
             $pdf->SetFont('Arial', '', 8);
-            $pdf->SetX($x);
-            $pdf->Cell($w, 3, $examen->idPrestacion, 0, 0, 'L');
+            $pdf->SetXY($x, $y);
+            $pdf->MultiCell($w, 6, $examen->idPrestacion, 0,'L');
             
             $pdf->SetFont('Arial', '', 7);
-            $pdf->SetX($x+($w*1));
-            $pdf->MultiCell($w, 3, $examen->Examen, 0, 'L', 0, 3);
+            $pdf->SetXY($x+($w*1), $y);
+            $pdf->MultiCell($w, 6, $examen->Examen, 0, 'L');
+            $pdf->SetFont('Arial', '', 7);
+            $pdf->SetXY($x+($w*2), $y);
+            $pdf->MultiCell($w, 6, $examen->Empresa, 0, 'L');
 
             $pdf->SetFont('Arial', '', 7);
-            $pdf->SetX($x+($w*2));
-            $pdf->MultiCell($w, 3, $examen->Empresa, 0, 'L', 0, 3);
+            $pdf->SetXY($x+($w*3), $y);
+            $pdf->MultiCell($w, 6, $examen->Paciente, 0,'L');
+            
+            $pdf->SetFont('Arial', '', 7);
+            $pdf->SetXY($x+($w*4), $y);
+            $pdf->MultiCell($w, 6, "Efector", 0,'L');
+
+            $pdf->Ln(4);
+            $i++;
+            if ($i % 25 == 0) {
+                $pdf->AddPage();
+            }
+            //$pdf->SetFont('Arial','',7);$pdf->SetX(93);$pdf->Cell(0,3,substr($row1['ObsExamen'],0,80),0,0,'L');$pdf->Ln(4);
+        }
+
+        $pdf->Ln(4);
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->Cell($w, 4, "Examenes Informador", 0, 1, 'L'); //salto de linea
+        $pdf->Ln(4);
+
+        $x = $pdf->GetX();
+        $y = $pdf->GetY();
+        $w = 35;
+
+        //colocamos el encabezado de la tabla
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->SetXY($x, $y);
+        $pdf->Cell($w, 4, "PRESTACION", 0, 0, 'L');
+
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->SetXY($x+($w*1), $y);
+        $pdf->Cell($w, 4, "EXAMEN", 0, 0, 'L');
+
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->SetXY($x+($w*2), $y);
+        $pdf->Cell($w, 4, "EMPRESA", 0, 0, 'L');
+
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->SetXY($x+($w*3), $y);
+        $pdf->Cell($w, 4, "PACIENTE", 0, 0, 'L');
+
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->SetXY($x+($w*4), $y);
+        $pdf->Cell($w, 4, "TIPO", 0, 0, 'L');
+
+        $pdf->Ln(5);	
+        
+        $examenesInformador = $this->getExamenesInformador($datos["id"]);
+        $w = 35;
+        $i = 1;
+        foreach ($examenesInformador as $examen) {
+            $y = $pdf->GetY();
+
+            $pdf->SetFont('Arial', '', 8);
+            $pdf->SetXY($x, $y);
+            $pdf->MultiCell($w, 4, $examen->idPrestacion, 0,'L');
+            
+            $pdf->SetFont('Arial', '', 7);
+            $pdf->SetXY($x+($w*1), $y);
+            $pdf->MultiCell($w, 4, $examen->Examen, 0, 'L');
 
             $pdf->SetFont('Arial', '', 7);
-            $pdf->SetX($x+($w*3));
-            $pdf->MultiCell($w, 3, $examen->Paciente, 0, 'L', 0, 3);
+            $pdf->SetXY($x+($w*2), $y);
+            $pdf->MultiCell($w, 4, $examen->Empresa, 0, 'L');
 
             $pdf->SetFont('Arial', '', 7);
-            $pdf->SetX($x+($w*4));
-            $pdf->MultiCell($w, 3, "Efector", 0, 'L', 0, 3);
+            $pdf->SetXY($x+($w*3), $y);
+            $pdf->MultiCell($w, 4, $examen->Paciente, 0,'L');
 
-            $pdf->Ln(1);
+            $pdf->SetFont('Arial', '', 7);
+            $pdf->SetXY($x+($w*4), $y);
+            $pdf->MultiCell($w, 4, "Informador", 0,'L');
+
+            $pdf->Ln(4);
+            $i++;
+            if ($i % 25 == 0) {
+                $pdf->AddPage();
+            }
             //$pdf->SetFont('Arial','',7);$pdf->SetX(93);$pdf->Cell(0,3,substr($row1['ObsExamen'],0,80),0,0,'L');$pdf->Ln(4);
         }
         $pdf->Ln(4);
