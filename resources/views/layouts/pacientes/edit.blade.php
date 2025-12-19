@@ -14,6 +14,9 @@
     <h4 class="mb-sm-0">Paciente <span class="custom-badge original">Nro. {{ $paciente->Id }}</span></h4>
 
     <div class="page-title-right">
+        <button type="button" class="btn botonGeneral" id="altaPrestacionArtModal">
+            <i class="ri-add-line align-bottom me-1"></i> Prestación ART
+        </button>
         <button type="button" class="btn botonGeneral" data-bs-toggle="modal" data-bs-target="#altaPrestacionModal">
             <i class="ri-add-line align-bottom me-1"></i> Nueva Prestación
         </button>
@@ -347,32 +350,32 @@
                             <hr class="mt-1 mb-1">
                             <div class="row text-center">
                                 <div class="col-12">
-                                    <div class="form-check form-check-inline">
+                                    <div class="form-check form-check-inline checkART">
                                         <input class="form-check-input" type="radio" name="TipoPrestacion" id="ART" value="ART">
                                         <label class="form-check-label" for="ART">ART</label>
                                     </div>
 
-                                    <div class="form-check form-check-inline">
+                                    <div class="form-check form-check-inline checkPrestacion">
                                         <input class="form-check-input" type="radio" name="TipoPrestacion" id="INGRESO" value="INGRESO" >
                                         <label class="form-check-label" for="ingreso">INGRESO</label>
                                     </div>
                             
-                                    <div class="form-check form-check-inline">
+                                    <div class="form-check form-check-inline checkPrestacion">
                                         <input class="form-check-input" type="radio" name="TipoPrestacion" id="PERIODICO" value="PERIODICO">
                                         <label class="form-check-label" for="periodico">PERIODICO</label>
                                     </div>
 
-                                    <div class="form-check form-check-inline">
+                                    <div class="form-check form-check-inline checkPrestacion">
                                         <input class="form-check-input" type="radio" name="TipoPrestacion" id="OCUPACIONAL" value="OCUPACIONAL">
                                         <label class="form-check-label" for="ocupacional">OCUPACIONAL</label>
                                     </div>
 
-                                    <div class="form-check form-check-inline">
+                                    <div class="form-check form-check-inline checkPrestacion">
                                         <input class="form-check-input" type="radio" name="TipoPrestacion" id="EGRESO" value="EGRESO">
                                         <label class="form-check-label" for="egreso">EGRESO</label>
                                     </div>
 
-                                    <div class="form-check form-check-inline">
+                                    <div class="form-check form-check-inline checkPrestacion">
                                         <input class="form-check-input" type="radio" name="TipoPrestacion" id="TipoPrestacion" id="MAS" value="MAS">
                                         <label class="form-check-label" for="mas">MAS</label>
                                     </div>
@@ -1465,6 +1468,7 @@ const modificarParametros = "{{ route('parametros.modificar') }}";
 <script src="{{ asset('js/utils.js') }}?v={{ time() }}"></script>
 <script src="{{ asset('js/pacientes/fichaLaboral.js') }}?v={{ time() }}"></script>
 <script src="{{ asset('js/pacientes/prestacionesPacientes.js') }}?v={{ time() }}"></script>
+<script src="{{ asset('js/pacientes/prestacionART.js') }}?v={{ time() }}"></script>
 
 
 <script src="{{ asset('js/webcam.min.js') }}?v={{ time() }}"></script>
