@@ -13948,7 +13948,172 @@ BEGIN
     ORDER BY p.Id DESC;
 END
 
+<<<<<<< Updated upstream
 ALTER TABLE profesionales_prov DROP INDEX IdProf_2; -- error de produccion en asignacion
+=======
+ALTER TABLE profesionales_prov DROP INDEX IdProf_2; -- error de produccion en asignacion
+
+
+-- modificaciones sobre stores procedures de factura compra 20251218
+
+DROP PROCEDURE IF EXISTS db_cmit.getExamenesFacturaCompraInformador;
+
+DELIMITER $$
+$$
+CREATE DEFINER=`db_cmit`@`%` PROCEDURE `db_cmit`.`getExamenesFacturaCompraInformador`(IN idFactura INT)
+BEGIN
+	SELECT 
+		itf.Id as Id,
+		ex.Nombre as Examen,
+		i.IdPrestacion as idPrestacion,
+		i.Fecha as Fecha,
+		CONCAT(p.Apellido, ',', p.Nombre) as Paciente,
+		ex.Adjunto as Adjunto,
+		CASE 
+			WHEN ai.Id IS NOT NULL THEN 1
+			ELSE 0
+		END as Adjuntado,
+		i.Anulado as Anulado,
+		c.ParaEmpresa as Empresa,
+		ex.Cerrado as Cerrado 
+	FROM 
+		itemsprestaciones i 
+		INNER JOIN itemsfacturacompra2 itf ON itf.IdItemPrestacion  = i.Id
+		INNER JOIN examenes ex ON ex.Id = i.IdExamen 
+		INNER JOIN prestaciones p2 ON p2.Id = i.idPrestacion
+		INNER JOIN pacientes p ON p.Id  = p2.idPaciente
+		INNER JOIN clientes c ON c.Id = p2.IdEmpresa
+		LEFT JOIN archivosinformador ai ON ai.IdEntidad = p.Id 
+	WHERE
+		itf.IdFactura = idFactura;
+END$$
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS db_cmit.getExamenesFacturaCompraEfector;
+
+DELIMITER $$
+$$
+CREATE DEFINER=`db_cmit`@`%` PROCEDURE `db_cmit`.`getExamenesFacturaCompraEfector`(IN idFactura INT)
+BEGIN
+	SELECT 
+		itf.Id as Id,
+		ex.Nombre as Examen,
+		i.IdPrestacion as idPrestacion,
+		i.Fecha as Fecha,
+		CONCAT(p.Apellido, ',', p.Nombre) as Paciente,
+		ex.Adjunto as Adjunto,
+		CASE 
+			WHEN af.Id IS NOT NULL THEN 1
+			ELSE 0
+		END as Adjuntado,
+		i.Anulado as Anulado,
+		c.ParaEmpresa as Empresa, 
+		ex.Cerrado as Cerrado
+	FROM 
+		itemsprestaciones i 
+		INNER JOIN itemsfacturacompra itf ON itf.IdItemPrestacion  = i.Id
+		INNER JOIN examenes ex ON ex.Id = i.IdExamen 
+		INNER JOIN prestaciones p2 ON p2.Id = i.idPrestacion
+		INNER JOIN pacientes p ON p.Id  = p2.idPaciente
+		INNER JOIN clientes c ON c.Id = p2.IdEmpresa
+		LEFT JOIN archivosefector af on af.IdEntidad = p.Id
+	WHERE
+		itf.IdFactura = idFactura;
+END$$
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS db_cmit.getExamenesEfectorFacturar;
+
+DELIMITER $$
+$$
+CREATE DEFINER=`db_cmit`@`%` PROCEDURE `db_cmit`.`getExamenesEfectorFacturar`(IN idProfesional INT, IN fechaDesde DATE, In fechaHasta DATE)
+BEGIN
+	Select  
+		i.Id,
+		i.IdPrestacion,
+		f.Fecha,
+		pr.Nombre,
+		pr.Apellido,
+		ex.Nombre as Examen,
+		cl.RazonSocial,
+		p.Nombre as NomPac,
+		p.Apellido as ApPac,
+		'Efector' as TipoProf ,
+		ex.Adjunto as Adjunto,
+		CASE 
+			WHEN af.Id IS NOT NULL THEN 1
+			ELSE 0
+		END as Adjuntado,
+		i.Anulado as Anulado,
+		ex.Cerrado as Cerrado,
+		cl.ParaEmpresa as Empresa
+	From 
+		prestaciones f
+		INNER JOIN itemsprestaciones i ON i.IdPrestacion=f.Id
+		INNER JOIN pacientes p ON p.Id=f.IdPaciente
+		INNER JOIN examenes ex ON ex.Id=i.IdExamen 
+		INNER JOIN profesionales pr ON pr.Id=i.IdProfesional
+		INNER JOIN clientes cl ON f.IdEmpresa=cl.Id 
+		LEFT JOIN archivosefector af on af.IdEntidad = p.Id
+	Where 
+		( i.FechaPagado ='0000-00-00' or i.FechaPagado IS NULL)
+		and ( i.NroFactCompra = 0 OR i.NroFactCompra IS NULL)
+		AND	( fechaDesde IS NULL OR f.Fecha > fechaDesde )
+		AND (fechaHasta IS NULL OR f.Fecha < fechaHasta)
+		AND i.IdProfesional = idProfesional 
+	;
+END$$
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS db_cmit.getExamenesInformadorFacturar;
+
+DELIMITER $$
+$$
+CREATE DEFINER=`db_cmit`@`%` PROCEDURE `db_cmit`.`getExamenesInformadorFacturar`(IN idProfesional INT, IN fechaDesde DATE, In fechaHasta DATE)
+BEGIN
+	Select 
+		i.Id,
+		i.IdPrestacion,
+		f.Fecha,
+		pr.Nombre,
+		pr.Apellido,
+		ex.Nombre as Examen,
+		cl.RazonSocial,
+		p.Nombre as NomPac,
+		p.Apellido as ApPac,
+		'Efector' as TipoProf  ,
+		ex.Adjunto as Adjunto,
+		CASE 
+			WHEN ai.Id IS NOT NULL THEN 1
+			ELSE 0
+		END as Adjuntado,
+		i.Anulado as Anulado,
+		ex.Cerrado as Cerrado,
+		cl.ParaEmpresa as Empresa
+	From 
+		prestaciones f
+		INNER JOIN itemsprestaciones i ON i.IdPrestacion=f.Id
+		INNER JOIN pacientes p ON p.Id=f.IdPaciente
+		INNER JOIN examenes ex ON ex.Id=i.IdExamen 
+		INNER JOIN profesionales pr ON pr.Id=i.IdProfesional2 
+		INNER JOIN clientes cl ON f.IdEmpresa=cl.Id 
+		LEFT JOIN archivosinformador ai ON ai.IdEntidad = p.Id 
+	Where 
+		( i.FechaPagado2='0000-00-00' or i.FechaPagado2 IS NULL)
+		and ( i.NroFactCompra2 = 0 OR i.NroFactCompra2 IS NULL)
+		AND	( fechaDesde IS NULL OR f.Fecha > fechaDesde )
+		AND (fechaHasta IS NULL OR f.Fecha < fechaHasta)
+		AND i.IdProfesional2 = idProfesional  
+	;
+END$$
+DELIMITER ;
+
+composer require --dev kwn/php-rdkafka-stubs
+
+
+>>>>>>> Stashed changes
+
 
 
 -- modificaciones sobre stores procedures de factura compra 20251218
