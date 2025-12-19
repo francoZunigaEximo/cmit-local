@@ -13948,9 +13948,7 @@ BEGIN
     ORDER BY p.Id DESC;
 END
 
-<<<<<<< Updated upstream
 ALTER TABLE profesionales_prov DROP INDEX IdProf_2; -- error de produccion en asignacion
-=======
 ALTER TABLE profesionales_prov DROP INDEX IdProf_2; -- error de produccion en asignacion
 
 
@@ -14112,4 +14110,3 @@ DELIMITER ;
 composer require --dev kwn/php-rdkafka-stubs
 
 
->>>>>>> Stashed changes

@@ -1,16 +1,16 @@
-$(function(){
+$(function () {
 
     const tabla = $('#listaUsuarios');
 
     $('#nombre').select2({
         language: {
-            noResults: function() {
+            noResults: function () {
 
-            return "No hay usuarios con esos datos";        
+                return "No hay usuarios con esos datos";
             },
-            searching: function() {
+            searching: function () {
 
-            return "Buscando..";
+                return "Buscando..";
             },
             inputTooShort: function () {
                 return "Por favor, ingrese 2 o más caracteres";
@@ -19,16 +19,16 @@ $(function(){
         placeholder: 'Apellido y nombre de usuario',
         allowClear: true,
         ajax: {
-            url: searchNombreUsuario, 
+            url: searchNombreUsuario,
             dataType: 'json',
-            data: function(params) {
+            data: function (params) {
                 return {
                     buscar: params.term
                 };
             },
-            processResults: function(data) {
+            processResults: function (data) {
                 return {
-                    results: data.result 
+                    results: data.result
                 };
             },
             cache: true
@@ -38,13 +38,13 @@ $(function(){
 
     $('#usua').select2({
         language: {
-            noResults: function() {
+            noResults: function () {
 
-            return "No hay usuarios con esos datos";        
+                return "No hay usuarios con esos datos";
             },
-            searching: function() {
+            searching: function () {
 
-            return "Buscando..";
+                return "Buscando..";
             },
             inputTooShort: function () {
                 return "Por favor, ingrese 2 o más caracteres";
@@ -53,16 +53,16 @@ $(function(){
         placeholder: 'Nombre de usuario',
         allowClear: true,
         ajax: {
-            url: searchUsuario, 
+            url: searchUsuario,
             dataType: 'json',
-            data: function(params) {
+            data: function (params) {
                 return {
                     buscar: params.term
                 };
             },
-            processResults: function(data) {
+            processResults: function (data) {
                 return {
-                    results: data.result 
+                    results: data.result
                 };
             },
             cache: true
@@ -73,13 +73,13 @@ $(function(){
 
     $('#rol').select2({
         language: {
-            noResults: function() {
+            noResults: function () {
 
-            return "No hay roles con esos datos";        
+                return "No hay roles con esos datos";
             },
-            searching: function() {
+            searching: function () {
 
-            return "Buscando..";
+                return "Buscando..";
             },
             inputTooShort: function () {
                 return "Por favor, ingrese 2 o más caracteres";
@@ -88,16 +88,16 @@ $(function(){
         placeholder: 'Rol de usuario',
         allowClear: true,
         ajax: {
-            url: searchRol, 
+            url: searchRol,
             dataType: 'json',
-            data: function(params) {
+            data: function (params) {
                 return {
                     buscar: params.term
                 };
             },
-            processResults: function(data) {
+            processResults: function (data) {
                 return {
-                    results: data.result 
+                    results: data.result
                 };
             },
             cache: true
@@ -106,132 +106,138 @@ $(function(){
     });
 
 
-    $(document).on('click', '.baja', function(e){
+    $(document).on('click', '.baja', function (e) {
         let id = $(this).data('id');
 
-        if(!id) return;
+        if (!id) return;
 
         swal({
             title: "¿Estas seguro que deseas eliminar al usuario?",
             icon: "warning",
             buttons: ["Cancelar", "Eliminar"],
         }).then((result) => {
-            if(result){
+            if (result) {
 
                 $('#listaUsuarios tbody').hide();
                 $('.dataTables_processing').show();
 
-                $.get(bajaUsuario, {Id: id})
-                    .done(function(response){
+                $.get(bajaUsuario, { Id: id })
+                    .done(function (response) {
 
                         let tipoToastr = response.estado === 'success' ? 'success' : 'warning';
 
                         toastr[tipoToastr](response.msg);
-                        $('#listaUsuarios').DataTable().ajax.reload(function(){
+                        $('#listaUsuarios').DataTable().ajax.reload(function () {
                             $('#listaUsuarios tbody').show();
                             $('.dataTables_processing').hide();
                         }, false);
                     })
-                    .fail(function(jqXHR){
-
+                    .fail(function (jqXHR) {
+                        $('#listaUsuarios').DataTable().ajax.reload(function () {
+                            $('#listaUsuarios tbody').show();
+                            $('.dataTables_processing').hide();
+                        }, false);
                         let errorData = JSON.parse(jqXHR.responseText);
                         checkError(jqXHR.status, errorData.msg);
                         return;
                     });
             }
-        });            
+        });
     });
 
-    $(document).on('click', '.bloquear', function(e){
+    $(document).on('click', '.bloquear', function (e) {
         let id = $(this).data('id');
 
-        if(!id) return;
+        if (!id) return;
 
         swal({
             title: "¿Estas seguro que deseas realizar la acción?",
             icon: "warning",
             buttons: ["No", "Si"]
         }).then((result) => {
-            if(result){
+            if (result) {
 
                 $('#listaUsuarios tbody').hide();
                 $('.dataTables_processing').show();
 
-                $.get(bloquearUsuario, {Id: id})
-                    .done(function(response){
-                        toastr.success(response.msg, '', {timeOut: 1000});
-                        $('#listaUsuarios').DataTable().ajax.reload(function(){
+                $.get(bloquearUsuario, { Id: id })
+                    .done(function (response) {
+                        toastr.success(response.msg, '', { timeOut: 1000 });
+                        $('#listaUsuarios').DataTable().ajax.reload(function () {
                             $('#listaUsuarios tbody').show();
                             $('.dataTables_processing').hide();
                         }, false);
-                        
-                    })
-                    .fail(function(jqXHR){
 
+                    })
+                    .fail(function (jqXHR) {
+                        $('#listaUsuarios').DataTable().ajax.reload(function () {
+                            $('#listaUsuarios tbody').show();
+                            $('.dataTables_processing').hide();
+                        }, false);
                         let errorData = JSON.parse(jqXHR.responseText);
                         checkError(jqXHR.status, errorData.msg);
                         return;
                     });
             }
-        });      
+        });
     });
 
-    $(document).on('click', '.cambiarPass', function(e){
+    $(document).on('click', '.cambiarPass', function (e) {
         let id = $(this).data('id');
 
-        if(!id) return;
+        if (!id) return;
 
         swal({
             title: "¿Estas seguro que deseas resetear la contraseña?",
             icon: "warning",
             buttons: ["Cancelar", "Resetear"]
         }).then((result) => {
-            if(result){
+            if (result) {
                 preloader('on');
-                $.get(cambiarPassUsuario, {Id: id})
-                    .done(function(response){
+                $.get(cambiarPassUsuario, { Id: id })
+                    .done(function (response) {
                         preloader('off');
-                        toastr.success(response.msg, '', {timeOut: 1000});
-                    }); 
+                        toastr.success(response.msg, '', { timeOut: 1000 });
+                    });
             }
-        });      
+        });
     });
 
-    $(document).on('click', '#reiniciar', function(e){
+    $(document).on('click', '#reiniciar', function (e) {
         e.preventDefault();
         $('#listaUsuarios tbody').hide();
         $('.dataTables_processing').show();
 
-        $('#listaUsuarios').DataTable().ajax.reload(function(){
+        $('#listaUsuarios').DataTable().ajax.reload(function () {
             $('#listaUsuarios tbody').show();
             $('.dataTables_processing').hide();
         }, false);
 
     });
 
-    $(document).on('click', '.forzarCierre', function(e){
+    $(document).on('click', '.forzarCierre', function (e) {
         e.preventDefault();
 
         let id = $(this).data('id');
 
-        if(!id) return;
+        if (!id) return;
 
         swal({
             title: "¿Esta seguro que deseas cerrar la sesion del usuario?",
             icon: "warning",
             buttons: ["Cancelar", "Aceptar"]
-        }).then((confirmar) =>{
-            if(confirmar){
+        }).then((confirmar) => {
+            if (confirmar) {
 
                 preloader('on');
-                $.get(btnCerrarSesion, {Id: id, forzar: true})
-                    .done(function(response){
+                $.get(btnCerrarSesion, { Id: id, forzar: true })
+                    .done(function (response) {
                         preloader('off');
                         toastr.success(response.msg);
                         tabla.DataTable().draw(false);
 
                     })
-                    .fail(function(jqXHR){
+                    .fail(function (jqXHR) {
                         preloader('off');
                         let errorData = JSON.parse(jqXHR.responseText);
                         checkError(jqXHR.status, errorData.msg);
