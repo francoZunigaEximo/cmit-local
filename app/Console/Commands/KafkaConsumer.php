@@ -17,14 +17,14 @@ class KafkaConsumer extends Command
     public function handler()
     {
         $conf = new Conf();
-        $conf->set('metadata.broker.list', 'IP_SERVER');
+        $conf->set('metadata.broker.list', '192.168.1.5');
         $conf->set('group_id', 'migracion-a-laravel');
         $conf->set('auto.offset.reset', 'earliest');
         $conf->set('enable.auto.commit', true);
         $conf->set('auto.commit.interval.ms', 5000);
 
         $consumer = new RdKafkaConsumer($conf);
-        $consumer->subscribe(['^dbsoftactual.db_cmit.*']);
+        $consumer->subscribe(['^dbsoftactual.db_gestion.*']);
 
         $this->info("Iniciando sincronización");
 
@@ -50,7 +50,6 @@ class KafkaConsumer extends Command
 
     protected function routeMessage($message)
     {
-        // 1. Decodificar JSON
         $data = json_decode($message->payload, true);
         if (!$data || !isset($data['payload'])) return;
 
