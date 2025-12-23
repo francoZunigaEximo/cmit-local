@@ -113,7 +113,7 @@ class MapasController extends Controller
                     'mapas.Fecha',
                     'mapas.FechaE',
                     'mapas.Cmapeados',
-                    'mapas.Cpacientes',
+                    'mapas.Cpacientes AS contadorPacientes',
                     'art.RazonSocial as Art',
                     'empresa.RazonSocial as Empresa',
                     DB::raw("SUM(CASE WHEN prestaciones.Anulado = 0 THEN 1 ELSE 0 END) as contadorPrestaciones"),
