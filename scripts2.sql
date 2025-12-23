@@ -14276,9 +14276,8 @@ DELIMITER ;
 
 DROP PROCEDURE IF EXISTS db_cmit.getExamenesEfectorFacturar;
 
-DELIMITER $$
-$$
-CREATE DEFINER=`db_cmit`@`%` PROCEDURE `db_cmit`.`getExamenesEfectorFacturar`(IN idProfesional INT, IN fechaDesde DATE, In fechaHasta DATE)
+DELIMITER //
+CREATE PROCEDURE `getExamenesEfectorFacturar`(IN idProfesional INT, IN fechaDesde DATE, In fechaHasta DATE)
 BEGIN
 	Select  
 		i.Id,
