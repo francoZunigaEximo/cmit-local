@@ -5,6 +5,7 @@
 use App\Services\Reportes\Reporte;
 use App\Models\ExamenCuentaIt;
 use FPDF;
+use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\DB;
 
  class ExamenCuenta extends Reporte
@@ -69,15 +70,22 @@ use Illuminate\Support\Facades\DB;
         return ExamenCuentaIt::join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
             ->join('prestaciones', 'pagosacuenta_it.IdPrestacion', '=', 'prestaciones.Id')
             ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+            ->join('itemsprestaciones', function (JoinClause $join) {
+                $join->on('pagosacuenta_it.IdPrestacion', '=', 'itemsprestaciones.IdPrestacion')
+                ->on('pagosacuenta_it.IdExamen', '=', 'itemsprestaciones.IdExamen');
+            })
+            ->join('profesionales as efector', 'efector.Id', '=', 'itemsprestaciones.IdProfesional')
+            ->join('proveedores', 'efector.IdProveedor', '=', 'proveedores.Id')
             ->join('estudios', 'examenes.IdEstudio', '=', 'estudios.Id')
             ->select(
                 'prestaciones.Id as IdPrestacion',
-                'estudios.Nombre as NombreEstudio',
+                'proveedores.Nombre as NombreEstudio',
                 'examenes.Nombre as NombreExamen',
                 'pacientes.Nombre as Nombre',
                 'pacientes.Apellido as Apellido'  
             )
             ->where('pagosacuenta_it.IdPago', $id)
+            ->whereNot('pagosacuenta_it.Obs', 'provisorio')
             ->orderBy('examenes.Nombre')
             ->orderBy('estudios.Nombre')
             ->get();
@@ -108,18 +116,26 @@ use Illuminate\Support\Facades\DB;
 
     private function totalExamenes(int $id): int
     {
-        return ExamenCuentaIt::where('IdPago', $id)->count() ?? 0;
+        return ExamenCuentaIt::where('IdPago', $id)
+        ->whereNot('Obs', 'provisorio')
+        ->count();
     }
 
     private function totalDisponibles(int $id): int
     {
-        return ExamenCuentaIt::where('IdPago', $id)->where('IdPrestacion', 0)->count() ?? 0;
+        return ExamenCuentaIt::where('IdPago', $id)
+        ->whereNot('Obs', 'provisorio')
+        ->where('IdPrestacion', 0)
+        ->count();
     }
 
     private function listadoDisponibles(int $id)
     {
         return ExamenCuentaIt::join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
             ->select('examenes.Nombre as NombreExamen')
-            ->where('IdPago', $id)->where('IdPrestacion')->get();
+            ->where('IdPago', $id)
+            ->whereNot('Obs', 'provisorio')
+            ->where('IdPrestacion', 0)
+            ->get();
     }
  }
