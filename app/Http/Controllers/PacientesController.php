@@ -342,8 +342,8 @@ class PacientesController extends Controller
         ->join('clientes as art', 'prestaciones.IdART', '=', 'art.Id')
         ->leftJoin('itemsprestaciones', 'prestaciones.Id', '=', 'itemsprestaciones.IdPrestacion')
         ->select(
-            DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdART) AS Art'),
-            DB::raw('(SELECT RazonSocial FROM clientes WHERE Id = prestaciones.IdEmpresa) AS Empresa'),
+            'emp.RazonSocial as Empresa',
+            'art.RazonSocial as Art',
             DB::raw('COALESCE(COUNT(itemsprestaciones.IdPrestacion), 0) as Total'),
             DB::raw('COALESCE(COUNT(CASE WHEN (itemsprestaciones.CAdj = 5 OR itemsprestaciones.CAdj = 3) AND (itemsprestaciones.CInfo = 3 OR itemsprestaciones.CInfo = 0) THEN itemsprestaciones.IdPrestacion END), 0) as CerradoAdjunto'),
             'emp.ParaEmpresa as ParaEmpresa',
