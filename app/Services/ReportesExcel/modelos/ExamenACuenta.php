@@ -139,6 +139,25 @@ class ExamenACuenta implements ReporteInterface
             $sheet->setCellValue('B'.$ultimasFilas, $items->NombreExamen);
             $ultimasFilas++;
         }
+
+        $filaOcupados = $ultimasFilas;
+
+        $sheet->setCellValue('A'.$filaOcupados, 'TOTAL EXAMENES DISPONIBLES: ');
+        $sheet->mergeCells('A'.$filaOcupados.':B'.$filaOcupados);
+        $sheet->getStyle('A'.$filaOcupados.':B'.$filaOcupados)->getFont()->setBold(true)->setSize(11);
+        $sheet->getRowDimension('8')->setRowHeight(30);
+        $sheet->getStyle('A'.$filaOcupados.':B'.$filaOcupados)->getFill()
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('CCCCCCCC'); 
+
+        $disponibles = $this->examenesDisponibles($examen->Id);
+
+        $datosFinlaes = $filaOcupados + 1;
+        foreach($disponibles as $items){
+            $sheet->setCellValue('A'.$datosFinlaes, $items->Cantidad);
+            $sheet->setCellValue('B'.$datosFinlaes, $items->NombreExamen);
+            $datosFinlaes++;
+        }
     }
 
     public function generar($examen)
@@ -217,5 +236,31 @@ class ExamenACuenta implements ReporteInterface
         ->where('pagosacuenta_it.IdPago', $id)
         ->orderBy('examenes.Nombre')
         ->get();
+    }
+
+    private function examenesDisponibles(?int $id): mixed
+    {
+        return ExamenCuentaIt::join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
+            ->leftJoin('prestaciones', 'pagosacuenta_it.IdPrestacion', '=', 'prestaciones.Id')
+            ->join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
+            ->join('itemsprestaciones', function (JoinClause $join) {
+                $join->on('pagosacuenta_it.IdPrestacion', '=', 'itemsprestaciones.IdPrestacion')
+                ->on('pagosacuenta_it.IdExamen', '=', 'itemsprestaciones.IdExamen');
+            })
+            ->join('profesionales as efector', 'efector.Id', '=', 'itemsprestaciones.IdProfesional')
+            ->join('proveedores', 'efector.IdProveedor', '=', 'proveedores.Id')
+            ->join('estudios', 'examenes.IdEstudio', '=', 'estudios.Id')
+            ->select(
+                'prestaciones.Id as IdPrestacion',
+                'proveedores.Nombre as NombreEstudio',
+                'examenes.Nombre as NombreExamen',
+                'pacientes.Nombre as Nombre',
+                'pacientes.Apellido as Apellido'  
+            )
+            ->where('pagosacuenta_it.IdPago', $id)
+            ->where('pagosacuenta_it.IdPrestacion', 0)
+            ->orderBy('examenes.Nombre')
+            ->orderBy('estudios.Nombre')
+            ->get();
     }
 }
