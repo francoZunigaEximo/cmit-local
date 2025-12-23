@@ -69,9 +69,9 @@ $(document).ready(()=>{
                             let fecha = fechaNow(data.Fecha,'/',0);
 
                             return `<div class="text-center">
-                                                <span>${fecha === 'NaN/NaN/NaN'? '-' : fecha}</span>
-                                                ${(totalDias <= 0) ? '<span class="custom-badge generalNegro">Cerrado</span>' : ''}
-                                            </div>`;
+                                        <span>${fecha === 'NaN/NaN/NaN'? '-' : fecha}</span>
+                                        ${(totalDias <= 0) ? '<span class="custom-badge generalNegro">Cerrado</span>' : ''}
+                                    </div>`;
                         }
                     },
                     {
@@ -93,7 +93,7 @@ $(document).ready(()=>{
                         data: null,
                         width: 50,
                         render: function(data){
-
+                            
                             return `<div class="text-center">${data.contadorPrestaciones}/${data.contadorPacientes === 0 && data.contadorPrestaciones !== 0 ? data.contadorPrestaciones : data.contadorPacientes}</div>`;
                         } 
 
