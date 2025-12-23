@@ -32,7 +32,7 @@ use App\Services\ReportesExcel\modelos\PaqueteFacturacionDetalle;
 use App\Services\ReportesExcel\modelos\SaldosCta;
 use App\Services\ReportesExcel\modelos\PagoMasivo;
 use App\Services\ReportesExcel\modelos\OrdenExamenResumen;
-
+use App\Services\ReportesExcel\modelos\ExamenACuenta;
 class ReporteExcel
 {
     public static function crear($tipo)
@@ -98,6 +98,8 @@ class ReporteExcel
                 return new OrdenExamenResumen();
             case 'ordenExamenPrestacion':
                 return new OrdenExamenPrestacion();
+            case 'examenAcuenta':
+                return new ExamenACuenta();
             default:
                 return response()->json(['msg' => 'Tipo de reporte no válido'], 400);
         }
