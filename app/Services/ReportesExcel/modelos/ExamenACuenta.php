@@ -121,26 +121,7 @@ class ExamenACuenta implements ReporteInterface
             $fila++;
         }
 
-        $nuevaFila = $fila+1;
-        
-        $sheet->setCellValue('A'.$nuevaFila, 'TOTAL EXAMENES DEL PAGO: ');
-        $sheet->mergeCells('A'.$nuevaFila.':B'.$nuevaFila);
-        $sheet->getStyle('A'.$nuevaFila.':B'.$nuevaFila)->getFont()->setBold(true)->setSize(11);
-        $sheet->getRowDimension('8')->setRowHeight(30);
-        $sheet->getStyle('A'.$nuevaFila.':B'.$nuevaFila)->getFill()
-        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-        ->getStartColor()->setARGB('CCCCCCCC'); 
-
-        $listado = $this->totalReporte($examen->Id);
-        
-        $ultimasFilas = $nuevaFila + 1;
-        foreach($listado as $items){
-            $sheet->setCellValue('A'.$ultimasFilas, $items->Cantidad);
-            $sheet->setCellValue('B'.$ultimasFilas, $items->NombreExamen);
-            $ultimasFilas++;
-        }
-
-        $filaOcupados = $ultimasFilas;
+        $filaOcupados = $fila+1;
 
         $sheet->setCellValue('A'.$filaOcupados, 'TOTAL EXAMENES DISPONIBLES: ');
         $sheet->mergeCells('A'.$filaOcupados.':B'.$filaOcupados);
@@ -226,17 +207,6 @@ class ExamenACuenta implements ReporteInterface
     private function totalDisponibles(?int $id): int
     {
         return ExamenCuentaIt::where('IdPago', $id)->where('IdPrestacion', 0)->whereNot('Obs', 'provisorio')->count();
-    }
-
-    private function totalReporte(?int $id): mixed
-    {
-        return ExamenCuentaIt::join('examenes', 'examenes.Id', '=', 'pagosacuenta_it.IdExamen')
-        ->select(
-            DB::raw('COUNT(pagosacuenta_it.IdExamen) as Cantidad'), 
-            'examenes.Nombre as NombreExamen')
-        ->where('pagosacuenta_it.IdPago', $id)
-        ->orderBy('examenes.Nombre')
-        ->get();
     }
 
     private function examenesDisponibles(?int $id): mixed
