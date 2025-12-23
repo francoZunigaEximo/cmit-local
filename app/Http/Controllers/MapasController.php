@@ -193,6 +193,7 @@ class MapasController extends Controller
 
             $query->whereNotNull('mapas.Fecha')
                 ->where('mapas.Fecha', '<>', '0000-00-00')
+                ->whereNot('mapas.Id', 0)
                 ->orderByDesc('mapas.Id');
 
             return Datatables::of($query)->make(true);
