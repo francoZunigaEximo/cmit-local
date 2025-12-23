@@ -220,12 +220,12 @@ class ExamenACuenta implements ReporteInterface
 
     private function totalExamenes(?int $id): int
     {
-        return ExamenCuentaIt::where('IdPago', $id)->count();
+        return ExamenCuentaIt::where('IdPago', $id)->whereNot('Obs', 'provisorio')->count();
     }
 
     private function totalDisponibles(?int $id): int
     {
-        return ExamenCuentaIt::where('IdPago', $id)->where('IdPrestacion', 0)->count();
+        return ExamenCuentaIt::where('IdPago', $id)->where('IdPrestacion', 0)->whereNot('Obs', 'provisorio')->count();
     }
 
     private function totalReporte(?int $id): mixed
