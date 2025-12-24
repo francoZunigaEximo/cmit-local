@@ -60,7 +60,7 @@ use Illuminate\Support\Facades\DB;
         $pdf->SetFont('Arial','',7);
         
         foreach($listDisponibles as $item) {
-            $pdf->Cell(0,3,($item->Cantidad),0,0,'R');
+            $pdf->Cell(20, 3, $item->Cantidad, 0, 0, 'R');
             $pdf->Cell(0,3,utf8_decode($item->NombreExamen),0,0,'L');
             $pdf->Ln();
         }
