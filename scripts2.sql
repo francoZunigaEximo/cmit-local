@@ -18,6 +18,29 @@ ALTER TABLE clientes ADD Anexo INT DEFAULT 0 NULL;
 ALTER TABLE clientes ADD EMailAnexo varchar(100) NULL;
 ALTER TABLE clientes add Descuento INTEGER DEFAULT 0;
 
+DELIMITER //
+CREATE TRIGGER autocomplete_clientes
+BEFORE INSERT ON clientes
+FOR EACH ROW
+BEGIN
+    IF NEW.EMail IS NULL OR NEW.EMail = '' THEN
+        SET NEW.EMail = '';
+    END IF;
+
+	IF NEW.Telefono IS NULL OR NEW.Telefono = '' THEN
+        SET NEW.Telefono = '';
+    END IF;
+
+	IF NEW.ObsEMail IS NULL OR NEW.ObsEMail = '' THEN
+        SET NEW.ObsEMail = '';
+    END IF;
+
+	IF NEW.Direccion IS NULL OR NEW.Direccion = '' THEN
+        SET NEW.Direccion = '';
+    END IF;
+END //
+DELIMITER ;
+
 /*** FichaLaboral ***/
 ALTER TABLE fichaslaborales ADD COLUMN TipoPrestacion VARCHAR(12) NULL;
 ALTER TABLE fichaslaborales  ADD FechaPreocupacional DATE NULL;
@@ -44,10 +67,11 @@ ALTER TABLE telefonos ADD COLUMN IdCliente INT DEFAULT 0 NULL;
 /*** Profesionales Proveedor ***/
 ALTER TABLE profesionales_prov ADD Tipo VARCHAR(10) NULL; 
 
+/*** Pacientes ***/
 ALTER TABLE pacientes ADD COLUMN Estado INT DEFAULT 1;
 ALTER TABLE pacientes MODIFY COLUMN Foto VARCHAR(100) DEFAULT 'foto-default.png' NULL;
 
-/*** Pacientes ***/
+/*** Prestaciones ***/
 ALTER TABLE prestaciones ADD COLUMN Estado INT DEFAULT 1;
 ALTER TABLE prestaciones add NroFactProv VARCHAR(200) NULL;
 
@@ -80,6 +104,74 @@ ALTER TABLE datos DROP COLUMN EMail;
 ALTER TABLE datos ADD Telefono VARCHAR(12) NULL;
 /*HAY QUE INSERTAR LOS DATOS DEL USUARIO QUE FALTA MANUALMENTE */
 
+DELIMITER //
+CREATE TRIGGER autocomplete_datos
+BEFORE INSERT ON datos
+FOR EACH ROW
+BEGIN
+    -- Validación ObsEMail
+    IF NEW.ObsEMail IS NULL OR NEW.ObsEMail = '' THEN
+        SET NEW.ObsEMail = '';
+    END IF;
+
+    -- Validación Hijos (Asumiendo que es numérico, lo seteamos a 0)
+    IF NEW.Hijos IS NULL OR NEW.Hijos = '' THEN
+        SET NEW.Hijos = 0;
+    END IF;
+
+    -- Validación LugarNacimiento
+    IF NEW.LugarNacimiento IS NULL OR NEW.LugarNacimiento = '' THEN
+        SET NEW.LugarNacimiento = '';
+    END IF;
+
+    -- Validación EstadoCivil
+    IF NEW.EstadoCivil IS NULL OR NEW.EstadoCivil = '' THEN
+        SET NEW.EstadoCivil = '';
+    END IF;
+
+    -- Validación ObsEstadoCivil
+    IF NEW.ObsEstadoCivil IS NULL OR NEW.ObsEstadoCivil = '' THEN
+        SET NEW.ObsEstadoCivil = '';
+    END IF;
+
+    -- Validación Nacionalidad
+    IF NEW.Nacionalidad IS NULL OR NEW.Nacionalidad = '' THEN
+        SET NEW.Nacionalidad = '';
+    END IF;
+
+    -- Validación Sexo
+    IF NEW.Sexo IS NULL OR NEW.Sexo = '' THEN
+        SET NEW.Sexo = '';
+    END IF;
+
+END //
+DELIMITER ;
+
+CREATE TABLE `users` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `datos_id` int(11) DEFAULT NULL,
+  `email_verified_at` timestamp NULL DEFAULT NULL,
+  `password` varchar(255) NOT NULL,
+  `remember_token` varchar(100) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `profesional_id` int(11) DEFAULT 0,
+  `inactivo` int(11) DEFAULT 0,
+  `Anulado` int(11) DEFAULT 0,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `users_name_unique` (`name`),
+  UNIQUE KEY `users_email_unique` (`email`),
+  UNIQUE KEY `unique_name` (`name`),
+  KEY `idPersonal` (`datos_id`),
+  KEY `IdProfesional` (`profesional_id`),
+  KEY `idx_users_id` (`id`),
+  CONSTRAINT `users_ibfk_1` FOREIGN KEY (`datos_id`) REFERENCES `datos` (`Id`),
+  CONSTRAINT `users_ibfk_3` FOREIGN KEY (`profesional_id`) REFERENCES `profesionales` (`Id`)
+) ENGINE=InnoDB AUTO_INCREMENT=145 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
 /*** User ***/
 ALTER TABLE users DROP COLUMN `update`;
 ALTER TABLE users ADD COLUMN datos_id INT;
@@ -88,8 +180,160 @@ ALTER TABLE users CHANGE COLUMN idProfesional profesional_id INT;
 ALTER TABLE users ADD inactivo INT DEFAULT 0 NULL;
 ALTER TABLE users ADD Anulado INT DEFAULT 0 NULL;
 INSERT INTO users (name,email,datos_id,email_verified_at,password,remember_token,created_at,updated_at,profesional_id,inactivo,Anulado) VALUES
-	 ('nicolas','nmaximowicz@eximo.com.ar',{CAMBIAR POR EL ID DE DATOS},NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2024-05-20 01:44:18',230,0,0),
+	 ('nicolas','nmaximowicz@eximo.com.ar',55,NULL,'$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.',NULL,'2023-05-04 15:19:58','2024-05-20 01:44:18',230,0,0),
 	 ('lucas','lucas@cmit.com.ar',1,NULL,'$2y$10$5xxjrbNwlDFSu/Q.wAvCMeJ/URPDh57efpgaPTfflvk2fmM74CzHK',NULL,'2023-05-08 16:27:18','2024-05-20 01:34:23',0,0,0),
+
+INSERT INTO users (name, email, datos_id, password, profesional_id, inactivo, anulado) VALUES
+('abarbero', 'abarbero@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 248, 0, 0),
+('abernardino', 'abernardino@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 236, 0, 0),
+('abigailh', 'abigailh@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 212, 0, 0),
+('acarot', 'acarot@cmit.com', 44, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 0, 0, 0),
+('admin', 'admin@cmit.com', 1, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 0, 0, 0),
+('aestelrrig', 'aestelrrig@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 247, 0, 0),
+('agalvan', 'agalvan@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 139, 0, 0),
+('agimenez', 'agimenez@cmit.com', 54, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 0, 0, 0),
+('ailin437', 'ailin437@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 235, 0, 0),
+('ajaramillo', 'ajaramillo@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 245, 0, 0),
+('alagos', 'alagos@cmit.com', 42, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 0, 0, 0),
+('alillo', 'alillo@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 232, 0, 0),
+('arusso', 'arusso@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 175, 0, 0),
+('astridd', 'astridd@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 193, 0, 0),
+('astriddfichas', 'astriddfichas@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 201, 0, 0),
+('avargas', 'avargas@cmit.com', 50, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 0, 0, 0),
+('bcruz', 'bcruz@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 240, 0, 0),
+('bdiaduch', 'bdiaduch@cmit.com', 52, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 0, 0, 0),
+('belgrano', 'belgrano@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 169, 0, 0),
+('bjara', 'bjara@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 203, 0, 0),
+('candelagl', 'candelagl@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 199, 0, 0),
+('cantoninni', 'cantoninni@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 202, 0, 0),
+('caroca', 'caroca@cmit.com', 37, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 0, 0, 0),
+('caroquar', 'caroquar@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 57, 0, 0),
+('cchiara', 'cchiara@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 234, 0, 0),
+('cguevara', 'cguevara@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 185, 0, 0),
+('cintia', 'cintia@cmit.com', 7, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 0, 0, 0),
+('cmiguez', 'cmiguez@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 238, 0, 0),
+('cmit', 'cmit@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 26, 0, 0),
+('cmit1', 'cmit1@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 214, 0, 0),
+('conciencia', 'conciencia@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 168, 0, 0),
+('cortiz', 'cortiz@cmit.com', 53, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 0, 0, 0),
+('crear', 'crear@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 182, 0, 0),
+('crosa', 'crosa@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 190, 0, 0),
+('crossi', 'crossi@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 178, 0, 0),
+('dcampos', 'dcampos@cmit.com', 23, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 0, 0, 0),
+('dcamposcarnet', 'dcamposcarnet@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 162, 0, 0),
+('dcortes', 'dcortes@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 138, 0, 0),
+('dcortescarnet', 'dcortescarnet@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 176, 0, 0),
+('denisep', 'denisep@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 174, 0, 0),
+('dibarra', 'dibarra@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 192, 0, 0),
+('dino', 'dino@cmit.com', 34, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 0, 0, 0),
+('dinocarnet', 'dinocarnet@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 164, 0, 0),
+('dinoeeg', 'dinoeeg@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 160, 0, 0),
+('dkriger', 'dkriger@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 148, 0, 0),
+('dsasso', 'dsasso@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 140, 0, 0),
+('emilianob', 'emilianob@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 179, 0, 0),
+('eorejas', 'eorejas@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 221, 0, 0),
+('ergoma', 'ergoma@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 224, 0, 0),
+('fdelvalle', 'fdelvalle@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 207, 0, 0),
+('ffaris', 'ffaris@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 233, 0, 0),
+('fgomez', 'fgomez@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 217, 0, 0),
+('fmari', 'fmari@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 186, 0, 0),
+('fmassaro', 'fmassaro@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 158, 0, 0),
+('fmassaro2', 'fmassaro2@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 158, 0, 0),
+('fmauri', 'fmauri@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 239, 0, 0),
+('fmontiveros', 'fmontiveros@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 206, 0, 0),
+('fochoa', 'fochoa@cmit.com', 26, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 0, 0, 0),
+('fochoa2', 'fochoa2@cmit.com', 26, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 0, 0, 0),
+('fochoacarnet', 'fochoacarnet@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 177, 0, 0),
+('fronda', 'fronda@cmit.com', 39, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 0, 0, 0),
+('fsciammarella', 'fsciammarella@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 197, 0, 0),
+('gbante', 'gbante@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 171, 0, 0),
+('gbecerra', 'gbecerra@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 146, 0, 0),
+('gdubois', 'gdubois@cmit.com', 51, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 0, 0, 0),
+('gfranco', 'gfranco@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 80, 0, 0),
+('gfranco2', 'gfranco2@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 80, 0, 0),
+('ggomez', 'ggomez@cmit.com', 17, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 0, 0, 0),
+('gmarini', 'gmarini@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 188, 0, 0),
+('gmontiveros', 'gmontiveros@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 149, 0, 0),
+('gparada', 'gparada@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 218, 0, 0),
+('htorres', 'htorres@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 167, 0, 0),
+('icenteno', 'icenteno@cmit.com', 49, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 0, 0, 0),
+('imanuel', 'imanuel@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 231, 0, 0),
+('ipaccmit', 'ipaccmit@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 166, 0, 0),
+('isegovia', 'isegovia@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 151, 0, 0),
+('jmontesino', 'jmontesino@cmit.com', 30, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 0, 0, 0),
+('jmontesino2', 'jmontesino2@cmit.com', 30, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 0, 0, 0),
+('josiniri', 'josiniri@cmit.com', 43, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 0, 0, 0),
+('josiniri2', 'josiniri2@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 223, 0, 0),
+('josiniri3', 'josiniri3@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 229, 0, 0),
+('juan manuel', 'juanmanuel@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 47, 0, 0),
+('jurdiales', 'jurdiales@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 204, 0, 0),
+('katy', 'katy@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 184, 0, 0),
+('lalvarez', 'lalvarez@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 191, 0, 0),
+('lalvarez2', 'lalvarez2@cmit.com', 35, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 0, 0, 0),
+('lalvarezrx', 'lalvarezrx@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 191, 0, 0),
+('lantiqueo', 'lantiqueo@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 154, 0, 0),
+('liliana', 'liliana@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 48, 0, 0),
+('llamador', 'llamador@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 0, 0, 0),
+('llofeudo', 'llofeudo@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 156, 0, 0),
+('llopez', 'llopez@cmit.com', 14, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 0, 0, 0),
+('lmaero', 'lmaero@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 183, 0, 0),
+('lpinto', 'lpinto@cmit.com', 32, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 0, 0, 0),
+('lquezada', 'lquezada@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 153, 0, 0),
+('lsaavedra', 'lsaavedra@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 216, 0, 0),
+('lucas2', 'lucas2@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 161, 0, 0),
+('lucas3', 'lucas3@cmit.com', 33, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 0, 0, 0),
+('luis', 'luis@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 24, 0, 0),
+('mailend', 'mailend@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 155, 0, 0),
+('malmeira', 'malmeira@cmit.com', 25, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 0, 0, 0),
+('malmeira2', 'malmeira2@cmit.com', 25, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 0, 0, 0),
+('marguello', 'marguello@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 165, 0, 0),
+('martin', 'martin@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 60, 0, 0),
+('martin22', 'martin22@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 60, 0, 0),
+('mbustos', 'mbustos@cmit.com', 41, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 0, 0, 0),
+('mcogo', 'mcogo@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 200, 0, 0),
+('medicos', 'medicos@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 181, 0, 0),
+('mespinoza', 'mespinoza@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 131, 0, 0),
+('mgalera', 'mgalera@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 225, 0, 0),
+('mgutierrez', 'mgutierrez@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 29, 0, 0),
+('miguel', 'miguel@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 2, 0, 0),
+('miommi', 'miommi@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 157, 0, 0),
+('mkaty', 'mkaty@cmit.com', 36, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 0, 0, 0),
+('mmacedo', 'mmacedo@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 219, 0, 0),
+('mmoreno', 'mmoreno@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 194, 0, 0),
+('mmseres', 'mmseres@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 242, 0, 0),
+('mpbelli', 'mpbelli@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 210, 0, 0),
+('mporro', 'mporro@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 226, 0, 0),
+('mrosas', 'mrosas@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 142, 0, 0),
+('mteruel', 'mteruel@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 172, 0, 0),
+('mzapata', 'mzapata@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 228, 0, 0),
+('nmendoza', 'nmendoza@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 150, 0, 0),
+('nreyes', 'nreyes@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 249, 0, 0),
+('paola', 'paola@cmit.com', 3, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 0, 0, 0),
+('pcia', 'pcia@cmit.com', 48, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 0, 0, 0),
+('pcourtade', 'pcourtade@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 19, 0, 0),
+('pfrancese', 'pfrancese@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 65, 0, 0),
+('plopez', 'plopez@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 7, 0, 0),
+('pmorales', 'pmorales@cmit.com', 47, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 0, 0, 0),
+('porejas', 'porejas@cmit.com', 40, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 0, 0, 0),
+('psico', 'psico@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 123, 0, 0),
+('rbyrne', 'rbyrne@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 241, 0, 0),
+('rfalcone', 'rfalcone@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 196, 0, 0),
+('rmorales', 'rmorales@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 215, 0, 0),
+('rromano', 'rromano@cmit.com', 45, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 0, 0, 0),
+('rromano2', 'rromano2@cmit.com', 45, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 0, 0, 0),
+('rsifuentes', 'rsifuentes@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 243, 0, 0),
+('rvaca', 'rvaca@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 144, 0, 0),
+('rvaca2', 'rvaca2@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 220, 0, 0),
+('santoniazzi', 'santoniazzi@cmit.com', 15, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 0, 0, 0),
+('smarini', 'smarini@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 189, 0, 0),
+('tmaguire', 'tmaguire@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 205, 0, 0),
+('trcruzado', 'trcruzado@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 246, 0, 0),
+('varesco', 'varesco@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 159, 0, 0),
+('varesco1', 'varesco1@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 180, 0, 0),
+('vperea', 'vperea@cmit.com', 38, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 0, 0, 0),
+('wfigueroa', 'wfigueroa@cmit.com', 0, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 112, 0, 0),
+('ysanchez', 'ysanchez@cmit.com', 46, '$2y$10$gzHm1LAWcRT7Z1jpptQ25.JMLkxK64YEH/O3m/CqEzGXDq00dofW.', 0, 0, 0);
+
 
 /*** Roles ***/
 /*INCORPORAR LA TABLA A LA BASE DE DATOS*/
@@ -121,86 +365,86 @@ INSERT INTO roles(nombre, descripcion) VALUES
 CREATE TABLE permisos(
     Id INT NOT NULL AUTO_INCREMENT,
     slug VARCHAR(50) NOT NULL,
-    descripcion BLOB,
+    descripcion TEXT,
     PRIMARY KEY (Id),
     UNIQUE(Id)
 );
 
 /* Registros insert actualizados */
 INSERT INTO permisos (Id,slug,descripcion) VALUES
-	 (1,'clientes_add',0x4167726567617220636C69656E746573206E7565766F73),
-	 (2,'clientes_edit',0x65646974617220636C69656E746573),
-	 (3,'clientes_show',0x76697375616C697A6172206461746F732064656C20636C69656E7465),
-	 (5,'clientes_export',0x4578706F72746172207265706F7274657320656E2067656E6572616C),
-	 (6,'clientes_delete',0x456C696D696E617220756E20636C69656E7465),
-	 (7,'prestaciones_add',0x4167726567617220756E61206E75657661207072657374616369C3B36E),
-	 (8,'prestaciones_edit',0x45646974617220756E61207072657374616369C3B36E),
-	 (9,'prestaciones_show',0x56697375616C697A6172207072657374616369C3B36E),
-	 (10,'prestaciones_delete',0x456C696D696E61722070726573746163696F6E6573),
-	 (11,'prestaciones_block',0x416E756C61722070726573746163696F6E6573);
+	 (1,'clientes_add','Agregar clientes nuevos'),
+	 (2,'clientes_edit','editar clientes'),
+	 (3,'clientes_show','visualizar datos del cliente'),
+	 (5,'clientes_export','Exportar reportes en general'),
+	 (6,'clientes_delete','Eliminar un cliente'),
+	 (7,'prestaciones_add','Agregar una nueva prestación'),
+	 (8,'prestaciones_edit','Editar una prestación'),
+	 (9,'prestaciones_show','Visualizar prestación'),
+	 (10,'prestaciones_delete','Eliminar prestaciones'),
+	 (11,'prestaciones_block','Anular prestaciones');
 INSERT INTO permisos (Id,slug,descripcion) VALUES
-	 (12,'prestaciones_todo',0x5574696C697A616369C3B36E2064656C20626F74C3B36E20746F646F),
-	 (13,'prestaciones_eEnviar',0x5574696C697A616369C3B36E2064656C20626F74C3B36E2065456E76696172),
-	 (14,'etapas_show',0x56697375616C697A617220657461706173),
-	 (15,'etapas_apply',0x4574617061732061706C696361722C206365727261722C2061646A756E746172),
-	 (16,'etapas_informador',0x5365636369C3B36E20696E666F726D61646F72),
-	 (17,'etapas_efector',0x5365636369C3B36E2065666563746F72),
-	 (18,'etapas_eenviar',0x5365636369C3B36E2065456E76696172),
-	 (20,'mapas_edit',0x45646974617220756E206D617061),
-	 (23,'pacientes_add',0x416772656761722070616369656E7465),
-	 (24,'pacientes_edit',0x4564697461722070616369656E746573);
+	 (12,'prestaciones_todo','Utilización del botón todo'),
+	 (13,'prestaciones_eEnviar','Utilización del botón eEnviar'),
+	 (14,'etapas_show','Visualizar etapas'),
+	 (15,'etapas_apply','Etapas aplicar, cerrar, adjuntar'),
+	 (16,'etapas_informador','Sección informador'),
+	 (17,'etapas_efector','Sección efector'),
+	 (18,'etapas_eenviar','Sección eEnviar'),
+	 (20,'mapas_edit','Editar un mapa'),
+	 (23,'pacientes_add','Agregar paciente'),
+	 (24,'pacientes_edit','Editar pacientes');
 INSERT INTO permisos (Id,slug,descripcion) VALUES
-	 (25,'pacientes_delete',0x456C696D696E61722070616369656E746573),
-	 (26,'examenCta_add',0x41677265676172206578616D656E2061206375656E7461),
-	 (27,'examenCta_edit',0x456469746172206578616D656E2061206375656E7461),
-	 (28,'examenCta_delete',0x456C696D696E6172206578616D656E2061206375656E7461),
-	 (29,'boton_usuarios',0x41636365736F2061207573756172696F73),
-	 (30,'mapas_add',0x41677265676172206D61706173206E7565766F73),
-	 (31,'mapas_cerrar',0x43657272617220756E206D617061),
-	 (32,'mapas_finalizar',0x46696E616C697A617220756E206D617061),
-	 (33,'mapas_eenviar',0x65456E7669617220756E206D617061),
-	 (34,'stock_show',0x56697375616C697A61722073746F636B);
+	 (25,'pacientes_delete','Eliminar pacientes'),
+	 (26,'examenCta_add','Agregar examen a cuenta'),
+	 (27,'examenCta_edit','Editar examen a cuenta'),
+	 (28,'examenCta_delete','Eliminar examen a cuenta'),
+	 (29,'boton_usuarios','Acceso a usuarios'),
+	 (30,'mapas_add','Agregar mapas nuevos'),
+	 (31,'mapas_cerrar','Cerrar un mapa'),
+	 (32,'mapas_finalizar','Finalizar un mapa'),
+	 (33,'mapas_eenviar','eEnviar un mapa'),
+	 (34,'stock_show','Visualizar stock');
 INSERT INTO permisos (Id,slug,descripcion) VALUES
-	 (35,'stock_baja',0x6461722064652062616A612073746F636B),
-	 (36,'stock_add',0x416772656761722073746F636B),
-	 (37,'stock_parametros',0x506172616D6574726F732064652073746F636B),
-	 (38,'manual',0x4D6F64756C6F2064652073746F636B20636F6D706C65746F),
-	 (39,'boton_prestaciones',0x426F746F6E20736C696465722070726573746163696F6E6573),
-	 (40,'pacientes_show',0x56697375616C697A61722070616369656E746573),
-	 (41,'paciente_report',0x5265706F727465732070616369656E7465),
-	 (42,'mapas_show',0x56697375616C697A6172206D61706173),
-	 (43,'especialidades_show',0x56697375616C697A617220657370656369616C696461646573),
-	 (44,'especialidades_add',0x4167726567617220657370656369616C69646164);
+	 (35,'stock_baja','dar de baja stock'),
+	 (36,'stock_add','Agregar stock'),
+	 (37,'stock_parametros','Parametros de stock'),
+	 (38,'manual','Modulo de stock completo'),
+	 (39,'boton_prestaciones','Boton slider prestaciones'),
+	 (40,'pacientes_show','Visualizar pacientes'),
+	 (41,'paciente_report','Reportes paciente'),
+	 (42,'mapas_show','Visualizar mapas'),
+	 (43,'especialidades_show','Visualizar especialidades'),
+	 (44,'especialidades_add','Agregar especialidad');
 INSERT INTO permisos (Id,slug,descripcion) VALUES
-	 (45,'especialidades_edit',0x4D6F6469666963617220657370656369616C69646164),
-	 (46,'especialidades_delete',0x456C696D696E617220657370656369616C69646164),
-	 (47,'noticias_show',0x56697375616C697A6172206E6F746963696173),
-	 (48,'noticias_add',0x4372656172206E6F7469636961),
-	 (49,'noticias_edit',0x456469746172206E6F7469636961),
-	 (50,'noticias_delete',0x456C696D696E6172206E6F746963696173),
-	 (51,'examenCta_show',0x56697375616C697A6172206578616D656E65732061206375656E7461),
-	 (53,'mensajeria_edit',0x45646974617220792061637475616C697A617220636F7272656F73),
-	 (59,'prestaciones_report',0x496D7072657369C3B36E206465207265706F727465732064652070726573746163696F6E6573),
-	 (60,'facturacion_show',0x56697375616C697A616369C3B36E20646520666163747572616369C3B36E);
+	 (45,'especialidades_edit','Modificar especialidad'),
+	 (46,'especialidades_delete','Eliminar especialidad'),
+	 (47,'noticias_show','Visualizar noticias'),
+	 (48,'noticias_add','Crear noticia'),
+	 (49,'noticias_edit','Editar noticia'),
+	 (50,'noticias_delete','Eliminar noticias'),
+	 (51,'examenCta_show','Visualizar examenes a cuenta'),
+	 (53,'mensajeria_edit','Editar y actualizar correos'),
+	 (59,'prestaciones_report','Impresión de reportes de prestaciones'),
+	 (60,'facturacion_show','Visualización de facturación');
 INSERT INTO permisos (Id,slug,descripcion) VALUES
-	 (61,'facturacion_add',0x4167726567617220666163747572616369C3B36E),
-	 (62,'facturacion_edit',0x45646974617220666163747572616369C3B36E),
-	 (63,'facturacion_delete',0x456C696D696E617220666163747572616369C3B36E),
-	 (64,'mapas_delete',0x456C696D696E6172206D617061),
-	 (69,'mensajeria_show',0x56697375616C697A6172206D656E73616A6573206120656E76696172206120636C69656E746573),
-	 (70,'mensajeria_edit',0x45646963696F6E2079207265616C697A6163696F6E20646520656E76696F73),
-	 (71,'boton_todo',0x426F74C3B36E20544F444F20656E2070726573746163696F6E657320636F6E2066756E63696F6E616C696461646573206D756C7469706C6573),
-	 (72,'examenes_show',0x56697375616C697A6163696F6E206465206578616D656E6573),
-	 (73,'examenes_add',0x41677265676172206E7565766F73206578616D656E6573),
-	 (74,'examenes_edit',0x456469746172206578616D656E6573);
+	 (61,'facturacion_add','Agregar facturación'),
+	 (62,'facturacion_edit','Editar facturación'),
+	 (63,'facturacion_delete','Eliminar facturación'),
+	 (64,'mapas_delete','Eliminar mapa'),
+	 (69,'mensajeria_show','Visualizar mensajes a enviar a clientes'),
+	 (70,'mensajeria_edit','Edicion y realizacion de envios'),
+	 (71,'boton_todo','Botón TODO en prestaciones con funcionalidades multiples'),
+	 (72,'examenes_show','Visualizacion de examenes'),
+	 (73,'examenes_add','Agregar nuevos examenes'),
+	 (74,'examenes_edit','Editar examenes');
 INSERT INTO permisos (Id,slug,descripcion) VALUES
-	 (75,'examenes_delete',0x456C696D696E6172206578616D656E6573),
-	 (76,'datos_add',0x4372656163696F6E20792061637475616C697A6163696F6E206465206461746F732064656C207573756172696F),
-	 (77,'usuarios_show',0x56697375616C697A6172207573756172696F73),
-	 (78,'usuarios_add',0x4372656172206E7565766F207573756172696F),
-	 (79,'usuarios_edit',0x456469746172207573756172696F),
-	 (80,'usuarios_delete',0x456C696D696E6172207573756172696F),
-	 (81,'examenCta_report',0x5265706F727465206578616D656E2061206375656E7461);
+	 (75,'examenes_delete','Eliminar examenes'),
+	 (76,'datos_add','Creacion y actualizacion de datos del usuario'),
+	 (77,'usuarios_show','Visualizar usuarios'),
+	 (78,'usuarios_add','Crear nuevo usuario'),
+	 (79,'usuarios_edit','Editar usuario'),
+	 (80,'usuarios_delete','Eliminar usuario'),
+	 (81,'examenCta_report','Reporte examen a cuenta');
 
 /*** Rol de usuarios ***/
 CREATE TABLE `user_rol` (
@@ -530,8 +774,8 @@ INSERT INTO auditoriaacciones (Id, Nombre) VALUES
 ALTER TABLE auditoria MODIFY COLUMN IdUsuario varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL; 
 
 /*** Store Procedure ***/
-CREATE PROCEDURE getSearchA(IN fechaDesde DATE, IN fechaHasta DATE, IN prestacion INT, IN examen INT, IN paciente INT, 
-				IN estados VARCHAR, IN efector INT, IN especialidad INT, IN empresa INT)
+DELIMITER //
+CREATE PROCEDURE getSearchA(IN `fechaDesde` DATE, IN `fechaHasta` DATE, IN `prestacion` INT, IN `examen` INT, IN `paciente` INT, IN `estados` VARCHAR(50), IN `efector` INT, IN `especialidad` INT, IN `empresa` INT)
 BEGIN
 	SELECT i.Id as IdItem, i.Fecha as Fecha, i.CAdj as Estado, i.CInfo as Informado, i.IdProfesional as IdProfesional, pro.Nombre as Especialidad, pro.Id as IdEspecialidad, pre.Id as IdPrestacion, cli.RazonSocial as Empresa, pa.Apellido as pacApellido, pa.Nombre as pacNombre, pa.Documento as Documento, pa.Id as IdPaciente, ex.Nombre as Examen
 	FROM itemsprestaciones i
@@ -567,12 +811,15 @@ BEGIN
     AND i.Anulado = 0
     order by i.Id desc
     limit 5000;
-END
+END //
+DELIMITER ;
 
-CREATE PROCEDURE getSearchAdj(IN fechaDesde* DATE, IN fechaHasta* DATE, IN efector INT, IN especialidad INT, IN empresa INT, IN art INT)
+
+DELIMITER //
+CREATE PROCEDURE getSearchAdj(IN `fechaDesde` DATE, IN `fechaHasta` DATE, IN `efector` INT, IN `especialidad` INT, IN `empresa` INT, IN `art` INT)
 
 BEGIN
-    SELECT (CASE WHEN pro.Multi = 1 THEN "Multi Examen" ELSE exa.Nombre END) AS examen_nombre, i.Id AS IdItem, i.Fecha AS Fecha, i.CAdj AS Estado, pro.Nombre AS Especialidad, pro.Multi AS MultiEfector, pre.Id AS IdPrestacion, cli.RazonSocial AS Empresa, pa.Apellido AS pacApellido, pa.Nombre AS pacNombre, prof.Apellido AS proApellido, prof.Nombre AS proNombre, pa.Documento AS Documento, pa.Id AS IdPaciente, exa.Nombre AS Examen, exa.Id AS IdExamen
+       SELECT (CASE WHEN pro.Multi = 1 THEN "Multi Examen" ELSE exa.Nombre END) AS examen_nombre, i.Id AS IdItem, i.Fecha AS Fecha, i.CAdj AS Estado, pro.Nombre AS Especialidad, pro.Multi AS MultiEfector, pre.Id AS IdPrestacion, cli.RazonSocial AS Empresa, pa.Apellido AS pacApellido, pa.Nombre AS pacNombre, prof.Apellido AS proApellido, prof.Nombre AS proNombre, pa.Documento AS Documento, pa.Id AS IdPaciente, exa.Nombre AS Examen, exa.Id AS IdExamen
     FROM itemsprestaciones i
     INNER JOIN prestaciones pre ON i.IdPrestacion = pre.Id AND (pre.Anulado = 0)
 	INNER JOIN examenes exa ON i.IdExamen = exa.Id AND (exa.Adjunto = 1)
@@ -592,9 +839,12 @@ BEGIN
     GROUP BY (CASE WHEN pro.Multi = 1 THEN pre.Id ELSE i.Id END)
     order by i.Id desc
     limit 5000;
-END
+END //
+DELIMITER ;
 
-CREATE PROCEDURE getSearchInf(IN fechaDesde DATE, IN fechaHasta DATE, IN informador INT, IN especialidad INT, IN examen INT, IN prestacion INT, IN empresa INT, IN paciente INT)
+
+DELIMITER //
+CREATE PROCEDURE getSearchInf(IN `fechaDesde` DATE, IN `fechaHasta` DATE, IN `informador` INT, IN `especialidad` INT, IN `empresa` INT, IN `prestacion` INT, IN `paciente` INT, IN `examen` INT)
 
 BEGIN
     SELECT i.Id as IdItem, i.Fecha as Fecha, i.CAdj as Estado, i.CInfo as Informado, i.IdProfesional as IdProfesional, pro.Nombre as Especialidad, pro.Id as IdEspecialidad, pro.Multi as MultiEfector, pro.MultiE as MultiInformador, pre.Id as IdPrestacion, cli.RazonSocial as Empresa, CONCAT(pa.Apellido, ' ', pa.Nombre) as NombreCompleto, CONCAT(prof.Apellido, ' ', prof.Nombre) as NombreProfesional, pa.Documento as Documento, pa.Id as IdPaciente, exa.Nombre as Examen, exa.Id as IdExamen
@@ -615,9 +865,11 @@ BEGIN
     AND i.Anulado = 0
     order by i.Id desc
     limit 5000;
-END
+END //
+DELIMITER ;
 
-CREATE PROCEDURE getSearchInfA(IN fechaDesde DATE, IN fechaHasta DATE, IN informador INT, IN especialidad INT, IN examen INT, IN prestacion INT, IN empresa INT, IN paciente INT)
+DELIMITER //
+CREATE PROCEDURE getSearchInfA(IN `fechaDesde` DATE, IN `fechaHasta` DATE, IN `informador` INT, IN `especialidad` INT, IN `examen` INT, IN `prestacion` INT, IN `empresa` INT, IN `paciente` INT)
 
 BEGIN
     select i.Id as IdItem, i.Fecha as Fecha, i.CAdj as Estado, i.CInfo as Informado, i.IdProfesional as IdProfesional, pro.Nombre as Especialidad, pro.Id as IdEspecialidad, pro.Multi as MultiEfector, pro.MultiE as MultiInformador, pre.Id as IdPrestacion, cli.RazonSocial as Empresa, CONCAT(pa.Apellido, ' ', pa.Nombre) as NombreCompleto, CONCAT(prof.Apellido, ' ', prof.Nombre) as NombreProfesional, pa.Documento as Documento, pa.Id as IdPaciente, exa.Nombre as Examen, exa.Id as IdExamen 
@@ -641,8 +893,10 @@ BEGIN
     AND i.Anulado = 0
     order by i.Id desc 
     limit 5000;
-END
+END //
+DELIMITER ;
 
+DELIMITER //
 CREATE PROCEDURE getSearchInfAdj(IN fechaDesde DATE, IN fechaHasta DATE, IN informador INT, IN especialidad INT, IN art INT, IN empresa INT)
 BEGIN
     SELECT (CASE WHEN pro.MultiE = 1 THEN "Multi Examen" ELSE exa.Nombre END) AS examen_nombre, i.Id AS IdItem, i.Fecha AS Fecha, i.CAdj AS Estado, pro.Nombre AS Especialidad, pro.MultiE AS MultiInformador, pre.Id AS IdPrestacion, cli.RazonSocial AS Empresa, pa.Apellido AS pacApellido, pa.Nombre AS pacNombre, prof.Apellido AS proApellido, prof.Nombre AS proNombre, pa.Documento AS Documento, pa.Id AS IdPaciente, exa.Nombre AS Examen, exa.Id AS IdExamen, pre.Cerrado AS prestacionCerrado, pre.Id
@@ -668,9 +922,12 @@ BEGIN
         END
     ORDER BY i.Id DESC 
     LIMIT 5000;
-END
+END //
+DELIMITER ;
 
-CREATE PROCEDURE getSearchPrestacion(IN fechaDesde DATE, IN fechaHasta DATE, IN estadoPres VARCHAR, IN estadoEfector VARCHAR, IN estadoInformador VARCHAR, IN efector INT, IN informador INT, IN tipoProv VARCHAR, IN adjunto VARCHAR, IN examen INT, IN pendiente INT, IN vencido INT, IN especialidad INT, IN ausente VARCHAR, IN adjuntoEfector INT)
+
+DELIMITER //
+CREATE PROCEDURE `getSearchPrestacion`(IN `fechaDesde` DATE, IN `fechaHasta` DATE, IN `estadoPres` VARCHAR(100), IN `estadoEfector` VARCHAR(100), IN `estadoInformador` VARCHAR(100), IN `efector` INT, IN `informador` INT, IN `tipoProv` VARCHAR(100), IN `adjunto` VARCHAR(200), IN `examen` INT, IN `pendiente` INT, IN `vencido` INT, IN `especialidad` INT, IN `ausente` VARCHAR(100), IN `adjuntoEfector` INT)
 BEGIN
     SELECT 
         i.Id AS IdItem, 
@@ -818,13 +1075,11 @@ BEGIN
     GROUP BY(i.Id)
     ORDER BY i.Id DESC 
     LIMIT 5000;
-END 
+END //
+DELIMITER ;
 
-END
-
-
-CREATE PROCEDURE getSearchEEnviar(IN fechaDesde DATE, IN fechaHasta DATE, IN empresa INT, IN paciente INT, IN completo VARCHAR, IN abierto VARCHAR, IN cerrado VARCHAR, IN eenviar VARCHAR, IN impago VARCHAR)
-
+DELIMITER //
+CREATE PROCEDURE `getSearchEEnviar`(IN `fechaDesde` DATE, IN `fechaHasta` DATE, IN `empresa` INT, IN `paciente` INT, IN `completo` VARCHAR(25), IN `abierto` VARCHAR(25), IN `cerrado` VARCHAR(25), IN `eenviar` VARCHAR(25) , IN `impago` VARCHAR(25))
 BEGIN
     SELECT 
         pre.Fecha AS Fecha,
@@ -891,19 +1146,21 @@ BEGIN
         pre.Fecha DESC,
         cli.RazonSocial DESC
     LIMIT 1000;
-END
+END //
+DELIMITER ;
 
 
 /*********** Cambio en Informador de columna Informador *******************/
-(CASE
-	        WHEN i.CInfo = 0 THEN ''
-            WHEN i.CInfo = 1 THEN 'Pendiente' 
-            WHEN i.CInfo = 2 THEN 'Borrador' 
-            WHEN i.CInfo = 3 THEN 'Cerrado' 
-            ELSE '-' 
-        END) AS EstadoInformador
+-- (CASE
+-- 	        WHEN i.CInfo = 0 THEN ''
+--             WHEN i.CInfo = 1 THEN 'Pendiente' 
+--             WHEN i.CInfo = 2 THEN 'Borrador' 
+--             WHEN i.CInfo = 3 THEN 'Cerrado' 
+--             ELSE '-' 
+--         END) AS EstadoInformador
 
-ALTER TABLE profesionales_prov MODIFY COLUMN IdRol VARCHAR(10) DEFAULT '0' NULL;
+-- ALTER TABLE profesionales_prov MODIFY COLUMN IdRol VARCHAR(10) DEFAULT '0' NULL;
+ALTER TABLE profesionales_prov ADD COLUMN IdRol VARCHAR(20) DEFAULT '' NULL;
 #Aplicar a PreProduccion
 
 CREATE TABLE aliasExamenes(
@@ -983,22 +1240,19 @@ ALTER TABLE llamador ADD CONSTRAINT FK_EspecialidadLlamador FOREIGN KEY (especia
 
 DROP PROCEDURE IF EXISTS getExamenesPaquete;
 
-DELIMITER $$
-$$
-CREATE DEFINER=`db_cmit`@`%` PROCEDURE `db_cmit`.`getExamenesPaquete`(IN `IdPaquete` INT)
+DELIMITER //
+CREATE PROCEDURE `getExamenesPaquete`(IN `IdPaquete` INT)
 BEGIN
 	SELECT e.Id, e.Nombre FROM relpaqest r
 	INNER JOIN examenes e ON r.IdExamen = e.Id 
 	WHERE r.IdPaquete = IdPaquete;
-END
-$$
+END //
 DELIMITER ;
 
-DROP PROCEDURE IF EXISTS db_cmit.getListaExCta;
+DROP PROCEDURE IF EXISTS getListaExCta;
 
-DELIMITER $$
-$$
-CREATE DEFINER=`db_cmit`@`%` PROCEDURE `db_cmit`.`getListaExCta`(IN `IdCliente` INT)
+DELIMITER //
+CREATE PROCEDURE `getListaExCta`(IN `IdCliente` INT)
 BEGIN
 SELECT 
     COUNT(e.Nombre) AS CantidadExamenes,
@@ -1031,7 +1285,8 @@ SELECT
 	ORDER BY 
 	    pi2.IdPrestacion,
 	    pi2.Precarga ASC;
-END
+END //
+DELIMITER ;
 
 INSERT INTO rol_permisos (rol_id,permiso_id) VALUES(13,81); -- Permiso a administrador para imprimir Saldos y Detalles
 
@@ -1244,7 +1499,6 @@ ALTER TABLE prestaciones ADD CONSTRAINT fk_prestacion_datos_facturacion FOREIGN 
 ALTER TABLE fichaslaborales ADD CONSTRAINT fk_fichalaboral_datos_facturacion FOREIGN KEY(datos_facturacion_id) REFERENCES fichaprestacion_factura(id);
 
 DELIMITER //
-
 CREATE TRIGGER autocomplete_fichaslaborales
 BEFORE INSERT ON fichaslaborales
 FOR EACH ROW
@@ -1266,14 +1520,10 @@ BEGIN
     END IF;
 END;
 //
-
 DELIMITER ;
 
-ALTER TABLE facturasdeventa ADD CONSTRAINT fk_facturadeventa_prestacion FOREIGN KEY(IdPrestacion) REFERENCES prestaciones(Id);
+ALTER TABLE facturasventa ADD CONSTRAINT fk_facturadeventa_prestacion FOREIGN KEY(IdPrestacion) REFERENCES prestaciones(Id);
 ALTER TABLE fichaprestacion_factura MODIFY COLUMN NroFactProv TEXT DEFAULT NULL NULL;
-
-
-
 
 ALTER TABLE reportes ADD COLUMN VistaPrevia VARCHAR(200) DEFAULT NULL;
 
@@ -1298,16 +1548,15 @@ ALTER TABLE paqfacturacion ADD COLUMN Baja BIT DEFAULT 0;
 ALTER TABLE relpaqfact ADD COLUMN Baja BIT DEFAULT 0;
 
 
-DROP PROCEDURE IF EXISTS db_cmit.getExamenesPaqueteFac;
+DROP PROCEDURE IF EXISTS getExamenesPaqueteFac;
 
-DELIMITER $$
-$$
-CREATE PROCEDURE db_cmit.getExamenesPaqueteFac()
+DELIMITER //
+CREATE PROCEDURE getExamenesPaqueteFac()
 BEGIN
 	SELECT e.Id FROM relpaqfact r
 	INNER JOIN examenes e ON r.IdExamen = e.Id 
 	WHERE r.IdPaquete = IdPaquete AND r.Baja = 0;
-END$$
+END //
 DELIMITER ;
 
 ALTER TABLE clientesgrupos_it DROP INDEX IdCliente_2;
@@ -1323,7 +1572,8 @@ ALTER TABLE itemsprestaciones MODIFY COLUMN IdProfesional2 INT NOT NULL DEFAULT 
 --     END IF;
 -- END
 
-CREATE PROCEDURE getExamenes(IN id_prestacion INT, IN tipo VARCHAR(10))
+DELIMITER //
+CREATE PROCEDURE getExamenes(IN `id_prestacion` INT, IN `tipo` VARCHAR(10))
 BEGIN
 	SELECT 
 	    examenes.Nombre AS Nombre,
@@ -1332,10 +1582,10 @@ BEGIN
 	    examenes.Informe AS Informe,
 	    informador.InfAdj AS InfAdj,
 	    examenes.NoImprime AS ExaNI,
-	    CONCAT(efector.Apellido,' ', efector.Nombre) AS EfectorFullName,
-	    CONCAT(informador.Apellido,' ', informador.Nombre) AS InformadorFullName,
-	    CONCAT(datosEfector.Apellido,' ', datosEfector.Nombre) AS DatosEfectorFullName,
-	    CONCAT(datosInformador.Apellido,' ', datosInformador.Nombre) AS DatosInformadorFullName,
+	    CONCAT(efector.Apellido, ' ', efector.Nombre) AS EfectorFullName,
+	    CONCAT(informador.Apellido, ' ', informador.Nombre) AS InformadorFullName,
+	    CONCAT(datosEfector.Apellido, ' ', datosEfector.Nombre) AS DatosEfectorFullName,
+	    CONCAT(datosInformador.Apellido, ' ', datosInformador.Nombre) AS DatosInformadorFullName,
 	    efector.Apellido AS EfectorApellido,
 	    informador.Apellido AS InformadorApellido,
 	    datosEfector.Apellido AS DatosEfectorApellido,
@@ -1355,7 +1605,8 @@ BEGIN
 	    efector.Id AS IdEfector,
 	    informador.Id AS IdInformador,
 	    userEfector.id AS IdUserEfector,
-	    userInformador.id AS IdUserInformador
+	    userInformador.id AS IdUserInformador,
+	    notascredito_it.IdNC as IdNotaCredito
 	FROM itemsprestaciones
 	LEFT JOIN profesionales AS efector ON itemsprestaciones.IdProfesional = efector.Id
 	LEFT JOIN users AS userEfector ON efector.Id = userEfector.profesional_id
@@ -1363,12 +1614,14 @@ BEGIN
 	LEFT JOIN profesionales AS informador ON itemsprestaciones.IdProfesional2 = informador.Id
 	LEFT JOIN users AS userInformador ON informador.Id = userInformador.profesional_id
 	LEFT JOIN datos AS datosInformador ON userInformador.datos_id = datosInformador.Id
+	LEFT JOIN notascredito_it ON notascredito_it.IdIP = itemsprestaciones.Id AND notascredito_it.Baja = 0
 	JOIN examenes ON itemsprestaciones.IdExamen = examenes.Id
 	JOIN proveedores AS proveedor2 ON examenes.IdProveedor = proveedor2.Id
 	JOIN prestaciones ON itemsprestaciones.IdPrestacion = prestaciones.Id
 	LEFT JOIN archivosefector ON itemsprestaciones.Id = archivosefector.IdEntidad
 	LEFT JOIN archivosinformador ON itemsprestaciones.Id = archivosinformador.IdEntidad
 	WHERE 1=1
+	-- Filtro condicional
 	AND (
 	    (tipo != 'listado') OR 
 	    (tipo = 'listado' AND itemsprestaciones.IdPrestacion = id_prestacion)
@@ -1378,7 +1631,8 @@ BEGIN
 	    efector.IdProveedor ASC,
 	    examenes.Nombre ASC,
 	    itemsprestaciones.Fecha ASC;
-END
+END //
+DELIMITER ;
 
 ALTER TABLE itemsfacturacompra DROP FOREIGN KEY itemsfacturacompra_ibfk_2; --IdItemPrestacion
 ALTER TABLE itemsfacturacompra2 DROP FOREIGN KEY itemsfacturacompra2_ibfk_2; --IdItemPrestacion
@@ -13562,10 +13816,10 @@ INSERT INTO localidades (Id, Nombre, CP, IdPcia) VALUES
 (12221, 'USHUAIA', 9410, 34);
 
 CREATE TABLE Paises (
-Id int(11) NOT NULL AUTO_INCREMENT,
-iso char(2) DEFAULT NULL,
-nombre varchar(80) DEFAULT NULL,
-PRIMARY KEY (Id)
+	Id int(11) NOT NULL AUTO_INCREMENT,
+	iso char(2) DEFAULT NULL,
+	nombre varchar(80) DEFAULT NULL,
+	PRIMARY KEY (Id)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;
 
 INSERT INTO Paises VALUES
@@ -14022,9 +14276,8 @@ DELIMITER ;
 
 DROP PROCEDURE IF EXISTS db_cmit.getExamenesEfectorFacturar;
 
-DELIMITER $$
-$$
-CREATE DEFINER=`db_cmit`@`%` PROCEDURE `db_cmit`.`getExamenesEfectorFacturar`(IN idProfesional INT, IN fechaDesde DATE, In fechaHasta DATE)
+DELIMITER //
+CREATE PROCEDURE `getExamenesEfectorFacturar`(IN idProfesional INT, IN fechaDesde DATE, In fechaHasta DATE)
 BEGIN
 	Select  
 		i.Id,

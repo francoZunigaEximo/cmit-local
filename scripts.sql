@@ -483,6 +483,8 @@ ALTER TABLE prestaciones_obsfases DROP FOREIGN KEY prestaciones_obsfases_ibfk_2;
 SET foreign_key_checks = 0;
 ALTER TABLE prestaciones_obsfases CHANGE IdUsuario IdUsuario CHAR(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;
 ALTER TABLE prestaciones_obsfases ADD FOREIGN KEY(IdUsuario) REFERENCES users(name);
+
+
 CREATE TABLE IF NOT EXISTS tipos_obsfases (
     Id INT AUTO_INCREMENT NOT NULL,
     nombre VARCHAR(100) NOT NULL,
@@ -529,6 +531,7 @@ CREATE INDEX examenes_Nombre_IDX USING BTREE ON examenes (Nombre);
 ALTER TABLE pagosacuenta_it ADD Precarga INT(9) DEFAULT 0 NULL;
 
 
+DELIMITER //
 CREATE PROCEDURE getSearchA(IN fechaDesde DATE, IN fechaHasta DATE, IN prestacion INT, IN examen INT, IN paciente INT, 
 				IN estados VARCHAR, IN efector INT, IN especialidad INT, IN empresa INT)
 BEGIN
@@ -566,10 +569,11 @@ BEGIN
     AND i.Anulado = 0
     order by i.Id desc
     limit 5000;
-END
+END //
+DELIMITER ;
 
+DELIMITER //
 CREATE PROCEDURE getSearchAdj(IN fechaDesde* DATE, IN fechaHasta* DATE, IN efector INT, IN especialidad INT, IN empresa INT, IN art INT)
-
 BEGIN
     SELECT (CASE WHEN pro.Multi = 1 THEN "Multi Examen" ELSE exa.Nombre END) AS examen_nombre, i.Id AS IdItem, i.Fecha AS Fecha, i.CAdj AS Estado, pro.Nombre AS Especialidad, pro.Multi AS MultiEfector, pre.Id AS IdPrestacion, cli.RazonSocial AS Empresa, pa.Apellido AS pacApellido, pa.Nombre AS pacNombre, prof.Apellido AS proApellido, prof.Nombre AS proNombre, pa.Documento AS Documento, pa.Id AS IdPaciente, exa.Nombre AS Examen, exa.Id AS IdExamen
     FROM itemsprestaciones i
@@ -591,10 +595,12 @@ BEGIN
     GROUP BY (CASE WHEN pro.Multi = 1 THEN pre.Id ELSE i.Id END)
     order by i.Id desc
     limit 5000;
-END
+END //
+DELIMITER ;
 
+
+DELIMITER //
 CREATE PROCEDURE getSearchInf(IN fechaDesde DATE, IN fechaHasta DATE, IN informador INT, IN especialidad INT, IN examen INT, IN prestacion INT, IN empresa INT, IN paciente INT)
-
 BEGIN
     SELECT i.Id as IdItem, i.Fecha as Fecha, i.CAdj as Estado, i.CInfo as Informado, i.IdProfesional as IdProfesional, pro.Nombre as Especialidad, pro.Id as IdEspecialidad, pro.Multi as MultiEfector, pro.MultiE as MultiInformador, pre.Id as IdPrestacion, cli.RazonSocial as Empresa, CONCAT(pa.Apellido, ' ', pa.Nombre) as NombreCompleto, CONCAT(prof.Apellido, ' ', prof.Nombre) as NombreProfesional, pa.Documento as Documento, pa.Id as IdPaciente, exa.Nombre as Examen, exa.Id as IdExamen
     from itemsprestaciones i 
@@ -614,10 +620,11 @@ BEGIN
     AND i.Anulado = 0
     order by i.Id desc
     limit 5000;
-END
+END //
+DELIMITER ;
 
+DELIMITER //
 CREATE PROCEDURE getSearchInfA(IN fechaDesde DATE, IN fechaHasta DATE, IN informador INT, IN especialidad INT, IN examen INT, IN prestacion INT, IN empresa INT, IN paciente INT)
-
 BEGIN
     select i.Id as IdItem, i.Fecha as Fecha, i.CAdj as Estado, i.CInfo as Informado, i.IdProfesional as IdProfesional, pro.Nombre as Especialidad, pro.Id as IdEspecialidad, pro.Multi as MultiEfector, pro.MultiE as MultiInformador, pre.Id as IdPrestacion, cli.RazonSocial as Empresa, CONCAT(pa.Apellido, ' ', pa.Nombre) as NombreCompleto, CONCAT(prof.Apellido, ' ', prof.Nombre) as NombreProfesional, pa.Documento as Documento, pa.Id as IdPaciente, exa.Nombre as Examen, exa.Id as IdExamen 
     from itemsprestaciones i
@@ -640,8 +647,10 @@ BEGIN
     AND i.Anulado = 0
     order by i.Id desc 
     limit 5000;
-END
+END //
+DELIMITER ;
 
+DELIMITER //
 CREATE PROCEDURE getSearchInfAdj(IN fechaDesde DATE, IN fechaHasta DATE, IN informador INT, IN especialidad INT, IN art INT, IN empresa INT)
 BEGIN
     SELECT (CASE WHEN pro.MultiE = 1 THEN "Multi Examen" ELSE exa.Nombre END) AS examen_nombre, i.Id AS IdItem, i.Fecha AS Fecha, i.CAdj AS Estado, pro.Nombre AS Especialidad, pro.MultiE AS MultiInformador, pre.Id AS IdPrestacion, cli.RazonSocial AS Empresa, pa.Apellido AS pacApellido, pa.Nombre AS pacNombre, prof.Apellido AS proApellido, prof.Nombre AS proNombre, pa.Documento AS Documento, pa.Id AS IdPaciente, exa.Nombre AS Examen, exa.Id AS IdExamen, pre.Cerrado AS prestacionCerrado, pre.Id
@@ -667,7 +676,8 @@ BEGIN
         END
     ORDER BY i.Id DESC 
     LIMIT 5000;
-END
+END //
+DELIMITER ;
 
 CREATE PROCEDURE getSearchPrestacion(IN fechaDesde DATE, IN fechaHasta DATE, IN estadoPres VARCHAR, IN estadoEfector VARCHAR, IN estadoInformador VARCHAR, IN efector INT, IN informador INT, IN tipoProv VARCHAR, IN adjunto VARCHAR, IN examen INT, IN pendiente INT, IN vencido INT, IN especialidad INT, IN ausente VARCHAR, IN adjuntoEfector INT)
 

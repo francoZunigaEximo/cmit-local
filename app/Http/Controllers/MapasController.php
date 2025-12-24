@@ -102,136 +102,104 @@ class MapasController extends Controller
         $Ver = $request->Ver;
 
         if ($request->ajax()) {
-
-            $query = Mapa::leftJoin('prestaciones', 'mapas.Id', '=', 'prestaciones.IdMapa')
-                ->leftJoin('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-                ->join('clientes', function($join) use ($Art){
-                    $join->on('mapas.IdART', '=', 'clientes.Id');
-                    $join->when(!empty($Art), function ($join) use ($Art) {
-                        $join->where('clientes.Id', $Art);
-                    }); 
-                })
-                ->join('clientes AS clientes2', function($join) use ($Empresa){
-                    $join->on('mapas.IdEmpresa', '=', 'clientes2.Id');
-                    $join->when(!empty($Empresa), function ($join) use ($Empresa) {
-                        $join->where('clientes2.Id', $Empresa);
-                    }); 
-                })
+        
+            $query = Mapa::query()
+                ->leftJoin('prestaciones', 'mapas.Id', '=', 'prestaciones.IdMapa')
+                ->join('clientes as art', 'mapas.IdART', '=', 'art.Id')
+                ->join('clientes as empresa', 'mapas.IdEmpresa', '=', 'empresa.Id')
                 ->select(
-                    'mapas.Id AS Id',
-                    'mapas.Nro AS Nro',
-                    'mapas.Fecha AS Fecha',
-                    'mapas.FechaE AS FechaE',
-                    'mapas.Cmapeados AS Cmapeados',
+                    'mapas.Id',
+                    'mapas.Nro',
+                    'mapas.Fecha',
+                    'mapas.FechaE',
+                    'mapas.Cmapeados',
                     'mapas.Cpacientes AS contadorPacientes',
-                    'clientes.RazonSocial AS Art',
-                    'clientes.ParaEmpresa AS ParaEmpresa_Art',
-                    'clientes.NombreFantasia AS NombreFantasia_Art',
-                    'clientes2.RazonSocial AS Empresa',
-                    'clientes2.ParaEmpresa AS ParaEmpresa_Empresa',
-                    'clientes2.ParaEmpresa AS NombreFantasia_Empresa',
-                    'prestaciones.eEnviado AS eEnviado',
-                    'prestaciones.Cerrado AS Cerrado',
-                    'prestaciones.Entregado AS Entregado',
-                    'prestaciones.Finalizado AS Finalizado',
-                    'prestaciones.IdPaciente AS IdPaciente',
-                    'prestaciones.Id AS IdPrestacion'
-                )
-                ->selectRaw('COALESCE((SELECT COUNT(*) FROM prestaciones WHERE IdMapa = mapas.Id AND prestaciones.Anulado = 0), 0) AS contadorPrestaciones')
-                ->selectRaw("COALESCE((SELECT COUNT(*) FROM prestaciones WHERE IdMapa = mapas.Id AND prestaciones.Anulado = 1), 0) AS cdorPacientesAnulados")
-                ->selectRaw("COALESCE((SELECT COUNT(*) FROM prestaciones WHERE IdMapa = mapas.Id AND eEnviado = 1), 0) AS cdorEEnviados")
-                ->selectRaw("COALESCE((SELECT COUNT(*) FROM prestaciones WHERE IdMapa = mapas.Id AND Finalizado = 1), 0) AS cdorFinalizados")
-                ->selectRaw("COALESCE((SELECT COUNT(*) FROM prestaciones WHERE IdMapa = mapas.Id AND Cerrado = 1), 0) AS cdorCerrados")
-                ->selectRaw("COALESCE((SELECT COUNT(*) FROM prestaciones WHERE IdMapa = mapas.Id AND Entregado = 1), 0) AS cdorEntregados");
+                    'art.RazonSocial as Art',
+                    'empresa.RazonSocial as Empresa',
+                    DB::raw("SUM(CASE WHEN prestaciones.Anulado = 0 THEN 1 ELSE 0 END) as contadorPrestaciones"),
+                    DB::raw("SUM(CASE WHEN prestaciones.Anulado = 1 THEN 1 ELSE 0 END) as cdorPacientesAnulados"),
+                    DB::raw("SUM(CASE WHEN prestaciones.eEnviado = 1 THEN 1 ELSE 0 END) as cdorEEnviados"),
+                    DB::raw("SUM(CASE WHEN prestaciones.Finalizado = 1 THEN 1 ELSE 0 END) as cdorFinalizados"),
+                    DB::raw("SUM(CASE WHEN prestaciones.Cerrado = 1 THEN 1 ELSE 0 END) as cdorCerrados"),
+                    DB::raw("SUM(CASE WHEN prestaciones.Entregado = 1 THEN 1 ELSE 0 END) as cdorEntregados")
+                );
 
-            $query->when(!empty($Nro), function ($query) use ($Nro) {
+            $query->groupBy('mapas.Id', 'mapas.Nro', 'mapas.Fecha', 'mapas.FechaE', 'mapas.Cmapeados', 'mapas.Cpacientes', 'art.RazonSocial', 'empresa.RazonSocial');
+
+            if (!empty($Art)) {
+                $query->where('art.Id', $Art);
+            }
+            if (!empty($Empresa)) {
+                $query->where('empresa.Id', $Empresa);
+            }
+            if (!empty($Nro)) {
                 $query->where('mapas.Nro', $Nro);
-            });
+            }
 
-            //Terminado
-            $query->when(!empty($Estado) && $Estado === 'terminado', function ($query) {
-                $query->havingRaw('contadorPrestaciones > 0 AND contadorPrestaciones = cdorCerrados AND contadorPrestaciones = cdorFinalizados AND contadorPrestaciones = cdorEntregados');
-            });
+            if (!empty($Estado)) {
+                switch ($Estado) {
+                    case 'terminado':
+                        $query->havingRaw('contadorPrestaciones > 0')
+                            ->havingRaw('contadorPrestaciones = cdorCerrados')
+                            ->havingRaw('contadorPrestaciones = cdorFinalizados')
+                            ->havingRaw('contadorPrestaciones = cdorEntregados');
+                        break;
+                    case 'abierto':
+                        $query->havingRaw('contadorPrestaciones > 0 AND cdorCerrados = 0 AND cdorEEnviados = 0 AND cdorEntregados = 0');
+                        break;
+                    case 'eEnviado':
+                        $query->havingRaw('contadorPrestaciones > 0')
+                            ->havingRaw('(contadorPrestaciones = cdorEEnviados OR (cdorEEnviados = 1 AND contadorPrestaciones <> cdorEEnviados))')
+                            ->havingRaw('contadorPrestaciones = cdorCerrados')
+                            ->havingRaw('contadorPrestaciones = cdorFinalizados')
+                            ->havingRaw('contadorPrestaciones = cdorEntregados');
+                        break;
+                    case 'cerrado':
+                        $query->havingRaw('contadorPrestaciones > 0 AND contadorPrestaciones = cdorCerrados AND cdorFinalizados = 0 AND cdorEEnviados = 0 AND cdorEntregados = 0');
+                        break;
+                    case 'enProceso':
+                        $query->havingRaw('contadorPrestaciones > 0 AND cdorFinalizados = 0 AND cdorCerrados = 0 AND cdorEEnviados = 0 AND cdorEntregados = 0');
+                        break;
+                    case 'vacio':
+                        $query->havingRaw('contadorPrestaciones = 0');
+                        break;
+                    case 'todos':
+                        $query->addSelect(DB::raw("'Todos' as estado_label"));
+                        break;
+                }
+            }
 
-            //Abierto
-            $query->when(!empty($Estado) && $Estado === 'abierto', function ($query) {
-                $query->havingRaw('contadorPrestaciones > 0 && cdorCerrados = 0 && cdorEEnviados = 0 && cdorEntregados = 0');
-            });
-
-            //eEnviado
-            $query->when(!empty($Estado) && $Estado === 'eEnviado', function ($query) {
-                $query->havingRaw('contadorPrestaciones > 0 AND contadorPrestaciones = cdorEEnviados OR (cdorEEnviados = 1 AND contadorPrestaciones <> cdorEEnviados) AND contadorPrestaciones = cdorCerrados AND contadorPrestaciones = cdorFinalizados AND contadorPrestaciones = cdorEntregados');
-            });
-
-            //Cerrado
-            $query->when(!empty($Estado) && $Estado === 'cerrado', function ($query) {
-                $query->havingRaw('contadorPrestaciones > 0 AND contadorPrestaciones = cdorCerrados AND cdorFinalizados = 0 AND cdorEEnviados = 0 AND cdorEntregados = 0');
-            });
-
-            //enProceso
-            $query->when(!empty($Estado) && $Estado === 'enProceso', function ($query) {
-                $query->havingRaw('contadorPrestaciones > 0 AND cdorFinalizados = 0 AND cdorCerrados = 0 AND cdorEEnviados = 0 AND cdorEntregados = 0');
-                $query->where(function ($query) {
-                    $query->having('cdorCerrados', 0)
-                        ->orWhere(function ($query) {
-                            $query->havingRaw('contadorPrestaciones = cdorCerrados');
-                        });
-                });
-            });
-
-            //Todos
-            $query->when(empty($Estado) && $Estado === 'todos', function ($query) {
-                $query->addSelect(DB::raw("'Todos' as estado"));
-            });
-
-            //Vacio
-            $query->when(!empty($Estado) && $Estado === 'vacio', function ($query) {
-                $query->having('contadorPrestaciones', 0);
-            });
-
-            $query->when(!empty($corteDesde) && ! empty($corteHasta), function ($query) use ($corteDesde, $corteHasta) {
+            if (!empty($corteDesde) && !empty($corteHasta)) {
                 $query->whereBetween('mapas.Fecha', [$corteDesde, $corteHasta]);
-            });
-
-            $query->when(!empty($entregaDesde) && ! empty($entregaHasta), function ($query) use ($entregaDesde, $entregaHasta) {
+            }
+            
+            if (!empty($entregaDesde) && !empty($entregaHasta)) {
                 $query->whereBetween('mapas.FechaE', [$entregaDesde, $entregaHasta]);
-            });
+            }
 
-            $query->when(!empty($Vencimiento) && is_array($Vencimiento) && in_array('corteVencido', $Vencimiento), function ($query) {
-                $query->where('mapas.Fecha', '<', now()->format('Y-m-d'));
-            });
+            $hoy = now()->format('Y-m-d');
+            
+            if (!empty($Vencimiento) && is_array($Vencimiento)) {
+                $query->where(function($q) use ($Vencimiento, $hoy) {
+                    if (in_array('corteVencido', $Vencimiento)) $q->orWhere('mapas.Fecha', '<', $hoy);
+                    if (in_array('corteVigente', $Vencimiento)) $q->orWhere('mapas.Fecha', '>=', $hoy);
+                    if (in_array('entregaVencida', $Vencimiento)) $q->orWhere('mapas.FechaE', '<', $hoy);
+                    if (in_array('entregaVigente', $Vencimiento)) $q->orWhere('mapas.FechaE', '>=', $hoy);
+                });
+            }
 
-            $query->when(!empty($Vencimiento) && is_array($Vencimiento) && in_array('corteVigente', $Vencimiento), function ($query) {
-                $query->where('mapas.Fecha', '>=', now()->format('Y-m-d'));
-            });
+            if ($Ver == 'activo') $query->where('mapas.Inactivo', 0);
+            if ($Ver == 'inactivo') $query->where('mapas.Inactivo', 1);
 
-            $query->when(!empty($Vencimiento) && is_array($Vencimiento) && in_array('entregaVigente', $Vencimiento), function ($query) {
-                $query->where('mapas.FechaE', '>=', now()->format('Y-m-d'));
-            });
-
-            $query->when(!empty($Vencimiento) && is_array($Vencimiento) && in_array('entregaVencida', $Vencimiento), function ($query) {
-                $query->where('mapas.FechaE', '<', now()->format('Y-m-d'));
-            });
-
-            $query->when($Ver == 'activo', function ($query) {
-                $query->where('mapas.Inactivo', 0);
-            });
-
-            $query->when($Ver == 'inactivo', function ($query) {
-                $query->where('mapas.Inactivo', 1);
-            });
-
-            // dd($query->toSql(), $query->getBindings());
-            $query->whereNot('mapas.Nro', 0)
-                ->whereNot('mapas.Fecha', '0000-00-00')
-                ->whereNotNull('mapas.Fecha')
+            $query->whereNotNull('mapas.Fecha')
+                ->where('mapas.Fecha', '<>', '0000-00-00')
                 ->whereNot('mapas.Id', 0)
-                ->groupBy('mapas.Nro')
                 ->orderByDesc('mapas.Id');
 
             return Datatables::of($query)->make(true);
         }
-        return view('layouts.mapas.index', ['helper' => $this->helper]);
+
+    return view('layouts.mapas.index', ['helper' => $this->helper]);
     }
 
     public function create(): mixed
