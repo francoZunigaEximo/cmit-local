@@ -212,23 +212,15 @@ class ExamenACuenta implements ReporteInterface
     private function examenesDisponibles(?int $id): mixed
     {
         return ExamenCuentaIt::join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
-            ->join('prestaciones', 'pagosacuenta_it.IdPrestacion', '=', 'prestaciones.Id')
-            ->leftJoin('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')
-            ->leftJoin('itemsprestaciones', function (JoinClause $join) {
-                $join->on('pagosacuenta_it.IdPrestacion', '=', 'itemsprestaciones.IdPrestacion')
-                ->on('pagosacuenta_it.IdExamen', '=', 'itemsprestaciones.IdExamen');
-            })
-            ->leftJoin('profesionales as efector', 'efector.Id', '=', 'itemsprestaciones.IdProfesional')
-            ->leftJoin('proveedores', 'efector.IdProveedor', '=', 'proveedores.Id')
             ->join('estudios', 'examenes.IdEstudio', '=', 'estudios.Id')
             ->select(
                 'examenes.Nombre as NombreExamen',
-                DB::raw('COUNT(pagosacuenta_it.IdExamen) as Cantidad'), 
- 
+                DB::raw('COUNT(pagosacuenta_it.IdExamen) as Cantidad')
             )
             ->where('pagosacuenta_it.IdPago', $id)
             ->where('pagosacuenta_it.IdPrestacion', 0)
             ->whereNot('pagosacuenta_it.Obs', 'provisorio')
+            ->groupBy('examenes.Nombre', 'estudios.Nombre')
             ->orderBy('examenes.Nombre')
             ->orderBy('estudios.Nombre')
             ->get();
