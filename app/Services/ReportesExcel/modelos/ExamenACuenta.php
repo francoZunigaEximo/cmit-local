@@ -222,11 +222,9 @@ class ExamenACuenta implements ReporteInterface
             ->leftJoin('proveedores', 'efector.IdProveedor', '=', 'proveedores.Id')
             ->join('estudios', 'examenes.IdEstudio', '=', 'estudios.Id')
             ->select(
-                'prestaciones.Id as IdPrestacion',
-                'proveedores.Nombre as NombreEstudio',
                 'examenes.Nombre as NombreExamen',
-                'pacientes.Nombre as Nombre',
-                'pacientes.Apellido as Apellido'  
+                DB::raw('COUNT(pagosacuenta_it.IdExamen) as Cantidad'), 
+ 
             )
             ->where('pagosacuenta_it.IdPago', $id)
             ->where('pagosacuenta_it.IdPrestacion', 0)
