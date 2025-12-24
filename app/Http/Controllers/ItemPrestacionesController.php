@@ -21,6 +21,7 @@ use App\Helpers\FileHelper;
 use App\Helpers\Tools;
 use App\Models\NotaCredito;
 use App\Models\NotaCreditoIt;
+use App\Models\Prestacion;
 use App\Models\Profesional;
 use App\Models\Proveedor;
 use App\Models\User;
@@ -1137,10 +1138,12 @@ class ItemPrestacionesController extends Controller
 
         if ($query) {
             $paciente = $this->getPaciente($query->IdPrestacion);
+            $prestacion = Prestacion::where('Id', $query->IdPrestacion)->first()->Cerrado;
 
             $data = [
                 'itemprestacion' => $query,
                 'paciente' => $paciente,
+                'prestacion' => $prestacion, # Solo definimos si esta cerrada para bloquear funcionalidades
                 'qrTexto' => Tools::generarQR('A', $query->IdPrestacion, $query->IdExamen, $paciente->Id, 'texto'),
                 'adjuntoEfector' => $this->adjunto($query->Id, "Efector"),
                 'adjuntoInformador' => $this->adjunto($query->Id, "Informador"),
