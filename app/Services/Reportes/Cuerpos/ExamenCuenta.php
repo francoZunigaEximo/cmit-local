@@ -32,18 +32,18 @@ use Illuminate\Support\Facades\DB;
             $pdf->Cell(60,3,utf8_decode(substr($reporte->Apellido . " " . $reporte->Nombre,0,30)),0,0,'L');$pdf->Ln();
         }
 
-        $listado = $this->detalladoExamenesCuenta($datos['id']);
+        // $listado = $this->detalladoExamenesCuenta($datos['id']);
 
-        $pdf->Ln(6);$pdf->SetFont('Arial','BU',10);	
-        $pdf->Cell(0,5,'TOTAL EXAMENES DEL PAGO:',0,0,'L');
-        $pdf->Ln();
-        $pdf->SetFont('Arial','',7);
+        // $pdf->Ln(6);$pdf->SetFont('Arial','BU',10);	
+        // $pdf->Cell(0,5,'TOTAL EXAMENES DEL PAGO:',0,0,'L');
+        // $pdf->Ln();
+        // $pdf->SetFont('Arial','',7);
 
-        foreach($listado as $item) {
-            $pdf->Cell(20,3,$item->Cantidad,0,0,'R');
-            $pdf->Cell(0,3,utf8_decode($item->NombreExamen),0,0,'L');
-            $pdf->Ln();
-        }
+        // foreach($listado as $item) {
+        //     $pdf->Cell(20,3,$item->Cantidad,0,0,'R');
+        //     $pdf->Cell(0,3,utf8_decode($item->NombreExamen),0,0,'L');
+        //     $pdf->Ln();
+        // }
         
         $totalExamenes = $this->totalExamenes($datos['id']);
         $totalDisponibles = $this->totalDisponibles(($datos['id']));
