@@ -60,6 +60,7 @@ use Illuminate\Support\Facades\DB;
         $pdf->SetFont('Arial','',7);
         
         foreach($listDisponibles as $item) {
+            $pdf->Cell(0,3,($item->Cantidad),0,0,'R');
             $pdf->Cell(0,3,utf8_decode($item->NombreExamen),0,0,'L');
             $pdf->Ln();
         }
@@ -132,10 +133,17 @@ use Illuminate\Support\Facades\DB;
     private function listadoDisponibles(int $id)
     {
         return ExamenCuentaIt::join('examenes', 'pagosacuenta_it.IdExamen', '=', 'examenes.Id')
-            ->select('examenes.Nombre as NombreExamen')
-            ->where('IdPago', $id)
-            ->whereNot('Obs', 'provisorio')
-            ->where('IdPrestacion', 0)
+            ->join('estudios', 'examenes.IdEstudio', '=', 'estudios.Id')
+            ->select(
+                'examenes.Nombre as NombreExamen',
+                DB::raw('COUNT(pagosacuenta_it.IdExamen) as Cantidad')
+            )
+            ->where('pagosacuenta_it.IdPago', $id)
+            ->where('pagosacuenta_it.IdPrestacion', 0)
+            ->whereNot('pagosacuenta_it.Obs', 'provisorio')
+            ->groupBy('examenes.Nombre', 'estudios.Nombre')
+            ->orderBy('examenes.Nombre')
+            ->orderBy('estudios.Nombre')
             ->get();
     }
  }
