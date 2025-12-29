@@ -374,7 +374,7 @@
                                         <input class="form-check-input" type="radio" name="TipoPrestacion" id="EGRESO" value="EGRESO">
                                         <label class="form-check-label" for="egreso">EGRESO</label>
                                     </div>
-                                    <div class="form-check form-check-inline">
+                                    <div class="form-check form-check-inline checkPrestacion">
                                         <input class="form-check-input" type="radio" name="TipoPrestacion" id="LNC" value="LNC">
                                         <label class="form-check-label" for="lnc">LNC</label>
                                     </div>  
