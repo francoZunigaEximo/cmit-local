@@ -86,15 +86,15 @@ $(function () {
     };
 
     const listOpciones = {
-        '.TareaRealizar': ['OCUPACIONAL', 'OTRO', 'INGRESO', 'ART'],
-        '.PuestoActual': ['OCUPACIONAL', 'OTRO', 'PERIODICO', 'EGRESO', 'ART'],
-        '.UltimoPuesto': ['OCUPACIONAL', 'OTRO', 'INGRESO', 'ART'],
-        '.SectorActual': ['PERIODICO', 'OCUPACIONAL', 'EGRESO', 'OTRO', 'ART'],
-        '.AntiguedadPuesto': ['PERIODICO', 'OCUPACIONAL', 'EGRESO', 'OTRO', 'ART'],
-        '.AntiguedadEmpresa': ['EGRESO', 'OCUPACIONAL', 'OTRO', 'PERIODICO', 'ART',],
-        '.FechaIngreso': ['EGRESO', 'OCUPACIONAL', 'PERIODICO', 'ART', 'INGRESO'],
-        '.FechaEgreso': ['EGRESO', 'OCUPACIONAL', 'ART'],
-        '.CCosto': ['INGRESO', 'ART', 'EGRESO', 'OCUPACIONAL', 'PERIODICO']
+        '.TareaRealizar': ['OCUPACIONAL', 'OTRO', 'INGRESO', 'ART', 'LNC'],
+        '.PuestoActual': ['OCUPACIONAL', 'OTRO', 'PERIODICO', 'EGRESO', 'ART', 'LNC'],
+        '.UltimoPuesto': ['OCUPACIONAL', 'OTRO', 'INGRESO', 'ART', 'LNC'],
+        '.SectorActual': ['PERIODICO', 'OCUPACIONAL', 'EGRESO', 'OTRO', 'ART', 'LNC'],
+        '.AntiguedadPuesto': ['PERIODICO', 'OCUPACIONAL', 'EGRESO', 'OTRO', 'ART', 'LNC'],
+        '.AntiguedadEmpresa': ['EGRESO', 'OCUPACIONAL', 'OTRO', 'PERIODICO', 'ART', 'LNC'],
+        '.FechaIngreso': ['EGRESO', 'OCUPACIONAL', 'PERIODICO', 'ART', 'INGRESO', 'LNC'],
+        '.FechaEgreso': ['EGRESO', 'OCUPACIONAL', 'ART', 'LNC'],
+        '.CCosto': ['INGRESO', 'ART', 'EGRESO', 'OCUPACIONAL', 'PERIODICO', 'LNC']
     };
 
     const masOpciones = {
