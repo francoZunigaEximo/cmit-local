@@ -677,7 +677,7 @@ $(function () {
     function loadModalExamen(id) {
         preloader('on');
         $.get(editModal, { Id: id, _token: TOKEN })
-            .done(async function (response) {
+            .done(function (response) {
 
                 const estadoAbierto = [0, 1, 2],
                     estadoCerrado = [3, 4, 5],
@@ -786,10 +786,8 @@ $(function () {
                 optionsGeneralModal(examenes.IdProveedor2, 'informador').then(response => {
                     return response;
                 });
-                await listadoEModal(itemprestaciones.Id);
-                await listadoIModal(itemprestaciones.Id);
-
-
+                listadoEModal(itemprestaciones.Id);
+                listadoIModal(itemprestaciones.Id);
 
                 if (itemprestaciones.CInfo === 2 && adjuntosInformador(itemprestaciones, response) === 'Pendiente' && itemprestaciones.Anulado === 0) {
                     borrarCache();
