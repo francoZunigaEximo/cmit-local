@@ -663,7 +663,7 @@
                                     <input class="form-check-input" type="radio" name="TipoPrestacion" id="EGRESO" value="EGRESO" {{ isset($fichalaboral) && $fichalaboral->TipoPrestacion === 'EGRESO' ? 'checked' : '' }}>
                                     <label class="form-check-label" for="egreso">EGRESO</label>
                                 </div>
-                
+                                          
                                 <div class="form-check form-check-inline">
                                     <input class="form-check-input" type="radio" name="TipoPrestacion" id="TipoPrestacion" id="OTRO" value="OTRO" {{ isset($fichalaboral) && in_array($fichalaboral->TipoPrestacion, ['CARNET', 'NO ART', 'RECMED','S/C_OCUPACIONAL']) ? 'checked' : '' }}>
                                     <label class="form-check-label" for="otro">OTRO</label>

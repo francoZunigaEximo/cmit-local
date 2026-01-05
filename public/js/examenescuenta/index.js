@@ -266,6 +266,11 @@ $(function(){
         preloader('on');
         var idsSeleccionados = obtenerIdsSeleccionados();
         var allSelected = $("#checkAll").is(":checked");
+        if(idsSeleccionados.length === 0 && !allSelected){
+            preloader('off');
+            toastr.warning('Debe seleccionar al menos un examen o la opción de seleccionar todo.','',{timeOut: 2000});
+            return;
+        }
         $.get(exportSimple,
             {
                 fechaDesde : $('#fechaDesde').val(),
@@ -298,7 +303,11 @@ $(function(){
         preloader('on');
         var idsSeleccionados = obtenerIdsSeleccionados();
         var allSelected = $("#checkAll").is(":checked");
-
+        if(idsSeleccionados.length === 0 && !allSelected){
+            preloader('off');
+            toastr.warning('Debe seleccionar al menos un examen o la opción de seleccionar todo.','',{timeOut: 2000});
+            return;
+        }
         $.get(exportCompleto,
             {
                 fechaDesde : $('#fechaDesde').val(),

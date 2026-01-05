@@ -13886,3 +13886,4 @@ DELIMITER ;
 
 composer require --dev kwn/php-rdkafka-stubs
 
+INSERT INTO prestaciones_tipo (Id, Nombre) VALUES(11, 'LNC');
