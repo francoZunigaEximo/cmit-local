@@ -272,6 +272,7 @@ class ItemPrestacionesController extends Controller
                     'archivosefector.Id as IdE',
                     'archivosefector.Ruta as Nombre',
                     'archivosefector.Descripcion as DescripcionE',
+                    'archivosefector.IdPrestacion as IdPrestacion',
                     'archivosefector.Ruta as RutaE',
                     'examenes.NoImprime as Adjunto',
                     'proveedores.MultiE as MultiE',
@@ -289,6 +290,7 @@ class ItemPrestacionesController extends Controller
                     'archivosinformador.Ruta as Nombre',
                     'archivosinformador.Descripcion as DescripcionI',
                     'archivosinformador.Ruta as RutaI',
+                    'archivosinformador.IdPrestacion as IdPrestacion',
                     'examenes.Adjunto as Adjunto',
                     'itemsprestaciones.Anulado as Anulado'
                 )
@@ -311,6 +313,7 @@ class ItemPrestacionesController extends Controller
             ->select(
                 'archivosefector.Id as IdE',
                 'archivosefector.IdEntidad as IdItem',
+                'archivosefector.IdPrestacion as IdPrestacion',
                 'examenes.Nombre as NombreExamen',
                 'archivosefector.Descripcion as DescripcionE',
                 'archivosefector.Ruta as RutaE',

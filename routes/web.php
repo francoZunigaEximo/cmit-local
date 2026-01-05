@@ -160,6 +160,7 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::get('prestaciones/exportar-resultados', [PrestacionesController::class, 'exportResultados'])->name('prestaciones.exportarResultado');
     Route::get('prestaciones/enviar-reporteEspecial', [PrestacionesController::class, 'enviarReporteEspecial'])->name('prestaciones.reporteEspecial');
     Route::get('prestaciones/pdfPrueba', [PrestacionesController::class, 'pdfPrueba'])->name('prestaciones.pdfPrueba');
+    Route::get('prestaciones/estado-cerrado', [PrestacionesController::class, 'getEstadoCerrado'])->name('prestaciones.estadoCerrado');
     Route::resource('prestaciones', PrestacionesController::class);
 
     //Ruta Ficha Laboral

@@ -1048,6 +1048,12 @@ class PrestacionesController extends Controller
         return response()->json(['msg' => 'No se ha podido generar el archivo'], 409);
     }
 
+    public function getEstadoCerrado(Request $request)
+    {
+        $query = Prestacion::where('Id', $request->Id)->first();
+        return response()->json($query->Cerrado);
+    }
+
     private function verificarEstados(int $id)
     {
         return Prestacion::join('pacientes', 'prestaciones.IdPaciente', '=', 'pacientes.Id')

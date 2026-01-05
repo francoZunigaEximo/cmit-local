@@ -1,11 +1,11 @@
-$(function(){
+$(function () {
 
     let idExamen = [],
         empresa = $('#empresa').val();
 
-    const valAbrir = [3, 4, 5], 
-          valCerrar = [0, 1, 2], 
-          valCerrarI = 3;
+    const valAbrir = [3, 4, 5],
+        valCerrar = [0, 1, 2],
+        valCerrarI = 3;
 
     cargarExamen(ID);
     contadorExamenes(ID);
@@ -14,13 +14,13 @@ $(function(){
     $('#exam').select2({
         placeholder: 'Seleccionar exámen...',
         language: {
-            noResults: function() {
+            noResults: function () {
 
-            return "No hay examenes con esos datos";        
+                return "No hay examenes con esos datos";
             },
-            searching: function() {
+            searching: function () {
 
-            return "Buscando..";
+                return "Buscando..";
             },
             inputTooShort: function () {
                 return "Por favor, ingrese 2 o más caracteres";
@@ -28,20 +28,20 @@ $(function(){
         },
         allowClear: true,
         ajax: {
-           url: searchExamen,
-           dataType: 'json',
-           delay: 250,
-           data: function(params) {
+            url: searchExamen,
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
                 return {
                     buscar: params.term,
                 };
-           },
-           processResults: function(data) {
+            },
+            processResults: function (data) {
                 return {
                     results: data.examen
                 };
-           },
-           cache: true,
+            },
+            cache: true,
         },
         minimumInputLength: 2
     });
@@ -50,17 +50,17 @@ $(function(){
         document.querySelector(".select2-container--open .select2-search__field").focus()
     });
 
-    $(document).off('click', '.adPaquete').on('click', '.addPaquete', function(e){
+    $(document).off('click', '.adPaquete').on('click', '.addPaquete', function (e) {
         e.preventDefault();
-        
+
         let paquete = $('#paquetes').val();
-        
-        if(!paquete){
-            toastr.warning("Debe seleccionar un paquete para poder añadirlo en su totalidad",'',{timeOut: 1000});
+
+        if (!paquete) {
+            toastr.warning("Debe seleccionar un paquete para poder añadirlo en su totalidad", '', { timeOut: 1000 });
             return;
         }
         preloader('on');
-       $.ajax({
+        $.ajax({
             url: paqueteId,
             type: 'POST',
             data: {
@@ -69,7 +69,7 @@ $(function(){
                 IdPrestacion: ID
             },
 
-            success:function(response){
+            success: function (response) {
                 preloader('off');
                 $('#listaExamenes').empty();
                 cargarExamen(ID);
@@ -77,60 +77,60 @@ $(function(){
                 listadoSelectExCta(empresa)
                 $('.addPaquete').val([]).trigger('change.select2');
             },
-            error: function(jqXHR){
+            error: function (jqXHR) {
                 preloader('off');
-                let errorData = JSON.parse(jqXHR.responseText);            
+                let errorData = JSON.parse(jqXHR.responseText);
                 checkError(jqXHR.status, errorData.msg);
-                return; 
+                return;
             }
-       });
-       
+        });
+
     });
 
-    $(document).on('click', '.deleteExamenes, .deleteExamen', function(e){
+    $(document).on('click', '.deleteExamenes, .deleteExamen', function (e) {
 
         e.preventDefault();
 
-        let ids = [], id = $(this).data('delete'), checkAll ='';
+        let ids = [], id = $(this).data('delete'), checkAll = '';
 
         if ($(this).hasClass('deleteExamenes')) {
 
-            $('input[name="Id_examenes"]:checked').each(function() {
-               ids.push($(this).val());
+            $('input[name="Id_examenes"]:checked').each(function () {
+                ids.push($(this).val());
             });
-    
+
             checkAll = $('#checkAllExamenes').prop('checked');
 
-        } else if($(this).hasClass('deleteExamen')) {
+        } else if ($(this).hasClass('deleteExamen')) {
 
             ids.push(id);
         }
 
-        if(ids.length === 0 && !checkAll){
-            toastr.warning('No hay examenes seleccionados','',{timeOut: 1000});
+        if (ids.length === 0 && !checkAll) {
+            toastr.warning('No hay examenes seleccionados', '', { timeOut: 1000 });
             return;
-        }  
-    
+        }
+
         swal({
             title: "Confirme la eliminación de los examenes",
             icon: "warning",
             buttons: ["Cancelar", "Eliminar"],
         }).then((confirmar) => {
-            if (confirmar){
+            if (confirmar) {
 
                 preloader('on');
-                $.post(deleteItemExamen, {Id: ids,  _token: TOKEN})
-                    .done(function(response){
-                    
+                $.post(deleteItemExamen, { Id: ids, _token: TOKEN })
+                    .done(function (response) {
+
                         preloader('off');
                         for (let i = 0; i < response.length; i++) {
                             let data = response[i];
-                            toastr[data.status](data.msg, "", { timeOut: 1000 }); 
+                            toastr[data.status](data.msg, "", { timeOut: 1000 });
                         }
 
                         countSuccess = response.filter(item => item.status === 'success').length;
 
-                        if(countSuccess > 0) {
+                        if (countSuccess > 0) {
                             $('#listaExamenes').empty();
                             $('#exam').val([]).trigger('change.select2');
                             $('#paquetes').val([]).trigger('change.select2');
@@ -139,76 +139,76 @@ $(function(){
                             contadorExamenes(ID);
                         }
 
-                        
+
                     })
-                    .fail(function(jqXHR){
+                    .fail(function (jqXHR) {
                         preloader('off');
-                        let errorData = JSON.parse(jqXHR.responseText);            
+                        let errorData = JSON.parse(jqXHR.responseText);
                         checkError(jqXHR.status, errorData.msg);
-                        return; 
+                        return;
                     });
             }
-            
+
         });
     });
 
-    $(document).on('click', '.bloquearExamenes, .bloquearExamen', function(e){
+    $(document).on('click', '.bloquearExamenes, .bloquearExamen', function (e) {
 
         e.preventDefault();
 
         let ids = [], id = $(this).data('bloquear');
-        var checkAll ='';
+        var checkAll = '';
 
         if ($(this).hasClass('bloquearExamenes')) {
 
-            $('input[name="Id_examenes"]:checked').each(function() {
+            $('input[name="Id_examenes"]:checked').each(function () {
                 ids.push($(this).val());
-        
+
             });
-    
-            checkAll =$('#checkAllExamenes').prop('checked');
-        
-        }else if($(this).hasClass('bloquearExamen')){
+
+            checkAll = $('#checkAllExamenes').prop('checked');
+
+        } else if ($(this).hasClass('bloquearExamen')) {
 
             ids.push(id);
         }
 
-        if(ids.length === 0 && !checkAll){
-            toastr.warning('No hay examenes seleccionados','',{timeOut: 1000});
+        if (ids.length === 0 && !checkAll) {
+            toastr.warning('No hay examenes seleccionados', '', { timeOut: 1000 });
             return;
         }
-    
+
         swal({
             title: "Confirme el bloqueo de los examenes",
             icon: "warning",
             buttons: ["Cancelar", "Bloquear"],
         }).then((confirmar) => {
-            if(confirmar){
+            if (confirmar) {
 
                 preloader('on');
-                $.ajax({    
+                $.ajax({
                     url: bloquearItemExamen,
                     type: 'POST',
                     data: {
                         Id: ids,
                         _token: TOKEN
                     },
-                    success: function(response){
+                    success: function (response) {
                         var estados = [];
-                        
+
                         preloader('off')
-                        for(let index = 0; index < response.length; index++){
+                        for (let index = 0; index < response.length; index++) {
                             let msg = response[index],
                                 tipoRespuesta = {
                                     success: 'success',
                                     fail: 'info'
                                 }
-                           
+
                             toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 });
                             estados.push(msg.estado);
                         }
-                        
-                        if(estados.includes('success')) {
+
+                        if (estados.includes('success')) {
                             $('#listaExamenes').empty();
                             $('#exam').val([]).trigger('change.select2');
                             $('#addPaquete').val([]).trigger('change.select2');
@@ -219,22 +219,22 @@ $(function(){
                     }
                 });
             }
-        });     
+        });
     });
 
-    $(document).on('click', '.abrirExamenes', function(e) {
+    $(document).on('click', '.abrirExamenes', function (e) {
         e.preventDefault();
 
         let ids = [];
 
-        $('input[name="Id_examenes"]:checked').each(function() {
+        $('input[name="Id_examenes"]:checked').each(function () {
             ids.push($(this).val());
         });
 
         let checkAll = $('#checkAllExamenes').prop('checked');
 
-        if(ids.length === 0 && !checkAll){
-            toastr.warning('No hay examenes seleccionados','',{timeOut: 1000});
+        if (ids.length === 0 && !checkAll) {
+            toastr.warning('No hay examenes seleccionados', '', { timeOut: 1000 });
             return;
         }
 
@@ -243,7 +243,7 @@ $(function(){
             icon: "warning",
             buttons: ["Cancelar", "Abrir"],
         }).then((confirmar) => {
-            if(confirmar){
+            if (confirmar) {
 
                 preloader('on');
                 $.ajax({
@@ -253,22 +253,22 @@ $(function(){
                         Ids: ids,
                         _token: TOKEN
                     },
-                    success: function(response){
+                    success: function (response) {
                         var estados = [];
                         preloader('off');
 
-                        for(let index=0; index < response.length; index++){
+                        for (let index = 0; index < response.length; index++) {
                             let msg = response[index],
                                 tipoRespuesta = {
                                     success: 'success',
                                     fail: 'info'
                                 }
-                           
+
                             toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 });
                             estados.push(msg.estado);
                         }
 
-                        if(estados.includes('success')) {
+                        if (estados.includes('success')) {
                             $('#listaExamenes').empty();
                             $('#exam').val([]).trigger('change.select2');
                             $('#addPaquete').val([]).trigger('change.select2');
@@ -280,23 +280,23 @@ $(function(){
             }
         });
 
-            
+
 
     });
 
-    $(document).on('click', '.adjuntoExamenes', function(e){
+    $(document).on('click', '.adjuntoExamenes', function (e) {
         e.preventDefault();
 
         let ids = [];
 
-        $('input[name="Id_examenes"]:checked').each(function() {
+        $('input[name="Id_examenes"]:checked').each(function () {
             ids.push($(this).val());
         });
 
         let checkAll = $('#checkAllExamenes').prop('checked');
 
-        if(ids.length === 0 && !checkAll){
-            toastr.warning('No hay examenes seleccionados','',{timeOut: 1000});
+        if (ids.length === 0 && !checkAll) {
+            toastr.warning('No hay examenes seleccionados', '', { timeOut: 1000 });
             return;
         }
 
@@ -305,7 +305,7 @@ $(function(){
             icon: "warning",
             buttons: ["Cancelar", "Adjuntar"],
         }).then((confirmar) => {
-            if(confirmar){
+            if (confirmar) {
 
                 preloader('on');
                 $.ajax({
@@ -315,22 +315,22 @@ $(function(){
                         Ids: ids,
                         _token: TOKEN
                     },
-                    success: function(response){
+                    success: function (response) {
                         var estados = [];
                         preloader('off');
 
-                        for(let index = 0; index < response.length; index++){
+                        for (let index = 0; index < response.length; index++) {
                             let msg = response[index],
                                 tipoRespuesta = {
                                     success: 'success',
                                     fail: 'info'
                                 }
 
-                                toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 });
-                                estados.push(msg.estado);
+                            toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 });
+                            estados.push(msg.estado);
                         }
 
-                        if(estados.includes('success')) {
+                        if (estados.includes('success')) {
                             $('#listaExamenes').empty();
                             $('#exam').val([]).trigger('change.select2');
                             $('#addPaquete').val([]).trigger('change.select2');
@@ -341,23 +341,23 @@ $(function(){
                     }
                 });
             }
-        });    
+        });
     });
 
-    $(document).on('click', '.liberarExamenes', function(e){
+    $(document).on('click', '.liberarExamenes', function (e) {
 
         e.preventDefault();
 
         let ids = [];
 
-        $('input[name="Id_examenes"]:checked').each(function() {
+        $('input[name="Id_examenes"]:checked').each(function () {
             ids.push($(this).val());
         });
 
         let checkAll = $('#checkAllExamenes').prop('checked');
 
-        if(ids.length === 0 && !checkAll){
-            toastr.warning('No hay examenes seleccionados','',{timeOut: 1000});
+        if (ids.length === 0 && !checkAll) {
+            toastr.warning('No hay examenes seleccionados', '', { timeOut: 1000 });
             return;
         }
 
@@ -366,7 +366,7 @@ $(function(){
             icon: "warning",
             buttons: ["Cancelar", "Liberar"],
         }).then((confirmar) => {
-            if(confirmar) {
+            if (confirmar) {
 
                 preloader('on');
                 $.ajax({
@@ -376,21 +376,21 @@ $(function(){
                         Ids: ids,
                         _token: TOKEN
                     },
-                    success: function(response){
+                    success: function (response) {
                         var estados = [];
                         preloader('off');
-                        response.forEach(function(msg) {
-                            
+                        response.forEach(function (msg) {
+
                             let tipoRespuesta = {
                                 success: 'success',
                                 fail: 'info'
                             }
-                            
+
                             toastr[tipoRespuesta[msg.estado]](msg.message, "Atención", { timeOut: 10000 });
                             estados.push(msg.estado);
                         });
 
-                        if(estados.includes('success')) {
+                        if (estados.includes('success')) {
                             $('#listaExamenes').empty();
                             $('#exam').val([]).trigger('change.select2');
                             $('#addPaquete').val([]).trigger('change.select2');
@@ -401,54 +401,54 @@ $(function(){
                     }
                 });
             }
-        });     
+        });
     });
 
-    $(document).on('click', '.addExamen, .addExamenCta', function(e){
+    $(document).on('click', '.addExamen, .addExamenCta', function (e) {
         e.preventDefault();
 
         let id = $(this).hasClass('addExamen') ? $("#exam").val() : $('#exaCtaDisp').val(),
             idExaCta = $('#exaCtaDisp option:selected').data('id');
 
-        if(!id) {
-            toastr.warning("Debe seleccionar un examen para poder añadirlo a la lista",'',{timeOut: 1000});
+        if (!id) {
+            toastr.warning("Debe seleccionar un examen para poder añadirlo a la lista", '', { timeOut: 1000 });
             return;
         }
 
         saveExamen(id, idExaCta);
     });
 
-    $(window).on('popstate', function() {
+    $(window).on('popstate', function () {
         location.reload();
     });
 
-    $('#checkAllExamenes').on('click', function() {
+    $('#checkAllExamenes').on('click', function () {
 
         $('input[type="checkbox"][name="Id_examenes"]:not(#checkAllExamenes)').prop('checked', this.checked);
     });
-  
-    $(document).on('click', '.incompleto, .ausente, .forma, .sinesc, .devol', function() {
+
+    $(document).on('click', '.incompleto, .ausente, .forma, .sinesc, .devol', function () {
         let classes = $(this).attr('class').split(' '),
             //item = $(this).closest('tr').find('td:first').attr('id');
             item = $(this).closest('tr').find('td:eq(1)').attr('id');
 
-            const opcionesClasses = {
-                'incompleto': 'Incompleto',
-                'ausente': 'Ausente',
-                'forma': 'Forma',
-                'sinesc': 'SinEsc',
-                'devol': 'Devol'
-              };
+        const opcionesClasses = {
+            'incompleto': 'Incompleto',
+            'ausente': 'Ausente',
+            'forma': 'Forma',
+            'sinesc': 'SinEsc',
+            'devol': 'Devol'
+        };
 
-            let buscarClasse = classes.find(clase => opcionesClasses.hasOwnProperty(clase));
+        let buscarClasse = classes.find(clase => opcionesClasses.hasOwnProperty(clase));
 
-            if(buscarClasse){
-                opcionesExamenes(item, opcionesClasses[buscarClasse]);
-            }
-    
+        if (buscarClasse) {
+            opcionesExamenes(item, opcionesClasses[buscarClasse]);
+        }
+
     });
 
-    $(document).on('click', '.verExamen', function(e){
+    $(document).on('click', '.verExamen', function (e) {
         e.preventDefault();
 
         let id = $(this).data('id');
@@ -461,20 +461,20 @@ $(function(){
         contadorExamenes(ID);
     });
 
-    
-    function saveExamen(id, idExaCta = null){
+
+    function saveExamen(id, idExaCta = null) {
 
         idExamen = [];
         if (Array.isArray(id)) {
-            for(let index = 0; index < id.length; index++) {
+            for (let index = 0; index < id.length; index++) {
                 idExamen.push(id[index]);
             }
-        }else{
+        } else {
             idExamen.push(id);
         }
 
         if (idExamen.length === 0) {
-            toastr.warning("No existe el exámen o el paquete no contiene examenes",'',{timeOut: 1000});
+            toastr.warning("No existe el exámen o el paquete no contiene examenes", '', { timeOut: 1000 });
             return;
         }
         preloader('on');
@@ -488,7 +488,7 @@ $(function(){
                 idExamen: idExamen,
                 idExaCta: idExaCta
             },
-            success: function(){
+            success: function () {
                 preloader('off');
                 $('#listaExamenes').empty();
                 $('#exam').val([]).trigger('change.select2');
@@ -496,18 +496,18 @@ $(function(){
                 cargarExamen(ID);
                 contadorExamenes(ID);
                 listadoSelectExCta(empresa)
-        },
-            error: function(jqXHR){
+            },
+            error: function (jqXHR) {
                 preloader('off');
-                let errorData = JSON.parse(jqXHR.responseText);            
+                let errorData = JSON.parse(jqXHR.responseText);
                 checkError(jqXHR.status, errorData.msg);
-                return;  
+                return;
             }
         });
 
     }
 
-    function opcionesExamenes(item, opcion){
+    function opcionesExamenes(item, opcion) {
         preloader('on');
         $.ajax({
             url: itemExamen,
@@ -517,58 +517,57 @@ $(function(){
                 Id: item,
                 opcion: opcion
             },
-            success: function(response){
+            success: function (response) {
                 preloader('off');
-                toastr.success(response.msg,'',{timeOut: 1000});
+                toastr.success(response.msg, '', { timeOut: 1000 });
 
-                let fila = $('td#' + item).closest('tr'), 
-                    span= fila.find('span#' + opcion.toLowerCase()),
+                let fila = $('td#' + item).closest('tr'),
+                    span = fila.find('span#' + opcion.toLowerCase()),
                     clase = span.attr('class'),
                     contenido = (clase === 'badge badge-soft-dark' ? 'custom-badge rojo' : 'badge badge-soft-dark');
-            
+
                 span.removeClass().addClass(contenido);
                 checkerIncompletos(ID);
             },
-            error: function(jqXHR){
+            error: function (jqXHR) {
                 preloader('off');
-                let errorData = JSON.parse(jqXHR.responseText);            
+                let errorData = JSON.parse(jqXHR.responseText);
                 checkError(jqXHR.status, errorData.msg);
-                return;  
+                return;
             }
         });
     }
 
-    async function checkerIncompletos(idPrestacion)
-    {
-        if(!idPrestacion) return;
+    async function checkerIncompletos(idPrestacion) {
+        if (!idPrestacion) return;
 
-        $.get(await checkInc, { Id: idPrestacion }, function(response) {
+        $.get(await checkInc, { Id: idPrestacion }, function (response) {
 
             let ids = ['Incompleto', 'Ausente', 'Forma', 'SinEsc', 'Devol'];
             let propiedades = ['inc', 'aus', 'forma', 'sin', 'devo'];
-        
+
             ids.forEach((id, index) => {
                 let propiedad = propiedades[index];
                 let className = response[propiedad] === 'Completo' ? 'grisClaro' : 'grisFuerte';
-        
+
                 $('#' + id).removeClass().addClass('form-control ' + className);
             });
         });
     }
 
     async function cargarExamen(id) {
-    
-        try {    
+
+        try {
             preloader('on');
 
-            let response = await $.get(getExamenes,{Id: id, tipo: 'listado'});
+            let response = await $.get(getExamenes, { Id: id, tipo: 'listado' });
 
             const cargaEfector = await primeraCarga(id, "efector");
             const cargaInformador = await primeraCarga(id, "informador");
-            
+
             checkExamenes(id);
             contadorExamenes(id);
-            
+
             let filas = '';
 
             preloader('off');
@@ -580,14 +579,14 @@ $(function(){
 
                 let titleInformador = examen.IdInformador === 0 ? '' : (examen.Informe === 1 ? examen.InformadorFullName || examen.DatosInformadorFullName : ''),
                     fullNameInformador = examen.IdInformador === 0 ? '' : (examen.Informe === 1 ? examen.InformadorApellido || examen.DatosInformadorApellido : '');
-                
-                let estaCerrado = cerrado == '1' ? 'disabled': '';
+
+                let estaCerrado = cerrado == '1' ? 'disabled' : '';
                 filas += `
                     <tr ${examen.Anulado === 1 ? 'class="filaBaja"' : ''}>
                         <td><input type="checkbox" name="Id_examenes" value="${examen.IdItem}" checked></td>
                         <td data-idexam="${examen.IdExamen}" id="${examen.IdItem}" style="text-align:left">${examen.Nombre} ${examen.Anulado === 1 ? '<span class="custom-badge rojo">Bloqueado</span>' : ''} ${cargaEfector.includes(examen.IdItem) ? '<i title="Carga multiple, efector, desde este exámen" class="ri-file-mark-line verde"></i>' : ''} ${cargaInformador.includes(examen.IdItem) ? '<i title="Carga multiple, informador, desde este exámen" class="ri-file-mark-line naranja"></i>' : ''}</td>
                         <td>
-                            <span id="incompleto" class="${(examen.Incompleto === 0 || examen.Incompleto === null  ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
+                            <span id="incompleto" class="${(examen.Incompleto === 0 || examen.Incompleto === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
                                 <i class="ri-flag-2-line ${examen.Anulado === 0 ? 'incompleto' : ''}"></i>
                             </span>
                         </td>
@@ -597,7 +596,7 @@ $(function(){
                             </span>
                         </td>
                         <td>
-                            <span id="forma" class="${(examen.Forma === 0 ||  examen.Forma === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
+                            <span id="forma" class="${(examen.Forma === 0 || examen.Forma === null ? 'badge badge-soft-dark' : 'custom-badge rojo')}">
                                 <i class="ri-flag-2-line ${examen.Anulado == 0 ? 'forma' : ''}"></i>
                             </span>
                         </td>
@@ -612,14 +611,14 @@ $(function(){
                             </span>
                         </td>
                         <td class="date text-center capitalize" title="${titleEfector}">${fullNameEfector === 0 ? '' : fullNameEfector}
-                            <span class="badge badge-soft-${([0,1,2].includes(examen.CAdj) ? 'danger': ([3,4,5].includes(examen.CAdj) ? 'success' : ''))}">
-                                ${([0,1,2].includes(examen.CAdj) ? 'Abierto': ([3,4,5].includes(examen.CAdj) ? 'Cerrado' : ''))}
+                            <span class="badge badge-soft-${([0, 1, 2].includes(examen.CAdj) ? 'danger' : ([3, 4, 5].includes(examen.CAdj) ? 'success' : ''))}">
+                                ${([0, 1, 2].includes(examen.CAdj) ? 'Abierto' : ([3, 4, 5].includes(examen.CAdj) ? 'Cerrado' : ''))}
                             </span>
-                            ${examen.ExaAdj === 1 ? `<i class="ri-attachment-line ${examen.archivos > 0 ? 'verde' : 'gris'}"></i>`: ``}    
+                            ${examen.ExaAdj === 1 ? `<i class="ri-attachment-line ${examen.archivos > 0 ? 'verde' : 'gris'}"></i>` : ``}    
                         </td>
-                        <td class="date text-center capitalize" title="${titleInformador}">${examen.CInfo === 0 ? '' : (fullNameInformador === 0 ? '' :  fullNameInformador)}
-                            <span class="badge badge-soft-${(examen.CInfo === 0 ? 'dark' :(examen.CInfo === 3 ? 'success' : ([1,2].includes(examen.CInfo)) ? 'danger' : ''))}">${(examen.CInfo === 0 || examen.InfAdj === 0 ? '' : (examen.CInfo === 3 ? 'Cerrado' : (examen.CInfo == 2 ? 'Borrador' : (examen.CInfo === 1 ? 'Pendiente': ''))))}</span>
-                            ${examen.InfAdj === 1 ? (examen.CInfo ? `<i class="ri-attachment-line ${examen.archivosI > 0 ? 'verde' : 'gris'}"></i>`: ``) : ''}   
+                        <td class="date text-center capitalize" title="${titleInformador}">${examen.CInfo === 0 ? '' : (fullNameInformador === 0 ? '' : fullNameInformador)}
+                            <span class="badge badge-soft-${(examen.CInfo === 0 ? 'dark' : (examen.CInfo === 3 ? 'success' : ([1, 2].includes(examen.CInfo)) ? 'danger' : ''))}">${(examen.CInfo === 0 || examen.InfAdj === 0 ? '' : (examen.CInfo === 3 ? 'Cerrado' : (examen.CInfo == 2 ? 'Borrador' : (examen.CInfo === 1 ? 'Pendiente' : ''))))}</span>
+                            ${examen.InfAdj === 1 ? (examen.CInfo ? `<i class="ri-attachment-line ${examen.archivosI > 0 ? 'verde' : 'gris'}"></i>` : ``) : ''}   
                         </td>
                         <td class="phone"><span class="${examen.Facturado === 1 ? 'badge badge-soft-success' : 'custom-badge rojo'}"><i class="ri-check-line"></i></span></td>
                         <td>
@@ -633,9 +632,9 @@ $(function(){
                                             <i class="ri-forbid-2-line"></i>
                                         </button>
                                     </div>
-                                ` 
-                                : (examen.Anulado === 1 && examen.Baja === 1) || (examen.Anulado === 1 && examen.IdNotaCredito === null) ? `<button title="Reactivar" class="btn btn-sm iconGeneral edit-item-btn btnReactivar" data-id="${examen.IdItem}" type="button"  ${estaCerrado}><i class="ri-arrow-up-circle-fill"></i></button>` 
-                                : `<button class="btn btn-sm iconGeneral" type="button" title="Este examen esta en una nota de credito"><i class="ri-file-text-fill" style="color: red"></i></button>`}
+                                `
+                        : (examen.Anulado === 1 && examen.Baja === 1) || (examen.Anulado === 1 && examen.IdNotaCredito === null) ? `<button title="Reactivar" class="btn btn-sm iconGeneral edit-item-btn btnReactivar" data-id="${examen.IdItem}" type="button"  ${estaCerrado}><i class="ri-arrow-up-circle-fill"></i></button>`
+                            : `<button class="btn btn-sm iconGeneral" type="button" title="Este examen esta en una nota de credito"><i class="ri-file-text-fill" style="color: red"></i></button>`}
                                 <div class="remove">
                                     <button data-delete="${examen.IdItem}" class="btn btn-sm iconGeneral deleteExamen" title="Eliminar">
                                         <i class="ri-delete-bin-2-line"></i>
@@ -646,47 +645,48 @@ $(function(){
                     </tr>`;
             }
 
-                    $('#listaExamenes').append(filas);
-                    $("#listado").fancyTable({
-                        pagination: true,
-                        perPage: 50,
-                        searchable: false,
-                        globalSearch: false,
-                        sortable: false,
-                    });
-            } catch (error) {
-                preloader('off');
-                let errorData = JSON.parse(jqXHR.responseText);            
-                checkError(jqXHR.status, errorData.msg);
-                return;  
-            }
+            $('#listaExamenes').append(filas);
+            $("#listado").fancyTable({
+                pagination: true,
+                perPage: 50,
+                searchable: false,
+                globalSearch: false,
+                sortable: false,
+            });
+        } catch (error) {
+            preloader('off');
+            let errorData = JSON.parse(jqXHR.responseText);
+            checkError(jqXHR.status, errorData.msg);
+            return;
+        }
     }
-    
-    
+
+
 
     async function checkExamenes(id) {
 
-        $.get(await buscarEx, {Id: id}, function(response){
+        $.get(await buscarEx, { Id: id }, function (response) {
 
-            response === 0 
+            response === 0
                 ? $('.auditoria, .autorizados, .evaluacion, .banderas').hide()
-                : $('.auditoria, .autorizados, .evaluacion, .banderas').show()  
+                : $('.auditoria, .autorizados, .evaluacion, .banderas').show()
         })
     }
 
 
     function loadModalExamen(id) {
         preloader('on');
-        $.get(editModal, {Id: id, _token: TOKEN})
-            .done(function(response){
+        $.get(editModal, { Id: id, _token: TOKEN })
+            .done(async function (response) {
 
-                const estadoAbierto = [0, 1, 2], 
-                      estadoCerrado = [3, 4, 5], 
-                      itemprestaciones = response.itemprestacion, 
-                      pacientes = response.paciente.paciente,
-                      examenes = itemprestaciones.examenes,
-                      factura = itemprestaciones.facturadeventa,
-                      notaCreditoEx = response.notacredito;
+                const estadoAbierto = [0, 1, 2],
+                    estadoCerrado = [3, 4, 5],
+                    itemprestaciones = response.itemprestacion,
+                    pacientes = response.paciente.paciente,
+                    examenes = itemprestaciones.examenes,
+                    factura = itemprestaciones.facturadeventa,
+                    prestacionCerrada = response.prestacion,
+                    notaCreditoEx = response.notacredito;
 
                 const eventos = [
                     eventoAbrir,
@@ -697,9 +697,9 @@ $(function(){
                 ];
 
                 const reactivarEstilos = [
-                    '#ex-Fecha', 
-                    '#ex-ObsExamen', 
-                    '#ex-efectores', 
+                    '#ex-Fecha',
+                    '#ex-ObsExamen',
+                    '#ex-efectores',
                     '#ex-informadores'
                 ];
 
@@ -707,11 +707,11 @@ $(function(){
                 let paciente = pacientes.Nombre + ' ' + pacientes.Apellido,
                     anulado = itemprestaciones.Anulado === 1 ? '<span class="custom-badge rojo">Bloqueado</span>' : '',
                     estado = estadoAbierto.includes(itemprestaciones.CAdj) ? 'Abierto' : estadoCerrado.includes(itemprestaciones.CAdj) ? 'Cerrado' : '';
-                    estadoColor = estadoAbierto.includes(itemprestaciones.CAdj) ? {'color': 'red'} : estadoCerrado.includes(itemprestaciones.CAdj) ? {'color' : 'green'} : '{}',
-                    colorAdjEfector = examenes.Adjunto === 1 && !response.adjuntoEfector ? {"color" : 'red'} : examenes.Adjunto === 1 && response.adjuntoEfector ? {"color" : "green"} : '{}',
-                    estadoColorI = [0,1,2].includes(itemprestaciones.CInfo) ? {"color": "red"} : itemprestaciones.CInfo === 3 ? {"color": "green"} : '{}',
+                estadoColor = estadoAbierto.includes(itemprestaciones.CAdj) ? { 'color': 'red' } : estadoCerrado.includes(itemprestaciones.CAdj) ? { 'color': 'green' } : '{}',
+                    colorAdjEfector = examenes.Adjunto === 1 && !response.adjuntoEfector ? { "color": 'red' } : examenes.Adjunto === 1 && response.adjuntoEfector ? { "color": "green" } : '{}',
+                    estadoColorI = [0, 1, 2].includes(itemprestaciones.CInfo) ? { "color": "red" } : itemprestaciones.CInfo === 3 ? { "color": "green" } : '{}',
                     estadoI = itemprestaciones.CInfo === 1 ? 'Pendiente' : itemprestaciones.CInfo === 2 ? 'Borrador' : itemprestaciones.CInfo === 3 ? 'Cerrado' : '',
-                    colorAdjInformador = itemprestaciones.profesionales2.InfAdj === 1 && !response.adjuntoInformador ? {"color": "red"} : itemprestaciones.profesionales2.InfAdj === 1 && response.adjuntoInformador ? {"color": "green"} : '{}',
+                    colorAdjInformador = itemprestaciones.profesionales2.InfAdj === 1 && !response.adjuntoInformador ? { "color": "red" } : itemprestaciones.profesionales2.InfAdj === 1 && response.adjuntoInformador ? { "color": "green" } : '{}',
                     tipo = factura.Tipo || '',
                     sucursal = factura.Sucursal || '',
                     nroFactura = factura.NroFactura || '',
@@ -719,9 +719,9 @@ $(function(){
                     sucursalNc = notaCreditoEx?.Sucursal || '',
                     nroNc = notaCreditoEx?.Nro || '',
                     notaCEx = tipoNc + sucursalNc + nroNc;
-                
+
                 $('.ex-abrir').hide();
-                
+
                 $('#ex-qr').empty().text(response.qrTexto);
                 $('#ex-paciente').empty().text(paciente);
                 $('#ex-anulado').empty().html(anulado);
@@ -737,7 +737,7 @@ $(function(){
                 $('#ex-IdInformador').val(examenes.proveedor2.Id || '');
                 $('#ex-ObsExamen').val(stripTags(itemprestaciones.ObsExamen) || '');
                 $('#ex-FechaAsignado').val(itemprestaciones.FechaAsignado || '');
-                
+
                 $('#ex-EstadoEx').val(estado);
                 $('#ex-EstadoEx').empty().css(estadoColor);
 
@@ -753,7 +753,7 @@ $(function(){
                 $('#ex-EstadoI').val(estadoI)
                 $('#ex-EstadoI').empty().css(estadoColorI);
                 $('#ex-FechaPagado2').val(itemprestaciones.FechaPagado2 || '');
-                
+
                 itemprestaciones.Anulado === 1 ? $('#ex-asignarI, #ex-abrirI, #ex-cerrarI').hide() : $('#ex-asignar, #ex-abrir, #ex-cerrar').show();
 
                 $('#ex-CInfo').val(itemprestaciones.CInfo || '');
@@ -768,11 +768,11 @@ $(function(){
                 $('#ex-NumeroNC').val(notaCEx);
 
                 $('#ex-efectores').empty().append('<option selected value="' + response.efectores.id + '">' + response.efectores.NombreCompleto + '</option>');
-          
+
                 $('#ex-informadores').empty().append('<option selected value="' + response.informadores.id + '">' + response.informadores.NombreCompleto + '</option>');
 
                 let efector = $('#ex-efectores').val(), informador = $('#ex-informadores').val();
-                
+
                 asignarModal(itemprestaciones.IdProfesional, 'efector');
                 asignarModal(itemprestaciones.IdProfesional2, 'informador');
                 liberarModal(itemprestaciones.CAdj, efector, 'efector');
@@ -786,18 +786,18 @@ $(function(){
                 optionsGeneralModal(examenes.IdProveedor2, 'informador').then(response => {
                     return response;
                 });
-                listadoEModal(itemprestaciones.Id);
-                listadoIModal(itemprestaciones.Id);
+                await listadoEModal(itemprestaciones.Id);
+                await listadoIModal(itemprestaciones.Id);
 
-                
-                
+
+
                 if (itemprestaciones.CInfo === 2 && adjuntosInformador(itemprestaciones, response) === 'Pendiente' && itemprestaciones.Anulado === 0) {
                     borrarCache();
                     $('.ex-adjuntarInformador').show();
                 }
 
                 ocultarCampos();
-                $.each(eventos, function(index, evento) {
+                $.each(eventos, function (index, evento) {
                     evento(itemprestaciones.Id);
                 });
 
@@ -808,7 +808,7 @@ $(function(){
 
                 multiExEfector(itemprestaciones); //Activa el multiefector en el listado de Archivos
                 listaExEfector(response.multiEfector); // Listado de los examenes MultiEfector
-                
+
                 $('#ex-multi').val(itemprestaciones.examenes.proveedor1.Multi === 1 ? 'success' : 'fail');
 
                 multiExInformador(itemprestaciones); //Activa el multiinformador en el listado de Archivos
@@ -816,37 +816,37 @@ $(function(){
 
                 $('#ex-multiE').val(itemprestaciones.examenes.proveedor2.MultiE == 1 && itemprestaciones.profesionales2.InfAdj === 1 ? 'success' : 'fail');
 
-                
-
                 checkBloq(itemprestaciones.Anulado, reactivarEstilos);
+
+                prestacionCerrada === 1 && $('.btn-group-efector, .btn-group-informador').hide();
             })
-            .fail(function(jqXHR){
+            .fail(function (jqXHR) {
                 preloader('off');
-                let errorData = JSON.parse(jqXHR.responseText);            
+                let errorData = JSON.parse(jqXHR.responseText);
                 checkError(jqXHR.status, errorData.msg);
-                return;  
+                return;
             });
     }
 
     /*******************************Modal Examen ************************************/
     function eventoAbrir(id) {
-        $(document).off('click', '.ex-abrir').on('click', '.ex-abrir', function(e){
+        $(document).off('click', '.ex-abrir').on('click', '.ex-abrir', function (e) {
 
             e.preventDefault();
-            let lista = {3: 0, 4: 1, 5: 2}, cadj = $('#ex-CAdj').val();
+            let lista = { 3: 0, 4: 1, 5: 2 }, cadj = $('#ex-CAdj').val();
 
-            if(parseInt(cadj, 10) in lista){
+            if (parseInt(cadj, 10) in lista) {
                 preloader('on');
-                $.post(updateItem, {Id : id, _token: TOKEN, CAdj: lista[cadj], Para: 'abrir' })
-                    .done(function(response){
+                $.post(updateItem, { Id: id, _token: TOKEN, CAdj: lista[cadj], Para: 'abrir' })
+                    .done(function (response) {
                         preloader('off');
                         toastr.success('Se ha realizado la acción correctamente');
                         loadModalExamen(response[0].data.Id);
-                        
+
                     })
-                    .fail(function(jqXHR){
+                    .fail(function (jqXHR) {
                         preloader('off');
-                        let errorData = JSON.parse(jqXHR.responseText);            
+                        let errorData = JSON.parse(jqXHR.responseText);
                         checkError(jqXHR.status, errorData.msg);
                         return;
                     });
@@ -855,61 +855,61 @@ $(function(){
     }
 
     function eventoCerrar(id) {
-        $(document).off('click', '#ex-cerrar, #ex-cerrarI').on('click', '#ex-cerrar, #ex-cerrarI', function(e){
+        $(document).off('click', '#ex-cerrar, #ex-cerrarI').on('click', '#ex-cerrar, #ex-cerrarI', function (e) {
             e.preventDefault();
             let who = $(this).hasClass('ex-cerrar') ? 'cerrar' : 'cerrarI',
-                listaE = {0: 3, 2: 5, 1: 4},
+                listaE = { 0: 3, 2: 5, 1: 4 },
                 listaI = ["0", "1", "2", "3"],
-                cadj = $('#ex-CAdj').val(), 
+                cadj = $('#ex-CAdj').val(),
                 CInfo = $('#ex-CInfo').val();
 
-            if(who === 'cerrar' && parseInt(cadj, 10) in listaE) {
-                
+            if (who === 'cerrar' && parseInt(cadj, 10) in listaE) {
+
                 swal({
                     title: "¿Esta seguro que desea cerrar el exámen efector?",
                     icon: "warning",
                     buttons: ["Cancelar", "Aceptar"]
                 }).then((confirmar) => {
-                    if(confirmar) {
+                    if (confirmar) {
                         preloader('on');
-                        $.post(updateItem, {Id : id, _token: TOKEN, CAdj: listaE[cadj], Para: who })
-                            .done(function(response){
+                        $.post(updateItem, { Id: id, _token: TOKEN, CAdj: listaE[cadj], Para: who })
+                            .done(function (response) {
                                 preloader('off');
                                 let query = response[0].data;
-                                
+
                                 toastr.success('Se ha cerrado al efector correctamente');
                                 loadModalExamen(query.Id);
                             })
-                            .fail(function(jqXHR){
+                            .fail(function (jqXHR) {
                                 preloader('off');
-                                let errorData = JSON.parse(jqXHR.responseText);            
+                                let errorData = JSON.parse(jqXHR.responseText);
                                 checkError(jqXHR.status, errorData.msg);
                                 return;
                             });
                     }
                 });
-            }    
-            
-            if(who === 'cerrarI' && listaI.includes(CInfo)) {
+            }
+
+            if (who === 'cerrarI' && listaI.includes(CInfo)) {
                 swal({
                     title: "¿Esta seguro que desea cerrar el examen informador?",
                     icon: "warning",
                     buttons: ["Cancelar", "Aceptar"]
                 }).then((confirmar) => {
-                    if(confirmar) {
+                    if (confirmar) {
                         preloader('on');
-                        $.post(updateItem, {Id : id, _token: TOKEN, CInfo: 3, Para: who })
-                            .done(function(response){
+                        $.post(updateItem, { Id: id, _token: TOKEN, CInfo: 3, Para: who })
+                            .done(function (response) {
                                 preloader('off');
                                 let query = response[0].data;
 
-                                toastr.success('Se ha cerrado al informador correctamente','',{timeOut: 1000});
+                                toastr.success('Se ha cerrado al informador correctamente', '', { timeOut: 1000 });
                                 loadModalExamen(query.Id);
-                                
+
                             })
-                            .fail(function(jqXHR){
+                            .fail(function (jqXHR) {
                                 preloader('off');
-                                let errorData = JSON.parse(jqXHR.responseText);            W
+                                let errorData = JSON.parse(jqXHR.responseText); W
                                 checkError(jqXHR.status, errorData.msg);
                                 return;
                             });
@@ -920,30 +920,30 @@ $(function(){
     }
 
     function eventoAsignar(id) {
-        $(document).on('click', '#ex-asignar, #ex-asignarI', function(e) {
+        $(document).on('click', '#ex-asignar, #ex-asignarI', function (e) {
             e.preventDefault();
 
             let who = $(this).hasClass('ex-asignar') ? 'asignar' : 'asignarI',
                 check = (who === 'asignar') ? $('#ex-efectores').val() : $('#ex-informadores').val();
-    
-            if(!check || check === '0') {
-                toastr.warning("Debe seleccionar un Efector/Informador para poder asignar uno",'',{timeOut: 1000});
+
+            if (!check || check === '0') {
+                toastr.warning("Debe seleccionar un Efector/Informador para poder asignar uno", '', { timeOut: 1000 });
                 return;
             }
-    
+
             swal({
                 title: "¿Esta seguro que desea asignar?",
                 icon: "warning",
                 buttons: ["Cancelar", "Aceptar"]
             }).then((confirmar) => {
-                if(confirmar) {
-    
+                if (confirmar) {
+
                     preloader('on');
-                    $.post(updateAsignado, { Id: id, _token: TOKEN, IdProfesional: check, fecha: 1, Para: who})
-                        .done(function(response){
+                    $.post(updateAsignado, { Id: id, _token: TOKEN, IdProfesional: check, fecha: 1, Para: who })
+                        .done(function (response) {
                             preloader('off');
                             const itemprestaciones = response.data;
-                            toastr.success(response.msg,'',{timeOut: 1000});
+                            toastr.success(response.msg, '', { timeOut: 1000 });
 
                             if (who === 'asignar') {
 
@@ -952,16 +952,16 @@ $(function(){
                                 preloader('off');
 
 
-                            }else if(who === 'asignarI') {
+                            } else if (who === 'asignarI') {
 
                                 preloader('on');
                                 loadModalExamen(itemprestaciones.Id);
                                 preloader('off');
-                            }     
+                            }
                         })
-                        .fail(function(jqXHR){
+                        .fail(function (jqXHR) {
                             preloader('off');
-                            let errorData = JSON.parse(jqXHR.responseText);            
+                            let errorData = JSON.parse(jqXHR.responseText);
                             checkError(jqXHR.status, errorData.msg);
                             return;
                         });
@@ -971,75 +971,75 @@ $(function(){
     }
 
     function eventoLiberar(id) {
-        $(document).on('click', '#ex-liberar, #ex-liberarI', function(e) {
+        $(document).on('click', '#ex-liberar, #ex-liberarI', function (e) {
             e.preventDefault();
-    
+
             let checkEmptyE = $('#ex-efectores').val(), checkEmptyI = $('#ex-informadores').val(), who = $(this).attr('id') === 'ex-liberar' ? checkEmptyE : checkEmptyI;
-            
+
             if (who != '0') {
-    
+
                 swal({
                     title: "¿Esta seguro que desea liberar el exámen?",
                     icon: "warning",
                     buttons: ["Cancelar", "Aceptar"]
                 }).then((confirmar) => {
                     if (confirmar) {
-                        
+
                         preloader('on');
-                        $.post(updateAsignado, { Id: id, _token: TOKEN, IdProfesional: 0, fecha: 0, Para: $(this).attr('id') === 'ex-liberar' ? 'asignar' : 'asignarI'})
-                        .done(function(response){
-                            preloader('off');
-                            toastr.success(response.msg,'',{timeOut: 1000});
-                            loadModalExamen(response.data.Id);
-                            
-                        })
-                        .fail(function(jqXHR){
-                            preloader('off');
-                            let errorData = JSON.parse(jqXHR.responseText);            
-                            checkError(jqXHR.status, errorData.msg);
-                            return;
-                        });
+                        $.post(updateAsignado, { Id: id, _token: TOKEN, IdProfesional: 0, fecha: 0, Para: $(this).attr('id') === 'ex-liberar' ? 'asignar' : 'asignarI' })
+                            .done(function (response) {
+                                preloader('off');
+                                toastr.success(response.msg, '', { timeOut: 1000 });
+                                loadModalExamen(response.data.Id);
+
+                            })
+                            .fail(function (jqXHR) {
+                                preloader('off');
+                                let errorData = JSON.parse(jqXHR.responseText);
+                                checkError(jqXHR.status, errorData.msg);
+                                return;
+                            });
                     }
-                })   
+                })
             }
         });
     }
 
     function eventoAdjuntar(id) {
-        $(document).off('click', '.ex-btnAdjEfector, .ex-btnAdjInformador').on('click', '.ex-btnAdjEfector, .ex-btnAdjInformador', function (e){
+        $(document).off('click', '.ex-btnAdjEfector, .ex-btnAdjInformador').on('click', '.ex-btnAdjEfector, .ex-btnAdjInformador', function (e) {
             e.preventDefault();
-            
+
             let who = $(this).hasClass('ex-btnAdjEfector') ? 'efector' : 'informador';
 
             let obj = {
                 efector: ['input[name="fileEfector"]', '[id^="Id_multiAdj_"]:checked', '#DescripcionE', '#ex-efectores'],
                 informador: ['input[name="fileInformador"]', '[id^="Id_multiAdjInf_"]:checked', '#DescripcionI', '#ex-informadores']
             }
-            
+
             let archivo = $(obj[who][0])[0].files[0];
-    
+
             let multi = who === 'efector' ? $('#ex-multi').val() : $('#ex-multiE').val(), ids = [], anexoProfesional = $(obj[who][3]).val();
-    
-            $(obj[who][1]).each(function() {
+
+            $(obj[who][1]).each(function () {
                 ids.push($(this).val());
             });
 
-            if(ids.length === 0 && multi == "success"){
-                toastr.warning('No hay examenes seleccionados','',{timeOut: 1000});
+            if (ids.length === 0 && multi == "success") {
+                toastr.warning('No hay examenes seleccionados', '', { timeOut: 1000 });
                 return;
             }
-            
+
             let descripcion = $(obj[who][2]).val(),
                 identificacion = (multi == 'success') ? ids : $('#ex-identificacion').val(),
                 prestacion = $('#ex-prestacion').val();
-            
-            who = multi === 'success' && who === 'efector'
-                    ? 'multiefector'
-                    : (multi === 'success' && who === 'informador'
-                        ? 'multiInformador'
-                        : who);
 
-            if(verificarArchivo(archivo)){
+            who = multi === 'success' && who === 'efector'
+                ? 'multiefector'
+                : (multi === 'success' && who === 'informador'
+                    ? 'multiInformador'
+                    : who);
+
+            if (verificarArchivo(archivo)) {
                 preloader('on');
                 let formData = new FormData();
                 formData.append('archivo', archivo);
@@ -1051,15 +1051,15 @@ $(function(){
                 formData.append('anexoProfesional', anexoProfesional);
                 formData.append('multi', multi);
                 formData.append('_token', TOKEN);
-       
+
                 $.ajax({
                     type: 'POST',
                     url: fileUpload,
                     data: formData,
                     processData: false,
                     contentType: false,
-                    success: function() {
-                        
+                    success: function () {
+
                         borrarCache();
                         ocultarCampos();
                         $('#modalEfector, #modalInformador').removeClass('show');
@@ -1070,28 +1070,28 @@ $(function(){
                     },
                     error: function (jqXHR) {
                         preloader('off');
-                        let errorData = JSON.parse(jqXHR.responseText);            
+                        let errorData = JSON.parse(jqXHR.responseText);
                         checkError(jqXHR.status, errorData.msg);
                         return;
                     }
                 });
             }
         });
-    
+
     }
 
     function eventoEliminar(idItem, multiE, multiI) {
-        $(document).on('click', '.deleteAdjunto', function(e){
+        $(document).on('click', '.deleteAdjunto', function (e) {
             e.preventDefault();
-            let id = $(this).data('id'), 
+            let id = $(this).data('id'),
                 tipo = $(this).data('tipo'),
                 idExOriginal = $('#ex-identificacion').val();
-    
-            if(!id || !tipo){
+
+            if (!id || !tipo) {
                 toastr.warning("Hay un problema porque no podemos identificar el tipo o la id a eliminar");
                 return;
             }
-            
+
             swal({
                 title: "¿Está seguro que desea eliminar?",
                 icon: "warning",
@@ -1118,24 +1118,24 @@ $(function(){
                         closeModal: true
                     }
                 }
-            }).then((confirmar) =>{
+            }).then((confirmar) => {
 
                 if (confirmar === null || (typeof confirmar === 'object' && Object.keys(confirmar).length === 0)) {
-                    return; 
+                    return;
                 }
 
                 preloader('on');
 
-                $.get(deleteIdAdjunto, {Id: id, Tipo: tipo, ItemP: idItem, multi: confirmar === 'multiple'})
-                    .done(function(response){
+                $.get(deleteIdAdjunto, { Id: id, Tipo: tipo, ItemP: idItem, multi: confirmar === 'multiple' })
+                    .done(function (response) {
                         borrarCache();
                         loadModalExamen(idExOriginal);
                         preloader('off');
-                        toastr.success(response.msg);  
+                        toastr.success(response.msg);
                     })
-                    .fail(function(jqXHR){
+                    .fail(function (jqXHR) {
                         preloader('off');
-                        let errorData = JSON.parse(jqXHR.responseText);            
+                        let errorData = JSON.parse(jqXHR.responseText);
                         checkError(jqXHR.status, errorData.msg);
                         return;
                     })
@@ -1144,43 +1144,43 @@ $(function(){
     }
 
     function eventoActualizar(id) {
-        $(document).off('click', '#actExamenModal').on('click', '#actExamenModal', function(e){
+        $(document).off('click', '#actExamenModal').on('click', '#actExamenModal', function (e) {
             e.preventDefault();
-    
+
             let ObsExamen = $('#ex-ObsExamen').val(), Profesionales2 = $('#ex-informadores').val(), Obs = $('#ex-Obs').val(), Fecha = $('#ex-Fecha').val();
-            
+
             preloader('on');
-            $.post(updateItemExamen, {Id: id, _token: TOKEN, ObsExamen: ObsExamen, Profesionales2: Profesionales2, Obs: Obs, Fecha: Fecha})
-                .done(function(response) {
-    
+            $.post(updateItemExamen, { Id: id, _token: TOKEN, ObsExamen: ObsExamen, Profesionales2: Profesionales2, Obs: Obs, Fecha: Fecha })
+                .done(function (response) {
+
                     borrarCache();
                     loadModalExamen(response.data);
                     preloader('off');
                     toastr.success(response.msg);
                 })
-                .fail(function(jqXHR) {
+                .fail(function (jqXHR) {
                     preloader('off');
-                    let errorData = JSON.parse(jqXHR.responseText);            
+                    let errorData = JSON.parse(jqXHR.responseText);
                     checkError(jqXHR.status, errorData.msg);
                     return;
                 });
         });
     }
 
-    $(document).on('click', '.replaceAdjunto', function() {
+    $(document).on('click', '.replaceAdjunto', function () {
 
         let replaceId = $(this).data('id');
         let replaceTipo = $(this).data('tipo');
-        
+
         $('#replaceId').val(replaceId);
         $('#replaceTipo').val(replaceTipo);
-        
+
     });
 
-    $(document).on('click', '.btnReplaceAdj', function() {
+    $(document).on('click', '.btnReplaceAdj', function () {
 
-        let archivo = $('input[name="fileReplace"]')[0].files[0], 
-            replace_Id = $('input[name="replaceId"]').val(), 
+        let archivo = $('input[name="fileReplace"]')[0].files[0],
+            replace_Id = $('input[name="replaceId"]').val(),
             replace_Tipo = $('input[name="replaceTipo"]').val();
 
         if (verificarArchivo(archivo)) {
@@ -1197,7 +1197,7 @@ $(function(){
                 data: formData,
                 processData: false,
                 contentType: false,
-                success: function(response) {
+                success: function (response) {
                     borrarCache();
                     listadoEModal(response.data.Id);
                     listadoIModal(response.data.Id);
@@ -1209,7 +1209,7 @@ $(function(){
                 },
                 error: function (jqXHR) {
                     preloader('off');
-                    let errorData = JSON.parse(jqXHR.responseText);            
+                    let errorData = JSON.parse(jqXHR.responseText);
                     checkError(jqXHR.status, errorData.msg);
                     return;
                 }
@@ -1217,8 +1217,8 @@ $(function(){
         }
 
     });
-  
-    $(document).on('click', '.btnReactivar', function(e) {
+
+    $(document).on('click', '.btnReactivar', function (e) {
         e.preventDefault();
         let id = $(this).data('id');
 
@@ -1229,20 +1229,20 @@ $(function(){
         }).then((confirmar) => {
             if (confirmar) {
                 preloader('on');
-                $.post(reactivarItem, {id: id, _token: TOKEN})
-                    .done(function(response){
+                $.post(reactivarItem, { id: id, _token: TOKEN })
+                    .done(function (response) {
                         preloader('off');
-                        toastr.success(response.msg,'',{timeOut: 1000});
-                         $('#listaExamenes').empty();
-                            $('#exam').val([]).trigger('change.select2');
-                            $('#addPaquete').val([]).trigger('change.select2');
-                            $('#listaExamenes').empty();
-                            cargarExamen(ID);
-                            contadorExamenes(ID);
+                        toastr.success(response.msg, '', { timeOut: 1000 });
+                        $('#listaExamenes').empty();
+                        $('#exam').val([]).trigger('change.select2');
+                        $('#addPaquete').val([]).trigger('change.select2');
+                        $('#listaExamenes').empty();
+                        cargarExamen(ID);
+                        contadorExamenes(ID);
                     })
-                    .fail(function(jqXHR){
+                    .fail(function (jqXHR) {
                         preloader('off');
-                        let errorData = JSON.parse(jqXHR.responseText);            
+                        let errorData = JSON.parse(jqXHR.responseText);
                         checkError(jqXHR.status, errorData.msg);
                         return;
                     });
@@ -1250,46 +1250,46 @@ $(function(){
         });
     })
 
-    async function asignarModal(e, tipo){
+    async function asignarModal(e, tipo) {
 
         let efector = $('#ex-efectores').val();
 
         if (tipo === 'efector') {
-            
+
             let resultado = await parseInt(e);
-            
+
             if (!resultado) {
                 await borrarCache();
                 $('.ex-asignar').show();
-                $('#ex-informadores').prop('disabled', true);  
+                $('#ex-informadores').prop('disabled', true);
             }
-        
+
         } else if (tipo === 'informador') {
 
             let resultado = await parseInt(e, 10);
 
             if (!resultado && parseInt(efector)) {
-                
+
                 await borrarCache();
                 $('.ex-asignarI').show();
             }
         }
     }
 
-    async function liberarModal(val, e, tipo){
+    async function liberarModal(val, e, tipo) {
 
         let number = parseInt(e, 10);
 
-        if(tipo === 'efector') {
-                                    
+        if (tipo === 'efector') {
+
             let resultado = await (number && valCerrar.includes(parseInt(val, 10)));
 
             if (resultado) {
                 await borrarCache();
-                $('.ex-liberar, .ex-cerrar').show();    
+                $('.ex-liberar, .ex-cerrar').show();
             }
 
-        }else if(tipo === 'informador') {
+        } else if (tipo === 'informador') {
 
             let resultado = await (number && valCerrarI !== parseInt(val, 10));
 
@@ -1297,48 +1297,48 @@ $(function(){
                 await borrarCache();
                 $('.ex-liberarI, .ex-adjuntarInformador').show();
                 $('.ex-asignarI').hide();
-            }  
+            }
 
         }
     }
 
-    async function abrirModal(val){
+    async function abrirModal(val) {
 
         let informador = $('#ex-informadores').val();
-        let resultado = await (valAbrir.includes(parseInt(val, 10)) && parseInt(informador,10) !== 3 || parseInt(informador,10) !== 0);
+        let resultado = await (valAbrir.includes(parseInt(val, 10)) && parseInt(informador, 10) !== 3 || parseInt(informador, 10) !== 0);
 
         if (resultado) {
 
             await borrarCache();
             $('.ex-abrir').show();
             $('#ex-informadores').prop('disabled', false);
-        
+
         } else {
 
             await borrarCache();
-            $('.ex-abrir').hide();  
+            $('.ex-abrir').hide();
         }
     }
 
-    async function cerrarModal(val, e, tipo, idItemprestacion){ 
+    async function cerrarModal(val, e, tipo, idItemprestacion) {
 
         let efector = parseInt($('#ex-efectores').val(), 10),
-            informador = parseInt($('#ex-informadores').val(),10),
+            informador = parseInt($('#ex-informadores').val(), 10),
             CInfo = parseInt($('#ex-CInfo').val(), 10),
             Estado = $('#ex-Estado').val(),
             EstadoI = $('#ex-Estado').val(),
             AdjEfector = $('#ex-Estado').val(),
             AdjInformador = $('#ex-EstadoInf').val(),
             num = parseInt(e, 10);
-        
+
         if (tipo === 'efector') {
             let resultado = await (valCerrar.includes(parseInt(val, 10)) && num);
 
-            if(resultado){
+            if (resultado) {
                 await borrarCache();
-                $('.ex-liberar, .ex-cerrar').show();   
+                $('.ex-liberar, .ex-cerrar').show();
 
-                if(Estado !== 'No lleva adjuntos') {
+                if (Estado !== 'No lleva adjuntos') {
                     checkAdjunto(idItemprestacion, 'efector').then(response => {
                         response ? $('.ex-adjuntarEfector').hide() : $('.ex-adjuntarEfector').show();
                     });
@@ -1352,27 +1352,27 @@ $(function(){
                 errorInformador = await (informador !== 0) && (AdjInformador === 'Pendiente'),
                 final = await (efector !== 0 && informador !== 0) && (Estado === 'Cerrado' && EstadoI === 'Cerrado');
 
-            if(resultado){
-   
+            if (resultado) {
+
                 await borrarCache();
                 $('.ex-cerrarI').show();
                 $('.ex-abrir').hide();
 
-                if(EstadoI !== 'No lleva adjuntos') {
+                if (EstadoI !== 'No lleva adjuntos') {
                     checkAdjunto(idItemprestacion, 'informador').then(response => {
                         response ? $('.ex-adjuntarInformador').hide() : $('.ex-adjuntarInformador').show();
                     });
                 }
 
-            }else if(errorEfector) {
+            } else if (errorEfector) {
                 await borrarCache();
                 $('.ex-adjuntarEfector').show();
-                
-            }else if(errorInformador) {
+
+            } else if (errorInformador) {
                 await borrarCache();
                 $('.ex-adjuntarInformador').show();
 
-            }else if(final){
+            } else if (final) {
 
                 await borrarCache();
                 $('.ex-cerrarI, .ex-abrir, .ex-liberarI, .ex-adjuntarInformador').hide();
@@ -1385,7 +1385,7 @@ $(function(){
     }
 
     async function optionsGeneralModal(id, tipo) {
-        
+
         let etiqueta, valor;
 
         if (tipo === 'efector') {
@@ -1404,27 +1404,30 @@ $(function(){
                     let data = response.resultados;
                     etiqueta.empty().append('<option value="">Elija una opción</option>');
 
-                    for(let i = 0; i < data.length; i++) {
+                    for (let i = 0; i < data.length; i++) {
                         let d = data[i],
                             contenido = `<option value="${d.Id}">${d.NombreCompleto}</option>`;
-                            etiqueta.append(contenido);
+                        etiqueta.append(contenido);
                     }
                 });
         }
     }
 
-    async function listadoEModal(id){
-        
+    async function listadoEModal(id) {
+
         $('#listaefectores').empty();
-        
+
         preloader('on');
-        $.get(await paginacionGeneral, {Id: id, tipo: 'efector'})
-            .done(function(response){
-                let data = response.resultado;
+        $.get(await paginacionGeneral, { Id: id, tipo: 'efector' })
+            .done(async function (response) {
+                let data = await response.resultado;
                 preloader('off');
 
-                for(let index = 0; index < data.length; index++) {
-                    let d = data[index];
+                for (let index = 0; index < data.length; index++) {
+                    let d = await data[index];
+
+                    const respEstado = await $.get(estadoCerrado, { Id: d.IdPrestacion });
+                    const estadoCerradoValue = await respEstado;
 
                     let contenido = `
                         <tr>
@@ -1433,7 +1436,7 @@ $(function(){
                             <td>${(d.Adjunto === 0 ? 'Físico' : 'Digital')}</td>
                             <td>${(d.MultiE === 0 ? 'Simple' : 'Multi')}</td>
                             <td>
-                                <div class="d-flex justify-content-center align-items-center gap-2">
+                                <div class="d-flex justify-content-center align-items-center gap-2 btn-group-efector">
                                     <div class="edit">
                                         <a href="${descargaE}/${d.RutaE}" target="_blank">
                                             <button type="button" class="btn btn-sm iconGeneral" title="Ver"><i class="ri-search-eye-line"></i></button>
@@ -1444,18 +1447,21 @@ $(function(){
                                             <button type="button" class="btn btn-sm iconGeneral" title="Descargar"><i class="ri-download-2-line"></i></button>
                                         </a>
                                     </div>
-                                    <div class="replace">
-                                        <button data-id="${d.IdE}" data-tipo="efector" class="btn btn-sm iconGeneral replaceAdjunto" data-bs-toggle="offcanvas" data-bs-target="#replaceAdjunto" title="Reemplazar archivo">
-                                            <i class="ri-file-edit-line"></i>
-                                        </button>
-                                    </div>
 
-                                    ${(d.Anulado === 0) ? `
-                                    <div class="remove">
-                                        <button data-id="${d.IdE}" data-tipo="efector" class="btn btn-sm iconGeneral deleteAdjunto" title="Eliminar">
-                                            <i class="ri-delete-bin-2-line"></i>
-                                        </button>
-                                    </div>
+                                    ${(estadoCerradoValue === 0) ? `
+                                        <div class="replace">
+                                            <button data-id="${d.IdE}" data-tipo="efector" class="btn btn-sm iconGeneral replaceAdjunto" data-bs-toggle="offcanvas" data-bs-target="#replaceAdjunto" title="Reemplazar archivo">
+                                                <i class="ri-file-edit-line"></i>
+                                            </button>
+                                        </div>
+                                    ` : ``}
+
+                                    ${(d.Anulado === 0 && estadoCerradoValue === 0) ? `
+                                        <div class="remove">
+                                            <button data-id="${d.IdE}" data-tipo="efector" class="btn btn-sm iconGeneral deleteAdjunto" title="Eliminar ${estadoCerradoValue}">
+                                                <i class="ri-delete-bin-2-line"></i>
+                                            </button>
+                                        </div>
                                     ` : ``}
                                     
                                 </div>
@@ -1468,24 +1474,26 @@ $(function(){
             })
     }
 
-    async function listadoIModal(id){
+    async function listadoIModal(id) {
 
         $('#listainformadores').empty();
         let EstadoI = $('#ex-EstadoI').val()
         preloader('on');
-        $.get(await paginacionGeneral, {Id: id, tipo: 'informador'})
-            .done(function(response){
-                let data = response.resultado;
+        $.get(await paginacionGeneral, { Id: id, tipo: 'informador' })
+            .done(async function (response) {
+                let data = await response.resultado;
                 preloader('off');
 
-                for(let index = 0; index < data.length; index++) {
-                    let d = data[index],
+                for (let index = 0; index < data.length; index++) {
+                    let d = await data[index],
+                        respEstado = await $.get(estadoCerrado, { Id: d.IdPrestacion }),
+                        estadoCerradoValue = await respEstado,
                         contenido = `
                     <tr>
                         <td>${d.Nombre}</td>
                         <td>${(d.DescripcionI ?? '')}</td>
                         <td>
-                            <div class="d-flex justify-content-center align-items-center gap-2">
+                            <div class="d-flex justify-content-center align-items-center gap-2 btn-group-informador">
                                 <div class="edit">
                                     <a href="${descargaI}/${d.RutaI}" target="_blank">
                                         <button type="button" class="btn btn-sm iconGeneral" title="Ver"><i class="ri-search-eye-line"></i></button>
@@ -1496,14 +1504,15 @@ $(function(){
                                         <button type="button" class="btn btn-sm iconGeneral" title="Descargar"><i class="ri-download-2-line"></i></button>
                                     </a>
                                 </div>
+                                ${(estadoCerradoValue === 0) ? `
                                 <div class="replace">
                                     <button data-id="${d.IdI}" data-tipo="informador" data-bs-toggle="offcanvas" data-bs-target="#replaceAdjunto" class="btn btn-sm iconGeneral replaceAdjunto" title="Reemplazar archivo">
                                         <i class="ri-file-edit-line"></i>
                                     </button> 
-                                </div>
-                                ${d.Anulado === 0 ? `
+                                </div>` : ``}
+                                ${(d.Anulado === 0 && estadoCerradoValue === 0) ? `
                                 <div class="remove">
-                                    <button data-id="${d.IdI}" data-tipo="informador" class="btn btn-sm iconGeneral deleteAdjunto" title="Eliminar">
+                                    <button data-id="${d.IdI}" data-tipo="informador" class="btn btn-sm iconGeneral deleteAdjunto" title="Eliminar ${estadoCerradoValue}">
                                         <i class="ri-delete-bin-2-line"></i>
                                     </button>
                                 </div>
@@ -1513,12 +1522,12 @@ $(function(){
                     </tr>
                 `;
 
-                $('#listainformadores').append(contenido);     
-                }     
+                    $('#listainformadores').append(contenido);
+                }
             })
-            .fail(function(jqXHR){
+            .fail(function (jqXHR) {
                 preloader('off');
-                let errorData = JSON.parse(jqXHR.responseText);            
+                let errorData = JSON.parse(jqXHR.responseText);
                 checkError(jqXHR.status, errorData.msg);
                 return;
             });
@@ -1527,7 +1536,7 @@ $(function(){
     function ocultarCampos() {
         const elements = document.querySelectorAll('.ex-abrir, .ex-cerrar, .ex-asignar, .ex-liberar, .ex-asignarI, .ex-liberarI, .ex-cerrarI, .ex-adjuntarEfector, .ex-adjuntarInformador');
 
-        for(let i = 0; i < elements.length; i++) {
+        for (let i = 0; i < elements.length; i++) {
             elements[i].style.display = 'none';
         }
     }
@@ -1538,15 +1547,15 @@ $(function(){
 
     function listaExEfector(data) {
 
-        if(!data) return;
+        if (!data) return;
         $('.listaGrupoEfector').empty();
 
-        for(let index = 0; index < data.length; index++) {
+        for (let index = 0; index < data.length; index++) {
             let examen = data[index],
                 contenido = `
                 <label class="list-group-item">
-                    <input class="form-check-input me-1" type="checkbox" id="Id_multiAdj_${ examen.Id }" value="${examen.Id}" ${ examen.archivos_count > 0 ? 'disabled' : 'checked' }> 
-                    ${ examen.archivos_count > 0 ? examen.NombreExamen + ' <i title="Con archivo adjunto" class="ri-attachment-line verde"></i>' : examen.NombreExamen}
+                    <input class="form-check-input me-1" type="checkbox" id="Id_multiAdj_${examen.Id}" value="${examen.Id}" ${examen.archivos_count > 0 ? 'disabled' : 'checked'}> 
+                    ${examen.archivos_count > 0 ? examen.NombreExamen + ' <i title="Con archivo adjunto" class="ri-attachment-line verde"></i>' : examen.NombreExamen}
                 </label>
             `;
             $('.listaGrupoEfector').append(contenido);
@@ -1558,28 +1567,25 @@ $(function(){
     }
 
     function listaExInformador(data) {
-        if(!data) return;
-        
+        if (!data) return;
+
         $('.listaGrupoInformador').empty();
-        for(let index = 0; index < data.length; index++) {
+        for (let index = 0; index < data.length; index++) {
             let examen = data[index],
                 contenido = `
                     <label class="list-group-item">
-                        <input class="form-check-input me-1" type="checkbox" id="Id_multiAdjInf_${ examen.Id }" value="${ examen.Id}" ${ examen.archivos_count > 0 ? 'disabled' : 'checked' }> 
-                        ${ examen.archivos_count > 0 ? examen.NombreExamen + ' (' + examen.NombreProveedor + ') <i title="Con archivo adjunto" class="ri-attachment-line verde"></i>' : examen.NombreExamen + ' (' + examen.NombreProveedor + ')'}
+                        <input class="form-check-input me-1" type="checkbox" id="Id_multiAdjInf_${examen.Id}" value="${examen.Id}" ${examen.archivos_count > 0 ? 'disabled' : 'checked'}> 
+                        ${examen.archivos_count > 0 ? examen.NombreExamen + ' (' + examen.NombreProveedor + ') <i title="Con archivo adjunto" class="ri-attachment-line verde"></i>' : examen.NombreExamen + ' (' + examen.NombreProveedor + ')'}
                     </label>
                 `;
-                $('.listaGrupoInformador').append(contenido);
+            $('.listaGrupoInformador').append(contenido);
         }
-        
+
     }
 
     function adjuntosEfector(examenes, data) {
 
-        console.log(examenes.Adjunto);
-        console.log(typeof(examenes.Adjunto));
-
-        switch(true) {
+        switch (true) {
             case (examenes.Adjunto === 0):
                 return 'No lleva adjuntos';
 
@@ -1596,7 +1602,7 @@ $(function(){
 
     function adjuntosInformador(item, data) {
 
-        switch(true) {
+        switch (true) {
             case (item.profesionales2.InfAdj === 0):
                 return 'No lleva Adjuntos';
 
@@ -1612,7 +1618,7 @@ $(function(){
     }
 
     function borrarCache() {
-        $.post(cacheDelete, {_token: TOKEN}, function(){});
+        $.post(cacheDelete, { _token: TOKEN }, function () { });
     }
 
 
@@ -1622,10 +1628,10 @@ $(function(){
 
         return new Promise((resolve, reject) => {
             $.get(checkAdj, { Id: id, Tipo: tipo })
-                .done(function(response) { 
-                    resolve(response);      
+                .done(function (response) {
+                    resolve(response);
                 })
-                .fail(function(error) {
+                .fail(function (error) {
                     console.error("Error:", error);
                     reject(error);
                 });
@@ -1633,15 +1639,15 @@ $(function(){
     }
 
     function checkBloq(anulado, estilos) {
-        
-        if(anulado === 1) {
+
+        if (anulado === 1) {
             $('#ex-Fecha, #ex-ObsExamen, #ex-efectores, #ex-informadores, #actExamenModal').prop('disabled', true);
             $('button').removeClass('ex-asignar ex-abrir ex-cerrar ex-asignarI ex-cerrarI');
             //p$('button').removeAttr('id');
             $('#ex-liberarI, #ex-liberar').show();
-        }else{
+        } else {
             $('#ex-Fecha, #ex-ObsExamen, #ex-efectores, #ex-informadores, #actExamenModal').prop('disabled', false);
-            $.each(estilos, function(index, estilo){
+            $.each(estilos, function (index, estilo) {
                 let clase = estilo.replace('#', '');
                 $(estilo).hasClass(clase) ? $(estilo).addClass(clase) : '';
             })
@@ -1653,7 +1659,7 @@ $(function(){
             url: checkFirst,
             type: 'GET',
             data: {
-                Id: id, 
+                Id: id,
                 who: who
             }
         });
@@ -1662,7 +1668,7 @@ $(function(){
     }
 
     function contadorExamenes(idPrestacion) {
-        $.get(contadorEx, {Id: idPrestacion}, function(response){
+        $.get(contadorEx, { Id: idPrestacion }, function (response) {
             $('#countExamenes').empty().text(response);
         });
     }
@@ -1670,62 +1676,62 @@ $(function(){
     function checkearFacturas() {
         let id = $('#ex-identificacion').val();
 
-        if(!id) return;
+        if (!id) return;
 
-        $.get(checkFacturas, {IdPrestacion: $('#ex-prestacion').val(), IdExamen: $('#ex-idExamen').val()})
-            .done(function(response){
+        $.get(checkFacturas, { IdPrestacion: $('#ex-prestacion').val(), IdExamen: $('#ex-idExamen').val() })
+            .done(function (response) {
 
                 switch (response.tipo) {
                     case 'examenCuenta':
-                         $('#ex-NroFacturaVta').val(response.data.NroFactura);
-                         $('#ex-FechaFacturaVta').val(response.data.Fecha);
+                        $('#ex-NroFacturaVta').val(response.data.NroFactura);
+                        $('#ex-FechaFacturaVta').val(response.data.Fecha);
                         return;
                     case 'facturaDeVenta':
-                         $('#ex-NroFacturaVta').val(response.data.NroFactura);
-                         $('#ex-FechaFacturaVta').val(response.data.Fecha);
-                        return 
+                        $('#ex-NroFacturaVta').val(response.data.NroFactura);
+                        $('#ex-FechaFacturaVta').val(response.data.Fecha);
+                        return
                     default:
                         $('#ex-NroFacturaVta').val();
                         $('#ex-FechaFacturaVta').val();
                         return;
                 }
             })
-            .fail(function(jqXHR){
+            .fail(function (jqXHR) {
                 let errorData = JSON.parse(jqXHR.responseText);
                 checkError(jqXHR.status, errorData.msg);
                 return;
             })
     }
 
-        function listadoSelectExCta(id) {
+    function listadoSelectExCta(id) {
         $('#exaCtaDisp').empty()
 
-        if(!id) return;
+        if (!id) return;
 
         preloader('on');
-        $.get(listaExCuenta, {Id: id})
-            .done(function(response){
-             
+        $.get(listaExCuenta, { Id: id })
+            .done(function (response) {
+
                 let contenido = '';
-                if(response && response.length > 0) {
+                if (response && response.length > 0) {
 
                     $('#exaCtaDisp').append('<option selected value="">Examenes disponibles..</option>');
 
-                    $.each(response, function(index, data){
+                    $.each(response, function (index, data) {
                         contenido += `<option value="${data.IdExamen}" data-id="${data.IdPagoCuenta}">${data.NombreExamen} (Cantidad: ${data.total})</option>`;
                     });
 
                     $('#exaCtaDisp').append(contenido);
 
-                }else{
+                } else {
                     $('#exaCtaDisp').append('<option selected value="">Sin examenes disponibles</option>');
-                }  
+                }
             })
-            .fail(function(jqXHR){
+            .fail(function (jqXHR) {
                 preloader('off');
-                let errorData = JSON.parse(jqXHR.responseText);            
+                let errorData = JSON.parse(jqXHR.responseText);
                 checkError(jqXHR.status, errorData.msg);
-                return; 
+                return;
             })
     }
 
