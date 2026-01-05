@@ -818,7 +818,7 @@ $(function () {
 
                 checkBloq(itemprestaciones.Anulado, reactivarEstilos);
 
-                prestacionCerrada === 1 && $('.btn-group-efector, .btn-group-informador').hide();
+                // prestacionCerrada === 1 && $('.btn-group-efector, .btn-group-informador').hide();
             })
             .fail(function (jqXHR) {
                 preloader('off');
