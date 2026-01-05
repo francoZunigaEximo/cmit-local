@@ -60,8 +60,6 @@ class ClientesController extends Controller
         }
     }
 
-
-
     public function create()
     {
         $quitarDeProvincias = ['CIUDAD DE BUENOS AIRES', '', 'BARILOCHE', 'COLOMBIA', 'GENERAL ALVEAL', 'GENERAL ALVEAR', 'LAS OVEJAS', 'VENEZUELA'];
