@@ -11,7 +11,7 @@
     </div>
     <div class="page-title-right">
     </div>
-    <button type="button" id="volver" class="btn btn-warning botonGeneral">Volver</button>
+    <button type="button" id="volver" class="btn btn-warning">Volver</button>
 </div>
 
 <div class="container-fluid">

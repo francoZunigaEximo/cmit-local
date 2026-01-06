@@ -5,7 +5,7 @@
 @section('content')
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
     <h4 class="mb-sm-0">Crear Nuevo Mensaje</h4>
-    <a class="btn btn-sm botonGeneral" href="{{ route('mensajes.modelos') }}"><i class="ri-arrow-go-back-line"></i>Volver</a>
+    <a class="btn btn-warning" href="{{ route('mensajes.modelos') }}"><i class="ri-arrow-go-back-line"></i>Volver</a>
 </div>
 
 <div class="col-sm-12 mt-2 mb-2">
