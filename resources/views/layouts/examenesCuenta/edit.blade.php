@@ -8,7 +8,7 @@
     <h4 class="mb-sm-0">Examenes a cuenta</h4>
 
     <div class="page-title-right"></div>
-    <button type="button" class="btn btn-sm botonGeneral volverPrincipal">Volver</button>
+    <button type="button" class="btn btn-warning botonGeneral volverPrincipal">Volver</button>
 </div>
 
 <div class="row mt-2 mb-2">
