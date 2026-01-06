@@ -8,7 +8,7 @@
     <h4 class="mb-sm-0">Examenes a cuenta</h4>
 
     <div class="page-title-right"></div>
-    <button type="button" class="btn btn-warning volverPagoCuenta">Volver</button>
+    <button type="button" class="btn btn-warning volverPagoCuenta"><i class="ri-arrow-left-line"></i>&nbsp;Volver</button>
 </div>
 
 <div class="row">

@@ -15,7 +15,7 @@
                     <li class="breadcrumb-item active">Nuevo</li>       
                 </ol> 
             </div>
-            <button class="btn btn-warning  m-2" id="volver" type="button">Volver</button>
+            <button class="btn btn-warning  m-2" id="volver" type="button"><i class="ri-arrow-left-line"></i>&nbsp;Volver</button>
         </div>
     </div>
 </div>

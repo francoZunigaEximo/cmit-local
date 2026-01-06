@@ -6,7 +6,7 @@
 
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
     <h4 class="mb-sm-0">Especialidad <span class="badge text-bg-primary">Nueva</span></h4>
-    <a class="btn btn-warning botonGeneral" href="{{ route('especialidades.index')}}">Volver</a>
+    <a class="btn btn-warning" href="{{ route('especialidades.index')}}"><i class="ri-arrow-left-line"></i>&nbsp;Volver</a>
 </div>
 
 <div class="card-header">
