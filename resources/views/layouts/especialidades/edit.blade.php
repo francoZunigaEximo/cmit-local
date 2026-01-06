@@ -6,7 +6,7 @@
 
 <div class="row mb-4">
     <div class="col-12 text-end">
-        <button class="btn btn-warning"><i class="ri-arrow-left-line"></i>&nbsp;Volver</button>
+        <a href="{{ route('especialidades.index') }}" class="btn btn-warning"><i class="ri-arrow-left-line"></i>&nbsp;Volver</a>
     </div>
 </div>
 

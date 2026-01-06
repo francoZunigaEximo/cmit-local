@@ -6,7 +6,7 @@
 
 <div class="row mb-4">
     <div class="col-12 d-flex justify-content-end">
-        <button class="btn btn-warning"><i class="ri-arrow-left-line"></i>&nbsp;Volver</button>
+        <a href="{{ route('clientes.index') }}" class="btn btn-warning"><i class="ri-arrow-left-line"></i>&nbsp;Volver</a>
     </div>
 </div>
 
