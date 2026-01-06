@@ -200,7 +200,7 @@
                 </div>
 
                 <div class="col-12 box-information mt-2 text-center mt-3">
-                    <button type="button" {!! $examene->Inactivo === 3 ? 'disabled' : 'id="guardar"' !!} class="btn botonGeneral">Guardar</button>
+                    <button type="button" {!! $examene->Inactivo === 3 ? 'disabled' : 'id="Registrar"' !!} class="btn botonGeneral">Guardar</button>
                 </div>
 
             </div>

@@ -51,7 +51,7 @@
         <div class="row">
             <div class="col-lg-1 pt-4">
                 <div class="hstack gap-2 justify-content-end">
-                    <button type="submit" class="btn botonGeneral">Guardar</button>
+                    <button type="submit" class="btn botonGeneral">Registrar</button>
                 </div>
             </div>
         </div>

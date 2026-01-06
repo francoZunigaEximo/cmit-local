@@ -181,6 +181,7 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::post('examen/actualizar', [ExamenesController::class, 'updateExamen'])->name('updateExamen');
     Route::get('examenes/exportar/excel', [ExamenesController::class, 'excel'])->name('examenes.excel');
     Route::get('examenes/reportes', [ExamenesController::class, 'getReportes'])->name('examenes.getReportes');
+    Route::get('examenes/getVistaPrevia', [ExamenesController::class, 'getVistaPrevia'])->name('examenes.getVistaPrevia');
     Route::resource('examenes', ExamenesController::class);
 
     //Ruta de Comentarios de Prestaciones
@@ -257,6 +258,7 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::post('/especialidades/guardar', [ProveedoresController::class, 'save'])->name('saveBasico');
     Route::post('/especialidades/actualizar', [ProveedoresController::class, 'updateProveedor'])->name('updateProveedor');
     Route::get('/especialidades/listado', [ProveedoresController::class, 'lstProveedores'])->name('lstProveedores');
+    Route::post('/especialidad/baja', [ProveedoresController::class, 'baja'])->name('bajaEspecialidad');
     Route::resource('especialidades', ProveedoresController::class);
     
     //Rutas de ItemsPrestaciones

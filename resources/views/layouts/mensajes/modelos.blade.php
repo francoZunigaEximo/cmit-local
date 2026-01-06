@@ -5,11 +5,12 @@
 @section('content')
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
     <h4 class="mb-sm-0">Modelos de mensajes</h4>
+    <a class="btn btn-sm botonGeneral" href="{{ route('mensajes.index') }}"><i class="ri-arrow-go-back-line"></i>Volver</a>
 </div>
 
 <div class="row">
     <div class="col-sm-12 text-end">
-        <a class="btn btn-sm botonGeneral" href="{{ route('mensajes.index') }}"><i class="ri-arrow-go-back-line"></i>Volver</a>
+        
         <a class="btn btn-sm botonGeneral" href="{{ route('mensajes.modelos.create')}}"><i class="ri-add-line"></i>Agregar</a>
     </div>
 </div>

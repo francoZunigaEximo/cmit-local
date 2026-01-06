@@ -8,6 +8,7 @@
     <h4 class="mb-sm-0">Examenes a cuenta</h4>
 
     <div class="page-title-right"></div>
+    <button type="button" class="btn btn-sm botonGeneral volverPagoCuenta">Volver</button>
 </div>
 
 <div class="row">
@@ -52,8 +53,7 @@
 
             <div class="row justify-content-center">
                 <div class="col-sm-4 mb-3 text-center">
-                    <button type="button" class="btn btn-sm botonGeneral crearPagoCuenta">Generar</button>
-                    <button type="button" class="btn btn-sm botonGeneral volverPagoCuenta">Volver</button>
+                    <button type="button" class="btn btn-sm botonGeneral crearPagoCuenta">Registrar</button>
                 </div>
             </div>
         </div>

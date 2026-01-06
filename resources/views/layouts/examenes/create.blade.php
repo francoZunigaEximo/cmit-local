@@ -11,6 +11,7 @@
     </div>
     <div class="page-title-right">
     </div>
+    <button type="button" id="volver" class="btn botonGeneral">Volver</button>
 </div>
 
 <div class="container-fluid">
@@ -196,8 +197,8 @@
                 </div>
 
                 <div class="col-12 box-information mt-2 text-center mt-3">
-                    <button type="button" id="volver" class="btn botonGeneral">Volver</button>
-                    <button type="submit" id="crear" class="btn botonGeneral">Crear</button>
+                    
+                    <button type="submit" id="crear" class="btn botonGeneral">Registrar</button>
                 </div>
 
             </div>
