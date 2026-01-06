@@ -13,7 +13,7 @@
         <div class="alert alert-warning verAlerta" role="alert">
             <strong> Atención: </strong> Los actualización de los datos profesionales se encontrarán disponibles si el usuario es efector, informador, combinado o evaluador.
         </div>   
-        <button class="btn btn-warning botonGeneral m-2" type="button" id="volver">Volver</button>
+        <button class="btn btn-warning  m-2" type="button" id="volver">Volver</button>
     </div>
 </div>
 

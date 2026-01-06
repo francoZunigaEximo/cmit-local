@@ -7,7 +7,7 @@
 <div class="page-title-box d-sm-flex align-items-center justify-content-start">
     <h4 class="mb-sm-0">Registrar un nuevo cliente</h4>
     <x-helper>{!!$helper!!}</x-helper>
-    <a href="{{ route('clientes.index') }}" class="btn btn-warning botonGeneral">Volver</a>
+    <a href="{{ route('clientes.index') }}" class="btn btn-warning ">Volver</a>
 </div>
                         
 <div class="card-header">
