@@ -6,6 +6,7 @@
 
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
     <h4 class="mb-sm-0">Editar emails</h4>
+    <button type="button" class="btn btn-sm botonGeneral volver"><i class="ri-arrow-go-back-line"></i>&nbsp;Volver</button>
 </div>
 
 <div class="row">
@@ -51,7 +52,7 @@
 
 <div class="row">
     <div class="col-sm-12 text-center mt-2">
-        <button type="button" class="btn btn-sm botonGeneral volver"><i class="ri-arrow-go-back-line"></i>&nbsp;Volver</button>
+        
         <button type="button" class="btn btn-sm botonGeneral actualizar"><i class="ri-save-line"></i>&nbsp;Actualizar</button>
     </div>
 </div>

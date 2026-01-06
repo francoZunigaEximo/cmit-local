@@ -82,7 +82,7 @@
         <div class="row">
             <div class="col-12 d-flex justify-content-center">
                 
-                <button class="btn btn-primary" type="button" id="guardarCambios">Guardar</button>
+                <button class="btn btn-primary" type="button" id="guardarCambios">Registrar</button>
             </div>
         </div>
     </div>

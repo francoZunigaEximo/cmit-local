@@ -95,7 +95,7 @@
                 <div class="col-lg-12 pt-4">
                     <div class="hstack gap-2 justify-content-end">
                         
-                        <button type="button" id="updateBasico" class="btn botonGeneral">Guardar</button>
+                        <button type="button" id="updateBasico" class="btn botonGeneral">Registrar</button>
                     </div>
                 </div>
             </div>

@@ -50,7 +50,7 @@ class GrupoClientesController extends Controller
 
     public function searchGrupos(Request $request)
     {
-        if(!$this->hasPermission("grupos_delete")) {
+        if(!$this->hasPermission("grupos_show")) {
             return response()->json(["msg" => "No tiene permisos"], 403);
         }
 
@@ -164,8 +164,10 @@ class GrupoClientesController extends Controller
 
     public function deleteGrupoCliente(Request $request)
     {
-        $id = $request->id;
-        GrupoClientes::find($id)->update(['Baja' => 1]);
+        if(!$this->hasPermission("grupos_delete")) {
+            $id = $request->id;
+            GrupoClientes::find($id)->update(['Baja' => 1]);
+        }
     }
 
     public function detalle()

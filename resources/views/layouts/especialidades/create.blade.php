@@ -77,7 +77,7 @@
                         <div class="hstack gap-2 justify-content-end">
                             
                             <a class="btn btn-sm botonGeneral" href="{{ route('especialidades.index')}}">Volver</a>
-                            <button type="button" id="saveBasico" class="btn btn-sm botonGeneral">Guardar</button>
+                            <button type="button" id="saveBasico" class="btn btn-sm botonGeneral">Registrar</button>
                         </div>
                     </div>
                 </div>
