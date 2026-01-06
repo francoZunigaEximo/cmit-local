@@ -258,6 +258,7 @@ Route::middleware(['auth', 'auth.session'])->group(function() {
     Route::post('/especialidades/guardar', [ProveedoresController::class, 'save'])->name('saveBasico');
     Route::post('/especialidades/actualizar', [ProveedoresController::class, 'updateProveedor'])->name('updateProveedor');
     Route::get('/especialidades/listado', [ProveedoresController::class, 'lstProveedores'])->name('lstProveedores');
+    Route::post('/especialidad/baja', [ProveedoresController::class, 'baja'])->name('bajaEspecialidad');
     Route::resource('especialidades', ProveedoresController::class);
     
     //Rutas de ItemsPrestaciones
