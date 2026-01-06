@@ -13,6 +13,7 @@
         <div class="alert alert-warning verAlerta" role="alert">
             <strong> Atención: </strong> Los actualización de los datos profesionales se encontrarán disponibles si el usuario es efector, informador, combinado o evaluador.
         </div>   
+        <a class="btn btn-warning " href="{{ route('usuarios.index') }}"><i class="ri-arrow-left-line"></i>&nbsp;Volver</a>
     </div>
 </div>
 
@@ -79,7 +80,7 @@
         </div>
         
         <div class="p-3 col-md-12 d-flex justify-content-end ">
-            <button class="btn botonGeneral m-2" type="button" id="volver">Volver</button>
+            
             <button class="btn botonGeneral m-2 cambiarEmail" type="button" id="cambiarEmail">Actualizar</button>
         </div>
     </div>

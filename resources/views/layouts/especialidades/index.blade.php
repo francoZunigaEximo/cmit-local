@@ -85,14 +85,6 @@
 
 </div>
 
-
-
-   
-
-        
-    
-
-
 <script>
     const SEARCH = "{{ route('especialidades.index') }}";
     const especialidadExcel = "{{ route('especialidadExcel') }}";

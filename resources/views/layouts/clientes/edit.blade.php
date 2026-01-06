@@ -5,8 +5,8 @@
 @section('content')
 
 <div class="row mb-4">
-    <div class="col-12 text-end">
-        <button class="btn btn-warning multiVolver"><i class="ri-arrow-left-line"></i>&nbsp;Volver</button>
+    <div class="col-12 d-flex justify-content-end">
+        <a href="{{ route('clientes.index') }}" class="btn btn-warning"><i class="ri-arrow-left-line"></i>&nbsp;Volver</a>
     </div>
 </div>
 

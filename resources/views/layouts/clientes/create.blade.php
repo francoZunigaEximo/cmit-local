@@ -4,10 +4,10 @@
 
 @section('content')
 
-<div class="page-title-box d-sm-flex align-items-center justify-content-start">
+<div class="page-title-box d-sm-flex align-items-center justify-content-between">
     <h4 class="mb-sm-0">Registrar un nuevo cliente</h4>
     <x-helper>{!!$helper!!}</x-helper>
-
+    <a href="{{ route('clientes.index') }}" class="btn btn-warning "><i class="ri-arrow-left-line"></i>&nbsp;Volver</a>
 </div>
                         
 <div class="card-header">
@@ -189,7 +189,6 @@
                     <div class="col-lg-12 mt-3">
                         <div class="hstack gap-2 justify-content-end">
                             
-                            <a href="{{ route('clientes.index') }}" class="btn bt-sm botonGeneral">Ir a Principal</a>
                             <button type="submit" class="btn btn-sm botonGeneral">Registrar</button>
                         </div>
                     </div>
