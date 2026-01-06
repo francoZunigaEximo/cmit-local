@@ -13666,7 +13666,7 @@ BEGIN
 END //
 DELIMITER;
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `db_prepro`.`getOrdenesResumenes`(
+CREATE PROCEDURE getOrdenesResumenes(
     IN fechaDesde DATE, 
     IN fechaHasta DATE, 
     IN especialidades INT, 
@@ -13736,7 +13736,7 @@ DROP PROCEDURE IF EXISTS db_cmit.getExamenesFacturaCompraInformador;
 
 DELIMITER $$
 $$
-CREATE DEFINER=`db_cmit`@`%` PROCEDURE `db_cmit`.`getExamenesFacturaCompraInformador`(IN idFactura INT)
+CREATE PROCEDURE getExamenesFacturaCompraInformador(IN idFactura INT)
 BEGIN
 	SELECT 
 		itf.Id as Id,
@@ -13769,7 +13769,7 @@ DROP PROCEDURE IF EXISTS db_cmit.getExamenesFacturaCompraEfector;
 
 DELIMITER $$
 $$
-CREATE DEFINER=`db_cmit`@`%` PROCEDURE `db_cmit`.`getExamenesFacturaCompraEfector`(IN idFactura INT)
+CREATE PROCEDURE getExamenesFacturaCompraEfector(IN idFactura INT)
 BEGIN
 	SELECT 
 		itf.Id as Id,
@@ -13845,7 +13845,7 @@ DROP PROCEDURE IF EXISTS db_cmit.getExamenesInformadorFacturar;
 
 DELIMITER $$
 $$
-CREATE DEFINER=`db_cmit`@`%` PROCEDURE `db_cmit`.`getExamenesInformadorFacturar`(IN idProfesional INT, IN fechaDesde DATE, In fechaHasta DATE)
+CREATE PROCEDURE getExamenesInformadorFacturar(IN idProfesional INT, IN fechaDesde DATE, In fechaHasta DATE)
 BEGIN
 	Select 
 		i.Id,
