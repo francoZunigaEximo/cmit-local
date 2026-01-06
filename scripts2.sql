@@ -1179,44 +1179,6 @@ BEGIN
 END //
 DELIMITER ;
 
-DROP PROCEDURE IF EXISTS getListaExCta;
-
-DELIMITER //
-CREATE PROCEDURE `getListaExCta`(IN `IdCliente` INT)
-BEGIN
-SELECT 
-    COUNT(e.Nombre) AS CantidadExamenes,
-    c.RazonSocial AS Empresa,
-    e.Nombre AS NombreExamen,
-    pi2.Precarga AS Documento,
-    CONCAT(
-        p.Tipo,
-        LPAD(p.Suc, 4, '0'),
-        '-',
-        LPAD(p.Nro, 8, '0')
-    ) AS Factura,
-    MAX(p.Obs) as Obs,
-    MAX(pi2.Id) as IdEx,
-	MAX(e.Id) as IdFiltro
-	FROM pagosacuenta_it pi2
-	INNER JOIN pagosacuenta p ON pi2.IdPago = p.Id
-	INNER JOIN clientes c ON p.IdEmpresa = c.Id
-	INNER JOIN examenes e ON pi2.IdExamen = e.Id
-	WHERE 
-	    c.Id = IdCliente
-	    AND pi2.Obs <> 'provisorio'
-	    AND pi2.IdPrestacion = 0
-	    AND NOT pi2.IdExamen = 0
-	GROUP BY 
-	    c.RazonSocial, 
-	    e.Nombre,
-	    pi2.Precarga,
-	    Factura
-	ORDER BY 
-	    pi2.IdPrestacion,
-	    pi2.Precarga ASC;
-END //
-DELIMITER ;
 
 INSERT INTO rol_permisos (rol_id,permiso_id) VALUES(13,81); -- Permiso a administrador para imprimir Saldos y Detalles
 
@@ -1472,17 +1434,6 @@ ALTER TABLE paqfacturacion ADD COLUMN Baja BIT DEFAULT 0;
 ALTER TABLE relpaqfact ADD COLUMN Baja BIT DEFAULT 0;
 
 
-DROP PROCEDURE IF EXISTS getExamenesPaqueteFac;
-
-DELIMITER //
-CREATE PROCEDURE getExamenesPaqueteFac()
-BEGIN
-	SELECT e.Id FROM relpaqfact r
-	INNER JOIN examenes e ON r.IdExamen = e.Id 
-	WHERE r.IdPaquete = IdPaquete AND r.Baja = 0;
-END //
-DELIMITER ;
-
 
 -- CREATE DEFINER=`db_cmit`@`%` TRIGGER autocomplete_itemsprestaciones
 -- BEFORE INSERT ON itemsprestaciones
@@ -1664,19 +1615,6 @@ INSERT INTO rol_permisos (rol_id, permiso_id) VALUES (12, 88);
 INSERT INTO rol_permisos (rol_id, permiso_id) VALUES (13, 88);
 INSERT INTO rol_permisos (rol_id, permiso_id) VALUES (13, 89);
 
-
-
-DROP PROCEDURE IF EXISTS getExamenesPaquete;
-
-DELIMITER //
-CREATE PROCEDURE `getExamenesPaquete`(IN `IdPaquete` INT)
-BEGIN
-	SELECT e.Id, e.Nombre FROM relpaqest r
-	INNER JOIN examenes e ON r.IdExamen = e.Id 
-	WHERE r.IdPaquete = IdPaquete;
-END //
-DELIMITER ;
-
 DROP PROCEDURE IF EXISTS getListaExCta;
 
 DELIMITER //
@@ -1733,11 +1671,11 @@ ALTER TABLE paqfacturacion ADD COLUMN Baja BIT DEFAULT 0;
 ALTER TABLE relpaqfact ADD COLUMN Baja BIT DEFAULT 0;
 
 
-DROP PROCEDURE IF EXISTS db_cmit.getExamenesPaqueteFac;
+DROP PROCEDURE IF EXISTS getExamenesPaqueteFac;
 
 DELIMITER $$
 $$
-CREATE PROCEDURE db_cmit.getExamenesPaqueteFac()
+CREATE PROCEDURE getExamenesPaqueteFac()
 BEGIN
 	SELECT e.Id FROM relpaqfact r
 	INNER JOIN examenes e ON r.IdExamen = e.Id 
@@ -1758,62 +1696,6 @@ ALTER TABLE itemsprestaciones MODIFY COLUMN IdProfesional2 INT NOT NULL DEFAULT 
 --     END IF;
 -- END
 
-CREATE PROCEDURE getExamenes(IN id_prestacion INT, IN tipo VARCHAR(10))
-BEGIN
-	SELECT 
-	    examenes.Nombre AS Nombre,
-	    examenes.Id AS IdExamen,
-	    examenes.Adjunto AS ExaAdj,
-	    examenes.Informe AS Informe,
-	    informador.InfAdj AS InfAdj,
-	    examenes.NoImprime AS ExaNI,
-	    CONCAT(efector.Apellido,' ', efector.Nombre) AS EfectorFullName,
-	    CONCAT(informador.Apellido,' ', informador.Nombre) AS InformadorFullName,
-	    CONCAT(datosEfector.Apellido,' ', datosEfector.Nombre) AS DatosEfectorFullName,
-	    CONCAT(datosInformador.Apellido,' ', datosInformador.Nombre) AS DatosInformadorFullName,
-	    efector.Apellido AS EfectorApellido,
-	    informador.Apellido AS InformadorApellido,
-	    datosEfector.Apellido AS DatosEfectorApellido,
-	    datosInformador.Apellido AS DatosInformadorApellido,
-	    efector.RegHis AS RegHis,
-	    itemsprestaciones.Ausente AS Ausente,
-	    itemsprestaciones.Forma AS Forma,
-	    itemsprestaciones.Incompleto AS Incompleto,
-	    itemsprestaciones.SinEsc AS SinEsc,
-	    itemsprestaciones.Devol AS Devol,
-	    itemsprestaciones.CAdj AS CAdj,
-	    itemsprestaciones.CInfo AS CInfo,
-	    itemsprestaciones.Id AS IdItem,
-	    itemsprestaciones.Anulado AS Anulado,
-	    (SELECT COUNT(*) FROM archivosefector WHERE IdEntidad = itemsprestaciones.Id) AS archivos,
-	    (SELECT COUNT(*) FROM archivosinformador WHERE IdEntidad = itemsprestaciones.Id) AS archivosI,
-	    efector.Id AS IdEfector,
-	    informador.Id AS IdInformador,
-	    userEfector.id AS IdUserEfector,
-	    userInformador.id AS IdUserInformador
-	FROM itemsprestaciones
-	LEFT JOIN profesionales AS efector ON itemsprestaciones.IdProfesional = efector.Id
-	LEFT JOIN users AS userEfector ON efector.Id = userEfector.profesional_id
-	LEFT JOIN datos AS datosEfector ON userEfector.datos_id = datosEfector.Id
-	LEFT JOIN profesionales AS informador ON itemsprestaciones.IdProfesional2 = informador.Id
-	LEFT JOIN users AS userInformador ON informador.Id = userInformador.profesional_id
-	LEFT JOIN datos AS datosInformador ON userInformador.datos_id = datosInformador.Id
-	JOIN examenes ON itemsprestaciones.IdExamen = examenes.Id
-	JOIN proveedores AS proveedor2 ON examenes.IdProveedor = proveedor2.Id
-	JOIN prestaciones ON itemsprestaciones.IdPrestacion = prestaciones.Id
-	LEFT JOIN archivosefector ON itemsprestaciones.Id = archivosefector.IdEntidad
-	LEFT JOIN archivosinformador ON itemsprestaciones.Id = archivosinformador.IdEntidad
-	WHERE 1=1
-	AND (
-	    (tipo != 'listado') OR 
-	    (tipo = 'listado' AND itemsprestaciones.IdPrestacion = id_prestacion)
-	)
-	GROUP BY itemsprestaciones.Id
-	ORDER BY 
-	    efector.IdProveedor ASC,
-	    examenes.Nombre ASC,
-	    itemsprestaciones.Fecha ASC;
-END
 
 ALTER TABLE itemsfacturacompra DROP FOREIGN KEY itemsfacturacompra_ibfk_2; --IdItemPrestacion
 ALTER TABLE itemsfacturacompra2 DROP FOREIGN KEY itemsfacturacompra2_ibfk_2; --IdItemPrestacion
@@ -1959,21 +1841,21 @@ ALTER TABLE notascredito_it ADD Baja BIT DEFAULT 0;
 ALTER TABLE notascredito ADD Baja BIT DEFAULT 0;
 
 -- auditorias
-INSERT INTO db_cmit.auditoriatablas
+INSERT INTO auditoriatablas
 (Id, Nombre)
 VALUES(7,'NOTA CREDITO');
 
-INSERT INTO db_cmit.auditoriatablas
+INSERT INTO auditoriatablas
 (Id, Nombre)
 VALUES(8,'EXAMEN');
 
 -- get examenes con idNotaCredito
 
-DROP PROCEDURE IF EXISTS db_cmit.getExamenes;
+DROP PROCEDURE IF EXISTS getExamenes;
 
 DELIMITER $$
 $$
-CREATE DEFINER=`db_cmit`@`%` PROCEDURE `db_cmit`.`getExamenes`(IN `id_prestacion` INT, IN `tipo` VARCHAR(10))
+CREATE  PROCEDURE getExamenes(IN `id_prestacion` INT, IN `tipo` VARCHAR(10))
 BEGIN
 	SELECT 
 	    examenes.Nombre AS Nombre,
@@ -13732,7 +13614,7 @@ ALTER TABLE profesionales_prov DROP INDEX IdProf_2; -- error de produccion en as
 
 -- modificaciones sobre stores procedures de factura compra 20251218
 
-DROP PROCEDURE IF EXISTS db_cmit.getExamenesFacturaCompraInformador;
+DROP PROCEDURE IF EXISTS getExamenesFacturaCompraInformador;
 
 DELIMITER $$
 $$
@@ -13765,7 +13647,7 @@ BEGIN
 END$$
 DELIMITER ;
 
-DROP PROCEDURE IF EXISTS db_cmit.getExamenesFacturaCompraEfector;
+DROP PROCEDURE IF EXISTS getExamenesFacturaCompraEfector;
 
 DELIMITER $$
 $$
@@ -13798,7 +13680,7 @@ BEGIN
 END$$
 DELIMITER ;
 
-DROP PROCEDURE IF EXISTS db_cmit.getExamenesEfectorFacturar;
+DROP PROCEDURE IF EXISTS getExamenesEfectorFacturar;
 
 DELIMITER //
 CREATE PROCEDURE `getExamenesEfectorFacturar`(IN idProfesional INT, IN fechaDesde DATE, In fechaHasta DATE)
@@ -13841,7 +13723,7 @@ END$$
 DELIMITER ;
 
 
-DROP PROCEDURE IF EXISTS db_cmit.getExamenesInformadorFacturar;
+DROP PROCEDURE IF EXISTS getExamenesInformadorFacturar;
 
 DELIMITER $$
 $$
