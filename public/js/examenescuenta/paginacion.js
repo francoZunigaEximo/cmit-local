@@ -1,14 +1,14 @@
 function mostrarBotonesPago(valor) {
 
-    if(valor === 'pago') {
+    if (valor === 'pago') {
         $('.quitarPago').show();
         $('.botonPagar').hide();
         habilitarMasivo(1);
-    }else if(valor === '') {
+    } else if (valor === '') {
         $('.quitarPago').hide();
         $('.botonPagar').show();
         habilitarMasivo(0);
-    }else{
+    } else {
         habilitarMasivo(2);
         $('.botonPagar, .quitarPago').hide();
     }
@@ -20,11 +20,11 @@ function habilitarMasivo(arg) {
         $('.quitarPago').prop('disabled', false);
         $('.botonPagar').prop('disabled', true);
 
-    } else if(arg === 0) {
+    } else if (arg === 0) {
         $('.quitarPago').prop('disabled', true);
         $('.botonPagar').prop('disabled', false);
-        
-    }else{
+
+    } else {
         $('.botonPagar, .quitarPago').prop('disabled', true);
     }
 }
@@ -48,12 +48,12 @@ function format(rowData) {
                             </thead>
                             <tbody class="list form-check-all">`;
         preloader('on');
-        $.get(detallesExamenes, {Id: (rowData.IdEx === '' || rowData.IdEx === undefined ? 0 : rowData.IdEx)})
-            .done(async function(response){
+        $.get(detallesExamenes, { Id: (rowData.IdEx === '' || rowData.IdEx === undefined ? 0 : rowData.IdEx) })
+            .done(async function (response) {
                 let data = await response.result;
                 preloader('off');
-                $.each(data, function(index, d){
-                   let nombreCompleto =  d.ApellidoPaciente + ' ' + d.NombrePaciente;
+                $.each(data, function (index, d) {
+                    let nombreCompleto = d.ApellidoPaciente + ' ' + d.NombrePaciente;
 
                     div += `<tr>
                                 <td>${d.NombreExamen === undefined ? '-' : d.NombreExamen}</td>
@@ -65,11 +65,11 @@ function format(rowData) {
                         </table>
                     </div>`;
 
-               
+
 
                 resolve(div);
             })
-            .fail(function(error){
+            .fail(function (error) {
                 preloader('off');
                 reject(error);
             });
@@ -78,18 +78,18 @@ function format(rowData) {
     });
 }
 
-$(function(){
+$(function () {
 
-     $('#empresa').each(function() {
+    $('#empresa').each(function () {
         $(this).select2({
             language: {
-                noResults: function() {
-    
-                return "No hay empresas con esos datos";        
+                noResults: function () {
+
+                    return "No hay empresas con esos datos";
                 },
-                searching: function() {
-    
-                return "Buscando..";
+                searching: function () {
+
+                    return "Buscando..";
                 },
                 inputTooShort: function () {
                     return "Por favor, ingrese 2 o más caracteres";
@@ -98,53 +98,17 @@ $(function(){
             placeholder: 'Nombre Empresa, Alias o ParaEmpresa',
             allowClear: true,
             ajax: {
-                url: getClientes, 
+                url: getClientes,
                 dataType: 'json',
-                data: function(params) {
+                data: function (params) {
                     return {
                         buscar: params.term,
                         tipo: 'E'
                     };
                 },
-                processResults: function(data) {
+                processResults: function (data) {
                     return {
-                        results: data.clientes 
-                    };
-                },
-                cache: true
-            },
-            minimumInputLength: 2 
-        });
-    });
-
-        $('#examen').each(function(){
-        $(this).select2({
-            language: {
-                noResults: function() {
-    
-                return "No hay examenes con esos datos";        
-                },
-                searching: function() {
-    
-                return "Buscando..";
-                },
-                inputTooShort: function () {
-                    return "Por favor, ingrese 2 o más caracteres";
-                }
-            },
-            placeholder: 'Nombre del exámen',
-            allowClear: true,
-            ajax: {
-                url: searchExamen, 
-                dataType: 'json',
-                data: function(params) {
-                    return {
-                        buscar: params.term
-                    };
-                },
-                processResults: function(data) {
-                    return {
-                        results: data.examen 
+                        results: data.clientes
                     };
                 },
                 cache: true
@@ -153,16 +117,52 @@ $(function(){
         });
     });
 
-    $('#paciente').each(function(){
+    $('#examen').each(function () {
         $(this).select2({
             language: {
-                noResults: function() {
-    
-                return "No hay pacientes con esos datos";        
+                noResults: function () {
+
+                    return "No hay examenes con esos datos";
                 },
-                searching: function() {
-    
-                return "Buscando..";
+                searching: function () {
+
+                    return "Buscando..";
+                },
+                inputTooShort: function () {
+                    return "Por favor, ingrese 2 o más caracteres";
+                }
+            },
+            placeholder: 'Nombre del exámen',
+            allowClear: true,
+            ajax: {
+                url: searchExamen,
+                dataType: 'json',
+                data: function (params) {
+                    return {
+                        buscar: params.term
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: data.examen
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 2
+        });
+    });
+
+    $('#paciente').each(function () {
+        $(this).select2({
+            language: {
+                noResults: function () {
+
+                    return "No hay pacientes con esos datos";
+                },
+                searching: function () {
+
+                    return "Buscando..";
                 },
                 inputTooShort: function () {
                     return "Por favor, ingrese 2 o más caracteres";
@@ -171,21 +171,21 @@ $(function(){
             placeholder: 'Apellido y/o nombre del paciente',
             allowClear: true,
             ajax: {
-                url: getPacientes, 
+                url: getPacientes,
                 dataType: 'json',
-                data: function(params) {
+                data: function (params) {
                     return {
                         buscar: params.term,
                     };
                 },
-                processResults: function(data) {
+                processResults: function (data) {
                     return {
-                        results: data.pacientes 
+                        results: data.pacientes
                     };
                 },
                 cache: true
             },
-            minimumInputLength: 2 
+            minimumInputLength: 2
         });
     });
 
@@ -203,7 +203,10 @@ $(function(){
         selectEmpresa = $('#empresa'),
         selectExamen = $('#examen'),
         selectPacienteDNI = $('#paciente'),
-        selectEstado = $('#estado');
+        selectEstado = $('#estado'),
+        inputFechaPagoDesde = $('#fechaPagoDesde'),
+        inputFechaPagoHasta = $('#fechaPagoHasta');
+
 
     let dataTable = new DataTable(tabla, {
 
@@ -219,8 +222,8 @@ $(function(){
         serverSide: true,
         stateSave: true,
         stateDuration: 60 * 60 * 24,
-        stateLoadParams: function(settings, data) {
-            if(data.customFilters) {
+        stateLoadParams: function (settings, data) {
+            if (data.customFilters) {
                 inputFechaDesde.val(data.customFilters.fechaDesde);
                 inputFechaHasta.val(data.customFilters.fechaHasta);
                 inputFacturaDesdeIndividual.val(data.customFilters.facturaDesdeIndividual);
@@ -265,15 +268,17 @@ $(function(){
                     selectPacienteDNI.val(null).trigger('change');
                 }
                 selectEstado.val(data.customFilters.estado).trigger('change');
+                inputFechaPagoDesde.val(data.customFilters.fechaPagoDesde);
+                inputFechaPagoHasta.val(data.customFilters.fechaPagoHasta);
             }
         },
-        stateLoadCallback: function(settings) {
+        stateLoadCallback: function (settings) {
             let storedData = localStorage.getItem('DataTables_listadoExamenesCuentas_/examenesCuenta');
             if (storedData) {
                 let data = JSON.parse(storedData);
 
                 if (data.customFilters) {
-     
+
                     inputFacturaDesdeIndividual.val(data.customFilters.facturaDesdeIndividual);
                     inputFacturaHasta.val(data.customFilters.facturaHasta);
                     if (data.customFilters.empresa && data.customFilters.empresa !== '') {
@@ -312,6 +317,8 @@ $(function(){
                     }
 
                     selectEstado.val(data.customFilters.estado).trigger('change');
+                    inputFechaPagoDesde.val(data.customFilters.fechaPagoDesde);
+                    inputFechaPagoHasta.val(data.customFilters.fechaPagoHasta);
 
                     return data;
                 }
@@ -323,7 +330,7 @@ $(function(){
             data.customFilters = {
                 fechaDesde: inputFechaDesde.val(),
                 fechaHasta: inputFechaHasta.val(),
-                facturaDesdeIndividual: inputFacturaDesdeIndividual.val(), 
+                facturaDesdeIndividual: inputFacturaDesdeIndividual.val(),
                 facturaHasta: inputFacturaHasta.val(),
                 empresa: selectEmpresa.val(),
                 nombreEmpresa: selectEmpresa.find(':selected').text(),
@@ -331,13 +338,15 @@ $(function(){
                 nombreExamen: selectExamen.find(':selected').text(),
                 pacienteDNI: selectPacienteDNI.val(),
                 nombrePaciente: selectPacienteDNI.find(':selected').text(),
-                estado: selectEstado.val()
+                estado: selectEstado.val(),
+                fechaPagoDesde: inputFechaPagoDesde.val(),
+                fechaPagoHasta: inputFechaPagoHasta.val(),
             };
             localStorage.setItem('DataTables_listadoExamenesCuentas_/examenesCuenta', JSON.stringify(data));
         },
         ajax: {
             url: SEARCH,
-            data: function(d){
+            data: function (d) {
                 d.fechaDesde = $('#fechaDesde').val();
                 d.fechaHasta = $('#fechaHasta').val();
                 d.rangoDesde = $('#rangoDesde').val();
@@ -346,6 +355,8 @@ $(function(){
                 d.paciente = $('#paciente').val();
                 d.examen = $('#examen').val();
                 d.estado = $('#estado').val();
+                d.fechaPagoDesde = $('#fechaPagoDesde').val();
+                d.fechaPagoHasta = $('#fechaPagoHasta').val();
             }
         },
         dataType: 'json',
@@ -356,7 +367,7 @@ $(function(){
                 name: 'selectId',
                 orderable: false,
                 targets: 0,
-                render: function(data){
+                render: function (data) {
                     return `<div class="text-center"><input type="checkbox" class="fila-checkbox" name="Id" value="${data.IdEx}" ></div>`;
                 }
             },
@@ -365,7 +376,7 @@ $(function(){
                 name: 'IdEx',
                 orderable: true,
                 targets: 1,
-                render: function(data){
+                render: function (data) {
                     return ("000000" + data.IdEx).slice(-6);
                 }
             },
@@ -374,7 +385,7 @@ $(function(){
                 name: 'Numero',
                 orderable: true,
                 targets: 2,
-                render: function(data){
+                render: function (data) {
                     return data.Tipo + ("0000" + data.Sucursal).slice(-4) + '-' + ("00000000" + data.Numero).slice(-8);
                 }
             },
@@ -383,8 +394,8 @@ $(function(){
                 name: 'Fecha',
                 orderable: true,
                 targets: 3,
-                render: function(data){
-                    return fechaNow(data.Fecha,'/',0);
+                render: function (data) {
+                    return fechaNow(data.Fecha, '/', 0);
                 }
             },
             {
@@ -392,7 +403,7 @@ $(function(){
                 name: 'Empresa',
                 orderable: true,
                 targets: 4,
-                render: function(data){
+                render: function (data) {
                     let EmpresaCompleto = data.Empresa + ' - ' + data.Cuit;
                     return `<span >${EmpresaCompleto}</span>`;
                 }
@@ -402,7 +413,7 @@ $(function(){
                 name: 'ParaEmpresa',
                 orderable: true,
                 targets: 5,
-                render: function(data){
+                render: function (data) {
                     return `<span >${data.ParaEmpresa}</span>`;
                 }
             },
@@ -411,9 +422,9 @@ $(function(){
                 name: 'FechaPagado',
                 orderable: true,
                 targets: 6,
-                render: function(data){
+                render: function (data) {
 
-                    return data.FechaPagado === '0000-00-00' ? '-' : fechaNow(data.FechaPagado,'/',0);
+                    return data.FechaPagado === '0000-00-00' ? '-' : fechaNow(data.FechaPagado, '/', 0);
                 }
             },
             {
@@ -428,17 +439,17 @@ $(function(){
                 name: 'ParaEmpresa',
                 orderable: false,
                 targets: 8,
-                render: function(data) {
+                render: function (data) {
                     let nroFactura = data.Tipo + ("0000" + data.Sucursal).slice(-4) + '-' + ("00000000" + data.Numero).slice(-8);
                     let empresa = data.Empresa;
 
                     let editar = `<a title="Editar" href="${location.href}/${data.IdEx}/edit"><button type="button" class="btn btn-sm iconGeneralNegro"><i class="ri-edit-line"></i></button></a>`,
-                
+
                         baja = `<button data-id="${data.IdEx}" title="Dar de baja" type="button" class="btn btn-sm iconGeneralNegro deleteExamen" ><i class="ri-delete-bin-2-line"></i></button>`,
-                        
+
                         pago = `<button type="button" data-id="${data.IdEx}" data-nro="${nroFactura}" data-empresa="${empresa}" class="btn btn-sm botonGeneral cambiarBoton">${data.FechaPagado === '0000-00-00' ? 'Pagar' : 'Quitar pago'}</button>`;
 
-                    return editar + ' ' + baja + ' ' + pago;  
+                    return editar + ' ' + baja + ' ' + pago;
                 }
             }
         ],
@@ -461,49 +472,49 @@ $(function(){
             },
             info: "Mostrando _START_ a _END_ de _TOTAL_ de facturas",
         },
-        drawCallback: function() {
-            $(document).on('change', '#estado', function() {
+        drawCallback: function () {
+            $(document).on('change', '#estado', function () {
                 let valor = $(this).val();
                 mostrarBotonesPago(valor);
-                
+
             });
 
             //$('.botonPagar').prop('disabled', true);
 
-            $('#listadoExamenesCuentas tbody').off('click', 'td.details-control').on('click', 'td.details-control', function(){
+            $('#listadoExamenesCuentas tbody').off('click', 'td.details-control').on('click', 'td.details-control', function () {
                 let tr = $(this).closest('tr'), row = dataTable.row(tr);
-            
-                if(row.child.isShown()){
+
+                if (row.child.isShown()) {
                     row.child.hide();
                     tr.removeClass('shown');
                 } else {
-                    format(row.data()).then(function(div){
+                    format(row.data()).then(function (div) {
                         row.child(div).show();
                         tr.addClass('shown');
-                    }).catch(function(error){
+                    }).catch(function (error) {
                         console.error('Error al cargar detalles:', error);
                     });
                 }
             });
-        
-            $(document).on('click', '#btn-show-all-children', function(){
-                tableIndex.rows().every(function(){
-                    if(!this.child.isShown()){
+
+            $(document).on('click', '#btn-show-all-children', function () {
+                tableIndex.rows().every(function () {
+                    if (!this.child.isShown()) {
                         this.child(format(this.data())).show();
                         $(this.node()).addClass('shown');
                     }
                 });
             });
-        
-            $(document).on('click', '#btn-hide-all-children', function(){
-                tableIndex.rows().every(function(){
-                    if(this.child.isShown()){
+
+            $(document).on('click', '#btn-hide-all-children', function () {
+                tableIndex.rows().every(function () {
+                    if (this.child.isShown()) {
                         this.child.hide();
                         $(this.node()).removeClass('shown');
                     }
                 });
             });
-        
+
 
         }
     });
@@ -524,7 +535,7 @@ $(function(){
             }
 
             inputFechaDesde.val(obtenerFormato(fechaDesdeObj));
-            inputFechaHasta.val(obtenerFormato(fechaHastaObj)); 
+            inputFechaHasta.val(obtenerFormato(fechaHastaObj));
 
         }
 
@@ -532,6 +543,17 @@ $(function(){
             toastr.warning("Las fechas son obligatorias", "", { timeOut: 1000 });
             return;
         }
+
+        if ($('#estado').val() === 'pago' && $('#fechaPagoDesde').val() && !$('#fechaPagoHasta').val()) {
+            toastr.warning('Debe ingresar la fecha hasta de pago o dejar vacio el campo de fecha desde');
+            return;
+        }
+
+        if ($('#estado').val() !== 'pago' && ($('#fechaPagoHasta').val() || $('#fechaPagoDesde').val())) {
+            $('#fechaPagoHasta').val('');
+            $('#fechaPagoDesde').val('');
+        }
+            
 
         dataTable.draw();
     });

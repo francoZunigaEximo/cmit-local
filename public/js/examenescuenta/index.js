@@ -1,20 +1,21 @@
-$(function(){
+$(function () {
 
     const tabla = "#listadoExamenesCuentas";
 
     $('#fechaHasta, #FechaCreate').val(fechaNow(null, "-", 0));
     $('#estado').val("todos");
+    $('.fechaPago').hide();
 
-    $('#empresaSaldo, #empresaPago, #empresaCreate').each(function() {
+    $('#empresaSaldo, #empresaPago, #empresaCreate').each(function () {
         $(this).select2({
             language: {
-                noResults: function() {
-    
-                return "No hay empresas con esos datos";        
+                noResults: function () {
+
+                    return "No hay empresas con esos datos";
                 },
-                searching: function() {
-    
-                return "Buscando..";
+                searching: function () {
+
+                    return "Buscando..";
                 },
                 inputTooShort: function () {
                     return "Por favor, ingrese 2 o más caracteres";
@@ -23,35 +24,35 @@ $(function(){
             placeholder: 'Nombre Empresa, Alias o ParaEmpresa',
             allowClear: true,
             ajax: {
-                url: getClientes, 
+                url: getClientes,
                 dataType: 'json',
-                data: function(params) {
+                data: function (params) {
                     return {
                         buscar: params.term,
                         tipo: 'E'
                     };
                 },
-                processResults: function(data) {
+                processResults: function (data) {
                     return {
-                        results: data.clientes 
+                        results: data.clientes
                     };
                 },
                 cache: true
             },
-            minimumInputLength: 2 
+            minimumInputLength: 2
         });
     });
 
-    $('#examenSaldo').each(function(){
+    $('#examenSaldo').each(function () {
         $(this).select2({
             language: {
-                noResults: function() {
-    
-                return "No hay examenes con esos datos";        
+                noResults: function () {
+
+                    return "No hay examenes con esos datos";
                 },
-                searching: function() {
-    
-                return "Buscando..";
+                searching: function () {
+
+                    return "Buscando..";
                 },
                 inputTooShort: function () {
                     return "Por favor, ingrese 2 o más caracteres";
@@ -60,16 +61,16 @@ $(function(){
             placeholder: 'Nombre del exámen',
             allowClear: true,
             ajax: {
-                url: searchExamen, 
+                url: searchExamen,
                 dataType: 'json',
-                data: function(params) {
+                data: function (params) {
                     return {
                         buscar: params.term
                     };
                 },
-                processResults: function(data) {
+                processResults: function (data) {
                     return {
-                        results: data.examen 
+                        results: data.examen
                     };
                 },
                 cache: true
@@ -84,7 +85,7 @@ $(function(){
             placeholder: "X-0000-00000000",
             clearMaskOnLostFocus: true,
             onBeforePaste: function (pastedValue, opts) {
-                
+
                 return pastedValue.charAt(0).toUpperCase() + pastedValue.slice(1);
             },
             definitions: {
@@ -98,15 +99,15 @@ $(function(){
     });
 
     $("#rangoDesde, #rangoHasta, #FacturaCreate").inputmask('rango');
-    
-    $(document).on('click', '.cambiarBoton', function(e) {
-        
+
+    $(document).on('click', '.cambiarBoton', function (e) {
+
         e.preventDefault();
         let id = $(this).data('id'),
             nroFactura = $(this).data('nro'),
             textBoton = $(this).text().trim(),
             hoy = new Date().toISOString().slice(0, 10);
-            empresa = $(this).data('empresa'),
+        empresa = $(this).data('empresa'),
             title = "¿Estas seguro que deseas marcar como pagado el examen?",
             contenido = $('<div>').html(`
                 <b>Empresa:</b> ${empresa}<br /> 
@@ -114,7 +115,7 @@ $(function(){
                 <b class="mt-2 fechaExamen">Fecha:</b> <input type="date" id="fecha" name="fecha" value="${hoy}">    
             `);
 
-        if(textBoton === 'Quitar pago') {
+        if (textBoton === 'Quitar pago') {
             $('#fecha').val('');
             contenido.find('#fecha').hide();
             contenido.find('.fechaExamen').hide();
@@ -127,44 +128,44 @@ $(function(){
             icon: "warning",
             buttons: ["Cancelar", "Aceptar"]
         }).then((confirmar) => {
-            if(confirmar) {
+            if (confirmar) {
                 let fechaSeleccionada = $('#fecha').val();
 
                 preloader('on');
-                $.post(cambiarPago, {Id: id, fecha: fechaSeleccionada, _token: TOKEN})
-                    .done(function(response){
+                $.post(cambiarPago, { Id: id, fecha: fechaSeleccionada, _token: TOKEN })
+                    .done(function (response) {
                         preloader('off');
                         let data = response.resultados
                         toastr.success(data.msg, { timeOut: 1000 })
                         $(tabla).DataTable().draw(false);
                     })
-                    .fail(function(jqXHR){
+                    .fail(function (jqXHR) {
                         preloader('off');
-                        let errorData = JSON.parse(jqXHR.responseText);            
+                        let errorData = JSON.parse(jqXHR.responseText);
                         checkError(jqXHR.status, errorData.msg);
-                        return;  
+                        return;
                     })
             }
         })
 
-            
-        
+
+
     });
 
-    $(document).on('click', '.deleteExamen', function(e){
+    $(document).on('click', '.deleteExamen', function (e) {
         e.preventDefault();
 
         let id = $(this).data('id');
-        
+
         swal({
             title: "¿Estas seguro que deseas eliminar el examen a cuenta?",
             icon: "warning",
             buttons: ["Cancelar", "Aceptar"]
         }).then((confirmar) => {
-            if(confirmar) {
+            if (confirmar) {
                 preloader('on');
-                $.post(eliminarExCuenta, {Id: id, _token: TOKEN})
-                    .done(function(response){
+                $.post(eliminarExCuenta, { Id: id, _token: TOKEN })
+                    .done(function (response) {
 
                         preloader('off');
                         let tipoToastr = response.estado == 'success' ? ['success', 'Perfecto'] : ['info', 'Atención'];
@@ -175,20 +176,20 @@ $(function(){
 
                     })
             }
-        });    
+        });
     });
-    
-    $(document).on('click', '.botonPagar, .quitarPago', function(e){
+
+    $(document).on('click', '.botonPagar, .quitarPago', function (e) {
         e.preventDefault();
 
         let ids = [], datosEmpresa = [], hoy = new Date().toISOString().slice(0, 10), tipo = $(this).hasClass('botonPagar') ? 'pagoMasivo' : null, textBoton = $(this).text().trim();
 
-        $('input[name="Id"]:checked').each(function() {
+        $('input[name="Id"]:checked').each(function () {
             let checkbox = $(this),
                 fila = checkbox.closest('tr'),
                 empresa = fila.find('td:eq(4)').text().trim(),
                 factura = fila.find('td:eq(2)').text().trim();
-            
+
             ids.push(checkbox.val());
             datosEmpresa.push({
                 factura: factura,
@@ -198,14 +199,14 @@ $(function(){
         });
 
         if (ids.length === 0) {
-            toastr.warning('Debes seleccionar al menos un item para realizar la operación.','',{timeOut: 1000});
+            toastr.warning('Debes seleccionar al menos un item para realizar la operación.', '', { timeOut: 1000 });
             return;
         }
 
         let filtro = datosEmpresa.filter(item => item.factura !== '');
         let listaHtml = '<div><ul>';
         listaHtml += `<b class="mb-2 mt-1 fechaExamen">Fecha:</b> <input type="date" id="fecha" name="fecha" value="${hoy}"><br>`;
-        $.each(filtro, function(index, data){
+        $.each(filtro, function (index, data) {
             listaHtml += `<li class="fs-6">${data.empresa} | Factura: ${data.factura}</li>`;
         });
 
@@ -213,8 +214,8 @@ $(function(){
 
         let contenido = $(listaHtml);
 
-        if(textBoton === 'Quitar pago masivo') {
-    
+        if (textBoton === 'Quitar pago masivo') {
+
             $('#fecha').val('');
             contenido.find('#fecha').hide();
             contenido.find('.fechaExamen').hide();
@@ -227,17 +228,17 @@ $(function(){
             icon: "warning",
             buttons: ["Cancelar", "Aceptar"]
         }).then((confirmar) => {
-            if(confirmar) {
+            if (confirmar) {
 
                 let fechaSeleccionada = $('#fecha').val();
                 preloader('on');
-                $.post(cambiarPago, {Id: ids, _token: TOKEN, fecha: fechaSeleccionada, tipo: tipo})
-                    .done(function(response){
+                $.post(cambiarPago, { Id: ids, _token: TOKEN, fecha: fechaSeleccionada, tipo: tipo })
+                    .done(function (response) {
                         preloader('off');
                         let data = response.resultados,
                             reporte = response.reporte;
 
-                        if(reporte) {
+                        if (reporte) {
                             createFile("excel", reporte.original.filePath, generarCodigoAleatorio() + '_reporte');
                         }
 
@@ -245,17 +246,17 @@ $(function(){
                         $(tabla).DataTable().draw(false);
 
                     })
-                    .fail(function(jqXHR){
+                    .fail(function (jqXHR) {
                         preloader('off');
-                        let errorData = JSON.parse(jqXHR.responseText);            
+                        let errorData = JSON.parse(jqXHR.responseText);
                         checkError(jqXHR.status, errorData.msg);
-                        return;  
+                        return;
                     })
             }
         });
     });
 
-    $(document).on('click', '.facturasHoy', function(e){
+    $(document).on('click', '.facturasHoy', function (e) {
         e.preventDefault();
         /*let table = $(tabla).DataTable();
         table.ajax.url(INDEX).page.len(7).load();*/
@@ -266,21 +267,21 @@ $(function(){
         preloader('on');
         var idsSeleccionados = obtenerIdsSeleccionados();
         var allSelected = $("#checkAll").is(":checked");
-        if(idsSeleccionados.length === 0 && !allSelected){
+        if (idsSeleccionados.length === 0 && !allSelected) {
             preloader('off');
-            toastr.warning('Debe seleccionar al menos un examen o la opción de seleccionar todo.','',{timeOut: 2000});
+            toastr.warning('Debe seleccionar al menos un examen o la opción de seleccionar todo.', '', { timeOut: 2000 });
             return;
         }
         $.get(exportSimple,
             {
-                fechaDesde : $('#fechaDesde').val(),
-                fechaHasta : $('#fechaHasta').val(),
-                rangoDesde : $('#rangoDesde').val(),
-                rangoHasta : $('#rangoHasta').val(),
-                empresa : $('#empresa').val(),
-                paciente : $('#paciente').val(),
-                examen : $('#examen').val(),
-                estado : $('#estado').val(),
+                fechaDesde: $('#fechaDesde').val(),
+                fechaHasta: $('#fechaHasta').val(),
+                rangoDesde: $('#rangoDesde').val(),
+                rangoHasta: $('#rangoHasta').val(),
+                empresa: $('#empresa').val(),
+                paciente: $('#paciente').val(),
+                examen: $('#examen').val(),
+                estado: $('#estado').val(),
                 ids: idsSeleccionados,
                 all: allSelected
             })
@@ -303,21 +304,21 @@ $(function(){
         preloader('on');
         var idsSeleccionados = obtenerIdsSeleccionados();
         var allSelected = $("#checkAll").is(":checked");
-        if(idsSeleccionados.length === 0 && !allSelected){
+        if (idsSeleccionados.length === 0 && !allSelected) {
             preloader('off');
-            toastr.warning('Debe seleccionar al menos un examen o la opción de seleccionar todo.','',{timeOut: 2000});
+            toastr.warning('Debe seleccionar al menos un examen o la opción de seleccionar todo.', '', { timeOut: 2000 });
             return;
         }
         $.get(exportCompleto,
             {
-                fechaDesde : $('#fechaDesde').val(),
-                fechaHasta : $('#fechaHasta').val(),
-                rangoDesde : $('#rangoDesde').val(),
-                rangoHasta : $('#rangoHasta').val(),
-                empresa : $('#empresa').val(),
-                paciente : $('#paciente').val(),
-                examen : $('#examen').val(),
-                estado : $('#estado').val(),
+                fechaDesde: $('#fechaDesde').val(),
+                fechaHasta: $('#fechaHasta').val(),
+                rangoDesde: $('#rangoDesde').val(),
+                rangoHasta: $('#rangoHasta').val(),
+                empresa: $('#empresa').val(),
+                paciente: $('#paciente').val(),
+                examen: $('#examen').val(),
+                estado: $('#estado').val(),
                 ids: idsSeleccionados,
                 all: allSelected
             })
@@ -336,12 +337,22 @@ $(function(){
             });
     });
 
+    $('#estado').on('change', function () {
+        let data = $(this).val();
 
-});
+        if (data === 'pago') {
+            $('.fechaPago').show();
+        } else {
+            $('.fechaPago').hide();
+        }
+    });
 
-function obtenerIdsSeleccionados(){
+    function obtenerIdsSeleccionados() {
         itemsSeleccionados = $(".fila-checkbox:checked").map(function () {
             return this.value;
         }).get();
         return itemsSeleccionados;
     }
+
+
+});

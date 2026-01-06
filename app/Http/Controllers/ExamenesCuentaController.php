@@ -122,6 +122,10 @@ class ExamenesCuentaController extends Controller
                 $query->whereIn('pagosacuenta.Pagado', [0,1]);
             });
 
+            $query->when(!empty($request->fechaPagoDesde) && !empty($request->fechaPagoHasta), function ($query) use ($request){
+                $query->whereBetween('pagosacuenta.FechaP', [$request->fechaPagoDesde, $request->fechaPagoHasta]);
+            });
+
             $result = $query->groupBy('pagosacuenta.Id', 'pagosacuenta.Tipo', 'pagosacuenta.Suc', 'pagosacuenta.Nro', 'pagosacuenta.Pagado');
             return $result;
     }
