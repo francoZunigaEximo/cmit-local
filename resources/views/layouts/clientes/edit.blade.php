@@ -6,7 +6,7 @@
 
 <div class="row mb-4">
     <div class="col-12 d-flex justify-content-end">
-        <a href="{{ route('clientes.index') }}" class="btn btn-warning"><i class="ri-arrow-left-line"></i>&nbsp;Volver</a>
+        <a href="{{ route('clientes.index') }}" class="btn btnSuccess"><i class="ri-arrow-left-line"></i>&nbsp;Volver</a>
     </div>
 </div>
 
@@ -269,7 +269,7 @@
                         <div class="hstack gap-2 justify-content-end">
                             <a href="{{ route('clientes.index') }}" class="btn botonGeneral">Ir a Principal</a>
                             @can('clientes_edit')
-                            <button type="submit" class="btn botonGeneral">Actualizar</button>
+                            <button type="submit" class="btn btnDanger">Actualizar</button>
                             @endcan
                         </div>
                     </div>
@@ -279,7 +279,7 @@
             </form>
         </div>
         
-        <div class="tab-pane" id="paraEmpresa" role="tabpanel">                
+        <div class="tab-pane" id="paraEmpresa" role="tabpanel">
                 <div class="card mt-xxl-n5">
                 <div class="card-body p-4">
                 <div class="row g-2">
@@ -370,7 +370,7 @@
                     <div class="col-lg-12">
                         <div class="text-end">
                             @can('clientes_edit')
-                            <button type="button" id="btnAutorizado" class="btn botonGeneral">Autorizar</button>
+                            <button type="button" id="btnAutorizado" class="btn btnDanger">Autorizar</button>
                             @endcan
                         </div>
                         
@@ -472,7 +472,7 @@
                             <!--end col-->
                             <div class="hstack gap-2 justify-content-end">
                                 @can('clientes_edit')
-                                <button type="button" class="btn botonGeneral" id="btnOpciones">Guardar</button>
+                                <button type="button" class="btn btnDanger" id="btnOpciones">Guardar</button>
                                 @endcan
                             </div>
                         </div>
@@ -517,7 +517,7 @@
                 </div>
                 <div class="hstack gap-2 justify-content-end">
                     @can('clientes_edit')
-                    <button type="button" class="btn botonGeneral" id="guardarEmail">Guardar</button>
+                    <button type="button" class="btn btnDanger" id="guardarEmail">Guardar</button>
                     @endcan
                 </div>
             </div>
@@ -550,7 +550,7 @@
             </div>
             <div class="hstack gap-2 justify-content-end">
                 @can('clientes_edit')
-                <button type="button" class="btn botonGeneral" id="btnObservaciones" >Guardar</button>
+                <button type="button" class="btn btnDanger" id="btnObservaciones" >Guardar</button>
                 @endcan
             </div>
         </div>
@@ -716,7 +716,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn botonGeneral" data-bs-dismiss="modal">Cancelar edición</button>
-                <button type="button" class="btn botonGeneral" id="saveCambiosEdit">Guardar</button>
+                <button type="button" class="btn btnDanger" id="saveCambiosEdit">Guardar</button>
             </div>
         </div>
     </div>
@@ -745,7 +745,7 @@
             </div>
             <div class="modal-footer mt-2">
                 <button type="button" class="btn botonGeneral" data-bs-dismiss="modal">Cancelar edición</button>
-                <button type="button" class="btn botonGeneral" id="saveParametrosEdit">Guardar</button>
+                <button type="button" class="btn btnDanger" id="saveParametrosEdit">Guardar</button>
             </div>
         </div>
     </div>

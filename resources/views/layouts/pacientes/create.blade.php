@@ -6,7 +6,7 @@
 
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
     <h4 class="mb-sm-0">Nuevo paciente</h4>
-    <a href="{{ route('pacientes.index') }}" class="btn btn-success botonGeneral">Volver</a>
+    <a href="{{ route('pacientes.index') }}" class="btn btnSuccess">Volver</a>
 </div>
 
 <div class="container-fluid">
@@ -154,7 +154,7 @@
                 </div>
 
                 <div class="col-12 box-information mt-2 text-center">
-                    <button type="submit" id="btnRegistrar" class="btn btn-danger botonGeneral">Registrar</button>
+                    <button type="submit" id="btnRegistrar" class="btn btnDanger">Registrar</button>
                 </div>
             </div> 
         </div>

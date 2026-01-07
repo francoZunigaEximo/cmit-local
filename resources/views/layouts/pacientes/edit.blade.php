@@ -6,7 +6,7 @@
 
 <div class="row mb-4">
     <div class="col-12 text-end">
-        <button onclick="window.history.back()" class="btn btn-warning"><i class="ri-arrow-left-line"></i>&nbsp;Volver</button>
+        <button onclick="window.history.back()" class="btn btnSuccess"><i class="ri-arrow-left-line"></i>&nbsp;Volver</button>
     </div>
 </div>
 
@@ -181,7 +181,7 @@
                 </div>
 
                 <div class="col-12 box-information mt-2 text-center">
-                    <button type="submit" class="btn btn-sm botonGeneral">Actualizar</button>
+                    <button type="submit" class="btn btnDanger">Actualizar</button>
                 </div>
             </div> 
         </div>

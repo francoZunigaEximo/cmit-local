@@ -6,7 +6,7 @@
 
 <div class="row mb-4">
     <div class="col-12 text-end">
-        <a href="{{ route('especialidades.index') }}" class="btn btn-warning"><i class="ri-arrow-left-line"></i>&nbsp;Volver</a>
+        <a href="{{ route('especialidades.index') }}" class="btn btnSuccess"><i class="ri-arrow-left-line"></i>&nbsp;Volver</a>
     </div>
 </div>
 
@@ -95,7 +95,7 @@
                 <div class="col-lg-12 pt-4">
                     <div class="hstack gap-2 justify-content-end">
                         
-                        <button type="button" id="updateBasico" class="btn botonGeneral">Guardar</button>
+                        <button type="button" id="updateBasico" class="btn btnDanger">Guardar</button>
                     </div>
                 </div>
             </div>
@@ -139,7 +139,7 @@
                 <div class="col-lg-12 pt-4">
                     <div class="hstack gap-2 justify-content-end">
                         
-                        <button type="button" id="updateOpciones" class="btn btn-sm botonGeneral">Guardar</button>
+                        <button type="button" id="updateOpciones" class="btn btnDanger">Guardar</button>
                     </div>
                 </div>
     

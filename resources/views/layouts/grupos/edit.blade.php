@@ -5,7 +5,7 @@
 @section('content')
 <div class="row mb-4">
     <div class="col-12 text-end">
-        <a href="{{ route('grupos.index') }}"  class="btn btn-warning"><i class="ri-arrow-left-line"></i>&nbsp;Volver</a>
+        <a href="{{ route('grupos.index') }}"  class="btn btnSuccess"><i class="ri-arrow-left-line"></i>&nbsp;Volver</a>
     </div>
 </div>
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
@@ -64,7 +64,7 @@
         </tbody>
     </table>
     <div class="col-12 box-information mt-2 text-center">
-        <button type="submit" id="btnRegistrar" class="btn botonGeneral">Guardar</button>
+        <button type="submit" id="btnRegistrar" class="btn btnDanger">Guardar</button>
     </div>
 </div>
 

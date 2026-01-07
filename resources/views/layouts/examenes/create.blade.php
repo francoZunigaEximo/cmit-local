@@ -11,7 +11,7 @@
     </div>
     <div class="page-title-right">
     </div>
-    <button type="button" id="volver" class="btn btn-warning"><i class="ri-arrow-left-line"></i>&nbsp;Volver</button>
+    <button type="button" id="volver" class="btn btnSuccess"><i class="ri-arrow-left-line"></i>&nbsp;Volver</button>
 </div>
 
 <div class="container-fluid">
@@ -198,7 +198,7 @@
 
                 <div class="col-12 box-information mt-2 text-center mt-3">
                     
-                    <button type="submit" id="crear" class="btn botonGeneral">Registrar</button>
+                    <button type="submit" id="crear" class="btn btnDanger">Registrar</button>
                 </div>
 
             </div>

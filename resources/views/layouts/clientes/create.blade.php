@@ -7,7 +7,7 @@
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
     <h4 class="mb-sm-0">Registrar un nuevo cliente</h4>
     <x-helper>{!!$helper!!}</x-helper>
-    <a href="{{ route('clientes.index') }}" class="btn btn-warning "><i class="ri-arrow-left-line"></i>&nbsp;Volver</a>
+    <a href="{{ route('clientes.index') }}" class="btn btnSuccess "><i class="ri-arrow-left-line"></i>&nbsp;Volver</a>
 </div>
                         
 <div class="card-header">
@@ -189,7 +189,7 @@
                     <div class="col-lg-12 mt-3">
                         <div class="hstack gap-2 justify-content-end">
                             
-                            <button type="submit" class="btn btn-sm botonGeneral">Registrar</button>
+                            <button type="submit" class="btn btnSuccess">Registrar</button>
                         </div>
                     </div>
                     <!--end col-->

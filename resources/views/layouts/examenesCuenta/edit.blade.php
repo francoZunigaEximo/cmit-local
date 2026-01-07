@@ -8,7 +8,7 @@
     <h4 class="mb-sm-0">Examenes a cuenta</h4>
 
     <div class="page-title-right"></div>
-    <button type="button" class="btn btn-warning volverPrincipal"><i class="ri-arrow-left-line"></i>&nbsp;Volver</button>
+    <button type="button" class="btn btnSuccess volverPrincipal"><i class="ri-arrow-left-line"></i>&nbsp;Volver</button>
 </div>
 
 <div class="row mt-2 mb-2">
@@ -55,7 +55,7 @@
 
             <div class="row justify-content-center">
                 <div class="col-sm-4 mb-3 text-center">
-                    <button type="button" class="btn btn-sm botonGeneral actualizarPagoCuenta">Guardar</button>
+                    <button type="button" class="btn btnDanger actualizarPagoCuenta">Guardar</button>
                     
                 </div>
             </div>
