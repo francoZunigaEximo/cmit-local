@@ -6,7 +6,7 @@
 
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
     <h4 class="mb-sm-0">Especialidad <span class="badge text-bg-primary">Nueva</span></h4>
-    <a class="btn btn-warning" href="{{ route('especialidades.index')}}"><i class="ri-arrow-left-line"></i>&nbsp;Volver</a>
+    <a class="btn btnSuccess" href="{{ route('especialidades.index')}}"><i class="ri-arrow-left-line"></i>&nbsp;Volver</a>
 </div>
 
 <div class="card-header">
@@ -77,7 +77,7 @@
                     <div class="col-lg-12 pt-4">
                         <div class="hstack gap-2 justify-content-end">
                             
-                            <button type="button" id="saveBasico" class="btn btn-sm botonGeneral">Registrar</button>
+                            <button type="button" id="saveBasico" class="btn btnDanger">Registrar</button>
                         </div>
                     </div>
                 </div>

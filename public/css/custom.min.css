@@ -1,1 +1,10 @@
 
+.btnDanger{
+    background-color: red;
+    color: white;
+ }
+
+ .btnSuccess{
+    background-color: rgb(77, 171, 33);
+    color: white;
+ }

@@ -6,7 +6,7 @@
 
 <div class="row mb-4">
     <div class="col-12 text-end">
-        <a href="{{ route('examenes.index') }}" class="btn btn-warning"><i class="ri-arrow-left-line"></i>&nbsp;Volver</a>
+        <a href="{{ route('examenes.index') }}" class="btn btnSuccess"><i class="ri-arrow-left-line"></i>&nbsp;Volver</a>
     </div>
 </div>
 
@@ -200,7 +200,7 @@
                 </div>
 
                 <div class="col-12 box-information mt-2 text-center mt-3">
-                    <button type="button" {!! $examene->Inactivo === 3 ? 'disabled' : 'id="Registrar"' !!} class="btn botonGeneral">Guardar</button>
+                    <button type="button" {!! $examene->Inactivo === 3 ? 'disabled' : 'id="Registrar"' !!} class="btn btnDanger">Guardar</button>
                 </div>
 
             </div>

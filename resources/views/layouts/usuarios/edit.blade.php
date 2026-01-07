@@ -13,7 +13,7 @@
         <div class="alert alert-warning verAlerta" role="alert">
             <strong> Atención: </strong> Los actualización de los datos profesionales se encontrarán disponibles si el usuario es efector, informador, combinado o evaluador.
         </div>   
-        <a class="btn btn-warning " href="{{ route('usuarios.index') }}"><i class="ri-arrow-left-line"></i>&nbsp;Volver</a>
+        <a class="btn btnSuccess " href="{{ route('usuarios.index') }}"><i class="ri-arrow-left-line"></i>&nbsp;Volver</a>
     </div>
 </div>
 
@@ -81,7 +81,7 @@
         
         <div class="p-3 col-md-12 d-flex justify-content-end ">
             
-            <button class="btn botonGeneral m-2 cambiarEmail" type="button" id="cambiarEmail">Actualizar</button>
+            <button class="btn btnDanger m-2 cambiarEmail" type="button" id="cambiarEmail">Actualizar</button>
         </div>
     </div>
 
@@ -170,7 +170,7 @@
             </div>
         
             <div class="p-3 col-md-12 d-flex justify-content-end ">
-                <button class="btn botonGeneral m-2 updateDatos">Actualizar</button>
+                <button class="btn btnDanger m-2 updateDatos">Actualizar</button>
             </div>
 
         </form>
@@ -307,7 +307,7 @@
             
             <div class="row">
                 <div class="col-sm-12 text-center">
-                    <button type="button" class="saveOpciones btn botonGeneral">Confirmar</button>
+                    <button type="button" class="saveOpciones btn btnDanger">Confirmar</button>
                 </div>
             </div>
        </div>
@@ -341,7 +341,7 @@
             <div class="col-lg-12">
                 <div class="hstack gap-2 justify-content-end">
 
-                    <button type="button" class="saveSeguro btn botonGeneral">Guardar</button>
+                    <button type="button" class="saveSeguro btn btnDanger">Guardar</button>
                 </div>
             </div>
           

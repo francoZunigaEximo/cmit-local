@@ -7,7 +7,7 @@
 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
     <h4 class="mb-sm-0">Editar Factura de Compra</h4>
 
-    <a class="btn btn-warning" href="{{ route('facturaCompra.index') }}"><i class="ri-arrow-left-line"></i> Volver</a>
+    <a class="btn btnSuccess" href="{{ route('facturaCompra.index') }}"><i class="ri-arrow-left-line"></i> Volver</a>
 </div>
 
 
@@ -77,7 +77,7 @@
         </div>
         
         <div class="d-flex justify-content-center mb-3">
-            <button type="button" id="editarFactura" class="btn botonGeneral">Actualizar</button>
+            <button type="button" id="editarFactura" class="btn btnDanger">Actualizar</button>
         </div>
         
         <h4>Examenes Efector</h4>
