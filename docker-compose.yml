@@ -19,7 +19,7 @@ services:
   myapp:
     image: docker.io/bitnami/laravel:latest
     ports:
-      - '8000:8000'
+      - '8084:8000'
     environment:
       - DB_HOST=192.168.111.8
       - DB_PORT=3306
