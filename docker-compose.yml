@@ -13,7 +13,7 @@ services:
   composer-aux:
     image: composer
     volumes:
-      - 'C:/Users/fzuniga/DOCKER-LARAVEL/cmit:/app'
+      - './:/app'
     command: install --ignore-platform-reqs --no-scripts
 
   myapp:
@@ -32,7 +32,7 @@ services:
       - REDIS_PASSWORD=null
       - REDIS_PORT=6379
     volumes:
-      - 'C:/Users/fzuniga/DOCKER-LARAVEL/cmit:/app'
+      - './:/app'
     depends_on:
       - composer-aux
       - redis  
