@@ -1,34 +1,42 @@
-version: '2'
+version: "3.9"
 
 services:
   redis:
     image: redis:7
+    container_name: cmit_redis
     ports:
       - "6382:6379"
 
   composer-aux:
     image: composer:latest
+    container_name: cmit_composer
     working_dir: /app
     volumes:
       - ./:/app
     command: composer install --ignore-platform-reqs --no-scripts
 
   myapp:
-    image: bitnami/laravel:latest
-    user: root
+    image: laravelsail/php83-composer:latest
+    container_name: cmit_laravel
     ports:
-      - "8084:8000"
+      - "8084:80"
     environment:
+      WWWUSER: 1000
+      WWWGROUP: 1000
+
       DB_HOST: 192.168.111.8
       DB_PORT: 3306
       DB_USERNAME: db_cmit
       DB_DATABASE: db_cmit
       DB_PASSWORD: db_cmit
+
       CACHE_DRIVER: redis
       REDIS_CLIENT: predis
       REDIS_HOST: redis
       REDIS_PORT: 6379
+
     volumes:
-      - ./:/opt/bitnami/laravel
+      - ./:/var/www/html
+
     depends_on:
       - redis
