@@ -8,6 +8,7 @@ services:
     container_name: laravel_app
     volumes:
       - .:/var/www
+    command: composer install --ignore-platform-reqs --no-scripts
     working_dir: /var/www
     environment:
       DB_HOST: 192.168.111.8
