@@ -15,6 +15,7 @@ services:
 
   myapp:
     image: bitnami/laravel:latest
+    user: root
     ports:
       - "8084:8000"
     environment:
