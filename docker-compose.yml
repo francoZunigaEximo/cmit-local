@@ -17,7 +17,7 @@ services:
     command: install --ignore-platform-reqs --no-scripts
 
   myapp:
-    image: docker.io/bitnami/laravel:10
+    image: docker.io/bitnami/laravel:latest
     ports:
       - '8000:8000'
     environment:
