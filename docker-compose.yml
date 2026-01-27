@@ -75,6 +75,21 @@ services:
     networks:
       - laravel-development
 
+  reverb:
+    build:
+      context: .
+      dockerfile: ./docker/workspace/Dockerfile # Reutilizamos tu imagen que ya tiene PHP
+    command: php artisan reverb:start --host=0.0.0.0 --port=8080
+    ports:
+      - "8085:8080"
+    volumes:
+      - ./:/var/www
+    networks:
+      - laravel-development
+    depends_on:
+      - workspace
+      - redis
+
   redis:
     image: redis:alpine
     networks:
