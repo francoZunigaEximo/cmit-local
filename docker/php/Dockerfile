@@ -1,20 +1,25 @@
 FROM php:8.2-fpm
 
-# Instalar dependencias del sistema
+# Dependencias del sistema
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
+    zip \
+    libzip-dev \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
-    libjpeg-dev \
-    libfreetype6-dev \
-    zip \
     curl \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+    && docker-php-ext-install \
+        pdo_mysql \
+        mbstring \
+        exif \
+        pcntl \
+        bcmath \
+        gd \
+        zip
 
-# Instalar Composer
+# Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www
