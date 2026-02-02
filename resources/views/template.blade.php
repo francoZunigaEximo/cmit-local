@@ -278,7 +278,7 @@
                                 </ul>
                             </div>
                         </li>
-
+                        <!--
                         <li class="nav-item">
                             <a class="nav-link menu-link collapsed" href="#sidebarGeneral" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarGeneral">
                                 <i data-feather="folder" class="icon-dual"></i> <span data-key="t-general">General</span>
@@ -293,6 +293,7 @@
                                 </ul>
                             </div>
                         </li>
+                        -->
 
                         @can('noticias_edit')
                         <li class="nav-item">
