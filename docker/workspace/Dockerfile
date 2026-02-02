@@ -8,8 +8,8 @@ ARG GID=1000
 ARG NODE_VERSION=22.0.0
 
 # Install system dependencies and build libraries
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl \
+RUN apt-get update && apt-get install -y --no-install-recommends \ 
+    curl git \
     unzip \
     libpq-dev \
     libonig-dev \
@@ -40,6 +40,8 @@ RUN apt-get update && apt-get install -y \
     libwebp-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-install -j$(nproc) gd
+
+RUN docker-php-ext-install pcntl pdo_mysql gd
 
 # Use ARG to define environment variables passed from the Docker build command or Docker Compose.
 ARG XDEBUG_ENABLED
