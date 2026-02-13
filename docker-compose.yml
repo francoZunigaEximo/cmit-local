@@ -83,7 +83,7 @@ services:
     ports:
       - "8085:8085"
     volumes:
-      - ./:/var/www
+      - .:/var/www
     networks:
       - laravel-development
     depends_on:
