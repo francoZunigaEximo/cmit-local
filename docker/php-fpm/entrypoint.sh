@@ -5,15 +5,11 @@ set -e
 USER_ID=${UID:-1000}
 GROUP_ID=${GID:-1000}
 
-<<<<<<< HEAD
-=======
 #cambiamos los permisos en caso de estar en un SO linux
-if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    echo "Fixing file permissions with UID=${USER_ID} and GID=${GROUP_ID}..."
-    chown -R ${USER_ID}:${GROUP_ID} /var/www || echo "Some files could not be changed"
-fi
 
->>>>>>> 4bad3aa8314519f8d04ecfd7c0285bb2511a9fb8
+echo "Fixing file permissions with UID=${USER_ID} and GID=${GROUP_ID}..."
+chown -R ${USER_ID}:${GROUP_ID} /var/www || echo "Some files could not be changed"
+
 # Clear configurations to avoid caching issues in development
 cd /var/www
 

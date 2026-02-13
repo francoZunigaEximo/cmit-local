@@ -185,12 +185,8 @@
                                     <th class="sort">Para Empresa</th>
                                     <th class="sort">ART</th>
                                     <th class="sort">Estado</th>
-                                    <th>eEnv</th>
                                     <th>INC</th>
                                     <th>AUS</th>
-                                    <th>FOR</th>
-                                    <th>DEV</th>
-                                    <th>FP</th>
                                     <th>FAC</th>
                                     <th>Acciones</th>
                                 </tr>

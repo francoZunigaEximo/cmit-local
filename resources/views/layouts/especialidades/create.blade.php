@@ -35,7 +35,6 @@
                         <select class="form-control" name="Externo" id="Externo">
                             <option value="" selected>Elija una opción...</option>
                             <option value="1">Sí</option>
-                            <option value="0">No</option>
                         </select>
                     </div>  
         

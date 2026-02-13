@@ -1147,7 +1147,7 @@ class ItemPrestacionesController extends Controller
                 'itemprestacion' => $query,
                 'paciente' => $paciente,
                 'prestacion' => $prestacion, # Solo definimos si esta cerrada para bloquear funcionalidades
-                'qrTexto' => Tools::generarQR('A', $query->IdPrestacion, $query->IdExamen, $paciente->Id, 'texto'),
+                'qrTexto' => "", # Tools::generarQR('A', $query->IdPrestacion, $query->IdExamen, $paciente->Id, 'texto'),
                 'adjuntoEfector' => $this->adjunto($query->Id, "Efector"),
                 'adjuntoInformador' => $this->adjunto($query->Id, "Informador"),
                 'multiEfector' => $this->multiEfector($query->IdPrestacion, $query->IdProfesional, $query->examenes->IdProveedor),

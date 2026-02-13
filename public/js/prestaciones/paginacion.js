@@ -190,18 +190,9 @@ $(function(){
                 },
                 {
                     data: null,
-                    name: 'eEnviado',
-                    orderable: false,
-                    targets: 9,
-                    render: function(data){
-                        return `<div class="text-center ${data.eEnviado === 1 ? `verde` : ``}">${data.eEnviado === 1 ? 'eEnv' : ''}</div>`;
-                    }
-                },
-                {
-                    data: null,
                     name: 'INC',
                     orderable: false, 
-                    targets: 10,
+                    targets: 9,
                     render: function(data){
                         let color = data.Incompleto === 1 ? 'rojo' : '',
                             texto = data.Incompleto === 1 ? 'INC' : '&nbsp;';
@@ -212,51 +203,19 @@ $(function(){
                     data: null,
                     name: 'AUS',
                     orderable: false, 
-                    targets: 11,
+                    targets: 10,
                     render: function(data){
                         let color = data.Ausente === 1 ? 'rojo' : '',
                             texto = data.Ausente === 1 ? 'AUS' : '&nbsp;';
                         return `<div class="text-center ${color}">${texto}</div>`;
                     }
                 },
-                {
-                    data: null,
-                    name: 'FOR',
-                    orderable: false, 
-                    targets: 12,
-                    render: function(data){
-                        let color = data.Forma === 1 ? 'rojo' : '',
-                            texto = data.Forma === 1 ? 'FOR' : '&nbsp;';
-                        return `<div class="text-center ${color}">${texto}</div>`;
-                    }
-                },
-                {
-                    data: null,
-                    name: 'DEV',
-                    orderable: false, 
-                    targets: 13,
-                    render: function(data){
-                        let color = data.Devol === 1 ? 'rojo' : '',
-                            texto = data.Devol === 1 ? 'DEV' : '&nbsp;';
-                        return `<div class="text-center ${color}">${texto}</div>`;
-                    }
-                },
-                {
-                    data: null,
-                    name: 'FP',
-                    orderable: false, 
-                    targets: 14,
-                    render: function(data){
-
-                        let pagos = { 'B': 'Ctdo', 'C': 'Ctdo', 'P': 'ExCta', 'A': 'CC'};
-                        return !pagos[data.Pago] ? 'CC' : pagos[data.Pago];      
-                    }
-                },
+                
                 {
                     data: null,
                     name: 'Factura',
                     orderable: false,
-                    targets: 15,
+                    targets: 11,
                     render: function(data){
                         return data.Facturado === 1 
                                 ? `<div class="text-center verde">Fac</div>` 
@@ -268,7 +227,7 @@ $(function(){
                     name: 'Id',
                     orderable: false,
                     width: 100,
-                    targets: 16,
+                    targets: 12,
                     render: function(data){
 
                         let editar = `<a title="Editar" href="${url}/${data.Id}/edit" target="_blank"><button type="button" class="btn btn-sm iconGeneralNegro"><i class="ri-edit-line"></i></button></a>`,

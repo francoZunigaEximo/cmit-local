@@ -930,7 +930,7 @@
 
                             <div class="row mt-2 paqueteExamen">
                         
-                                <div class="col-5">
+                                <div class="col-6">
                                     <label for="paquetes" class="form-label">Paquetes</label> <!-- select 2 de paquetes de exámenes -->
                                     <div class="mb-3">
                                         <div class="cajaExamenes">
@@ -940,7 +940,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-5">
+                                <div class="col-6">
                                     <label for="examenes" class="form-label">Examen</label> <!-- select 2 de exámenes -->
                                     <div class="mb-3">
                                         <div class="cajaExamenes">
@@ -950,7 +950,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-2 d-flex justify-content-center align-items-center">
+                                <div class="col-2 d-flex justify-content-center align-items-center" style="display: hidden;">
                                     <div class="mb-3">
                                         <div class="cajaExamenes">
                                             <button class="btn botonGeneral btnExamen">Examenes Masivo</button>
