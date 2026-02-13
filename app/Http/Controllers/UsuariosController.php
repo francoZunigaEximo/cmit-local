@@ -29,7 +29,7 @@ class UsuariosController extends Controller
             <span class="small"><i class="ri-edit-line"></i>&nbsp;Editar correo electronico, datos personales y roles.</span>
             <span class="small"><i class="ri-delete-bin-2-line"></i>&nbsp;Dar de baja/eliminar el usuario.</span>
             <span class="small"><i class="ri-lock-2-line"></i>&nbsp;Desactivar o activar usuario.</span>
-            <span class="small"><i class="ri-lock-password-line"></i>&nbsp;Reset de password a "cmit1234".</span>
+            <span class="small"><i class="ri-lock-password-line"></i>&nbsp;Reset de password a "eximo1234".</span>
         </div>
     ';
 
