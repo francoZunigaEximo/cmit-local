@@ -43,7 +43,7 @@
                     <span class="small"><a class="btn btn-sm botonGeneral small p-1"><i class="ri-edit-line p-1"></i></a>&nbsp;Editar correo electronico, datos personales y roles.</span> &nbsp; 
                     <span class="small"><a class="btn btn-sm botonGeneral small p-1"><i class="ri-delete-bin-2-line p-1"></a></i>&nbsp;Dar de baja/eliminar el usuario.</span> &nbsp; 
                     <span class="small"><a class="btn btn-sm botonGeneral small p-1"><i class="ri-lock-2-line p-1"></i></a>&nbsp;Desactivar o activar usuario.</span> &nbsp;
-                    <span class="small"><a class="btn btn-sm botonGeneral small p-1"><i class="ri-key-2-line p-1"></i></a>&nbsp;Reset de password a 'cmit1234'.</span>
+                    <span class="small"><a class="btn btn-sm botonGeneral small p-1"><i class="ri-key-2-line p-1"></i></a>&nbsp;Reset de password a 'eximo1234'.</span>
                 </div>
                 <div class="col-sm-3 d-flex justify-content-end">
                     <a href="{{ route('usuarios.create') }}" class="btn botonGeneral"><i class="ri-add-line"></i> Nuevo</a>

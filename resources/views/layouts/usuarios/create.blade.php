@@ -35,7 +35,7 @@
 
     <div class="row">
         <div class="col-sm-12">
-            <p>Los nuevos usuarios tienen como contraseña estandar <span class="verde fw-semibold">"cmit1234"</span>. En su primera sesión se le solicitará el cambio.</p>
+            <p>Los nuevos usuarios tienen como contraseña estandar <span class="verde fw-semibold">"eximo1234"</span>. En su primera sesión se le solicitará el cambio.</p>
             <p>Los campos con asteriscos <span class="required">(*)</span> son obligatorios.</p>
         </div>
     </div>
