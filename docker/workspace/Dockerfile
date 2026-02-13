@@ -44,7 +44,6 @@ RUN apt-get update && apt-get install -y \
 
 RUN docker-php-ext-install pcntl pdo_mysql gd
 
-
 # Use ARG to define environment variables passed from the Docker build command or Docker Compose.
 ARG XDEBUG_ENABLED
 ARG XDEBUG_MODE
