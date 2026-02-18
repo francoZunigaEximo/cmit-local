@@ -13,8 +13,8 @@ class EEstudio extends Reporte
     {
         $prestacion = $this->prestacion($datos['id']);
         
-        $pdf->Image(url('/').ReporteConfig::$URLPORTADA,1,0,209); 
-            $y=220;
+        #$pdf->Image(url('/').ReporteConfig::$URLPORTADA,1,0,209); 
+        $y=20;
         $pdf->SetFont('Arial','B',14);
         $pdf->SetTextColor(255, 255, 255, 255);//white
         $pdf->SetXY(109,$y);$pdf->Cell(0,3,utf8_decode(substr($prestacion->paciente->Nombre. ' '.$prestacion->paciente->Apellido,0,28)),0,0,'L');$y=$y+10;

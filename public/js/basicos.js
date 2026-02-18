@@ -86,15 +86,22 @@ function quitarDuplicados(selector) {
 }
 
 function createFile(tipo, array, name) {
-    let filePath = array,
+    const pathBase = "/var/www/storage/app/public/";
+    let fullPath = "";
+    let url = new URL(location.href);
+    if(array.includes(pathBase)){
+        fullPath = url.origin +"/"+ array.replace(pathBase, "/storage/");
+    }else{
+        let filePath = array,
         pattern = /storage(.*)/,
         match = filePath.match(pattern),
-        path = match ? match[1] : '';
+        path = match ? storage +"/"+match[1] : '';
 
-    let url = new URL(location.href),
-        checkPublic = url.href.includes("public") ? '/cmit/storage' : '/storage',
-        baseUrl = url.origin + checkPublic,
+        let checkPublic = '/storage',
+        baseUrl = url.origin + checkPublic;
+
         fullPath = baseUrl + path;
+    }
 
     let link = document.createElement('a');
     link.href = fullPath;
