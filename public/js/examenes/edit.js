@@ -9,7 +9,7 @@ $(function(){
         window.history.back();
     });
 
-    $(document).on('click', '#guardar', function(){
+    $(document).on('click', '#Registrar', function(){
 
         let Examen = $('#Examen').val(),
             Estudio =$('#Estudio').val(),

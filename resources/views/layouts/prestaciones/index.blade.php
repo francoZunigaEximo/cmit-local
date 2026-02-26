@@ -187,7 +187,6 @@
                                     <th class="sort">Estado</th>
                                     <th>INC</th>
                                     <th>AUS</th>
-                                    <th>FAC</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>

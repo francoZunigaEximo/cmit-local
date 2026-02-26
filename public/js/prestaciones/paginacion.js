@@ -213,21 +213,10 @@ $(function(){
                 
                 {
                     data: null,
-                    name: 'Factura',
-                    orderable: false,
-                    targets: 11,
-                    render: function(data){
-                        return data.Facturado === 1 
-                                ? `<div class="text-center verde">Fac</div>` 
-                                : ``;
-                    }
-                },
-                {
-                    data: null,
                     name: 'Id',
                     orderable: false,
                     width: 100,
-                    targets: 12,
+                    targets: 11,
                     render: function(data){
 
                         let editar = `<a title="Editar" href="${url}/${data.Id}/edit" target="_blank"><button type="button" class="btn btn-sm iconGeneralNegro"><i class="ri-edit-line"></i></button></a>`,
