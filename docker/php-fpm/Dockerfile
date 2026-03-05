@@ -41,6 +41,20 @@ RUN if getent group ${GID}; then \
 RUN sed -i "s/user = www-data/user = www/g" /usr/local/etc/php-fpm.d/www.conf && \
     sed -i "s/group = www-data/group = $group_name/g" /usr/local/etc/php-fpm.d/www.conf
 
+# 1. Instalamos las dependencias del sistema necesarias para compilar imagick
+RUN apt-get update && apt-get install -y \
+    libmagickwand-dev \
+    libmariadb-dev \
+    --no-install-recommends
+
+# 2. Instalamos imagick (usando la versión específica si es necesario)
+# En PHP 8.2+, a veces pecl requiere forzar la versión o ignorar advertencias
+RUN pecl install imagick && \
+    docker-php-ext-enable imagick
+
+# 3. Limpiamos cache de apt para reducir el tamaño de la imagen
+RUN rm -rf /var/lib/apt/lists/*
+
 # Instalamos las dependencias necesarias y el driver pdo_mysql
 RUN apt-get update && apt-get install -y \
     libmariadb-dev \

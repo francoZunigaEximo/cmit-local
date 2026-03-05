@@ -46,10 +46,10 @@
                         <div class="navbar-brand-box horizontal-logo">
                             <a href="{{ route('home') }}" class="logo logo-dark">
                                 <span class="logo-sm">
-                                    <img src="{{ asset('images/logo-intranet-sm.png') }}?v={{ time () }}" alt="" height="22">
+                                    <img src="{{ asset('images/logo-intranet-sm.png') }}?v={{ time () }}" alt="" style="width: 40px;">
                                 </span>
                                 <span class="logo-lg">
-                                    <img src="{{ asset('images/logo-intranet.png') }}?v={{ time () }}" alt="" height="17">
+                                    <img src="{{ asset('images/logo-intranet.png') }}?v={{ time () }}" alt="" style="width: 100px:">
                                 </span>
                             </a>
                         </div>
@@ -157,18 +157,18 @@
                 <!-- Dark Logo-->
                 <a href="{{route('noticias.index')}}" class="logo logo-dark">
                     <span class="logo-sm">
-                        <img src="{{ asset('images/logo-intranet-sm.png') }}" alt="Salud Ocupacionl SRL" >
+                        <img src="{{ asset('images/logo-intranet-sm.png') }}" alt="Salud Ocupacionl SRL" style="width: 40px;">
                     </span>
                     <span class="logo-lg">
-                        <img src="{{ asset('images/logo-intranet.png') }}" alt="Salud Ocupacionl SRL" >
+                        <img src="{{ asset('images/logo-intranet.png') }}" alt="Salud Ocupacionl SRL" style="width: 100px;">
                     </span>
                 </a>
                 <a href="{{ route('home') }}" class="logo logo-light">
                     <span class="logo-sm">
-                        <img src="{{ asset('images/logo-intranet-sm.png') }}" alt="Salud Ocupacionl SRL" >
+                        <img src="{{ asset('images/logo-intranet-sm.png') }}" alt="Salud Ocupacionl SRL" style="width: 40px;">
                     </span>
                     <span class="logo-lg">
-                        <img src="{{ asset('images/logo-intranet.png') }}" alt="Salud Ocupacionl SRL" >
+                        <img src="{{ asset('images/logo-intranet.png') }}" alt="Salud Ocupacionl SRL" style="width: 100px;">
                     </span>
                 </a>
                 <button type="button" class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover" id="vertical-hover">

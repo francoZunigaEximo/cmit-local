@@ -143,7 +143,7 @@ class EvaluacionResumen extends Reporte
         }
 
         //foto paciente
-        if(!empty($query->paciente->Foto)){$pdf->Image(FileHelper::getFileUrl('lectura').'/Fotos/'.$query->paciente->Foto,160,$y+15,38,27);}
+        //if(!empty($query->paciente->Foto)){$pdf->Image(FileHelper::getFileUrl('lectura').'/Fotos/'.$query->paciente->Foto,160,$y+15,38,27);}
 
 
         //la prestacion debe estar cerrada para mostrar firma y sello

@@ -28,7 +28,7 @@ class Tools
         $prestacion = Prestacion::find($prestacionId);
 
         $code = strtoupper($tipo) . $prestacionId . $examenId . $pacienteId;
-
+        
         QrCode::size(300)->format('png')->generate($code, $path);
         if($pdf){
             $pdf->SetXY(100,5);$pdf->Cell(85,3,$paciente->Apellido.' '.$paciente->Nombre,0,0,'R');
