@@ -95,7 +95,7 @@ function createFile(tipo, array, name) {
         checkPublic = url.href.includes("public") ? '/cmit/storage' : '/storage',
         baseUrl = url.origin + checkPublic,
         fullPath = baseUrl + path;
-
+        
     let link = document.createElement('a');
     link.href = fullPath;
     link.download = tipo === 'pdf' ? name : name + ".xlsx";

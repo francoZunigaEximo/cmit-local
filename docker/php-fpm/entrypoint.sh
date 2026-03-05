@@ -1,19 +1,14 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 
 # Check if $UID and $GID are set, else fallback to default (1000:1000)
 USER_ID=${UID:-1000}
 GROUP_ID=${GID:-1000}
 
-<<<<<<< HEAD
-=======
-#cambiamos los permisos en caso de estar en un SO linux
-if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    echo "Fixing file permissions with UID=${USER_ID} and GID=${GROUP_ID}..."
-    chown -R ${USER_ID}:${GROUP_ID} /var/www || echo "Some files could not be changed"
-fi
+# Fix file ownership and permissions using the passed UID and GID
+echo "Fixing file permissions with UID=${USER_ID} and GID=${GROUP_ID}..."
+#chown -R ${USER_ID}:${GROUP_ID} /var/www || echo "Some files could not be changed"
 
->>>>>>> 4bad3aa8314519f8d04ecfd7c0285bb2511a9fb8
 # Clear configurations to avoid caching issues in development
 cd /var/www
 
