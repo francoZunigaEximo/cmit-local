@@ -25,12 +25,16 @@ Las imagenes que levantamos son 4; el servidor nginx que ejecutara la aplicacion
 
 Cuando termine de levantar el proyecto recuerde llevarse las variable de entorno del archivo .env a el servidor para poder ejecutar la aplicacion.
 
-### Pasos
+### Pasos 
 
 1. ejecute `docker-compose up -d` 
 2. en caso de no tener el en .env la clase APP_KEY o la tiene vacia ejecute `docker-compose exec workspace php artisan key:generate` .
 3. instalar las dependencias con composer: `docker-compose exec workdir workspace composer install` .
-4. pruebe navegando a `http://localhost:8084/` o `http://<ip-maquina>:8084/` .
+4. generar link simbolico del storage: `docker-compose exec php-fpm php artisan storage:link`
+5. pruebe navegando a `http://localhost:8084/` o `http://<ip-maquina>:8084/` .
+
+> En caso de que se quiera ejecutar sobre un SO windows tendra que hacer lo siguiente: `docker compose -f docker-compose-win.yml up --build`
+
 
 ### Info
 
